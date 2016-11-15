@@ -1,0 +1,25 @@
+
+//------------------------------------------------
+// NOC_CONT_NOC_PORT_OUTPUT_CNTL_LOCAL_INPUT_QUEUE_CONTROL_STATE width
+//------------------------------------------------
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_STATE_MSB            10
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_STATE_LSB            0
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_STATE_SIZE           (`NOC_CONT_NOC_PORT_OUTPUT_CNTL_STATE_MSB - `NOC_CONT_NOC_PORT_OUTPUT_CNTL_STATE_LSB +1)
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_STATE_RANGE           `NOC_CONT_NOC_PORT_OUTPUT_CNTL_STATE_MSB : `NOC_CONT_NOC_PORT_OUTPUT_CNTL_STATE_LSB
+
+//------------------------------------------------------------------------------------------------
+//------------------------------------------------
+// NOC_CONT_NOC_PORT_OUTPUT_CNTL state machine states
+//------------------------------------------------
+
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT        11'd1
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_LOCAL  11'd2
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_LOCAL   11'd4
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT0  11'd8
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT0   11'd16
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT1  11'd32
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT1   11'd64
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT2  11'd128
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT2   11'd256
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT3  11'd512
+`define NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT3   11'd1024
