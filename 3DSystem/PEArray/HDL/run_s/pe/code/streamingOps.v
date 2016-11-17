@@ -46,7 +46,7 @@ module streamingOps (
                           reset_poweron     ,
 
                           // Controller interface
-                          operation         , // register interface
+                          operation               , // from register interface
                           strm0_enable            , 
                           strm0_source            , 
                           strm0_destination       , 
@@ -126,11 +126,11 @@ module streamingOps (
   output      strm1_ready       ;
   output      strm0_complete    ;
   output      strm1_complete    ;
-  input [`STREAMING_OP_CNTL_OPERATION_RANGE  ]        operation         ;
-  input [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE ]    strm0_source      ; 
-  input [`STREAMING_OP_CNTL_OPERATION_TO_RANGE ]      strm0_destination ; 
-  input [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE ]    strm1_source      ; 
-  input [`STREAMING_OP_CNTL_OPERATION_TO_RANGE ]      strm1_destination ; 
+  input [`STREAMING_OP_CNTL_OPERATION_RANGE                  ]        operation         ;
+  input [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]        strm0_source      ; 
+  input [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]        strm1_source      ; 
+  input [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]        strm0_destination ; 
+  input [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]        strm1_destination ; 
 
   // Result interface
   input                                        reg__stOp__ready          ;
@@ -354,7 +354,7 @@ module streamingOps (
     fp_cmp_first_gt_threshold    =   'b0                       ;
     fp_cmp_enable                =   'b0                       ;
     casex (operation)
-      `STREAMING_OP_CNTL_OPERATION_BITSUM_FROM_MEM_TO_MEM   :
+      `STREAMING_OP_CNTL_OPERATION_MEM_MEM_BITSUM_TO_MEM   :
         begin
           // Output
           stOp__dma__strm0_data        =   bsum                       ;
@@ -370,7 +370,7 @@ module streamingOps (
           // stOp control
           bsum_enable                  =  1'b1 ;
         end
-      `STREAMING_OP_CNTL_OPERATION_BITSUM_FROM_MEM_TO_REG   :
+      `STREAMING_OP_CNTL_OPERATION_MEM_MEM_BITSUM_TO_REG    :
         begin
           // Output
           stOp__reg__data              =   bsum                       ;
@@ -385,7 +385,21 @@ module streamingOps (
           // stOp control
           bsum_enable                  =   'b1 ;
         end
-      `STREAMING_OP_CNTL_OPERATION_NOP_FROM_TWO_EXT_TO_MEM     :
+      `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  :
+        begin
+          // Output
+          stOp__dma__strm0_data        =   strm0_fifo_read_data       ;
+          stOp__dma__strm0_data_mask   =   32'hFFFF_FFFF              ;
+          stOp__dma__strm0_cntl        =   strm0_fifo_read_cntl       ; // only one result
+          stOp__dma__strm0_data_valid  =   strm0_enable & strm0_fifo_data_available & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
+
+          // FIFO control
+          strm0_fifo_read              =   strm0_enable & strm0_fifo_data_available & dma__stOp__strm0_ready;
+          strm0_stOp_complete          =   strm0_src_complete & strm0_fifo_empty  ;
+    
+          // stOp control
+        end
+      `STREAMING_OP_CNTL_OPERATION_STD_STD_NOP_TO_MEM     :
         begin
           // Output
           stOp__dma__strm0_data        =   strm0_fifo_read_data       ;
@@ -405,7 +419,7 @@ module streamingOps (
     
           // stOp control
         end
-      `STREAMING_OP_CNTL_OPERATION_FP_MAC_FROM_MEM_TO_MEM     :
+      `STREAMING_OP_CNTL_OPERATION_MEM_MEM_FP_MAC_TO_MEM     :
         begin
           // Output
           stOp__dma__strm0_data        =   fp_mac                     ;
@@ -421,7 +435,7 @@ module streamingOps (
           // stOp control
           fp_mac_enable                =   'b1                       ;
         end
-      `STREAMING_OP_CNTL_OPERATION_FP_MAC_FROM_EXT_TO_MEM     :
+      `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM     :
         begin
           // Output
           stOp__dma__strm0_data        =   fp_mac                     ;
@@ -437,7 +451,23 @@ module streamingOps (
           // stOp control
           fp_mac_enable                =   'b1                       ;
         end
-      `STREAMING_OP_CNTL_OPERATION_FP_MAX_FROM_MEM_TO_MEM     :
+      `STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM     :
+        begin
+          // Output
+          stOp__dma__strm0_data        =   fp_mac                     ;
+          stOp__dma__strm0_cntl        =  `DMA_CONT_STRM_CNTL_SOP_EOP ; // only one result
+          stOp__dma__strm0_data_valid  =   fp_mac_result_valid ;
+
+          // FIFO control
+          strm0_fifo_read              =   strm0_enable & strm_fifo_data_available ;
+          strm1_fifo_read              =   strm1_enable & strm_fifo_data_available ;
+          strm0_stOp_complete          =   fp_mac_complete      ;
+          strm1_stOp_complete          =   fp_mac_complete      ;
+    
+          // stOp control
+          fp_mac_enable                =   'b1                       ;
+        end
+      `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAX_TO_MEM     :
         begin
           // Output
           stOp__dma__strm0_data        =   fp_cmp                     ;
@@ -453,7 +483,7 @@ module streamingOps (
           fp_cmp_max                   =   'b1                       ;
           fp_cmp_enable                =   'b1                       ;
         end
-      `STREAMING_OP_CNTL_OPERATION_FP_FIRST_GT_FROM_MEM_TO_MEM     :
+      `STREAMING_OP_CNTL_OPERATION_MEM_MEM_FP_FIRST_GT_TO_MEM     :
         begin
           // Output
           stOp__dma__strm0_data        =   fp_cmp                     ;
@@ -470,7 +500,7 @@ module streamingOps (
           fp_cmp_first_gt_threshold    =   'b1                       ;
           fp_cmp_enable                =   'b1                       ;
         end
-      `STREAMING_OP_CNTL_OPERATION_NOP_FROM_MEM_TO_MEM     :
+      `STREAMING_OP_CNTL_OPERATION_MEM_NONE_NOP_TO_MEM     :
         begin
           // Output
           stOp__dma__strm0_data        =   strm0_fifo_read_data       ;

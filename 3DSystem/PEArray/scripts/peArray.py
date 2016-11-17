@@ -1562,18 +1562,23 @@ if __name__ == "__main__":
 
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
-      pLine = pLine + '\n  wire                                         cntl__sdp__lane{0}_strm{1}_read_enable         ;'.format(lane,strm)
-      pLine = pLine + '\n  wire                                         cntl__sdp__lane{0}_strm{1}_write_enable        ;'.format(lane,strm)
-      pLine = pLine + '\n  wire                                         sdp__cntl__lane{0}_strm{1}_read_ready          ;  // from dma'.format(lane,strm)
-      pLine = pLine + '\n  wire                                         sdp__cntl__lane{0}_strm{1}_write_ready         ;'.format(lane,strm)
-      pLine = pLine + '\n  wire                                         sdp__cntl__lane{0}_strm{1}_read_complete       ;  // from dma'.format(lane,strm)
-      pLine = pLine + '\n  wire                                         sdp__cntl__lane{0}_strm{1}_write_complete      ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE       ] cntl__sdp__lane{0}_strm{1}_read_start_address  ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE       ] cntl__sdp__lane{0}_strm{1}_write_start_address ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`DMA_CONT_DATA_TYPES_RANGE         ] cntl__sdp__lane{0}_type{1}                     ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ] cntl__sdp__lane{0}_num_of_types{1}             ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE ]     cntl__sdp__lane{0}_strm{1}_stOp_source       ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`STREAMING_OP_CNTL_OPERATION_TO_RANGE ]       cntl__sdp__lane{0}_strm{1}_stOp_destination  ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  cntl__sdp__lane{0}_strm{1}_read_enable         ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  cntl__sdp__lane{0}_strm{1}_write_enable        ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  sdp__cntl__lane{0}_strm{1}_read_ready          ;  // from dma'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  sdp__cntl__lane{0}_strm{1}_write_ready         ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  sdp__cntl__lane{0}_strm{1}_read_complete       ;  // from dma'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  sdp__cntl__lane{0}_strm{1}_write_complete      ;'.format(lane,strm)
+      pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE            ]     cntl__sdp__lane{0}_strm{1}_read_start_address  ;'.format(lane,strm)
+      pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE            ]     cntl__sdp__lane{0}_strm{1}_write_start_address ;'.format(lane,strm)
+      pLine = pLine + '\n  wire   [`DMA_CONT_DATA_TYPES_RANGE              ]     cntl__sdp__lane{0}_type{1}                     ;'.format(lane,strm)
+      pLine = pLine + '\n  wire   [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE        ]     cntl__sdp__lane{0}_num_of_types{1}             ;'.format(lane,strm)
+      if strm == 0:
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+      else:
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+
   pLine = pLine + '\n'
 
 
@@ -1791,11 +1796,15 @@ if __name__ == "__main__":
       pLine = pLine + '\n   output [`DMA_CONT_STRM_ADDRESS_RANGE]        cntl__sdp__lane{0}_strm{1}_write_start_address  ;  // streaming op result start address '.format(lane,strm)
       pLine = pLine + '\n   output [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]   cntl__sdp__lane{0}_num_of_types{1}              ;                                       '.format(lane,strm)
       pLine = pLine + '\n   output [`DMA_CONT_DATA_TYPES_RANGE ]         cntl__sdp__lane{0}_type{1}                      ;                                       '.format(lane,strm)
-      pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                                       '.format(lane,strm)
-      pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_TO_RANGE ]    cntl__sdp__lane{0}_strm{1}_stOp_destination ;                                       '.format(lane,strm)
-      pLine = pLine + '\n   output                                       cntl__sdp__lane{0}_strm{1}_stOp_enable            ;                                       '.format(lane,strm)  
-      pLine = pLine + '\n   input                                        sdp__cntl__lane{0}_strm{1}_stOp_ready             ;                                       '.format(lane,strm)  
-      pLine = pLine + '\n   input                                        sdp__cntl__lane{0}_strm{1}_stOp_complete          ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   output                                       cntl__sdp__lane{0}_strm{1}_stOp_enable          ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   input                                        sdp__cntl__lane{0}_strm{1}_stOp_ready           ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   input                                        sdp__cntl__lane{0}_strm{1}_stOp_complete        ;                                       '.format(lane,strm)  
+      if strm == 0:
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+      else:
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
 
   f.write(pLine)
   f.close()
@@ -1820,8 +1829,12 @@ if __name__ == "__main__":
       pLine = pLine + '\n  wire   [`DMA_CONT_DATA_TYPES_RANGE         ] lane{0}_type{1}                                ;'.format(lane,strm)
       pLine = pLine + '\n  wire   [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ] lane{0}_num_of_types{1}                        ;'.format(lane,strm)
       pLine = pLine + '\n  wire   [`PE_MAX_STAGGER_RANGE              ] lane{0}_stagger{1}                             ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE ]     cntl__sdp__lane{0}_strm{1}_stOp_source       ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`STREAMING_OP_CNTL_OPERATION_TO_RANGE ]       cntl__sdp__lane{0}_strm{1}_stOp_destination  ;'.format(lane,strm)
+      if strm == 0:
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+      else:
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
@@ -1857,21 +1870,23 @@ if __name__ == "__main__":
   pLine = ""
 
   # Generate a signal indicating all lanes streams are done
+  pLine = pLine + '\n  // pe__sys__thisSyncnronized basically means all the streams in the PE are complete'
+  pLine = pLine + '\n  // The PE controller will move to a \'final\' state once it receives sys__pe__allSynchronized'
   pLine = pLine + '\n  assign pe__sys__thisSynchronized = ((strm_control[0].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[0].lane_enable) & '.format(lane)
   for lane in range (1, (numOfExecLanes)-1):
     pLine = pLine + '\n                                     ((strm_control[{0}].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[{0}].lane_enable) &  '.format(lane)
-  pLine = pLine + '\n                                     ((strm_control[{0}].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[{0}].lane_enable) ; '.format((numOfMemPorts/2)-1)
+  pLine = pLine + '\n                                     ((strm_control[{0}].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[{0}].lane_enable) ; '.format(numOfExecLanes-1)
   pLine = pLine + '\n'
 
   offset = 0
   for lane in range (0, numOfExecLanes):
     offset = lane + 16
-    pLine = pLine + '\n  assign cntl__sdp__lane{0}_dma_operation = rs0[15:1]                                      ; '.format(lane)
+    pLine = pLine + '\n  assign cntl__sdp__lane{0}_dma_operation = rs0[31:1]                                      ; '.format(lane)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
     offset = lane + 16
-    pLine = pLine + '\n  assign cntl__sdp__lane{0}_stOp_operation = rs0[15:1]                                      ; '.format(lane)
+    pLine = pLine + '\n  assign cntl__sdp__lane{0}_stOp_operation = rs0[31:1]                                      ; '.format(lane)
     for strm in range (0, 2):
       pLine = pLine + '\n  assign cntl__sdp__lane{0}_strm{1}_stOp_enable    = strm_control[{0}].strm{1}_stOp_enable     ; '.format(lane,strm)
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_stOp_ready      = sdp__cntl__lane{0}_strm{1}_stOp_ready     ; '.format(lane,strm)
@@ -3079,6 +3094,9 @@ if __name__ == "__main__":
 
   f = open('../HDL/common/sys_general_connections.vh', 'w')
   pLine = ""
+  pLine = pLine + '\n  // Send an \'all\' synchronized to all PE\'s '
+  pLine = pLine + '\n  // pe__sys__thisSyncnronized basically means all the streams in a PE are complete'
+  pLine = pLine + '\n  // The PE controller will move to a \'final\' state once it receives sys__pe__allSynchronized'
   pLine = pLine + '\n  wire  sys__pe__allSynchronized = pe_inst[0].pe__sys__thisSynchronized & '  
   for pe in range (1, numOfPe-1):
     pLine = pLine + '\n                                   pe_inst[{0}].pe__sys__thisSynchronized & '.format(pe)

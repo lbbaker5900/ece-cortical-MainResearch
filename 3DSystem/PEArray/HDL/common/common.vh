@@ -29,8 +29,8 @@
 // FIFO's
 
 // Threshold below full when we assert almost full
-`define COMMON_FIFO_ALMOST_FULL_THRESHOLD_DEFAULT  6
-`define COMMON_STREAMING_OP_INPUT_FIFO_ALMOST_FULL_THRESHOLD 2
+`define COMMON_FIFO_ALMOST_FULL_THRESHOLD_DEFAULT  4
+`define COMMON_STREAMING_OP_INPUT_FIFO_ALMOST_FULL_THRESHOLD 4
 
 //--------------------------------------------------------
 // Streaming Op input and DMA input from stOp

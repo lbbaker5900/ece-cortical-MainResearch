@@ -1,8 +1,4 @@
 
-  shortreal fp_mac_expected_result;
-  shortreal fp_mac_got_result     ;
-
-  initial
   begin
     repeat(10) @(negedge clk);
 
@@ -39,8 +35,11 @@
 //        $display("\n%t: Cumulative result : %d of %d, %d\n", $time, fp_mac_expected_result, $bitstoshortreal(strm0[i0]), $bitstoshortreal(strm1[i0]));
 //
     $display("%t: Generated expected FP MAC TO MEM result : %d\n", $time, fp_mac_expected_result);
+
+    $display("%t: Start downstream stimulus\n", $time);
     begin
       fork
+        //test_downstream_stimulus();  // doesnt seem to work??
         `include "test_std_stimulus.vh"
       join
     end
@@ -226,5 +225,5 @@
     join
 
 */
-
-  end
+  
+end

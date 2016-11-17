@@ -278,18 +278,18 @@ module pe (
 
         wire  [`STREAMING_OP_CNTL_OPERATION_RANGE ]  cntl__dma__operation     ;
 
-        wire                                             stOp__cntl__complete          ;
-        wire                                             cntl__stOp__strm0_enable      ;
-        wire                                             cntl__stOp__strm1_enable      ;
-        wire                                             stOp__cntl__strm0_ready       ;
-        wire                                             stOp__cntl__strm1_ready       ;
-        wire                                             stOp__cntl__strm0_complete    ;
-        wire                                             stOp__cntl__strm1_complete    ;
-        wire  [`STREAMING_OP_CNTL_OPERATION_RANGE ]      cntl__stOp__operation         ;
-        wire  [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE]  cntl__stOp__strm0_source      ;
-        wire  [`STREAMING_OP_CNTL_OPERATION_TO_RANGE]    cntl__stOp__strm0_destination ;
-        wire  [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE]  cntl__stOp__strm1_source      ;
-        wire  [`STREAMING_OP_CNTL_OPERATION_TO_RANGE]    cntl__stOp__strm1_destination ;
+        wire                                                          stOp__cntl__complete          ;
+        wire                                                          cntl__stOp__strm0_enable      ;
+        wire                                                          cntl__stOp__strm1_enable      ;
+        wire                                                          stOp__cntl__strm0_ready       ;
+        wire                                                          stOp__cntl__strm1_ready       ;
+        wire                                                          stOp__cntl__strm0_complete    ;
+        wire                                                          stOp__cntl__strm1_complete    ;
+        wire  [`STREAMING_OP_CNTL_OPERATION_RANGE ]                   cntl__stOp__operation         ;
+        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  cntl__stOp__strm0_source      ;
+        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  cntl__stOp__strm1_source      ;
+        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  cntl__stOp__strm0_destination ;
+        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  cntl__stOp__strm1_destination ;
 
         wire                                         stOp__noc__strm_ready       ;
         wire  [`DMA_CONT_STRM_CNTL_RANGE          ]  noc__stOp__strm_cntl        ; 

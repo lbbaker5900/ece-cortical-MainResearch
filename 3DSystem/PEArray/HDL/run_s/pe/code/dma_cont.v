@@ -222,6 +222,7 @@ module dma_cont (
   // extract source and destination flags from operation fields
   //
   // to/from memory
+  /*
   wire source_is_memory         = ( operation[`STREAMING_OP_CNTL_OPERATION_FROM_RANGE               ] == `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY );
   wire destination_is_memory    = ( operation[`STREAMING_OP_CNTL_OPERATION_TO_RANGE                 ] == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY   );
   wire [`STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_RANGE ] num_of_src_streams  =   operation[`STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_RANGE  ] ;  // 0, 1 or 2
@@ -238,6 +239,7 @@ module dma_cont (
                                                                      2'd0  ;
   assign streams_to_memory           =   ( destination_is_memory ) ? num_of_dest_streams : 
                                                                      2'd0  ;
+  */
 
   //------------------------------------------------------------
   //

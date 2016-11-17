@@ -177,42 +177,42 @@ module streamingOps_datapath (
 
   //-------------------------------------------------------------------------------------------------
   // Interface to Controller 
-  input [`STREAMING_OP_CNTL_OPERATION_RANGE]           cntl__stOp__operation                ;
-                                                                                            
-  input                                                cntl__stOp__strm0_enable             ;
-  input                                                cntl__stOp__strm1_enable             ;
-  output                                               stOp__cntl__strm0_ready              ;
-  output                                               stOp__cntl__strm1_ready              ;
-  output                                               stOp__cntl__strm0_complete           ;
-  output                                               stOp__cntl__strm1_complete           ;
-  input  [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE ]    cntl__stOp__strm0_source             ;
-  input  [`STREAMING_OP_CNTL_OPERATION_TO_RANGE ]      cntl__stOp__strm0_destination        ;
-  input  [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE ]    cntl__stOp__strm1_source             ;
-  input  [`STREAMING_OP_CNTL_OPERATION_TO_RANGE ]      cntl__stOp__strm1_destination        ;
+  input [`STREAMING_OP_CNTL_OPERATION_RANGE]                       cntl__stOp__operation                ;
+                                                                                                        
+  input                                                            cntl__stOp__strm0_enable             ;
+  input                                                            cntl__stOp__strm1_enable             ;
+  output                                                           stOp__cntl__strm0_ready              ;
+  output                                                           stOp__cntl__strm1_ready              ;
+  output                                                           stOp__cntl__strm0_complete           ;
+  output                                                           stOp__cntl__strm1_complete           ;
+  input  [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]    cntl__stOp__strm0_source             ;
+  input  [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]    cntl__stOp__strm1_source             ;
+  input  [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]    cntl__stOp__strm0_destination        ;
+  input  [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]    cntl__stOp__strm1_destination        ;
 
-  input [`STREAMING_OP_CNTL_OPERATION_RANGE]           cntl__dma__operation                 ;
-                                                       
-  input                                                cntl__dma__strm0_read_enable         ;
-  input                                                cntl__dma__strm1_read_enable         ;
-  input                                                cntl__dma__strm0_write_enable        ;
-  input                                                cntl__dma__strm1_write_enable        ;
-  output                                               dma__cntl__strm0_read_ready          ;
-  output                                               dma__cntl__strm1_read_ready          ;
-  output                                               dma__cntl__strm0_read_complete       ;
-  output                                               dma__cntl__strm1_read_complete       ;
-  output                                               dma__cntl__strm0_write_ready         ;
-  output                                               dma__cntl__strm1_write_ready         ;
-  output                                               dma__cntl__strm0_write_complete      ;
-  output                                               dma__cntl__strm1_write_complete      ;
-                                                       
-  input [`DMA_CONT_STRM_ADDRESS_RANGE]                 cntl__dma__strm0_read_start_address  ;  // streaming op arg0
-  input [`DMA_CONT_STRM_ADDRESS_RANGE]                 cntl__dma__strm1_read_start_address  ;  // streaming op arg1
-  input [`DMA_CONT_STRM_ADDRESS_RANGE]                 cntl__dma__strm0_write_start_address ;  // streaiming op result start address
-  input [`DMA_CONT_STRM_ADDRESS_RANGE]                 cntl__dma__strm1_write_start_address ;  // streaiming op result start address
-  input [`DMA_CONT_DATA_TYPES_RANGE ]                  cntl__dma__type0                     ;
-  input [`DMA_CONT_DATA_TYPES_RANGE ]                  cntl__dma__type1                     ;
-  input [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]            cntl__dma__num_of_types0             ;
-  input [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]            cntl__dma__num_of_types1             ;
+  input [`STREAMING_OP_CNTL_OPERATION_RANGE]                       cntl__dma__operation                 ;
+                                                                   
+  input                                                            cntl__dma__strm0_read_enable         ;
+  input                                                            cntl__dma__strm1_read_enable         ;
+  input                                                            cntl__dma__strm0_write_enable        ;
+  input                                                            cntl__dma__strm1_write_enable        ;
+  output                                                           dma__cntl__strm0_read_ready          ;
+  output                                                           dma__cntl__strm1_read_ready          ;
+  output                                                           dma__cntl__strm0_read_complete       ;
+  output                                                           dma__cntl__strm1_read_complete       ;
+  output                                                           dma__cntl__strm0_write_ready         ;
+  output                                                           dma__cntl__strm1_write_ready         ;
+  output                                                           dma__cntl__strm0_write_complete      ;
+  output                                                           dma__cntl__strm1_write_complete      ;
+                                                                   
+  input [`DMA_CONT_STRM_ADDRESS_RANGE]                             cntl__dma__strm0_read_start_address  ;  // streaming op arg0
+  input [`DMA_CONT_STRM_ADDRESS_RANGE]                             cntl__dma__strm1_read_start_address  ;  // streaming op arg1
+  input [`DMA_CONT_STRM_ADDRESS_RANGE]                             cntl__dma__strm0_write_start_address ;  // streaiming op result start address
+  input [`DMA_CONT_STRM_ADDRESS_RANGE]                             cntl__dma__strm1_write_start_address ;  // streaiming op result start address
+  input [`DMA_CONT_DATA_TYPES_RANGE ]                              cntl__dma__type0                     ;
+  input [`DMA_CONT_DATA_TYPES_RANGE ]                              cntl__dma__type1                     ;
+  input [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]                        cntl__dma__num_of_types0             ;
+  input [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]                        cntl__dma__num_of_types1             ;
 
   //-------------------------------------------------------------------------------------------------
   // Interface to NoC (via cntl)
@@ -270,12 +270,12 @@ module streamingOps_datapath (
   //-------------------------------------------------------------------------------------------------
   // Controller wires
 
-  wire [`STREAMING_OP_CNTL_OPERATION_RANGE]       cntl__dma__operation          ;
-  wire [`STREAMING_OP_CNTL_OPERATION_RANGE]       cntl__stOp__operation         ;
-  wire [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE]  cntl__stOp__strm0_source      ;
-  wire [`STREAMING_OP_CNTL_OPERATION_TO_RANGE]    cntl__stOp__strm0_destination ;
-  wire [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE]  cntl__stOp__strm1_source      ;
-  wire [`STREAMING_OP_CNTL_OPERATION_TO_RANGE]    cntl__stOp__strm1_destination ;
+  wire [`STREAMING_OP_CNTL_OPERATION_RANGE                  ]    cntl__dma__operation          ;
+  wire [`STREAMING_OP_CNTL_OPERATION_RANGE                  ]    cntl__stOp__operation         ;
+  wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]    cntl__stOp__strm0_source      ;
+  wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]    cntl__stOp__strm1_source      ;
+  wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]    cntl__stOp__strm0_destination ;
+  wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]    cntl__stOp__strm1_destination ;
 
 
 

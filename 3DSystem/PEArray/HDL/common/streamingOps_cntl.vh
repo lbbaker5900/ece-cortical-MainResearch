@@ -180,23 +180,20 @@
 //------------------------------------------------
 // STREAMING_OP_CNTL Operations
 //------------------------------------------------
+/*
 `define STREAMING_OP_CNTL_OPERATION_FROM_SIZE                2
 `define STREAMING_OP_CNTL_OPERATION_FROM_MSB                 `STREAMING_OP_CNTL_OPERATION_FROM_SIZE-1
 `define STREAMING_OP_CNTL_OPERATION_FROM_LSB                 0
 `define STREAMING_OP_CNTL_OPERATION_FROM_RANGE               `STREAMING_OP_CNTL_OPERATION_FROM_MSB : `STREAMING_OP_CNTL_OPERATION_FROM_LSB
-`define STREAMING_OP_CNTL_OPERATION_FROM_MEMORY              0
-`define STREAMING_OP_CNTL_OPERATION_FROM_EXT                 1
-`define STREAMING_OP_CNTL_OPERATION_FROM_NOC                 2
 
 `define STREAMING_OP_CNTL_OPERATION_TO_SIZE                  2
 `define STREAMING_OP_CNTL_OPERATION_TO_MSB                   (`STREAMING_OP_CNTL_OPERATION_TO_LSB + `STREAMING_OP_CNTL_OPERATION_TO_SIZE-1)
 `define STREAMING_OP_CNTL_OPERATION_TO_LSB                   (`STREAMING_OP_CNTL_OPERATION_FROM_MSB + 1)
 `define STREAMING_OP_CNTL_OPERATION_TO_RANGE                 `STREAMING_OP_CNTL_OPERATION_TO_MSB : `STREAMING_OP_CNTL_OPERATION_TO_LSB
-`define STREAMING_OP_CNTL_OPERATION_TO_MEMORY                0
-`define STREAMING_OP_CNTL_OPERATION_TO_REG                   1                                                                             
-`define STREAMING_OP_CNTL_OPERATION_TO_NOC                   2
+*/                                                                        
 
 // stream or single transaction
+/* FIXME - not used
 `define STREAMING_OP_CNTL_OPERATION_STREAM_FROM_SIZE         1                                                                            
 `define STREAMING_OP_CNTL_OPERATION_STREAM_FROM_MSB          (`STREAMING_OP_CNTL_OPERATION_STREAM_FROM_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_FROM_SIZE-1)
 `define STREAMING_OP_CNTL_OPERATION_STREAM_FROM_LSB          (`STREAMING_OP_CNTL_OPERATION_TO_MSB + 1)
@@ -205,11 +202,32 @@
 `define STREAMING_OP_CNTL_OPERATION_STREAM_TO_SIZE           1                                                                                                                                                                           
 `define STREAMING_OP_CNTL_OPERATION_STREAM_TO_MSB            (`STREAMING_OP_CNTL_OPERATION_STREAM_TO_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_TO_SIZE-1)
 `define STREAMING_OP_CNTL_OPERATION_STREAM_TO_LSB            (`STREAMING_OP_CNTL_OPERATION_STREAM_FROM_MSB + 1)
-`define STREAMING_OP_CNTL_OPERATION_STREAM_TO_RANGE          `STREAMING_OP_CNTL_OPERATION_STREAM_TO_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_TO_LSB     
+`define STREAMING_OP_CNTL_OPERATION_STREAM_TO_RANGE          `STREAMING_OP_CNTL_OPERATION_STREAM_TO_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_TO_LSB
+*/   
+
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_SIZE     3                                                                            
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_MSB      (`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_SIZE-1)
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_LSB      0
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE    `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_LSB     
+                                                             
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_SIZE      3                                                                                                                                                                           
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_MSB       (`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_SIZE-1)
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_LSB       (`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_MSB + 1)
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE     `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_LSB
+
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_SIZE     3                                                                            
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_MSB      (`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_SIZE-1)
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_LSB      (`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_MSB + 1)
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE    `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_LSB     
+                                                             
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_SIZE      3                                                                                                                                                                           
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_MSB       (`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_SIZE-1)
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_LSB       (`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_MSB + 1)
+`define STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE     `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_LSB
 
 `define STREAMING_OP_CNTL_OPERATION_OPCODE_SIZE              5                                                                                                                                                                           
 `define STREAMING_OP_CNTL_OPERATION_OPCODE_MSB               (`STREAMING_OP_CNTL_OPERATION_OPCODE_LSB + `STREAMING_OP_CNTL_OPERATION_OPCODE_SIZE-1)
-`define STREAMING_OP_CNTL_OPERATION_OPCODE_LSB               (`STREAMING_OP_CNTL_OPERATION_STREAM_TO_MSB + 1)
+`define STREAMING_OP_CNTL_OPERATION_OPCODE_LSB               (`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_MSB + 1)
 `define STREAMING_OP_CNTL_OPERATION_OPCODE_RANGE             `STREAMING_OP_CNTL_OPERATION_OPCODE_MSB : `STREAMING_OP_CNTL_OPERATION_OPCODE_LSB     
 `define STREAMING_OP_CNTL_OPERATION_BITSUM                   0
 `define STREAMING_OP_CNTL_OPERATION_BYTESUM                  1
@@ -219,8 +237,8 @@
 `define STREAMING_OP_CNTL_OPERATION_FP_MAX_N                 5
 `define STREAMING_OP_CNTL_OPERATION_FP_MAX_N_THR             6
 `define STREAMING_OP_CNTL_OPERATION_FP_MAX_ALL_THR           7
-`define STREAMING_OP_CNTL_OPERATION_NOP_MEM_TO_MEM          16
-`define STREAMING_OP_CNTL_OPERATION_NOP_MEM_TO_NOC          17
+//`define STREAMING_OP_CNTL_OPERATION_NOP_MEM_TO_MEM          16
+//`define STREAMING_OP_CNTL_OPERATION_NOP_MEM_TO_NOC          17
 `define STREAMING_OP_CNTL_OPERATION_NOP                     31
 
 `define STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_SIZE           2                                                                                                                                                                           
@@ -233,35 +251,77 @@
 `define STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_LSB            (`STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_MSB + 1)
 `define STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_RANGE          `STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_MSB : `STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_LSB     
 
-//                                                                    num    num                                                          dest    src  
-//                                                                    dest   src                                                         scalar/ scalar/ 
-//                                                                   strms  strms                   opcode                               vector  vector   dest   src
-`define STREAMING_OP_CNTL_OPERATION_BITSUM_FROM_MEM_TO_MEM           {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_BITSUM            ,  1'b0,   1'b1,   2'd0,  2'd0} 
-`define STREAMING_OP_CNTL_OPERATION_BITSUM_FROM_MEM_TO_REG           {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_BITSUM            ,  1'b0,   1'b1,   2'd1,  2'd0} 
-`define STREAMING_OP_CNTL_OPERATION_FP_MAC_FROM_MEM_TO_MEM           {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAC            ,  1'b0,   1'b1,   2'd0,  2'd0} 
-`define STREAMING_OP_CNTL_OPERATION_FP_MAX_FROM_MEM_TO_MEM           {2'd1,  2'd1,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAX            ,  1'b0,   1'b1,   2'd0,  2'd0} 
-`define STREAMING_OP_CNTL_OPERATION_FP_FIRST_GT_FROM_MEM_TO_MEM      {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_FIRST_GT       ,  1'b0,   1'b1,   2'd0,  2'd0}  // find first element to exceed a threshold and return index. Input is ptr to array and ptr to threshold
-`define STREAMING_OP_CNTL_OPERATION_FP_MAX_N_FROM_MEM_TO_MEM         {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAX_N          ,  1'b0,   1'b1,   2'd0,  2'd0}  // find highest N elements. Input is ptr to array and ptr to int N
-`define STREAMING_OP_CNTL_OPERATION_FP_MAX_N_THR_FROM_MEM_TO_MEM     {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAX_N_THR      ,  1'b0,   1'b1,   2'd0,  2'd0}  // find highest N elements. Input is ptr to array and ptr to struct containing int N and float Thr
-`define STREAMING_OP_CNTL_OPERATION_FP_MAX_ALL_THR_FROM_MEM_TO_MEM   {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAX_ALL_THR    ,  1'b0,   1'b1,   2'd0,  2'd0}  // find all elements that exceed a threshold. Input is ptr to array and ptr to struct containing int N and float Thr
-`define STREAMING_OP_CNTL_OPERATION_FP_MAC_FROM_EXT_TO_MEM           {2'd2,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAC            ,  1'b1,   1'b1,   2'd0,  2'd1} 
-                                                                                                                                                                        // result is vector of indices
-`define STREAMING_OP_CNTL_OPERATION_NOP_FROM_MEM_TO_MEM              {2'd1,  2'd1,   5'd`STREAMING_OP_CNTL_OPERATION_NOP               ,  1'b1,   1'b1,   2'd0,  2'd0}  // Doesnt assume uCode knows if memory is local or not
-                                                                                                                                                                        // Controller determines if address is local or an NoC request is required
-//`define STREAMING_OP_CNTL_OPERATION_NOP_FROM_MEM_TO_NOC              {2'd1,  2'd1,  5'd`STREAMING_OP_CNTL_OPERATION_NOP                ,  1'b1,   1'b1,   2'd2,  2'd0}  // This command is specific to DMA requests from other PE's
-                                                                                                                                                                        // This command will be constructed within the cntl module when seeing dma requests from the NoC
-                                                                                                                  
-`define STREAMING_OP_CNTL_OPERATION_NOP_FROM_ONE_EXT_TO_MEM          {2'd1,  2'd1,  5'd`STREAMING_OP_CNTL_OPERATION_NOP                ,  1'b1,   1'b1,   2'd0,  2'd1} 
-`define STREAMING_OP_CNTL_OPERATION_NOP_FROM_TWO_EXT_TO_MEM          {2'd2,  2'd2,  5'd`STREAMING_OP_CNTL_OPERATION_NOP                ,  1'b1,   1'b1,   2'd0,  2'd1} 
+// SRC and DEST codes
+`define STREAMING_OP_CNTL_OPERATION_FROM_NONE                0
+`define STREAMING_OP_CNTL_OPERATION_FROM_MEMORY              1
+`define STREAMING_OP_CNTL_OPERATION_FROM_EXT                 2  // FIXME : use STD not EXT
+`define STREAMING_OP_CNTL_OPERATION_FROM_STD                 2
+`define STREAMING_OP_CNTL_OPERATION_FROM_NOC                 3
+
+`define STREAMING_OP_CNTL_OPERATION_TO_NONE                  0
+`define STREAMING_OP_CNTL_OPERATION_TO_MEMORY                1
+`define STREAMING_OP_CNTL_OPERATION_TO_STD                   2
+`define STREAMING_OP_CNTL_OPERATION_TO_NOC                   3
+`define STREAMING_OP_CNTL_OPERATION_TO_REG                   4    
+
+// FIXME : get rid of number of streams. Use src and dest to determine number
+//                                                                    num    num                                                         
+//                                                                    dest   src                                                          strm1   strm0  strm1   strm0
+//                                                                   strms  strms                   opcode                                 dest    dest   src     src
+`define STREAMING_OP_CNTL_OPERATION_MEM_MEM_BITSUM_TO_MEM            {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_BITSUM            ,   3'd0,   3'd1,  3'd1,   3'd1         } 
+`define STREAMING_OP_CNTL_OPERATION_MEM_MEM_BITSUM_TO_REG            {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_BITSUM            ,   3'd2,   3'd2,  3'd1,   3'd1         } 
+`define STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM              {2'd1,  2'd1,   5'd`STREAMING_OP_CNTL_OPERATION_NOP               ,   3'd0,   3'd1,  3'd2,   3'd2         } 
+`define STREAMING_OP_CNTL_OPERATION_STD_STD_NOP_TO_MEM               {2'd2,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_NOP               ,   3'd1,   3'd1,  3'd2,   3'd2         } 
+`define STREAMING_OP_CNTL_OPERATION_MEM_MEM_FP_MAC_TO_MEM            {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAC            ,   3'd0,   3'd1,  3'd1,   3'd1         } 
+`define STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM            {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAC            ,   3'd0,   3'd1,  3'd2,   3'd2         } 
+`define STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM            {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAC            ,   3'd0,   3'd1,  3'd2,   3'd1         } 
+`define STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAX_TO_MEM            {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAX            ,   3'd0,   3'd1,  3'd2,   3'd2         } 
+`define STREAMING_OP_CNTL_OPERATION_MEM_MEM_FP_FIRST_GT_TO_MEM       {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_FIRST_GT       ,   3'd0,   3'd1,  3'd1,   3'd1         }  // find first element to exceed a threshold and return index. Input is ptr to array and ptr to threshold
+`define STREAMING_OP_CNTL_OPERATION_MEM_NONE_NOP_TO_MEM              {2'd1,  2'd1,   5'd`STREAMING_OP_CNTL_OPERATION_NOP               ,   3'd0,   3'd1,  3'd0,   3'd1         }  // Doesnt assume uCode knows if memory is local or not
+
+/*
+TBD
+`define STREAMING_OP_CNTL_OPERATION_FP_MAX_N_FROM_MEM_TO_MEM         {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAX_N          ,   3'd0,   3'd1,  3'd1,   3'd1         }  // find highest N elements. Input is ptr to array and ptr to int N
+`define STREAMING_OP_CNTL_OPERATION_FP_MAX_N_THR_FROM_MEM_TO_MEM     {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAX_N_THR      ,   3'd0,   3'd1,  3'd1,   3'd1         }  // find highest N elements. Input is ptr to array and ptr to struct containing int N and float Thr
+`define STREAMING_OP_CNTL_OPERATION_FP_MAX_ALL_THR_FROM_MEM_TO_MEM   {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAX_ALL_THR    ,   3'd0,   3'd1,  3'd1,   3'd1         }  // find all elements that exceed a threshold. Input is ptr to array and ptr to struct containing int N and float Thr
+*/
+
+/*
+
+`define STREAMING_OP_CNTL_OPERATION_FP_MAC_FROM_EXT_TO_MEM           {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAC            ,   3'd0,   3'd1,  3'd2,   3'd2         } 
+`define STREAMING_OP_CNTL_OPERATION_FP_MAC_FROM_STD_TO_MEM           {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAC            ,   3'd0,   3'd1,  3'd2,   3'd2         } 
+
+
+`define STREAMING_OP_CNTL_OPERATION_NOP_FROM_ONE_STD_TO_MEM          {2'd1,  2'd1,   5'd`STREAMING_OP_CNTL_OPERATION_NOP               ,   3'd0,   3'd1,  3'd2,   3'd2         } 
+
+`define STREAMING_OP_CNTL_OPERATION_FP_MAC_FROM_STD_MEM_TO_MEM       {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAC            ,   3'd0,   3'd1,  3'd2,   3'd2         } 
+                                                                                                                                                                               
+`define STREAMING_OP_CNTL_OPERATION_NOP_FROM_MEM_TO_MEM              {2'd1,  2'd1,   5'd`STREAMING_OP_CNTL_OPERATION_NOP               ,   3'd0,   3'd1,  3'd0,   3'd1         }  // Doesnt assume uCode knows if memory is local or not
+                                                                                                                                                                                  // Controller determines if address is local or an NoC request is required
+//`define STREAMING_OP_CNTL_OPERATION_NOP_FROM_MEM_TO_NOC              {2'd1,  2'd1,  5'd`STREAMING_OP_CNTL_OPERATION_NOP              ,   3'd3,   3'd3,  3'd0,   3'd1         }  // This command is specific to DMA requests from other PE's
+                                                                                                                                                                                  // This command will be constructed within the cntl module when seeing dma requests from the NoC
+                                                                                                                                                                               
+`define STREAMING_OP_CNTL_OPERATION_NOP_FROM_ONE_EXT_TO_MEM          {2'd1,  2'd1,  5'd`STREAMING_OP_CNTL_OPERATION_NOP                ,   3'd0,   3'd1,  3'd2,   3'd2         } 
+`define STREAMING_OP_CNTL_OPERATION_NOP_FROM_TWO_EXT_TO_MEM          {2'd2,  2'd2,  5'd`STREAMING_OP_CNTL_OPERATION_NOP                ,   3'd1,   3'd1,  3'd2,   3'd2         } 
+*/
 
 //------------------------------------------------
 // STREAMING_OP_CNTL variable widths
 //------------------------------------------------
 
+/* FIXME - delete
 `define STREAMING_OP_CNTL_OPERATION_SIZE            (`STREAMING_OP_CNTL_OPERATION_FROM_SIZE               + \
                                                      `STREAMING_OP_CNTL_OPERATION_TO_SIZE                 + \
                                                      `STREAMING_OP_CNTL_OPERATION_STREAM_TO_SIZE          + \
                                                      `STREAMING_OP_CNTL_OPERATION_STREAM_FROM_SIZE        + \
+                                                     `STREAMING_OP_CNTL_OPERATION_OPCODE_SIZE             + \
+                                                     `STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_SIZE + \
+                                                     `STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_SIZE )
+*/
+`define STREAMING_OP_CNTL_OPERATION_SIZE            (`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_SIZE    + \
+                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_SIZE     + \
+                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_SIZE   + \
+                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_SIZE    + \
                                                      `STREAMING_OP_CNTL_OPERATION_OPCODE_SIZE             + \
                                                      `STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_SIZE + \
                                                      `STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_SIZE )

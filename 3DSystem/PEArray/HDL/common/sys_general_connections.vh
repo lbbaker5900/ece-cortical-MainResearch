@@ -1,4 +1,7 @@
 
+  // Send an 'all' synchronized to all PE's 
+  // pe__sys__thisSyncnronized basically means all the streams in a PE are complete
+  // The PE controller will move to a 'final' state once it receives sys__pe__allSynchronized
   wire  sys__pe__allSynchronized = pe_inst[0].pe__sys__thisSynchronized & 
                                    pe_inst[1].pe__sys__thisSynchronized & 
                                    pe_inst[2].pe__sys__thisSynchronized & 

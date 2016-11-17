@@ -174,13 +174,15 @@ module streamingOps_cntl (
   wire [`PE_NUM_OF_EXEC_LANES_RANGE] exec_lanes_active ;
   assign exec_lane_active = rs1[`PE_NUM_OF_EXEC_LANES_RANGE];
 
-  wire [14:0] operation = rs0[15:1];  // FIXME
+  wire [31:0] operation = rs0[31:1];  // FIXME
 
   // extract source and destination flags from operation fields
   //
   // to/from memory
+  /*
   wire source_is_memory         = ( operation[`STREAMING_OP_CNTL_OPERATION_FROM_RANGE               ] == `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY );
   wire destination_is_memory    = ( operation[`STREAMING_OP_CNTL_OPERATION_TO_RANGE                 ] == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY   );
+*/
 
   wire [`STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_RANGE ] num_of_src_streams  =   operation[`STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_RANGE  ] ;  // 0, 1 or 2
   wire [`STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_RANGE] num_of_dest_streams =   operation[`STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_RANGE ] ;  // 0, 1 or 2
@@ -193,13 +195,30 @@ module streamingOps_cntl (
   wire [`STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_RANGE ] streams_from_memory ;  // 0, 1 or 2
   wire [`STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_RANGE] streams_to_memory   ;
 
+  wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE    ] strm0_source        ;
+  wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE     ] strm1_source        ;
+
   // Currently DMA to/from other PE's are supported only by NOP's - FIXME
   wire is_nop = (operation[`STREAMING_OP_CNTL_OPERATION_OPCODE_RANGE] == `STREAMING_OP_CNTL_OPERATION_NOP);
 
+  assign streams_from_memory         = ((operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE ] == `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY) && 
+                                        (operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE  ] == `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY))    ? 'd2 :
+                                       (operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE ] == `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY  )    ? 'd1 :
+                                       (operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE  ] == `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY  )    ? 'd1 :
+                                                                                                                                                           'd0 ;
+
+  assign streams_to_memory           = ((operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ] == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) && 
+                                        (operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ] == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY))     ? 'd2 :
+                                       (operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ] == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY  )     ? 'd1 :
+                                       (operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ] == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY  )     ? 'd1 :
+                                                                                                                                                           'd0 ;
+
+/*
   assign streams_from_memory         =   ( source_is_memory      ) ? num_of_src_streams : 
                                                                      2'd0  ;
   assign streams_to_memory           =   ( destination_is_memory ) ? num_of_dest_streams : 
                                                                      2'd0  ;
+*/
 
   assign mem_granted = memc__cntl__granted ;
 
@@ -424,10 +443,10 @@ module streamingOps_cntl (
         wire strm0_write_local = (strm0_write_peId == peId)           ;
         wire strm1_write_local = (strm1_write_peId == peId)           ;
 
-        reg [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE] strm0_stOp_src  ;
-        reg [`STREAMING_OP_CNTL_OPERATION_FROM_RANGE] strm1_stOp_src  ;
-        reg [`STREAMING_OP_CNTL_OPERATION_TO_RANGE  ] strm0_stOp_dest ;
-        reg [`STREAMING_OP_CNTL_OPERATION_TO_RANGE  ] strm1_stOp_dest ;
+        reg [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ] strm0_stOp_src  ;
+        reg [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ] strm1_stOp_src  ;
+        reg [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ] strm0_stOp_dest ;
+        reg [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ] strm1_stOp_dest ;
    
         wire both_dma_streams_complete = ((strm0_read_enable  & strm0_read_complete ) | ~strm0_read_enable ) 
                                        & ((strm1_read_enable  & strm1_read_complete ) | ~strm1_read_enable )
@@ -638,24 +657,24 @@ module streamingOps_cntl (
             // initially set the sc from the operation unless the address isnt local, in which case we see a NoC DMA request is occuring so
             // set source to NoC
             strm0_stOp_src  <= ( reset_poweron                                                   ) ? 'b00                                                : 
-                               ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_ENABLE_DMA_WRITE  ) ?  operation[`STREAMING_OP_CNTL_OPERATION_FROM_RANGE] :
+                               ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_ENABLE_DMA_WRITE  ) ?  operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ] :
                                ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_STRM0_REQ_NOC_DMA ) ? `STREAMING_OP_CNTL_OPERATION_FROM_NOC               :
                                                                                                       strm0_stOp_src                                     ;
 
             strm1_stOp_src  <= ( reset_poweron                                                   ) ? 'b00                                                : 
-                               ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_ENABLE_DMA_WRITE  ) ?  operation[`STREAMING_OP_CNTL_OPERATION_FROM_RANGE] :
+                               ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_ENABLE_DMA_WRITE  ) ?  operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ] :
                                ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_STRM1_REQ_NOC_DMA ) ? `STREAMING_OP_CNTL_OPERATION_FROM_NOC               :
                                                                                                       strm1_stOp_src                                     ;
 
    
             strm0_stOp_dest <= ( reset_poweron                                                       ) ? 'b00                                                : 
-                               ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_ENABLE_DMA_WRITE      ) ?  operation[`STREAMING_OP_CNTL_OPERATION_TO_RANGE  ] :
+                               ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_ENABLE_DMA_WRITE      ) ?  operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ] :
                                ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_PROCESS_EXT_REQ_STRM0 ) ? `STREAMING_OP_CNTL_OPERATION_TO_NOC                 :
                                ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_PROCESS_EXT_REQ_STRM1 ) ? 'b00                                                :
                                                                                                           strm0_stOp_dest                                    ;
    
             strm1_stOp_dest <= ( reset_poweron                                                       ) ? 'b00                                                : 
-                               ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_ENABLE_DMA_WRITE      ) ?  operation[`STREAMING_OP_CNTL_OPERATION_TO_RANGE  ] :
+                               ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_ENABLE_DMA_WRITE      ) ?  operation[`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ] :
                                ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_PROCESS_EXT_REQ_STRM1 ) ? `STREAMING_OP_CNTL_OPERATION_TO_NOC                 :
                                ( so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_PROCESS_EXT_REQ_STRM0 ) ? 'b00                                                :
                                                                                                           strm1_stOp_dest                                    ;
