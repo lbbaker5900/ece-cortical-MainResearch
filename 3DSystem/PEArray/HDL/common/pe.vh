@@ -8,6 +8,31 @@
 
 *****************************************************************/
 
+
+//------------------------------------------------
+// Stack Bus stream
+//------------------------------------------------
+
+`define PE_STD_LANE_WIDTH_MSB           31
+`define PE_STD_LANE_WIDTH_LSB            0
+`define PE_STD_LANE_WIDTH_SIZE           (`PE_STD_LANE_WIDTH_MSB - `PE_STD_LANE_WIDTH_LSB +1)
+`define PE_STD_LANE_WIDTH_RANGE           `PE_STD_LANE_WIDTH_MSB : `PE_STD_LANE_WIDTH_LSB
+
+`define PE_STU_LANE_WIDTH_MSB           31
+`define PE_STU_LANE_WIDTH_LSB            0
+`define PE_STU_LANE_WIDTH_SIZE           (`PE_STU_LANE_WIDTH_MSB - `PE_STU_LANE_WIDTH_LSB +1)
+`define PE_STU_LANE_WIDTH_RANGE           `PE_STU_LANE_WIDTH_MSB : `PE_STU_LANE_WIDTH_LSB
+
+//------------------------------------------------
+// PE Stack bus streams
+//------------------------------------------------
+
+`define PE_NUM_OF_STREAMS               2
+`define PE_NUM_OF_STREAMS_MSB           (`PE_NUM_OF_STREAMS -1)
+`define PE_NUM_OF_STREAMS_LSB            0
+`define PE_NUM_OF_STREAMS_SIZE           (`PE_NUM_OF_STREAMS_MSB - `PE_NUM_OF_STREAMS_LSB +1)
+`define PE_NUM_OF_STREAMS_RANGE           `PE_NUM_OF_STREAMS_MSB : `PE_NUM_OF_STREAMS_LSB
+
 //------------------------------------------------
 // PE Execution Lane 
 //------------------------------------------------
@@ -35,16 +60,16 @@
 
 // Used to determine which PE address resides
 `define PE_PE_DECODE_ADDRESS_MSB    `PE_CHIPLET_ADDRESS_MSB
-`define PE_PE_DECODE_ADDRESS_LSB    (`PE_CHIPLET_ADDRESS_MSB - ((`CLOG2(`PE_NUM_OF_PE))-1))
+`define PE_PE_DECODE_ADDRESS_LSB    (`PE_CHIPLET_ADDRESS_MSB - ((`CLOG2(`PE_ARRAY_NUM_OF_PE))-1))
 `define PE_PE_DECODE_ADDRESS_SIZE   (`PE_PE_DECODE_ADDRESS_MSB - `PE_PE_DECODE_ADDRESS_LSB +1)
 `define PE_PE_DECODE_ADDRESS_RANGE   `PE_PE_DECODE_ADDRESS_MSB : `PE_PE_DECODE_ADDRESS_LSB
 
-`define PE_PE_ID_MSB               ((`CLOG2(`PE_NUM_OF_PE))-1)
+`define PE_PE_ID_MSB               ((`CLOG2(`PE_ARRAY_NUM_OF_PE))-1)
 `define PE_PE_ID_LSB               0
 `define PE_PE_ID_SIZE              (`PE_PE_ID_MSB - `PE_PE_ID_LSB +1)
 `define PE_PE_ID_RANGE              `PE_PE_ID_MSB : `PE_PE_ID_LSB
 
-`define PE_PE_ID_BITMASK_MSB               (`PE_NUM_OF_PE-1)
+`define PE_PE_ID_BITMASK_MSB               (`PE_ARRAY_NUM_OF_PE-1)
 `define PE_PE_ID_BITMASK_LSB               0
 `define PE_PE_ID_BITMASK_SIZE              (`PE_PE_ID_BITMASK_MSB - `PE_PE_ID_BITMASK_LSB +1)
 `define PE_PE_ID_BITMASK_RANGE              `PE_PE_ID_BITMASK_MSB : `PE_PE_ID_BITMASK_LSB

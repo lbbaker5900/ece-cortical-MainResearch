@@ -15,7 +15,7 @@ if __name__ == "__main__":
     if FoundPe == False:
       data = re.split(r'\s{1,}', line)
       # check define is in 2nd field
-      if "PE_NUM_OF_PE" in data[1]:
+      if "PE_ARRAY_NUM_OF_PE" in data[1]:
         numOfPe = int(data[2])
         FoundPe = True
   searchFile.close()
@@ -28,7 +28,7 @@ if __name__ == "__main__":
       data = re.split(r'\s{1,}', line)
       # check define is in 2nd field
       if "PE_NUM_OF_EXEC_LANES" in data[1]:
-        numOfLane = int(data[2])
+        numOfExecLanes = int(data[2])
         FoundLane = True
   searchFile.close()
 
@@ -46,6 +46,142 @@ if __name__ == "__main__":
 
 
 
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ## System Verilog Testbench files
+
+
+
+  # Generate stack bus connections
+
+  f = open('../SIMULATION/common/TB_system_stack_bus_downstream_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    for lane in range (0, numOfExecLanes):
+      for strm in range (0, 2):
+        pLine = pLine + '\n            pe{1}__std__lane{0}_strm{2}_ready       ,'.format(lane,pe,strm)
+        pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_cntl        ,'.format(lane,pe,strm) 
+        pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_data        ,'.format(lane,pe,strm) 
+        pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_data_mask   ,'.format(lane,pe,strm) 
+        pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_data_valid  ,'.format(lane,pe,strm) 
+        pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../SIMULATION/common/TB_system_stack_bus_downstream_port_declarations.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    for lane in range (0, numOfExecLanes):
+      for strm in range (0, 2):
+        pLine = pLine + '\n  output                                       pe{1}__std__lane{0}_strm{2}_ready       ;'.format(lane,pe,strm)
+        pLine = pLine + '\n  input [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe{1}__lane{0}_strm{2}_cntl        ;'.format(lane,pe,strm) 
+        pLine = pLine + '\n  input [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data        ;'.format(lane,pe,strm) 
+        pLine = pLine + '\n  input [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data_mask   ;'.format(lane,pe,strm) 
+        pLine = pLine + '\n  input                                        std__pe{1}__lane{0}_strm{2}_data_valid  ;'.format(lane,pe,strm) 
+        pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../SIMULATION/common/TB_system_stack_bus_downstream_instance_wires.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    for lane in range (0, numOfExecLanes):
+      for strm in range (0, 2):
+        pLine = pLine + '\n  wire                                        pe{1}__std__lane{0}_strm{2}_ready       ;'.format(lane,pe,strm)
+        pLine = pLine + '\n  wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe{1}__lane{0}_strm{2}_cntl        ;'.format(lane,pe,strm) 
+        pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data        ;'.format(lane,pe,strm) 
+        pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data_mask   ;'.format(lane,pe,strm) 
+        pLine = pLine + '\n  wire                                        std__pe{1}__lane{0}_strm{2}_data_valid  ;'.format(lane,pe,strm) 
+        pLine = pLine + '\n'
+     
+  f.write(pLine)
+  f.close()
+
+  f = open('../SIMULATION/common/TB_system_stack_bus_downstream_instance_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    for lane in range (0, numOfExecLanes):
+      pLine = pLine + '\n        // PE {1}, Lane {0}                 '.format(lane,pe)
+      for strm in range (0, 2):
+        pLine = pLine + '\n        .pe{0}__std__lane{1}_strm{2}_ready         ( Sys2PeArray[{0}][{1}].cb_test.pe__std__lane_strm{2}_ready      ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_cntl          ( Sys2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_cntl       ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data          ( Sys2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data       ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_valid    ( Sys2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_mask     ( Sys2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_mask  ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        '
+                                             
+  f.write(pLine)
+  f.close()
+
+
+  # Start all the generators and drivers
+
+  f = open('../SIMULATION/common/TB_start_generators_and_drivers.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    for lane in range (0, numOfExecLanes):
+      pLine = pLine + '\n            begin'
+      pLine = pLine + '\n              gen[{0}][{1}].run()  ;'.format(pe,lane) 
+      pLine = pLine + '\n            end'                                    
+      pLine = pLine + '\n            begin'                                  
+      pLine = pLine + '\n              drv[{0}][{1}].run()  ;'.format(pe,lane) 
+      pLine = pLine + '\n            end'
+      pLine = pLine + '\n            begin'                                  
+      pLine = pLine + '\n              dma2mem[{0}][{1}].run()  ;'.format(pe,lane) 
+      pLine = pLine + '\n            end'
+      pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../SIMULATION/common/TB_wait_for_final_operation.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    for lane in range (0, numOfExecLanes):
+      pLine = pLine + '\n            begin'
+      pLine = pLine + '\n              @(final_operation[{0}][{1}]) ;'.format(pe,lane) 
+      pLine = pLine + '\n            end'                                         
+    pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../SIMULATION/common/TB_quiesce_all_generators.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    for lane in range (0, numOfExecLanes):
+      pLine = pLine + '\n            begin'
+      pLine = pLine + '\n                @vSys2PeArray[{0}][{1}].cb_test                                      ;'.format(pe,lane) 
+      for strm in range (0, 2):
+        pLine = pLine + '\n                vSys2PeArray [{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid  <= 0  ;'.format(pe,lane,strm) 
+      pLine = pLine + '\n            end'                                         
+    pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ## Verilog Testbench files
+
+
   f = open('../SIMULATION/common/test_mem_to_mem_init_step1.vh', 'w')
   pLine = ""
 
@@ -55,11 +191,11 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 start address'
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r134 = 32\'h'.format(pe,lane) + hex(lane).split('x')[1] + '010;'
 
       pLine = pLine + '\n            // Stream 1 start address'
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r135 = 32\'h'.format(pe,lane) + hex(lane).split('x')[1] + '800;'
 
   pLine = pLine + '\n'
@@ -68,12 +204,12 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[19:16] = 4\'d4;'.format(pe,lane)
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[19:16] = 4\'d4;'.format(pe,lane)
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[15:0]  = numOfTypes;'.format(pe,lane)
 
@@ -102,7 +238,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // PE {0}  '.format(pe)
-    for lane in range (0, numOfLane):
+    for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
 
         pLine = pLine + '\n      fp_mac_expected_result = 0 ;                '.format(lane,strm,pe)
@@ -150,7 +286,7 @@ if __name__ == "__main__":
       data = re.split(r'\s{1,}', line)
       # check define is in 2nd field
       if "PE_NUM_OF_EXEC_LANES" in data[1]:
-        numOfLane = int(data[2])
+        numOfExecLanes = int(data[2])
         FoundLane = True
   searchFile.close()
 
@@ -186,11 +322,11 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Destination address'
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r134 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
 
       pLine = pLine + '\n            // Stream 1 Destination address'
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r135 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
@@ -199,12 +335,12 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[19:16] = 4\'d4;'.format(pe,lane)
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[19:16] = 4\'d4;'.format(pe,lane)
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[15:0]  = numOfTypes;'.format(pe,lane)
 
@@ -214,7 +350,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n            // Enable Stack bus streams'
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            enable_std_stream0 = 1 ;          '.format(pe,lane)
           pLine = pLine + '\n            enable_std_stream1 = 1 ;          '.format(pe,lane)
 
@@ -245,7 +381,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // PE {0}  '.format(pe)
-    for lane in range (0, numOfLane):
+    for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
 
         pLine = pLine + '\n      fp_mac_expected_result = 0 ;                '.format(lane,strm,pe)
@@ -282,11 +418,11 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Source address'
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r130 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
                                                                                                                                                                       
       pLine = pLine + '\n            // Stream 1 Source address'                                                                                                      
-      for lane in range (0, numOfLane):                                                                                                                               
+      for lane in range (0, numOfExecLanes):                                                                                                                               
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r131 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
@@ -296,11 +432,11 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Destination address'
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r134 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
                                                                                                                                                                       
       pLine = pLine + '\n            // Stream 1 Destination address'                                                                                                 
-      for lane in range (0, numOfLane):                                                                                                                               
+      for lane in range (0, numOfExecLanes):                                                                                                                               
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r135 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
@@ -309,12 +445,12 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[19:16] = 4\'d4;'.format(pe,lane)
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[19:16] = 4\'d4;'.format(pe,lane)
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[15:0]  = numOfTypes;'.format(pe,lane)
 
@@ -324,7 +460,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n            // Enable Stack bus streams'
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            enable_std_stream0 = 0 ;          '.format(pe,lane)
           pLine = pLine + '\n            enable_std_stream1 = 1 ;          '.format(pe,lane)
 
@@ -354,7 +490,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // PE {0}  '.format(pe)
-    for lane in range (0, numOfLane):
+    for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
 
         pLine = pLine + '\n      fp_mac_expected_result = 0 ;                '.format(lane,strm,pe)
@@ -391,11 +527,11 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Destination address'
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r134 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
 
       pLine = pLine + '\n            // Stream 1 Destination address'
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r135 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
@@ -404,12 +540,12 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[19:16] = 4\'d4;'.format(pe,lane)
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[19:16] = 4\'d4;'.format(pe,lane)
           pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[15:0]  = numOfTypes;'.format(pe,lane)
 
@@ -419,7 +555,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n            // Enable Stack bus streams'
   pLine = pLine + '\n'
   for pe in range (0, numOfPe):
-      for lane in range (0, numOfLane):
+      for lane in range (0, numOfExecLanes):
           pLine = pLine + '\n            enable_std_stream0 = 1 ;          '.format(pe,lane)
           pLine = pLine + '\n            enable_std_stream1 = 0 ;          '.format(pe,lane)
 
@@ -449,7 +585,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // PE {0}  '.format(pe)
-    for lane in range (0, numOfLane):
+    for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
 
         pLine = pLine + '\n      fp_mac_expected_result = 0 ;                '.format(lane,strm,pe)
@@ -501,7 +637,7 @@ if __name__ == "__main__":
       data = re.split(r'\s{1,}', line)
       # check define is in 2nd field
       if "PE_NUM_OF_EXEC_LANES" in data[1]:
-        numOfLane = int(data[2])
+        numOfExecLanes = int(data[2])
         FoundLane = True
   searchFile.close()
 
@@ -552,7 +688,7 @@ if __name__ == "__main__":
 
   # Create a vector of external stream values unique for each PE
   for pe in range (0, numOfPe):
-    for lane in range (0, numOfLane):
+    for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n  reg [31:0] pe{0}_lane{1}_strm{2} [0:4095];'.format(pe,lane,strm)
         pLine = pLine + '\n  reg [31:0] pe{0}_lane{1}_strm{2}_tmp     ;'.format(pe,lane,strm)
@@ -580,7 +716,7 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
-    for lane in range (0, numOfLane):
+    for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n    // Lane {0}                 '.format(lane,pe, strm)
         pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_cntl        = \'d1         ;'.format(lane,pe,strm)
@@ -595,7 +731,7 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
-    for lane in range (0, numOfLane):
+    for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n    // Lane {0}                 '.format(lane,pe)
         pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_cntl        = \'d0         ;'.format(lane,pe,strm)
@@ -614,7 +750,7 @@ if __name__ == "__main__":
     #pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.rs1        = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane)
     pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.rs1        = 32\'b1111_1111_1111_1111_1111_1111_1111_1111; '.format(pe,lane)
     #pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.rs1        = 32\'b0000_0000_0000_0000_0000_0000_0000_1011; '.format(pe,lane)
-    for lane in range (0, numOfLane):
+    for lane in range (0, numOfExecLanes):
       for reg in range (128, 135+1):
          pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.lane{1}_r{2} = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane,reg)
       
@@ -635,7 +771,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // PE {0}  '.format(pe)
-    for lane in range (0, numOfLane):
+    for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n      // Lane {0}, Stream {1}             '.format(lane,strm)
         pLine = pLine + '\n      begin                                                                                                   '.format(lane,strm,pe)

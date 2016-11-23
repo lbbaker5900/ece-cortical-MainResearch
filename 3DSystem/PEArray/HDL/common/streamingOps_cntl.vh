@@ -18,7 +18,7 @@
 `define STREAMING_OP_CNTL_PE_ID_SIZE    (`STREAMING_OP_CNTL_PE_ID_MSB - `STREAMING_OP_CNTL_PE_ID_LSB +1)
 `define STREAMING_OP_CNTL_PE_ID_RANGE    `STREAMING_OP_CNTL_PE_ID_MSB : `STREAMING_OP_CNTL_PE_ID_LSB
 
-//`define STREAMING_OP_CNTL_CHIPLET_ADDRESS_MSB     (`MEM_ACC_CONTROL_MEMORY_ADDRESS_MSB + (`CLOG2(`PE_NUM_OF_PE)))
+//`define STREAMING_OP_CNTL_CHIPLET_ADDRESS_MSB     (`MEM_ACC_CONTROL_MEMORY_ADDRESS_MSB + (`CLOG2(`PE_ARRAY_NUM_OF_PE)))
 `define STREAMING_OP_CNTL_CHIPLET_ADDRESS_MSB     `PE_CHIPLET_ADDRESS_MSB
 `define STREAMING_OP_CNTL_CHIPLET_ADDRESS_LSB     0
 `define STREAMING_OP_CNTL_CHIPLET_ADDRESS_SIZE    (`STREAMING_OP_CNTL_CHIPLET_ADDRESS_MSB - `STREAMING_OP_CNTL_CHIPLET_ADDRESS_LSB +1)
@@ -26,7 +26,7 @@
 
 // Used by CNTL to determine which PE address resides
 `define STREAMING_OP_CNTL_PE_DECODE_ADDRESS_MSB    `STREAMING_OP_CNTL_CHIPLET_ADDRESS_MSB
-`define STREAMING_OP_CNTL_PE_DECODE_ADDRESS_LSB    (`STREAMING_OP_CNTL_CHIPLET_ADDRESS_MSB - ((`CLOG2(`PE_NUM_OF_PE))-1))
+`define STREAMING_OP_CNTL_PE_DECODE_ADDRESS_LSB    (`STREAMING_OP_CNTL_CHIPLET_ADDRESS_MSB - ((`CLOG2(`PE_ARRAY_NUM_OF_PE))-1))
 `define STREAMING_OP_CNTL_PE_DECODE_ADDRESS_SIZE   (`STREAMING_OP_CNTL_PE_DECODE_ADDRESS_MSB - `STREAMING_OP_CNTL_PE_DECODE_ADDRESS_LSB +1)
 `define STREAMING_OP_CNTL_PE_DECODE_ADDRESS_RANGE   `STREAMING_OP_CNTL_PE_DECODE_ADDRESS_MSB : `STREAMING_OP_CNTL_PE_DECODE_ADDRESS_LSB
 
@@ -309,22 +309,15 @@ TBD
 // STREAMING_OP_CNTL variable widths
 //------------------------------------------------
 
-/* FIXME - delete
-`define STREAMING_OP_CNTL_OPERATION_SIZE            (`STREAMING_OP_CNTL_OPERATION_FROM_SIZE               + \
-                                                     `STREAMING_OP_CNTL_OPERATION_TO_SIZE                 + \
-                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_TO_SIZE          + \
-                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_FROM_SIZE        + \
-                                                     `STREAMING_OP_CNTL_OPERATION_OPCODE_SIZE             + \
-                                                     `STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_SIZE + \
-                                                     `STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_SIZE )
-*/
-`define STREAMING_OP_CNTL_OPERATION_SIZE            (`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_SIZE    + \
-                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_SIZE     + \
-                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_SIZE   + \
-                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_SIZE    + \
-                                                     `STREAMING_OP_CNTL_OPERATION_OPCODE_SIZE             + \
-                                                     `STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_SIZE + \
-                                                     `STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_SIZE )
+`define STREAMING_OP_CNTL_OPERATION_SIZE            ( \
+                                                     `STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_SIZE + \
+                                                     `STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_SIZE  + \
+                                                     `STREAMING_OP_CNTL_OPERATION_OPCODE_SIZE              + \
+                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_SIZE     + \
+                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_SIZE    + \
+                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_SIZE      + \
+                                                     `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_SIZE       \
+                                                    )
 
 `define STREAMING_OP_CNTL_OPERATION_MSB            (`STREAMING_OP_CNTL_OPERATION_SIZE - 1)
 `define STREAMING_OP_CNTL_OPERATION_LSB            0

@@ -70,7 +70,7 @@ module pe_array (
  
   genvar gvi;
   generate
-    for (gvi=0; gvi<`PE_NUM_OF_PE; gvi=gvi+1) 
+    for (gvi=0; gvi<`PE_ARRAY_NUM_OF_PE; gvi=gvi+1) 
     //for (gvi=0; gvi<1; gvi=gvi+1) 
       begin: pe_inst
         wire [`STREAMING_OP_CNTL_PE_ID_RANGE   ]   peId              ; 

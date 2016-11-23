@@ -47,7 +47,7 @@
 //------------------------------------------------
 // MEM_ACC_CONT_MEMORY
 //------------------------------------------------
-`define MEM_ACC_CONT_MEMORY_ADDRESS_MSB           (`STREAMING_OP_CNTL_CHIPLET_ADDRESS_MSB - (`CLOG2(`PE_NUM_OF_PE)))
+`define MEM_ACC_CONT_MEMORY_ADDRESS_MSB           (`STREAMING_OP_CNTL_CHIPLET_ADDRESS_MSB - (`CLOG2(`PE_ARRAY_NUM_OF_PE)))
 //`define MEM_ACC_CONT_MEMORY_ADDRESS_MSB           16
 `define MEM_ACC_CONT_MEMORY_ADDRESS_LSB            0
 `define MEM_ACC_CONT_MEMORY_ADDRESS_SIZE           (`MEM_ACC_CONT_MEMORY_ADDRESS_MSB - `MEM_ACC_CONT_MEMORY_ADDRESS_LSB +1)
