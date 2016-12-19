@@ -23,27 +23,27 @@ module top;
 
 
     // system clock and reset
-    logic reset       ;
+    logic reset_poweron       ;
     logic clk    =  0 ;
 
     always #5ns clk=~clk;
 
     initial begin
-        reset            = 1;
-        #100ns reset     = 0;
+        reset_poweron            = 1;
+        #100ns reset_poweron     = 0;
     end
 
     //----------------------------------------------------------------------------------------------------
     // Instantiate an interface for every pe/lane/stream pair
     //
     //                              pe  lane
-    std_pe_lane_ifc    Sys2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk, reset);  // shorthand for [0:63] ....
+    std_pe_lane_ifc    Sys2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk);  // shorthand for [0:63] ....
 
     //----------------------------------------------------------------------------------------------------
     // Probe interface(s)
     //
     // Write Memory probe
-    pe_dma2mem_ifc    Dma2Mem      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk, reset);  // shorthand for [0:63] ....
+    pe_dma2mem_ifc    Dma2Mem      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk);  // shorthand for [0:63] ....
 
 
     //----------------------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ module top;
          `include "TB_system_stack_bus_downstream_instance_ports.vh"
        
         .clk               ( clk       ),
-        .reset_poweron     ( reset     )
+        .reset_poweron     ( reset_poweron     )
     );
 
 
@@ -66,7 +66,7 @@ module top;
         test  ti  (
                    Sys2PeArray  ,
                    Dma2Mem      ,
-                   reset
+                   reset_poweron
                   );
 
     //----------------------------------------------------------------------------------------------------
@@ -107,6 +107,8 @@ module top;
     //
 
     int numOfTypes;
+    reg enable_std_stream0 ;
+    reg enable_std_stream1 ;
   
     initial
         begin

@@ -54,7 +54,7 @@ class generator;
     integer systemEventDeltaTime = 5;  // next time for event as integer
     //-------------------------------------------------------------------------
 
-    vSys2PeArray_T vSys2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ;
+    vSys2PeArray_T vSys2PeArray ;
 
     base_operation    sys_operation     ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_gen ;  // operation packet containing all data associated with operation
@@ -65,7 +65,7 @@ class generator;
                   input event                 gen2drv_ack       ,
                   input event                 new_operation     ,
                   input event                 final_operation   ,
-                  input vSys2PeArray_T vSys2PeArray[`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]
+                  input vSys2PeArray_T        vSys2PeArray
                  );
 
         this.Id                = Id                 ;
@@ -80,7 +80,7 @@ class generator;
     task run ();
         //$display("@%0t LEE: Running generator : {%0d,%0d}\n", $time,Id[0], Id[1]);
         // wait a few cycles before starting
-        repeat (20) @(vSys2PeArray[Id[0]][Id[1]].cb_test);  
+        repeat (20) @(vSys2PeArray.cb_test);  
         //$display("@%0t LEE: TEST: {%0d,%0d}\n", $time,Id[0], Id[1]);
 
         sys_operation_gen = new ();
@@ -93,7 +93,7 @@ class generator;
                 
                 if (sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM )   // NOP
                     begin
-                        $display("@%0t LEE: Generating NOP operation: {%0d,%0d}\n", $time,Id[0], Id[1]);
+                        $display("@%0t : INFO: Generating NOP operation: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         sys_operation_gen.create();
                         sys_operation.OpType  =  sys_operation_gen.OpType ;
                         sys_operation.id      = operationNum              ;
@@ -102,7 +102,7 @@ class generator;
                     end 
                 else if(sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM )   // NOP
                     begin
-                        $display("@%0t LEE: Generating FP MAC operation: {%0d,%0d}\n", $time,Id[0], Id[1]);
+                        $display("@%0t : INFO: Generating FP MAC operation: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         sys_operation_gen.create();
                         sys_operation.OpType            = sys_operation_gen.OpType            ;
                         sys_operation.id                = operationNum                        ;

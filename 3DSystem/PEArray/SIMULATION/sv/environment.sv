@@ -79,9 +79,9 @@ class Environment;
                         gen2drv   = new () ;
                         drv2memP  = new () ;
                         // remember, each gen/drv tuple handle both streams in a lane
-                        gen     [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane], vSys2PeArray                                     );
-                        drv     [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane],                            vSys2PeArray , drv2memP, drv2memP_ack[pe][lane]  );
-                        dma2mem [pe][lane]  = new ( Id,                                                                                      vDma2Mem     , drv2memP, drv2memP_ack[pe][lane]  );
+                        gen     [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane], vSys2PeArray[pe][lane]                                     );
+                        drv     [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane],                            vSys2PeArray[pe][lane] , drv2memP, drv2memP_ack[pe][lane]  );
+                        dma2mem [pe][lane]  = new ( Id,                                                                                      vDma2Mem    [pe][lane] , drv2memP, drv2memP_ack[pe][lane]  );
                     end
             end
 
@@ -89,19 +89,22 @@ class Environment;
     endtask
 
     task run();                                                       //This task spawns parallel run tasks of generator, driver, golden models and their respective checkers.
-        $display("@%0t LEE: Run generators and drivers \n", $time);
+        $display("@%0t : INFO:ENV: Run generators and drivers \n", $time);
         fork                                                          //These end after the generator triggers the event "final_operation" after generating the final transaction.
-            // We have a generator and driver for every pe/lane
+            // We have a generator, driver and checker for every pe/lane
             `include "TB_start_generators_and_drivers.vh"
-            // gen.run();       //Do not comment
-            // drv.run();       //Do not comment
+            // gen.run();
+            // drv.run();
         join_none
 
+        //$display("@%0t LEE: Wait for final operation\n", $time);
         fork                                                          //These end after the generator triggers the event "final_operation" after generating the final transaction.
             `include "TB_wait_for_final_operation.vh"
             // @(final_operation);
-        join_none
-        wait fork ;
+        join
+        //join_none
+        //wait fork ;
+        //$display("@%0t LEE: Drivers taken all operations \n", $time);
 
         repeat (50)              //Running simulation for some time after the final transaction is sent
         begin
@@ -111,6 +114,21 @@ class Environment;
                 //vSys2PeArray[0][0].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
             join_none
         end
+
+        // check all memory checkers have finished
+        for (int pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe++)
+            begin
+                for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+                    begin
+                        // this will help finding any unfinished checkers
+                        $display("@%0t INFO: Mem checker complete : {%0d,%0d}\n", $time,pe,lane);
+                        //wait (dma2mem[pe][lane].finished.triggered);  // doesnt seem to work???
+                        wait (dma2mem[pe][lane].found == 1);
+                        //$display("@%0t LEE: Mem checker complete : {%0d,%0d}\n", $time,pe,lane);
+                        dma2mem[pe][lane].finished = null ;
+                    end
+            end
+
     endtask
 
     task wrap_up();                                               //This task marks the completion of verification.

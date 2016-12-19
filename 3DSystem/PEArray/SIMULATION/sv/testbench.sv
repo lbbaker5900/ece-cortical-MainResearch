@@ -26,7 +26,6 @@ program automatic test (
 
     initial begin
         env = new ( Sys2PeArray, Dma2Mem );
-        //env = new ( Sys2PeArray );
         env.build();
         env.run();
         env.wrap_up();

@@ -15,7 +15,7 @@ if __name__ == "__main__":
     if FoundPe == False:
       data = re.split(r'\s{1,}', line)
       # check define is in 2nd field
-      if "PE_NUM_OF_PE" in data[1]:
+      if "PE_ARRAY_NUM_OF_PE" in data[1]:
         numOfPe = int(data[2])
         FoundPe = True
   searchFile.close()

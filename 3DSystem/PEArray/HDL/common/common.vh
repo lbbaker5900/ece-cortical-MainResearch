@@ -1,3 +1,5 @@
+`ifndef _common_vh_
+`define _common_vh_
 
 
 //------------------------------------------------------------------------------------------------------------
@@ -758,4 +760,4 @@
 `define COMMON_IEEE754_FLOAT_INFINITY  32'h7F80_0000
 `define COMMON_INT_MAX                 32'hFFFF_FFFF
 
-
+`endif

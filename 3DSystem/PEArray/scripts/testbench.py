@@ -152,6 +152,7 @@ if __name__ == "__main__":
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n            begin'
       pLine = pLine + '\n              @(final_operation[{0}][{1}]) ;'.format(pe,lane) 
+      pLine = pLine + '\n              //$display("@%0t LEE: Received final operation event for {0},{1}\\n", $time);'.format(pe,lane) 
       pLine = pLine + '\n            end'                                         
     pLine = pLine + '\n'
 

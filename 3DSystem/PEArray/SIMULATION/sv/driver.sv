@@ -36,14 +36,14 @@ class driver;
     base_operation sys_operation;
 
     // FIXME : doesnt need all interfaces
-    vSys2PeArray_T vSys2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ;
+    vSys2PeArray_T vSys2PeArray ;
 
     function new (
                   input int                  Id[2]          ,
                   input mailbox              gen2drv        ,                  //Retrieving mailboxes and virtual system interface.
                   input event                gen2drv_ack    ,
                   input event                new_operation  ,
-                  input vSys2PeArray_T       vSys2PeArray[`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
+                  input vSys2PeArray_T       vSys2PeArray   ,
                   input mailbox              drv2memP       ,
                   input event                drv2memP_ack   );
 
@@ -71,43 +71,43 @@ class driver;
                                 //    $display("@%0t LEE: Driver {%d,%d} received transaction id : %0d with %d operands", $time, Id[0], Id[1], sys_operation.id, sys_operation.numberOfOperands);
                                 while (transaction < sys_operation.numberOfOperands)
                                     begin
-                                        @(vSys2PeArray[Id[0]][Id[1]].cb_test);
+                                        @(vSys2PeArray.cb_test);
 // FIXME need to fork-join streams
 
-                                        if ((vSys2PeArray[Id[0]][Id[1]].cb_test.pe__std__lane_strm0_ready) && (vSys2PeArray[Id[0]][Id[1]].cb_test.pe__std__lane_strm1_ready))
+                                        if ((vSys2PeArray.cb_test.pe__std__lane_strm0_ready) && (vSys2PeArray.cb_test.pe__std__lane_strm1_ready))
                                             begin
                                                 //$display("@%0t LEE: Driving stream0 transaction %d with value : %0d", $time,transaction, sys_operation.operands[0][transaction]);
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm0_data_valid  <= 1  ;
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm0_cntl        <= ((transaction == 0) && (transaction == (sys_operation.numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
-                                                                                                                      ( transaction == 0                                                        ) ?  `COMMON_STD_INTF_CNTL_SOM         :
-                                                                                                                      ( transaction == (sys_operation.numberOfOperands-1)                       ) ?  `COMMON_STD_INTF_CNTL_EOM         :
-                                                                                                                                                                                                     `COMMON_STD_INTF_CNTL_MOM         ;
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm0_data        <= sys_operation.operands[0][transaction]  ;
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 1  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm0_cntl        <= ((transaction == 0) && (transaction == (sys_operation.numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
+                                                                                                        ( transaction == 0                                                        ) ?  `COMMON_STD_INTF_CNTL_SOM         :
+                                                                                                        ( transaction == (sys_operation.numberOfOperands-1)                       ) ?  `COMMON_STD_INTF_CNTL_EOM         :
+                                                                                                                                                                                       `COMMON_STD_INTF_CNTL_MOM         ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm0_data        <= sys_operation.operands[0][transaction]  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
                                                 
                                                 //$display("@%0t LEE: Driving stream1 transaction %d with value : %0d", $time,transaction, sys_operation.operands[1][transaction]);
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm1_data_valid  <= 1  ;
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm1_cntl        <= ((transaction == 0) && (transaction == (sys_operation.numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
-                                                                                                                      ( transaction == 0                                                        ) ?  `COMMON_STD_INTF_CNTL_SOM         :
-                                                                                                                      ( transaction == (sys_operation.numberOfOperands-1)                       ) ?  `COMMON_STD_INTF_CNTL_EOM         :
-                                                                                                                                                                                                     `COMMON_STD_INTF_CNTL_MOM         ;
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm1_data        <= sys_operation.operands[1][transaction]  ;
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 1  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm1_cntl        <= ((transaction == 0) && (transaction == (sys_operation.numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
+                                                                                                        ( transaction == 0                                                        ) ?  `COMMON_STD_INTF_CNTL_SOM         :
+                                                                                                        ( transaction == (sys_operation.numberOfOperands-1)                       ) ?  `COMMON_STD_INTF_CNTL_EOM         :
+                                                                                                                                                                                       `COMMON_STD_INTF_CNTL_MOM         ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm1_data        <= sys_operation.operands[1][transaction]  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
 
                                                 transaction = transaction + 1;
                                                 
                                             end
                                         else
                                             begin
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm0_cntl        <= 0  ;         //Passing the instruction to the system interface
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm0_data        <= 0  ;
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm0_cntl        <= 0  ;         //Passing the instruction to the system interface
+                                                vSys2PeArray.cb_test.std__pe__lane_strm0_data        <= 0  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
                                   
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm1_cntl        <= 0  ;         //Passing the instruction to the system interface
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm1_data        <= 0  ;
-                                                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm1_cntl        <= 0  ;         //Passing the instruction to the system interface
+                                                vSys2PeArray.cb_test.std__pe__lane_strm1_data        <= 0  ;
+                                                vSys2PeArray.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
                                             end
                                     end
 
@@ -119,16 +119,16 @@ class driver;
                                 
                             end  // while
                             // processed sequence, acknowledge generator for new sequence
-                            $display("@%0t LEE: {%d,%d} Completed sequence", $time, Id[0], Id[1] );
+                            $display("@%0t : INFO: {%d,%d} Completed driving sequence", $time, Id[0], Id[1] );
                             -> gen2drv_ack;
                         end
                 else
                     begin 
-                        @(vSys2PeArray[Id[0]][Id[1]].cb_test);
+                        @(vSys2PeArray.cb_test);
                         //if ((Id[0] == 0) && (Id[1] == 0))
                         //    $display("@%0t LEE: Driver {%d,%d} driving NULL", $time, Id[0], Id[1]);
-                        vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
-                        vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
+                        vSys2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
+                        vSys2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
                     end  // if
             end  // forever
     endtask
@@ -136,9 +136,9 @@ class driver;
     task run_req();                                        //This task checks the busy signal and asserts/desserts the request signal.
         repeat (20)                                        //If busy is high, then request should remain low and if busy is low then request goes high.
             begin
-                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
-                vSys2PeArray[Id[0]][Id[1]].cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
-                @(vSys2PeArray[Id[0]][Id[1]].cb_test);
+                vSys2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
+                vSys2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
+                @(vSys2PeArray.cb_test);
             end
     endtask
 
