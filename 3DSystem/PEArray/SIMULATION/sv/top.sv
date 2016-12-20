@@ -1,12 +1,12 @@
 /*********************************************************************************************
     File name   : top.sv
-    Author      : Sarvagya
+    Author      : Lee B Baker
     Affiliation : North Carolina State University, Raleigh, NC
-    Date        : Aug 2016
-    Email       : ssarvag@ncsu.edu
+    Date        : Dec 2016
+    Email       : lbbaker@ncsu.edu
     
     Description : This module is the top level. It contains the connections to and from the 
-                  system, memory and probe interface.
+                  management layer, pe's and internal probe interfaces.
 *********************************************************************************************/
 
 `timescale 1ns/10ps
