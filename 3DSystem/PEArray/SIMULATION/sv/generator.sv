@@ -54,7 +54,7 @@ class generator;
     integer systemEventDeltaTime = 5;  // next time for event as integer
     //-------------------------------------------------------------------------
 
-    vSys2PeArray_T vSys2PeArray ;
+    vSysLane2PeArray_T   vSysLane2PeArray ;
 
     base_operation    sys_operation     ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_gen ;  // operation packet containing all data associated with operation
@@ -65,7 +65,7 @@ class generator;
                   input event                 gen2drv_ack       ,
                   input event                 new_operation     ,
                   input event                 final_operation   ,
-                  input vSys2PeArray_T        vSys2PeArray
+                  input vSysLane2PeArray_T    vSysLane2PeArray
                  );
 
         this.Id                = Id                 ;
@@ -73,14 +73,14 @@ class generator;
         this.gen2drv_ack       = gen2drv_ack        ;
         this.new_operation     = new_operation      ;
         this.final_operation   = final_operation    ;
-        this.vSys2PeArray      = vSys2PeArray       ;
+        this.vSysLane2PeArray  = vSysLane2PeArray   ;
 
     endfunction
 
     task run ();
         //$display("@%0t LEE: Running generator : {%0d,%0d}\n", $time,Id[0], Id[1]);
         // wait a few cycles before starting
-        repeat (20) @(vSys2PeArray.cb_test);  
+        repeat (20) @(vSysLane2PeArray.cb_test);  
         //$display("@%0t LEE: TEST: {%0d,%0d}\n", $time,Id[0], Id[1]);
 
         sys_operation_gen = new ();

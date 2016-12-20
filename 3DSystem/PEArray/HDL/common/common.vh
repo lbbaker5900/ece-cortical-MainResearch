@@ -42,7 +42,7 @@
 //      inside dma  - from stOp
 
 `define STREAMING_OP_INPUT_FIFO \
-        reg  [`STREAMING_OP_DATA_WIDTH_RANGE]       fifo_data      [`STREAMING_OP_INPUT_FIFO_DEPTH_RANGE] ; \
+        reg  [`STREAMING_OP_DATA_RANGE      ]       fifo_data      [`STREAMING_OP_INPUT_FIFO_DEPTH_RANGE] ; \
         reg  [`DMA_CONT_STRM_CNTL_RANGE     ]       fifo_cntl      [`STREAMING_OP_INPUT_FIFO_DEPTH_RANGE] ; \
         reg  [`STREAMING_OP_INPUT_FIFO_RANGE]       fifo_wp              ; \
         reg  [`STREAMING_OP_INPUT_FIFO_RANGE]       fifo_rp              ; \
@@ -50,9 +50,9 @@
         wire                                        fifo_empty           ; \
         wire                                        fifo_almost_full     ; \
         wire                                        fifo_read            ; \
-        wire [`STREAMING_OP_DATA_WIDTH_RANGE]       fifo_read_data       ; \
+        wire [`STREAMING_OP_DATA_RANGE      ]       fifo_read_data       ; \
         wire [`DMA_CONT_STRM_CNTL_RANGE     ]       fifo_read_cntl       ; \
-        wire [`STREAMING_OP_DATA_WIDTH_RANGE]       data                 ; \
+        wire [`STREAMING_OP_DATA_RANGE      ]       data                 ; \
         wire [`DMA_CONT_STRM_CNTL_RANGE     ]       cntl                 ; \
         wire                                        fifo_write           ; \
         wire                                        clear                ; \
@@ -101,7 +101,7 @@
 `define NoC_to_StOp_FIFO \
         reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]       fifo_cntl      [`STREAMING_OP_CNTL_NOC_TO_STOP_FIFO_DEPTH_RANGE] ; \
         reg                                              fifo_strmId    [`STREAMING_OP_CNTL_NOC_TO_STOP_FIFO_DEPTH_RANGE] ;\
-        reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]       fifo_data      [`STREAMING_OP_CNTL_NOC_TO_STOP_FIFO_DEPTH_RANGE] ; \
+        reg  [`STREAMING_OP_CNTL_DATA_RANGE      ]       fifo_data      [`STREAMING_OP_CNTL_NOC_TO_STOP_FIFO_DEPTH_RANGE] ; \
         reg  [`STREAMING_OP_CNTL_NOC_TO_STOP_FIFO_RANGE]       fifo_wp              ; \
         reg  [`STREAMING_OP_CNTL_NOC_TO_STOP_FIFO_RANGE]       fifo_rp              ; \
         reg  [`STREAMING_OP_CNTL_NOC_TO_STOP_FIFO_RANGE]       fifo_depth           ; \
@@ -111,11 +111,11 @@
         wire                                        fifo_read            ; \
         reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]       fifo_read_cntl       ; \
         reg                                              fifo_read_strmId     ; \
-        reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]       fifo_read_data       ; \
+        reg  [`STREAMING_OP_CNTL_DATA_RANGE      ]       fifo_read_data       ; \
         reg                                              fifo_read_data_valid ; \
         wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]       cntl                 ; \
         wire                                             strmId               ; \
-        wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]       data                 ; \
+        wire [`STREAMING_OP_CNTL_DATA_RANGE      ]       data                 ; \
         wire                                        fifo_write           ; \
         wire                                        clear                ; \
    \
@@ -180,11 +180,11 @@
         wire                                        fifo_read            ; \
         wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]       fifo_read_cntl       ; \
         wire                                             fifo_read_strmId     ; \
-        wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]       fifo_read_data       ; \
+        wire [`STREAMING_OP_CNTL_DATA_RANGE      ]       fifo_read_data       ; \
         reg                                              fifo_read_data_valid ; \
         wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]       cntl                 ; \
         wire                                             strmId               ; \
-        wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]       data                 ; \
+        wire [`STREAMING_OP_CNTL_DATA_RANGE      ]       data                 ; \
         wire                                        fifo_write           ; \
         wire                                        clear                ; \
    \
@@ -242,7 +242,7 @@
 `define StOp_to_NoC_FIFO \
         reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]       fifo_cntl      [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_DEPTH_RANGE] ; \
         reg                                              fifo_strmId    [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_DEPTH_RANGE] ;\
-        reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]       fifo_data      [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_DEPTH_RANGE] ; \
+        reg  [`STREAMING_OP_CNTL_DATA_RANGE      ]       fifo_data      [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_DEPTH_RANGE] ; \
         reg  [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]       fifo_wp              ; \
         reg  [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]       fifo_rp              ; \
         reg  [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]       fifo_depth           ; \
@@ -252,11 +252,11 @@
         wire                                        fifo_read            ; \
         reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]       fifo_read_cntl       ; \
         reg                                              fifo_read_strmId     ; \
-        reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]       fifo_read_data       ; \
+        reg  [`STREAMING_OP_CNTL_DATA_RANGE      ]       fifo_read_data       ; \
         reg                                              fifo_read_data_valid ; \
         wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]       cntl                 ; \
         wire                                             strmId               ; \
-        wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]       data                 ; \
+        wire [`STREAMING_OP_CNTL_DATA_RANGE      ]       data                 ; \
         wire                                        fifo_write           ; \
         wire                                        clear                ; \
    \

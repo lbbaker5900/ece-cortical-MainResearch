@@ -2,7 +2,7 @@
   // lane0 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane0_fromStOp_strm_cntl                   ;
   reg                                                         lane0_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane0_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane0_fromStOp_strm_data                   ;
   reg                                                         lane0_fromStOp_strm_data_valid             ;
   wire                                                        lane0_fromStOp_strm_ready                  ;
   reg                                                         lane0_fromStOp_strm_fifo_read              ;
@@ -12,13 +12,13 @@
   wire                                                        lane0_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane0_fromStOp_strm_fifo_depth             ;
   wire                                                        lane0_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane0_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane0_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane0_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane0_fromStOp_strm_fifo_data_available    ;
   // lane1 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane1_fromStOp_strm_cntl                   ;
   reg                                                         lane1_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane1_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane1_fromStOp_strm_data                   ;
   reg                                                         lane1_fromStOp_strm_data_valid             ;
   wire                                                        lane1_fromStOp_strm_ready                  ;
   reg                                                         lane1_fromStOp_strm_fifo_read              ;
@@ -28,13 +28,13 @@
   wire                                                        lane1_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane1_fromStOp_strm_fifo_depth             ;
   wire                                                        lane1_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane1_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane1_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane1_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane1_fromStOp_strm_fifo_data_available    ;
   // lane2 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane2_fromStOp_strm_cntl                   ;
   reg                                                         lane2_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane2_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane2_fromStOp_strm_data                   ;
   reg                                                         lane2_fromStOp_strm_data_valid             ;
   wire                                                        lane2_fromStOp_strm_ready                  ;
   reg                                                         lane2_fromStOp_strm_fifo_read              ;
@@ -44,13 +44,13 @@
   wire                                                        lane2_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane2_fromStOp_strm_fifo_depth             ;
   wire                                                        lane2_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane2_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane2_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane2_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane2_fromStOp_strm_fifo_data_available    ;
   // lane3 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane3_fromStOp_strm_cntl                   ;
   reg                                                         lane3_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane3_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane3_fromStOp_strm_data                   ;
   reg                                                         lane3_fromStOp_strm_data_valid             ;
   wire                                                        lane3_fromStOp_strm_ready                  ;
   reg                                                         lane3_fromStOp_strm_fifo_read              ;
@@ -60,13 +60,13 @@
   wire                                                        lane3_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane3_fromStOp_strm_fifo_depth             ;
   wire                                                        lane3_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane3_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane3_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane3_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane3_fromStOp_strm_fifo_data_available    ;
   // lane4 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane4_fromStOp_strm_cntl                   ;
   reg                                                         lane4_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane4_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane4_fromStOp_strm_data                   ;
   reg                                                         lane4_fromStOp_strm_data_valid             ;
   wire                                                        lane4_fromStOp_strm_ready                  ;
   reg                                                         lane4_fromStOp_strm_fifo_read              ;
@@ -76,13 +76,13 @@
   wire                                                        lane4_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane4_fromStOp_strm_fifo_depth             ;
   wire                                                        lane4_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane4_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane4_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane4_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane4_fromStOp_strm_fifo_data_available    ;
   // lane5 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane5_fromStOp_strm_cntl                   ;
   reg                                                         lane5_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane5_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane5_fromStOp_strm_data                   ;
   reg                                                         lane5_fromStOp_strm_data_valid             ;
   wire                                                        lane5_fromStOp_strm_ready                  ;
   reg                                                         lane5_fromStOp_strm_fifo_read              ;
@@ -92,13 +92,13 @@
   wire                                                        lane5_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane5_fromStOp_strm_fifo_depth             ;
   wire                                                        lane5_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane5_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane5_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane5_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane5_fromStOp_strm_fifo_data_available    ;
   // lane6 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane6_fromStOp_strm_cntl                   ;
   reg                                                         lane6_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane6_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane6_fromStOp_strm_data                   ;
   reg                                                         lane6_fromStOp_strm_data_valid             ;
   wire                                                        lane6_fromStOp_strm_ready                  ;
   reg                                                         lane6_fromStOp_strm_fifo_read              ;
@@ -108,13 +108,13 @@
   wire                                                        lane6_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane6_fromStOp_strm_fifo_depth             ;
   wire                                                        lane6_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane6_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane6_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane6_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane6_fromStOp_strm_fifo_data_available    ;
   // lane7 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane7_fromStOp_strm_cntl                   ;
   reg                                                         lane7_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane7_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane7_fromStOp_strm_data                   ;
   reg                                                         lane7_fromStOp_strm_data_valid             ;
   wire                                                        lane7_fromStOp_strm_ready                  ;
   reg                                                         lane7_fromStOp_strm_fifo_read              ;
@@ -124,13 +124,13 @@
   wire                                                        lane7_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane7_fromStOp_strm_fifo_depth             ;
   wire                                                        lane7_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane7_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane7_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane7_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane7_fromStOp_strm_fifo_data_available    ;
   // lane8 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane8_fromStOp_strm_cntl                   ;
   reg                                                         lane8_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane8_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane8_fromStOp_strm_data                   ;
   reg                                                         lane8_fromStOp_strm_data_valid             ;
   wire                                                        lane8_fromStOp_strm_ready                  ;
   reg                                                         lane8_fromStOp_strm_fifo_read              ;
@@ -140,13 +140,13 @@
   wire                                                        lane8_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane8_fromStOp_strm_fifo_depth             ;
   wire                                                        lane8_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane8_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane8_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane8_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane8_fromStOp_strm_fifo_data_available    ;
   // lane9 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane9_fromStOp_strm_cntl                   ;
   reg                                                         lane9_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane9_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane9_fromStOp_strm_data                   ;
   reg                                                         lane9_fromStOp_strm_data_valid             ;
   wire                                                        lane9_fromStOp_strm_ready                  ;
   reg                                                         lane9_fromStOp_strm_fifo_read              ;
@@ -156,13 +156,13 @@
   wire                                                        lane9_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane9_fromStOp_strm_fifo_depth             ;
   wire                                                        lane9_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane9_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane9_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane9_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane9_fromStOp_strm_fifo_data_available    ;
   // lane10 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane10_fromStOp_strm_cntl                   ;
   reg                                                         lane10_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane10_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane10_fromStOp_strm_data                   ;
   reg                                                         lane10_fromStOp_strm_data_valid             ;
   wire                                                        lane10_fromStOp_strm_ready                  ;
   reg                                                         lane10_fromStOp_strm_fifo_read              ;
@@ -172,13 +172,13 @@
   wire                                                        lane10_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane10_fromStOp_strm_fifo_depth             ;
   wire                                                        lane10_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane10_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane10_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane10_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane10_fromStOp_strm_fifo_data_available    ;
   // lane11 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane11_fromStOp_strm_cntl                   ;
   reg                                                         lane11_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane11_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane11_fromStOp_strm_data                   ;
   reg                                                         lane11_fromStOp_strm_data_valid             ;
   wire                                                        lane11_fromStOp_strm_ready                  ;
   reg                                                         lane11_fromStOp_strm_fifo_read              ;
@@ -188,13 +188,13 @@
   wire                                                        lane11_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane11_fromStOp_strm_fifo_depth             ;
   wire                                                        lane11_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane11_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane11_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane11_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane11_fromStOp_strm_fifo_data_available    ;
   // lane12 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane12_fromStOp_strm_cntl                   ;
   reg                                                         lane12_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane12_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane12_fromStOp_strm_data                   ;
   reg                                                         lane12_fromStOp_strm_data_valid             ;
   wire                                                        lane12_fromStOp_strm_ready                  ;
   reg                                                         lane12_fromStOp_strm_fifo_read              ;
@@ -204,13 +204,13 @@
   wire                                                        lane12_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane12_fromStOp_strm_fifo_depth             ;
   wire                                                        lane12_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane12_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane12_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane12_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane12_fromStOp_strm_fifo_data_available    ;
   // lane13 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane13_fromStOp_strm_cntl                   ;
   reg                                                         lane13_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane13_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane13_fromStOp_strm_data                   ;
   reg                                                         lane13_fromStOp_strm_data_valid             ;
   wire                                                        lane13_fromStOp_strm_ready                  ;
   reg                                                         lane13_fromStOp_strm_fifo_read              ;
@@ -220,13 +220,13 @@
   wire                                                        lane13_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane13_fromStOp_strm_fifo_depth             ;
   wire                                                        lane13_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane13_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane13_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane13_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane13_fromStOp_strm_fifo_data_available    ;
   // lane14 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane14_fromStOp_strm_cntl                   ;
   reg                                                         lane14_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane14_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane14_fromStOp_strm_data                   ;
   reg                                                         lane14_fromStOp_strm_data_valid             ;
   wire                                                        lane14_fromStOp_strm_ready                  ;
   reg                                                         lane14_fromStOp_strm_fifo_read              ;
@@ -236,13 +236,13 @@
   wire                                                        lane14_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane14_fromStOp_strm_fifo_depth             ;
   wire                                                        lane14_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane14_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane14_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane14_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane14_fromStOp_strm_fifo_data_available    ;
   // lane15 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane15_fromStOp_strm_cntl                   ;
   reg                                                         lane15_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane15_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane15_fromStOp_strm_data                   ;
   reg                                                         lane15_fromStOp_strm_data_valid             ;
   wire                                                        lane15_fromStOp_strm_ready                  ;
   reg                                                         lane15_fromStOp_strm_fifo_read              ;
@@ -252,13 +252,13 @@
   wire                                                        lane15_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane15_fromStOp_strm_fifo_depth             ;
   wire                                                        lane15_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane15_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane15_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane15_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane15_fromStOp_strm_fifo_data_available    ;
   // lane16 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane16_fromStOp_strm_cntl                   ;
   reg                                                         lane16_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane16_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane16_fromStOp_strm_data                   ;
   reg                                                         lane16_fromStOp_strm_data_valid             ;
   wire                                                        lane16_fromStOp_strm_ready                  ;
   reg                                                         lane16_fromStOp_strm_fifo_read              ;
@@ -268,13 +268,13 @@
   wire                                                        lane16_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane16_fromStOp_strm_fifo_depth             ;
   wire                                                        lane16_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane16_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane16_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane16_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane16_fromStOp_strm_fifo_data_available    ;
   // lane17 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane17_fromStOp_strm_cntl                   ;
   reg                                                         lane17_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane17_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane17_fromStOp_strm_data                   ;
   reg                                                         lane17_fromStOp_strm_data_valid             ;
   wire                                                        lane17_fromStOp_strm_ready                  ;
   reg                                                         lane17_fromStOp_strm_fifo_read              ;
@@ -284,13 +284,13 @@
   wire                                                        lane17_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane17_fromStOp_strm_fifo_depth             ;
   wire                                                        lane17_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane17_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane17_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane17_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane17_fromStOp_strm_fifo_data_available    ;
   // lane18 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane18_fromStOp_strm_cntl                   ;
   reg                                                         lane18_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane18_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane18_fromStOp_strm_data                   ;
   reg                                                         lane18_fromStOp_strm_data_valid             ;
   wire                                                        lane18_fromStOp_strm_ready                  ;
   reg                                                         lane18_fromStOp_strm_fifo_read              ;
@@ -300,13 +300,13 @@
   wire                                                        lane18_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane18_fromStOp_strm_fifo_depth             ;
   wire                                                        lane18_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane18_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane18_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane18_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane18_fromStOp_strm_fifo_data_available    ;
   // lane19 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane19_fromStOp_strm_cntl                   ;
   reg                                                         lane19_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane19_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane19_fromStOp_strm_data                   ;
   reg                                                         lane19_fromStOp_strm_data_valid             ;
   wire                                                        lane19_fromStOp_strm_ready                  ;
   reg                                                         lane19_fromStOp_strm_fifo_read              ;
@@ -316,13 +316,13 @@
   wire                                                        lane19_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane19_fromStOp_strm_fifo_depth             ;
   wire                                                        lane19_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane19_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane19_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane19_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane19_fromStOp_strm_fifo_data_available    ;
   // lane20 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane20_fromStOp_strm_cntl                   ;
   reg                                                         lane20_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane20_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane20_fromStOp_strm_data                   ;
   reg                                                         lane20_fromStOp_strm_data_valid             ;
   wire                                                        lane20_fromStOp_strm_ready                  ;
   reg                                                         lane20_fromStOp_strm_fifo_read              ;
@@ -332,13 +332,13 @@
   wire                                                        lane20_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane20_fromStOp_strm_fifo_depth             ;
   wire                                                        lane20_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane20_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane20_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane20_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane20_fromStOp_strm_fifo_data_available    ;
   // lane21 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane21_fromStOp_strm_cntl                   ;
   reg                                                         lane21_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane21_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane21_fromStOp_strm_data                   ;
   reg                                                         lane21_fromStOp_strm_data_valid             ;
   wire                                                        lane21_fromStOp_strm_ready                  ;
   reg                                                         lane21_fromStOp_strm_fifo_read              ;
@@ -348,13 +348,13 @@
   wire                                                        lane21_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane21_fromStOp_strm_fifo_depth             ;
   wire                                                        lane21_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane21_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane21_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane21_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane21_fromStOp_strm_fifo_data_available    ;
   // lane22 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane22_fromStOp_strm_cntl                   ;
   reg                                                         lane22_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane22_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane22_fromStOp_strm_data                   ;
   reg                                                         lane22_fromStOp_strm_data_valid             ;
   wire                                                        lane22_fromStOp_strm_ready                  ;
   reg                                                         lane22_fromStOp_strm_fifo_read              ;
@@ -364,13 +364,13 @@
   wire                                                        lane22_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane22_fromStOp_strm_fifo_depth             ;
   wire                                                        lane22_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane22_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane22_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane22_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane22_fromStOp_strm_fifo_data_available    ;
   // lane23 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane23_fromStOp_strm_cntl                   ;
   reg                                                         lane23_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane23_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane23_fromStOp_strm_data                   ;
   reg                                                         lane23_fromStOp_strm_data_valid             ;
   wire                                                        lane23_fromStOp_strm_ready                  ;
   reg                                                         lane23_fromStOp_strm_fifo_read              ;
@@ -380,13 +380,13 @@
   wire                                                        lane23_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane23_fromStOp_strm_fifo_depth             ;
   wire                                                        lane23_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane23_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane23_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane23_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane23_fromStOp_strm_fifo_data_available    ;
   // lane24 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane24_fromStOp_strm_cntl                   ;
   reg                                                         lane24_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane24_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane24_fromStOp_strm_data                   ;
   reg                                                         lane24_fromStOp_strm_data_valid             ;
   wire                                                        lane24_fromStOp_strm_ready                  ;
   reg                                                         lane24_fromStOp_strm_fifo_read              ;
@@ -396,13 +396,13 @@
   wire                                                        lane24_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane24_fromStOp_strm_fifo_depth             ;
   wire                                                        lane24_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane24_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane24_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane24_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane24_fromStOp_strm_fifo_data_available    ;
   // lane25 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane25_fromStOp_strm_cntl                   ;
   reg                                                         lane25_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane25_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane25_fromStOp_strm_data                   ;
   reg                                                         lane25_fromStOp_strm_data_valid             ;
   wire                                                        lane25_fromStOp_strm_ready                  ;
   reg                                                         lane25_fromStOp_strm_fifo_read              ;
@@ -412,13 +412,13 @@
   wire                                                        lane25_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane25_fromStOp_strm_fifo_depth             ;
   wire                                                        lane25_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane25_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane25_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane25_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane25_fromStOp_strm_fifo_data_available    ;
   // lane26 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane26_fromStOp_strm_cntl                   ;
   reg                                                         lane26_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane26_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane26_fromStOp_strm_data                   ;
   reg                                                         lane26_fromStOp_strm_data_valid             ;
   wire                                                        lane26_fromStOp_strm_ready                  ;
   reg                                                         lane26_fromStOp_strm_fifo_read              ;
@@ -428,13 +428,13 @@
   wire                                                        lane26_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane26_fromStOp_strm_fifo_depth             ;
   wire                                                        lane26_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane26_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane26_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane26_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane26_fromStOp_strm_fifo_data_available    ;
   // lane27 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane27_fromStOp_strm_cntl                   ;
   reg                                                         lane27_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane27_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane27_fromStOp_strm_data                   ;
   reg                                                         lane27_fromStOp_strm_data_valid             ;
   wire                                                        lane27_fromStOp_strm_ready                  ;
   reg                                                         lane27_fromStOp_strm_fifo_read              ;
@@ -444,13 +444,13 @@
   wire                                                        lane27_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane27_fromStOp_strm_fifo_depth             ;
   wire                                                        lane27_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane27_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane27_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane27_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane27_fromStOp_strm_fifo_data_available    ;
   // lane28 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane28_fromStOp_strm_cntl                   ;
   reg                                                         lane28_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane28_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane28_fromStOp_strm_data                   ;
   reg                                                         lane28_fromStOp_strm_data_valid             ;
   wire                                                        lane28_fromStOp_strm_ready                  ;
   reg                                                         lane28_fromStOp_strm_fifo_read              ;
@@ -460,13 +460,13 @@
   wire                                                        lane28_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane28_fromStOp_strm_fifo_depth             ;
   wire                                                        lane28_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane28_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane28_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane28_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane28_fromStOp_strm_fifo_data_available    ;
   // lane29 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane29_fromStOp_strm_cntl                   ;
   reg                                                         lane29_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane29_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane29_fromStOp_strm_data                   ;
   reg                                                         lane29_fromStOp_strm_data_valid             ;
   wire                                                        lane29_fromStOp_strm_ready                  ;
   reg                                                         lane29_fromStOp_strm_fifo_read              ;
@@ -476,13 +476,13 @@
   wire                                                        lane29_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane29_fromStOp_strm_fifo_depth             ;
   wire                                                        lane29_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane29_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane29_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane29_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane29_fromStOp_strm_fifo_data_available    ;
   // lane30 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane30_fromStOp_strm_cntl                   ;
   reg                                                         lane30_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane30_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane30_fromStOp_strm_data                   ;
   reg                                                         lane30_fromStOp_strm_data_valid             ;
   wire                                                        lane30_fromStOp_strm_ready                  ;
   reg                                                         lane30_fromStOp_strm_fifo_read              ;
@@ -492,13 +492,13 @@
   wire                                                        lane30_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane30_fromStOp_strm_fifo_depth             ;
   wire                                                        lane30_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane30_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane30_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane30_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane30_fromStOp_strm_fifo_data_available    ;
   // lane31 to NoC 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane31_fromStOp_strm_cntl                   ;
   reg                                                         lane31_fromStOp_strm_id                     ;
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane31_fromStOp_strm_data                   ;
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane31_fromStOp_strm_data                   ;
   reg                                                         lane31_fromStOp_strm_data_valid             ;
   wire                                                        lane31_fromStOp_strm_ready                  ;
   reg                                                         lane31_fromStOp_strm_fifo_read              ;
@@ -508,6 +508,6 @@
   wire                                                        lane31_fromStOp_strm_fifo_read_data_valid   ;
   wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane31_fromStOp_strm_fifo_depth             ;
   wire                                                        lane31_fromStOp_strm_fifo_read_id           ;
-  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane31_fromStOp_strm_fifo_read_data         ;
+  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane31_fromStOp_strm_fifo_read_data         ;
   wire                                                        lane31_fromStOp_strm_fifo_dma_pkt_available ;
   wire                                                        lane31_fromStOp_strm_fifo_data_available    ;

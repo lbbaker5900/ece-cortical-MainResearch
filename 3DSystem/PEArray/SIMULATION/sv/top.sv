@@ -37,7 +37,9 @@ module top;
     // Instantiate an interface for every pe/lane/stream pair
     //
     //                              pe  lane
-    std_pe_lane_ifc    Sys2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk);  // shorthand for [0:63] ....
+    std_pe_lane_ifc    SysLane2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (.clk_lane            ( clk           ));  // shorthand for [0:63] ....
+    std_pe_oob_ifc     SysOob2PeArray  [`PE_ARRAY_NUM_OF_PE]                        (.clk_oob             ( clk           ) ,
+                                                                                     .reset_poweron       ( reset_poweron ));  
 
     //----------------------------------------------------------------------------------------------------
     // Probe interface(s)
@@ -64,8 +66,9 @@ module top;
     // Testbench
     //
         test  ti  (
-                   Sys2PeArray  ,
-                   Dma2Mem      ,
+                   SysLane2PeArray     ,
+                   SysOob2PeArray      ,
+                   Dma2Mem             ,
                    reset_poweron
                   );
 

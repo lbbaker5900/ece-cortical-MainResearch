@@ -31,7 +31,7 @@ interface std_pe_oob_ifc(
                            input bit clk_oob   , 
                            input bit reset_poweron );
 
-    // Stack Bus - downstream
+    // Stack Bus - downstream Out-of-band
     // FIXME - right now type is a per lane signal??
     logic [`STACK_DOWN_INTF_TYPE_RANGE   ]       std__pe__oob_type        ;  // Control or Data, Vector or scalar
 
@@ -42,7 +42,7 @@ interface std_pe_oob_ifc(
     logic                                        sys__pe__allSynchronized  ;
     logic                                        pe__sys__thisSynchronized ;
 
-    logic                                        sys__pe__peId             ;
+    logic [`PE_PE_ID_RANGE               ]       sys__pe__peId             ;
     logic                                        pe__sys__ready            ;
     logic                                        pe__sys__complete         ;
 
@@ -104,28 +104,15 @@ interface std_pe_lane_ifc(
 
     logic                                        pe__std__lane_strm0_ready       ;
     logic [`COMMON_STD_INTF_CNTL_RANGE   ]       std__pe__lane_strm0_cntl        ;
-    logic [`PE_STD_LANE_WIDTH_RANGE      ]       std__pe__lane_strm0_data        ;
-    logic [`PE_STD_LANE_WIDTH_RANGE      ]       std__pe__lane_strm0_data_mask   ;
+    logic [`PE_STD_LANE_DATA_RANGE       ]       std__pe__lane_strm0_data        ;
+    logic [`PE_STD_LANE_DATA_RANGE       ]       std__pe__lane_strm0_data_mask   ;
     logic                                        std__pe__lane_strm0_data_valid  ;
  
     logic                                        pe__std__lane_strm1_ready       ;
     logic [`COMMON_STD_INTF_CNTL_RANGE   ]       std__pe__lane_strm1_cntl        ;
-    logic [`PE_STD_LANE_WIDTH_RANGE      ]       std__pe__lane_strm1_data        ;
-    logic [`PE_STD_LANE_WIDTH_RANGE      ]       std__pe__lane_strm1_data_mask   ;
+    logic [`PE_STD_LANE_DATA_RANGE       ]       std__pe__lane_strm1_data        ;
+    logic [`PE_STD_LANE_DATA_RANGE       ]       std__pe__lane_strm1_data_mask   ;
     logic                                        std__pe__lane_strm1_data_valid  ;
- 
-    // Stack Bus - upstream
-    logic                                        stu__pe__lane_strm0_ready       ;
-    logic [`COMMON_STD_INTF_CNTL_RANGE   ]       pe__stu__lane_strm0_cntl        ;
-    logic [`PE_STU_LANE_WIDTH_RANGE      ]       pe__stu__lane_strm0_data        ;
-    logic [`PE_STU_LANE_WIDTH_RANGE      ]       pe__stu__lane_strm0_data_mask   ;
-    logic                                        pe__stu__lane_strm0_data_valid  ;
- 
-    logic                                        stu__pe__lane_strm1_ready       ;
-    logic [`COMMON_STD_INTF_CNTL_RANGE   ]       pe__stu__lane_strm1_cntl        ;
-    logic [`PE_STU_LANE_WIDTH_RANGE      ]       pe__stu__lane_strm1_data        ;
-    logic [`PE_STU_LANE_WIDTH_RANGE      ]       pe__stu__lane_strm1_data_mask   ;
-    logic                                        pe__stu__lane_strm1_data_valid  ;
  
     clocking cb_test @(posedge clk_lane);
         output       std__pe__lane_type              ;
@@ -142,17 +129,6 @@ interface std_pe_lane_ifc(
         output       std__pe__lane_strm1_data_mask   ;
         output       std__pe__lane_strm1_data_valid  ;
     
-        output       stu__pe__lane_strm0_ready       ;
-        input        pe__stu__lane_strm0_cntl        ;
-        input        pe__stu__lane_strm0_data        ;
-        input        pe__stu__lane_strm0_data_mask   ;
-        input        pe__stu__lane_strm0_data_valid  ;
-
-        output       stu__pe__lane_strm1_ready       ;
-        input        pe__stu__lane_strm1_cntl        ;
-        input        pe__stu__lane_strm1_data        ;
-        input        pe__stu__lane_strm1_data_mask   ;
-        input        pe__stu__lane_strm1_data_valid  ;
     endclocking : cb_test
  
     clocking cb_dut @(posedge clk_lane);
@@ -170,31 +146,69 @@ interface std_pe_lane_ifc(
         input        std__pe__lane_strm1_data_mask   ;
         inout        std__pe__lane_strm1_data_valid  ;
     
-        input        stu__pe__lane_strm0_ready       ;
-        output       pe__stu__lane_strm0_cntl        ;
-        output       pe__stu__lane_strm0_data        ;
-        output       pe__stu__lane_strm0_data_mask   ;
-        inout        pe__stu__lane_strm0_data_valid  ;
-
-        input        stu__pe__lane_strm1_ready       ;
-        output       pe__stu__lane_strm1_cntl        ;
-        output       pe__stu__lane_strm1_data        ;
-        output       pe__stu__lane_strm1_data_mask   ;
-        inout        pe__stu__lane_strm1_data_valid  ;
     endclocking : cb_dut
  
-    modport TB_PeArray2Sys (
+    modport TB_PeArray2SysLane (
         clocking    cb_dut   
     );
  
-    modport TB_Sys2PeArray (
+    modport TB_SysLane2PeArray (
         clocking    cb_test  
     );
 
 endinterface : std_pe_lane_ifc
 
-typedef virtual std_pe_lane_ifc.TB_Sys2PeArray vSys2PeArray_T;
-typedef virtual std_pe_lane_ifc.TB_PeArray2Sys vPeArray2Sys_T;
+typedef virtual std_pe_lane_ifc.TB_SysLane2PeArray vSysLane2PeArray_T;
+typedef virtual std_pe_lane_ifc.TB_PeArray2SysLane vPeArray2SysLane_T;
+
+
+interface stu_pe_lane_ifc(
+                           input bit clk_lane   );
+
+    // Stack Bus - upstream
+
+    logic [`STACK_UP_INTF_TYPE_RANGE     ]       pe__stu__lane_type              ;  // Control or Data, Vector or scalar
+
+    logic                                        stu__pe__lane_result_ready       ;
+    logic [`COMMON_STD_INTF_CNTL_RANGE   ]       pe__stu__lane_result_cntl        ;
+    logic [`PE_STU_LANE_RESULT_RANGE     ]       pe__stu__lane_result_data        ;
+    logic [`PE_STU_LANE_RESULT_RANGE     ]       pe__stu__lane_result_data_mask   ;
+    logic                                        pe__stu__lane_result_data_valid  ;
+ 
+    clocking cb_test @(posedge clk_lane);
+        output       pe__stu__lane_type               ;
+
+        output       stu__pe__lane_result_ready       ;
+        input        pe__stu__lane_result_cntl        ;
+        input        pe__stu__lane_result_data        ;
+        input        pe__stu__lane_result_data_mask   ;
+        input        pe__stu__lane_result_data_valid  ;
+
+    endclocking : cb_test
+ 
+    clocking cb_dut @(posedge clk_lane);
+        input        pe__stu__lane_type               ;
+
+        input        stu__pe__lane_result_ready       ;
+        output       pe__stu__lane_result_cntl        ;
+        output       pe__stu__lane_result_data        ;
+        output       pe__stu__lane_result_data_mask   ;
+        inout        pe__stu__lane_result_data_valid  ;
+
+    endclocking : cb_dut
+ 
+    modport TB_PeArrayResult2Sys (
+        clocking    cb_dut   
+    );
+ 
+    modport TB_Sys2PeArrayResult (
+        clocking    cb_test  
+    );
+
+endinterface : stu_pe_lane_ifc
+
+typedef virtual stu_pe_lane_ifc.TB_Sys2PeArrayResult vSys2PeArrayResult_T;
+typedef virtual stu_pe_lane_ifc.TB_PeArrayResult2Sys vPeArrayResult2Sys_T;
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -249,27 +263,27 @@ interface sti_stOp_lane_ifc(
 
     logic                                        stOp__sti__lane_strm0_ready       ;
     logic [`COMMON_STD_INTF_CNTL_RANGE   ]       sti__stOp__lane_strm0_cntl        ;
-    logic [`PE_STD_LANE_WIDTH_RANGE      ]       sti__stOp__lane_strm0_data        ;
-    logic [`PE_STD_LANE_WIDTH_RANGE      ]       sti__stOp__lane_strm0_data_mask   ;
+    logic [`PE_STD_LANE_DATA_RANGE       ]       sti__stOp__lane_strm0_data        ;
+    logic [`PE_STD_LANE_DATA_RANGE       ]       sti__stOp__lane_strm0_data_mask   ;
     logic                                        sti__stOp__lane_strm0_data_valid  ;
  
     logic                                        stOp__sti__lane_strm1_ready       ;
     logic [`COMMON_STD_INTF_CNTL_RANGE   ]       sti__stOp__lane_strm1_cntl        ;
-    logic [`PE_STD_LANE_WIDTH_RANGE      ]       sti__stOp__lane_strm1_data        ;
-    logic [`PE_STD_LANE_WIDTH_RANGE      ]       sti__stOp__lane_strm1_data_mask   ;
+    logic [`PE_STD_LANE_DATA_RANGE       ]       sti__stOp__lane_strm1_data        ;
+    logic [`PE_STD_LANE_DATA_RANGE       ]       sti__stOp__lane_strm1_data_mask   ;
     logic                                        sti__stOp__lane_strm1_data_valid  ;
  
     // Stack Bus - upstream
     logic                                        stu__stOp__lane_strm0_ready       ;
     logic [`COMMON_STD_INTF_CNTL_RANGE   ]       stOp__stu__lane_strm0_cntl        ;
-    logic [`PE_STU_LANE_WIDTH_RANGE      ]       stOp__stu__lane_strm0_data        ;
-    logic [`PE_STU_LANE_WIDTH_RANGE      ]       stOp__stu__lane_strm0_data_mask   ;
+    logic [`PE_STU_LANE_RESULT_RANGE     ]       stOp__stu__lane_strm0_data        ;
+    logic [`PE_STU_LANE_RESULT_RANGE     ]       stOp__stu__lane_strm0_data_mask   ;
     logic                                        stOp__stu__lane_strm0_data_valid  ;
  
     logic                                        stu__stOp__lane_strm1_ready       ;
     logic [`COMMON_STD_INTF_CNTL_RANGE   ]       stOp__stu__lane_strm1_cntl        ;
-    logic [`PE_STU_LANE_WIDTH_RANGE      ]       stOp__stu__lane_strm1_data        ;
-    logic [`PE_STU_LANE_WIDTH_RANGE      ]       stOp__stu__lane_strm1_data_mask   ;
+    logic [`PE_STU_LANE_RESULT_RANGE     ]       stOp__stu__lane_strm1_data        ;
+    logic [`PE_STU_LANE_RESULT_RANGE     ]       stOp__stu__lane_strm1_data_mask   ;
     logic                                        stOp__stu__lane_strm1_data_valid  ;
  
     clocking cb_dut @(posedge clk);

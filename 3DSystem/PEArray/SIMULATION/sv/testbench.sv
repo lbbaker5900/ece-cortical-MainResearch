@@ -16,8 +16,9 @@
 
 program automatic test (
         // array of interfaces, one for each pe/lane/stream
-        std_pe_lane_ifc.TB_Sys2PeArray   Sys2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES],
-        pe_dma2mem_ifc.TB_Dma2Mem        Dma2Mem     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES],
+        std_pe_lane_ifc.TB_SysLane2PeArray   SysLane2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
+        std_pe_oob_ifc.TB_SysOob2PeArray     SysOob2PeArray  [`PE_ARRAY_NUM_OF_PE]                        ,
+        pe_dma2mem_ifc.TB_Dma2Mem            Dma2Mem         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
         
         input logic reset
         );
@@ -25,7 +26,7 @@ program automatic test (
     Environment env;
 
     initial begin
-        env = new ( Sys2PeArray, Dma2Mem );
+        env = new ( SysLane2PeArray, SysOob2PeArray, Dma2Mem );
         env.build();
         env.run();
         env.wrap_up();

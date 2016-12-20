@@ -1,4 +1,15 @@
 
+               // General control and status                                                 
+               .sys__pe__peId                      ( sys__pe__peId                   ),      
+               .sys__pe__allSynchronized           ( sys__pe__allSynchronized        ),      
+               .pe__sys__thisSynchronized          ( pe__sys__thisSynchronized       ),      
+               .pe__sys__ready                     ( pe__sys__ready                  ),      
+               .pe__sys__complete                  ( pe__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                 
+               .std__pe__oob_cntl                  ( std__pe__oob_cntl               ),      
+               .std__pe__oob_valid                 ( std__pe__oob_valid              ),      
+               .pe__std__oob_ready                 ( pe__std__oob_ready              ),      
+               .std__pe__oob_type                  ( std__pe__oob_type               ),      
                // Lane 0                 
                .pe__std__lane0_strm0_ready         ( pe__std__lane0_strm0_ready      ),      
                .std__pe__lane0_strm0_cntl          ( std__pe__lane0_strm0_cntl       ),      

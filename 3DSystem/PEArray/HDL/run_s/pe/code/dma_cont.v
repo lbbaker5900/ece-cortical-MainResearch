@@ -191,24 +191,24 @@ module dma_cont (
 
   input                                         stOp__dma__strm0_ready       ;
   output [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm0_cntl        ; 
-  output [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm0_data        ; 
-  output [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm0_data_mask   ; 
+  output [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data        ; 
+  output [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data_mask   ; 
   output                                        dma__stOp__strm0_data_valid  ; 
   input                                         stOp__dma__strm1_ready       ;
   output [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm1_cntl        ; 
-  output [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm1_data        ; 
-  output [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm1_data_mask   ; 
+  output [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data        ; 
+  output [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data_mask   ; 
   output                                        dma__stOp__strm1_data_valid  ; 
 
   output                                        dma__stOp__strm0_ready       ;
   input [`DMA_CONT_STRM_CNTL_RANGE     ]        stOp__dma__strm0_cntl        ; 
-  input [`STREAMING_OP_DATA_WIDTH_RANGE]        stOp__dma__strm0_data        ; 
-  input [`STREAMING_OP_DATA_WIDTH_RANGE]        stOp__dma__strm0_data_mask   ; 
+  input [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm0_data        ; 
+  input [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm0_data_mask   ; 
   input                                         stOp__dma__strm0_data_valid  ; 
   output                                        dma__stOp__strm1_ready       ;
   input [`DMA_CONT_STRM_CNTL_RANGE     ]        stOp__dma__strm1_cntl        ; 
-  input [`STREAMING_OP_DATA_WIDTH_RANGE]        stOp__dma__strm1_data        ; 
-  input [`STREAMING_OP_DATA_WIDTH_RANGE]        stOp__dma__strm1_data_mask   ; 
+  input [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm1_data        ; 
+  input [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm1_data_mask   ; 
   input                                         stOp__dma__strm1_data_valid  ; 
 
 
@@ -296,12 +296,12 @@ module dma_cont (
   // Input FIFO from stOp
   wire                                        strm0_from_stOp_fifo_empty           ; 
   wire                                        strm0_from_stOp_fifo_almost_full     ; 
-  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       strm0_from_stOp_fifo_read_data       ; 
+  wire [`STREAMING_OP_DATA_RANGE      ]       strm0_from_stOp_fifo_read_data       ; 
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       strm0_from_stOp_fifo_read_cntl       ; 
 
   wire                                        strm1_from_stOp_fifo_empty           ; 
   wire                                        strm1_from_stOp_fifo_almost_full     ; 
-  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       strm1_from_stOp_fifo_read_data       ; 
+  wire [`STREAMING_OP_DATA_RANGE      ]       strm1_from_stOp_fifo_read_data       ; 
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       strm1_from_stOp_fifo_read_cntl       ; 
 
 
@@ -749,8 +749,8 @@ module dma_cont (
   //-----------------------
   // Stream 0
   reg  [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm0_cntl           ; 
-  reg  [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm0_data           ; 
-  reg  [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm0_data_mask      ; 
+  reg  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data           ; 
+  reg  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data_mask      ; 
   reg                                         dma__stOp__strm0_data_valid     ; 
 
   always @(posedge clk)
@@ -774,8 +774,8 @@ module dma_cont (
   //-----------------------
   // Stream 1
   reg  [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm1_cntl           ; 
-  reg  [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm1_data           ; 
-  reg  [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm1_data_mask      ; 
+  reg  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data           ; 
+  reg  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data_mask      ; 
   reg                                         dma__stOp__strm1_data_valid     ; 
 
   always @(posedge clk)

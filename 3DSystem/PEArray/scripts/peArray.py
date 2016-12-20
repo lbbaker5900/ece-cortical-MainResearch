@@ -352,7 +352,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; '
   pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; '
   pLine = pLine + '\n  reg                                             noc__cntl__dp_strmId     ; '
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE     ] noc__cntl__dp_data       ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data       ; '
   pLine = pLine + '\n  reg                                             noc__cntl__dp_valid      ; '
   pLine = pLine + '\n'
   pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__cp_cntl_p1       ; '
@@ -363,7 +363,7 @@ if __name__ == "__main__":
 
   pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__dp_cntl_p1       ; '
   pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type_p1       ; '
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE     ] noc__cntl__dp_data_p1       ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data_p1       ; '
   pLine = pLine + '\n  reg                                             noc__cntl__dp_valid_p1      ; '
   pLine = pLine + '\n'
 
@@ -1631,8 +1631,8 @@ if __name__ == "__main__":
       pLine = pLine + '\n  // Lane {0}, Stream {1}'.format(lane,strm)
       pLine = pLine + '\n  wire                                         sdp__std__lane{0}_strm{1}_ready         ;'.format(lane,strm)
       pLine = pLine + '\n  wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       std__sdp__lane{0}_strm{1}_cntl          ;'.format(lane,strm)
-      pLine = pLine + '\n  wire  [`STREAMING_OP_DATA_WIDTH_RANGE]       std__sdp__lane{0}_strm{1}_data          ;'.format(lane,strm)
-      pLine = pLine + '\n  wire  [`STREAMING_OP_DATA_WIDTH_RANGE]       std__sdp__lane{0}_strm{1}_data_mask     ;'.format(lane,strm)
+      pLine = pLine + '\n  wire  [`STREAMING_OP_DATA_RANGE      ]       std__sdp__lane{0}_strm{1}_data          ;'.format(lane,strm)
+      pLine = pLine + '\n  wire  [`STREAMING_OP_DATA_RANGE      ]       std__sdp__lane{0}_strm{1}_data_mask     ;'.format(lane,strm)
       pLine = pLine + '\n  wire                                         std__sdp__lane{0}_strm{1}_data_valid    ;'.format(lane,strm)
     pLine = pLine + '\n'
 
@@ -2238,7 +2238,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n   output [`PE_PE_ID_RANGE                         ] cntl__noc__dp_peId       ; '.format(lane)
   pLine = pLine + '\n   output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__dp_laneId     ; '.format(lane)
   pLine = pLine + '\n   output                                            cntl__noc__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   output[`STREAMING_OP_CNTL_DATA_WIDTH_RANGE      ] cntl__noc__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   output[`STREAMING_OP_CNTL_DATA_RANGE            ] cntl__noc__dp_data       ; '.format(lane)
   pLine = pLine + '\n   output                                            cntl__noc__dp_valid      ; '.format(lane)
   pLine = pLine + '\n   // Aggregate Data-path (dp) from NoC '.format(lane)
   pLine = pLine + '\n   output                                            cntl__noc__dp_ready      ; '.format(lane)
@@ -2246,7 +2246,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; '.format(lane)
   pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; '.format(lane)
   pLine = pLine + '\n   input                                             noc__cntl__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   input [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE      ] noc__cntl__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   input [`STREAMING_OP_CNTL_DATA_RANGE            ] noc__cntl__dp_data       ; '.format(lane)
   pLine = pLine + '\n   input                                             noc__cntl__dp_valid      ; '.format(lane)
   pLine = pLine + '\n'
   for lane in range (0, numOfExecLanes):
@@ -2254,13 +2254,13 @@ if __name__ == "__main__":
     pLine = pLine + '\n   input                                            sdp__cntl__lane{0}_strm_ready      ; '.format(lane)
     pLine = pLine + '\n   output[`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]      cntl__sdp__lane{0}_strm_cntl       ; '.format(lane)
     pLine = pLine + '\n   output                                           cntl__sdp__lane{0}_strm_id         ; '.format(lane)
-    pLine = pLine + '\n   output[`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]      cntl__sdp__lane{0}_strm_data       ; '.format(lane)
+    pLine = pLine + '\n   output[`STREAMING_OP_CNTL_DATA_RANGE      ]      cntl__sdp__lane{0}_strm_data       ; '.format(lane)
     pLine = pLine + '\n   output                                           cntl__sdp__lane{0}_strm_data_valid ; '.format(lane)
     pLine = pLine + '\n   // lane{0} to NoC '.format(lane)
     pLine = pLine + '\n   output                                           cntl__sdp__lane{0}_strm_ready      ; '.format(lane)
     pLine = pLine + '\n   input [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]      sdp__cntl__lane{0}_strm_cntl       ; '.format(lane)
     pLine = pLine + '\n   input                                            sdp__cntl__lane{0}_strm_id         ; '.format(lane)
-    pLine = pLine + '\n   input [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]      sdp__cntl__lane{0}_strm_data       ; '.format(lane)
+    pLine = pLine + '\n   input [`STREAMING_OP_CNTL_DATA_RANGE      ]      sdp__cntl__lane{0}_strm_data       ; '.format(lane)
     pLine = pLine + '\n   input                                            sdp__cntl__lane{0}_strm_data_valid ; '.format(lane)
   pLine = pLine + '\n'
 
@@ -2301,7 +2301,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n   reg  [`PE_PE_ID_RANGE                         ] cntl__noc__dp_peId       ; '.format(lane)
   pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__dp_laneId     ; '.format(lane)
   pLine = pLine + '\n   reg                                             cntl__noc__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE     ] cntl__noc__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_DATA_RANGE           ] cntl__noc__dp_data       ; '.format(lane)
   pLine = pLine + '\n   reg                                             cntl__noc__dp_valid      ; '.format(lane)
   # We have a big mux at the output so add a register stage
   pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] cntl__noc__dp_cntl_p1    ; '.format(lane)
@@ -2316,7 +2316,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; '.format(lane)
   pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; '.format(lane)
   pLine = pLine + '\n   wire                                            noc__cntl__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE     ] noc__cntl__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data       ; '.format(lane)
   pLine = pLine + '\n   wire                                            noc__cntl__dp_valid      ; '.format(lane)
   pLine = pLine + '\n'
 
@@ -2332,13 +2332,13 @@ if __name__ == "__main__":
     pLine = pLine + '\n   wire                                            sdp__cntl__lane{0}_strm_ready      ; '.format(lane)
     pLine = pLine + '\n   reg[`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]        cntl__sdp__lane{0}_strm_cntl       ; '.format(lane)
     pLine = pLine + '\n   reg                                             cntl__sdp__lane{0}_strm_id         ; '.format(lane)
-    pLine = pLine + '\n   reg[`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]        cntl__sdp__lane{0}_strm_data       ; '.format(lane)
+    pLine = pLine + '\n   reg[`STREAMING_OP_CNTL_DATA_RANGE      ]        cntl__sdp__lane{0}_strm_data       ; '.format(lane)
     pLine = pLine + '\n   reg                                             cntl__sdp__lane{0}_strm_data_valid ; '.format(lane)
     pLine = pLine + '\n   // lane{0} to NoC '.format(lane)
     pLine = pLine + '\n   wire                                            cntl__sdp__lane{0}_strm_ready      ; '.format(lane)
     pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]      sdp__cntl__lane{0}_strm_cntl       ; '.format(lane)
     pLine = pLine + '\n   wire                                            sdp__cntl__lane{0}_strm_id         ; '.format(lane)
-    pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]      sdp__cntl__lane{0}_strm_data       ; '.format(lane)
+    pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE      ]      sdp__cntl__lane{0}_strm_data       ; '.format(lane)
     pLine = pLine + '\n   wire                                            sdp__cntl__lane{0}_strm_data_valid ; '.format(lane)
   pLine = pLine + '\n'
 
@@ -2438,7 +2438,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n   wire [`PE_PE_ID_RANGE                         ] cntl__noc__dp_peId       ; '.format(lane)
   pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__dp_laneId     ; '.format(lane)
   pLine = pLine + '\n   wire                                            cntl__noc__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE     ] cntl__noc__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] cntl__noc__dp_data       ; '.format(lane)
   pLine = pLine + '\n   wire                                            cntl__noc__dp_valid      ; '.format(lane)
   pLine = pLine + '\n   // Aggregate Data-Path (dp) from NoC '.format(lane)
   pLine = pLine + '\n   wire                                            cntl__noc__dp_ready      ; '.format(lane)
@@ -2446,7 +2446,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; '.format(lane)
   pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; '.format(lane)
   pLine = pLine + '\n   wire                                            noc__cntl__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE     ] noc__cntl__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data       ; '.format(lane)
   pLine = pLine + '\n   wire                                            noc__cntl__dp_valid      ; '.format(lane)
   pLine = pLine + '\n'
 
@@ -2463,13 +2463,13 @@ if __name__ == "__main__":
     pLine = pLine + '\n   wire                                            sdp__cntl__lane{0}_strm_ready      ; '.format(lane)
     pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]      cntl__sdp__lane{0}_strm_cntl       ; '.format(lane)
     pLine = pLine + '\n   wire                                            cntl__sdp__lane{0}_strm_id         ; '.format(lane)
-    pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]      cntl__sdp__lane{0}_strm_data       ; '.format(lane)
+    pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE      ]      cntl__sdp__lane{0}_strm_data       ; '.format(lane)
     pLine = pLine + '\n   wire                                            cntl__sdp__lane{0}_strm_data_valid ; '.format(lane)
     pLine = pLine + '\n   // lane{0} to NoC '.format(lane)
     pLine = pLine + '\n   wire                                            cntl__sdp__lane{0}_strm_ready      ; '.format(lane)
     pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]      sdp__cntl__lane{0}_strm_cntl       ; '.format(lane)
     pLine = pLine + '\n   wire                                            sdp__cntl__lane{0}_strm_id         ; '.format(lane)
-    pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]      sdp__cntl__lane{0}_strm_data       ; '.format(lane)
+    pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE      ]      sdp__cntl__lane{0}_strm_data       ; '.format(lane)
     pLine = pLine + '\n   wire                                            sdp__cntl__lane{0}_strm_data_valid ; '.format(lane)
   pLine = pLine + '\n'
 
@@ -2508,7 +2508,7 @@ if __name__ == "__main__":
     id = lane * numOfStrms + strm
     pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane{1}_fromStOp_strm_cntl                   ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  reg                                                         lane{1}_fromStOp_strm_id                     ;'.format(fifo,lane,strm,id) 
-    pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane{1}_fromStOp_strm_data                   ;'.format(fifo,lane,strm,id) 
+    pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane{1}_fromStOp_strm_data                   ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  reg                                                         lane{1}_fromStOp_strm_data_valid             ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  wire                                                        lane{1}_fromStOp_strm_ready                  ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  reg                                                         lane{1}_fromStOp_strm_fifo_read              ;'.format(fifo,lane,strm,id) 
@@ -2518,7 +2518,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire                                                        lane{1}_fromStOp_strm_fifo_read_data_valid   ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_RANGE]            lane{1}_fromStOp_strm_fifo_depth             ;'.format(fifo,lane,strm,id)
     pLine = pLine + '\n  wire                                                        lane{1}_fromStOp_strm_fifo_read_id           ;'.format(fifo,lane,strm,id) 
-    pLine = pLine + '\n  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane{1}_fromStOp_strm_fifo_read_data         ;'.format(fifo,lane,strm,id) 
+    pLine = pLine + '\n  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane{1}_fromStOp_strm_fifo_read_data         ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  wire                                                        lane{1}_fromStOp_strm_fifo_dma_pkt_available ;'.format(fifo,lane,strm,id)
     pLine = pLine + '\n  wire                                                        lane{1}_fromStOp_strm_fifo_data_available    ;'.format(fifo,lane,strm,id)
 
@@ -2681,7 +2681,7 @@ if __name__ == "__main__":
     id = lane * numOfStrms + strm
     pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane{1}_toStOp_strm_cntl                 ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  reg                                                         lane{1}_toStOp_strm_id                   ;'.format(fifo,lane,strm,id) 
-    pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane{1}_toStOp_strm_data                 ;'.format(fifo,lane,strm,id) 
+    pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane{1}_toStOp_strm_data                 ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  reg                                                         lane{1}_toStOp_strm_fifo_write           ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  wire                                                        lane{1}_toStOp_strm_ready                ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  wire                                                        lane{1}_toStOp_strm_fifo_read            ;'.format(fifo,lane,strm,id) 
@@ -2690,7 +2690,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire [`STREAMING_OP_CNTL_STOP_TO_NOC_FIFO_EOP_COUNT_RANGE ] lane{1}_toStOp_strm_fifo_eop_count       ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE                  ] lane{1}_toStOp_strm_fifo_read_cntl       ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  wire                                                        lane{1}_toStOp_strm_fifo_read_id         ;'.format(fifo,lane,strm,id) 
-    pLine = pLine + '\n  wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE                 ] lane{1}_toStOp_strm_fifo_read_data       ;'.format(fifo,lane,strm,id) 
+    pLine = pLine + '\n  wire [`STREAMING_OP_CNTL_DATA_RANGE                       ] lane{1}_toStOp_strm_fifo_read_data       ;'.format(fifo,lane,strm,id) 
     pLine = pLine + '\n  wire                                                        lane{1}_toStOp_strm_fifo_data_available  ;'.format(fifo,lane,strm,id)
 
   f.write(pLine)
@@ -3013,13 +3013,26 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
+    pLine = pLine + '\n            // General control and status                  ,'.format(pe) 
+    pLine = pLine + '\n            sys__pe{0}__peId                               ,'.format(pe) 
+    pLine = pLine + '\n            sys__pe{0}__allSynchronized                    ,'.format(pe) 
+    pLine = pLine + '\n            pe{0}__sys__thisSynchronized                   ,'.format(pe) 
+    pLine = pLine + '\n            pe{0}__sys__ready                              ,'.format(pe) 
+    pLine = pLine + '\n            pe{0}__sys__complete                           ,'.format(pe) 
+    #
+    pLine = pLine + '\n            // OOB controls how the lanes are interpreted  ,'.format(pe) 
+    pLine = pLine + '\n            std__pe{0}__oob_cntl                           ,'.format(pe) 
+    pLine = pLine + '\n            std__pe{0}__oob_valid                          ,'.format(pe) 
+    pLine = pLine + '\n            pe{0}__std__oob_ready                          ,'.format(pe) 
+    pLine = pLine + '\n            std__pe{0}__oob_type                           ,'.format(pe) 
+    #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
-        pLine = pLine + '\n            pe{1}__std__lane{0}_strm{2}_ready       ,'.format(lane,pe,strm)
-        pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_cntl        ,'.format(lane,pe,strm) 
-        pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_data        ,'.format(lane,pe,strm) 
-        pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_data_mask   ,'.format(lane,pe,strm) 
-        pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_data_valid  ,'.format(lane,pe,strm) 
+        pLine = pLine + '\n            pe{0}__std__lane{1}_strm{2}_ready       ,'.format(pe,lane,strm)
+        pLine = pLine + '\n            std__pe{0}__lane{1}_strm{2}_cntl        ,'.format(pe,lane,strm) 
+        pLine = pLine + '\n            std__pe{0}__lane{1}_strm{2}_data        ,'.format(pe,lane,strm) 
+        pLine = pLine + '\n            std__pe{0}__lane{1}_strm{2}_data_mask   ,'.format(pe,lane,strm) 
+        pLine = pLine + '\n            std__pe{0}__lane{1}_strm{2}_data_valid  ,'.format(pe,lane,strm) 
         pLine = pLine + '\n'
 
   f.write(pLine)
@@ -3029,13 +3042,26 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
+    pLine = pLine + '\n  // General control and status                                                  '.format(pe) 
+    pLine = pLine + '\n  input [`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
+    pLine = pLine + '\n  input                                         sys__pe{0}__allSynchronized     ;'.format(pe) 
+    pLine = pLine + '\n  output                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
+    pLine = pLine + '\n  output                                        pe{0}__sys__ready               ;'.format(pe) 
+    pLine = pLine + '\n  output                                        pe{0}__sys__complete            ;'.format(pe) 
+    #                                                                                                              
+    pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                  '.format(pe) 
+    pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe{0}__oob_cntl            ;'.format(pe) 
+    pLine = pLine + '\n  input                                         std__pe{0}__oob_valid           ;'.format(pe) 
+    pLine = pLine + '\n  output                                        pe{0}__std__oob_ready           ;'.format(pe) 
+    pLine = pLine + '\n  input [`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
+    #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
-        pLine = pLine + '\n  output                                       pe{1}__std__lane{0}_strm{2}_ready       ;'.format(lane,pe,strm)
-        pLine = pLine + '\n  input [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe{1}__lane{0}_strm{2}_cntl        ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  input [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data        ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  input [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data_mask   ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  input                                        std__pe{1}__lane{0}_strm{2}_data_valid  ;'.format(lane,pe,strm) 
+        pLine = pLine + '\n  output                                          pe{0}__std__lane{1}_strm{2}_ready       ;'.format(pe,lane,strm)
+        pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE      ]       std__pe{0}__lane{1}_strm{2}_cntl        ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       std__pe{0}__lane{1}_strm{2}_data        ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       std__pe{0}__lane{1}_strm{2}_data_mask   ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  input                                           std__pe{0}__lane{1}_strm{2}_data_valid  ;'.format(pe,lane,strm) 
         pLine = pLine + '\n'
 
   f.write(pLine)
@@ -3045,13 +3071,26 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
+    pLine = pLine + '\n  // General control and status                                                '.format(pe) 
+    pLine = pLine + '\n  wire[`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        sys__pe{0}__allSynchronized     ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        pe{0}__sys__ready               ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        pe{0}__sys__complete            ;'.format(pe) 
+    #                                                                                                            
+    pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                '.format(pe) 
+    pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe{0}__oob_cntl            ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        std__pe{0}__oob_valid           ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        pe{0}__std__oob_ready           ;'.format(pe) 
+    pLine = pLine + '\n  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
+    #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
-        pLine = pLine + '\n  wire                                        pe{1}__std__lane{0}_strm{2}_ready       ;'.format(lane,pe,strm)
-        pLine = pLine + '\n  wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe{1}__lane{0}_strm{2}_cntl        ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data        ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data_mask   ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  wire                                        std__pe{1}__lane{0}_strm{2}_data_valid  ;'.format(lane,pe,strm) 
+        pLine = pLine + '\n  wire                                        pe{0}__std__lane{1}_strm{2}_ready       ;'.format(pe,lane,strm)
+        pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE       ]   std__pe{0}__lane{1}_strm{2}_cntl        ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   std__pe{0}__lane{1}_strm{2}_data        ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   std__pe{0}__lane{1}_strm{2}_data_mask   ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  wire                                        std__pe{0}__lane{1}_strm{2}_data_valid  ;'.format(pe,lane,strm) 
         pLine = pLine + '\n'
      
   f.write(pLine)
@@ -3061,14 +3100,27 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
+    pLine = pLine + '\n               // General control and status                                                       '.format(pe,lane,strm) 
+    pLine = pLine + '\n               .sys__pe{0}__peId                      ( sys__pe{0}__peId                   ),      '.format(pe,lane,strm)
+    pLine = pLine + '\n               .sys__pe{0}__allSynchronized           ( sys__pe{0}__allSynchronized        ),      '.format(pe,lane,strm)
+    pLine = pLine + '\n               .pe{0}__sys__thisSynchronized          ( pe{0}__sys__thisSynchronized       ),      '.format(pe,lane,strm)
+    pLine = pLine + '\n               .pe{0}__sys__ready                     ( pe{0}__sys__ready                  ),      '.format(pe,lane,strm)
+    pLine = pLine + '\n               .pe{0}__sys__complete                  ( pe{0}__sys__complete               ),      '.format(pe,lane,strm)
+    #                                                                                                                                      
+    pLine = pLine + '\n               // OOB controls how the lanes are interpreted                                       '.format(pe,lane,strm) 
+    pLine = pLine + '\n               .std__pe{0}__oob_cntl                  ( std__pe{0}__oob_cntl               ),      '.format(pe,lane,strm)
+    pLine = pLine + '\n               .std__pe{0}__oob_valid                 ( std__pe{0}__oob_valid              ),      '.format(pe,lane,strm)
+    pLine = pLine + '\n               .pe{0}__std__oob_ready                 ( pe{0}__std__oob_ready              ),      '.format(pe,lane,strm)
+    pLine = pLine + '\n               .std__pe{0}__oob_type                  ( std__pe{0}__oob_type               ),      '.format(pe,lane,strm)
+    #
     for lane in range (0, numOfExecLanes):
-      pLine = pLine + '\n               // PE {1}, Lane {0}                 '.format(lane,pe)
+      pLine = pLine + '\n               // PE {0}, Lane {1}                 '.format(pe,lane)
       for strm in range (0, 2):
-        pLine = pLine + '\n               .pe{1}__std__lane{0}_strm{2}_ready         ( pe{1}__std__lane{0}_strm{2}_ready      ),      '.format(lane,pe,strm)
-        pLine = pLine + '\n               .std__pe{1}__lane{0}_strm{2}_cntl          ( std__pe{1}__lane{0}_strm{2}_cntl       ),      '.format(lane,pe,strm)
-        pLine = pLine + '\n               .std__pe{1}__lane{0}_strm{2}_data          ( std__pe{1}__lane{0}_strm{2}_data       ),      '.format(lane,pe,strm)
-        pLine = pLine + '\n               .std__pe{1}__lane{0}_strm{2}_data_valid    ( std__pe{1}__lane{0}_strm{2}_data_valid ),      '.format(lane,pe,strm)
-        pLine = pLine + '\n               .std__pe{1}__lane{0}_strm{2}_data_mask     ( std__pe{1}__lane{0}_strm{2}_data_mask  ),      '.format(lane,pe,strm)
+        pLine = pLine + '\n               .pe{0}__std__lane{1}_strm{2}_ready         ( pe{0}__std__lane{1}_strm{2}_ready      ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n               .std__pe{0}__lane{1}_strm{2}_cntl          ( std__pe{0}__lane{1}_strm{2}_cntl       ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n               .std__pe{0}__lane{1}_strm{2}_data          ( std__pe{0}__lane{1}_strm{2}_data       ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n               .std__pe{0}__lane{1}_strm{2}_data_valid    ( std__pe{0}__lane{1}_strm{2}_data_valid ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n               .std__pe{0}__lane{1}_strm{2}_data_mask     ( std__pe{0}__lane{1}_strm{2}_data_mask  ),      '.format(pe,lane,strm)
         pLine = pLine + '\n'
                                              
   f.write(pLine)
@@ -3078,13 +3130,25 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
+    #
+    pLine = pLine + '\n  assign   pe_inst[{0}].sys__pe__peId               =  sys__pe{0}__peId                           ;'.format(pe) 
+    pLine = pLine + '\n  assign   pe_inst[{0}].sys__pe__allSynchronized    =  sys__pe{0}__allSynchronized                ;'.format(pe) 
+    pLine = pLine + '\n  assign   pe{0}__sys__thisSynchronized             =  pe_inst[{0}].pe__sys__thisSynchronized     ;'.format(pe)
+    pLine = pLine + '\n  assign   pe{0}__sys__ready                        =  pe_inst[{0}].pe__sys__ready                ;'.format(pe)
+    pLine = pLine + '\n  assign   pe{0}__sys__complete                     =  pe_inst[{0}].pe__sys__complete             ;'.format(pe)
+    #
+    pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__oob_cntl           =  std__pe{0}__oob_cntl                       ;'.format(pe) 
+    pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__oob_valid          =  std__pe{0}__oob_valid                      ;'.format(pe) 
+    pLine = pLine + '\n  assign   pe{0}__std__oob_ready                    =  pe_inst[{0}].pe__std__oob_ready            ;'.format(pe)
+    pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__oob_type           =  std__pe{0}__oob_type                       ;'.format(pe) 
+    #
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
-        pLine = pLine + '\n  assign   pe{1}__std__lane{0}_strm{2}_ready                 =  pe_inst[{1}].pe__std__lane{0}_strm{2}_ready  ;'.format(lane,pe,strm)
-        pLine = pLine + '\n  assign   pe_inst[{1}].std__pe__lane{0}_strm{2}_cntl        =  std__pe{1}__lane{0}_strm{2}_cntl             ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  assign   pe_inst[{1}].std__pe__lane{0}_strm{2}_data        =  std__pe{1}__lane{0}_strm{2}_data             ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  assign   pe_inst[{1}].std__pe__lane{0}_strm{2}_data_mask   =  std__pe{1}__lane{0}_strm{2}_data_mask        ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  assign   pe_inst[{1}].std__pe__lane{0}_strm{2}_data_valid  =  std__pe{1}__lane{0}_strm{2}_data_valid       ;'.format(lane,pe,strm) 
+        pLine = pLine + '\n  assign   pe{0}__std__lane{1}_strm{2}_ready                 =  pe_inst[{0}].pe__std__lane{1}_strm{2}_ready  ;'.format(pe,lane,strm)
+        pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__lane{1}_strm{2}_cntl        =  std__pe{0}__lane{1}_strm{2}_cntl             ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__lane{1}_strm{2}_data        =  std__pe{0}__lane{1}_strm{2}_data             ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__lane{1}_strm{2}_data_mask   =  std__pe{0}__lane{1}_strm{2}_data_mask        ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__lane{1}_strm{2}_data_valid  =  std__pe{0}__lane{1}_strm{2}_data_valid       ;'.format(pe,lane,strm) 
         pLine = pLine + '\n'
 
   f.write(pLine)
@@ -3110,7 +3174,21 @@ if __name__ == "__main__":
   f = open('../HDL/common/pe_stack_bus_downstream_ports.vh', 'w')
   pLine = ""
 
+  pLine = pLine + '\n            // General control and status               ,' 
+  pLine = pLine + '\n            sys__pe__peId                               ,' 
+  pLine = pLine + '\n            sys__pe__allSynchronized                    ,' 
+  pLine = pLine + '\n            pe__sys__thisSynchronized                   ,' 
+  pLine = pLine + '\n            pe__sys__ready                              ,' 
+  pLine = pLine + '\n            pe__sys__complete                           ,' 
+  #
+  pLine = pLine + '\n            // OOB controls how the lanes are interpreted  ,'.format(lane,pe,strm) 
+  pLine = pLine + '\n            std__pe__oob_cntl                           ,'.format(lane,pe,strm) 
+  pLine = pLine + '\n            std__pe__oob_valid                          ,'.format(lane,pe,strm) 
+  pLine = pLine + '\n            pe__std__oob_ready                          ,'.format(lane,pe,strm) 
+  pLine = pLine + '\n            std__pe__oob_type                           ,'.format(lane,pe,strm) 
+  #
   for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n            // Lane operand bus                 '.format(lane)
     pLine = pLine + '\n            pe__std__lane{0}_strm0_ready       ,'.format(lane)
     pLine = pLine + '\n            std__pe__lane{0}_strm0_cntl        ,'.format(lane) 
     pLine = pLine + '\n            std__pe__lane{0}_strm0_data        ,'.format(lane) 
@@ -3129,17 +3207,31 @@ if __name__ == "__main__":
   f = open('../HDL/common/pe_stack_bus_downstream_port_declarations.vh', 'w')
   pLine = ""
 
+  pLine = pLine + '\n  // General control and status                                               ' 
+  pLine = pLine + '\n  input [`PE_PE_ID_RANGE                 ]      sys__pe__peId                ;' 
+  pLine = pLine + '\n  input                                         sys__pe__allSynchronized     ;' 
+  pLine = pLine + '\n  output                                        pe__sys__thisSynchronized    ;' 
+  pLine = pLine + '\n  output                                        pe__sys__ready               ;' 
+  pLine = pLine + '\n  output                                        pe__sys__complete            ;' 
+  #
+  pLine = pLine + '\n  // OOB controls how the lanes are interpreted                               '.format(lane,pe,strm) 
+  pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;'.format(lane,pe,strm) 
+  pLine = pLine + '\n  input                                         std__pe__oob_valid           ;'.format(lane,pe,strm) 
+  pLine = pLine + '\n  output                                        pe__std__oob_ready           ;'.format(lane,pe,strm) 
+  pLine = pLine + '\n  input [`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe__oob_type            ;'.format(lane,pe,strm) 
+  #
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  output                                       pe__std__lane{0}_strm0_ready       ;'.format(lane)
-    pLine = pLine + '\n  input [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe__lane{0}_strm0_cntl        ;'.format(lane) 
-    pLine = pLine + '\n  input [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe__lane{0}_strm0_data        ;'.format(lane) 
-    pLine = pLine + '\n  input [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe__lane{0}_strm0_data_mask   ;'.format(lane) 
-    pLine = pLine + '\n  input                                        std__pe__lane{0}_strm0_data_valid  ;'.format(lane) 
-    pLine = pLine + '\n  output                                       pe__std__lane{0}_strm1_ready       ;'.format(lane)
-    pLine = pLine + '\n  input [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe__lane{0}_strm1_cntl        ;'.format(lane) 
-    pLine = pLine + '\n  input [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe__lane{0}_strm1_data        ;'.format(lane) 
-    pLine = pLine + '\n  input [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe__lane{0}_strm1_data_mask   ;'.format(lane) 
-    pLine = pLine + '\n  input                                        std__pe__lane{0}_strm1_data_valid  ;'.format(lane) 
+    pLine = pLine + '\n  // Lane operand bus                 '.format(lane)
+    pLine = pLine + '\n  output                                           pe__std__lane{0}_strm0_ready       ;'.format(lane)
+    pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE       ]       std__pe__lane{0}_strm0_cntl        ;'.format(lane) 
+    pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       std__pe__lane{0}_strm0_data        ;'.format(lane) 
+    pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       std__pe__lane{0}_strm0_data_mask   ;'.format(lane) 
+    pLine = pLine + '\n  input                                            std__pe__lane{0}_strm0_data_valid  ;'.format(lane) 
+    pLine = pLine + '\n  output                                           pe__std__lane{0}_strm1_ready       ;'.format(lane)
+    pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE       ]       std__pe__lane{0}_strm1_cntl        ;'.format(lane) 
+    pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       std__pe__lane{0}_strm1_data        ;'.format(lane) 
+    pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       std__pe__lane{0}_strm1_data_mask   ;'.format(lane) 
+    pLine = pLine + '\n  input                                            std__pe__lane{0}_strm1_data_valid  ;'.format(lane) 
     pLine = pLine + '\n'
 
   f.write(pLine)
@@ -3148,17 +3240,31 @@ if __name__ == "__main__":
   f = open('../HDL/common/pe_stack_bus_downstream_instance_wires.vh', 'w')
   pLine = ""
 
+  pLine = pLine + '\n  // General control and status                                             ' 
+  pLine = pLine + '\n  wire [`PE_PE_ID_RANGE                 ]     sys__pe__peId                ;' 
+  pLine = pLine + '\n  wire                                        sys__pe__allSynchronized     ;' 
+  pLine = pLine + '\n  wire                                        pe__sys__thisSynchronized    ;' 
+  pLine = pLine + '\n  wire                                        pe__sys__ready               ;' 
+  pLine = pLine + '\n  wire                                        pe__sys__complete            ;' 
+  #
+  pLine = pLine + '\n  // OOB controls how the lanes are interpreted                             ' 
+  pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;' 
+  pLine = pLine + '\n  wire                                        std__pe__oob_valid           ;' 
+  pLine = pLine + '\n  wire                                        pe__std__oob_ready           ;' 
+  pLine = pLine + '\n  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe__oob_type            ;' 
+  #
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  wire                                        pe__std__lane{0}_strm0_ready       ;'.format(lane)
-    pLine = pLine + '\n  wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe__lane{0}_strm0_cntl        ;'.format(lane) 
-    pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe__lane{0}_strm0_data        ;'.format(lane) 
-    pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe__lane{0}_strm0_data_mask   ;'.format(lane) 
-    pLine = pLine + '\n  wire                                        std__pe__lane{0}_strm0_data_valid  ;'.format(lane) 
-    pLine = pLine + '\n  wire                                        pe__std__lane{0}_strm1_ready       ;'.format(lane)
-    pLine = pLine + '\n  wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe__lane{0}_strm1_cntl        ;'.format(lane) 
-    pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe__lane{0}_strm1_data        ;'.format(lane) 
-    pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe__lane{0}_strm1_data_mask   ;'.format(lane) 
-    pLine = pLine + '\n  wire                                        std__pe__lane{0}_strm1_data_valid  ;'.format(lane) 
+    pLine = pLine + '\n  // Lane operand bus                 '.format(lane)
+    pLine = pLine + '\n  wire                                           pe__std__lane{0}_strm0_ready       ;'.format(lane)
+    pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE       ]      std__pe__lane{0}_strm0_cntl        ;'.format(lane) 
+    pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]      std__pe__lane{0}_strm0_data        ;'.format(lane) 
+    pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]      std__pe__lane{0}_strm0_data_mask   ;'.format(lane) 
+    pLine = pLine + '\n  wire                                           std__pe__lane{0}_strm0_data_valid  ;'.format(lane) 
+    pLine = pLine + '\n  wire                                           pe__std__lane{0}_strm1_ready       ;'.format(lane)
+    pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE       ]      std__pe__lane{0}_strm1_cntl        ;'.format(lane) 
+    pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]      std__pe__lane{0}_strm1_data        ;'.format(lane) 
+    pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]      std__pe__lane{0}_strm1_data_mask   ;'.format(lane) 
+    pLine = pLine + '\n  wire                                           std__pe__lane{0}_strm1_data_valid  ;'.format(lane) 
 
   f.write(pLine)
   f.close()
@@ -3166,6 +3272,19 @@ if __name__ == "__main__":
   f = open('../HDL/common/pe_stack_bus_downstream_instance_ports.vh', 'w')
   pLine = ""
 
+  pLine = pLine + '\n               // General control and status                                                 '
+  pLine = pLine + '\n               .sys__pe__peId                      ( sys__pe__peId                   ),      '
+  pLine = pLine + '\n               .sys__pe__allSynchronized           ( sys__pe__allSynchronized        ),      '
+  pLine = pLine + '\n               .pe__sys__thisSynchronized          ( pe__sys__thisSynchronized       ),      '
+  pLine = pLine + '\n               .pe__sys__ready                     ( pe__sys__ready                  ),      '
+  pLine = pLine + '\n               .pe__sys__complete                  ( pe__sys__complete               ),      '
+
+  pLine = pLine + '\n               // OOB controls how the lanes are interpreted                                 '
+  pLine = pLine + '\n               .std__pe__oob_cntl                  ( std__pe__oob_cntl               ),      '
+  pLine = pLine + '\n               .std__pe__oob_valid                 ( std__pe__oob_valid              ),      '
+  pLine = pLine + '\n               .pe__std__oob_ready                 ( pe__std__oob_ready              ),      '
+  pLine = pLine + '\n               .std__pe__oob_type                  ( std__pe__oob_type               ),      '
+  #
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n               // Lane {0}                 '.format(lane)
     for strm in range (0, 2):
@@ -3200,11 +3319,11 @@ if __name__ == "__main__":
 
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
-      pLine = pLine + '\n  input                                         stOp__sti__lane{0}_strm{1}_ready       ;'.format(lane,strm)
-      pLine = pLine + '\n  output [`DMA_CONT_STRM_CNTL_RANGE     ]       sti__stOp__lane{0}_strm{1}_cntl        ;'.format(lane,strm) 
-      pLine = pLine + '\n  output [`STREAMING_OP_DATA_WIDTH_RANGE]       sti__stOp__lane{0}_strm{1}_data        ;'.format(lane,strm) 
-      pLine = pLine + '\n  output [`STREAMING_OP_DATA_WIDTH_RANGE]       sti__stOp__lane{0}_strm{1}_data_mask   ;'.format(lane,strm) 
-      pLine = pLine + '\n  output                                        sti__stOp__lane{0}_strm{1}_data_valid  ;'.format(lane,strm) 
+      pLine = pLine + '\n  input                                             stOp__sti__lane{0}_strm{1}_ready       ;'.format(lane,strm)
+      pLine = pLine + '\n  output [`COMMON_STD_INTF_CNTL_RANGE       ]       sti__stOp__lane{0}_strm{1}_cntl        ;'.format(lane,strm) 
+      pLine = pLine + '\n  output [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       sti__stOp__lane{0}_strm{1}_data        ;'.format(lane,strm) 
+      pLine = pLine + '\n  output [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       sti__stOp__lane{0}_strm{1}_data_mask   ;'.format(lane,strm) 
+      pLine = pLine + '\n  output                                            sti__stOp__lane{0}_strm{1}_data_valid  ;'.format(lane,strm) 
       pLine = pLine + '\n'
 
   f.write(pLine)
@@ -3230,11 +3349,11 @@ if __name__ == "__main__":
 
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
-      pLine = pLine + '\n  wire                                        stOp__sti__lane{0}_strm{1}_ready       ;'.format(lane,strm)
-      pLine = pLine + '\n  wire [`DMA_CONT_STRM_CNTL_RANGE     ]       sti__stOp__lane{0}_strm{1}_cntl        ;'.format(lane,strm) 
-      pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       sti__stOp__lane{0}_strm{1}_data        ;'.format(lane,strm) 
-      pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       sti__stOp__lane{0}_strm{1}_data_mask   ;'.format(lane,strm) 
-      pLine = pLine + '\n  wire                                        sti__stOp__lane{0}_strm{1}_data_valid  ;'.format(lane,strm) 
+      pLine = pLine + '\n  wire                                            stOp__sti__lane{0}_strm{1}_ready       ;'.format(lane,strm)
+      pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE       ]       sti__stOp__lane{0}_strm{1}_cntl        ;'.format(lane,strm) 
+      pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       sti__stOp__lane{0}_strm{1}_data        ;'.format(lane,strm) 
+      pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       sti__stOp__lane{0}_strm{1}_data_mask   ;'.format(lane,strm) 
+      pLine = pLine + '\n  wire                                            sti__stOp__lane{0}_strm{1}_data_valid  ;'.format(lane,strm) 
       pLine = pLine + '\n'
       
   f.write(pLine)

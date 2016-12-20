@@ -25,12 +25,12 @@
 module pe (
 
             // PE core interface
-            ready             , // ready to start streaming. Goes active when outside interfaces can start streaming
-            complete          ,
+            //ready             , // ready to start streaming. Goes active when outside interfaces can start streaming
+            //complete          ,
 
             // General system signals
-            sys__pe__allSynchronized  ,  // all PE streams are complete
-            pe__sys__thisSynchronized ,  // this PE's streams are complete
+            //sys__pe__allSynchronized  ,  // all PE streams are complete
+            //pe__sys__thisSynchronized ,  // this PE's streams are complete
                           
              //-------------------------------
             // Stack Bus - Downstream
@@ -43,7 +43,7 @@ module pe (
             `include "noc_cntl_noc_ports.vh"
             //
  
-            peId             ,
+            //peId             ,
             clk              ,
             reset_poweron    
  
@@ -51,14 +51,14 @@ module pe (
 
   input                      clk            ;
   input                      reset_poweron  ;
-  input [`PE_PE_ID_RANGE   ] peId           ; 
+  //input [`PE_PE_ID_RANGE   ] sys__pe__peId  ; 
 
-  input                      sys__pe__allSynchronized  ;  // all PE streams are complete
-  output                     pe__sys__thisSynchronized ;  // this PE's streams are complete
+  //input                      sys__pe__allSynchronized  ;  // all PE streams are complete
+  //output                     pe__sys__thisSynchronized ;  // this PE's streams are complete
    
   // interface to PE core
-  output      ready             ; // ready to start streaming
-  output      complete          ;
+  //output      ready             ; // ready to start streaming
+  //output      complete          ;
 
 
   //-------------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ module pe (
   // 
   `include "pe_simd_instance_wires.vh"
 
-
+  wire [`PE_PE_ID_RANGE     ]     peId = sys__pe__peId   ;
 
 
 
@@ -181,8 +181,8 @@ module pe (
   streamingOps_cntl streamingOps_cntl (
 
                           // PE core interface
-                          .ready             ( ready     ), // ready to start streaming
-                          .complete          ( complete  ),  // FIXME
+                          .ready             ( pe__sys__ready     ), // ready to start streaming
+                          .complete          ( pe__sys__complete  ),  // FIXME
                           
                           // General system signals
                           .sys__pe__allSynchronized  (sys__pe__allSynchronized ),  // all PE streams are complete
@@ -294,24 +294,24 @@ module pe (
         wire                                         stOp__noc__strm_ready       ;
         wire  [`DMA_CONT_STRM_CNTL_RANGE          ]  noc__stOp__strm_cntl        ; 
         wire                                         noc__stOp__strm_id          ; 
-        wire  [`STREAMING_OP_DATA_WIDTH_RANGE     ]  noc__stOp__strm_data        ; 
+        wire  [`STREAMING_OP_DATA_RANGE           ]  noc__stOp__strm_data        ; 
         wire                                         noc__stOp__strm_data_valid  ; 
 
         wire                                         noc__stOp__strm_ready       ;
         wire  [`DMA_CONT_STRM_CNTL_RANGE          ]  stOp__noc__strm_cntl        ; 
         wire                                         stOp__noc__strm_id          ; 
-        wire  [`STREAMING_OP_DATA_WIDTH_RANGE     ]  stOp__noc__strm_data        ; 
+        wire  [`STREAMING_OP_DATA_RANGE           ]  stOp__noc__strm_data        ; 
         wire                                         stOp__noc__strm_data_valid  ; 
 
         wire                                         stOp__sti__strm0_ready       ;
         wire  [`DMA_CONT_STRM_CNTL_RANGE          ]  sti__stOp__strm0_cntl        ; 
-        wire  [`STREAMING_OP_DATA_WIDTH_RANGE     ]  sti__stOp__strm0_data        ; 
-        wire  [`STREAMING_OP_DATA_WIDTH_RANGE     ]  sti__stOp__strm0_data_mask   ; 
+        wire  [`STREAMING_OP_DATA_RANGE           ]  sti__stOp__strm0_data        ; 
+        wire  [`STREAMING_OP_DATA_RANGE           ]  sti__stOp__strm0_data_mask   ; 
         wire                                         sti__stOp__strm0_data_valid  ; 
         wire                                         stOp__sti__strm1_ready       ;
         wire  [`DMA_CONT_STRM_CNTL_RANGE          ]  sti__stOp__strm1_cntl        ; 
-        wire  [`STREAMING_OP_DATA_WIDTH_RANGE     ]  sti__stOp__strm1_data        ; 
-        wire  [`STREAMING_OP_DATA_WIDTH_RANGE     ]  sti__stOp__strm1_data_mask   ; 
+        wire  [`STREAMING_OP_DATA_RANGE           ]  sti__stOp__strm1_data        ; 
+        wire  [`STREAMING_OP_DATA_RANGE           ]  sti__stOp__strm1_data_mask   ; 
         wire                                         sti__stOp__strm1_data_valid  ; 
 
         streamingOps_datapath streamingOps_datapath (

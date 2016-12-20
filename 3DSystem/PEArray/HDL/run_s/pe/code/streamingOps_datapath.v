@@ -220,26 +220,26 @@ module streamingOps_datapath (
   output                                       stOp__noc__strm_ready       ;
   input [`DMA_CONT_STRM_CNTL_RANGE     ]       noc__stOp__strm_cntl        ; 
   input                                        noc__stOp__strm_id          ; 
-  input [`STREAMING_OP_DATA_WIDTH_RANGE]       noc__stOp__strm_data        ; 
+  input [`STREAMING_OP_DATA_RANGE      ]       noc__stOp__strm_data        ; 
   input                                        noc__stOp__strm_data_valid  ; 
   // to NoC
   input                                        noc__stOp__strm_ready       ;
   output[`DMA_CONT_STRM_CNTL_RANGE     ]       stOp__noc__strm_cntl        ; 
   output                                       stOp__noc__strm_id          ; 
-  output[`STREAMING_OP_DATA_WIDTH_RANGE]       stOp__noc__strm_data        ; 
+  output[`STREAMING_OP_DATA_RANGE      ]       stOp__noc__strm_data        ; 
   output                                       stOp__noc__strm_data_valid  ; 
 
   //-------------------------------------------------------------------------------------------------
   // Interface to Downstream Stack bus
   output                                       stOp__sti__strm0_ready       ;
   input [`DMA_CONT_STRM_CNTL_RANGE     ]       sti__stOp__strm0_cntl        ; 
-  input [`STREAMING_OP_DATA_WIDTH_RANGE]       sti__stOp__strm0_data        ; 
-  input [`STREAMING_OP_DATA_WIDTH_RANGE]       sti__stOp__strm0_data_mask   ; 
+  input [`STREAMING_OP_DATA_RANGE      ]       sti__stOp__strm0_data        ; 
+  input [`STREAMING_OP_DATA_RANGE      ]       sti__stOp__strm0_data_mask   ; 
   input                                        sti__stOp__strm0_data_valid  ; 
   output                                       stOp__sti__strm1_ready       ;
   input [`DMA_CONT_STRM_CNTL_RANGE     ]       sti__stOp__strm1_cntl        ; 
-  input [`STREAMING_OP_DATA_WIDTH_RANGE]       sti__stOp__strm1_data        ; 
-  input [`STREAMING_OP_DATA_WIDTH_RANGE]       sti__stOp__strm1_data_mask   ; 
+  input [`STREAMING_OP_DATA_RANGE      ]       sti__stOp__strm1_data        ; 
+  input [`STREAMING_OP_DATA_RANGE      ]       sti__stOp__strm1_data_mask   ; 
   input                                        sti__stOp__strm1_data_valid  ; 
 
   //-------------------------------------------------------------------------------------------------
@@ -284,25 +284,25 @@ module streamingOps_datapath (
 
   wire                                         stOp__dma__strm0_ready       ;
   wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm0_cntl        ; 
-  wire  [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm0_data        ; 
-  wire  [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm0_data_mask   ; 
+  wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data        ; 
+  wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data_mask   ; 
   wire                                         dma__stOp__strm0_data_valid  ; 
   wire                                         stOp__dma__strm1_ready       ;
   wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm1_cntl        ; 
-  wire  [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm1_data        ; 
-  wire  [`STREAMING_OP_DATA_WIDTH_RANGE]       dma__stOp__strm1_data_mask   ; 
+  wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data        ; 
+  wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data_mask   ; 
   wire                                         dma__stOp__strm1_data_valid  ; 
 
   // FIXME: Only need one streaming bus from stOp
   wire                                         dma__stOp__strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]        stOp__dma__strm0_cntl        ; 
-  wire [`STREAMING_OP_DATA_WIDTH_RANGE]        stOp__dma__strm0_data        ; 
-  wire [`STREAMING_OP_DATA_WIDTH_RANGE]        stOp__dma__strm0_data_mask   ; 
+  wire [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm0_data        ; 
+  wire [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm0_data_mask   ; 
   wire                                         stOp__dma__strm0_data_valid  ; 
   wire                                         dma__stOp__strm1_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]        stOp__dma__strm1_cntl        ; 
-  wire [`STREAMING_OP_DATA_WIDTH_RANGE]        stOp__dma__strm1_data        ; 
-  wire [`STREAMING_OP_DATA_WIDTH_RANGE]        stOp__dma__strm1_data_mask   ; 
+  wire [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm1_data        ; 
+  wire [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm1_data_mask   ; 
   wire                                         stOp__dma__strm1_data_valid  ; 
 
   wire  [`STREAMING_OP_RESULT_RANGE   ]        stOp_result           ; 

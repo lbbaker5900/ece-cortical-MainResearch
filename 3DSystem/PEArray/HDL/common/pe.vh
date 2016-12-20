@@ -13,15 +13,17 @@
 // Stack Bus stream
 //------------------------------------------------
 
-`define PE_STD_LANE_WIDTH_MSB           31
-`define PE_STD_LANE_WIDTH_LSB            0
-`define PE_STD_LANE_WIDTH_SIZE           (`PE_STD_LANE_WIDTH_MSB - `PE_STD_LANE_WIDTH_LSB +1)
-`define PE_STD_LANE_WIDTH_RANGE           `PE_STD_LANE_WIDTH_MSB : `PE_STD_LANE_WIDTH_LSB
+`define PE_STD_LANE_DATA_WIDTH          `STACK_DOWN_INTF_STRM_DATA_WIDTH 
+`define PE_STD_LANE_DATA_MSB            `PE_STD_LANE_DATA_WIDTH-1
+`define PE_STD_LANE_DATA_LSB            0
+`define PE_STD_LANE_DATA_RANGE          `PE_STD_LANE_DATA_MSB : `PE_STD_LANE_DATA_LSB
 
-`define PE_STU_LANE_WIDTH_MSB           31
-`define PE_STU_LANE_WIDTH_LSB            0
-`define PE_STU_LANE_WIDTH_SIZE           (`PE_STU_LANE_WIDTH_MSB - `PE_STU_LANE_WIDTH_LSB +1)
-`define PE_STU_LANE_WIDTH_RANGE           `PE_STU_LANE_WIDTH_MSB : `PE_STU_LANE_WIDTH_LSB
+`define PE_STU_LANE_RESULT_WIDTH          `STACK_UP_INTF_LANE_RESULT_WIDTH 
+`define PE_STU_LANE_RESULT_MSB            `PE_STU_LANE_RESULT_WIDTH-1
+`define PE_STU_LANE_RESULT_LSB            0
+`define PE_STU_LANE_RESULT_RANGE          `PE_STU_LANE_RESULT_MSB : `PE_STU_LANE_RESULT_LSB
+
+
 
 //------------------------------------------------
 // PE Stack bus streams

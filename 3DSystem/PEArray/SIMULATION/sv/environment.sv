@@ -49,20 +49,23 @@ class Environment;
     event         drv2memP_ack     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ; 
 
     // an array of all stream interfaces in the system
-    vSys2PeArray_T  vSys2PeArray  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; // unpacked
+    vSysLane2PeArray_T  vSysLane2PeArray  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; // unpacked
+    vSysOob2PeArray_T   vSysOob2PeArray   [`PE_ARRAY_NUM_OF_PE]                         ;
 
     // an array of all dma to memory interfaces in the system
-    vDma2Mem_T      vDma2Mem      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; // unpacked
+    vDma2Mem_T          vDma2Mem          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; // unpacked
 
     //----------------------------------------------------------------------------------------------------
     // 
     function new (
                     // Retrieving the interface passed from the testbench in order to pass it to the required blocks.
-                    input vSys2PeArray_T vSys2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-                    input vDma2Mem_T     vDma2Mem     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]
+                    input vSysLane2PeArray_T vSysLane2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
+                    input vSysOob2PeArray_T  vSysOob2PeArray  [`PE_ARRAY_NUM_OF_PE]                        ,
+                    input vDma2Mem_T         vDma2Mem         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]
                 );
-        this.vSys2PeArray   =   vSys2PeArray   ;
-        this.vDma2Mem       =   vDma2Mem       ;
+        this.vSysLane2PeArray   =   vSysLane2PeArray   ;
+        this.vSysOob2PeArray    =   vSysOob2PeArray    ;
+        this.vDma2Mem           =   vDma2Mem           ;
     endfunction
 
     task build();                                 //This task passes the required interfaces, mailboxes, events to the objects of driver, generator and respective scoreboards.
@@ -71,16 +74,16 @@ class Environment;
             begin
                 for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                     begin
-                        vSys2PeArray[pe][lane].cb_test.std__pe__lane_strm0_data_valid  <= 1'b0;
-                        vSys2PeArray[pe][lane].cb_test.std__pe__lane_strm1_data_valid  <= 1'b0;
+                        vSysLane2PeArray[pe][lane].cb_test.std__pe__lane_strm0_data_valid  <= 1'b0;
+                        vSysLane2PeArray[pe][lane].cb_test.std__pe__lane_strm1_data_valid  <= 1'b0;
 
                         //$display("@%0t LEE: Create generators and drivers : {%0d,%0d,%0d}\n", $time,pe,lane,stream);
                         Id = {pe, lane};
                         gen2drv   = new () ;
                         drv2memP  = new () ;
                         // remember, each gen/drv tuple handle both streams in a lane
-                        gen     [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane], vSys2PeArray[pe][lane]                                     );
-                        drv     [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane],                            vSys2PeArray[pe][lane] , drv2memP, drv2memP_ack[pe][lane]  );
+                        gen     [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane], vSysLane2PeArray[pe][lane]                                     );
+                        drv     [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane],                            vSysLane2PeArray[pe][lane] , drv2memP, drv2memP_ack[pe][lane]  );
                         dma2mem [pe][lane]  = new ( Id,                                                                                      vDma2Mem    [pe][lane] , drv2memP, drv2memP_ack[pe][lane]  );
                     end
             end
@@ -110,8 +113,8 @@ class Environment;
         begin
             fork                                                          //These end after the generator triggers the event "final_operation" after generating the final transaction.
                 `include "TB_quiesce_all_generators.vh"
-                //@vSys2PeArray[0][0].cb_test;
-                //vSys2PeArray[0][0].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
+                //@vSysLane2PeArray[0][0].cb_test;
+                //vSysLane2PeArray[0][0].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
             join_none
         end
 

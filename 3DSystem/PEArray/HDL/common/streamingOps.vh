@@ -35,10 +35,11 @@
 //------------------------------------------------
 // STREAMING_OP_DATA_WIDTH width
 //------------------------------------------------
-`define STREAMING_OP_DATA_WIDTH_MSB           `STREAMING_OP_CNTL_DATA_WIDTH_MSB
-`define STREAMING_OP_DATA_WIDTH_LSB            0
-`define STREAMING_OP_DATA_WIDTH_SIZE           (`STREAMING_OP_DATA_WIDTH_MSB - `STREAMING_OP_DATA_WIDTH_LSB +1)
-`define STREAMING_OP_DATA_WIDTH_RANGE           `STREAMING_OP_DATA_WIDTH_MSB : `STREAMING_OP_DATA_WIDTH_LSB
+`define STREAMING_OP_DATA_WIDTH               `STREAMING_OP_CNTL_DATA_WIDTH
+`define STREAMING_OP_DATA_MSB                 `STREAMING_OP_CNTL_DATA_WIDTH-1
+`define STREAMING_OP_DATA_LSB                  0
+`define STREAMING_OP_DATA_SIZE                 (`STREAMING_OP_DATA_MSB - `STREAMING_OP_DATA_LSB +1)
+`define STREAMING_OP_DATA_RANGE                 `STREAMING_OP_DATA_MSB : `STREAMING_OP_DATA_LSB
 
 //------------------------------------------------
 // STREAMING_OP FIFO

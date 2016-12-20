@@ -65,12 +65,15 @@ class mem_checker;
                                 @(vP_mem.cb);
                                 if (vP_mem.cb.dma__memc__write_valid)
                                     begin
-                                        $display ($time,": INFO:MEM_CHECKER :: Write to memory {%d,%d} : Hex : %h, FP : %f\n", Id[0], Id[1], vP_mem.cb.dma__memc__write_data, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
+                                        $display ($time,": INFO:PASS:MEM_CHECKER :: Correct value Writen to memory {%d,%d} : Hex : %h, FP : %f\n", Id[0], Id[1], vP_mem.cb.dma__memc__write_data, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
                                         found = 1 ;
                                         // check for floating point within a tolerance
                                         // FIXME:
                                         if (($bitstoshortreal(vP_mem.cb.dma__memc__write_data) > sys_operation.resultLow) && ($bitstoshortreal(vP_mem.cb.dma__memc__write_data) < sys_operation.resultHigh))
                                             $display ($time,": ERROR:MEM_CHECKER :: incorrect result data for {%d,%d}: expected %f, observed %f\n", Id[0], Id[1], sys_operation.result, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
+                                        else
+                                            $display ($time,": INFO:PASS:MEM_CHECKER :: Correct result writen to memory {%d,%d} : Hex : %h, FP : %f\n", Id[0], Id[1], vP_mem.cb.dma__memc__write_data, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
+
                                         -> this.finished ;
                                     end
                             end

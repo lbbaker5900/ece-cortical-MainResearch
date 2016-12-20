@@ -11,7 +11,7 @@
   reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; 
   reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; 
   reg                                             noc__cntl__dp_strmId     ; 
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE     ] noc__cntl__dp_data       ; 
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data       ; 
   reg                                             noc__cntl__dp_valid      ; 
 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__cp_cntl_p1       ; 
@@ -21,7 +21,7 @@
 
   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__dp_cntl_p1       ; 
   reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type_p1       ; 
-  reg  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE     ] noc__cntl__dp_data_p1       ; 
+  reg  [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data_p1       ; 
   reg                                             noc__cntl__dp_valid_p1      ; 
 
   always @(posedge clk)

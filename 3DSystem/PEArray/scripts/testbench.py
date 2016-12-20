@@ -62,6 +62,19 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
+    pLine = pLine + '\n            // General control and status                  ,'.format(pe) 
+    pLine = pLine + '\n            sys__pe{0}__peId                               ,'.format(pe) 
+    pLine = pLine + '\n            sys__pe{0}__allSynchronized                    ,'.format(pe) 
+    pLine = pLine + '\n            pe{0}__sys__thisSynchronized                   ,'.format(pe) 
+    pLine = pLine + '\n            pe{0}__sys__ready                              ,'.format(pe) 
+    pLine = pLine + '\n            pe{0}__sys__complete                           ,'.format(pe) 
+    #
+    pLine = pLine + '\n            // OOB controls how the lanes are interpreted  ,'.format(pe) 
+    pLine = pLine + '\n            std__pe{0}__oob_cntl                           ,'.format(pe) 
+    pLine = pLine + '\n            std__pe{0}__oob_valid                          ,'.format(pe) 
+    pLine = pLine + '\n            pe{0}__std__oob_ready                          ,'.format(pe) 
+    pLine = pLine + '\n            std__pe{0}__oob_type                           ,'.format(pe) 
+    #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n            pe{1}__std__lane{0}_strm{2}_ready       ,'.format(lane,pe,strm)
@@ -78,6 +91,19 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
+    pLine = pLine + '\n  // General control and status                                                  '.format(pe) 
+    pLine = pLine + '\n  input [`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
+    pLine = pLine + '\n  input                                         sys__pe{0}__allSynchronized     ;'.format(pe) 
+    pLine = pLine + '\n  output                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
+    pLine = pLine + '\n  output                                        pe{0}__sys__ready               ;'.format(pe) 
+    pLine = pLine + '\n  output                                        pe{0}__sys__complete            ;'.format(pe) 
+    #                                                                                                              
+    pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                  '.format(pe) 
+    pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe{0}__oob_cntl            ;'.format(pe) 
+    pLine = pLine + '\n  input                                         std__pe{0}__oob_valid           ;'.format(pe) 
+    pLine = pLine + '\n  output                                        pe{0}__std__oob_ready           ;'.format(pe) 
+    pLine = pLine + '\n  input [`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
+    #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n  output                                       pe{1}__std__lane{0}_strm{2}_ready       ;'.format(lane,pe,strm)
@@ -94,6 +120,19 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
+    pLine = pLine + '\n  // General control and status                                                '.format(pe) 
+    pLine = pLine + '\n  wire[`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        sys__pe{0}__allSynchronized     ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        pe{0}__sys__ready               ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        pe{0}__sys__complete            ;'.format(pe) 
+    #                                                                                                            
+    pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                '.format(pe) 
+    pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe{0}__oob_cntl            ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        std__pe{0}__oob_valid           ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        pe{0}__std__oob_ready           ;'.format(pe) 
+    pLine = pLine + '\n  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
+    #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n  wire                                        pe{1}__std__lane{0}_strm{2}_ready       ;'.format(lane,pe,strm)
@@ -110,14 +149,27 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
+    pLine = pLine + '\n  // General control and status                                                                     '.format(pe) 
+    pLine = pLine + '\n        .sys__pe{0}__peId               ( SysOob2PeArray[{0}].cb_test.sys__pe__peId              ), '.format(pe) 
+    pLine = pLine + '\n        .sys__pe{0}__allSynchronized    ( SysOob2PeArray[{0}].cb_test.sys__pe__allSynchronized   ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__sys__thisSynchronized   ( SysOob2PeArray[{0}].cb_test.pe__sys__thisSynchronized  ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__sys__ready              ( SysOob2PeArray[{0}].cb_test.pe__sys__ready             ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__sys__complete           ( SysOob2PeArray[{0}].cb_test.pe__sys__complete          ), '.format(pe) 
+    #                                                                                                            
+    pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                                     '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_cntl           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_cntl          ), '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_valid          ( SysOob2PeArray[{0}].cb_test.std__pe__oob_valid         ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__std__oob_ready          ( SysOob2PeArray[{0}].cb_test.pe__std__oob_ready         ), '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_type           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_type          ), '.format(pe) 
+    # 
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n        // PE {1}, Lane {0}                 '.format(lane,pe)
       for strm in range (0, 2):
-        pLine = pLine + '\n        .pe{0}__std__lane{1}_strm{2}_ready         ( Sys2PeArray[{0}][{1}].cb_test.pe__std__lane_strm{2}_ready      ),      '.format(pe,lane,strm)
-        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_cntl          ( Sys2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_cntl       ),      '.format(pe,lane,strm)
-        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data          ( Sys2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data       ),      '.format(pe,lane,strm)
-        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_valid    ( Sys2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid ),      '.format(pe,lane,strm)
-        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_mask     ( Sys2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_mask  ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .pe{0}__std__lane{1}_strm{2}_ready         ( SysLane2PeArray[{0}][{1}].cb_test.pe__std__lane_strm{2}_ready      ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_cntl          ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_cntl       ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data          ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data       ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_valid    ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_mask     ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_mask  ),      '.format(pe,lane,strm)
         pLine = pLine + '\n        '
                                              
   f.write(pLine)
@@ -165,9 +217,9 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n            begin'
-      pLine = pLine + '\n                @vSys2PeArray[{0}][{1}].cb_test                                      ;'.format(pe,lane) 
+      pLine = pLine + '\n                @vSysLane2PeArray[{0}][{1}].cb_test                                      ;'.format(pe,lane) 
       for strm in range (0, 2):
-        pLine = pLine + '\n                vSys2PeArray [{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid  <= 0  ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n                vSysLane2PeArray [{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid  <= 0  ;'.format(pe,lane,strm) 
       pLine = pLine + '\n            end'                                         
     pLine = pLine + '\n'
 

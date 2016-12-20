@@ -107,7 +107,7 @@ module noc_cntl (
   input  [`PE_PE_ID_RANGE                         ] cntl__noc__dp_peId       ; 
   input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__dp_laneId     ; 
   input                                             cntl__noc__dp_strmId     ; 
-  input  [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE     ] cntl__noc__dp_data       ; 
+  input  [`STREAMING_OP_CNTL_DATA_RANGE           ] cntl__noc__dp_data       ; 
   input                                             cntl__noc__dp_valid      ; 
   // Aggregate Data-path (dp) from NoC 
   input                                             cntl__noc__dp_ready      ; 
@@ -115,7 +115,7 @@ module noc_cntl (
   output [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; 
   output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; 
   output                                            noc__cntl__dp_strmId     ; 
-  output [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE     ] noc__cntl__dp_data       ; 
+  output [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data       ; 
   output                                            noc__cntl__dp_valid      ; 
 
   `include "noc_cntl_noc_ports_declaration.vh"

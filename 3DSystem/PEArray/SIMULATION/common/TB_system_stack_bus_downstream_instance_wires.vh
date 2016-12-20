@@ -1,4 +1,15 @@
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe0__peId                ;
+  wire                                        sys__pe0__allSynchronized     ;
+  wire                                        pe0__sys__thisSynchronized    ;
+  wire                                        pe0__sys__ready               ;
+  wire                                        pe0__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe0__oob_cntl            ;
+  wire                                        std__pe0__oob_valid           ;
+  wire                                        pe0__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe0__oob_type            ;
   wire                                        pe0__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe0__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe0__lane0_strm0_data        ;
@@ -383,6 +394,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe0__lane31_strm1_data_mask   ;
   wire                                        std__pe0__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe1__peId                ;
+  wire                                        sys__pe1__allSynchronized     ;
+  wire                                        pe1__sys__thisSynchronized    ;
+  wire                                        pe1__sys__ready               ;
+  wire                                        pe1__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe1__oob_cntl            ;
+  wire                                        std__pe1__oob_valid           ;
+  wire                                        pe1__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe1__oob_type            ;
   wire                                        pe1__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe1__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe1__lane0_strm0_data        ;
@@ -767,6 +789,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe1__lane31_strm1_data_mask   ;
   wire                                        std__pe1__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe2__peId                ;
+  wire                                        sys__pe2__allSynchronized     ;
+  wire                                        pe2__sys__thisSynchronized    ;
+  wire                                        pe2__sys__ready               ;
+  wire                                        pe2__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe2__oob_cntl            ;
+  wire                                        std__pe2__oob_valid           ;
+  wire                                        pe2__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe2__oob_type            ;
   wire                                        pe2__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe2__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe2__lane0_strm0_data        ;
@@ -1151,6 +1184,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe2__lane31_strm1_data_mask   ;
   wire                                        std__pe2__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe3__peId                ;
+  wire                                        sys__pe3__allSynchronized     ;
+  wire                                        pe3__sys__thisSynchronized    ;
+  wire                                        pe3__sys__ready               ;
+  wire                                        pe3__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe3__oob_cntl            ;
+  wire                                        std__pe3__oob_valid           ;
+  wire                                        pe3__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe3__oob_type            ;
   wire                                        pe3__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe3__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe3__lane0_strm0_data        ;
@@ -1535,6 +1579,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe3__lane31_strm1_data_mask   ;
   wire                                        std__pe3__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe4__peId                ;
+  wire                                        sys__pe4__allSynchronized     ;
+  wire                                        pe4__sys__thisSynchronized    ;
+  wire                                        pe4__sys__ready               ;
+  wire                                        pe4__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe4__oob_cntl            ;
+  wire                                        std__pe4__oob_valid           ;
+  wire                                        pe4__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe4__oob_type            ;
   wire                                        pe4__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe4__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe4__lane0_strm0_data        ;
@@ -1919,6 +1974,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe4__lane31_strm1_data_mask   ;
   wire                                        std__pe4__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe5__peId                ;
+  wire                                        sys__pe5__allSynchronized     ;
+  wire                                        pe5__sys__thisSynchronized    ;
+  wire                                        pe5__sys__ready               ;
+  wire                                        pe5__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe5__oob_cntl            ;
+  wire                                        std__pe5__oob_valid           ;
+  wire                                        pe5__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe5__oob_type            ;
   wire                                        pe5__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe5__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe5__lane0_strm0_data        ;
@@ -2303,6 +2369,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe5__lane31_strm1_data_mask   ;
   wire                                        std__pe5__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe6__peId                ;
+  wire                                        sys__pe6__allSynchronized     ;
+  wire                                        pe6__sys__thisSynchronized    ;
+  wire                                        pe6__sys__ready               ;
+  wire                                        pe6__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe6__oob_cntl            ;
+  wire                                        std__pe6__oob_valid           ;
+  wire                                        pe6__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe6__oob_type            ;
   wire                                        pe6__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe6__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe6__lane0_strm0_data        ;
@@ -2687,6 +2764,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe6__lane31_strm1_data_mask   ;
   wire                                        std__pe6__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe7__peId                ;
+  wire                                        sys__pe7__allSynchronized     ;
+  wire                                        pe7__sys__thisSynchronized    ;
+  wire                                        pe7__sys__ready               ;
+  wire                                        pe7__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe7__oob_cntl            ;
+  wire                                        std__pe7__oob_valid           ;
+  wire                                        pe7__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe7__oob_type            ;
   wire                                        pe7__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe7__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe7__lane0_strm0_data        ;
@@ -3071,6 +3159,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe7__lane31_strm1_data_mask   ;
   wire                                        std__pe7__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe8__peId                ;
+  wire                                        sys__pe8__allSynchronized     ;
+  wire                                        pe8__sys__thisSynchronized    ;
+  wire                                        pe8__sys__ready               ;
+  wire                                        pe8__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe8__oob_cntl            ;
+  wire                                        std__pe8__oob_valid           ;
+  wire                                        pe8__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe8__oob_type            ;
   wire                                        pe8__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe8__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe8__lane0_strm0_data        ;
@@ -3455,6 +3554,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe8__lane31_strm1_data_mask   ;
   wire                                        std__pe8__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe9__peId                ;
+  wire                                        sys__pe9__allSynchronized     ;
+  wire                                        pe9__sys__thisSynchronized    ;
+  wire                                        pe9__sys__ready               ;
+  wire                                        pe9__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe9__oob_cntl            ;
+  wire                                        std__pe9__oob_valid           ;
+  wire                                        pe9__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe9__oob_type            ;
   wire                                        pe9__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe9__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe9__lane0_strm0_data        ;
@@ -3839,6 +3949,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe9__lane31_strm1_data_mask   ;
   wire                                        std__pe9__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe10__peId                ;
+  wire                                        sys__pe10__allSynchronized     ;
+  wire                                        pe10__sys__thisSynchronized    ;
+  wire                                        pe10__sys__ready               ;
+  wire                                        pe10__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe10__oob_cntl            ;
+  wire                                        std__pe10__oob_valid           ;
+  wire                                        pe10__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe10__oob_type            ;
   wire                                        pe10__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe10__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe10__lane0_strm0_data        ;
@@ -4223,6 +4344,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe10__lane31_strm1_data_mask   ;
   wire                                        std__pe10__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe11__peId                ;
+  wire                                        sys__pe11__allSynchronized     ;
+  wire                                        pe11__sys__thisSynchronized    ;
+  wire                                        pe11__sys__ready               ;
+  wire                                        pe11__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe11__oob_cntl            ;
+  wire                                        std__pe11__oob_valid           ;
+  wire                                        pe11__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe11__oob_type            ;
   wire                                        pe11__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe11__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe11__lane0_strm0_data        ;
@@ -4607,6 +4739,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe11__lane31_strm1_data_mask   ;
   wire                                        std__pe11__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe12__peId                ;
+  wire                                        sys__pe12__allSynchronized     ;
+  wire                                        pe12__sys__thisSynchronized    ;
+  wire                                        pe12__sys__ready               ;
+  wire                                        pe12__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe12__oob_cntl            ;
+  wire                                        std__pe12__oob_valid           ;
+  wire                                        pe12__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe12__oob_type            ;
   wire                                        pe12__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe12__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe12__lane0_strm0_data        ;
@@ -4991,6 +5134,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe12__lane31_strm1_data_mask   ;
   wire                                        std__pe12__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe13__peId                ;
+  wire                                        sys__pe13__allSynchronized     ;
+  wire                                        pe13__sys__thisSynchronized    ;
+  wire                                        pe13__sys__ready               ;
+  wire                                        pe13__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe13__oob_cntl            ;
+  wire                                        std__pe13__oob_valid           ;
+  wire                                        pe13__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe13__oob_type            ;
   wire                                        pe13__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe13__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe13__lane0_strm0_data        ;
@@ -5375,6 +5529,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe13__lane31_strm1_data_mask   ;
   wire                                        std__pe13__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe14__peId                ;
+  wire                                        sys__pe14__allSynchronized     ;
+  wire                                        pe14__sys__thisSynchronized    ;
+  wire                                        pe14__sys__ready               ;
+  wire                                        pe14__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe14__oob_cntl            ;
+  wire                                        std__pe14__oob_valid           ;
+  wire                                        pe14__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe14__oob_type            ;
   wire                                        pe14__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe14__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe14__lane0_strm0_data        ;
@@ -5759,6 +5924,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe14__lane31_strm1_data_mask   ;
   wire                                        std__pe14__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe15__peId                ;
+  wire                                        sys__pe15__allSynchronized     ;
+  wire                                        pe15__sys__thisSynchronized    ;
+  wire                                        pe15__sys__ready               ;
+  wire                                        pe15__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe15__oob_cntl            ;
+  wire                                        std__pe15__oob_valid           ;
+  wire                                        pe15__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe15__oob_type            ;
   wire                                        pe15__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe15__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe15__lane0_strm0_data        ;
@@ -6143,6 +6319,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe15__lane31_strm1_data_mask   ;
   wire                                        std__pe15__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe16__peId                ;
+  wire                                        sys__pe16__allSynchronized     ;
+  wire                                        pe16__sys__thisSynchronized    ;
+  wire                                        pe16__sys__ready               ;
+  wire                                        pe16__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe16__oob_cntl            ;
+  wire                                        std__pe16__oob_valid           ;
+  wire                                        pe16__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe16__oob_type            ;
   wire                                        pe16__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe16__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe16__lane0_strm0_data        ;
@@ -6527,6 +6714,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe16__lane31_strm1_data_mask   ;
   wire                                        std__pe16__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe17__peId                ;
+  wire                                        sys__pe17__allSynchronized     ;
+  wire                                        pe17__sys__thisSynchronized    ;
+  wire                                        pe17__sys__ready               ;
+  wire                                        pe17__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe17__oob_cntl            ;
+  wire                                        std__pe17__oob_valid           ;
+  wire                                        pe17__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe17__oob_type            ;
   wire                                        pe17__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe17__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe17__lane0_strm0_data        ;
@@ -6911,6 +7109,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe17__lane31_strm1_data_mask   ;
   wire                                        std__pe17__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe18__peId                ;
+  wire                                        sys__pe18__allSynchronized     ;
+  wire                                        pe18__sys__thisSynchronized    ;
+  wire                                        pe18__sys__ready               ;
+  wire                                        pe18__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe18__oob_cntl            ;
+  wire                                        std__pe18__oob_valid           ;
+  wire                                        pe18__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe18__oob_type            ;
   wire                                        pe18__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe18__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe18__lane0_strm0_data        ;
@@ -7295,6 +7504,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe18__lane31_strm1_data_mask   ;
   wire                                        std__pe18__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe19__peId                ;
+  wire                                        sys__pe19__allSynchronized     ;
+  wire                                        pe19__sys__thisSynchronized    ;
+  wire                                        pe19__sys__ready               ;
+  wire                                        pe19__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe19__oob_cntl            ;
+  wire                                        std__pe19__oob_valid           ;
+  wire                                        pe19__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe19__oob_type            ;
   wire                                        pe19__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe19__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe19__lane0_strm0_data        ;
@@ -7679,6 +7899,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe19__lane31_strm1_data_mask   ;
   wire                                        std__pe19__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe20__peId                ;
+  wire                                        sys__pe20__allSynchronized     ;
+  wire                                        pe20__sys__thisSynchronized    ;
+  wire                                        pe20__sys__ready               ;
+  wire                                        pe20__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe20__oob_cntl            ;
+  wire                                        std__pe20__oob_valid           ;
+  wire                                        pe20__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe20__oob_type            ;
   wire                                        pe20__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe20__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe20__lane0_strm0_data        ;
@@ -8063,6 +8294,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe20__lane31_strm1_data_mask   ;
   wire                                        std__pe20__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe21__peId                ;
+  wire                                        sys__pe21__allSynchronized     ;
+  wire                                        pe21__sys__thisSynchronized    ;
+  wire                                        pe21__sys__ready               ;
+  wire                                        pe21__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe21__oob_cntl            ;
+  wire                                        std__pe21__oob_valid           ;
+  wire                                        pe21__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe21__oob_type            ;
   wire                                        pe21__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe21__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe21__lane0_strm0_data        ;
@@ -8447,6 +8689,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe21__lane31_strm1_data_mask   ;
   wire                                        std__pe21__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe22__peId                ;
+  wire                                        sys__pe22__allSynchronized     ;
+  wire                                        pe22__sys__thisSynchronized    ;
+  wire                                        pe22__sys__ready               ;
+  wire                                        pe22__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe22__oob_cntl            ;
+  wire                                        std__pe22__oob_valid           ;
+  wire                                        pe22__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe22__oob_type            ;
   wire                                        pe22__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe22__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe22__lane0_strm0_data        ;
@@ -8831,6 +9084,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe22__lane31_strm1_data_mask   ;
   wire                                        std__pe22__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe23__peId                ;
+  wire                                        sys__pe23__allSynchronized     ;
+  wire                                        pe23__sys__thisSynchronized    ;
+  wire                                        pe23__sys__ready               ;
+  wire                                        pe23__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe23__oob_cntl            ;
+  wire                                        std__pe23__oob_valid           ;
+  wire                                        pe23__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe23__oob_type            ;
   wire                                        pe23__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe23__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe23__lane0_strm0_data        ;
@@ -9215,6 +9479,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe23__lane31_strm1_data_mask   ;
   wire                                        std__pe23__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe24__peId                ;
+  wire                                        sys__pe24__allSynchronized     ;
+  wire                                        pe24__sys__thisSynchronized    ;
+  wire                                        pe24__sys__ready               ;
+  wire                                        pe24__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe24__oob_cntl            ;
+  wire                                        std__pe24__oob_valid           ;
+  wire                                        pe24__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe24__oob_type            ;
   wire                                        pe24__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe24__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe24__lane0_strm0_data        ;
@@ -9599,6 +9874,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe24__lane31_strm1_data_mask   ;
   wire                                        std__pe24__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe25__peId                ;
+  wire                                        sys__pe25__allSynchronized     ;
+  wire                                        pe25__sys__thisSynchronized    ;
+  wire                                        pe25__sys__ready               ;
+  wire                                        pe25__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe25__oob_cntl            ;
+  wire                                        std__pe25__oob_valid           ;
+  wire                                        pe25__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe25__oob_type            ;
   wire                                        pe25__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe25__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe25__lane0_strm0_data        ;
@@ -9983,6 +10269,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe25__lane31_strm1_data_mask   ;
   wire                                        std__pe25__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe26__peId                ;
+  wire                                        sys__pe26__allSynchronized     ;
+  wire                                        pe26__sys__thisSynchronized    ;
+  wire                                        pe26__sys__ready               ;
+  wire                                        pe26__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe26__oob_cntl            ;
+  wire                                        std__pe26__oob_valid           ;
+  wire                                        pe26__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe26__oob_type            ;
   wire                                        pe26__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe26__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe26__lane0_strm0_data        ;
@@ -10367,6 +10664,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe26__lane31_strm1_data_mask   ;
   wire                                        std__pe26__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe27__peId                ;
+  wire                                        sys__pe27__allSynchronized     ;
+  wire                                        pe27__sys__thisSynchronized    ;
+  wire                                        pe27__sys__ready               ;
+  wire                                        pe27__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe27__oob_cntl            ;
+  wire                                        std__pe27__oob_valid           ;
+  wire                                        pe27__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe27__oob_type            ;
   wire                                        pe27__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe27__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe27__lane0_strm0_data        ;
@@ -10751,6 +11059,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe27__lane31_strm1_data_mask   ;
   wire                                        std__pe27__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe28__peId                ;
+  wire                                        sys__pe28__allSynchronized     ;
+  wire                                        pe28__sys__thisSynchronized    ;
+  wire                                        pe28__sys__ready               ;
+  wire                                        pe28__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe28__oob_cntl            ;
+  wire                                        std__pe28__oob_valid           ;
+  wire                                        pe28__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe28__oob_type            ;
   wire                                        pe28__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe28__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe28__lane0_strm0_data        ;
@@ -11135,6 +11454,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe28__lane31_strm1_data_mask   ;
   wire                                        std__pe28__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe29__peId                ;
+  wire                                        sys__pe29__allSynchronized     ;
+  wire                                        pe29__sys__thisSynchronized    ;
+  wire                                        pe29__sys__ready               ;
+  wire                                        pe29__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe29__oob_cntl            ;
+  wire                                        std__pe29__oob_valid           ;
+  wire                                        pe29__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe29__oob_type            ;
   wire                                        pe29__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe29__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe29__lane0_strm0_data        ;
@@ -11519,6 +11849,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe29__lane31_strm1_data_mask   ;
   wire                                        std__pe29__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe30__peId                ;
+  wire                                        sys__pe30__allSynchronized     ;
+  wire                                        pe30__sys__thisSynchronized    ;
+  wire                                        pe30__sys__ready               ;
+  wire                                        pe30__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe30__oob_cntl            ;
+  wire                                        std__pe30__oob_valid           ;
+  wire                                        pe30__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe30__oob_type            ;
   wire                                        pe30__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe30__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe30__lane0_strm0_data        ;
@@ -11903,6 +12244,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe30__lane31_strm1_data_mask   ;
   wire                                        std__pe30__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe31__peId                ;
+  wire                                        sys__pe31__allSynchronized     ;
+  wire                                        pe31__sys__thisSynchronized    ;
+  wire                                        pe31__sys__ready               ;
+  wire                                        pe31__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe31__oob_cntl            ;
+  wire                                        std__pe31__oob_valid           ;
+  wire                                        pe31__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe31__oob_type            ;
   wire                                        pe31__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe31__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe31__lane0_strm0_data        ;
@@ -12287,6 +12639,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe31__lane31_strm1_data_mask   ;
   wire                                        std__pe31__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe32__peId                ;
+  wire                                        sys__pe32__allSynchronized     ;
+  wire                                        pe32__sys__thisSynchronized    ;
+  wire                                        pe32__sys__ready               ;
+  wire                                        pe32__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe32__oob_cntl            ;
+  wire                                        std__pe32__oob_valid           ;
+  wire                                        pe32__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe32__oob_type            ;
   wire                                        pe32__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe32__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe32__lane0_strm0_data        ;
@@ -12671,6 +13034,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe32__lane31_strm1_data_mask   ;
   wire                                        std__pe32__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe33__peId                ;
+  wire                                        sys__pe33__allSynchronized     ;
+  wire                                        pe33__sys__thisSynchronized    ;
+  wire                                        pe33__sys__ready               ;
+  wire                                        pe33__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe33__oob_cntl            ;
+  wire                                        std__pe33__oob_valid           ;
+  wire                                        pe33__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe33__oob_type            ;
   wire                                        pe33__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe33__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe33__lane0_strm0_data        ;
@@ -13055,6 +13429,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe33__lane31_strm1_data_mask   ;
   wire                                        std__pe33__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe34__peId                ;
+  wire                                        sys__pe34__allSynchronized     ;
+  wire                                        pe34__sys__thisSynchronized    ;
+  wire                                        pe34__sys__ready               ;
+  wire                                        pe34__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe34__oob_cntl            ;
+  wire                                        std__pe34__oob_valid           ;
+  wire                                        pe34__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe34__oob_type            ;
   wire                                        pe34__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe34__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe34__lane0_strm0_data        ;
@@ -13439,6 +13824,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe34__lane31_strm1_data_mask   ;
   wire                                        std__pe34__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe35__peId                ;
+  wire                                        sys__pe35__allSynchronized     ;
+  wire                                        pe35__sys__thisSynchronized    ;
+  wire                                        pe35__sys__ready               ;
+  wire                                        pe35__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe35__oob_cntl            ;
+  wire                                        std__pe35__oob_valid           ;
+  wire                                        pe35__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe35__oob_type            ;
   wire                                        pe35__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe35__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe35__lane0_strm0_data        ;
@@ -13823,6 +14219,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe35__lane31_strm1_data_mask   ;
   wire                                        std__pe35__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe36__peId                ;
+  wire                                        sys__pe36__allSynchronized     ;
+  wire                                        pe36__sys__thisSynchronized    ;
+  wire                                        pe36__sys__ready               ;
+  wire                                        pe36__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe36__oob_cntl            ;
+  wire                                        std__pe36__oob_valid           ;
+  wire                                        pe36__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe36__oob_type            ;
   wire                                        pe36__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe36__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe36__lane0_strm0_data        ;
@@ -14207,6 +14614,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe36__lane31_strm1_data_mask   ;
   wire                                        std__pe36__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe37__peId                ;
+  wire                                        sys__pe37__allSynchronized     ;
+  wire                                        pe37__sys__thisSynchronized    ;
+  wire                                        pe37__sys__ready               ;
+  wire                                        pe37__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe37__oob_cntl            ;
+  wire                                        std__pe37__oob_valid           ;
+  wire                                        pe37__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe37__oob_type            ;
   wire                                        pe37__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe37__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe37__lane0_strm0_data        ;
@@ -14591,6 +15009,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe37__lane31_strm1_data_mask   ;
   wire                                        std__pe37__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe38__peId                ;
+  wire                                        sys__pe38__allSynchronized     ;
+  wire                                        pe38__sys__thisSynchronized    ;
+  wire                                        pe38__sys__ready               ;
+  wire                                        pe38__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe38__oob_cntl            ;
+  wire                                        std__pe38__oob_valid           ;
+  wire                                        pe38__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe38__oob_type            ;
   wire                                        pe38__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe38__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe38__lane0_strm0_data        ;
@@ -14975,6 +15404,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe38__lane31_strm1_data_mask   ;
   wire                                        std__pe38__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe39__peId                ;
+  wire                                        sys__pe39__allSynchronized     ;
+  wire                                        pe39__sys__thisSynchronized    ;
+  wire                                        pe39__sys__ready               ;
+  wire                                        pe39__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe39__oob_cntl            ;
+  wire                                        std__pe39__oob_valid           ;
+  wire                                        pe39__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe39__oob_type            ;
   wire                                        pe39__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe39__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe39__lane0_strm0_data        ;
@@ -15359,6 +15799,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe39__lane31_strm1_data_mask   ;
   wire                                        std__pe39__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe40__peId                ;
+  wire                                        sys__pe40__allSynchronized     ;
+  wire                                        pe40__sys__thisSynchronized    ;
+  wire                                        pe40__sys__ready               ;
+  wire                                        pe40__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe40__oob_cntl            ;
+  wire                                        std__pe40__oob_valid           ;
+  wire                                        pe40__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe40__oob_type            ;
   wire                                        pe40__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe40__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe40__lane0_strm0_data        ;
@@ -15743,6 +16194,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe40__lane31_strm1_data_mask   ;
   wire                                        std__pe40__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe41__peId                ;
+  wire                                        sys__pe41__allSynchronized     ;
+  wire                                        pe41__sys__thisSynchronized    ;
+  wire                                        pe41__sys__ready               ;
+  wire                                        pe41__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe41__oob_cntl            ;
+  wire                                        std__pe41__oob_valid           ;
+  wire                                        pe41__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe41__oob_type            ;
   wire                                        pe41__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe41__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe41__lane0_strm0_data        ;
@@ -16127,6 +16589,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe41__lane31_strm1_data_mask   ;
   wire                                        std__pe41__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe42__peId                ;
+  wire                                        sys__pe42__allSynchronized     ;
+  wire                                        pe42__sys__thisSynchronized    ;
+  wire                                        pe42__sys__ready               ;
+  wire                                        pe42__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe42__oob_cntl            ;
+  wire                                        std__pe42__oob_valid           ;
+  wire                                        pe42__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe42__oob_type            ;
   wire                                        pe42__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe42__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe42__lane0_strm0_data        ;
@@ -16511,6 +16984,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe42__lane31_strm1_data_mask   ;
   wire                                        std__pe42__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe43__peId                ;
+  wire                                        sys__pe43__allSynchronized     ;
+  wire                                        pe43__sys__thisSynchronized    ;
+  wire                                        pe43__sys__ready               ;
+  wire                                        pe43__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe43__oob_cntl            ;
+  wire                                        std__pe43__oob_valid           ;
+  wire                                        pe43__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe43__oob_type            ;
   wire                                        pe43__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe43__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe43__lane0_strm0_data        ;
@@ -16895,6 +17379,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe43__lane31_strm1_data_mask   ;
   wire                                        std__pe43__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe44__peId                ;
+  wire                                        sys__pe44__allSynchronized     ;
+  wire                                        pe44__sys__thisSynchronized    ;
+  wire                                        pe44__sys__ready               ;
+  wire                                        pe44__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe44__oob_cntl            ;
+  wire                                        std__pe44__oob_valid           ;
+  wire                                        pe44__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe44__oob_type            ;
   wire                                        pe44__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe44__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe44__lane0_strm0_data        ;
@@ -17279,6 +17774,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe44__lane31_strm1_data_mask   ;
   wire                                        std__pe44__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe45__peId                ;
+  wire                                        sys__pe45__allSynchronized     ;
+  wire                                        pe45__sys__thisSynchronized    ;
+  wire                                        pe45__sys__ready               ;
+  wire                                        pe45__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe45__oob_cntl            ;
+  wire                                        std__pe45__oob_valid           ;
+  wire                                        pe45__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe45__oob_type            ;
   wire                                        pe45__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe45__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe45__lane0_strm0_data        ;
@@ -17663,6 +18169,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe45__lane31_strm1_data_mask   ;
   wire                                        std__pe45__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe46__peId                ;
+  wire                                        sys__pe46__allSynchronized     ;
+  wire                                        pe46__sys__thisSynchronized    ;
+  wire                                        pe46__sys__ready               ;
+  wire                                        pe46__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe46__oob_cntl            ;
+  wire                                        std__pe46__oob_valid           ;
+  wire                                        pe46__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe46__oob_type            ;
   wire                                        pe46__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe46__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe46__lane0_strm0_data        ;
@@ -18047,6 +18564,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe46__lane31_strm1_data_mask   ;
   wire                                        std__pe46__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe47__peId                ;
+  wire                                        sys__pe47__allSynchronized     ;
+  wire                                        pe47__sys__thisSynchronized    ;
+  wire                                        pe47__sys__ready               ;
+  wire                                        pe47__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe47__oob_cntl            ;
+  wire                                        std__pe47__oob_valid           ;
+  wire                                        pe47__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe47__oob_type            ;
   wire                                        pe47__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe47__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe47__lane0_strm0_data        ;
@@ -18431,6 +18959,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe47__lane31_strm1_data_mask   ;
   wire                                        std__pe47__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe48__peId                ;
+  wire                                        sys__pe48__allSynchronized     ;
+  wire                                        pe48__sys__thisSynchronized    ;
+  wire                                        pe48__sys__ready               ;
+  wire                                        pe48__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe48__oob_cntl            ;
+  wire                                        std__pe48__oob_valid           ;
+  wire                                        pe48__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe48__oob_type            ;
   wire                                        pe48__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe48__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe48__lane0_strm0_data        ;
@@ -18815,6 +19354,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe48__lane31_strm1_data_mask   ;
   wire                                        std__pe48__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe49__peId                ;
+  wire                                        sys__pe49__allSynchronized     ;
+  wire                                        pe49__sys__thisSynchronized    ;
+  wire                                        pe49__sys__ready               ;
+  wire                                        pe49__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe49__oob_cntl            ;
+  wire                                        std__pe49__oob_valid           ;
+  wire                                        pe49__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe49__oob_type            ;
   wire                                        pe49__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe49__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe49__lane0_strm0_data        ;
@@ -19199,6 +19749,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe49__lane31_strm1_data_mask   ;
   wire                                        std__pe49__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe50__peId                ;
+  wire                                        sys__pe50__allSynchronized     ;
+  wire                                        pe50__sys__thisSynchronized    ;
+  wire                                        pe50__sys__ready               ;
+  wire                                        pe50__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe50__oob_cntl            ;
+  wire                                        std__pe50__oob_valid           ;
+  wire                                        pe50__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe50__oob_type            ;
   wire                                        pe50__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe50__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe50__lane0_strm0_data        ;
@@ -19583,6 +20144,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe50__lane31_strm1_data_mask   ;
   wire                                        std__pe50__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe51__peId                ;
+  wire                                        sys__pe51__allSynchronized     ;
+  wire                                        pe51__sys__thisSynchronized    ;
+  wire                                        pe51__sys__ready               ;
+  wire                                        pe51__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe51__oob_cntl            ;
+  wire                                        std__pe51__oob_valid           ;
+  wire                                        pe51__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe51__oob_type            ;
   wire                                        pe51__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe51__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe51__lane0_strm0_data        ;
@@ -19967,6 +20539,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe51__lane31_strm1_data_mask   ;
   wire                                        std__pe51__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe52__peId                ;
+  wire                                        sys__pe52__allSynchronized     ;
+  wire                                        pe52__sys__thisSynchronized    ;
+  wire                                        pe52__sys__ready               ;
+  wire                                        pe52__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe52__oob_cntl            ;
+  wire                                        std__pe52__oob_valid           ;
+  wire                                        pe52__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe52__oob_type            ;
   wire                                        pe52__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe52__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe52__lane0_strm0_data        ;
@@ -20351,6 +20934,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe52__lane31_strm1_data_mask   ;
   wire                                        std__pe52__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe53__peId                ;
+  wire                                        sys__pe53__allSynchronized     ;
+  wire                                        pe53__sys__thisSynchronized    ;
+  wire                                        pe53__sys__ready               ;
+  wire                                        pe53__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe53__oob_cntl            ;
+  wire                                        std__pe53__oob_valid           ;
+  wire                                        pe53__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe53__oob_type            ;
   wire                                        pe53__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe53__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe53__lane0_strm0_data        ;
@@ -20735,6 +21329,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe53__lane31_strm1_data_mask   ;
   wire                                        std__pe53__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe54__peId                ;
+  wire                                        sys__pe54__allSynchronized     ;
+  wire                                        pe54__sys__thisSynchronized    ;
+  wire                                        pe54__sys__ready               ;
+  wire                                        pe54__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe54__oob_cntl            ;
+  wire                                        std__pe54__oob_valid           ;
+  wire                                        pe54__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe54__oob_type            ;
   wire                                        pe54__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe54__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe54__lane0_strm0_data        ;
@@ -21119,6 +21724,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe54__lane31_strm1_data_mask   ;
   wire                                        std__pe54__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe55__peId                ;
+  wire                                        sys__pe55__allSynchronized     ;
+  wire                                        pe55__sys__thisSynchronized    ;
+  wire                                        pe55__sys__ready               ;
+  wire                                        pe55__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe55__oob_cntl            ;
+  wire                                        std__pe55__oob_valid           ;
+  wire                                        pe55__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe55__oob_type            ;
   wire                                        pe55__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe55__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe55__lane0_strm0_data        ;
@@ -21503,6 +22119,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe55__lane31_strm1_data_mask   ;
   wire                                        std__pe55__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe56__peId                ;
+  wire                                        sys__pe56__allSynchronized     ;
+  wire                                        pe56__sys__thisSynchronized    ;
+  wire                                        pe56__sys__ready               ;
+  wire                                        pe56__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe56__oob_cntl            ;
+  wire                                        std__pe56__oob_valid           ;
+  wire                                        pe56__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe56__oob_type            ;
   wire                                        pe56__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe56__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe56__lane0_strm0_data        ;
@@ -21887,6 +22514,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe56__lane31_strm1_data_mask   ;
   wire                                        std__pe56__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe57__peId                ;
+  wire                                        sys__pe57__allSynchronized     ;
+  wire                                        pe57__sys__thisSynchronized    ;
+  wire                                        pe57__sys__ready               ;
+  wire                                        pe57__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe57__oob_cntl            ;
+  wire                                        std__pe57__oob_valid           ;
+  wire                                        pe57__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe57__oob_type            ;
   wire                                        pe57__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe57__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe57__lane0_strm0_data        ;
@@ -22271,6 +22909,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe57__lane31_strm1_data_mask   ;
   wire                                        std__pe57__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe58__peId                ;
+  wire                                        sys__pe58__allSynchronized     ;
+  wire                                        pe58__sys__thisSynchronized    ;
+  wire                                        pe58__sys__ready               ;
+  wire                                        pe58__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe58__oob_cntl            ;
+  wire                                        std__pe58__oob_valid           ;
+  wire                                        pe58__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe58__oob_type            ;
   wire                                        pe58__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe58__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe58__lane0_strm0_data        ;
@@ -22655,6 +23304,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe58__lane31_strm1_data_mask   ;
   wire                                        std__pe58__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe59__peId                ;
+  wire                                        sys__pe59__allSynchronized     ;
+  wire                                        pe59__sys__thisSynchronized    ;
+  wire                                        pe59__sys__ready               ;
+  wire                                        pe59__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe59__oob_cntl            ;
+  wire                                        std__pe59__oob_valid           ;
+  wire                                        pe59__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe59__oob_type            ;
   wire                                        pe59__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe59__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe59__lane0_strm0_data        ;
@@ -23039,6 +23699,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe59__lane31_strm1_data_mask   ;
   wire                                        std__pe59__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe60__peId                ;
+  wire                                        sys__pe60__allSynchronized     ;
+  wire                                        pe60__sys__thisSynchronized    ;
+  wire                                        pe60__sys__ready               ;
+  wire                                        pe60__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe60__oob_cntl            ;
+  wire                                        std__pe60__oob_valid           ;
+  wire                                        pe60__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe60__oob_type            ;
   wire                                        pe60__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe60__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe60__lane0_strm0_data        ;
@@ -23423,6 +24094,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe60__lane31_strm1_data_mask   ;
   wire                                        std__pe60__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe61__peId                ;
+  wire                                        sys__pe61__allSynchronized     ;
+  wire                                        pe61__sys__thisSynchronized    ;
+  wire                                        pe61__sys__ready               ;
+  wire                                        pe61__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe61__oob_cntl            ;
+  wire                                        std__pe61__oob_valid           ;
+  wire                                        pe61__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe61__oob_type            ;
   wire                                        pe61__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe61__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe61__lane0_strm0_data        ;
@@ -23807,6 +24489,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe61__lane31_strm1_data_mask   ;
   wire                                        std__pe61__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe62__peId                ;
+  wire                                        sys__pe62__allSynchronized     ;
+  wire                                        pe62__sys__thisSynchronized    ;
+  wire                                        pe62__sys__ready               ;
+  wire                                        pe62__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe62__oob_cntl            ;
+  wire                                        std__pe62__oob_valid           ;
+  wire                                        pe62__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe62__oob_type            ;
   wire                                        pe62__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe62__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe62__lane0_strm0_data        ;
@@ -24191,6 +24884,17 @@
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe62__lane31_strm1_data_mask   ;
   wire                                        std__pe62__lane31_strm1_data_valid  ;
 
+  // General control and status                                                
+  wire[`PE_PE_ID_RANGE                 ]      sys__pe63__peId                ;
+  wire                                        sys__pe63__allSynchronized     ;
+  wire                                        pe63__sys__thisSynchronized    ;
+  wire                                        pe63__sys__ready               ;
+  wire                                        pe63__sys__complete            ;
+  // OOB controls how the lanes are interpreted                                
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe63__oob_cntl            ;
+  wire                                        std__pe63__oob_valid           ;
+  wire                                        pe63__std__oob_ready           ;
+  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe63__oob_type            ;
   wire                                        pe63__std__lane0_strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe63__lane0_strm0_cntl        ;
   wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe63__lane0_strm0_data        ;

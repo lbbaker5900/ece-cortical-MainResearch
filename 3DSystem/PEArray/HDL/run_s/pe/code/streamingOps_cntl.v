@@ -1200,7 +1200,7 @@ module streamingOps_cntl (
         wire                                                   fifo_read_delayed  ;
         wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE ]             cntl_delayed       ; 
         wire                                                   strmId_delayed     ;
-        wire [`STREAMING_OP_CNTL_DATA_WIDTH_RANGE]             data_delayed       ; 
+        wire [`STREAMING_OP_CNTL_DATA_RANGE      ]             data_delayed       ; 
         wire [`STREAMING_OP_CNTL_NOC_TO_STOP_FIFO_RANGE]       fifo_wp_delayed    ; 
         wire [`STREAMING_OP_CNTL_NOC_TO_STOP_FIFO_RANGE]       fifo_rp_delayed    ; 
   `ifndef SYNTHESIS

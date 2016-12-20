@@ -1,4 +1,15 @@
 
+               // General control and status                                                       
+               .sys__pe0__peId                      ( sys__pe0__peId                   ),      
+               .sys__pe0__allSynchronized           ( sys__pe0__allSynchronized        ),      
+               .pe0__sys__thisSynchronized          ( pe0__sys__thisSynchronized       ),      
+               .pe0__sys__ready                     ( pe0__sys__ready                  ),      
+               .pe0__sys__complete                  ( pe0__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe0__oob_cntl                  ( std__pe0__oob_cntl               ),      
+               .std__pe0__oob_valid                 ( std__pe0__oob_valid              ),      
+               .pe0__std__oob_ready                 ( pe0__std__oob_ready              ),      
+               .std__pe0__oob_type                  ( std__pe0__oob_type               ),      
                // PE 0, Lane 0                 
                .pe0__std__lane0_strm0_ready         ( pe0__std__lane0_strm0_ready      ),      
                .std__pe0__lane0_strm0_cntl          ( std__pe0__lane0_strm0_cntl       ),      
@@ -415,6 +426,17 @@
                .std__pe0__lane31_strm1_data_valid    ( std__pe0__lane31_strm1_data_valid ),      
                .std__pe0__lane31_strm1_data_mask     ( std__pe0__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe1__peId                      ( sys__pe1__peId                   ),      
+               .sys__pe1__allSynchronized           ( sys__pe1__allSynchronized        ),      
+               .pe1__sys__thisSynchronized          ( pe1__sys__thisSynchronized       ),      
+               .pe1__sys__ready                     ( pe1__sys__ready                  ),      
+               .pe1__sys__complete                  ( pe1__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe1__oob_cntl                  ( std__pe1__oob_cntl               ),      
+               .std__pe1__oob_valid                 ( std__pe1__oob_valid              ),      
+               .pe1__std__oob_ready                 ( pe1__std__oob_ready              ),      
+               .std__pe1__oob_type                  ( std__pe1__oob_type               ),      
                // PE 1, Lane 0                 
                .pe1__std__lane0_strm0_ready         ( pe1__std__lane0_strm0_ready      ),      
                .std__pe1__lane0_strm0_cntl          ( std__pe1__lane0_strm0_cntl       ),      
@@ -831,6 +853,17 @@
                .std__pe1__lane31_strm1_data_valid    ( std__pe1__lane31_strm1_data_valid ),      
                .std__pe1__lane31_strm1_data_mask     ( std__pe1__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe2__peId                      ( sys__pe2__peId                   ),      
+               .sys__pe2__allSynchronized           ( sys__pe2__allSynchronized        ),      
+               .pe2__sys__thisSynchronized          ( pe2__sys__thisSynchronized       ),      
+               .pe2__sys__ready                     ( pe2__sys__ready                  ),      
+               .pe2__sys__complete                  ( pe2__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe2__oob_cntl                  ( std__pe2__oob_cntl               ),      
+               .std__pe2__oob_valid                 ( std__pe2__oob_valid              ),      
+               .pe2__std__oob_ready                 ( pe2__std__oob_ready              ),      
+               .std__pe2__oob_type                  ( std__pe2__oob_type               ),      
                // PE 2, Lane 0                 
                .pe2__std__lane0_strm0_ready         ( pe2__std__lane0_strm0_ready      ),      
                .std__pe2__lane0_strm0_cntl          ( std__pe2__lane0_strm0_cntl       ),      
@@ -1247,6 +1280,17 @@
                .std__pe2__lane31_strm1_data_valid    ( std__pe2__lane31_strm1_data_valid ),      
                .std__pe2__lane31_strm1_data_mask     ( std__pe2__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe3__peId                      ( sys__pe3__peId                   ),      
+               .sys__pe3__allSynchronized           ( sys__pe3__allSynchronized        ),      
+               .pe3__sys__thisSynchronized          ( pe3__sys__thisSynchronized       ),      
+               .pe3__sys__ready                     ( pe3__sys__ready                  ),      
+               .pe3__sys__complete                  ( pe3__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe3__oob_cntl                  ( std__pe3__oob_cntl               ),      
+               .std__pe3__oob_valid                 ( std__pe3__oob_valid              ),      
+               .pe3__std__oob_ready                 ( pe3__std__oob_ready              ),      
+               .std__pe3__oob_type                  ( std__pe3__oob_type               ),      
                // PE 3, Lane 0                 
                .pe3__std__lane0_strm0_ready         ( pe3__std__lane0_strm0_ready      ),      
                .std__pe3__lane0_strm0_cntl          ( std__pe3__lane0_strm0_cntl       ),      
@@ -1663,6 +1707,17 @@
                .std__pe3__lane31_strm1_data_valid    ( std__pe3__lane31_strm1_data_valid ),      
                .std__pe3__lane31_strm1_data_mask     ( std__pe3__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe4__peId                      ( sys__pe4__peId                   ),      
+               .sys__pe4__allSynchronized           ( sys__pe4__allSynchronized        ),      
+               .pe4__sys__thisSynchronized          ( pe4__sys__thisSynchronized       ),      
+               .pe4__sys__ready                     ( pe4__sys__ready                  ),      
+               .pe4__sys__complete                  ( pe4__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe4__oob_cntl                  ( std__pe4__oob_cntl               ),      
+               .std__pe4__oob_valid                 ( std__pe4__oob_valid              ),      
+               .pe4__std__oob_ready                 ( pe4__std__oob_ready              ),      
+               .std__pe4__oob_type                  ( std__pe4__oob_type               ),      
                // PE 4, Lane 0                 
                .pe4__std__lane0_strm0_ready         ( pe4__std__lane0_strm0_ready      ),      
                .std__pe4__lane0_strm0_cntl          ( std__pe4__lane0_strm0_cntl       ),      
@@ -2079,6 +2134,17 @@
                .std__pe4__lane31_strm1_data_valid    ( std__pe4__lane31_strm1_data_valid ),      
                .std__pe4__lane31_strm1_data_mask     ( std__pe4__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe5__peId                      ( sys__pe5__peId                   ),      
+               .sys__pe5__allSynchronized           ( sys__pe5__allSynchronized        ),      
+               .pe5__sys__thisSynchronized          ( pe5__sys__thisSynchronized       ),      
+               .pe5__sys__ready                     ( pe5__sys__ready                  ),      
+               .pe5__sys__complete                  ( pe5__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe5__oob_cntl                  ( std__pe5__oob_cntl               ),      
+               .std__pe5__oob_valid                 ( std__pe5__oob_valid              ),      
+               .pe5__std__oob_ready                 ( pe5__std__oob_ready              ),      
+               .std__pe5__oob_type                  ( std__pe5__oob_type               ),      
                // PE 5, Lane 0                 
                .pe5__std__lane0_strm0_ready         ( pe5__std__lane0_strm0_ready      ),      
                .std__pe5__lane0_strm0_cntl          ( std__pe5__lane0_strm0_cntl       ),      
@@ -2495,6 +2561,17 @@
                .std__pe5__lane31_strm1_data_valid    ( std__pe5__lane31_strm1_data_valid ),      
                .std__pe5__lane31_strm1_data_mask     ( std__pe5__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe6__peId                      ( sys__pe6__peId                   ),      
+               .sys__pe6__allSynchronized           ( sys__pe6__allSynchronized        ),      
+               .pe6__sys__thisSynchronized          ( pe6__sys__thisSynchronized       ),      
+               .pe6__sys__ready                     ( pe6__sys__ready                  ),      
+               .pe6__sys__complete                  ( pe6__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe6__oob_cntl                  ( std__pe6__oob_cntl               ),      
+               .std__pe6__oob_valid                 ( std__pe6__oob_valid              ),      
+               .pe6__std__oob_ready                 ( pe6__std__oob_ready              ),      
+               .std__pe6__oob_type                  ( std__pe6__oob_type               ),      
                // PE 6, Lane 0                 
                .pe6__std__lane0_strm0_ready         ( pe6__std__lane0_strm0_ready      ),      
                .std__pe6__lane0_strm0_cntl          ( std__pe6__lane0_strm0_cntl       ),      
@@ -2911,6 +2988,17 @@
                .std__pe6__lane31_strm1_data_valid    ( std__pe6__lane31_strm1_data_valid ),      
                .std__pe6__lane31_strm1_data_mask     ( std__pe6__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe7__peId                      ( sys__pe7__peId                   ),      
+               .sys__pe7__allSynchronized           ( sys__pe7__allSynchronized        ),      
+               .pe7__sys__thisSynchronized          ( pe7__sys__thisSynchronized       ),      
+               .pe7__sys__ready                     ( pe7__sys__ready                  ),      
+               .pe7__sys__complete                  ( pe7__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe7__oob_cntl                  ( std__pe7__oob_cntl               ),      
+               .std__pe7__oob_valid                 ( std__pe7__oob_valid              ),      
+               .pe7__std__oob_ready                 ( pe7__std__oob_ready              ),      
+               .std__pe7__oob_type                  ( std__pe7__oob_type               ),      
                // PE 7, Lane 0                 
                .pe7__std__lane0_strm0_ready         ( pe7__std__lane0_strm0_ready      ),      
                .std__pe7__lane0_strm0_cntl          ( std__pe7__lane0_strm0_cntl       ),      
@@ -3327,6 +3415,17 @@
                .std__pe7__lane31_strm1_data_valid    ( std__pe7__lane31_strm1_data_valid ),      
                .std__pe7__lane31_strm1_data_mask     ( std__pe7__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe8__peId                      ( sys__pe8__peId                   ),      
+               .sys__pe8__allSynchronized           ( sys__pe8__allSynchronized        ),      
+               .pe8__sys__thisSynchronized          ( pe8__sys__thisSynchronized       ),      
+               .pe8__sys__ready                     ( pe8__sys__ready                  ),      
+               .pe8__sys__complete                  ( pe8__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe8__oob_cntl                  ( std__pe8__oob_cntl               ),      
+               .std__pe8__oob_valid                 ( std__pe8__oob_valid              ),      
+               .pe8__std__oob_ready                 ( pe8__std__oob_ready              ),      
+               .std__pe8__oob_type                  ( std__pe8__oob_type               ),      
                // PE 8, Lane 0                 
                .pe8__std__lane0_strm0_ready         ( pe8__std__lane0_strm0_ready      ),      
                .std__pe8__lane0_strm0_cntl          ( std__pe8__lane0_strm0_cntl       ),      
@@ -3743,6 +3842,17 @@
                .std__pe8__lane31_strm1_data_valid    ( std__pe8__lane31_strm1_data_valid ),      
                .std__pe8__lane31_strm1_data_mask     ( std__pe8__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe9__peId                      ( sys__pe9__peId                   ),      
+               .sys__pe9__allSynchronized           ( sys__pe9__allSynchronized        ),      
+               .pe9__sys__thisSynchronized          ( pe9__sys__thisSynchronized       ),      
+               .pe9__sys__ready                     ( pe9__sys__ready                  ),      
+               .pe9__sys__complete                  ( pe9__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe9__oob_cntl                  ( std__pe9__oob_cntl               ),      
+               .std__pe9__oob_valid                 ( std__pe9__oob_valid              ),      
+               .pe9__std__oob_ready                 ( pe9__std__oob_ready              ),      
+               .std__pe9__oob_type                  ( std__pe9__oob_type               ),      
                // PE 9, Lane 0                 
                .pe9__std__lane0_strm0_ready         ( pe9__std__lane0_strm0_ready      ),      
                .std__pe9__lane0_strm0_cntl          ( std__pe9__lane0_strm0_cntl       ),      
@@ -4159,6 +4269,17 @@
                .std__pe9__lane31_strm1_data_valid    ( std__pe9__lane31_strm1_data_valid ),      
                .std__pe9__lane31_strm1_data_mask     ( std__pe9__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe10__peId                      ( sys__pe10__peId                   ),      
+               .sys__pe10__allSynchronized           ( sys__pe10__allSynchronized        ),      
+               .pe10__sys__thisSynchronized          ( pe10__sys__thisSynchronized       ),      
+               .pe10__sys__ready                     ( pe10__sys__ready                  ),      
+               .pe10__sys__complete                  ( pe10__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe10__oob_cntl                  ( std__pe10__oob_cntl               ),      
+               .std__pe10__oob_valid                 ( std__pe10__oob_valid              ),      
+               .pe10__std__oob_ready                 ( pe10__std__oob_ready              ),      
+               .std__pe10__oob_type                  ( std__pe10__oob_type               ),      
                // PE 10, Lane 0                 
                .pe10__std__lane0_strm0_ready         ( pe10__std__lane0_strm0_ready      ),      
                .std__pe10__lane0_strm0_cntl          ( std__pe10__lane0_strm0_cntl       ),      
@@ -4575,6 +4696,17 @@
                .std__pe10__lane31_strm1_data_valid    ( std__pe10__lane31_strm1_data_valid ),      
                .std__pe10__lane31_strm1_data_mask     ( std__pe10__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe11__peId                      ( sys__pe11__peId                   ),      
+               .sys__pe11__allSynchronized           ( sys__pe11__allSynchronized        ),      
+               .pe11__sys__thisSynchronized          ( pe11__sys__thisSynchronized       ),      
+               .pe11__sys__ready                     ( pe11__sys__ready                  ),      
+               .pe11__sys__complete                  ( pe11__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe11__oob_cntl                  ( std__pe11__oob_cntl               ),      
+               .std__pe11__oob_valid                 ( std__pe11__oob_valid              ),      
+               .pe11__std__oob_ready                 ( pe11__std__oob_ready              ),      
+               .std__pe11__oob_type                  ( std__pe11__oob_type               ),      
                // PE 11, Lane 0                 
                .pe11__std__lane0_strm0_ready         ( pe11__std__lane0_strm0_ready      ),      
                .std__pe11__lane0_strm0_cntl          ( std__pe11__lane0_strm0_cntl       ),      
@@ -4991,6 +5123,17 @@
                .std__pe11__lane31_strm1_data_valid    ( std__pe11__lane31_strm1_data_valid ),      
                .std__pe11__lane31_strm1_data_mask     ( std__pe11__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe12__peId                      ( sys__pe12__peId                   ),      
+               .sys__pe12__allSynchronized           ( sys__pe12__allSynchronized        ),      
+               .pe12__sys__thisSynchronized          ( pe12__sys__thisSynchronized       ),      
+               .pe12__sys__ready                     ( pe12__sys__ready                  ),      
+               .pe12__sys__complete                  ( pe12__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe12__oob_cntl                  ( std__pe12__oob_cntl               ),      
+               .std__pe12__oob_valid                 ( std__pe12__oob_valid              ),      
+               .pe12__std__oob_ready                 ( pe12__std__oob_ready              ),      
+               .std__pe12__oob_type                  ( std__pe12__oob_type               ),      
                // PE 12, Lane 0                 
                .pe12__std__lane0_strm0_ready         ( pe12__std__lane0_strm0_ready      ),      
                .std__pe12__lane0_strm0_cntl          ( std__pe12__lane0_strm0_cntl       ),      
@@ -5407,6 +5550,17 @@
                .std__pe12__lane31_strm1_data_valid    ( std__pe12__lane31_strm1_data_valid ),      
                .std__pe12__lane31_strm1_data_mask     ( std__pe12__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe13__peId                      ( sys__pe13__peId                   ),      
+               .sys__pe13__allSynchronized           ( sys__pe13__allSynchronized        ),      
+               .pe13__sys__thisSynchronized          ( pe13__sys__thisSynchronized       ),      
+               .pe13__sys__ready                     ( pe13__sys__ready                  ),      
+               .pe13__sys__complete                  ( pe13__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe13__oob_cntl                  ( std__pe13__oob_cntl               ),      
+               .std__pe13__oob_valid                 ( std__pe13__oob_valid              ),      
+               .pe13__std__oob_ready                 ( pe13__std__oob_ready              ),      
+               .std__pe13__oob_type                  ( std__pe13__oob_type               ),      
                // PE 13, Lane 0                 
                .pe13__std__lane0_strm0_ready         ( pe13__std__lane0_strm0_ready      ),      
                .std__pe13__lane0_strm0_cntl          ( std__pe13__lane0_strm0_cntl       ),      
@@ -5823,6 +5977,17 @@
                .std__pe13__lane31_strm1_data_valid    ( std__pe13__lane31_strm1_data_valid ),      
                .std__pe13__lane31_strm1_data_mask     ( std__pe13__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe14__peId                      ( sys__pe14__peId                   ),      
+               .sys__pe14__allSynchronized           ( sys__pe14__allSynchronized        ),      
+               .pe14__sys__thisSynchronized          ( pe14__sys__thisSynchronized       ),      
+               .pe14__sys__ready                     ( pe14__sys__ready                  ),      
+               .pe14__sys__complete                  ( pe14__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe14__oob_cntl                  ( std__pe14__oob_cntl               ),      
+               .std__pe14__oob_valid                 ( std__pe14__oob_valid              ),      
+               .pe14__std__oob_ready                 ( pe14__std__oob_ready              ),      
+               .std__pe14__oob_type                  ( std__pe14__oob_type               ),      
                // PE 14, Lane 0                 
                .pe14__std__lane0_strm0_ready         ( pe14__std__lane0_strm0_ready      ),      
                .std__pe14__lane0_strm0_cntl          ( std__pe14__lane0_strm0_cntl       ),      
@@ -6239,6 +6404,17 @@
                .std__pe14__lane31_strm1_data_valid    ( std__pe14__lane31_strm1_data_valid ),      
                .std__pe14__lane31_strm1_data_mask     ( std__pe14__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe15__peId                      ( sys__pe15__peId                   ),      
+               .sys__pe15__allSynchronized           ( sys__pe15__allSynchronized        ),      
+               .pe15__sys__thisSynchronized          ( pe15__sys__thisSynchronized       ),      
+               .pe15__sys__ready                     ( pe15__sys__ready                  ),      
+               .pe15__sys__complete                  ( pe15__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe15__oob_cntl                  ( std__pe15__oob_cntl               ),      
+               .std__pe15__oob_valid                 ( std__pe15__oob_valid              ),      
+               .pe15__std__oob_ready                 ( pe15__std__oob_ready              ),      
+               .std__pe15__oob_type                  ( std__pe15__oob_type               ),      
                // PE 15, Lane 0                 
                .pe15__std__lane0_strm0_ready         ( pe15__std__lane0_strm0_ready      ),      
                .std__pe15__lane0_strm0_cntl          ( std__pe15__lane0_strm0_cntl       ),      
@@ -6655,6 +6831,17 @@
                .std__pe15__lane31_strm1_data_valid    ( std__pe15__lane31_strm1_data_valid ),      
                .std__pe15__lane31_strm1_data_mask     ( std__pe15__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe16__peId                      ( sys__pe16__peId                   ),      
+               .sys__pe16__allSynchronized           ( sys__pe16__allSynchronized        ),      
+               .pe16__sys__thisSynchronized          ( pe16__sys__thisSynchronized       ),      
+               .pe16__sys__ready                     ( pe16__sys__ready                  ),      
+               .pe16__sys__complete                  ( pe16__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe16__oob_cntl                  ( std__pe16__oob_cntl               ),      
+               .std__pe16__oob_valid                 ( std__pe16__oob_valid              ),      
+               .pe16__std__oob_ready                 ( pe16__std__oob_ready              ),      
+               .std__pe16__oob_type                  ( std__pe16__oob_type               ),      
                // PE 16, Lane 0                 
                .pe16__std__lane0_strm0_ready         ( pe16__std__lane0_strm0_ready      ),      
                .std__pe16__lane0_strm0_cntl          ( std__pe16__lane0_strm0_cntl       ),      
@@ -7071,6 +7258,17 @@
                .std__pe16__lane31_strm1_data_valid    ( std__pe16__lane31_strm1_data_valid ),      
                .std__pe16__lane31_strm1_data_mask     ( std__pe16__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe17__peId                      ( sys__pe17__peId                   ),      
+               .sys__pe17__allSynchronized           ( sys__pe17__allSynchronized        ),      
+               .pe17__sys__thisSynchronized          ( pe17__sys__thisSynchronized       ),      
+               .pe17__sys__ready                     ( pe17__sys__ready                  ),      
+               .pe17__sys__complete                  ( pe17__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe17__oob_cntl                  ( std__pe17__oob_cntl               ),      
+               .std__pe17__oob_valid                 ( std__pe17__oob_valid              ),      
+               .pe17__std__oob_ready                 ( pe17__std__oob_ready              ),      
+               .std__pe17__oob_type                  ( std__pe17__oob_type               ),      
                // PE 17, Lane 0                 
                .pe17__std__lane0_strm0_ready         ( pe17__std__lane0_strm0_ready      ),      
                .std__pe17__lane0_strm0_cntl          ( std__pe17__lane0_strm0_cntl       ),      
@@ -7487,6 +7685,17 @@
                .std__pe17__lane31_strm1_data_valid    ( std__pe17__lane31_strm1_data_valid ),      
                .std__pe17__lane31_strm1_data_mask     ( std__pe17__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe18__peId                      ( sys__pe18__peId                   ),      
+               .sys__pe18__allSynchronized           ( sys__pe18__allSynchronized        ),      
+               .pe18__sys__thisSynchronized          ( pe18__sys__thisSynchronized       ),      
+               .pe18__sys__ready                     ( pe18__sys__ready                  ),      
+               .pe18__sys__complete                  ( pe18__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe18__oob_cntl                  ( std__pe18__oob_cntl               ),      
+               .std__pe18__oob_valid                 ( std__pe18__oob_valid              ),      
+               .pe18__std__oob_ready                 ( pe18__std__oob_ready              ),      
+               .std__pe18__oob_type                  ( std__pe18__oob_type               ),      
                // PE 18, Lane 0                 
                .pe18__std__lane0_strm0_ready         ( pe18__std__lane0_strm0_ready      ),      
                .std__pe18__lane0_strm0_cntl          ( std__pe18__lane0_strm0_cntl       ),      
@@ -7903,6 +8112,17 @@
                .std__pe18__lane31_strm1_data_valid    ( std__pe18__lane31_strm1_data_valid ),      
                .std__pe18__lane31_strm1_data_mask     ( std__pe18__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe19__peId                      ( sys__pe19__peId                   ),      
+               .sys__pe19__allSynchronized           ( sys__pe19__allSynchronized        ),      
+               .pe19__sys__thisSynchronized          ( pe19__sys__thisSynchronized       ),      
+               .pe19__sys__ready                     ( pe19__sys__ready                  ),      
+               .pe19__sys__complete                  ( pe19__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe19__oob_cntl                  ( std__pe19__oob_cntl               ),      
+               .std__pe19__oob_valid                 ( std__pe19__oob_valid              ),      
+               .pe19__std__oob_ready                 ( pe19__std__oob_ready              ),      
+               .std__pe19__oob_type                  ( std__pe19__oob_type               ),      
                // PE 19, Lane 0                 
                .pe19__std__lane0_strm0_ready         ( pe19__std__lane0_strm0_ready      ),      
                .std__pe19__lane0_strm0_cntl          ( std__pe19__lane0_strm0_cntl       ),      
@@ -8319,6 +8539,17 @@
                .std__pe19__lane31_strm1_data_valid    ( std__pe19__lane31_strm1_data_valid ),      
                .std__pe19__lane31_strm1_data_mask     ( std__pe19__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe20__peId                      ( sys__pe20__peId                   ),      
+               .sys__pe20__allSynchronized           ( sys__pe20__allSynchronized        ),      
+               .pe20__sys__thisSynchronized          ( pe20__sys__thisSynchronized       ),      
+               .pe20__sys__ready                     ( pe20__sys__ready                  ),      
+               .pe20__sys__complete                  ( pe20__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe20__oob_cntl                  ( std__pe20__oob_cntl               ),      
+               .std__pe20__oob_valid                 ( std__pe20__oob_valid              ),      
+               .pe20__std__oob_ready                 ( pe20__std__oob_ready              ),      
+               .std__pe20__oob_type                  ( std__pe20__oob_type               ),      
                // PE 20, Lane 0                 
                .pe20__std__lane0_strm0_ready         ( pe20__std__lane0_strm0_ready      ),      
                .std__pe20__lane0_strm0_cntl          ( std__pe20__lane0_strm0_cntl       ),      
@@ -8735,6 +8966,17 @@
                .std__pe20__lane31_strm1_data_valid    ( std__pe20__lane31_strm1_data_valid ),      
                .std__pe20__lane31_strm1_data_mask     ( std__pe20__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe21__peId                      ( sys__pe21__peId                   ),      
+               .sys__pe21__allSynchronized           ( sys__pe21__allSynchronized        ),      
+               .pe21__sys__thisSynchronized          ( pe21__sys__thisSynchronized       ),      
+               .pe21__sys__ready                     ( pe21__sys__ready                  ),      
+               .pe21__sys__complete                  ( pe21__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe21__oob_cntl                  ( std__pe21__oob_cntl               ),      
+               .std__pe21__oob_valid                 ( std__pe21__oob_valid              ),      
+               .pe21__std__oob_ready                 ( pe21__std__oob_ready              ),      
+               .std__pe21__oob_type                  ( std__pe21__oob_type               ),      
                // PE 21, Lane 0                 
                .pe21__std__lane0_strm0_ready         ( pe21__std__lane0_strm0_ready      ),      
                .std__pe21__lane0_strm0_cntl          ( std__pe21__lane0_strm0_cntl       ),      
@@ -9151,6 +9393,17 @@
                .std__pe21__lane31_strm1_data_valid    ( std__pe21__lane31_strm1_data_valid ),      
                .std__pe21__lane31_strm1_data_mask     ( std__pe21__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe22__peId                      ( sys__pe22__peId                   ),      
+               .sys__pe22__allSynchronized           ( sys__pe22__allSynchronized        ),      
+               .pe22__sys__thisSynchronized          ( pe22__sys__thisSynchronized       ),      
+               .pe22__sys__ready                     ( pe22__sys__ready                  ),      
+               .pe22__sys__complete                  ( pe22__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe22__oob_cntl                  ( std__pe22__oob_cntl               ),      
+               .std__pe22__oob_valid                 ( std__pe22__oob_valid              ),      
+               .pe22__std__oob_ready                 ( pe22__std__oob_ready              ),      
+               .std__pe22__oob_type                  ( std__pe22__oob_type               ),      
                // PE 22, Lane 0                 
                .pe22__std__lane0_strm0_ready         ( pe22__std__lane0_strm0_ready      ),      
                .std__pe22__lane0_strm0_cntl          ( std__pe22__lane0_strm0_cntl       ),      
@@ -9567,6 +9820,17 @@
                .std__pe22__lane31_strm1_data_valid    ( std__pe22__lane31_strm1_data_valid ),      
                .std__pe22__lane31_strm1_data_mask     ( std__pe22__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe23__peId                      ( sys__pe23__peId                   ),      
+               .sys__pe23__allSynchronized           ( sys__pe23__allSynchronized        ),      
+               .pe23__sys__thisSynchronized          ( pe23__sys__thisSynchronized       ),      
+               .pe23__sys__ready                     ( pe23__sys__ready                  ),      
+               .pe23__sys__complete                  ( pe23__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe23__oob_cntl                  ( std__pe23__oob_cntl               ),      
+               .std__pe23__oob_valid                 ( std__pe23__oob_valid              ),      
+               .pe23__std__oob_ready                 ( pe23__std__oob_ready              ),      
+               .std__pe23__oob_type                  ( std__pe23__oob_type               ),      
                // PE 23, Lane 0                 
                .pe23__std__lane0_strm0_ready         ( pe23__std__lane0_strm0_ready      ),      
                .std__pe23__lane0_strm0_cntl          ( std__pe23__lane0_strm0_cntl       ),      
@@ -9983,6 +10247,17 @@
                .std__pe23__lane31_strm1_data_valid    ( std__pe23__lane31_strm1_data_valid ),      
                .std__pe23__lane31_strm1_data_mask     ( std__pe23__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe24__peId                      ( sys__pe24__peId                   ),      
+               .sys__pe24__allSynchronized           ( sys__pe24__allSynchronized        ),      
+               .pe24__sys__thisSynchronized          ( pe24__sys__thisSynchronized       ),      
+               .pe24__sys__ready                     ( pe24__sys__ready                  ),      
+               .pe24__sys__complete                  ( pe24__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe24__oob_cntl                  ( std__pe24__oob_cntl               ),      
+               .std__pe24__oob_valid                 ( std__pe24__oob_valid              ),      
+               .pe24__std__oob_ready                 ( pe24__std__oob_ready              ),      
+               .std__pe24__oob_type                  ( std__pe24__oob_type               ),      
                // PE 24, Lane 0                 
                .pe24__std__lane0_strm0_ready         ( pe24__std__lane0_strm0_ready      ),      
                .std__pe24__lane0_strm0_cntl          ( std__pe24__lane0_strm0_cntl       ),      
@@ -10399,6 +10674,17 @@
                .std__pe24__lane31_strm1_data_valid    ( std__pe24__lane31_strm1_data_valid ),      
                .std__pe24__lane31_strm1_data_mask     ( std__pe24__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe25__peId                      ( sys__pe25__peId                   ),      
+               .sys__pe25__allSynchronized           ( sys__pe25__allSynchronized        ),      
+               .pe25__sys__thisSynchronized          ( pe25__sys__thisSynchronized       ),      
+               .pe25__sys__ready                     ( pe25__sys__ready                  ),      
+               .pe25__sys__complete                  ( pe25__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe25__oob_cntl                  ( std__pe25__oob_cntl               ),      
+               .std__pe25__oob_valid                 ( std__pe25__oob_valid              ),      
+               .pe25__std__oob_ready                 ( pe25__std__oob_ready              ),      
+               .std__pe25__oob_type                  ( std__pe25__oob_type               ),      
                // PE 25, Lane 0                 
                .pe25__std__lane0_strm0_ready         ( pe25__std__lane0_strm0_ready      ),      
                .std__pe25__lane0_strm0_cntl          ( std__pe25__lane0_strm0_cntl       ),      
@@ -10815,6 +11101,17 @@
                .std__pe25__lane31_strm1_data_valid    ( std__pe25__lane31_strm1_data_valid ),      
                .std__pe25__lane31_strm1_data_mask     ( std__pe25__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe26__peId                      ( sys__pe26__peId                   ),      
+               .sys__pe26__allSynchronized           ( sys__pe26__allSynchronized        ),      
+               .pe26__sys__thisSynchronized          ( pe26__sys__thisSynchronized       ),      
+               .pe26__sys__ready                     ( pe26__sys__ready                  ),      
+               .pe26__sys__complete                  ( pe26__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe26__oob_cntl                  ( std__pe26__oob_cntl               ),      
+               .std__pe26__oob_valid                 ( std__pe26__oob_valid              ),      
+               .pe26__std__oob_ready                 ( pe26__std__oob_ready              ),      
+               .std__pe26__oob_type                  ( std__pe26__oob_type               ),      
                // PE 26, Lane 0                 
                .pe26__std__lane0_strm0_ready         ( pe26__std__lane0_strm0_ready      ),      
                .std__pe26__lane0_strm0_cntl          ( std__pe26__lane0_strm0_cntl       ),      
@@ -11231,6 +11528,17 @@
                .std__pe26__lane31_strm1_data_valid    ( std__pe26__lane31_strm1_data_valid ),      
                .std__pe26__lane31_strm1_data_mask     ( std__pe26__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe27__peId                      ( sys__pe27__peId                   ),      
+               .sys__pe27__allSynchronized           ( sys__pe27__allSynchronized        ),      
+               .pe27__sys__thisSynchronized          ( pe27__sys__thisSynchronized       ),      
+               .pe27__sys__ready                     ( pe27__sys__ready                  ),      
+               .pe27__sys__complete                  ( pe27__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe27__oob_cntl                  ( std__pe27__oob_cntl               ),      
+               .std__pe27__oob_valid                 ( std__pe27__oob_valid              ),      
+               .pe27__std__oob_ready                 ( pe27__std__oob_ready              ),      
+               .std__pe27__oob_type                  ( std__pe27__oob_type               ),      
                // PE 27, Lane 0                 
                .pe27__std__lane0_strm0_ready         ( pe27__std__lane0_strm0_ready      ),      
                .std__pe27__lane0_strm0_cntl          ( std__pe27__lane0_strm0_cntl       ),      
@@ -11647,6 +11955,17 @@
                .std__pe27__lane31_strm1_data_valid    ( std__pe27__lane31_strm1_data_valid ),      
                .std__pe27__lane31_strm1_data_mask     ( std__pe27__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe28__peId                      ( sys__pe28__peId                   ),      
+               .sys__pe28__allSynchronized           ( sys__pe28__allSynchronized        ),      
+               .pe28__sys__thisSynchronized          ( pe28__sys__thisSynchronized       ),      
+               .pe28__sys__ready                     ( pe28__sys__ready                  ),      
+               .pe28__sys__complete                  ( pe28__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe28__oob_cntl                  ( std__pe28__oob_cntl               ),      
+               .std__pe28__oob_valid                 ( std__pe28__oob_valid              ),      
+               .pe28__std__oob_ready                 ( pe28__std__oob_ready              ),      
+               .std__pe28__oob_type                  ( std__pe28__oob_type               ),      
                // PE 28, Lane 0                 
                .pe28__std__lane0_strm0_ready         ( pe28__std__lane0_strm0_ready      ),      
                .std__pe28__lane0_strm0_cntl          ( std__pe28__lane0_strm0_cntl       ),      
@@ -12063,6 +12382,17 @@
                .std__pe28__lane31_strm1_data_valid    ( std__pe28__lane31_strm1_data_valid ),      
                .std__pe28__lane31_strm1_data_mask     ( std__pe28__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe29__peId                      ( sys__pe29__peId                   ),      
+               .sys__pe29__allSynchronized           ( sys__pe29__allSynchronized        ),      
+               .pe29__sys__thisSynchronized          ( pe29__sys__thisSynchronized       ),      
+               .pe29__sys__ready                     ( pe29__sys__ready                  ),      
+               .pe29__sys__complete                  ( pe29__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe29__oob_cntl                  ( std__pe29__oob_cntl               ),      
+               .std__pe29__oob_valid                 ( std__pe29__oob_valid              ),      
+               .pe29__std__oob_ready                 ( pe29__std__oob_ready              ),      
+               .std__pe29__oob_type                  ( std__pe29__oob_type               ),      
                // PE 29, Lane 0                 
                .pe29__std__lane0_strm0_ready         ( pe29__std__lane0_strm0_ready      ),      
                .std__pe29__lane0_strm0_cntl          ( std__pe29__lane0_strm0_cntl       ),      
@@ -12479,6 +12809,17 @@
                .std__pe29__lane31_strm1_data_valid    ( std__pe29__lane31_strm1_data_valid ),      
                .std__pe29__lane31_strm1_data_mask     ( std__pe29__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe30__peId                      ( sys__pe30__peId                   ),      
+               .sys__pe30__allSynchronized           ( sys__pe30__allSynchronized        ),      
+               .pe30__sys__thisSynchronized          ( pe30__sys__thisSynchronized       ),      
+               .pe30__sys__ready                     ( pe30__sys__ready                  ),      
+               .pe30__sys__complete                  ( pe30__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe30__oob_cntl                  ( std__pe30__oob_cntl               ),      
+               .std__pe30__oob_valid                 ( std__pe30__oob_valid              ),      
+               .pe30__std__oob_ready                 ( pe30__std__oob_ready              ),      
+               .std__pe30__oob_type                  ( std__pe30__oob_type               ),      
                // PE 30, Lane 0                 
                .pe30__std__lane0_strm0_ready         ( pe30__std__lane0_strm0_ready      ),      
                .std__pe30__lane0_strm0_cntl          ( std__pe30__lane0_strm0_cntl       ),      
@@ -12895,6 +13236,17 @@
                .std__pe30__lane31_strm1_data_valid    ( std__pe30__lane31_strm1_data_valid ),      
                .std__pe30__lane31_strm1_data_mask     ( std__pe30__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe31__peId                      ( sys__pe31__peId                   ),      
+               .sys__pe31__allSynchronized           ( sys__pe31__allSynchronized        ),      
+               .pe31__sys__thisSynchronized          ( pe31__sys__thisSynchronized       ),      
+               .pe31__sys__ready                     ( pe31__sys__ready                  ),      
+               .pe31__sys__complete                  ( pe31__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe31__oob_cntl                  ( std__pe31__oob_cntl               ),      
+               .std__pe31__oob_valid                 ( std__pe31__oob_valid              ),      
+               .pe31__std__oob_ready                 ( pe31__std__oob_ready              ),      
+               .std__pe31__oob_type                  ( std__pe31__oob_type               ),      
                // PE 31, Lane 0                 
                .pe31__std__lane0_strm0_ready         ( pe31__std__lane0_strm0_ready      ),      
                .std__pe31__lane0_strm0_cntl          ( std__pe31__lane0_strm0_cntl       ),      
@@ -13311,6 +13663,17 @@
                .std__pe31__lane31_strm1_data_valid    ( std__pe31__lane31_strm1_data_valid ),      
                .std__pe31__lane31_strm1_data_mask     ( std__pe31__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe32__peId                      ( sys__pe32__peId                   ),      
+               .sys__pe32__allSynchronized           ( sys__pe32__allSynchronized        ),      
+               .pe32__sys__thisSynchronized          ( pe32__sys__thisSynchronized       ),      
+               .pe32__sys__ready                     ( pe32__sys__ready                  ),      
+               .pe32__sys__complete                  ( pe32__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe32__oob_cntl                  ( std__pe32__oob_cntl               ),      
+               .std__pe32__oob_valid                 ( std__pe32__oob_valid              ),      
+               .pe32__std__oob_ready                 ( pe32__std__oob_ready              ),      
+               .std__pe32__oob_type                  ( std__pe32__oob_type               ),      
                // PE 32, Lane 0                 
                .pe32__std__lane0_strm0_ready         ( pe32__std__lane0_strm0_ready      ),      
                .std__pe32__lane0_strm0_cntl          ( std__pe32__lane0_strm0_cntl       ),      
@@ -13727,6 +14090,17 @@
                .std__pe32__lane31_strm1_data_valid    ( std__pe32__lane31_strm1_data_valid ),      
                .std__pe32__lane31_strm1_data_mask     ( std__pe32__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe33__peId                      ( sys__pe33__peId                   ),      
+               .sys__pe33__allSynchronized           ( sys__pe33__allSynchronized        ),      
+               .pe33__sys__thisSynchronized          ( pe33__sys__thisSynchronized       ),      
+               .pe33__sys__ready                     ( pe33__sys__ready                  ),      
+               .pe33__sys__complete                  ( pe33__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe33__oob_cntl                  ( std__pe33__oob_cntl               ),      
+               .std__pe33__oob_valid                 ( std__pe33__oob_valid              ),      
+               .pe33__std__oob_ready                 ( pe33__std__oob_ready              ),      
+               .std__pe33__oob_type                  ( std__pe33__oob_type               ),      
                // PE 33, Lane 0                 
                .pe33__std__lane0_strm0_ready         ( pe33__std__lane0_strm0_ready      ),      
                .std__pe33__lane0_strm0_cntl          ( std__pe33__lane0_strm0_cntl       ),      
@@ -14143,6 +14517,17 @@
                .std__pe33__lane31_strm1_data_valid    ( std__pe33__lane31_strm1_data_valid ),      
                .std__pe33__lane31_strm1_data_mask     ( std__pe33__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe34__peId                      ( sys__pe34__peId                   ),      
+               .sys__pe34__allSynchronized           ( sys__pe34__allSynchronized        ),      
+               .pe34__sys__thisSynchronized          ( pe34__sys__thisSynchronized       ),      
+               .pe34__sys__ready                     ( pe34__sys__ready                  ),      
+               .pe34__sys__complete                  ( pe34__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe34__oob_cntl                  ( std__pe34__oob_cntl               ),      
+               .std__pe34__oob_valid                 ( std__pe34__oob_valid              ),      
+               .pe34__std__oob_ready                 ( pe34__std__oob_ready              ),      
+               .std__pe34__oob_type                  ( std__pe34__oob_type               ),      
                // PE 34, Lane 0                 
                .pe34__std__lane0_strm0_ready         ( pe34__std__lane0_strm0_ready      ),      
                .std__pe34__lane0_strm0_cntl          ( std__pe34__lane0_strm0_cntl       ),      
@@ -14559,6 +14944,17 @@
                .std__pe34__lane31_strm1_data_valid    ( std__pe34__lane31_strm1_data_valid ),      
                .std__pe34__lane31_strm1_data_mask     ( std__pe34__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe35__peId                      ( sys__pe35__peId                   ),      
+               .sys__pe35__allSynchronized           ( sys__pe35__allSynchronized        ),      
+               .pe35__sys__thisSynchronized          ( pe35__sys__thisSynchronized       ),      
+               .pe35__sys__ready                     ( pe35__sys__ready                  ),      
+               .pe35__sys__complete                  ( pe35__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe35__oob_cntl                  ( std__pe35__oob_cntl               ),      
+               .std__pe35__oob_valid                 ( std__pe35__oob_valid              ),      
+               .pe35__std__oob_ready                 ( pe35__std__oob_ready              ),      
+               .std__pe35__oob_type                  ( std__pe35__oob_type               ),      
                // PE 35, Lane 0                 
                .pe35__std__lane0_strm0_ready         ( pe35__std__lane0_strm0_ready      ),      
                .std__pe35__lane0_strm0_cntl          ( std__pe35__lane0_strm0_cntl       ),      
@@ -14975,6 +15371,17 @@
                .std__pe35__lane31_strm1_data_valid    ( std__pe35__lane31_strm1_data_valid ),      
                .std__pe35__lane31_strm1_data_mask     ( std__pe35__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe36__peId                      ( sys__pe36__peId                   ),      
+               .sys__pe36__allSynchronized           ( sys__pe36__allSynchronized        ),      
+               .pe36__sys__thisSynchronized          ( pe36__sys__thisSynchronized       ),      
+               .pe36__sys__ready                     ( pe36__sys__ready                  ),      
+               .pe36__sys__complete                  ( pe36__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe36__oob_cntl                  ( std__pe36__oob_cntl               ),      
+               .std__pe36__oob_valid                 ( std__pe36__oob_valid              ),      
+               .pe36__std__oob_ready                 ( pe36__std__oob_ready              ),      
+               .std__pe36__oob_type                  ( std__pe36__oob_type               ),      
                // PE 36, Lane 0                 
                .pe36__std__lane0_strm0_ready         ( pe36__std__lane0_strm0_ready      ),      
                .std__pe36__lane0_strm0_cntl          ( std__pe36__lane0_strm0_cntl       ),      
@@ -15391,6 +15798,17 @@
                .std__pe36__lane31_strm1_data_valid    ( std__pe36__lane31_strm1_data_valid ),      
                .std__pe36__lane31_strm1_data_mask     ( std__pe36__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe37__peId                      ( sys__pe37__peId                   ),      
+               .sys__pe37__allSynchronized           ( sys__pe37__allSynchronized        ),      
+               .pe37__sys__thisSynchronized          ( pe37__sys__thisSynchronized       ),      
+               .pe37__sys__ready                     ( pe37__sys__ready                  ),      
+               .pe37__sys__complete                  ( pe37__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe37__oob_cntl                  ( std__pe37__oob_cntl               ),      
+               .std__pe37__oob_valid                 ( std__pe37__oob_valid              ),      
+               .pe37__std__oob_ready                 ( pe37__std__oob_ready              ),      
+               .std__pe37__oob_type                  ( std__pe37__oob_type               ),      
                // PE 37, Lane 0                 
                .pe37__std__lane0_strm0_ready         ( pe37__std__lane0_strm0_ready      ),      
                .std__pe37__lane0_strm0_cntl          ( std__pe37__lane0_strm0_cntl       ),      
@@ -15807,6 +16225,17 @@
                .std__pe37__lane31_strm1_data_valid    ( std__pe37__lane31_strm1_data_valid ),      
                .std__pe37__lane31_strm1_data_mask     ( std__pe37__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe38__peId                      ( sys__pe38__peId                   ),      
+               .sys__pe38__allSynchronized           ( sys__pe38__allSynchronized        ),      
+               .pe38__sys__thisSynchronized          ( pe38__sys__thisSynchronized       ),      
+               .pe38__sys__ready                     ( pe38__sys__ready                  ),      
+               .pe38__sys__complete                  ( pe38__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe38__oob_cntl                  ( std__pe38__oob_cntl               ),      
+               .std__pe38__oob_valid                 ( std__pe38__oob_valid              ),      
+               .pe38__std__oob_ready                 ( pe38__std__oob_ready              ),      
+               .std__pe38__oob_type                  ( std__pe38__oob_type               ),      
                // PE 38, Lane 0                 
                .pe38__std__lane0_strm0_ready         ( pe38__std__lane0_strm0_ready      ),      
                .std__pe38__lane0_strm0_cntl          ( std__pe38__lane0_strm0_cntl       ),      
@@ -16223,6 +16652,17 @@
                .std__pe38__lane31_strm1_data_valid    ( std__pe38__lane31_strm1_data_valid ),      
                .std__pe38__lane31_strm1_data_mask     ( std__pe38__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe39__peId                      ( sys__pe39__peId                   ),      
+               .sys__pe39__allSynchronized           ( sys__pe39__allSynchronized        ),      
+               .pe39__sys__thisSynchronized          ( pe39__sys__thisSynchronized       ),      
+               .pe39__sys__ready                     ( pe39__sys__ready                  ),      
+               .pe39__sys__complete                  ( pe39__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe39__oob_cntl                  ( std__pe39__oob_cntl               ),      
+               .std__pe39__oob_valid                 ( std__pe39__oob_valid              ),      
+               .pe39__std__oob_ready                 ( pe39__std__oob_ready              ),      
+               .std__pe39__oob_type                  ( std__pe39__oob_type               ),      
                // PE 39, Lane 0                 
                .pe39__std__lane0_strm0_ready         ( pe39__std__lane0_strm0_ready      ),      
                .std__pe39__lane0_strm0_cntl          ( std__pe39__lane0_strm0_cntl       ),      
@@ -16639,6 +17079,17 @@
                .std__pe39__lane31_strm1_data_valid    ( std__pe39__lane31_strm1_data_valid ),      
                .std__pe39__lane31_strm1_data_mask     ( std__pe39__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe40__peId                      ( sys__pe40__peId                   ),      
+               .sys__pe40__allSynchronized           ( sys__pe40__allSynchronized        ),      
+               .pe40__sys__thisSynchronized          ( pe40__sys__thisSynchronized       ),      
+               .pe40__sys__ready                     ( pe40__sys__ready                  ),      
+               .pe40__sys__complete                  ( pe40__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe40__oob_cntl                  ( std__pe40__oob_cntl               ),      
+               .std__pe40__oob_valid                 ( std__pe40__oob_valid              ),      
+               .pe40__std__oob_ready                 ( pe40__std__oob_ready              ),      
+               .std__pe40__oob_type                  ( std__pe40__oob_type               ),      
                // PE 40, Lane 0                 
                .pe40__std__lane0_strm0_ready         ( pe40__std__lane0_strm0_ready      ),      
                .std__pe40__lane0_strm0_cntl          ( std__pe40__lane0_strm0_cntl       ),      
@@ -17055,6 +17506,17 @@
                .std__pe40__lane31_strm1_data_valid    ( std__pe40__lane31_strm1_data_valid ),      
                .std__pe40__lane31_strm1_data_mask     ( std__pe40__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe41__peId                      ( sys__pe41__peId                   ),      
+               .sys__pe41__allSynchronized           ( sys__pe41__allSynchronized        ),      
+               .pe41__sys__thisSynchronized          ( pe41__sys__thisSynchronized       ),      
+               .pe41__sys__ready                     ( pe41__sys__ready                  ),      
+               .pe41__sys__complete                  ( pe41__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe41__oob_cntl                  ( std__pe41__oob_cntl               ),      
+               .std__pe41__oob_valid                 ( std__pe41__oob_valid              ),      
+               .pe41__std__oob_ready                 ( pe41__std__oob_ready              ),      
+               .std__pe41__oob_type                  ( std__pe41__oob_type               ),      
                // PE 41, Lane 0                 
                .pe41__std__lane0_strm0_ready         ( pe41__std__lane0_strm0_ready      ),      
                .std__pe41__lane0_strm0_cntl          ( std__pe41__lane0_strm0_cntl       ),      
@@ -17471,6 +17933,17 @@
                .std__pe41__lane31_strm1_data_valid    ( std__pe41__lane31_strm1_data_valid ),      
                .std__pe41__lane31_strm1_data_mask     ( std__pe41__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe42__peId                      ( sys__pe42__peId                   ),      
+               .sys__pe42__allSynchronized           ( sys__pe42__allSynchronized        ),      
+               .pe42__sys__thisSynchronized          ( pe42__sys__thisSynchronized       ),      
+               .pe42__sys__ready                     ( pe42__sys__ready                  ),      
+               .pe42__sys__complete                  ( pe42__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe42__oob_cntl                  ( std__pe42__oob_cntl               ),      
+               .std__pe42__oob_valid                 ( std__pe42__oob_valid              ),      
+               .pe42__std__oob_ready                 ( pe42__std__oob_ready              ),      
+               .std__pe42__oob_type                  ( std__pe42__oob_type               ),      
                // PE 42, Lane 0                 
                .pe42__std__lane0_strm0_ready         ( pe42__std__lane0_strm0_ready      ),      
                .std__pe42__lane0_strm0_cntl          ( std__pe42__lane0_strm0_cntl       ),      
@@ -17887,6 +18360,17 @@
                .std__pe42__lane31_strm1_data_valid    ( std__pe42__lane31_strm1_data_valid ),      
                .std__pe42__lane31_strm1_data_mask     ( std__pe42__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe43__peId                      ( sys__pe43__peId                   ),      
+               .sys__pe43__allSynchronized           ( sys__pe43__allSynchronized        ),      
+               .pe43__sys__thisSynchronized          ( pe43__sys__thisSynchronized       ),      
+               .pe43__sys__ready                     ( pe43__sys__ready                  ),      
+               .pe43__sys__complete                  ( pe43__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe43__oob_cntl                  ( std__pe43__oob_cntl               ),      
+               .std__pe43__oob_valid                 ( std__pe43__oob_valid              ),      
+               .pe43__std__oob_ready                 ( pe43__std__oob_ready              ),      
+               .std__pe43__oob_type                  ( std__pe43__oob_type               ),      
                // PE 43, Lane 0                 
                .pe43__std__lane0_strm0_ready         ( pe43__std__lane0_strm0_ready      ),      
                .std__pe43__lane0_strm0_cntl          ( std__pe43__lane0_strm0_cntl       ),      
@@ -18303,6 +18787,17 @@
                .std__pe43__lane31_strm1_data_valid    ( std__pe43__lane31_strm1_data_valid ),      
                .std__pe43__lane31_strm1_data_mask     ( std__pe43__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe44__peId                      ( sys__pe44__peId                   ),      
+               .sys__pe44__allSynchronized           ( sys__pe44__allSynchronized        ),      
+               .pe44__sys__thisSynchronized          ( pe44__sys__thisSynchronized       ),      
+               .pe44__sys__ready                     ( pe44__sys__ready                  ),      
+               .pe44__sys__complete                  ( pe44__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe44__oob_cntl                  ( std__pe44__oob_cntl               ),      
+               .std__pe44__oob_valid                 ( std__pe44__oob_valid              ),      
+               .pe44__std__oob_ready                 ( pe44__std__oob_ready              ),      
+               .std__pe44__oob_type                  ( std__pe44__oob_type               ),      
                // PE 44, Lane 0                 
                .pe44__std__lane0_strm0_ready         ( pe44__std__lane0_strm0_ready      ),      
                .std__pe44__lane0_strm0_cntl          ( std__pe44__lane0_strm0_cntl       ),      
@@ -18719,6 +19214,17 @@
                .std__pe44__lane31_strm1_data_valid    ( std__pe44__lane31_strm1_data_valid ),      
                .std__pe44__lane31_strm1_data_mask     ( std__pe44__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe45__peId                      ( sys__pe45__peId                   ),      
+               .sys__pe45__allSynchronized           ( sys__pe45__allSynchronized        ),      
+               .pe45__sys__thisSynchronized          ( pe45__sys__thisSynchronized       ),      
+               .pe45__sys__ready                     ( pe45__sys__ready                  ),      
+               .pe45__sys__complete                  ( pe45__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe45__oob_cntl                  ( std__pe45__oob_cntl               ),      
+               .std__pe45__oob_valid                 ( std__pe45__oob_valid              ),      
+               .pe45__std__oob_ready                 ( pe45__std__oob_ready              ),      
+               .std__pe45__oob_type                  ( std__pe45__oob_type               ),      
                // PE 45, Lane 0                 
                .pe45__std__lane0_strm0_ready         ( pe45__std__lane0_strm0_ready      ),      
                .std__pe45__lane0_strm0_cntl          ( std__pe45__lane0_strm0_cntl       ),      
@@ -19135,6 +19641,17 @@
                .std__pe45__lane31_strm1_data_valid    ( std__pe45__lane31_strm1_data_valid ),      
                .std__pe45__lane31_strm1_data_mask     ( std__pe45__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe46__peId                      ( sys__pe46__peId                   ),      
+               .sys__pe46__allSynchronized           ( sys__pe46__allSynchronized        ),      
+               .pe46__sys__thisSynchronized          ( pe46__sys__thisSynchronized       ),      
+               .pe46__sys__ready                     ( pe46__sys__ready                  ),      
+               .pe46__sys__complete                  ( pe46__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe46__oob_cntl                  ( std__pe46__oob_cntl               ),      
+               .std__pe46__oob_valid                 ( std__pe46__oob_valid              ),      
+               .pe46__std__oob_ready                 ( pe46__std__oob_ready              ),      
+               .std__pe46__oob_type                  ( std__pe46__oob_type               ),      
                // PE 46, Lane 0                 
                .pe46__std__lane0_strm0_ready         ( pe46__std__lane0_strm0_ready      ),      
                .std__pe46__lane0_strm0_cntl          ( std__pe46__lane0_strm0_cntl       ),      
@@ -19551,6 +20068,17 @@
                .std__pe46__lane31_strm1_data_valid    ( std__pe46__lane31_strm1_data_valid ),      
                .std__pe46__lane31_strm1_data_mask     ( std__pe46__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe47__peId                      ( sys__pe47__peId                   ),      
+               .sys__pe47__allSynchronized           ( sys__pe47__allSynchronized        ),      
+               .pe47__sys__thisSynchronized          ( pe47__sys__thisSynchronized       ),      
+               .pe47__sys__ready                     ( pe47__sys__ready                  ),      
+               .pe47__sys__complete                  ( pe47__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe47__oob_cntl                  ( std__pe47__oob_cntl               ),      
+               .std__pe47__oob_valid                 ( std__pe47__oob_valid              ),      
+               .pe47__std__oob_ready                 ( pe47__std__oob_ready              ),      
+               .std__pe47__oob_type                  ( std__pe47__oob_type               ),      
                // PE 47, Lane 0                 
                .pe47__std__lane0_strm0_ready         ( pe47__std__lane0_strm0_ready      ),      
                .std__pe47__lane0_strm0_cntl          ( std__pe47__lane0_strm0_cntl       ),      
@@ -19967,6 +20495,17 @@
                .std__pe47__lane31_strm1_data_valid    ( std__pe47__lane31_strm1_data_valid ),      
                .std__pe47__lane31_strm1_data_mask     ( std__pe47__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe48__peId                      ( sys__pe48__peId                   ),      
+               .sys__pe48__allSynchronized           ( sys__pe48__allSynchronized        ),      
+               .pe48__sys__thisSynchronized          ( pe48__sys__thisSynchronized       ),      
+               .pe48__sys__ready                     ( pe48__sys__ready                  ),      
+               .pe48__sys__complete                  ( pe48__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe48__oob_cntl                  ( std__pe48__oob_cntl               ),      
+               .std__pe48__oob_valid                 ( std__pe48__oob_valid              ),      
+               .pe48__std__oob_ready                 ( pe48__std__oob_ready              ),      
+               .std__pe48__oob_type                  ( std__pe48__oob_type               ),      
                // PE 48, Lane 0                 
                .pe48__std__lane0_strm0_ready         ( pe48__std__lane0_strm0_ready      ),      
                .std__pe48__lane0_strm0_cntl          ( std__pe48__lane0_strm0_cntl       ),      
@@ -20383,6 +20922,17 @@
                .std__pe48__lane31_strm1_data_valid    ( std__pe48__lane31_strm1_data_valid ),      
                .std__pe48__lane31_strm1_data_mask     ( std__pe48__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe49__peId                      ( sys__pe49__peId                   ),      
+               .sys__pe49__allSynchronized           ( sys__pe49__allSynchronized        ),      
+               .pe49__sys__thisSynchronized          ( pe49__sys__thisSynchronized       ),      
+               .pe49__sys__ready                     ( pe49__sys__ready                  ),      
+               .pe49__sys__complete                  ( pe49__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe49__oob_cntl                  ( std__pe49__oob_cntl               ),      
+               .std__pe49__oob_valid                 ( std__pe49__oob_valid              ),      
+               .pe49__std__oob_ready                 ( pe49__std__oob_ready              ),      
+               .std__pe49__oob_type                  ( std__pe49__oob_type               ),      
                // PE 49, Lane 0                 
                .pe49__std__lane0_strm0_ready         ( pe49__std__lane0_strm0_ready      ),      
                .std__pe49__lane0_strm0_cntl          ( std__pe49__lane0_strm0_cntl       ),      
@@ -20799,6 +21349,17 @@
                .std__pe49__lane31_strm1_data_valid    ( std__pe49__lane31_strm1_data_valid ),      
                .std__pe49__lane31_strm1_data_mask     ( std__pe49__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe50__peId                      ( sys__pe50__peId                   ),      
+               .sys__pe50__allSynchronized           ( sys__pe50__allSynchronized        ),      
+               .pe50__sys__thisSynchronized          ( pe50__sys__thisSynchronized       ),      
+               .pe50__sys__ready                     ( pe50__sys__ready                  ),      
+               .pe50__sys__complete                  ( pe50__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe50__oob_cntl                  ( std__pe50__oob_cntl               ),      
+               .std__pe50__oob_valid                 ( std__pe50__oob_valid              ),      
+               .pe50__std__oob_ready                 ( pe50__std__oob_ready              ),      
+               .std__pe50__oob_type                  ( std__pe50__oob_type               ),      
                // PE 50, Lane 0                 
                .pe50__std__lane0_strm0_ready         ( pe50__std__lane0_strm0_ready      ),      
                .std__pe50__lane0_strm0_cntl          ( std__pe50__lane0_strm0_cntl       ),      
@@ -21215,6 +21776,17 @@
                .std__pe50__lane31_strm1_data_valid    ( std__pe50__lane31_strm1_data_valid ),      
                .std__pe50__lane31_strm1_data_mask     ( std__pe50__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe51__peId                      ( sys__pe51__peId                   ),      
+               .sys__pe51__allSynchronized           ( sys__pe51__allSynchronized        ),      
+               .pe51__sys__thisSynchronized          ( pe51__sys__thisSynchronized       ),      
+               .pe51__sys__ready                     ( pe51__sys__ready                  ),      
+               .pe51__sys__complete                  ( pe51__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe51__oob_cntl                  ( std__pe51__oob_cntl               ),      
+               .std__pe51__oob_valid                 ( std__pe51__oob_valid              ),      
+               .pe51__std__oob_ready                 ( pe51__std__oob_ready              ),      
+               .std__pe51__oob_type                  ( std__pe51__oob_type               ),      
                // PE 51, Lane 0                 
                .pe51__std__lane0_strm0_ready         ( pe51__std__lane0_strm0_ready      ),      
                .std__pe51__lane0_strm0_cntl          ( std__pe51__lane0_strm0_cntl       ),      
@@ -21631,6 +22203,17 @@
                .std__pe51__lane31_strm1_data_valid    ( std__pe51__lane31_strm1_data_valid ),      
                .std__pe51__lane31_strm1_data_mask     ( std__pe51__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe52__peId                      ( sys__pe52__peId                   ),      
+               .sys__pe52__allSynchronized           ( sys__pe52__allSynchronized        ),      
+               .pe52__sys__thisSynchronized          ( pe52__sys__thisSynchronized       ),      
+               .pe52__sys__ready                     ( pe52__sys__ready                  ),      
+               .pe52__sys__complete                  ( pe52__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe52__oob_cntl                  ( std__pe52__oob_cntl               ),      
+               .std__pe52__oob_valid                 ( std__pe52__oob_valid              ),      
+               .pe52__std__oob_ready                 ( pe52__std__oob_ready              ),      
+               .std__pe52__oob_type                  ( std__pe52__oob_type               ),      
                // PE 52, Lane 0                 
                .pe52__std__lane0_strm0_ready         ( pe52__std__lane0_strm0_ready      ),      
                .std__pe52__lane0_strm0_cntl          ( std__pe52__lane0_strm0_cntl       ),      
@@ -22047,6 +22630,17 @@
                .std__pe52__lane31_strm1_data_valid    ( std__pe52__lane31_strm1_data_valid ),      
                .std__pe52__lane31_strm1_data_mask     ( std__pe52__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe53__peId                      ( sys__pe53__peId                   ),      
+               .sys__pe53__allSynchronized           ( sys__pe53__allSynchronized        ),      
+               .pe53__sys__thisSynchronized          ( pe53__sys__thisSynchronized       ),      
+               .pe53__sys__ready                     ( pe53__sys__ready                  ),      
+               .pe53__sys__complete                  ( pe53__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe53__oob_cntl                  ( std__pe53__oob_cntl               ),      
+               .std__pe53__oob_valid                 ( std__pe53__oob_valid              ),      
+               .pe53__std__oob_ready                 ( pe53__std__oob_ready              ),      
+               .std__pe53__oob_type                  ( std__pe53__oob_type               ),      
                // PE 53, Lane 0                 
                .pe53__std__lane0_strm0_ready         ( pe53__std__lane0_strm0_ready      ),      
                .std__pe53__lane0_strm0_cntl          ( std__pe53__lane0_strm0_cntl       ),      
@@ -22463,6 +23057,17 @@
                .std__pe53__lane31_strm1_data_valid    ( std__pe53__lane31_strm1_data_valid ),      
                .std__pe53__lane31_strm1_data_mask     ( std__pe53__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe54__peId                      ( sys__pe54__peId                   ),      
+               .sys__pe54__allSynchronized           ( sys__pe54__allSynchronized        ),      
+               .pe54__sys__thisSynchronized          ( pe54__sys__thisSynchronized       ),      
+               .pe54__sys__ready                     ( pe54__sys__ready                  ),      
+               .pe54__sys__complete                  ( pe54__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe54__oob_cntl                  ( std__pe54__oob_cntl               ),      
+               .std__pe54__oob_valid                 ( std__pe54__oob_valid              ),      
+               .pe54__std__oob_ready                 ( pe54__std__oob_ready              ),      
+               .std__pe54__oob_type                  ( std__pe54__oob_type               ),      
                // PE 54, Lane 0                 
                .pe54__std__lane0_strm0_ready         ( pe54__std__lane0_strm0_ready      ),      
                .std__pe54__lane0_strm0_cntl          ( std__pe54__lane0_strm0_cntl       ),      
@@ -22879,6 +23484,17 @@
                .std__pe54__lane31_strm1_data_valid    ( std__pe54__lane31_strm1_data_valid ),      
                .std__pe54__lane31_strm1_data_mask     ( std__pe54__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe55__peId                      ( sys__pe55__peId                   ),      
+               .sys__pe55__allSynchronized           ( sys__pe55__allSynchronized        ),      
+               .pe55__sys__thisSynchronized          ( pe55__sys__thisSynchronized       ),      
+               .pe55__sys__ready                     ( pe55__sys__ready                  ),      
+               .pe55__sys__complete                  ( pe55__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe55__oob_cntl                  ( std__pe55__oob_cntl               ),      
+               .std__pe55__oob_valid                 ( std__pe55__oob_valid              ),      
+               .pe55__std__oob_ready                 ( pe55__std__oob_ready              ),      
+               .std__pe55__oob_type                  ( std__pe55__oob_type               ),      
                // PE 55, Lane 0                 
                .pe55__std__lane0_strm0_ready         ( pe55__std__lane0_strm0_ready      ),      
                .std__pe55__lane0_strm0_cntl          ( std__pe55__lane0_strm0_cntl       ),      
@@ -23295,6 +23911,17 @@
                .std__pe55__lane31_strm1_data_valid    ( std__pe55__lane31_strm1_data_valid ),      
                .std__pe55__lane31_strm1_data_mask     ( std__pe55__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe56__peId                      ( sys__pe56__peId                   ),      
+               .sys__pe56__allSynchronized           ( sys__pe56__allSynchronized        ),      
+               .pe56__sys__thisSynchronized          ( pe56__sys__thisSynchronized       ),      
+               .pe56__sys__ready                     ( pe56__sys__ready                  ),      
+               .pe56__sys__complete                  ( pe56__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe56__oob_cntl                  ( std__pe56__oob_cntl               ),      
+               .std__pe56__oob_valid                 ( std__pe56__oob_valid              ),      
+               .pe56__std__oob_ready                 ( pe56__std__oob_ready              ),      
+               .std__pe56__oob_type                  ( std__pe56__oob_type               ),      
                // PE 56, Lane 0                 
                .pe56__std__lane0_strm0_ready         ( pe56__std__lane0_strm0_ready      ),      
                .std__pe56__lane0_strm0_cntl          ( std__pe56__lane0_strm0_cntl       ),      
@@ -23711,6 +24338,17 @@
                .std__pe56__lane31_strm1_data_valid    ( std__pe56__lane31_strm1_data_valid ),      
                .std__pe56__lane31_strm1_data_mask     ( std__pe56__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe57__peId                      ( sys__pe57__peId                   ),      
+               .sys__pe57__allSynchronized           ( sys__pe57__allSynchronized        ),      
+               .pe57__sys__thisSynchronized          ( pe57__sys__thisSynchronized       ),      
+               .pe57__sys__ready                     ( pe57__sys__ready                  ),      
+               .pe57__sys__complete                  ( pe57__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe57__oob_cntl                  ( std__pe57__oob_cntl               ),      
+               .std__pe57__oob_valid                 ( std__pe57__oob_valid              ),      
+               .pe57__std__oob_ready                 ( pe57__std__oob_ready              ),      
+               .std__pe57__oob_type                  ( std__pe57__oob_type               ),      
                // PE 57, Lane 0                 
                .pe57__std__lane0_strm0_ready         ( pe57__std__lane0_strm0_ready      ),      
                .std__pe57__lane0_strm0_cntl          ( std__pe57__lane0_strm0_cntl       ),      
@@ -24127,6 +24765,17 @@
                .std__pe57__lane31_strm1_data_valid    ( std__pe57__lane31_strm1_data_valid ),      
                .std__pe57__lane31_strm1_data_mask     ( std__pe57__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe58__peId                      ( sys__pe58__peId                   ),      
+               .sys__pe58__allSynchronized           ( sys__pe58__allSynchronized        ),      
+               .pe58__sys__thisSynchronized          ( pe58__sys__thisSynchronized       ),      
+               .pe58__sys__ready                     ( pe58__sys__ready                  ),      
+               .pe58__sys__complete                  ( pe58__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe58__oob_cntl                  ( std__pe58__oob_cntl               ),      
+               .std__pe58__oob_valid                 ( std__pe58__oob_valid              ),      
+               .pe58__std__oob_ready                 ( pe58__std__oob_ready              ),      
+               .std__pe58__oob_type                  ( std__pe58__oob_type               ),      
                // PE 58, Lane 0                 
                .pe58__std__lane0_strm0_ready         ( pe58__std__lane0_strm0_ready      ),      
                .std__pe58__lane0_strm0_cntl          ( std__pe58__lane0_strm0_cntl       ),      
@@ -24543,6 +25192,17 @@
                .std__pe58__lane31_strm1_data_valid    ( std__pe58__lane31_strm1_data_valid ),      
                .std__pe58__lane31_strm1_data_mask     ( std__pe58__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe59__peId                      ( sys__pe59__peId                   ),      
+               .sys__pe59__allSynchronized           ( sys__pe59__allSynchronized        ),      
+               .pe59__sys__thisSynchronized          ( pe59__sys__thisSynchronized       ),      
+               .pe59__sys__ready                     ( pe59__sys__ready                  ),      
+               .pe59__sys__complete                  ( pe59__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe59__oob_cntl                  ( std__pe59__oob_cntl               ),      
+               .std__pe59__oob_valid                 ( std__pe59__oob_valid              ),      
+               .pe59__std__oob_ready                 ( pe59__std__oob_ready              ),      
+               .std__pe59__oob_type                  ( std__pe59__oob_type               ),      
                // PE 59, Lane 0                 
                .pe59__std__lane0_strm0_ready         ( pe59__std__lane0_strm0_ready      ),      
                .std__pe59__lane0_strm0_cntl          ( std__pe59__lane0_strm0_cntl       ),      
@@ -24959,6 +25619,17 @@
                .std__pe59__lane31_strm1_data_valid    ( std__pe59__lane31_strm1_data_valid ),      
                .std__pe59__lane31_strm1_data_mask     ( std__pe59__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe60__peId                      ( sys__pe60__peId                   ),      
+               .sys__pe60__allSynchronized           ( sys__pe60__allSynchronized        ),      
+               .pe60__sys__thisSynchronized          ( pe60__sys__thisSynchronized       ),      
+               .pe60__sys__ready                     ( pe60__sys__ready                  ),      
+               .pe60__sys__complete                  ( pe60__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe60__oob_cntl                  ( std__pe60__oob_cntl               ),      
+               .std__pe60__oob_valid                 ( std__pe60__oob_valid              ),      
+               .pe60__std__oob_ready                 ( pe60__std__oob_ready              ),      
+               .std__pe60__oob_type                  ( std__pe60__oob_type               ),      
                // PE 60, Lane 0                 
                .pe60__std__lane0_strm0_ready         ( pe60__std__lane0_strm0_ready      ),      
                .std__pe60__lane0_strm0_cntl          ( std__pe60__lane0_strm0_cntl       ),      
@@ -25375,6 +26046,17 @@
                .std__pe60__lane31_strm1_data_valid    ( std__pe60__lane31_strm1_data_valid ),      
                .std__pe60__lane31_strm1_data_mask     ( std__pe60__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe61__peId                      ( sys__pe61__peId                   ),      
+               .sys__pe61__allSynchronized           ( sys__pe61__allSynchronized        ),      
+               .pe61__sys__thisSynchronized          ( pe61__sys__thisSynchronized       ),      
+               .pe61__sys__ready                     ( pe61__sys__ready                  ),      
+               .pe61__sys__complete                  ( pe61__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe61__oob_cntl                  ( std__pe61__oob_cntl               ),      
+               .std__pe61__oob_valid                 ( std__pe61__oob_valid              ),      
+               .pe61__std__oob_ready                 ( pe61__std__oob_ready              ),      
+               .std__pe61__oob_type                  ( std__pe61__oob_type               ),      
                // PE 61, Lane 0                 
                .pe61__std__lane0_strm0_ready         ( pe61__std__lane0_strm0_ready      ),      
                .std__pe61__lane0_strm0_cntl          ( std__pe61__lane0_strm0_cntl       ),      
@@ -25791,6 +26473,17 @@
                .std__pe61__lane31_strm1_data_valid    ( std__pe61__lane31_strm1_data_valid ),      
                .std__pe61__lane31_strm1_data_mask     ( std__pe61__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe62__peId                      ( sys__pe62__peId                   ),      
+               .sys__pe62__allSynchronized           ( sys__pe62__allSynchronized        ),      
+               .pe62__sys__thisSynchronized          ( pe62__sys__thisSynchronized       ),      
+               .pe62__sys__ready                     ( pe62__sys__ready                  ),      
+               .pe62__sys__complete                  ( pe62__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe62__oob_cntl                  ( std__pe62__oob_cntl               ),      
+               .std__pe62__oob_valid                 ( std__pe62__oob_valid              ),      
+               .pe62__std__oob_ready                 ( pe62__std__oob_ready              ),      
+               .std__pe62__oob_type                  ( std__pe62__oob_type               ),      
                // PE 62, Lane 0                 
                .pe62__std__lane0_strm0_ready         ( pe62__std__lane0_strm0_ready      ),      
                .std__pe62__lane0_strm0_cntl          ( std__pe62__lane0_strm0_cntl       ),      
@@ -26207,6 +26900,17 @@
                .std__pe62__lane31_strm1_data_valid    ( std__pe62__lane31_strm1_data_valid ),      
                .std__pe62__lane31_strm1_data_mask     ( std__pe62__lane31_strm1_data_mask  ),      
 
+               // General control and status                                                       
+               .sys__pe63__peId                      ( sys__pe63__peId                   ),      
+               .sys__pe63__allSynchronized           ( sys__pe63__allSynchronized        ),      
+               .pe63__sys__thisSynchronized          ( pe63__sys__thisSynchronized       ),      
+               .pe63__sys__ready                     ( pe63__sys__ready                  ),      
+               .pe63__sys__complete                  ( pe63__sys__complete               ),      
+               // OOB controls how the lanes are interpreted                                       
+               .std__pe63__oob_cntl                  ( std__pe63__oob_cntl               ),      
+               .std__pe63__oob_valid                 ( std__pe63__oob_valid              ),      
+               .pe63__std__oob_ready                 ( pe63__std__oob_ready              ),      
+               .std__pe63__oob_type                  ( std__pe63__oob_type               ),      
                // PE 63, Lane 0                 
                .pe63__std__lane0_strm0_ready         ( pe63__std__lane0_strm0_ready      ),      
                .std__pe63__lane0_strm0_cntl          ( std__pe63__lane0_strm0_cntl       ),      

@@ -83,23 +83,11 @@ module pe_array (
         wire        ready             ; // ready to start streaming
         wire        complete          ;
 
-        // General system signals
-        wire        pe__sys__thisSynchronized ;  // this PE's streams are complete
-
         // NoC Interface
         `include "pe_noc_instance_wires.vh"
 
         pe pe (
    
-                      // PE core interface
-                      .ready                        ( ready                       ), // ready to start streaming
-                      .complete                     ( complete                    ),  // FIXME
-                          
-                      // General system signals
-                      // FIXME: is inside PE ??
-                      .sys__pe__allSynchronized     ( sys__pe__allSynchronized   ),  // all PE streams are complete
-                      .pe__sys__thisSynchronized    ( pe__sys__thisSynchronized  ),  // this PE's streams are complete
-                          
                       // NoC Interface
                       `include "pe_noc_instance_ports.vh"
    
@@ -111,7 +99,7 @@ module pe_array (
                       // `include "pe_stu_instance_ports.vh"
    
    
-                     .peId              ( peId              ),
+                     //.peId              ( peId              ),
                      .clk               ( clk               ),
                      .reset_poweron     ( reset_poweron     )
               );
