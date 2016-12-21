@@ -19,6 +19,7 @@ vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common base_operation
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common driver.sv
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common generator.sv
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common mem_checker.sv
+vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common regFile_driver.sv
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common environment.sv
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common testbench.sv
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common top.sv

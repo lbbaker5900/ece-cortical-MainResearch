@@ -29,7 +29,6 @@ class mem_checker;
 
     base_operation sys_operation;
 
-    // FIXME : doesnt need all interfaces
     vDma2Mem_T vP_mem ;
 
     int i=0,j=0;

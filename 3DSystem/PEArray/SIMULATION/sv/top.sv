@@ -47,6 +47,12 @@ module top;
     // Write Memory probe
     pe_dma2mem_ifc    Dma2Mem      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk);  // shorthand for [0:63] ....
 
+    //----------------------------------------------------------------------------------------------------
+    // Probe interface(s) for forcing
+    //
+    // Regfile interface from SIMD
+    regFile2stOpCntl_ifc  RegFile2StOpCntl      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk);
+
 
     //----------------------------------------------------------------------------------------------------
     // Processing layer
@@ -66,35 +72,55 @@ module top;
     // Testbench
     //
         test  ti  (
-                   SysLane2PeArray     ,
-                   SysOob2PeArray      ,
-                   Dma2Mem             ,
+                   SysLane2PeArray     ,  // array of interfaces for each downstream pe/lane stack bus
+                   SysOob2PeArray      ,  // array of downstream stack bus OOB interfaces to each PE
+                   Dma2Mem             ,  // array of monitor probes for the DMA to Memory interface for each PE/Lane
+                   RegFile2StOpCntl    ,  // array of driver probes for the RegFile to stOp Controller for each PE/Lane
                    reset_poweron
                   );
 
     //----------------------------------------------------------------------------------------------------
     // Probes
     //
+    // DMA to memory interface for result check
     genvar pe, lane;
-        generate
-           for (pe=0; pe<64; pe=pe+1)
-               begin
-                   for (lane=0; lane<32; lane=lane+1)
-                       begin
-                           assign Dma2Mem[pe][lane].dma__memc__write_valid      = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_valid0        ;
-                           assign Dma2Mem[pe][lane].dma__memc__write_address    = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_address0      ;
-                           assign Dma2Mem[pe][lane].dma__memc__write_data       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_data0         ;
-                           assign Dma2Mem[pe][lane].dma__memc__read_valid       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_valid0         ;
-                           assign Dma2Mem[pe][lane].dma__memc__read_address     = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_address0       ;
-                           assign Dma2Mem[pe][lane].dma__memc__read_pause       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_pause0         ;
+    generate
+       for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
+           begin
+               for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
+                   begin
+                       assign Dma2Mem[pe][lane].dma__memc__write_valid      = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_valid0        ;
+                       assign Dma2Mem[pe][lane].dma__memc__write_address    = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_address0      ;
+                       assign Dma2Mem[pe][lane].dma__memc__write_data       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_data0         ;
+                       assign Dma2Mem[pe][lane].dma__memc__read_valid       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_valid0         ;
+                       assign Dma2Mem[pe][lane].dma__memc__read_address     = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_address0       ;
+                       assign Dma2Mem[pe][lane].dma__memc__read_pause       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_pause0         ;
 
-                           assign Dma2Mem[pe][lane].memc__dma__write_ready      = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__write_ready0        ;
-                           assign Dma2Mem[pe][lane].memc__dma__read_data        = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data0          ;
-                           assign Dma2Mem[pe][lane].memc__dma__read_data_valid  = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data_valid0    ;
-                           assign Dma2Mem[pe][lane].memc__dma__read_ready       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_ready0         ;
-                       end
-               end
-        endgenerate
+                       assign Dma2Mem[pe][lane].memc__dma__write_ready      = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__write_ready0        ;
+                       assign Dma2Mem[pe][lane].memc__dma__read_data        = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data0          ;
+                       assign Dma2Mem[pe][lane].memc__dma__read_data_valid  = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data_valid0    ;
+                       assign Dma2Mem[pe][lane].memc__dma__read_ready       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_ready0         ;
+                   end
+           end
+    endgenerate
+/*
+    generate
+       for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
+           begin
+               for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
+                   begin
+                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r128
+                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r129
+                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r130
+                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r131
+                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r132
+                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r133
+                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r134
+                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r135
+                   end
+           end
+    endgenerate
+*/
 
     /*
     dut_probe_dma2mem probe_dma2mem(

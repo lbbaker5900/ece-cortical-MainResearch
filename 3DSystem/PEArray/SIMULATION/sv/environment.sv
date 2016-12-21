@@ -29,14 +29,16 @@
 `include "generator.sv"
 `include "driver.sv"
 `include "mem_checker.sv"
+`include "regFile_driver.sv"
 
 import virtual_interface::*;
 
 class Environment;
     // each generator/driver pair handles the two streams in each pe/lane
-    generator     gen             [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
-    driver        drv             [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
-    mem_checker   dma2mem         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    generator        gen             [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    driver           drv             [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    mem_checker      mem_check       [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    regFile_driver   rf_driver       [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
 
 
     mailbox       gen2drv           ;
@@ -48,24 +50,32 @@ class Environment;
     mailbox       drv2memP          ;
     event         drv2memP_ack     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ; 
 
+    mailbox       gen2rfP           ;
+    event         gen2rfP_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ; 
+
     // an array of all stream interfaces in the system
-    vSysLane2PeArray_T  vSysLane2PeArray  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; // unpacked
-    vSysOob2PeArray_T   vSysOob2PeArray   [`PE_ARRAY_NUM_OF_PE]                         ;
+    vSysLane2PeArray_T     vSysLane2PeArray          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; // unpacked
+    vSysOob2PeArray_T      vSysOob2PeArray           [`PE_ARRAY_NUM_OF_PE]                         ;
 
     // an array of all dma to memory interfaces in the system
-    vDma2Mem_T          vDma2Mem          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; // unpacked
+    vDma2Mem_T             vDma2Mem                  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; // unpacked
+
+    // an array of all regFile signals to stOp controller
+    vRegFileDrv2stOpCntl_T vRegFileDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; // unpacked
 
     //----------------------------------------------------------------------------------------------------
     // 
     function new (
                     // Retrieving the interface passed from the testbench in order to pass it to the required blocks.
-                    input vSysLane2PeArray_T vSysLane2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-                    input vSysOob2PeArray_T  vSysOob2PeArray  [`PE_ARRAY_NUM_OF_PE]                        ,
-                    input vDma2Mem_T         vDma2Mem         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]
+                    input vSysLane2PeArray_T     vSysLane2PeArray          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
+                    input vSysOob2PeArray_T      vSysOob2PeArray           [`PE_ARRAY_NUM_OF_PE]                        ,
+                    input vDma2Mem_T             vDma2Mem                  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
+                    input vRegFileDrv2stOpCntl_T vRegFileDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]
                 );
-        this.vSysLane2PeArray   =   vSysLane2PeArray   ;
-        this.vSysOob2PeArray    =   vSysOob2PeArray    ;
-        this.vDma2Mem           =   vDma2Mem           ;
+        this.vSysLane2PeArray          =   vSysLane2PeArray      ;
+        this.vSysOob2PeArray           =   vSysOob2PeArray       ;
+        this.vDma2Mem                  =   vDma2Mem              ;
+        this.vRegFileDrv2stOpCntl      =   vRegFileDrv2stOpCntl  ;
     endfunction
 
     task build();                                 //This task passes the required interfaces, mailboxes, events to the objects of driver, generator and respective scoreboards.
@@ -81,10 +91,12 @@ class Environment;
                         Id = {pe, lane};
                         gen2drv   = new () ;
                         drv2memP  = new () ;
+                        gen2rfP   = new () ;
                         // remember, each gen/drv tuple handle both streams in a lane
-                        gen     [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane], vSysLane2PeArray[pe][lane]                                     );
-                        drv     [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane],                            vSysLane2PeArray[pe][lane] , drv2memP, drv2memP_ack[pe][lane]  );
-                        dma2mem [pe][lane]  = new ( Id,                                                                                      vDma2Mem    [pe][lane] , drv2memP, drv2memP_ack[pe][lane]  );
+                        gen       [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane], vSysLane2PeArray     [pe][lane] ,  gen2rfP,  gen2rfP_ack[pe][lane]  );
+                        drv       [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane],                            vSysLane2PeArray     [pe][lane] , drv2memP, drv2memP_ack[pe][lane]  );
+                        mem_check [pe][lane]  = new ( Id,                                                                                      vDma2Mem             [pe][lane] , drv2memP, drv2memP_ack[pe][lane]  );  // monitor dma to memory interface for result check
+                        rf_driver [pe][lane]  = new ( Id,                                                                                      vRegFileDrv2stOpCntl [pe][lane] ,  gen2rfP, gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
                     end
             end
 
@@ -125,10 +137,10 @@ class Environment;
                     begin
                         // this will help finding any unfinished checkers
                         $display("@%0t INFO: Mem checker complete : {%0d,%0d}\n", $time,pe,lane);
-                        //wait (dma2mem[pe][lane].finished.triggered);  // doesnt seem to work???
-                        wait (dma2mem[pe][lane].found == 1);
+                        //wait (mem_check[pe][lane].finished.triggered);  // doesnt seem to work???
+                        wait (mem_check[pe][lane].found == 1);
                         //$display("@%0t LEE: Mem checker complete : {%0d,%0d}\n", $time,pe,lane);
-                        dma2mem[pe][lane].finished = null ;
+                        mem_check[pe][lane].finished = null ;
                     end
             end
 

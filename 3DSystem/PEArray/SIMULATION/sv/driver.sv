@@ -33,6 +33,8 @@ class driver;
     mailbox   drv2lane []      ;  // create a mailbox for each stream driver
     int transaction    []      ;
 
+    // observe memory interface to check result
+    // FIXME: may go away once SIMD and result path is working
     mailbox   drv2memP         ;
     event     drv2memP_ack     ;
 

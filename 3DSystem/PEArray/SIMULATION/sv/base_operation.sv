@@ -30,8 +30,8 @@ package operation;
         int                                                 id                                                 ;
         //string                                              type                                               ;  // FIXME: not yet used
         rand logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]    OpType                                             ; 
-        rand bit   [`PE_CHIPLET_ADDRESS_RANGE          ]    destinationAddress [`PE_NUM_OF_STREAMS_RANGE ]     ;  
-        rand bit   [`PE_CHIPLET_ADDRESS_RANGE          ]    sourceAddress      [`PE_NUM_OF_STREAMS_RANGE ]     ;  
+        rand bit   [`PE_CHIPLET_ADDRESS_RANGE          ]    destinationAddress  [`PE_NUM_OF_STREAMS_RANGE ]    ;  
+        rand bit   [`PE_CHIPLET_ADDRESS_RANGE          ]    sourceAddress       [`PE_NUM_OF_STREAMS_RANGE ]    ;  
      
         static logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]  priorOperations[$]; //Queue to hold previous operations
         // an array of operands

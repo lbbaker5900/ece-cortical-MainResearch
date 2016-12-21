@@ -190,7 +190,10 @@ if __name__ == "__main__":
       pLine = pLine + '\n              drv[{0}][{1}].run()  ;'.format(pe,lane) 
       pLine = pLine + '\n            end'
       pLine = pLine + '\n            begin'                                  
-      pLine = pLine + '\n              dma2mem[{0}][{1}].run()  ;'.format(pe,lane) 
+      pLine = pLine + '\n              mem_check[{0}][{1}].run()  ;'.format(pe,lane) 
+      pLine = pLine + '\n            end'
+      pLine = pLine + '\n            begin'                                  
+      pLine = pLine + '\n              rf_driver[{0}][{1}].run()  ;'.format(pe,lane) 
       pLine = pLine + '\n            end'
       pLine = pLine + '\n'
 

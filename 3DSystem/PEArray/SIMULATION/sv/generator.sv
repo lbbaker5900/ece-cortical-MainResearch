@@ -38,6 +38,11 @@ class generator;
     event   final_operation  ;
     int     Id [2]           ; // PE, Lane
 
+    // Drive regFile interface
+    // FIXME : should this be in the driver??
+    // FIXME: may go away once SIMD and result path is working
+    mailbox   gen2rfP         ;
+    event     gen2rfP_ack     ;
         
     integer num_operations = 1;
     integer operationNum   = 0;  // used to set operation ID
@@ -65,7 +70,9 @@ class generator;
                   input event                 gen2drv_ack       ,
                   input event                 new_operation     ,
                   input event                 final_operation   ,
-                  input vSysLane2PeArray_T    vSysLane2PeArray
+                  input vSysLane2PeArray_T    vSysLane2PeArray  ,
+                  input mailbox               gen2rfP           ,
+                  input event                 gen2rfP_ack       
                  );
 
         this.Id                = Id                 ;
@@ -74,6 +81,8 @@ class generator;
         this.new_operation     = new_operation      ;
         this.final_operation   = final_operation    ;
         this.vSysLane2PeArray  = vSysLane2PeArray   ;
+        this.gen2rfP           = gen2rfP            ;
+        this.gen2rfP_ack       = gen2rfP_ack        ;
 
     endfunction
 
@@ -115,7 +124,10 @@ class generator;
                         sys_operation.resultLow         = sys_operation_gen.resultLow         ;
 */
                         operationNum++                                ;
-                        //$display("@%0t LEE: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
+                        $display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);
+                        gen2rfP.put(sys_operation)                    ;
+                        @gen2rfP_ack                                  ;  // wait for regFile inputs to be driven
+                        $display("@%0t LEE: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
                         gen2drv.put(sys_operation)                    ;
                     end
                 

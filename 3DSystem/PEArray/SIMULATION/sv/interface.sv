@@ -211,49 +211,6 @@ typedef virtual stu_pe_lane_ifc.TB_Sys2PeArrayResult vSys2PeArrayResult_T;
 typedef virtual stu_pe_lane_ifc.TB_PeArrayResult2Sys vPeArrayResult2Sys_T;
 
 
-/////////////////////////////////////////////////////////////////////////
-// interface between dma and mem controller
-/////////////////////////////////////////////////////////////////////////
-interface pe_dma2mem_ifc (
-                           input bit clk   );
-
-  // DMA <-> Memory port 
-    logic                                          dma__memc__write_valid     ;
-    logic   [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__write_address   ;
-    logic   [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  dma__memc__write_data      ;
-    logic                                          memc__dma__write_ready     ;
-    logic                                          dma__memc__read_valid      ;
-    logic   [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__read_address    ;
-    logic   [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__dma__read_data       ;
-    logic                                          memc__dma__read_data_valid ;
-    logic                                          memc__dma__read_ready      ;
-    logic                                          dma__memc__read_pause      ;
-
-  // This is a probe, so use only inputs
-  clocking cb @(posedge clk);
-      input   dma__memc__write_valid         , 
-              dma__memc__write_address       ,
-              dma__memc__write_data          ,
-              dma__memc__read_valid          ,
-              dma__memc__read_address        ,
-              dma__memc__read_pause          ;
-
-      input   memc__dma__write_ready         ,
-              memc__dma__read_data           ,
-              memc__dma__read_data_valid     ,
-              memc__dma__read_ready          ;
-
-  endclocking : cb
-
-  modport TB_Dma2Mem (
-                    clocking cb
-  );
-
-endinterface : pe_dma2mem_ifc 
-
-typedef virtual pe_dma2mem_ifc.TB_Dma2Mem vDma2Mem_T;
-
-
 interface sti_stOp_lane_ifc(
                            input bit clk   );
 
@@ -354,5 +311,106 @@ endinterface : sti_stOp_lane_ifc
 
 typedef virtual sti_stOp_lane_ifc.TB_Sti2StOp vSti2StOp_T;
 typedef virtual sti_stOp_lane_ifc.TB_StOp2Sti vStOp2Sti_T;
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Internal Probes
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// interface between dma and mem controller
+
+interface pe_dma2mem_ifc (
+                           input bit clk   );
+
+  // DMA <-> Memory port 
+    logic                                          dma__memc__write_valid     ;
+    logic   [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__write_address   ;
+    logic   [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  dma__memc__write_data      ;
+    logic                                          memc__dma__write_ready     ;
+    logic                                          dma__memc__read_valid      ;
+    logic   [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__read_address    ;
+    logic   [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__dma__read_data       ;
+    logic                                          memc__dma__read_data_valid ;
+    logic                                          memc__dma__read_ready      ;
+    logic                                          dma__memc__read_pause      ;
+
+  // This is a probe, so use only inputs
+  clocking cb @(posedge clk);
+      input   dma__memc__write_valid         , 
+              dma__memc__write_address       ,
+              dma__memc__write_data          ,
+              dma__memc__read_valid          ,
+              dma__memc__read_address        ,
+              dma__memc__read_pause          ;
+
+      input   memc__dma__write_ready         ,
+              memc__dma__read_data           ,
+              memc__dma__read_data_valid     ,
+              memc__dma__read_ready          ;
+
+  endclocking : cb
+
+  modport TB_Dma2Mem (
+                    clocking cb
+  );
+
+endinterface : pe_dma2mem_ifc 
+
+typedef virtual pe_dma2mem_ifc.TB_Dma2Mem vDma2Mem_T;
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Regfile interface to streamingOps_cntl
+
+interface regFile2stOpCntl_ifc  (
+                           input bit clk   );
+
+    // RegFile -> stOp Controller
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r128  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r129  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r130  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r131  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r132  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r133  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r134  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r135  ;
+
+  clocking cb_in @(posedge clk);
+      input        lane_r128 , 
+                   lane_r129 ,
+                   lane_r130 ,
+                   lane_r131 ,
+                   lane_r132 ,
+                   lane_r133 ,
+                   lane_r134 ,
+                   lane_r135 ;
+
+  endclocking : cb_in
+
+  clocking cb_out @(posedge clk);
+      output       lane_r128 , 
+                   lane_r129 ,
+                   lane_r130 ,
+                   lane_r131 ,
+                   lane_r132 ,
+                   lane_r133 ,
+                   lane_r134 ,
+                   lane_r135 ;
+
+  endclocking : cb_out
+
+  modport TB_regFileDrv2stOpCntl (
+                    clocking cb_out
+  );
+
+  modport TB_stOpCntlFromRegFile (
+                    clocking cb_in
+  );
+
+endinterface : regFile2stOpCntl_ifc
+
+typedef virtual regFile2stOpCntl_ifc.TB_regFileDrv2stOpCntl     vRegFileDrv2stOpCntl_T ;
+typedef virtual stOpCntlFromRegFile_ifc.TB_stOpCntlFromRegFile  vStOpCntlFromRegFile_T ;
 
 
