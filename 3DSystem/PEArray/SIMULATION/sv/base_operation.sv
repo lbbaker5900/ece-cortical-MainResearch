@@ -26,27 +26,28 @@ package operation;
 
     class base_operation ; 
     
-        time timeTag   ;
-        int  id        ;
-        rand logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]  OpType                                         ; 
-        rand bit   [`PE_CHIPLET_ADDRESS_RANGE          ]  destinationAddress [`PE_NUM_OF_STREAMS_RANGE ] ;  
-        rand bit   [`PE_CHIPLET_ADDRESS_RANGE          ]  sourceAddress      [`PE_NUM_OF_STREAMS_RANGE ] ;  
+        time                                                timeTag                                            ;
+        int                                                 id                                                 ;
+        //string                                              type                                               ;  // FIXME: not yet used
+        rand logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]    OpType                                             ; 
+        rand bit   [`PE_CHIPLET_ADDRESS_RANGE          ]    destinationAddress [`PE_NUM_OF_STREAMS_RANGE ]     ;  
+        rand bit   [`PE_CHIPLET_ADDRESS_RANGE          ]    sourceAddress      [`PE_NUM_OF_STREAMS_RANGE ]     ;  
      
         static logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]  priorOperations[$]; //Queue to hold previous operations
         // an array of operands
-        rand bit [`PE_EXEC_LANE_WIDTH_RANGE ] operands            [`PE_NUM_OF_STREAMS_RANGE ] [] ;
-        rand int                              numberOfOperands                                   ;
-        shortreal                             operandsReal        [`PE_NUM_OF_STREAMS_RANGE ]    ;
+        rand bit [`PE_EXEC_LANE_WIDTH_RANGE ]               operands            [`PE_NUM_OF_STREAMS_RANGE ] [] ;
+        rand int                                            numberOfOperands                                   ;
+        shortreal                                           operandsReal        [`PE_NUM_OF_STREAMS_RANGE ]    ;
         // cant randomize a float, so randomize the FP fields and construct the float
-        rand bit                              operandsSign        [`PE_NUM_OF_STREAMS_RANGE ] [] ;
-        rand bit [7:0]                        operandsExp         [`PE_NUM_OF_STREAMS_RANGE ] [] ;
-        rand bit [22:0]                       operandsSignificand [`PE_NUM_OF_STREAMS_RANGE ] [] ;
+        rand bit                                            operandsSign        [`PE_NUM_OF_STREAMS_RANGE ] [] ;
+        rand bit [7:0]                                      operandsExp         [`PE_NUM_OF_STREAMS_RANGE ] [] ;
+        rand bit [22:0]                                     operandsSignificand [`PE_NUM_OF_STREAMS_RANGE ] [] ;
 
         //------------------------------------------------------------------------------------------------------
         // If results are floating point
-        shortreal                        result             ; 
-        shortreal                        resultHigh         ;  // tolerate a slight differecne in floating point functions
-        shortreal                        resultLow          ;
+        shortreal                        result              ; 
+        shortreal                        resultHigh          ;  // tolerate a slight differecne in floating point functions
+        shortreal                        resultLow           ;
         shortreal                        FpTolerance = 0.001 ;
         
 
@@ -103,8 +104,17 @@ package operation;
                     operandsReal[0] = $bitstoshortreal({operandsSign[0][i], operandsExp[0][i], operandsSignificand[0][i]});
                     operandsReal[1] = $bitstoshortreal({operandsSign[1][i], operandsExp[1][i], operandsSignificand[1][i]});
                     result          = result + operandsReal[0]*operandsReal[1]   ; 
-                    resultHigh      = (1.0+FpTolerance)*result                   ;
-                    resultLow       = (1.0-FpTolerance)*result                   ;
+                    if (result >= 0)
+                      begin
+                        resultHigh      = (1.0+FpTolerance)*result                   ;
+                        resultLow       = (1.0-FpTolerance)*result                   ;
+                      end
+                    else
+                      begin
+                        resultLow       = (1.0+FpTolerance)*result                   ;
+                        resultHigh      = (1.0-FpTolerance)*result                   ;
+                      end
+                    //$display("%t: Base_operation result %d: %f, %f <> %f\n", $time, id, result, resultHigh, resultLow);
 
                     // generate stimiulus from floating point fields
                     operands[0][i] = {operandsSign[0][i], operandsExp[0][i], operandsSignificand[0][i]};
@@ -133,6 +143,20 @@ package operation;
             operandsReal[1] = $bitstoshortreal(operands[1][numberOfOperands-1]);
             $display("{%f, %f}\n", operandsReal[0], operandsReal[1]);
             $display("Expected Result = %f\n", result);
+        endfunction
+    
+    endclass
+
+    class stream_operation ; 
+    
+        time timeTag   ;
+        int  id        ;
+     
+        bit [`PE_EXEC_LANE_WIDTH_RANGE ] operands        [] ;
+        int                              numberOfOperands   ;
+
+        function new ();
+            this.timeTag = $time ;
         endfunction
     
     endclass

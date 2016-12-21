@@ -87,7 +87,6 @@ class generator;
 
         repeat (num_operations)                 //Number of transactions to be generated
             begin
-                sys_operation = new () ;
                 //assert (sys_operation_gen.randomize() );
                 sys_operation_gen.randomize() ;
                 
@@ -104,14 +103,19 @@ class generator;
                     begin
                         $display("@%0t : INFO: Generating FP MAC operation: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         sys_operation_gen.create();
+                        sys_operation = new sys_operation_gen ;
+/*
                         sys_operation.OpType            = sys_operation_gen.OpType            ;
                         sys_operation.id                = operationNum                        ;
                         sys_operation.operandsReal      = sys_operation_gen.operandsReal      ;
                         sys_operation.numberOfOperands  = sys_operation_gen.numberOfOperands  ;
                         sys_operation.operands          = sys_operation_gen.operands          ;
                         sys_operation.result            = sys_operation_gen.result            ;
+                        sys_operation.resultHigh        = sys_operation_gen.resultHigh        ;
+                        sys_operation.resultLow         = sys_operation_gen.resultLow         ;
+*/
                         operationNum++                                ;
-                        //$display("@%0t LEE: Generating FP MAC operation: {%0d,%0d} with expected result of %f\n", $time,Id[0], Id[1], sys_operation.result);
+                        //$display("@%0t LEE: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
                         gen2drv.put(sys_operation)                    ;
                     end
                 

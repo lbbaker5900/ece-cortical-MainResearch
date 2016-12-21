@@ -55,8 +55,9 @@ class mem_checker;
             begin
                 if ( drv2memP.num() != 0 )
                     begin
-                        $display ($time,": INFO:MEM_CHECKER :: Operation driven for {%02d,%02d}", Id[0], Id[1]);
+                        //$display ($time,": INFO:MEM_CHECKER :: Operation driven for {%02d,%02d}", Id[0], Id[1]);
                         drv2memP.peek(sys_operation);   //Taking the transaction from the driver mailbox
+                        //$display("@%0t LEE: Received FP MAC operation from driver: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
                         -> drv2memP_ack;
                         //while(~this.finished.triggered)
                         // waiting for the event doesnt seem to work????
@@ -65,7 +66,7 @@ class mem_checker;
                                 @(vP_mem.cb);
                                 if (vP_mem.cb.dma__memc__write_valid)
                                     begin
-                                        $display ($time,": INFO:PASS:MEM_CHECKER :: Correct value Writen to memory {%d,%d} : Hex : %h, FP : %f\n", Id[0], Id[1], vP_mem.cb.dma__memc__write_data, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
+                                        //$display ($time,": INFO:PASS:MEM_CHECKER :: Correct value Writen to memory {%d,%d} : Hex : %h, FP : %f\n", Id[0], Id[1], vP_mem.cb.dma__memc__write_data, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
                                         found = 1 ;
                                         // check for floating point within a tolerance
                                         // FIXME:
