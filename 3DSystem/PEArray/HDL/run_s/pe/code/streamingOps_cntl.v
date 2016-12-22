@@ -146,6 +146,9 @@ module streamingOps_cntl (
   // Wires and Register
   //
 
+  `include "streamingOps_cntl_simd_wires.vh"
+  `include "streamingOps_cntl_simd_assignments.vh"  // convert from multidimensional array
+
   wire cntl__memc__request  ;
   wire memc__cntl__granted  ;
   wire cntl__memc__released ;
@@ -1289,7 +1292,7 @@ module streamingOps_cntl (
   endgenerate
 
   assign from_NoC_control_fifo[0].cntl       = noc__cntl__cp_cntl        ;
-  assign from_NoC_control_fifo[0].type       = noc__cntl__cp_type        ;
+  assign from_NoC_control_fifo[0].typee      = noc__cntl__cp_type        ;  // type cannot be used in SV
   assign from_NoC_control_fifo[0].data       = noc__cntl__cp_data        ;
   assign from_NoC_control_fifo[0].peId       = noc__cntl__cp_peId        ;
   assign from_NoC_control_fifo[0].laneId     = noc__cntl__cp_laneId      ;
@@ -1314,7 +1317,7 @@ module streamingOps_cntl (
   endgenerate
 
   assign from_NoC_data_fifo[0].cntl       = noc__cntl__dp_cntl        ;
-  assign from_NoC_data_fifo[0].type       = noc__cntl__dp_type        ;
+  assign from_NoC_data_fifo[0].typee      = noc__cntl__dp_type        ;
   assign from_NoC_data_fifo[0].laneId     = noc__cntl__dp_laneId      ;
   assign from_NoC_data_fifo[0].strmId     = noc__cntl__dp_strmId      ;
   assign from_NoC_data_fifo[0].data       = noc__cntl__dp_data        ;

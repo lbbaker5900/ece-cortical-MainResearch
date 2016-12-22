@@ -437,7 +437,7 @@
         wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ]        fifo_read_laneId ;\
         wire                                                   fifo_read_strmId ;\
         wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ]        cntl             ;\
-        wire [`STREAMING_OP_CNTL_TYPE_RANGE           ]        type             ;\
+        wire [`STREAMING_OP_CNTL_TYPE_RANGE           ]        typee            ;// type cannot be used in SV\
         wire [`NOC_CONT_INTERNAL_DATA_RANGE           ]        data             ;\
         wire [`PE_PE_ID_RANGE                         ]        peId             ;\
         wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ]        laneId           ;\
@@ -455,7 +455,7 @@
             fifo_cntl[fifo_wp]      <= ( fifo_write       ) ? cntl               : \
                                                               fifo_cntl[fifo_wp] ;\
    \
-            fifo_type[fifo_wp]      <= ( fifo_write       ) ? type               : \
+            fifo_type[fifo_wp]      <= ( fifo_write       ) ? typee              : \
                                                               fifo_type[fifo_wp] ;\
    \
             fifo_data[fifo_wp]      <= ( fifo_write       ) ? data               : \
@@ -626,7 +626,7 @@
         wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ]        fifo_read_laneId ;\
         wire                                                   fifo_read_strmId ;\
         wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ]        cntl             ;\
-        wire [`STREAMING_OP_CNTL_TYPE_RANGE           ]        type             ;\
+        wire [`STREAMING_OP_CNTL_TYPE_RANGE           ]        typee            ;// type cannot be used in SV\
         wire [`NOC_CONT_INTERNAL_DATA_RANGE           ]        data             ;\
         wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ]        laneId           ;\
         wire                                                   strmId           ;\
@@ -643,7 +643,7 @@
             fifo_cntl[fifo_wp]      <= ( fifo_write       ) ? cntl               : \
                                                               fifo_cntl[fifo_wp] ;\
    \
-            fifo_type[fifo_wp]      <= ( fifo_write       ) ? type               : \
+            fifo_type[fifo_wp]      <= ( fifo_write       ) ? typee              : \
                                                               fifo_type[fifo_wp] ;\
    \
             fifo_data[fifo_wp]      <= ( fifo_write       ) ? data               : \

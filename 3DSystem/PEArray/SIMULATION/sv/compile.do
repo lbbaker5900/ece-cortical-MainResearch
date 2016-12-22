@@ -12,7 +12,7 @@ vlog +incdir+../../HDL/common ../../HDL/run_s/pe/code/streamingOps_datapath.v
 vlog +incdir+../../HDL/common ../../HDL/run_s/pe/code/noc_cntl.v
 vlog -sv +incdir+../../HDL/common ../../HDL/run_s/pe/code/stack_interface.v
 vlog -sv  +incdir+../../HDL/common ../../HDL/run_s/pe/code/pe.v
-vlog   +incdir+../../MEMORY/65nm/FIFOs/compout/views/sasslnpky2p32x35cm4sw0bk1ltlc1 +incdir+../../HDL/common ../../HDL/run_s/pe/code/streamingOps_cntl.v
+vlog -sv  +incdir+../../MEMORY/65nm/FIFOs/compout/views/sasslnpky2p32x35cm4sw0bk1ltlc1 +incdir+../../HDL/common ../../HDL/run_s/pe/code/streamingOps_cntl.v
 vlog -sv  +incdir+../../HDL/common ../../HDL/run_s/pe_array.v
 
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common base_operation.sv
