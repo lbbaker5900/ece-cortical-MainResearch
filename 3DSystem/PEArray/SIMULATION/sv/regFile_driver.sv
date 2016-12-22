@@ -62,6 +62,8 @@ class regFile_driver;
                         gen2rfP.peek(sys_operation);   //Taking the transaction from the generator mailbox
                         //$display("@%0t LEE: Received FP MAC operation from driver: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
 /*
+                        vP_srf.rs0 = {32{1'b1}};
+                        vP_srf.rs1 = {32{1'b1}};
                         //while(~this.finished.triggered)
                         // waiting for the event doesnt seem to work????
                         while(found == 0)

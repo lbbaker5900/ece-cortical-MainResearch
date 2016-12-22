@@ -13,5 +13,7 @@ package virtual_interface;
     typedef virtual regFileScalar2stOpCntl_ifc.vStOpCntlFromRegFileScalar_T      vStOpCntlFromRegFileScalar_T  ;
     typedef virtual regFileLane2stOpCntl_ifc.vRegFileLaneDrv2stOpCntl_T          vRegFileLaneDrv2stOpCntl_T    ;
     typedef virtual regFileLane2stOpCntl_ifc.vStOpCntlFromRegFileLane_T          vStOpCntlFromRegFileLane_T    ;
+    typedef virtual loadStore2memCntl_ifc.vLoadStoreDrv2memCntl_T                vLoadStoreDrv2memCntl_T       ;
+    typedef virtual loadStore2memCntl_ifc.vMemCntlFromLoadStore_T                vMemCntlFromLoadStore_T       ;
 endpackage:virtual_interface
     

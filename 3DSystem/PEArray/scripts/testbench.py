@@ -182,6 +182,9 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
+    pLine = pLine + '\n            begin'                                  
+    pLine = pLine + '\n              ldst_driver[{0}].run()  ;'.format(pe) 
+    pLine = pLine + '\n            end'
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n            begin'
       pLine = pLine + '\n              gen[{0}][{1}].run()  ;'.format(pe,lane) 
@@ -795,13 +798,13 @@ if __name__ == "__main__":
       for reg in range (128, 135+1):
          pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r{2} [{1}] = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane,reg)
       
-    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__request   = 1\'b0 ; '.format(pe,lane)
-    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__released  = 1\'b1 ; '.format(pe,lane)
+    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__request        = 1\'b0 ; '.format(pe,lane)
+    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__released       = 1\'b1 ; '.format(pe,lane)
     pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__write_address  = \'d0 ; '.format(pe,lane)
     pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__write_data     = \'d0 ; '.format(pe,lane)
     pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__read_address   = \'h00 ; '.format(pe,lane)
-    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__write_valid = 1\'b0; '.format(pe,lane)
-    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__read_valid  = 1\'b0; '.format(pe,lane)
+    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__write_valid    = 1\'b0; '.format(pe,lane)
+    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__read_valid     = 1\'b0; '.format(pe,lane)
 
   f.write(pLine)
   f.close()

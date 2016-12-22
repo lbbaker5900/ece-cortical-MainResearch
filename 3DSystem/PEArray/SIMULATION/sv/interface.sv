@@ -392,8 +392,10 @@ interface regFileScalar2stOpCntl_ifc  (
 
 endinterface : regFileScalar2stOpCntl_ifc
 
-typedef virtual regFileScalar2stOpCntl_ifc.TB_regFileScalarDrv2stOpCntl     vRegFileScalarDrv2stOpCntl_T ;
-typedef virtual stOpCntlFromRegFileScalar_ifc.TB_stOpCntlFromRegFileScalar  vStOpCntlFromRegFileScalar_T ;
+typedef virtual regFileScalar2stOpCntl_ifc     vRegFileScalarDrv2stOpCntl_T ;
+typedef virtual stOpCntlFromRegFileScalar_ifc  vStOpCntlFromRegFileScalar_T ;
+//typedef virtual regFileScalar2stOpCntl_ifc.TB_regFileScalarDrv2stOpCntl     vRegFileScalarDrv2stOpCntl_T ;
+//typedef virtual stOpCntlFromRegFileScalar_ifc.TB_stOpCntlFromRegFileScalar  vStOpCntlFromRegFileScalar_T ;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -449,4 +451,77 @@ endinterface : regFileLane2stOpCntl_ifc
 typedef virtual regFileLane2stOpCntl_ifc.TB_regFileLaneDrv2stOpCntl     vRegFileLaneDrv2stOpCntl_T ;
 typedef virtual stOpCntlFromRegFileLane_ifc.TB_stOpCntlFromRegFileLane  vStOpCntlFromRegFileLane_T ;
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SIMD Load/Store interface to streamingOps_cntl
+
+interface loadStore2memCntl_ifc  (
+                           input bit clk   );
+
+    // Load/Store -> mem Controller
+    logic                                         ldst__memc__request          ;
+    logic                                         memc__ldst__granted          ;
+    logic                                         ldst__memc__released         ;
+    // 
+    logic                                         ldst__memc__write_valid     ; 
+    logic  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  ldst__memc__write_address   ;
+    logic  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  ldst__memc__write_data      ; 
+    logic                                         memc__ldst__write_ready     ;
+    logic                                         ldst__memc__read_valid      ; 
+    logic  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  ldst__memc__read_address    ;
+    logic  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__ldst__read_data       ; 
+    logic                                         memc__ldst__read_data_valid ; 
+    logic                                         memc__ldst__read_ready      ; 
+    logic                                         ldst__memc__read_pause      ; 
+
+  clocking cb_in @(posedge clk);
+    input    ldst__memc__request         ;
+    output   memc__ldst__granted         ;
+    input    ldst__memc__released        ;
+    // 
+    input    ldst__memc__write_valid     ; 
+    input    ldst__memc__write_address   ;
+    input    ldst__memc__write_data      ; 
+    output   memc__ldst__write_ready     ;
+    input    ldst__memc__read_valid      ; 
+    input    ldst__memc__read_address    ;
+    output   memc__ldst__read_data       ; 
+    output   memc__ldst__read_data_valid ; 
+    output   memc__ldst__read_ready      ; 
+    input    ldst__memc__read_pause      ; 
+
+  endclocking : cb_in
+
+  clocking cb_out @(posedge clk);
+    output   ldst__memc__request         ;
+    input    memc__ldst__granted         ;
+    output   ldst__memc__released        ;
+    // 
+    output   ldst__memc__write_valid     ; 
+    output   ldst__memc__write_address   ;
+    output   ldst__memc__write_data      ; 
+    input    memc__ldst__write_ready     ;
+    output   ldst__memc__read_valid      ; 
+    output   ldst__memc__read_address    ;
+    input    memc__ldst__read_data       ; 
+    input    memc__ldst__read_data_valid ; 
+    input    memc__ldst__read_ready      ; 
+    output   ldst__memc__read_pause      ; 
+
+  endclocking : cb_out
+
+  modport TB_loadStoreDrv2memCntl (
+                    clocking cb_out
+  );
+
+  modport TB_memCntlFromLoadStore (
+                    clocking cb_in
+  );
+
+endinterface : loadStore2memCntl_ifc
+
+typedef virtual loadStore2memCntl_ifc     vLoadStoreDrv2memCntl_T  ;
+typedef virtual memCntlFromLoadStore_ifc  vMemCntlFromLoadStore_T  ;
+//typedef virtual loadStore2memCntl_ifc.TB_loadStoreDrv2memCntl     vLoadStoreDrv2memCntl_T ;
+//typedef virtual memCntlFromLoadStore_ifc.TB_memCntlFromLoadStore  vMemCntlFromLoadStore_T ;
 

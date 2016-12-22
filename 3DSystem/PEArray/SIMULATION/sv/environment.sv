@@ -30,28 +30,33 @@
 `include "driver.sv"
 `include "mem_checker.sv"
 `include "regFile_driver.sv"
+`include "loadStore_driver.sv"
 
 import virtual_interface::*;
 
 class Environment;
     // each generator/driver pair handles the two streams in each pe/lane
-    generator        gen             [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
-    driver           drv             [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
-    mem_checker      mem_check       [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
-    regFile_driver   rf_driver       [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    generator          gen               [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    driver             drv               [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    mem_checker        mem_check         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    regFile_driver     rf_driver         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    loadStore_driver   ldst_driver       [`PE_ARRAY_NUM_OF_PE]                        ;
 
 
-    mailbox       gen2drv           ;
+    mailbox       gen2drv          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
     event         gen2drv_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
     // an operation defines what is sent on both the streams in a pe/lane
     event         new_operation    [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
     event         final_operation  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
 
-    mailbox       drv2memP          ;
+    mailbox       drv2memP         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
     event         drv2memP_ack     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ; 
 
-    mailbox       gen2rfP           ;
+    mailbox       gen2rfP          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
     event         gen2rfP_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ; 
+
+    //mailbox       gen2ldstP         ;
+    //event         gen2ldstP_ack    [`PE_ARRAY_NUM_OF_PE]                        ;
 
     // an array of all stream interfaces in the system
     vSysLane2PeArray_T     vSysLane2PeArray          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
@@ -64,6 +69,9 @@ class Environment;
     vRegFileScalarDrv2stOpCntl_T vRegFileScalarDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE]                         ;
     vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
 
+    // an array of all SIMD load/store interfaces into the memory controller
+    vLoadStoreDrv2memCntl_T      vLoadStoreDrv2memCntl           [`PE_ARRAY_NUM_OF_PE]                         ;
+
     //----------------------------------------------------------------------------------------------------
     // 
     function new (
@@ -72,19 +80,23 @@ class Environment;
                     input vSysOob2PeArray_T            vSysOob2PeArray                 [`PE_ARRAY_NUM_OF_PE]                        ,
                     input vDma2Mem_T                   vDma2Mem                        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
                     input vRegFileScalarDrv2stOpCntl_T vRegFileScalarDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE]                        ,
-                    input vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] 
+                    input vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
+                    input vLoadStoreDrv2memCntl_T      vLoadStoreDrv2memCntl           [`PE_ARRAY_NUM_OF_PE]                        
                 );
         this.vSysLane2PeArray            =   vSysLane2PeArray            ;
         this.vSysOob2PeArray             =   vSysOob2PeArray             ;
         this.vDma2Mem                    =   vDma2Mem                    ;
         this.vRegFileScalarDrv2stOpCntl  =   vRegFileScalarDrv2stOpCntl  ;
         this.vRegFileLaneDrv2stOpCntl    =   vRegFileLaneDrv2stOpCntl    ;
+        this.vLoadStoreDrv2memCntl       =   vLoadStoreDrv2memCntl       ;
     endfunction
 
     task build();                                 //This task passes the required interfaces, mailboxes, events to the objects of driver, generator and respective scoreboards.
         int Id [2];
         for (int pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe++)
             begin
+                //gen2ldstP   = new () ;
+                ldst_driver [pe]  = new ( Id,            vLoadStoreDrv2memCntl [pe] ); // ,                                      gen2ldstP, gen2ldstP_ack [pe]        );  // load/store driver for mem controller inputs
                 for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                     begin
                         vSysLane2PeArray[pe][lane].cb_test.std__pe__lane_strm0_data_valid  <= 1'b0;
@@ -92,14 +104,14 @@ class Environment;
 
                         //$display("@%0t LEE: Create generators and drivers : {%0d,%0d,%0d}\n", $time,pe,lane,stream);
                         Id = {pe, lane};
-                        gen2drv   = new () ;
-                        drv2memP  = new () ;
-                        gen2rfP   = new () ;
+                        gen2drv     [pe][lane]  = new () ;
+                        drv2memP    [pe][lane]  = new () ;
+                        gen2rfP     [pe][lane]  = new () ;
                         // remember, each gen/drv tuple handle both streams in a lane
-                        gen       [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane],        vSysLane2PeArray     [pe][lane] ,                                        gen2rfP,  gen2rfP_ack[pe][lane]  );
-                        drv       [pe][lane]  = new ( Id, gen2drv , gen2drv_ack[pe][lane], new_operation[pe][lane],                                   vSysLane2PeArray     [pe][lane] ,                                       drv2memP, drv2memP_ack[pe][lane]  );
-                        mem_check [pe][lane]  = new ( Id,                                                                                             vDma2Mem             [pe][lane] ,                                       drv2memP, drv2memP_ack[pe][lane]  );  // monitor dma to memory interface for result check
-                        rf_driver [pe][lane]  = new ( Id,                                                                                       vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP, gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
+                        gen         [pe][lane]  = new ( Id, gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane],        vSysLane2PeArray     [pe][lane] ,                                        gen2rfP[pe][lane],    gen2rfP_ack[pe][lane]  );
+                        drv         [pe][lane]  = new ( Id, gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane],                                   vSysLane2PeArray     [pe][lane] ,                                       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );
+                        mem_check   [pe][lane]  = new ( Id,                                                                                                       vDma2Mem             [pe][lane] ,                                       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );  // monitor dma to memory interface for result check
+                        rf_driver   [pe][lane]  = new ( Id,                                                                                                 vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP[pe][lane],   gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
                     end
             end
 

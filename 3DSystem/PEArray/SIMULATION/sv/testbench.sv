@@ -21,6 +21,7 @@ program automatic test (
         pe_dma2mem_ifc.TB_Dma2Mem            Dma2Mem                  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
         regFileScalar2stOpCntl_ifc           RegFileScalar2StOpCntl   [`PE_ARRAY_NUM_OF_PE]                        ,
         regFileLane2stOpCntl_ifc             RegFileLane2StOpCntl     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
+        loadStore2memCntl_ifc                LoadStore2memCntl        [`PE_ARRAY_NUM_OF_PE]                        ,
         
         input logic reset
         );
@@ -28,7 +29,7 @@ program automatic test (
     Environment env;
 
     initial begin
-        env = new ( SysLane2PeArray, SysOob2PeArray, Dma2Mem, RegFileScalar2StOpCntl, RegFileLane2StOpCntl    );
+        env = new ( SysLane2PeArray, SysOob2PeArray, Dma2Mem, RegFileScalar2StOpCntl, RegFileLane2StOpCntl, LoadStore2memCntl    );
         env.build();
         env.run();
         env.wrap_up();

@@ -54,6 +54,8 @@ module top;
     regFileScalar2stOpCntl_ifc  RegFileScalar2StOpCntl    [`PE_ARRAY_NUM_OF_PE]                        (clk);
     regFileLane2stOpCntl_ifc    RegFileLane2StOpCntl      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk);
 
+    // Load/Store interface from SIMD
+    loadStore2memCntl_ifc       LoadStore2memCntl         [`PE_ARRAY_NUM_OF_PE]                        (clk);
 
     //----------------------------------------------------------------------------------------------------
     // Processing layer
@@ -76,8 +78,9 @@ module top;
                    SysLane2PeArray         ,  // array of interfaces for each downstream pe/lane stack bus
                    SysOob2PeArray          ,  // array of downstream stack bus OOB interfaces to each PE
                    Dma2Mem                 ,  // array of monitor probes for the DMA to Memory interface for each PE/Lane
-                   RegFileScalar2StOpCntl  ,  // array of driver probes for the RegFile Vector registers to stOp Controller for each PE/Lane
+                   RegFileScalar2StOpCntl  ,  // array of driver probes for the RegFile Scalar registers to stOp Controller for each PE
                    RegFileLane2StOpCntl    ,  // array of driver probes for the RegFile Vector registers to stOp Controller for each PE/Lane
+                   LoadStore2memCntl       ,  // array of driver probes for the Load/Store from SIMD to memory controller for each PE
                    reset_poweron
                   );
 
