@@ -363,54 +363,90 @@ typedef virtual pe_dma2mem_ifc.TB_Dma2Mem vDma2Mem_T;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Regfile interface to streamingOps_cntl
 
-interface regFile2stOpCntl_ifc  (
+interface regFileScalar2stOpCntl_ifc  (
                            input bit clk   );
 
-    // RegFile -> stOp Controller
-    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r128  ;
-    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r129  ;
-    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r130  ;
-    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r131  ;
-    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r132  ;
-    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r133  ;
-    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r134  ;
-    logic [`PE_EXEC_LANE_WIDTH_RANGE]  lane_r135  ;
+    // RegFile Scalars -> stOp Controller
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  rs0  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  rs1  ;
 
   clocking cb_in @(posedge clk);
-      input        lane_r128 , 
-                   lane_r129 ,
-                   lane_r130 ,
-                   lane_r131 ,
-                   lane_r132 ,
-                   lane_r133 ,
-                   lane_r134 ,
-                   lane_r135 ;
+      input        rs0 , 
+                   rs1 ;
 
   endclocking : cb_in
 
   clocking cb_out @(posedge clk);
-      output       lane_r128 , 
-                   lane_r129 ,
-                   lane_r130 ,
-                   lane_r131 ,
-                   lane_r132 ,
-                   lane_r133 ,
-                   lane_r134 ,
-                   lane_r135 ;
+      output       rs0 , 
+                   rs1 ;
 
   endclocking : cb_out
 
-  modport TB_regFileDrv2stOpCntl (
+  modport TB_regFileScalarDrv2stOpCntl (
                     clocking cb_out
   );
 
-  modport TB_stOpCntlFromRegFile (
+  modport TB_stOpCntlFromRegFileScalar (
                     clocking cb_in
   );
 
-endinterface : regFile2stOpCntl_ifc
+endinterface : regFileScalar2stOpCntl_ifc
 
-typedef virtual regFile2stOpCntl_ifc.TB_regFileDrv2stOpCntl     vRegFileDrv2stOpCntl_T ;
-typedef virtual stOpCntlFromRegFile_ifc.TB_stOpCntlFromRegFile  vStOpCntlFromRegFile_T ;
+typedef virtual regFileScalar2stOpCntl_ifc.TB_regFileScalarDrv2stOpCntl     vRegFileScalarDrv2stOpCntl_T ;
+typedef virtual stOpCntlFromRegFileScalar_ifc.TB_stOpCntlFromRegFileScalar  vStOpCntlFromRegFileScalar_T ;
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Regfile interface to streamingOps_cntl
+
+interface regFileLane2stOpCntl_ifc  (
+                           input bit clk   );
+
+    // RegFile Lanes -> stOp Controller
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  r128  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  r129  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  r130  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  r131  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  r132  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  r133  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  r134  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  r135  ;
+
+  clocking cb_in @(posedge clk);
+      input        r128 , 
+                   r129 ,
+                   r130 ,
+                   r131 ,
+                   r132 ,
+                   r133 ,
+                   r134 ,
+                   r135 ;
+
+  endclocking : cb_in
+
+  clocking cb_out @(posedge clk);
+      output       r128 , 
+                   r129 ,
+                   r130 ,
+                   r131 ,
+                   r132 ,
+                   r133 ,
+                   r134 ,
+                   r135 ;
+
+  endclocking : cb_out
+
+  modport TB_regFileLaneDrv2stOpCntl (
+                    clocking cb_out
+  );
+
+  modport TB_stOpCntlFromRegFileLane (
+                    clocking cb_in
+  );
+
+endinterface : regFileLane2stOpCntl_ifc
+
+typedef virtual regFileLane2stOpCntl_ifc.TB_regFileLaneDrv2stOpCntl     vRegFileLaneDrv2stOpCntl_T ;
+typedef virtual stOpCntlFromRegFileLane_ifc.TB_stOpCntlFromRegFileLane  vStOpCntlFromRegFileLane_T ;
 
 

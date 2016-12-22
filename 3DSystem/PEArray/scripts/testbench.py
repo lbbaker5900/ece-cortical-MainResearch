@@ -405,10 +405,6 @@ if __name__ == "__main__":
   pLine = pLine + '\n            // ##################################################'
   pLine = pLine + '\n            // Enable Stack bus streams'
   pLine = pLine + '\n'
-  for pe in range (0, numOfPe):
-      for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            enable_std_stream0 = 1 ;          '.format(pe,lane)
-          pLine = pLine + '\n            enable_std_stream1 = 1 ;          '.format(pe,lane)
 
 
   pLine = pLine + '\n'
@@ -512,13 +508,6 @@ if __name__ == "__main__":
 
 
   pLine = pLine + '\n'
-  pLine = pLine + '\n            // ##################################################'
-  pLine = pLine + '\n            // Enable Stack bus streams'
-  pLine = pLine + '\n'
-  for pe in range (0, numOfPe):
-      for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            enable_std_stream0 = 0 ;          '.format(pe,lane)
-          pLine = pLine + '\n            enable_std_stream1 = 1 ;          '.format(pe,lane)
 
   pLine = pLine + '\n'
   pLine = pLine + '\n            // ##################################################'
@@ -610,10 +599,6 @@ if __name__ == "__main__":
   pLine = pLine + '\n            // ##################################################'
   pLine = pLine + '\n            // Enable Stack bus streams'
   pLine = pLine + '\n'
-  for pe in range (0, numOfPe):
-      for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            enable_std_stream0 = 1 ;          '.format(pe,lane)
-          pLine = pLine + '\n            enable_std_stream1 = 0 ;          '.format(pe,lane)
 
   pLine = pLine + '\n'
   pLine = pLine + '\n            // ##################################################'

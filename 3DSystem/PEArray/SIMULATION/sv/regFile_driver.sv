@@ -23,26 +23,29 @@ import operation::*;
 
 class regFile_driver;
     
-    int       Id [2]        ; // PE, Lane, Stream
+    int       Id [2]        ; // PE
     mailbox   gen2rfP      ;
     event     gen2rfP_ack  ;
     event     finished      ;
 
     base_operation sys_operation;
 
-    vRegFileDrv2stOpCntl_T  vP_rf ;
+    vRegFileScalarDrv2stOpCntl_T  vP_srf ;
+    vRegFileLaneDrv2stOpCntl_T    vP_vrf ;
 
     int i=0,j=0;
     int found = 0;
 
     function new (
-                  input int                       Id[2]        ,
-                  input vRegFileDrv2stOpCntl_T    vP_rf        ,
-                  input mailbox                   gen2rfP      ,
-                  input event                     gen2rfP_ack );
+                  input int                             Id[2]         ,
+                  input vRegFileScalarDrv2stOpCntl_T    vP_srf        ,
+                  input vRegFileLaneDrv2stOpCntl_T      vP_vrf        ,
+                  input mailbox                         gen2rfP       ,
+                  input event                           gen2rfP_ack ) ;
 
         this.Id           = Id            ;
-        this.vP_rf        = vP_rf         ;
+        this.vP_srf       = vP_srf        ;
+        this.vP_vrf       = vP_vrf        ;
         this.gen2rfP      = gen2rfP       ;
         this.gen2rfP_ack  = gen2rfP_ack   ;
     endfunction
@@ -63,17 +66,17 @@ class regFile_driver;
                         // waiting for the event doesnt seem to work????
                         while(found == 0)
                             begin
-                                @(vP_rf.cb);
-                                if (vP_rf.cb.dma__memc__write_valid)
+                                @(vP_vrf.cb);
+                                if (vP_vrf.cb.dma__memc__write_valid)
                                     begin
-                                        //$display ($time,": INFO:PASS:MEM_CHECKER :: Correct value Writen to memory {%d,%d} : Hex : %h, FP : %f\n", Id[0], Id[1], vP_rf.cb.dma__memc__write_data, $bitstoshortreal(vP_rf.cb.dma__memc__write_data));
+                                        //$display ($time,": INFO:PASS:MEM_CHECKER :: Correct value Writen to memory {%d,%d} : Hex : %h, FP : %f\n", Id[0], Id[1], vP_vrf.cb.dma__memc__write_data, $bitstoshortreal(vP_vrf.cb.dma__memc__write_data));
                                         found = 1 ;
                                         // check for floating point within a tolerance
                                         // FIXME:
-                                        if (($bitstoshortreal(vP_rf.cb.dma__memc__write_data) > sys_operation.resultLow) && ($bitstoshortreal(vP_rf.cb.dma__memc__write_data) < sys_operation.resultHigh))
-                                            $display ($time,": ERROR:MEM_CHECKER :: incorrect result data for {%d,%d}: expected %f, observed %f\n", Id[0], Id[1], sys_operation.result, $bitstoshortreal(vP_rf.cb.dma__memc__write_data));
+                                        if (($bitstoshortreal(vP_vrf.cb.dma__memc__write_data) > sys_operation.resultLow) && ($bitstoshortreal(vP_vrf.cb.dma__memc__write_data) < sys_operation.resultHigh))
+                                            $display ($time,": ERROR:MEM_CHECKER :: incorrect result data for {%d,%d}: expected %f, observed %f\n", Id[0], Id[1], sys_operation.result, $bitstoshortreal(vP_vrf.cb.dma__memc__write_data));
                                         else
-                                            $display ($time,": INFO:PASS:MEM_CHECKER :: Correct result writen to memory {%d,%d} : Hex : %h, FP : %f\n", Id[0], Id[1], vP_rf.cb.dma__memc__write_data, $bitstoshortreal(vP_rf.cb.dma__memc__write_data));
+                                            $display ($time,": INFO:PASS:MEM_CHECKER :: Correct result writen to memory {%d,%d} : Hex : %h, FP : %f\n", Id[0], Id[1], vP_vrf.cb.dma__memc__write_data, $bitstoshortreal(vP_vrf.cb.dma__memc__write_data));
 
                                         -> this.finished ;
                                     end
@@ -85,7 +88,7 @@ class regFile_driver;
                     end
                 else
                     begin
-                         @(vP_rf.cb_out);
+                         @(vP_vrf.cb_out);
                     end
  
             end

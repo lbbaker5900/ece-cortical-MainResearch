@@ -51,7 +51,8 @@ module top;
     // Probe interface(s) for forcing
     //
     // Regfile interface from SIMD
-    regFile2stOpCntl_ifc  RegFile2StOpCntl      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk);
+    regFileScalar2stOpCntl_ifc  RegFileScalar2StOpCntl    [`PE_ARRAY_NUM_OF_PE]                        (clk);
+    regFileLane2stOpCntl_ifc    RegFileLane2StOpCntl      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk);
 
 
     //----------------------------------------------------------------------------------------------------
@@ -72,10 +73,11 @@ module top;
     // Testbench
     //
         test  ti  (
-                   SysLane2PeArray     ,  // array of interfaces for each downstream pe/lane stack bus
-                   SysOob2PeArray      ,  // array of downstream stack bus OOB interfaces to each PE
-                   Dma2Mem             ,  // array of monitor probes for the DMA to Memory interface for each PE/Lane
-                   RegFile2StOpCntl    ,  // array of driver probes for the RegFile to stOp Controller for each PE/Lane
+                   SysLane2PeArray         ,  // array of interfaces for each downstream pe/lane stack bus
+                   SysOob2PeArray          ,  // array of downstream stack bus OOB interfaces to each PE
+                   Dma2Mem                 ,  // array of monitor probes for the DMA to Memory interface for each PE/Lane
+                   RegFileScalar2StOpCntl  ,  // array of driver probes for the RegFile Vector registers to stOp Controller for each PE/Lane
+                   RegFileLane2StOpCntl    ,  // array of driver probes for the RegFile Vector registers to stOp Controller for each PE/Lane
                    reset_poweron
                   );
 
@@ -103,24 +105,30 @@ module top;
                    end
            end
     endgenerate
-/*
+
+    //----------------------------------------------------------------------------------------------------
+    // Forces
+    //
+    // connect regFile interfaces to SIMD regFile to streaming Ops controller interface
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
+               assign pe_array_inst.pe_inst[pe].pe.simd__cntl__rs0  =   RegFileScalar2StOpCntl[pe].rs0 ;  //.TB_regFileScalarDrv2stOpCntl
+               assign pe_array_inst.pe_inst[pe].pe.simd__cntl__rs1  =   RegFileScalar2StOpCntl[pe].rs1 ;  //.TB_regFileScalarDrv2stOpCntl
                for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
                    begin
-                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r128
-                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r129
-                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r130
-                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r131
-                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r132
-                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r133
-                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r134
-                       pe_array_inst.pe_inst[pe].pe.lane0_lane_r135
+                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r128[lane] =   RegFileLane2StOpCntl[pe][lane].r128 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r129[lane] =   RegFileLane2StOpCntl[pe][lane].r129 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r130[lane] =   RegFileLane2StOpCntl[pe][lane].r130 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r131[lane] =   RegFileLane2StOpCntl[pe][lane].r131 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r132[lane] =   RegFileLane2StOpCntl[pe][lane].r132 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r133[lane] =   RegFileLane2StOpCntl[pe][lane].r133 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r134[lane] =   RegFileLane2StOpCntl[pe][lane].r134 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r135[lane] =   RegFileLane2StOpCntl[pe][lane].r135 ;  //.TB_regFileLaneDrv2stOpCntl
                    end
            end
     endgenerate
-*/
+
 
     /*
     dut_probe_dma2mem probe_dma2mem(
@@ -136,8 +144,6 @@ module top;
     //
 
     int numOfTypes;
-    reg enable_std_stream0 ;
-    reg enable_std_stream1 ;
   
     initial
         begin
