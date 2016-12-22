@@ -33,6 +33,6 @@ vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common top.sv       2
 
 
 
-#vsim -c -sv_seed 3 -do "run.do" -novopt top 
+vsim -c -sv_seed 3 -do "run.do" -novopt top 
 #vsim    -sv_seed 3              -novopt top &
 

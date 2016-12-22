@@ -160,6 +160,7 @@ module top;
     // Testbench - random forces
     //
 
+    /*
     int numOfTypes;
   
     initial
@@ -171,5 +172,6 @@ module top;
             @(posedge clk);
             `include "test_std_std_fpmac_to_mem_init_step1.vh"
         end
+     */
 
 endmodule : top
