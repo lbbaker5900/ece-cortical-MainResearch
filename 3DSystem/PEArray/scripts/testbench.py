@@ -248,11 +248,11 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 start address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r134 = 32\'h'.format(pe,lane) + hex(lane).split('x')[1] + '010;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r134 [{1}] = 32\'h'.format(pe,lane) + hex(lane).split('x')[1] + '010;'
 
       pLine = pLine + '\n            // Stream 1 start address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r135 = 32\'h'.format(pe,lane) + hex(lane).split('x')[1] + '800;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r135 [{1}] = 32\'h'.format(pe,lane) + hex(lane).split('x')[1] + '800;'
 
   pLine = pLine + '\n'
   pLine = pLine + '\n            // ##################################################'
@@ -261,13 +261,13 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r132[19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r132[15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132[{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132[{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r133[19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r133[15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133[{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133[{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
 
   pLine = pLine + '\n'
@@ -278,11 +278,11 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   pLine = pLine + '\n            // Enable'
   for pe in range (0, numOfPe):
-      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.rs0[0]           = 1\'b1;'.format(pe)
+      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs0[0]           = 1\'b1;'.format(pe)
   pLine = pLine + '\n'
   pLine = pLine + '\n            // Operation'
   for pe in range (0, numOfPe):
-      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.rs0[31:1] = `STREAMING_OP_CNTL_OPERATION_NOP_FROM_TWO_EXT_TO_MEM ;'.format(pe)
+      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs0[31:1] = `STREAMING_OP_CNTL_OPERATION_NOP_FROM_TWO_EXT_TO_MEM ;'.format(pe)
   pLine = pLine + '\n'
   pLine = pLine + '\n            repeat(50) @(negedge clk);'
 
@@ -379,11 +379,11 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Destination address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r134 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r134 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
 
       pLine = pLine + '\n            // Stream 1 Destination address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r135 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r135 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
   pLine = pLine + '\n            // ##################################################'
@@ -392,13 +392,13 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r132[19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r132[15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r133[19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r133[15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
 
   pLine = pLine + '\n'
@@ -419,11 +419,11 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   pLine = pLine + '\n            // Enable'
   for pe in range (0, numOfPe):
-      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.rs0[0]           = 1\'b1;'.format(pe)
+      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs0[0]           = 1\'b1;'.format(pe)
   pLine = pLine + '\n'
   pLine = pLine + '\n            // Operation'
   for pe in range (0, numOfPe):
-      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.rs0[31:1] = `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;'.format(pe)
+      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs0[31:1] = `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;'.format(pe)
   pLine = pLine + '\n'
   pLine = pLine + '\n            repeat(50) @(negedge clk);'
 
@@ -475,11 +475,11 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Source address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r130 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r130 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
                                                                                                                                                                       
       pLine = pLine + '\n            // Stream 1 Source address'                                                                                                      
       for lane in range (0, numOfExecLanes):                                                                                                                               
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r131 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r131 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
   pLine = pLine + '\n'
@@ -489,11 +489,11 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Destination address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r134 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r134 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
                                                                                                                                                                       
       pLine = pLine + '\n            // Stream 1 Destination address'                                                                                                 
       for lane in range (0, numOfExecLanes):                                                                                                                               
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r135 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r135 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
   pLine = pLine + '\n            // ##################################################'
@@ -502,13 +502,13 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
 
   pLine = pLine + '\n'
@@ -584,11 +584,11 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Destination address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r134 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r134 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
 
       pLine = pLine + '\n            // Stream 1 Destination address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r135 = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r135 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
   pLine = pLine + '\n            // ##################################################'
@@ -597,13 +597,13 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r132[15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.lane{1}_r133[15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
 
   pLine = pLine + '\n'
@@ -802,13 +802,13 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
-    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.rs0        = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane)
-    #pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.rs1        = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane)
-    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.rs1        = 32\'b1111_1111_1111_1111_1111_1111_1111_1111; '.format(pe,lane)
-    #pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.rs1        = 32\'b0000_0000_0000_0000_0000_0000_0000_1011; '.format(pe,lane)
+    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs0        = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane)
+    #pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs1        = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane)
+    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs1        = 32\'b1111_1111_1111_1111_1111_1111_1111_1111; '.format(pe,lane)
+    #pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs1        = 32\'b0000_0000_0000_0000_0000_0000_0000_1011; '.format(pe,lane)
     for lane in range (0, numOfExecLanes):
       for reg in range (128, 135+1):
-         pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.streamingOps_cntl.lane{1}_r{2} = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane,reg)
+         pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r{2} [{1}] = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane,reg)
       
     pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__request   = 1\'b0 ; '.format(pe,lane)
     pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__released  = 1\'b1 ; '.format(pe,lane)
