@@ -357,7 +357,9 @@ interface pe_dma2mem_ifc (
 
 endinterface : pe_dma2mem_ifc 
 
-typedef virtual pe_dma2mem_ifc.TB_Dma2Mem vDma2Mem_T;
+//typedef virtual pe_dma2mem_ifc.TB_Dma2Mem vDma2Mem_T;
+
+typedef virtual pe_dma2mem_ifc vDma2Mem_T;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -394,6 +396,7 @@ endinterface : regFileScalar2stOpCntl_ifc
 
 typedef virtual regFileScalar2stOpCntl_ifc     vRegFileScalarDrv2stOpCntl_T ;
 typedef virtual stOpCntlFromRegFileScalar_ifc  vStOpCntlFromRegFileScalar_T ;
+
 //typedef virtual regFileScalar2stOpCntl_ifc.TB_regFileScalarDrv2stOpCntl     vRegFileScalarDrv2stOpCntl_T ;
 //typedef virtual stOpCntlFromRegFileScalar_ifc.TB_stOpCntlFromRegFileScalar  vStOpCntlFromRegFileScalar_T ;
 
@@ -448,8 +451,11 @@ interface regFileLane2stOpCntl_ifc  (
 
 endinterface : regFileLane2stOpCntl_ifc
 
-typedef virtual regFileLane2stOpCntl_ifc.TB_regFileLaneDrv2stOpCntl     vRegFileLaneDrv2stOpCntl_T ;
-typedef virtual stOpCntlFromRegFileLane_ifc.TB_stOpCntlFromRegFileLane  vStOpCntlFromRegFileLane_T ;
+//typedef virtual regFileLane2stOpCntl_ifc.TB_regFileLaneDrv2stOpCntl     vRegFileLaneDrv2stOpCntl_T ;
+//typedef virtual stOpCntlFromRegFileLane_ifc.TB_stOpCntlFromRegFileLane  vStOpCntlFromRegFileLane_T ;
+
+typedef virtual regFileLane2stOpCntl_ifc     vRegFileLaneDrv2stOpCntl_T ;
+typedef virtual stOpCntlFromRegFileLane_ifc  vStOpCntlFromRegFileLane_T ;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -522,6 +528,7 @@ endinterface : loadStore2memCntl_ifc
 
 typedef virtual loadStore2memCntl_ifc     vLoadStoreDrv2memCntl_T  ;
 typedef virtual memCntlFromLoadStore_ifc  vMemCntlFromLoadStore_T  ;
+
 //typedef virtual loadStore2memCntl_ifc.TB_loadStoreDrv2memCntl     vLoadStoreDrv2memCntl_T ;
 //typedef virtual memCntlFromLoadStore_ifc.TB_memCntlFromLoadStore  vMemCntlFromLoadStore_T ;
 

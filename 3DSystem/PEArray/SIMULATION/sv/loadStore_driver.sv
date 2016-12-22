@@ -55,6 +55,13 @@ class loadStore_driver;
             begin
                 //$display ($time,": INFO:LDST DRIVER :: Initialize load/store for {%02d,%02d}", Id[0], Id[1]);
                 @(vP_ldst.cb_out);
+                vP_ldst.cb_out.ldst__memc__request        <= 1'b0 ; 
+                vP_ldst.cb_out.ldst__memc__released       <= 1'b1 ; 
+                vP_ldst.cb_out.ldst__memc__write_address  <=  'd0 ; 
+                vP_ldst.cb_out.ldst__memc__write_data     <=  'd0 ;
+                vP_ldst.cb_out.ldst__memc__read_address   <= 'h00 ; 
+                vP_ldst.cb_out.ldst__memc__write_valid    <= 1'b0 ;
+                vP_ldst.cb_out.ldst__memc__read_valid     <= 1'b0 ;
 /*
                 if ( gen2ldstP.num() != 0 )
                     begin

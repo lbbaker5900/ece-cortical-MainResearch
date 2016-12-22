@@ -61,9 +61,17 @@ class regFile_driver;
                         $display ($time,": INFO:REGFILE DRIVER :: Operation received for {%02d,%02d}", Id[0], Id[1]);
                         gen2rfP.peek(sys_operation);   //Taking the transaction from the generator mailbox
                         //$display("@%0t LEE: Received FP MAC operation from driver: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
+                        vP_vrf.r134 = (Id[0] << 18) | (Id[1] < 13) | 32'b__0_0000_1000_0000;
+                        vP_vrf.r135 = (Id[0] << 18) | (Id[1] < 13) | 32'b__0_1000_0000_0000;
+                        //r134 [{1}] = 6'd32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
+                        vP_vrf.cb_out.r132[19:16] <= 4'd4;
+                        vP_vrf.cb_out.r132[15: 0] <= 16'd20;
+                        vP_vrf.cb_out.r133[19:16] <= 4'd4;
+                        vP_vrf.cb_out.r133[15: 0] <= 16'd20;
+                        vP_srf.cb_out.rs0[0]      <= 1'b1;
+                        vP_srf.cb_out.rs0[31:1]   <= `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
+                        vP_srf.cb_out.rs1         <= {32{1'b1}};
 /*
-                        vP_srf.rs0 = {32{1'b1}};
-                        vP_srf.rs1 = {32{1'b1}};
                         //while(~this.finished.triggered)
                         // waiting for the event doesnt seem to work????
                         while(found == 0)
