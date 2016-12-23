@@ -73,8 +73,6 @@ module pe_array (
     for (gvi=0; gvi<`PE_ARRAY_NUM_OF_PE; gvi=gvi+1) 
     //for (gvi=0; gvi<1; gvi=gvi+1) 
       begin: pe_inst
-        wire [`STREAMING_OP_CNTL_PE_ID_RANGE   ]   peId              ; 
-        assign peId = gvi;
 
         // Stack Bus downstream Interface
         `include "pe_stack_bus_downstream_instance_wires.vh"
@@ -85,6 +83,8 @@ module pe_array (
 
         // NoC Interface
         `include "pe_noc_instance_wires.vh"
+
+        assign sys__pe__peId = gvi;
 
         pe pe (
    

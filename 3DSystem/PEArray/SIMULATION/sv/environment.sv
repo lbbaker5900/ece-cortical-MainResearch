@@ -76,8 +76,8 @@ class Environment;
     // 
     function new (
                     // Retrieving the interface passed from the testbench in order to pass it to the required blocks.
-                    input vSysLane2PeArray_T           vSysLane2PeArray                [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
                     input vSysOob2PeArray_T            vSysOob2PeArray                 [`PE_ARRAY_NUM_OF_PE]                        ,
+                    input vSysLane2PeArray_T           vSysLane2PeArray                [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
                     input vDma2Mem_T                   vDma2Mem                        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
                     input vRegFileScalarDrv2stOpCntl_T vRegFileScalarDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE]                        ,
                     input vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
@@ -108,10 +108,10 @@ class Environment;
                         drv2memP    [pe][lane]  = new () ;
                         gen2rfP     [pe][lane]  = new () ;
                         // remember, each gen/drv tuple handle both streams in a lane
-                        gen         [pe][lane]  = new ( Id, gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane],        vSysLane2PeArray     [pe][lane] ,                                        gen2rfP[pe][lane],    gen2rfP_ack[pe][lane]  );
-                        drv         [pe][lane]  = new ( Id, gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane],                                   vSysLane2PeArray     [pe][lane] ,                                       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );
-                        mem_check   [pe][lane]  = new ( Id,                                                                                                       vDma2Mem             [pe][lane] ,                                       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );  // monitor dma to memory interface for result check
-                        rf_driver   [pe][lane]  = new ( Id,                                                                                                 vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP[pe][lane],   gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
+                        gen         [pe][lane]  = new ( Id, gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane],  vSysOob2PeArray [pe]       ,   vSysLane2PeArray [pe][lane] ,        gen2rfP[pe][lane],    gen2rfP_ack[pe][lane]  );
+                        drv         [pe][lane]  = new ( Id, gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane],                             vSysOob2PeArray [pe]       ,   vSysLane2PeArray [pe][lane] ,       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );
+                        mem_check   [pe][lane]  = new ( Id,                                                                                                       vDma2Mem  [pe][lane] ,                                       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );  // monitor dma to memory interface for result check
+                        rf_driver   [pe][lane]  = new ( Id,                                                                                      vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP[pe][lane],   gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
                     end
             end
 

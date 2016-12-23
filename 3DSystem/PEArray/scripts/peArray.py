@@ -3199,7 +3199,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     #
-    pLine = pLine + '\n  assign   pe_inst[{0}].sys__pe__peId               =  sys__pe{0}__peId                           ;'.format(pe) 
+    #pLine = pLine + '\n  assign   pe_inst[{0}].sys__pe__peId               =  sys__pe{0}__peId                           ;'.format(pe) 
     pLine = pLine + '\n  assign   pe_inst[{0}].sys__pe__allSynchronized    =  sys__pe{0}__allSynchronized                ;'.format(pe) 
     pLine = pLine + '\n  assign   pe{0}__sys__thisSynchronized             =  pe_inst[{0}].pe__sys__thisSynchronized     ;'.format(pe)
     pLine = pLine + '\n  assign   pe{0}__sys__ready                        =  pe_inst[{0}].pe__sys__ready                ;'.format(pe)

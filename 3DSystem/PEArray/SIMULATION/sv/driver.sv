@@ -30,6 +30,7 @@ class driver;
     event     gen2drv_ack      ;
     event     new_operation    ;
 
+    mailbox   drv2oob          ;  // create a mailbox for the OOB
     mailbox   drv2lane []      ;  // create a mailbox for each stream driver
     int transaction    []      ;
 
@@ -39,10 +40,12 @@ class driver;
     event     drv2memP_ack     ;
 
     base_operation   sys_operation      ;
+    base_operation   oob_operation      ;  // a copy of the sys_operation sent to the OOB process
     stream_operation tmp_strm_operation ;
     stream_operation strm_operation [] ;
 
     // FIXME : doesnt need all interfaces
+    vSysOob2PeArray_T  vSysOob2PeArray  ;  // FIXME: OOB is a per PE interface but we have driver objects for all PE/Lanes
     vSysLane2PeArray_T vSysLane2PeArray ;
 
     function new (
@@ -50,6 +53,7 @@ class driver;
                   input mailbox              gen2drv            ,                  //Retrieving mailboxes and virtual system interface.
                   input event                gen2drv_ack        ,
                   input event                new_operation      ,
+                  input vSysOob2PeArray_T    vSysOob2PeArray   ,
                   input vSysLane2PeArray_T   vSysLane2PeArray   ,
                   input mailbox              drv2memP           ,
                   input event                drv2memP_ack       );
@@ -58,14 +62,17 @@ class driver;
         this.gen2drv             = gen2drv                    ;
         this.gen2drv_ack         = gen2drv_ack                ;
         this.new_operation       = new_operation              ;
+        this.vSysOob2PeArray     = vSysOob2PeArray            ;
         this.vSysLane2PeArray    = vSysLane2PeArray           ;
         this.drv2memP            = drv2memP                   ;
         this.drv2memP_ack        = drv2memP_ack               ;
+        this.drv2oob             = new                        ;
         this.drv2lane            = new[`PE_NUM_OF_STREAMS  ]  ;
         for (int i=0; i<drv2lane.size(); i++)
             begin
                 this.drv2lane[i]            = new             ;
             end
+        this.oob_operation       = new                        ;  // create a separet base_operation so we can split OOB into a different class in future
         this.strm_operation      = new[`PE_NUM_OF_STREAMS  ]  ;
         this.transaction         = new[`PE_NUM_OF_STREAMS  ]  ;
         //for (int i=0; i<transaction.size(); i++)
@@ -93,6 +100,8 @@ class driver;
                                 //$display("@%0t : LEE: IDs : { %d } ", $time, sys_operation.id);
                                 //$display("@%0t : LEE: IDs : { %d } ", $time, strm_operation[1].id);
                     
+                                drv2oob.put(sys_operation)                    ;  // oob needs to prepare the PE
+
                                 for (int i=0; i<strm_operation.size(); i++)
                                     begin
                                         tmp_strm_operation                  = new            ;
@@ -115,6 +124,37 @@ class driver;
                                                 
                             end
                     end
+            end
+            // FIXME: currently PE OOB passed to all stream drivers so all lane drivers will drive single per PE OOB interface
+            // OOB needs to configure PE before streaming
+            begin
+                forever
+                    begin
+                        if ( drv2oob.num() != 0 )
+                            begin
+                                while(drv2oob.num() != 0)
+                                    begin
+                                        drv2oob.peek(oob_operation);                                                //Taking the instruction from generator 
+           
+                                        @(vSysOob2PeArray.cb_test);
+           
+                                        vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
+                                        vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= 0  ;  
+                                        vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
+           
+                                        drv2oob.get(oob_operation)  ;  //Removing the instruction from generator mailbox
+                                        
+                                    end  // while
+                                    $display("@%0t : INFO: {%d,%d} Completed driving OOB", $time, Id[0], Id[1] );
+                                end
+                        else
+                            begin 
+                                @(vSysOob2PeArray.cb_test);
+                                vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
+                                vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= 0  ;  
+                                vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 0  ;
+                            end  // if
+                    end  // forever
             end
             // FIXME : should use generate for the two following processes, but need to separate streams into separate interfaces so they can be indexed
             begin

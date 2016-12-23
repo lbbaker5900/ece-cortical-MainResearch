@@ -1,5 +1,4 @@
 
-  assign   pe_inst[0].sys__pe__peId               =  sys__pe0__peId                           ;
   assign   pe_inst[0].sys__pe__allSynchronized    =  sys__pe0__allSynchronized                ;
   assign   pe0__sys__thisSynchronized             =  pe_inst[0].pe__sys__thisSynchronized     ;
   assign   pe0__sys__ready                        =  pe_inst[0].pe__sys__ready                ;
@@ -392,7 +391,6 @@
   assign   pe_inst[0].std__pe__lane31_strm1_data_mask   =  std__pe0__lane31_strm1_data_mask        ;
   assign   pe_inst[0].std__pe__lane31_strm1_data_valid  =  std__pe0__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[1].sys__pe__peId               =  sys__pe1__peId                           ;
   assign   pe_inst[1].sys__pe__allSynchronized    =  sys__pe1__allSynchronized                ;
   assign   pe1__sys__thisSynchronized             =  pe_inst[1].pe__sys__thisSynchronized     ;
   assign   pe1__sys__ready                        =  pe_inst[1].pe__sys__ready                ;
@@ -785,7 +783,6 @@
   assign   pe_inst[1].std__pe__lane31_strm1_data_mask   =  std__pe1__lane31_strm1_data_mask        ;
   assign   pe_inst[1].std__pe__lane31_strm1_data_valid  =  std__pe1__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[2].sys__pe__peId               =  sys__pe2__peId                           ;
   assign   pe_inst[2].sys__pe__allSynchronized    =  sys__pe2__allSynchronized                ;
   assign   pe2__sys__thisSynchronized             =  pe_inst[2].pe__sys__thisSynchronized     ;
   assign   pe2__sys__ready                        =  pe_inst[2].pe__sys__ready                ;
@@ -1178,7 +1175,6 @@
   assign   pe_inst[2].std__pe__lane31_strm1_data_mask   =  std__pe2__lane31_strm1_data_mask        ;
   assign   pe_inst[2].std__pe__lane31_strm1_data_valid  =  std__pe2__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[3].sys__pe__peId               =  sys__pe3__peId                           ;
   assign   pe_inst[3].sys__pe__allSynchronized    =  sys__pe3__allSynchronized                ;
   assign   pe3__sys__thisSynchronized             =  pe_inst[3].pe__sys__thisSynchronized     ;
   assign   pe3__sys__ready                        =  pe_inst[3].pe__sys__ready                ;
@@ -1571,7 +1567,6 @@
   assign   pe_inst[3].std__pe__lane31_strm1_data_mask   =  std__pe3__lane31_strm1_data_mask        ;
   assign   pe_inst[3].std__pe__lane31_strm1_data_valid  =  std__pe3__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[4].sys__pe__peId               =  sys__pe4__peId                           ;
   assign   pe_inst[4].sys__pe__allSynchronized    =  sys__pe4__allSynchronized                ;
   assign   pe4__sys__thisSynchronized             =  pe_inst[4].pe__sys__thisSynchronized     ;
   assign   pe4__sys__ready                        =  pe_inst[4].pe__sys__ready                ;
@@ -1964,7 +1959,6 @@
   assign   pe_inst[4].std__pe__lane31_strm1_data_mask   =  std__pe4__lane31_strm1_data_mask        ;
   assign   pe_inst[4].std__pe__lane31_strm1_data_valid  =  std__pe4__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[5].sys__pe__peId               =  sys__pe5__peId                           ;
   assign   pe_inst[5].sys__pe__allSynchronized    =  sys__pe5__allSynchronized                ;
   assign   pe5__sys__thisSynchronized             =  pe_inst[5].pe__sys__thisSynchronized     ;
   assign   pe5__sys__ready                        =  pe_inst[5].pe__sys__ready                ;
@@ -2357,7 +2351,6 @@
   assign   pe_inst[5].std__pe__lane31_strm1_data_mask   =  std__pe5__lane31_strm1_data_mask        ;
   assign   pe_inst[5].std__pe__lane31_strm1_data_valid  =  std__pe5__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[6].sys__pe__peId               =  sys__pe6__peId                           ;
   assign   pe_inst[6].sys__pe__allSynchronized    =  sys__pe6__allSynchronized                ;
   assign   pe6__sys__thisSynchronized             =  pe_inst[6].pe__sys__thisSynchronized     ;
   assign   pe6__sys__ready                        =  pe_inst[6].pe__sys__ready                ;
@@ -2750,7 +2743,6 @@
   assign   pe_inst[6].std__pe__lane31_strm1_data_mask   =  std__pe6__lane31_strm1_data_mask        ;
   assign   pe_inst[6].std__pe__lane31_strm1_data_valid  =  std__pe6__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[7].sys__pe__peId               =  sys__pe7__peId                           ;
   assign   pe_inst[7].sys__pe__allSynchronized    =  sys__pe7__allSynchronized                ;
   assign   pe7__sys__thisSynchronized             =  pe_inst[7].pe__sys__thisSynchronized     ;
   assign   pe7__sys__ready                        =  pe_inst[7].pe__sys__ready                ;
@@ -3143,7 +3135,6 @@
   assign   pe_inst[7].std__pe__lane31_strm1_data_mask   =  std__pe7__lane31_strm1_data_mask        ;
   assign   pe_inst[7].std__pe__lane31_strm1_data_valid  =  std__pe7__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[8].sys__pe__peId               =  sys__pe8__peId                           ;
   assign   pe_inst[8].sys__pe__allSynchronized    =  sys__pe8__allSynchronized                ;
   assign   pe8__sys__thisSynchronized             =  pe_inst[8].pe__sys__thisSynchronized     ;
   assign   pe8__sys__ready                        =  pe_inst[8].pe__sys__ready                ;
@@ -3536,7 +3527,6 @@
   assign   pe_inst[8].std__pe__lane31_strm1_data_mask   =  std__pe8__lane31_strm1_data_mask        ;
   assign   pe_inst[8].std__pe__lane31_strm1_data_valid  =  std__pe8__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[9].sys__pe__peId               =  sys__pe9__peId                           ;
   assign   pe_inst[9].sys__pe__allSynchronized    =  sys__pe9__allSynchronized                ;
   assign   pe9__sys__thisSynchronized             =  pe_inst[9].pe__sys__thisSynchronized     ;
   assign   pe9__sys__ready                        =  pe_inst[9].pe__sys__ready                ;
@@ -3929,7 +3919,6 @@
   assign   pe_inst[9].std__pe__lane31_strm1_data_mask   =  std__pe9__lane31_strm1_data_mask        ;
   assign   pe_inst[9].std__pe__lane31_strm1_data_valid  =  std__pe9__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[10].sys__pe__peId               =  sys__pe10__peId                           ;
   assign   pe_inst[10].sys__pe__allSynchronized    =  sys__pe10__allSynchronized                ;
   assign   pe10__sys__thisSynchronized             =  pe_inst[10].pe__sys__thisSynchronized     ;
   assign   pe10__sys__ready                        =  pe_inst[10].pe__sys__ready                ;
@@ -4322,7 +4311,6 @@
   assign   pe_inst[10].std__pe__lane31_strm1_data_mask   =  std__pe10__lane31_strm1_data_mask        ;
   assign   pe_inst[10].std__pe__lane31_strm1_data_valid  =  std__pe10__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[11].sys__pe__peId               =  sys__pe11__peId                           ;
   assign   pe_inst[11].sys__pe__allSynchronized    =  sys__pe11__allSynchronized                ;
   assign   pe11__sys__thisSynchronized             =  pe_inst[11].pe__sys__thisSynchronized     ;
   assign   pe11__sys__ready                        =  pe_inst[11].pe__sys__ready                ;
@@ -4715,7 +4703,6 @@
   assign   pe_inst[11].std__pe__lane31_strm1_data_mask   =  std__pe11__lane31_strm1_data_mask        ;
   assign   pe_inst[11].std__pe__lane31_strm1_data_valid  =  std__pe11__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[12].sys__pe__peId               =  sys__pe12__peId                           ;
   assign   pe_inst[12].sys__pe__allSynchronized    =  sys__pe12__allSynchronized                ;
   assign   pe12__sys__thisSynchronized             =  pe_inst[12].pe__sys__thisSynchronized     ;
   assign   pe12__sys__ready                        =  pe_inst[12].pe__sys__ready                ;
@@ -5108,7 +5095,6 @@
   assign   pe_inst[12].std__pe__lane31_strm1_data_mask   =  std__pe12__lane31_strm1_data_mask        ;
   assign   pe_inst[12].std__pe__lane31_strm1_data_valid  =  std__pe12__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[13].sys__pe__peId               =  sys__pe13__peId                           ;
   assign   pe_inst[13].sys__pe__allSynchronized    =  sys__pe13__allSynchronized                ;
   assign   pe13__sys__thisSynchronized             =  pe_inst[13].pe__sys__thisSynchronized     ;
   assign   pe13__sys__ready                        =  pe_inst[13].pe__sys__ready                ;
@@ -5501,7 +5487,6 @@
   assign   pe_inst[13].std__pe__lane31_strm1_data_mask   =  std__pe13__lane31_strm1_data_mask        ;
   assign   pe_inst[13].std__pe__lane31_strm1_data_valid  =  std__pe13__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[14].sys__pe__peId               =  sys__pe14__peId                           ;
   assign   pe_inst[14].sys__pe__allSynchronized    =  sys__pe14__allSynchronized                ;
   assign   pe14__sys__thisSynchronized             =  pe_inst[14].pe__sys__thisSynchronized     ;
   assign   pe14__sys__ready                        =  pe_inst[14].pe__sys__ready                ;
@@ -5894,7 +5879,6 @@
   assign   pe_inst[14].std__pe__lane31_strm1_data_mask   =  std__pe14__lane31_strm1_data_mask        ;
   assign   pe_inst[14].std__pe__lane31_strm1_data_valid  =  std__pe14__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[15].sys__pe__peId               =  sys__pe15__peId                           ;
   assign   pe_inst[15].sys__pe__allSynchronized    =  sys__pe15__allSynchronized                ;
   assign   pe15__sys__thisSynchronized             =  pe_inst[15].pe__sys__thisSynchronized     ;
   assign   pe15__sys__ready                        =  pe_inst[15].pe__sys__ready                ;
@@ -6287,7 +6271,6 @@
   assign   pe_inst[15].std__pe__lane31_strm1_data_mask   =  std__pe15__lane31_strm1_data_mask        ;
   assign   pe_inst[15].std__pe__lane31_strm1_data_valid  =  std__pe15__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[16].sys__pe__peId               =  sys__pe16__peId                           ;
   assign   pe_inst[16].sys__pe__allSynchronized    =  sys__pe16__allSynchronized                ;
   assign   pe16__sys__thisSynchronized             =  pe_inst[16].pe__sys__thisSynchronized     ;
   assign   pe16__sys__ready                        =  pe_inst[16].pe__sys__ready                ;
@@ -6680,7 +6663,6 @@
   assign   pe_inst[16].std__pe__lane31_strm1_data_mask   =  std__pe16__lane31_strm1_data_mask        ;
   assign   pe_inst[16].std__pe__lane31_strm1_data_valid  =  std__pe16__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[17].sys__pe__peId               =  sys__pe17__peId                           ;
   assign   pe_inst[17].sys__pe__allSynchronized    =  sys__pe17__allSynchronized                ;
   assign   pe17__sys__thisSynchronized             =  pe_inst[17].pe__sys__thisSynchronized     ;
   assign   pe17__sys__ready                        =  pe_inst[17].pe__sys__ready                ;
@@ -7073,7 +7055,6 @@
   assign   pe_inst[17].std__pe__lane31_strm1_data_mask   =  std__pe17__lane31_strm1_data_mask        ;
   assign   pe_inst[17].std__pe__lane31_strm1_data_valid  =  std__pe17__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[18].sys__pe__peId               =  sys__pe18__peId                           ;
   assign   pe_inst[18].sys__pe__allSynchronized    =  sys__pe18__allSynchronized                ;
   assign   pe18__sys__thisSynchronized             =  pe_inst[18].pe__sys__thisSynchronized     ;
   assign   pe18__sys__ready                        =  pe_inst[18].pe__sys__ready                ;
@@ -7466,7 +7447,6 @@
   assign   pe_inst[18].std__pe__lane31_strm1_data_mask   =  std__pe18__lane31_strm1_data_mask        ;
   assign   pe_inst[18].std__pe__lane31_strm1_data_valid  =  std__pe18__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[19].sys__pe__peId               =  sys__pe19__peId                           ;
   assign   pe_inst[19].sys__pe__allSynchronized    =  sys__pe19__allSynchronized                ;
   assign   pe19__sys__thisSynchronized             =  pe_inst[19].pe__sys__thisSynchronized     ;
   assign   pe19__sys__ready                        =  pe_inst[19].pe__sys__ready                ;
@@ -7859,7 +7839,6 @@
   assign   pe_inst[19].std__pe__lane31_strm1_data_mask   =  std__pe19__lane31_strm1_data_mask        ;
   assign   pe_inst[19].std__pe__lane31_strm1_data_valid  =  std__pe19__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[20].sys__pe__peId               =  sys__pe20__peId                           ;
   assign   pe_inst[20].sys__pe__allSynchronized    =  sys__pe20__allSynchronized                ;
   assign   pe20__sys__thisSynchronized             =  pe_inst[20].pe__sys__thisSynchronized     ;
   assign   pe20__sys__ready                        =  pe_inst[20].pe__sys__ready                ;
@@ -8252,7 +8231,6 @@
   assign   pe_inst[20].std__pe__lane31_strm1_data_mask   =  std__pe20__lane31_strm1_data_mask        ;
   assign   pe_inst[20].std__pe__lane31_strm1_data_valid  =  std__pe20__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[21].sys__pe__peId               =  sys__pe21__peId                           ;
   assign   pe_inst[21].sys__pe__allSynchronized    =  sys__pe21__allSynchronized                ;
   assign   pe21__sys__thisSynchronized             =  pe_inst[21].pe__sys__thisSynchronized     ;
   assign   pe21__sys__ready                        =  pe_inst[21].pe__sys__ready                ;
@@ -8645,7 +8623,6 @@
   assign   pe_inst[21].std__pe__lane31_strm1_data_mask   =  std__pe21__lane31_strm1_data_mask        ;
   assign   pe_inst[21].std__pe__lane31_strm1_data_valid  =  std__pe21__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[22].sys__pe__peId               =  sys__pe22__peId                           ;
   assign   pe_inst[22].sys__pe__allSynchronized    =  sys__pe22__allSynchronized                ;
   assign   pe22__sys__thisSynchronized             =  pe_inst[22].pe__sys__thisSynchronized     ;
   assign   pe22__sys__ready                        =  pe_inst[22].pe__sys__ready                ;
@@ -9038,7 +9015,6 @@
   assign   pe_inst[22].std__pe__lane31_strm1_data_mask   =  std__pe22__lane31_strm1_data_mask        ;
   assign   pe_inst[22].std__pe__lane31_strm1_data_valid  =  std__pe22__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[23].sys__pe__peId               =  sys__pe23__peId                           ;
   assign   pe_inst[23].sys__pe__allSynchronized    =  sys__pe23__allSynchronized                ;
   assign   pe23__sys__thisSynchronized             =  pe_inst[23].pe__sys__thisSynchronized     ;
   assign   pe23__sys__ready                        =  pe_inst[23].pe__sys__ready                ;
@@ -9431,7 +9407,6 @@
   assign   pe_inst[23].std__pe__lane31_strm1_data_mask   =  std__pe23__lane31_strm1_data_mask        ;
   assign   pe_inst[23].std__pe__lane31_strm1_data_valid  =  std__pe23__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[24].sys__pe__peId               =  sys__pe24__peId                           ;
   assign   pe_inst[24].sys__pe__allSynchronized    =  sys__pe24__allSynchronized                ;
   assign   pe24__sys__thisSynchronized             =  pe_inst[24].pe__sys__thisSynchronized     ;
   assign   pe24__sys__ready                        =  pe_inst[24].pe__sys__ready                ;
@@ -9824,7 +9799,6 @@
   assign   pe_inst[24].std__pe__lane31_strm1_data_mask   =  std__pe24__lane31_strm1_data_mask        ;
   assign   pe_inst[24].std__pe__lane31_strm1_data_valid  =  std__pe24__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[25].sys__pe__peId               =  sys__pe25__peId                           ;
   assign   pe_inst[25].sys__pe__allSynchronized    =  sys__pe25__allSynchronized                ;
   assign   pe25__sys__thisSynchronized             =  pe_inst[25].pe__sys__thisSynchronized     ;
   assign   pe25__sys__ready                        =  pe_inst[25].pe__sys__ready                ;
@@ -10217,7 +10191,6 @@
   assign   pe_inst[25].std__pe__lane31_strm1_data_mask   =  std__pe25__lane31_strm1_data_mask        ;
   assign   pe_inst[25].std__pe__lane31_strm1_data_valid  =  std__pe25__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[26].sys__pe__peId               =  sys__pe26__peId                           ;
   assign   pe_inst[26].sys__pe__allSynchronized    =  sys__pe26__allSynchronized                ;
   assign   pe26__sys__thisSynchronized             =  pe_inst[26].pe__sys__thisSynchronized     ;
   assign   pe26__sys__ready                        =  pe_inst[26].pe__sys__ready                ;
@@ -10610,7 +10583,6 @@
   assign   pe_inst[26].std__pe__lane31_strm1_data_mask   =  std__pe26__lane31_strm1_data_mask        ;
   assign   pe_inst[26].std__pe__lane31_strm1_data_valid  =  std__pe26__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[27].sys__pe__peId               =  sys__pe27__peId                           ;
   assign   pe_inst[27].sys__pe__allSynchronized    =  sys__pe27__allSynchronized                ;
   assign   pe27__sys__thisSynchronized             =  pe_inst[27].pe__sys__thisSynchronized     ;
   assign   pe27__sys__ready                        =  pe_inst[27].pe__sys__ready                ;
@@ -11003,7 +10975,6 @@
   assign   pe_inst[27].std__pe__lane31_strm1_data_mask   =  std__pe27__lane31_strm1_data_mask        ;
   assign   pe_inst[27].std__pe__lane31_strm1_data_valid  =  std__pe27__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[28].sys__pe__peId               =  sys__pe28__peId                           ;
   assign   pe_inst[28].sys__pe__allSynchronized    =  sys__pe28__allSynchronized                ;
   assign   pe28__sys__thisSynchronized             =  pe_inst[28].pe__sys__thisSynchronized     ;
   assign   pe28__sys__ready                        =  pe_inst[28].pe__sys__ready                ;
@@ -11396,7 +11367,6 @@
   assign   pe_inst[28].std__pe__lane31_strm1_data_mask   =  std__pe28__lane31_strm1_data_mask        ;
   assign   pe_inst[28].std__pe__lane31_strm1_data_valid  =  std__pe28__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[29].sys__pe__peId               =  sys__pe29__peId                           ;
   assign   pe_inst[29].sys__pe__allSynchronized    =  sys__pe29__allSynchronized                ;
   assign   pe29__sys__thisSynchronized             =  pe_inst[29].pe__sys__thisSynchronized     ;
   assign   pe29__sys__ready                        =  pe_inst[29].pe__sys__ready                ;
@@ -11789,7 +11759,6 @@
   assign   pe_inst[29].std__pe__lane31_strm1_data_mask   =  std__pe29__lane31_strm1_data_mask        ;
   assign   pe_inst[29].std__pe__lane31_strm1_data_valid  =  std__pe29__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[30].sys__pe__peId               =  sys__pe30__peId                           ;
   assign   pe_inst[30].sys__pe__allSynchronized    =  sys__pe30__allSynchronized                ;
   assign   pe30__sys__thisSynchronized             =  pe_inst[30].pe__sys__thisSynchronized     ;
   assign   pe30__sys__ready                        =  pe_inst[30].pe__sys__ready                ;
@@ -12182,7 +12151,6 @@
   assign   pe_inst[30].std__pe__lane31_strm1_data_mask   =  std__pe30__lane31_strm1_data_mask        ;
   assign   pe_inst[30].std__pe__lane31_strm1_data_valid  =  std__pe30__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[31].sys__pe__peId               =  sys__pe31__peId                           ;
   assign   pe_inst[31].sys__pe__allSynchronized    =  sys__pe31__allSynchronized                ;
   assign   pe31__sys__thisSynchronized             =  pe_inst[31].pe__sys__thisSynchronized     ;
   assign   pe31__sys__ready                        =  pe_inst[31].pe__sys__ready                ;
@@ -12575,7 +12543,6 @@
   assign   pe_inst[31].std__pe__lane31_strm1_data_mask   =  std__pe31__lane31_strm1_data_mask        ;
   assign   pe_inst[31].std__pe__lane31_strm1_data_valid  =  std__pe31__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[32].sys__pe__peId               =  sys__pe32__peId                           ;
   assign   pe_inst[32].sys__pe__allSynchronized    =  sys__pe32__allSynchronized                ;
   assign   pe32__sys__thisSynchronized             =  pe_inst[32].pe__sys__thisSynchronized     ;
   assign   pe32__sys__ready                        =  pe_inst[32].pe__sys__ready                ;
@@ -12968,7 +12935,6 @@
   assign   pe_inst[32].std__pe__lane31_strm1_data_mask   =  std__pe32__lane31_strm1_data_mask        ;
   assign   pe_inst[32].std__pe__lane31_strm1_data_valid  =  std__pe32__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[33].sys__pe__peId               =  sys__pe33__peId                           ;
   assign   pe_inst[33].sys__pe__allSynchronized    =  sys__pe33__allSynchronized                ;
   assign   pe33__sys__thisSynchronized             =  pe_inst[33].pe__sys__thisSynchronized     ;
   assign   pe33__sys__ready                        =  pe_inst[33].pe__sys__ready                ;
@@ -13361,7 +13327,6 @@
   assign   pe_inst[33].std__pe__lane31_strm1_data_mask   =  std__pe33__lane31_strm1_data_mask        ;
   assign   pe_inst[33].std__pe__lane31_strm1_data_valid  =  std__pe33__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[34].sys__pe__peId               =  sys__pe34__peId                           ;
   assign   pe_inst[34].sys__pe__allSynchronized    =  sys__pe34__allSynchronized                ;
   assign   pe34__sys__thisSynchronized             =  pe_inst[34].pe__sys__thisSynchronized     ;
   assign   pe34__sys__ready                        =  pe_inst[34].pe__sys__ready                ;
@@ -13754,7 +13719,6 @@
   assign   pe_inst[34].std__pe__lane31_strm1_data_mask   =  std__pe34__lane31_strm1_data_mask        ;
   assign   pe_inst[34].std__pe__lane31_strm1_data_valid  =  std__pe34__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[35].sys__pe__peId               =  sys__pe35__peId                           ;
   assign   pe_inst[35].sys__pe__allSynchronized    =  sys__pe35__allSynchronized                ;
   assign   pe35__sys__thisSynchronized             =  pe_inst[35].pe__sys__thisSynchronized     ;
   assign   pe35__sys__ready                        =  pe_inst[35].pe__sys__ready                ;
@@ -14147,7 +14111,6 @@
   assign   pe_inst[35].std__pe__lane31_strm1_data_mask   =  std__pe35__lane31_strm1_data_mask        ;
   assign   pe_inst[35].std__pe__lane31_strm1_data_valid  =  std__pe35__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[36].sys__pe__peId               =  sys__pe36__peId                           ;
   assign   pe_inst[36].sys__pe__allSynchronized    =  sys__pe36__allSynchronized                ;
   assign   pe36__sys__thisSynchronized             =  pe_inst[36].pe__sys__thisSynchronized     ;
   assign   pe36__sys__ready                        =  pe_inst[36].pe__sys__ready                ;
@@ -14540,7 +14503,6 @@
   assign   pe_inst[36].std__pe__lane31_strm1_data_mask   =  std__pe36__lane31_strm1_data_mask        ;
   assign   pe_inst[36].std__pe__lane31_strm1_data_valid  =  std__pe36__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[37].sys__pe__peId               =  sys__pe37__peId                           ;
   assign   pe_inst[37].sys__pe__allSynchronized    =  sys__pe37__allSynchronized                ;
   assign   pe37__sys__thisSynchronized             =  pe_inst[37].pe__sys__thisSynchronized     ;
   assign   pe37__sys__ready                        =  pe_inst[37].pe__sys__ready                ;
@@ -14933,7 +14895,6 @@
   assign   pe_inst[37].std__pe__lane31_strm1_data_mask   =  std__pe37__lane31_strm1_data_mask        ;
   assign   pe_inst[37].std__pe__lane31_strm1_data_valid  =  std__pe37__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[38].sys__pe__peId               =  sys__pe38__peId                           ;
   assign   pe_inst[38].sys__pe__allSynchronized    =  sys__pe38__allSynchronized                ;
   assign   pe38__sys__thisSynchronized             =  pe_inst[38].pe__sys__thisSynchronized     ;
   assign   pe38__sys__ready                        =  pe_inst[38].pe__sys__ready                ;
@@ -15326,7 +15287,6 @@
   assign   pe_inst[38].std__pe__lane31_strm1_data_mask   =  std__pe38__lane31_strm1_data_mask        ;
   assign   pe_inst[38].std__pe__lane31_strm1_data_valid  =  std__pe38__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[39].sys__pe__peId               =  sys__pe39__peId                           ;
   assign   pe_inst[39].sys__pe__allSynchronized    =  sys__pe39__allSynchronized                ;
   assign   pe39__sys__thisSynchronized             =  pe_inst[39].pe__sys__thisSynchronized     ;
   assign   pe39__sys__ready                        =  pe_inst[39].pe__sys__ready                ;
@@ -15719,7 +15679,6 @@
   assign   pe_inst[39].std__pe__lane31_strm1_data_mask   =  std__pe39__lane31_strm1_data_mask        ;
   assign   pe_inst[39].std__pe__lane31_strm1_data_valid  =  std__pe39__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[40].sys__pe__peId               =  sys__pe40__peId                           ;
   assign   pe_inst[40].sys__pe__allSynchronized    =  sys__pe40__allSynchronized                ;
   assign   pe40__sys__thisSynchronized             =  pe_inst[40].pe__sys__thisSynchronized     ;
   assign   pe40__sys__ready                        =  pe_inst[40].pe__sys__ready                ;
@@ -16112,7 +16071,6 @@
   assign   pe_inst[40].std__pe__lane31_strm1_data_mask   =  std__pe40__lane31_strm1_data_mask        ;
   assign   pe_inst[40].std__pe__lane31_strm1_data_valid  =  std__pe40__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[41].sys__pe__peId               =  sys__pe41__peId                           ;
   assign   pe_inst[41].sys__pe__allSynchronized    =  sys__pe41__allSynchronized                ;
   assign   pe41__sys__thisSynchronized             =  pe_inst[41].pe__sys__thisSynchronized     ;
   assign   pe41__sys__ready                        =  pe_inst[41].pe__sys__ready                ;
@@ -16505,7 +16463,6 @@
   assign   pe_inst[41].std__pe__lane31_strm1_data_mask   =  std__pe41__lane31_strm1_data_mask        ;
   assign   pe_inst[41].std__pe__lane31_strm1_data_valid  =  std__pe41__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[42].sys__pe__peId               =  sys__pe42__peId                           ;
   assign   pe_inst[42].sys__pe__allSynchronized    =  sys__pe42__allSynchronized                ;
   assign   pe42__sys__thisSynchronized             =  pe_inst[42].pe__sys__thisSynchronized     ;
   assign   pe42__sys__ready                        =  pe_inst[42].pe__sys__ready                ;
@@ -16898,7 +16855,6 @@
   assign   pe_inst[42].std__pe__lane31_strm1_data_mask   =  std__pe42__lane31_strm1_data_mask        ;
   assign   pe_inst[42].std__pe__lane31_strm1_data_valid  =  std__pe42__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[43].sys__pe__peId               =  sys__pe43__peId                           ;
   assign   pe_inst[43].sys__pe__allSynchronized    =  sys__pe43__allSynchronized                ;
   assign   pe43__sys__thisSynchronized             =  pe_inst[43].pe__sys__thisSynchronized     ;
   assign   pe43__sys__ready                        =  pe_inst[43].pe__sys__ready                ;
@@ -17291,7 +17247,6 @@
   assign   pe_inst[43].std__pe__lane31_strm1_data_mask   =  std__pe43__lane31_strm1_data_mask        ;
   assign   pe_inst[43].std__pe__lane31_strm1_data_valid  =  std__pe43__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[44].sys__pe__peId               =  sys__pe44__peId                           ;
   assign   pe_inst[44].sys__pe__allSynchronized    =  sys__pe44__allSynchronized                ;
   assign   pe44__sys__thisSynchronized             =  pe_inst[44].pe__sys__thisSynchronized     ;
   assign   pe44__sys__ready                        =  pe_inst[44].pe__sys__ready                ;
@@ -17684,7 +17639,6 @@
   assign   pe_inst[44].std__pe__lane31_strm1_data_mask   =  std__pe44__lane31_strm1_data_mask        ;
   assign   pe_inst[44].std__pe__lane31_strm1_data_valid  =  std__pe44__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[45].sys__pe__peId               =  sys__pe45__peId                           ;
   assign   pe_inst[45].sys__pe__allSynchronized    =  sys__pe45__allSynchronized                ;
   assign   pe45__sys__thisSynchronized             =  pe_inst[45].pe__sys__thisSynchronized     ;
   assign   pe45__sys__ready                        =  pe_inst[45].pe__sys__ready                ;
@@ -18077,7 +18031,6 @@
   assign   pe_inst[45].std__pe__lane31_strm1_data_mask   =  std__pe45__lane31_strm1_data_mask        ;
   assign   pe_inst[45].std__pe__lane31_strm1_data_valid  =  std__pe45__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[46].sys__pe__peId               =  sys__pe46__peId                           ;
   assign   pe_inst[46].sys__pe__allSynchronized    =  sys__pe46__allSynchronized                ;
   assign   pe46__sys__thisSynchronized             =  pe_inst[46].pe__sys__thisSynchronized     ;
   assign   pe46__sys__ready                        =  pe_inst[46].pe__sys__ready                ;
@@ -18470,7 +18423,6 @@
   assign   pe_inst[46].std__pe__lane31_strm1_data_mask   =  std__pe46__lane31_strm1_data_mask        ;
   assign   pe_inst[46].std__pe__lane31_strm1_data_valid  =  std__pe46__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[47].sys__pe__peId               =  sys__pe47__peId                           ;
   assign   pe_inst[47].sys__pe__allSynchronized    =  sys__pe47__allSynchronized                ;
   assign   pe47__sys__thisSynchronized             =  pe_inst[47].pe__sys__thisSynchronized     ;
   assign   pe47__sys__ready                        =  pe_inst[47].pe__sys__ready                ;
@@ -18863,7 +18815,6 @@
   assign   pe_inst[47].std__pe__lane31_strm1_data_mask   =  std__pe47__lane31_strm1_data_mask        ;
   assign   pe_inst[47].std__pe__lane31_strm1_data_valid  =  std__pe47__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[48].sys__pe__peId               =  sys__pe48__peId                           ;
   assign   pe_inst[48].sys__pe__allSynchronized    =  sys__pe48__allSynchronized                ;
   assign   pe48__sys__thisSynchronized             =  pe_inst[48].pe__sys__thisSynchronized     ;
   assign   pe48__sys__ready                        =  pe_inst[48].pe__sys__ready                ;
@@ -19256,7 +19207,6 @@
   assign   pe_inst[48].std__pe__lane31_strm1_data_mask   =  std__pe48__lane31_strm1_data_mask        ;
   assign   pe_inst[48].std__pe__lane31_strm1_data_valid  =  std__pe48__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[49].sys__pe__peId               =  sys__pe49__peId                           ;
   assign   pe_inst[49].sys__pe__allSynchronized    =  sys__pe49__allSynchronized                ;
   assign   pe49__sys__thisSynchronized             =  pe_inst[49].pe__sys__thisSynchronized     ;
   assign   pe49__sys__ready                        =  pe_inst[49].pe__sys__ready                ;
@@ -19649,7 +19599,6 @@
   assign   pe_inst[49].std__pe__lane31_strm1_data_mask   =  std__pe49__lane31_strm1_data_mask        ;
   assign   pe_inst[49].std__pe__lane31_strm1_data_valid  =  std__pe49__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[50].sys__pe__peId               =  sys__pe50__peId                           ;
   assign   pe_inst[50].sys__pe__allSynchronized    =  sys__pe50__allSynchronized                ;
   assign   pe50__sys__thisSynchronized             =  pe_inst[50].pe__sys__thisSynchronized     ;
   assign   pe50__sys__ready                        =  pe_inst[50].pe__sys__ready                ;
@@ -20042,7 +19991,6 @@
   assign   pe_inst[50].std__pe__lane31_strm1_data_mask   =  std__pe50__lane31_strm1_data_mask        ;
   assign   pe_inst[50].std__pe__lane31_strm1_data_valid  =  std__pe50__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[51].sys__pe__peId               =  sys__pe51__peId                           ;
   assign   pe_inst[51].sys__pe__allSynchronized    =  sys__pe51__allSynchronized                ;
   assign   pe51__sys__thisSynchronized             =  pe_inst[51].pe__sys__thisSynchronized     ;
   assign   pe51__sys__ready                        =  pe_inst[51].pe__sys__ready                ;
@@ -20435,7 +20383,6 @@
   assign   pe_inst[51].std__pe__lane31_strm1_data_mask   =  std__pe51__lane31_strm1_data_mask        ;
   assign   pe_inst[51].std__pe__lane31_strm1_data_valid  =  std__pe51__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[52].sys__pe__peId               =  sys__pe52__peId                           ;
   assign   pe_inst[52].sys__pe__allSynchronized    =  sys__pe52__allSynchronized                ;
   assign   pe52__sys__thisSynchronized             =  pe_inst[52].pe__sys__thisSynchronized     ;
   assign   pe52__sys__ready                        =  pe_inst[52].pe__sys__ready                ;
@@ -20828,7 +20775,6 @@
   assign   pe_inst[52].std__pe__lane31_strm1_data_mask   =  std__pe52__lane31_strm1_data_mask        ;
   assign   pe_inst[52].std__pe__lane31_strm1_data_valid  =  std__pe52__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[53].sys__pe__peId               =  sys__pe53__peId                           ;
   assign   pe_inst[53].sys__pe__allSynchronized    =  sys__pe53__allSynchronized                ;
   assign   pe53__sys__thisSynchronized             =  pe_inst[53].pe__sys__thisSynchronized     ;
   assign   pe53__sys__ready                        =  pe_inst[53].pe__sys__ready                ;
@@ -21221,7 +21167,6 @@
   assign   pe_inst[53].std__pe__lane31_strm1_data_mask   =  std__pe53__lane31_strm1_data_mask        ;
   assign   pe_inst[53].std__pe__lane31_strm1_data_valid  =  std__pe53__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[54].sys__pe__peId               =  sys__pe54__peId                           ;
   assign   pe_inst[54].sys__pe__allSynchronized    =  sys__pe54__allSynchronized                ;
   assign   pe54__sys__thisSynchronized             =  pe_inst[54].pe__sys__thisSynchronized     ;
   assign   pe54__sys__ready                        =  pe_inst[54].pe__sys__ready                ;
@@ -21614,7 +21559,6 @@
   assign   pe_inst[54].std__pe__lane31_strm1_data_mask   =  std__pe54__lane31_strm1_data_mask        ;
   assign   pe_inst[54].std__pe__lane31_strm1_data_valid  =  std__pe54__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[55].sys__pe__peId               =  sys__pe55__peId                           ;
   assign   pe_inst[55].sys__pe__allSynchronized    =  sys__pe55__allSynchronized                ;
   assign   pe55__sys__thisSynchronized             =  pe_inst[55].pe__sys__thisSynchronized     ;
   assign   pe55__sys__ready                        =  pe_inst[55].pe__sys__ready                ;
@@ -22007,7 +21951,6 @@
   assign   pe_inst[55].std__pe__lane31_strm1_data_mask   =  std__pe55__lane31_strm1_data_mask        ;
   assign   pe_inst[55].std__pe__lane31_strm1_data_valid  =  std__pe55__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[56].sys__pe__peId               =  sys__pe56__peId                           ;
   assign   pe_inst[56].sys__pe__allSynchronized    =  sys__pe56__allSynchronized                ;
   assign   pe56__sys__thisSynchronized             =  pe_inst[56].pe__sys__thisSynchronized     ;
   assign   pe56__sys__ready                        =  pe_inst[56].pe__sys__ready                ;
@@ -22400,7 +22343,6 @@
   assign   pe_inst[56].std__pe__lane31_strm1_data_mask   =  std__pe56__lane31_strm1_data_mask        ;
   assign   pe_inst[56].std__pe__lane31_strm1_data_valid  =  std__pe56__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[57].sys__pe__peId               =  sys__pe57__peId                           ;
   assign   pe_inst[57].sys__pe__allSynchronized    =  sys__pe57__allSynchronized                ;
   assign   pe57__sys__thisSynchronized             =  pe_inst[57].pe__sys__thisSynchronized     ;
   assign   pe57__sys__ready                        =  pe_inst[57].pe__sys__ready                ;
@@ -22793,7 +22735,6 @@
   assign   pe_inst[57].std__pe__lane31_strm1_data_mask   =  std__pe57__lane31_strm1_data_mask        ;
   assign   pe_inst[57].std__pe__lane31_strm1_data_valid  =  std__pe57__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[58].sys__pe__peId               =  sys__pe58__peId                           ;
   assign   pe_inst[58].sys__pe__allSynchronized    =  sys__pe58__allSynchronized                ;
   assign   pe58__sys__thisSynchronized             =  pe_inst[58].pe__sys__thisSynchronized     ;
   assign   pe58__sys__ready                        =  pe_inst[58].pe__sys__ready                ;
@@ -23186,7 +23127,6 @@
   assign   pe_inst[58].std__pe__lane31_strm1_data_mask   =  std__pe58__lane31_strm1_data_mask        ;
   assign   pe_inst[58].std__pe__lane31_strm1_data_valid  =  std__pe58__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[59].sys__pe__peId               =  sys__pe59__peId                           ;
   assign   pe_inst[59].sys__pe__allSynchronized    =  sys__pe59__allSynchronized                ;
   assign   pe59__sys__thisSynchronized             =  pe_inst[59].pe__sys__thisSynchronized     ;
   assign   pe59__sys__ready                        =  pe_inst[59].pe__sys__ready                ;
@@ -23579,7 +23519,6 @@
   assign   pe_inst[59].std__pe__lane31_strm1_data_mask   =  std__pe59__lane31_strm1_data_mask        ;
   assign   pe_inst[59].std__pe__lane31_strm1_data_valid  =  std__pe59__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[60].sys__pe__peId               =  sys__pe60__peId                           ;
   assign   pe_inst[60].sys__pe__allSynchronized    =  sys__pe60__allSynchronized                ;
   assign   pe60__sys__thisSynchronized             =  pe_inst[60].pe__sys__thisSynchronized     ;
   assign   pe60__sys__ready                        =  pe_inst[60].pe__sys__ready                ;
@@ -23972,7 +23911,6 @@
   assign   pe_inst[60].std__pe__lane31_strm1_data_mask   =  std__pe60__lane31_strm1_data_mask        ;
   assign   pe_inst[60].std__pe__lane31_strm1_data_valid  =  std__pe60__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[61].sys__pe__peId               =  sys__pe61__peId                           ;
   assign   pe_inst[61].sys__pe__allSynchronized    =  sys__pe61__allSynchronized                ;
   assign   pe61__sys__thisSynchronized             =  pe_inst[61].pe__sys__thisSynchronized     ;
   assign   pe61__sys__ready                        =  pe_inst[61].pe__sys__ready                ;
@@ -24365,7 +24303,6 @@
   assign   pe_inst[61].std__pe__lane31_strm1_data_mask   =  std__pe61__lane31_strm1_data_mask        ;
   assign   pe_inst[61].std__pe__lane31_strm1_data_valid  =  std__pe61__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[62].sys__pe__peId               =  sys__pe62__peId                           ;
   assign   pe_inst[62].sys__pe__allSynchronized    =  sys__pe62__allSynchronized                ;
   assign   pe62__sys__thisSynchronized             =  pe_inst[62].pe__sys__thisSynchronized     ;
   assign   pe62__sys__ready                        =  pe_inst[62].pe__sys__ready                ;
@@ -24758,7 +24695,6 @@
   assign   pe_inst[62].std__pe__lane31_strm1_data_mask   =  std__pe62__lane31_strm1_data_mask        ;
   assign   pe_inst[62].std__pe__lane31_strm1_data_valid  =  std__pe62__lane31_strm1_data_valid       ;
 
-  assign   pe_inst[63].sys__pe__peId               =  sys__pe63__peId                           ;
   assign   pe_inst[63].sys__pe__allSynchronized    =  sys__pe63__allSynchronized                ;
   assign   pe63__sys__thisSynchronized             =  pe_inst[63].pe__sys__thisSynchronized     ;
   assign   pe63__sys__ready                        =  pe_inst[63].pe__sys__ready                ;

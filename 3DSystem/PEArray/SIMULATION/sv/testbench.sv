@@ -29,7 +29,7 @@ program automatic test (
     Environment env;
 
     initial begin
-        env = new ( SysLane2PeArray, SysOob2PeArray, Dma2Mem, RegFileScalar2StOpCntl, RegFileLane2StOpCntl, LoadStore2memCntl    );
+        env = new ( SysOob2PeArray, SysLane2PeArray, Dma2Mem, RegFileScalar2StOpCntl, RegFileLane2StOpCntl, LoadStore2memCntl    );
         env.build();
         env.run();
         env.wrap_up();

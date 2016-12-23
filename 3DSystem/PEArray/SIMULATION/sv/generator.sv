@@ -59,6 +59,7 @@ class generator;
     integer systemEventDeltaTime = 5;  // next time for event as integer
     //-------------------------------------------------------------------------
 
+    vSysOob2PeArray_T    vSysOob2PeArray  ;  // FIXME OOB interface is a per PE i/f where generator is per lane
     vSysLane2PeArray_T   vSysLane2PeArray ;
 
     base_operation    sys_operation     ;  // operation packet containing all data associated with operation
@@ -70,6 +71,7 @@ class generator;
                   input event                 gen2drv_ack       ,
                   input event                 new_operation     ,
                   input event                 final_operation   ,
+                  input vSysOob2PeArray_T     vSysOob2PeArray   ,
                   input vSysLane2PeArray_T    vSysLane2PeArray  ,
                   input mailbox               gen2rfP           ,
                   input event                 gen2rfP_ack       
@@ -80,6 +82,7 @@ class generator;
         this.gen2drv_ack       = gen2drv_ack        ;
         this.new_operation     = new_operation      ;
         this.final_operation   = final_operation    ;
+        this.vSysOob2PeArray   = vSysOob2PeArray    ;
         this.vSysLane2PeArray  = vSysLane2PeArray   ;
         this.gen2rfP           = gen2rfP            ;
         this.gen2rfP_ack       = gen2rfP_ack        ;
@@ -124,10 +127,10 @@ class generator;
                         sys_operation.resultLow         = sys_operation_gen.resultLow         ;
 */
                         operationNum++                                ;
-                        $display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);
+                        //$display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         gen2rfP.put(sys_operation)                    ;
                         @gen2rfP_ack                                  ;  // wait for regFile inputs to be driven
-                        $display("@%0t LEE: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
+                        //$display("@%0t LEE: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
                         gen2drv.put(sys_operation)                    ;
                     end
                 
