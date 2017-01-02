@@ -68,16 +68,28 @@ class regFile_driver;
                         if (sys_operation.OpType == `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM )
                             begin
                                 pe_data_type = PE_DATA_TYPE_WORD ;
-                                $display("@%0t INFO: Received FP MAC operation from driver: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
-                                vP_vrf.r134 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | sys_operation.destinationAddress[0];;
-                                vP_vrf.r135 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | sys_operation.destinationAddress[1];;
+                                $display("@%0t INFO: Received FP MAC operation from driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
+                                // Make sure address is local to PE
+                                if (sys_operation.destinationAddress[0][`PE_CHIPLET_ADDR_BITS_RANGE] != Id[0])
+                                  begin
+                                    $display("@%0t ERROR: Destination address not within this PE\'s local memory: {%0d,%0d} : %h\n", $time,Id[0], Id[1], sys_operation.destinationAddress[0][`PE_CHIPLET_ADDR_BITS_RANGE] );
+                                  end
+                                if (sys_operation.destinationAddress[0][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] != Id[1])
+                                  begin
+                                    $display("@%0t ERROR: Destination address not within this PE\'s local lane address space: {%0d,%0d} : %h\n", $time,Id[0], Id[1], sys_operation.destinationAddress[0][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] );
+                                  end
+                                //vP_vrf.r134 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | sys_operation.destinationAddress[0];
+                                //vP_vrf.r135 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | sys_operation.destinationAddress[1];
+                                // Now address is constrained in the base_operation to be within a PE and lane portion of local memory
+                                vP_vrf.r134 = sys_operation.destinationAddress[0];
+                                vP_vrf.r135 = sys_operation.destinationAddress[1];
                                 //vP_vrf.r134 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | 32'b__0_0000_1000_0000;
                                 //vP_vrf.r135 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | 32'b__0_1000_0000_0000;
                                 //r134 [{1}] = 6'd32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
                                 vP_vrf.cb_out.r132[19:16] <= pe_data_type ;  // type (bit, nibble, byte, word)
-                                vP_vrf.cb_out.r132[15: 0] <= 16'd20;    // num of types - for dma
+                                vP_vrf.cb_out.r132[15: 0] <= sys_operation.numberOfOperands ;    // num of types - for dma
                                 vP_vrf.cb_out.r133[19:16] <= pe_data_type ;  // type (bit, nibble, byte, word)
-                                vP_vrf.cb_out.r133[15: 0] <= 16'd20;
+                                vP_vrf.cb_out.r133[15: 0] <= sys_operation.numberOfOperands ;
                                 vP_srf.cb_out.rs0[0]      <= 1'b1;
                                 vP_srf.cb_out.rs0[31:1]   <= `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
                                 vP_srf.cb_out.rs1         <= {32{1'b1}};

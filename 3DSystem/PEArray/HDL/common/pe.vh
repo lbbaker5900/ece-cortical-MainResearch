@@ -58,6 +58,9 @@
 `define PE_EXEC_LANE_WIDTH_SIZE           (`PE_EXEC_LANE_WIDTH_MSB - `PE_EXEC_LANE_WIDTH_LSB +1)
 `define PE_EXEC_LANE_WIDTH_RANGE           `PE_EXEC_LANE_WIDTH_MSB : `PE_EXEC_LANE_WIDTH_LSB
 
+//---------------------------------------------------------------------------------------------------------------------
+// Memory
+
 `define PE_CHIPLET_ADDRESS_WIDTH   (`PE_ARRAY_CHIPLET_ADDRESS_WIDTH - (`CLOG2(`PE_ARRAY_NUM_OF_PE)))
 `define PE_CHIPLET_ADDRESS_MSB     `PE_CHIPLET_ADDRESS_WIDTH-1
 `define PE_CHIPLET_ADDRESS_LSB     0
@@ -71,6 +74,21 @@
 `define PE_CHIPLET_LANE_ADDRESS_SIZE    (`PE_CHIPLET_LANE_ADDRESS_MSB - `PE_CHIPLET_LANE_ADDRESS_LSB +1)
 `define PE_CHIPLET_LANE_ADDRESS_RANGE    `PE_CHIPLET_LANE_ADDRESS_MSB : `PE_CHIPLET_LANE_ADDRESS_LSB
 
+// bits in total pe_array address used to identify a PE
+`define PE_CHIPLET_ADDR_BITS_MSB     `PE_ARRAY_CHIPLET_ADDRESS_MSB
+`define PE_CHIPLET_ADDR_BITS_LSB     (`PE_ARRAY_CHIPLET_ADDRESS_MSB - (`CLOG2(`PE_ARRAY_NUM_OF_PE))+1)
+`define PE_CHIPLET_ADDR_BITS_SIZE    (`PE_CHIPLET_ADDR_BITS_MSB - `PE_CHIPLET_ADDR_BITS_LSB +1)
+`define PE_CHIPLET_ADDR_BITS_RANGE    `PE_CHIPLET_ADDR_BITS_MSB : `PE_CHIPLET_ADDR_BITS_LSB
+
+// bits in total pe address used to identify a Lane
+`define PE_CHIPLET_LANE_ADDR_BITS_MSB     `PE_CHIPLET_ADDR_BITS_LSB-1
+`define PE_CHIPLET_LANE_ADDR_BITS_LSB     (`PE_CHIPLET_LANE_ADDR_BITS_MSB - (`CLOG2(`PE_NUM_OF_EXEC_LANES))+1)
+`define PE_CHIPLET_LANE_ADDR_BITS_SIZE    (`PE_CHIPLET_LANE_ADDR_BITS_MSB - `PE_CHIPLET_LANE_ADDR_BITS_LSB +1)
+`define PE_CHIPLET_LANE_ADDR_BITS_RANGE    `PE_CHIPLET_LANE_ADDR_BITS_MSB : `PE_CHIPLET_LANE_ADDR_BITS_LSB
+
+//---------------------------------------------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------------------------------------------
 // Used to determine which PE address resides
 `define PE_PE_DECODE_ADDRESS_MSB    `PE_CHIPLET_ADDRESS_MSB
 `define PE_PE_DECODE_ADDRESS_LSB    (`PE_CHIPLET_ADDRESS_MSB - ((`CLOG2(`PE_ARRAY_NUM_OF_PE))-1))
@@ -122,5 +140,7 @@
 `define PE_NOC_INTERNAL_DATA_MSB          `PE_NOC_INTERNAL_DATA_WIDTH-1
 `define PE_NOC_INTERNAL_DATA_LSB          0
 `define PE_NOC_INTERNAL_DATA_RANGE        `PE_NOC_INTERNAL_DATA_MSB : `PE_NOC_INTERNAL_DATA_LSB
+
+
 
 `endif

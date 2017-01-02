@@ -1,3 +1,7 @@
+`ifndef _pe_array_vh
+`define _pe_array_vh
+
+
 /*****************************************************************
 
     File name   : pe_array.vh
@@ -88,4 +92,9 @@
 `define PE_ARRAY_CHIPLET_ADDRESS_LSB     0
 `define PE_ARRAY_CHIPLET_ADDRESS_SIZE    (`PE_ARRAY_CHIPLET_ADDRESS_MSB - `PE_ARRAY_CHIPLET_ADDRESS_LSB +1)
 `define PE_ARRAY_CHIPLET_ADDRESS_RANGE    `PE_ARRAY_CHIPLET_ADDRESS_MSB : `PE_ARRAY_CHIPLET_ADDRESS_LSB
+
+
+
+`endif
+
 

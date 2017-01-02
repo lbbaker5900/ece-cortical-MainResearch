@@ -74,8 +74,8 @@ class mem_checker;
                                         else
                                             $display ($time,": INFO:PASS:MEM_CHECKER :: Correct result written to memory {%d,%d} : Hex : %h, FP : %f\n", Id[0], Id[1], vP_mem.cb.dma__memc__write_data, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
                                         // check address
-                                        if (vP_mem.cb.dma__memc__write_address != sys_operation.destinationAddress[0]) 
-                                            $display ($time,": ERROR:MEM_CHECKER :: incorrect address for {%d,%d}: expected %h, observed %h\n", Id[0], Id[1], sys_operation.destinationAddress[0], vP_mem.cb.dma__memc__write_address);
+                                        if (vP_mem.cb.dma__memc__write_address != sys_operation.destinationAddress[0][`PE_CHIPLET_ADDRESS_RANGE ]) 
+                                            $display ($time,": ERROR:MEM_CHECKER :: incorrect address for {%d,%d}: expected %h, observed %h\n", Id[0], Id[1], sys_operation.destinationAddress[0][`PE_CHIPLET_ADDRESS_RANGE ], vP_mem.cb.dma__memc__write_address);
                                         else
                                             $display ($time,": INFO:PASS:MEM_CHECKER :: Correct address for result {%d,%d} : Hex : %h\n", Id[0], Id[1], vP_mem.cb.dma__memc__write_address);
 

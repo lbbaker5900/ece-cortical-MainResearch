@@ -124,7 +124,7 @@ class generator;
                         //$display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         gen2rfP.put(sys_operation)                    ;
                         @gen2rfP_ack                                  ;  // wait for regFile inputs to be driven
-                        //$display("@%0t LEE: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
+                        //$display("@%0t LEE:generator.sv: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                         gen2drv.put(sys_operation)                    ;
                     end
                 

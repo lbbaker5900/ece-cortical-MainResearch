@@ -31,8 +31,8 @@ package operation;
         int                                                 tId                                                ; // transaction number
         //string                                              type                                               ;  // FIXME: not yet used
         rand logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]    OpType                                             ; 
-        rand bit   [`PE_CHIPLET_ADDRESS_RANGE          ]    destinationAddress  [`PE_NUM_OF_STREAMS_RANGE ]    ;  
-        rand bit   [`PE_CHIPLET_ADDRESS_RANGE          ]    sourceAddress       [`PE_NUM_OF_STREAMS_RANGE ]    ;  
+        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    destinationAddress  [`PE_NUM_OF_STREAMS_RANGE ]    ;  
+        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    sourceAddress       [`PE_NUM_OF_STREAMS_RANGE ]    ;  
      
         static logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]  priorOperations[$]; //Queue to hold previous operations
         // an array of operands
@@ -64,9 +64,13 @@ package operation;
             this.c_operandValues .constraint_mode(1);
         endfunction : pre_randomize
         
+        // Restrict address to the PE and Lane portion of local memory
         constraint c_restrictLaneAddress {
+            //destinationAddress[0][`PE_CHIPLET_ADDR_BITS_RANGE      ] == Id[0];
+            //destinationAddress[0][`PE_CHIPLET_LANE_ADDR_BITS_RANGE ] == Id[1];
             //destinationAddress inside {[0:(2**`PE_CHIPLET_LANE_ADDRESS_WIDTH)-1   ]};
-            destinationAddress[0] inside {[Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH:(Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH)+4096 ]};
+            //destinationAddress[0] inside {[(Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH) : (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH)+4096 ]};
+            destinationAddress[0] inside {[((Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH)) : ((Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH))+4096 ]};
             destinationAddress[1] inside {[0:127 ]};
         }
         constraint c_operationType {
@@ -74,6 +78,7 @@ package operation;
         }
         constraint c_numberOfOperands {
             numberOfOperands inside {[20:100]};
+            //numberOfOperands inside {[0:65535]};
         }
         constraint c_streamSize {
             foreach (operands[i]) {
