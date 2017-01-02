@@ -27,7 +27,8 @@ package operation;
     class base_operation ; 
     
         time                                                timeTag                                            ;
-        int                                                 id                                                 ;
+        int                                                 Id [2]                                             ; // PE, Lane
+        int                                                 tId                                                ; // transaction number
         //string                                              type                                               ;  // FIXME: not yet used
         rand logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]    OpType                                             ; 
         rand bit   [`PE_CHIPLET_ADDRESS_RANGE          ]    destinationAddress  [`PE_NUM_OF_STREAMS_RANGE ]    ;  
@@ -63,6 +64,11 @@ package operation;
             this.c_operandValues .constraint_mode(1);
         endfunction : pre_randomize
         
+        constraint c_restrictLaneAddress {
+            //destinationAddress inside {[0:(2**`PE_CHIPLET_LANE_ADDRESS_WIDTH)-1   ]};
+            destinationAddress[0] inside {[Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH:(Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH)+4096 ]};
+            destinationAddress[1] inside {[0:127 ]};
+        }
         constraint c_operationType {
             OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM} ;
         }
@@ -114,7 +120,7 @@ package operation;
                         resultLow       = (1.0+FpTolerance)*result                   ;
                         resultHigh      = (1.0-FpTolerance)*result                   ;
                       end
-                    //$display("%t: Base_operation result %d: %f, %f <> %f\n", $time, id, result, resultHigh, resultLow);
+                    //$display("%t: Base_operation result %d: %f, %f <> %f\n", $time, tId, result, resultHigh, resultLow);
 
                     // generate stimiulus from floating point fields
                     operands[0][i] = {operandsSign[0][i], operandsExp[0][i], operandsSignificand[0][i]};
@@ -131,7 +137,7 @@ package operation;
         endfunction
     
         function displayOperation();
-            $display("%t: Operation ID#%d\n", $time, i, id);
+            $display("%t: Operation ID#%d\n", $time, i, tId);
             $display("Operands : ");
             for (int i=0; i<numberOfOperands-1; i++)
                 begin
@@ -150,7 +156,7 @@ package operation;
     class stream_operation ; 
     
         time timeTag   ;
-        int  id        ;
+        int  tId        ;
      
         bit [`PE_EXEC_LANE_WIDTH_RANGE ] operands        [] ;
         int                              numberOfOperands   ;

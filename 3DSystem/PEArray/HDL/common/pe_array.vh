@@ -80,3 +80,12 @@
 `define STACK_UP_INTF_TYPE_DATA_SCALAR            2
 `define STACK_UP_INTF_TYPE_DATA_VECTOR            3
 
+//---------------------------------------------------------------------------------------------------------------------
+// Memory
+
+`define PE_ARRAY_CHIPLET_ADDRESS_WIDTH   24
+`define PE_ARRAY_CHIPLET_ADDRESS_MSB     `PE_ARRAY_CHIPLET_ADDRESS_WIDTH-1
+`define PE_ARRAY_CHIPLET_ADDRESS_LSB     0
+`define PE_ARRAY_CHIPLET_ADDRESS_SIZE    (`PE_ARRAY_CHIPLET_ADDRESS_MSB - `PE_ARRAY_CHIPLET_ADDRESS_LSB +1)
+`define PE_ARRAY_CHIPLET_ADDRESS_RANGE    `PE_ARRAY_CHIPLET_ADDRESS_MSB : `PE_ARRAY_CHIPLET_ADDRESS_LSB
+

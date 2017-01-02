@@ -18,17 +18,20 @@
 `include "pe_array.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
+`include "TB_streamingOps_cntl.vh"
+
 import virtual_interface::*;
 import operation::*;
 
 class regFile_driver;
     
-    int       Id [2]        ; // PE
+    int       Id [2]        ; // PE, lane
     mailbox   gen2rfP      ;
     event     gen2rfP_ack  ;
     event     finished      ;
 
     base_operation sys_operation;
+    PE_DATA_TYPE pe_data_type ;
 
     vRegFileScalarDrv2stOpCntl_T  vP_srf ;
     vRegFileLaneDrv2stOpCntl_T    vP_vrf ;
@@ -54,6 +57,7 @@ class regFile_driver;
 
         sys_operation=new();
 
+
         forever 
             begin
                 if ( gen2rfP.num() != 0 )
@@ -63,13 +67,16 @@ class regFile_driver;
 
                         if (sys_operation.OpType == `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM )
                             begin
+                                pe_data_type = PE_DATA_TYPE_WORD ;
                                 $display("@%0t INFO: Received FP MAC operation from driver: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
-                                vP_vrf.r134 = (Id[0] << 18) | (Id[1] << 13) | 32'b__0_0000_1000_0000;
-                                vP_vrf.r135 = (Id[0] << 18) | (Id[1] << 13) | 32'b__0_1000_0000_0000;
+                                vP_vrf.r134 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | sys_operation.destinationAddress[0];;
+                                vP_vrf.r135 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | sys_operation.destinationAddress[1];;
+                                //vP_vrf.r134 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | 32'b__0_0000_1000_0000;
+                                //vP_vrf.r135 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | 32'b__0_1000_0000_0000;
                                 //r134 [{1}] = 6'd32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
-                                vP_vrf.cb_out.r132[19:16] <= 4'd4;      // type (bit, nibble, byte, word)
+                                vP_vrf.cb_out.r132[19:16] <= pe_data_type ;  // type (bit, nibble, byte, word)
                                 vP_vrf.cb_out.r132[15: 0] <= 16'd20;    // num of types - for dma
-                                vP_vrf.cb_out.r133[19:16] <= 4'd4;
+                                vP_vrf.cb_out.r133[19:16] <= pe_data_type ;  // type (bit, nibble, byte, word)
                                 vP_vrf.cb_out.r133[15: 0] <= 16'd20;
                                 vP_srf.cb_out.rs0[0]      <= 1'b1;
                                 vP_srf.cb_out.rs0[31:1]   <= `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;

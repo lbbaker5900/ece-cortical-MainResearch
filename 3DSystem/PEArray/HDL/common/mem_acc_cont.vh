@@ -1,3 +1,6 @@
+`ifndef _mem_acc_cont_vh
+`define _mem_acc_cont_vh
+
 /*****************************************************************
 
     File name   : mem_acc_cont.vh
@@ -47,8 +50,7 @@
 //------------------------------------------------
 // MEM_ACC_CONT_MEMORY
 //------------------------------------------------
-`define MEM_ACC_CONT_MEMORY_ADDRESS_MSB           (`STREAMING_OP_CNTL_CHIPLET_ADDRESS_MSB - (`CLOG2(`PE_ARRAY_NUM_OF_PE)))
-//`define MEM_ACC_CONT_MEMORY_ADDRESS_MSB           16
+`define MEM_ACC_CONT_MEMORY_ADDRESS_MSB           `STREAMING_OP_CNTL_CHIPLET_ADDRESS_MSB
 `define MEM_ACC_CONT_MEMORY_ADDRESS_LSB            0
 `define MEM_ACC_CONT_MEMORY_ADDRESS_SIZE           (`MEM_ACC_CONT_MEMORY_ADDRESS_MSB - `MEM_ACC_CONT_MEMORY_ADDRESS_LSB +1)
 `define MEM_ACC_CONT_MEMORY_ADDRESS_RANGE           `MEM_ACC_CONT_MEMORY_ADDRESS_MSB : `MEM_ACC_CONT_MEMORY_ADDRESS_LSB
@@ -71,4 +73,7 @@
 `define MEM_ACC_CONT_BANK_DATA_LSB            0
 `define MEM_ACC_CONT_BANK_DATA_SIZE           (`MEM_ACC_CONT_BANK_DATA_MSB - `MEM_ACC_CONT_BANK_DATA_LSB +1)
 `define MEM_ACC_CONT_BANK_DATA_RANGE           `MEM_ACC_CONT_BANK_DATA_MSB : `MEM_ACC_CONT_BANK_DATA_LSB
+
+
+`endif
 

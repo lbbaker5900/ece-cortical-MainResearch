@@ -96,18 +96,21 @@ class generator;
         //$display("@%0t LEE: TEST: {%0d,%0d}\n", $time,Id[0], Id[1]);
 
         sys_operation_gen = new ();
+        sys_operation_gen.Id = Id;  // randomize needs to know which PE and lane
 
         repeat (num_operations)                 //Number of transactions to be generated
             begin
                 //assert (sys_operation_gen.randomize() );
                 sys_operation_gen.randomize() ;
+                sys_operation_gen.tId      = operationNum             ;
                 
                 if (sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM )   // NOP
                     begin
+                        // FIXME : copy whats below
                         $display("@%0t : INFO: Generating NOP operation: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         sys_operation_gen.create();
                         sys_operation.OpType  =  sys_operation_gen.OpType ;
-                        sys_operation.id      = operationNum              ;
+                        sys_operation.tId      = operationNum             ;
                         operationNum++                                    ;
                         gen2drv.put(sys_operation)                        ;
                     end 
@@ -116,16 +119,7 @@ class generator;
                         $display("@%0t : INFO: Generating FP MAC operation: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         sys_operation_gen.create();
                         sys_operation = new sys_operation_gen ;
-/*
-                        sys_operation.OpType            = sys_operation_gen.OpType            ;
-                        sys_operation.id                = operationNum                        ;
-                        sys_operation.operandsReal      = sys_operation_gen.operandsReal      ;
-                        sys_operation.numberOfOperands  = sys_operation_gen.numberOfOperands  ;
-                        sys_operation.operands          = sys_operation_gen.operands          ;
-                        sys_operation.result            = sys_operation_gen.result            ;
-                        sys_operation.resultHigh        = sys_operation_gen.resultHigh        ;
-                        sys_operation.resultLow         = sys_operation_gen.resultLow         ;
-*/
+
                         operationNum++                                ;
                         //$display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         gen2rfP.put(sys_operation)                    ;

@@ -83,14 +83,16 @@ class driver;
 
     task run();
 
-        // Spawn 3 processes:
+        // Spawn 4 processes:
         // - first receives operations from the generator and splits it into two stream operations
+        // - an OOB process will configure the PE (WIP)
         // - the other two look for the stream operation from the first process and drive it onto there corresponding stream 
         fork
             begin
                 forever
                     begin
-                        // take the transaction from the generator and split it into two streams
+                        // take the transaction from the generator, splits it into two streams and sends a stream operation to both the processes
+                        // and send the sys_operation to the OOB process
                         @(vSysLane2PeArray.cb_test);
                         //$display("@%0t : LEE: {%d,%d} Check mailbox", $time, Id[0], Id[1] );
                         if ( gen2drv.num() != 0 )
@@ -101,11 +103,12 @@ class driver;
                                 //$display("@%0t : LEE: IDs : { %d } ", $time, strm_operation[1].id);
                     
                                 drv2oob.put(sys_operation)                    ;  // oob needs to prepare the PE
+                                // FIXME: Need to wait for the OOB process to send WU packet to PE (WIP)
 
                                 for (int i=0; i<strm_operation.size(); i++)
                                     begin
                                         tmp_strm_operation                  = new            ;
-                                        tmp_strm_operation.id               = sys_operation.id               ;
+                                        tmp_strm_operation.tId              = sys_operation.tId               ;
                                         tmp_strm_operation.operands         = new[sys_operation.numberOfOperands](sys_operation.operands[i])      ;
                                         tmp_strm_operation.numberOfOperands = sys_operation.numberOfOperands ;
                                         //tmp_strm_operation.operands         = sys_operation.operands[i]      ;
