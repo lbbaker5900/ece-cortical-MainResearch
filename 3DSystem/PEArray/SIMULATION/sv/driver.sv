@@ -53,7 +53,7 @@ class driver;
                   input mailbox              gen2drv            ,                  //Retrieving mailboxes and virtual system interface.
                   input event                gen2drv_ack        ,
                   input event                new_operation      ,
-                  input vSysOob2PeArray_T    vSysOob2PeArray   ,
+                  input vSysOob2PeArray_T    vSysOob2PeArray    ,
                   input vSysLane2PeArray_T   vSysLane2PeArray   ,
                   input mailbox              drv2memP           ,
                   input event                drv2memP_ack       );
@@ -72,7 +72,7 @@ class driver;
             begin
                 this.drv2lane[i]            = new             ;
             end
-        this.oob_operation       = new                        ;  // create a separet base_operation so we can split OOB into a different class in future
+        this.oob_operation       = new                        ;  // create a separate base_operation so we can split OOB into a different class in future
         this.strm_operation      = new[`PE_NUM_OF_STREAMS  ]  ;
         this.transaction         = new[`PE_NUM_OF_STREAMS  ]  ;
         //for (int i=0; i<transaction.size(); i++)
@@ -160,6 +160,7 @@ class driver;
                     end  // forever
             end
             // FIXME : should use generate for the two following processes, but need to separate streams into separate interfaces so they can be indexed
+            // dont think a generate can be put inside a class or task
             begin
                 forever
                     begin

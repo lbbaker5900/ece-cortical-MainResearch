@@ -106,19 +106,22 @@ class generator;
                 
                 if (sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM )   // NOP
                     begin
-                        // FIXME : copy whats below
-                        $display("@%0t : INFO: Generating NOP operation: {%0d,%0d}\n", $time,Id[0], Id[1]);
+                        $display("@%0t : INFO: Generating NOP transfer to memory operation: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         sys_operation_gen.create();
-                        sys_operation.OpType  =  sys_operation_gen.OpType ;
-                        sys_operation.tId      = operationNum             ;
-                        operationNum++                                    ;
-                        gen2drv.put(sys_operation)                        ;
+                        sys_operation = new sys_operation_gen ;
+
+                        operationNum++                                ;
+                        //$display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);
+                        gen2rfP.put(sys_operation)                    ;
+                        @gen2rfP_ack                                  ;  // wait for regFile inputs to be driven
+                        //$display("@%0t LEE:generator.sv: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
+                        gen2drv.put(sys_operation)                    ;
                     end 
                 else if(sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM )   // NOP
                     begin
                         $display("@%0t : INFO: Generating FP MAC operation: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         sys_operation_gen.create();
-                        sys_operation = new sys_operation_gen ;
+                        sys_operation = new sys_operation_gen ;  // copy sys_operation_gen
 
                         operationNum++                                ;
                         //$display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);

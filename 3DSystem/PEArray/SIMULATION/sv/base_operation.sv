@@ -22,27 +22,37 @@
 `include "pe_array.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
+`include "TB_streamingOps_cntl.vh"  // might cause an error if this is included in any of the above files
+
 package operation;
+
+    `undef _TB_streamingOps_cntl_vh     // forces this include to occur in the package
+    `include "TB_streamingOps_cntl.vh" 
+
 
     class base_operation ; 
     
-        time                                                timeTag                                            ;
-        int                                                 Id [2]                                             ; // PE, Lane
-        int                                                 tId                                                ; // transaction number
-        //string                                              type                                               ;  // FIXME: not yet used
-        rand logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]    OpType                                             ; 
-        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    destinationAddress  [`PE_NUM_OF_STREAMS_RANGE ]    ;  
-        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    sourceAddress       [`PE_NUM_OF_STREAMS_RANGE ]    ;  
+        time                                                timeTag                                                  ;
+        int                                                 Id [2]                                                   ; // PE, Lane
+        int                                                 tId                                                      ; // transaction number
+
+        // struct members cannot be rand
+        pe_stOp_operation                                   stOp_operation                                           ;  // create this from the other fields in the class
+
+        rand logic                                          enableDestinationStream   [`PE_NUM_OF_STREAMS_RANGE ]    ;  // based on operation type this tells the driver what to do with the two operand streams
+        rand logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]    OpType                                                   ; 
+        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    destinationAddress  [`PE_NUM_OF_STREAMS_RANGE ]          ;  
+        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    sourceAddress       [`PE_NUM_OF_STREAMS_RANGE ]          ;  
      
         static logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]  priorOperations[$]; //Queue to hold previous operations
         // an array of operands
-        rand bit [`PE_EXEC_LANE_WIDTH_RANGE ]               operands            [`PE_NUM_OF_STREAMS_RANGE ] [] ;
-        rand int                                            numberOfOperands                                   ;
-        shortreal                                           operandsReal        [`PE_NUM_OF_STREAMS_RANGE ]    ;
+        rand bit [`PE_EXEC_LANE_WIDTH_RANGE ]               operands            [`PE_NUM_OF_STREAMS_RANGE ] []       ;
+        rand int                                            numberOfOperands                                         ;
+        shortreal                                           operandsReal        [`PE_NUM_OF_STREAMS_RANGE ]          ;
         // cant randomize a float, so randomize the FP fields and construct the float
-        rand bit                                            operandsSign        [`PE_NUM_OF_STREAMS_RANGE ] [] ;
-        rand bit [7:0]                                      operandsExp         [`PE_NUM_OF_STREAMS_RANGE ] [] ;
-        rand bit [22:0]                                     operandsSignificand [`PE_NUM_OF_STREAMS_RANGE ] [] ;
+        rand bit                                            operandsSign        [`PE_NUM_OF_STREAMS_RANGE ] []       ;
+        rand bit [7:0]                                      operandsExp         [`PE_NUM_OF_STREAMS_RANGE ] []       ;
+        rand bit [22:0]                                     operandsSignificand [`PE_NUM_OF_STREAMS_RANGE ] []       ;
 
         //------------------------------------------------------------------------------------------------------
         // If results are floating point
@@ -59,22 +69,26 @@ package operation;
         endfunction
 
         function void pre_randomize();	//1 -> Turns on the constraint, 0-> Turns off the constraint
-            this.c_operationType .constraint_mode(1);
-            this.c_streamSize .constraint_mode(1);
+            this.c_operationType_fpMac.constraint_mode(1);
+            this.c_operationType_copyStdToMem.constraint_mode(0);
+            this.c_streamSize.constraint_mode(1);
             this.c_operandValues .constraint_mode(1);
         endfunction : pre_randomize
         
         // Restrict address to the PE and Lane portion of local memory
         constraint c_restrictLaneAddress {
-            //destinationAddress[0][`PE_CHIPLET_ADDR_BITS_RANGE      ] == Id[0];
-            //destinationAddress[0][`PE_CHIPLET_LANE_ADDR_BITS_RANGE ] == Id[1];
-            //destinationAddress inside {[0:(2**`PE_CHIPLET_LANE_ADDRESS_WIDTH)-1   ]};
-            //destinationAddress[0] inside {[(Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH) : (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH)+4096 ]};
-            destinationAddress[0] inside {[((Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH)) : ((Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH))+4096 ]};
+            destinationAddress[0] inside {[((Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH)) : ((Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH))+1024 ]};
             destinationAddress[1] inside {[0:127 ]};
         }
-        constraint c_operationType {
+        constraint c_operationType_fpMac {
             OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM} ;
+            enableDestinationStream[0] == 1 ;
+            enableDestinationStream[1] == 0 ;  // FIXME
+        }
+        constraint c_operationType_copyStdToMem {
+            OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  } ;
+            enableDestinationStream[0] == 1 ;
+            enableDestinationStream[1] == 0 ;
         }
         constraint c_numberOfOperands {
             numberOfOperands inside {[20:100]};

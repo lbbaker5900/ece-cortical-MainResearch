@@ -184,30 +184,6 @@
 //------------------------------------------------
 // STREAMING_OP_CNTL Operations
 //------------------------------------------------
-/*
-`define STREAMING_OP_CNTL_OPERATION_FROM_SIZE                2
-`define STREAMING_OP_CNTL_OPERATION_FROM_MSB                 `STREAMING_OP_CNTL_OPERATION_FROM_SIZE-1
-`define STREAMING_OP_CNTL_OPERATION_FROM_LSB                 0
-`define STREAMING_OP_CNTL_OPERATION_FROM_RANGE               `STREAMING_OP_CNTL_OPERATION_FROM_MSB : `STREAMING_OP_CNTL_OPERATION_FROM_LSB
-
-`define STREAMING_OP_CNTL_OPERATION_TO_SIZE                  2
-`define STREAMING_OP_CNTL_OPERATION_TO_MSB                   (`STREAMING_OP_CNTL_OPERATION_TO_LSB + `STREAMING_OP_CNTL_OPERATION_TO_SIZE-1)
-`define STREAMING_OP_CNTL_OPERATION_TO_LSB                   (`STREAMING_OP_CNTL_OPERATION_FROM_MSB + 1)
-`define STREAMING_OP_CNTL_OPERATION_TO_RANGE                 `STREAMING_OP_CNTL_OPERATION_TO_MSB : `STREAMING_OP_CNTL_OPERATION_TO_LSB
-*/                                                                        
-
-// stream or single transaction
-/* FIXME - not used
-`define STREAMING_OP_CNTL_OPERATION_STREAM_FROM_SIZE         1                                                                            
-`define STREAMING_OP_CNTL_OPERATION_STREAM_FROM_MSB          (`STREAMING_OP_CNTL_OPERATION_STREAM_FROM_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_FROM_SIZE-1)
-`define STREAMING_OP_CNTL_OPERATION_STREAM_FROM_LSB          (`STREAMING_OP_CNTL_OPERATION_TO_MSB + 1)
-`define STREAMING_OP_CNTL_OPERATION_STREAM_FROM_RANGE        `STREAMING_OP_CNTL_OPERATION_STREAM_FROM_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_FROM_LSB     
-                                                             
-`define STREAMING_OP_CNTL_OPERATION_STREAM_TO_SIZE           1                                                                                                                                                                           
-`define STREAMING_OP_CNTL_OPERATION_STREAM_TO_MSB            (`STREAMING_OP_CNTL_OPERATION_STREAM_TO_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_TO_SIZE-1)
-`define STREAMING_OP_CNTL_OPERATION_STREAM_TO_LSB            (`STREAMING_OP_CNTL_OPERATION_STREAM_FROM_MSB + 1)
-`define STREAMING_OP_CNTL_OPERATION_STREAM_TO_RANGE          `STREAMING_OP_CNTL_OPERATION_STREAM_TO_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_TO_LSB
-*/   
 
 `define STREAMING_OP_CNTL_OPERATION_STREAM_SRC_SIZE     3                                                                            
 `define STREAMING_OP_CNTL_OPERATION_STREAM_SRC_MSB      (`STREAMING_OP_CNTL_OPERATION_STREAM_SRC_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_SRC_SIZE-1)
@@ -279,6 +255,7 @@
 `define STREAMING_OP_CNTL_OPERATION_TO_REG                   4    
 
 // FIXME : get rid of number of streams. Use src and dest to determine number
+// FIXME: make sure we track order of struct in TB_streamingOps_cntl.vh
 //                                                                    num    num                                                         
 //                                                                    dest   src                                                          strm1   strm0  strm1   strm0
 //                                                                   strms  strms                   opcode                                 dest    dest   src     src
