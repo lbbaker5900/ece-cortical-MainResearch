@@ -66,6 +66,7 @@ module streamingOps_datapath (
             reg__stOp__ready             ,
             stOp__reg__valid             ,
             stOp__reg__data              , 
+            stOp__reg__cntl              , 
 
             //---------------------------------------------------------------
             // Memory Interface
@@ -173,6 +174,7 @@ module streamingOps_datapath (
   input                                        reg__stOp__ready             ;
   output                                       stOp__reg__valid             ;
   output [`STREAMING_OP_RESULT_RANGE   ]       stOp__reg__data              ; 
+  output [`COMMON_STD_INTF_CNTL_RANGE  ]       stOp__reg__cntl              ; 
 
 
   //-------------------------------------------------------------------------------------------------
@@ -328,6 +330,7 @@ module streamingOps_datapath (
                            .reg__stOp__ready             ( reg__stOp__ready            ),
                            .stOp__reg__valid             ( stOp__reg__valid            ),
                            .stOp__reg__data              ( stOp__reg__data             ),
+                           .stOp__reg__cntl              ( stOp__reg__cntl             ),
 
                             // DMA interface
                            .stOp__dma__strm0_ready       ( stOp__dma__strm0_ready      ),

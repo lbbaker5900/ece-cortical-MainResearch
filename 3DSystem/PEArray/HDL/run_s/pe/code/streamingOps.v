@@ -64,6 +64,7 @@ module streamingOps (
                           reg__stOp__ready             ,
                           stOp__reg__valid             ,
                           stOp__reg__data              , 
+                          stOp__reg__cntl              , 
 
                           // DMA interface
                           stOp__dma__strm0_ready       ,
@@ -134,9 +135,10 @@ module streamingOps (
   input [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]        strm1_destination ; 
 
   // Result interface
-  input                                        reg__stOp__ready          ;
-  output                                       stOp__reg__valid         ;
-  output [`STREAMING_OP_RESULT_RANGE   ]       stOp__reg__data                ; 
+  input                                        reg__stOp__ready             ;
+  output                                       stOp__reg__valid             ;
+  output [`STREAMING_OP_RESULT_RANGE   ]       stOp__reg__data              ; 
+  output [`COMMON_STD_INTF_CNTL_RANGE  ]       stOp__reg__cntl              ; 
 
   // DMA interface
   output                                       stOp__dma__strm0_ready       ;
@@ -252,10 +254,12 @@ module streamingOps (
   wire                                         sti__stOp__strm1_data_valid  ; 
 
   // Input FIFO
-  reg                                         strm0_fifo_read     ;    
-  reg                                         strm1_fifo_read     ;    
-  reg                                         strm0_output_valid  ;    
-  reg                                         strm1_output_valid  ;    
+  reg                                         strm0_fifo_read_data_valid    ;    // FIFO output pipe valid
+  reg                                         strm0_fifo_read               ;    
+  reg                                         strm1_fifo_read_data_valid    ;    
+  reg                                         strm1_fifo_read               ;    
+  reg                                         strm0_output_valid            ;    
+  reg                                         strm1_output_valid            ;    
 
   reg  [`DMA_CONT_STRM_CNTL_RANGE     ]       strm0_cntl        ; 
   reg  [`STREAMING_OP_DATA_RANGE      ]       strm0_data        ; 
@@ -304,10 +308,11 @@ module streamingOps (
   wire                                      reg__stOp__ready       ;
   reg                                       stOp__reg__valid       ;
   reg [`STREAMING_OP_RESULT_RANGE   ]       stOp__reg__data        ; 
-  reg [`STREAMING_OP_RESULT_RANGE   ]       stOp_result          ; // mux the streaming op output to the result
-  reg                                       stOp_result_valid    ;
-  reg                                       strm0_stOp_complete          ; // let the streaming operation tell us when it is complete
-  reg                                       strm1_stOp_complete          ; // let the streaming operation tell us when it is complete
+  reg [`COMMON_STD_INTF_CNTL_RANGE  ]       stOp__reg__cntl        ; 
+  reg [`STREAMING_OP_RESULT_RANGE   ]       stOp_result            ; // mux the streaming op output to the result
+  reg                                       stOp_result_valid      ;
+  reg                                       strm0_stOp_complete    ; // let the streaming operation tell us when it is complete
+  reg                                       strm1_stOp_complete    ; // let the streaming operation tell us when it is complete
                                                                      // Means selected streaming operation complete
 
   reg     strm0_ready          ;  // Stream ready 
@@ -329,9 +334,12 @@ module streamingOps (
   assign  strm0_src_complete_next          =   ~strm0_fifo_empty & ((strm0_fifo_read_cntl == `DMA_CONT_STRM_CNTL_EOP) | (strm0_fifo_read_cntl == `DMA_CONT_STRM_CNTL_SOP_EOP)) ;
   assign  strm1_src_complete_next          =   ~strm1_fifo_empty & ((strm1_fifo_read_cntl == `DMA_CONT_STRM_CNTL_EOP) | (strm1_fifo_read_cntl == `DMA_CONT_STRM_CNTL_SOP_EOP)) ;
 
+  // FIXME: Need to add to REG decodes
+  //
   always @(*)
     begin
     // Output
+    stOp__reg__cntl              =   'd0                       ;
     stOp__reg__data              =   'd0                       ;
     stOp__reg__valid             =   'b0                       ;
     // to Memory (via dma)
@@ -354,78 +362,56 @@ module streamingOps (
     fp_cmp_max                   =   'b0                       ;
     fp_cmp_first_gt_threshold    =   'b0                       ;
     fp_cmp_enable                =   'b0                       ;
-    casex (operation)
-      `STREAMING_OP_CNTL_OPERATION_MEM_MEM_BITSUM_TO_MEM   :
+    casex (opcode)
+      `STREAMING_OP_CNTL_OPERATION_BITSUM   :
         begin
           // Output
-          stOp__dma__strm0_data        =   bsum                       ;
-          stOp__dma__strm0_cntl        =  `DMA_CONT_STRM_CNTL_SOP_EOP ; // only one result
-          stOp__dma__strm0_data_valid  =   bsum_result_valid          ;
+          stOp__dma__strm0_data        =   bsum                                                                               ;
+          stOp__dma__strm0_cntl        =  `COMMON_STD_INTF_CNTL_SOM_EOM                                                       ; // only one result
+          stOp__dma__strm0_data_valid  =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & bsum_result_valid  ;
+
+          stOp__reg__data              =   bsum                                                                               ;
+          stOp__reg__cntl              =  `COMMON_STD_INTF_CNTL_SOM_EOM                                                       ; // only one result
+          stOp__reg__valid             =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_REG   ) & bsum_result_valid  ;
 
           // FIFO control
           strm0_fifo_read              =   strm0_enable & strm_fifo_data_available ;
           strm1_fifo_read              =   strm1_enable & strm_fifo_data_available ;
-          strm0_stOp_complete          =   bsum_complete & strm0_fifo_empty ;
-          strm1_stOp_complete          =   bsum_complete & strm1_fifo_empty ;
+          strm0_stOp_complete          =   bsum_complete & strm0_fifo_empty        ;
+          strm1_stOp_complete          =   bsum_complete & strm1_fifo_empty        ;
     
           // stOp control
           bsum_enable                  =  1'b1 ;
         end
-      `STREAMING_OP_CNTL_OPERATION_MEM_MEM_BITSUM_TO_REG    :
-        begin
-          // Output
-          stOp__reg__data              =   bsum                       ;
-          stOp__reg__valid             =   bsum_result_valid          ;
-
-          // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm_fifo_data_available ;
-          strm1_fifo_read              =   strm1_enable & strm_fifo_data_available ;
-          strm0_stOp_complete          =   bsum_complete & strm0_fifo_empty  ;
-          strm1_stOp_complete          =   bsum_complete & strm1_fifo_empty  ;
-    
-          // stOp control
-          bsum_enable                  =   'b1 ;
-        end
-      `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  :
+      `STREAMING_OP_CNTL_OPERATION_NOP  :
         begin
           // Output
           stOp__dma__strm0_data        =   strm0_fifo_read_data       ;
           stOp__dma__strm0_data_mask   =   32'hFFFF_FFFF              ;
           stOp__dma__strm0_cntl        =   strm0_fifo_read_cntl       ; // only one result
           stOp__dma__strm0_data_valid  =   strm0_enable & strm0_fifo_data_available & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
+          //stOp__dma__strm0_data_valid  =   strm0_fifo_read_data_valid ;
 
-          // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm0_fifo_data_available & dma__stOp__strm0_ready;
-          strm0_stOp_complete          =   strm0_src_complete & strm0_fifo_empty  ;
-    
-          // stOp control
-        end
-      `STREAMING_OP_CNTL_OPERATION_STD_STD_NOP_TO_MEM     :
-        begin
-          // Output
-          stOp__dma__strm0_data        =   strm0_fifo_read_data       ;
-          stOp__dma__strm0_data_mask   =   32'hFFFF_FFFF              ;
-          stOp__dma__strm0_cntl        =   strm0_fifo_read_cntl       ; // only one result
-          stOp__dma__strm0_data_valid  =   strm0_enable & strm0_fifo_data_available & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
           stOp__dma__strm1_data        =   strm1_fifo_read_data       ;
           stOp__dma__strm1_data_mask   =   32'hFFFF_FFFF              ;
           stOp__dma__strm1_cntl        =   strm1_fifo_read_cntl       ; // only one result
-          stOp__dma__strm1_data_valid  =   strm1_enable & strm1_fifo_data_available & dma__stOp__strm1_ready;
+          stOp__dma__strm1_data_valid  =   strm1_enable & strm0_fifo_data_available & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
+          //stOp__dma__strm1_data_valid  =   strm1_fifo_read_data_valid ;
 
           // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm0_fifo_data_available & dma__stOp__strm0_ready;
-          strm1_fifo_read              =   strm1_enable & strm1_fifo_data_available & dma__stOp__strm1_ready;
+          strm0_fifo_read              =   strm0_enable & strm0_fifo_data_available & ((strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm0_ready);
           strm0_stOp_complete          =   strm0_src_complete & strm0_fifo_empty  ;
-          strm1_stOp_complete          =   strm1_src_complete & strm1_fifo_empty  ;
+          strm1_fifo_read              =   strm1_enable & strm1_fifo_data_available & ((strm1_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm1_ready); // FIXME add REG
+          strm1_stOp_complete          =   strm1_enable & strm1_src_complete & strm1_fifo_empty  ;
     
           // stOp control
         end
-      `STREAMING_OP_CNTL_OPERATION_MEM_MEM_FP_MAC_TO_MEM     :
+      `STREAMING_OP_CNTL_OPERATION_FP_MAC     :
         begin
           // Output
           stOp__dma__strm0_data        =   fp_mac                     ;
           stOp__dma__strm0_cntl        =  `DMA_CONT_STRM_CNTL_SOP_EOP ; // only one result
-          stOp__dma__strm0_data_valid  =   fp_mac_result_valid ;
+          stOp__dma__strm0_data_valid  =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & fp_mac_result_valid ;
 
           // FIFO control
           strm0_fifo_read              =   strm0_enable & strm_fifo_data_available ;
@@ -436,44 +422,12 @@ module streamingOps (
           // stOp control
           fp_mac_enable                =   'b1                       ;
         end
-      `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM     :
-        begin
-          // Output
-          stOp__dma__strm0_data        =   fp_mac                     ;
-          stOp__dma__strm0_cntl        =  `DMA_CONT_STRM_CNTL_SOP_EOP ; // only one result
-          stOp__dma__strm0_data_valid  =   fp_mac_result_valid ;
-
-          // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm_fifo_data_available ;
-          strm1_fifo_read              =   strm1_enable & strm_fifo_data_available ;
-          strm0_stOp_complete          =   fp_mac_complete      ;
-          strm1_stOp_complete          =   fp_mac_complete      ;
-    
-          // stOp control
-          fp_mac_enable                =   'b1                       ;
-        end
-      `STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM     :
-        begin
-          // Output
-          stOp__dma__strm0_data        =   fp_mac                     ;
-          stOp__dma__strm0_cntl        =  `DMA_CONT_STRM_CNTL_SOP_EOP ; // only one result
-          stOp__dma__strm0_data_valid  =   fp_mac_result_valid ;
-
-          // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm_fifo_data_available ;
-          strm1_fifo_read              =   strm1_enable & strm_fifo_data_available ;
-          strm0_stOp_complete          =   fp_mac_complete      ;
-          strm1_stOp_complete          =   fp_mac_complete      ;
-    
-          // stOp control
-          fp_mac_enable                =   'b1                       ;
-        end
-      `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAX_TO_MEM     :
+      `STREAMING_OP_CNTL_OPERATION_FP_MAX     :
         begin
           // Output
           stOp__dma__strm0_data        =   fp_cmp                     ;
           stOp__dma__strm0_cntl        =  `DMA_CONT_STRM_CNTL_SOP_EOP ; // only one result
-          stOp__dma__strm0_data_valid  =   fp_cmp_result_valid  ;
+          stOp__dma__strm0_data_valid  =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & fp_cmp_result_valid  ;
 
           // FIFO control
           strm0_fifo_read              =   strm0_enable & ~strm0_fifo_empty & (so_cmp_state == `STREAMING_OP_FP_CMP_STATE_COMPARING_MAX ) ;
@@ -484,12 +438,12 @@ module streamingOps (
           fp_cmp_max                   =   'b1                       ;
           fp_cmp_enable                =   'b1                       ;
         end
-      `STREAMING_OP_CNTL_OPERATION_MEM_MEM_FP_FIRST_GT_TO_MEM     :
+      `STREAMING_OP_CNTL_OPERATION_FP_FIRST_GT     :
         begin
           // Output
           stOp__dma__strm0_data        =   fp_cmp                     ;
           stOp__dma__strm0_cntl        =  `DMA_CONT_STRM_CNTL_SOP_EOP ; // only one result
-          stOp__dma__strm0_data_valid  =   fp_cmp_result_valid  ;
+          stOp__dma__strm0_data_valid  =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & fp_cmp_result_valid  ;
 
           // FIFO control
           strm0_fifo_read              =   strm0_enable & ~strm0_fifo_empty & (so_cmp_state == `STREAMING_OP_FP_CMP_STATE_FINDING_FIRST_GT  ) ;
@@ -500,20 +454,6 @@ module streamingOps (
           // stOp control
           fp_cmp_first_gt_threshold    =   'b1                       ;
           fp_cmp_enable                =   'b1                       ;
-        end
-      `STREAMING_OP_CNTL_OPERATION_MEM_NONE_NOP_TO_MEM     :
-        begin
-          // Output
-          stOp__dma__strm0_data        =   strm0_fifo_read_data       ;
-          stOp__dma__strm0_data_mask   =   32'hFFFF_FFFF              ;
-          stOp__dma__strm0_cntl        =   strm0_fifo_read_cntl       ; // only one result
-          stOp__dma__strm0_data_valid  =   strm0_enable & strm0_fifo_data_available & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
-
-          // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm0_fifo_data_available & dma__stOp__strm0_ready;
-          strm0_stOp_complete          =   strm0_src_complete & strm0_fifo_empty ;
-    
-          // stOp control
         end
 
       default                       : 
@@ -597,7 +537,7 @@ module streamingOps (
             strm0_data_valid        =  dma__stOp__strm0_data_valid ; 
           end
         
-        `STREAMING_OP_CNTL_OPERATION_FROM_EXT : 
+        `STREAMING_OP_CNTL_OPERATION_FROM_STD : 
           begin
             strm0_cntl              =  sti__stOp__strm0_cntl       ; 
             strm0_data              =  sti__stOp__strm0_data       ; 
@@ -612,9 +552,9 @@ module streamingOps (
           end
         default                       : 
           begin
-            strm0_cntl              =  dma__stOp__strm0_cntl       ; 
-            strm0_data              =  dma__stOp__strm0_data       ; 
-            strm0_data_valid        =  dma__stOp__strm0_data_valid ; 
+            strm0_cntl              =  'd0                         ; 
+            strm0_data              =  'd0                         ; 
+            strm0_data_valid        =  'd0                         ; 
           end
       endcase // always @
     end
@@ -630,7 +570,7 @@ module streamingOps (
             strm1_data              =  dma__stOp__strm1_data       ; 
             strm1_data_valid        =  dma__stOp__strm1_data_valid ; 
           end
-        `STREAMING_OP_CNTL_OPERATION_FROM_EXT : 
+        `STREAMING_OP_CNTL_OPERATION_FROM_STD : 
           begin
             strm1_cntl              =  sti__stOp__strm1_cntl       ; 
             strm1_data              =  sti__stOp__strm1_data       ; 
@@ -645,9 +585,9 @@ module streamingOps (
           end
         default                       : 
           begin
-            strm1_cntl              =  dma__stOp__strm1_cntl       ; 
-            strm1_data              =  dma__stOp__strm1_data       ; 
-            strm1_data_valid        =  dma__stOp__strm1_data_valid ; 
+            strm1_cntl              =  'd0                         ; 
+            strm1_data              =  'd0                         ; 
+            strm1_data_valid        =  'd0                         ; 
           end
       endcase // always @
     end
@@ -655,16 +595,15 @@ module streamingOps (
   // Stream 0
   always @(*)
     casex (strm0_destination)  // the strm0_source override the FROM in the operation
-// FIXME: using FROM not TO when looking at destination???
-      `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY       : 
+      `STREAMING_OP_CNTL_OPERATION_TO_MEMORY       : 
         begin
           stOp__dma__strm0_ready  =  ~fifo[0].fifo_almost_full ;
         end
-      `STREAMING_OP_CNTL_OPERATION_FROM_EXT : 
+      `STREAMING_OP_CNTL_OPERATION_TO_STD : 
         begin
           stOp__dma__strm0_ready  = 1'b0                  ;
         end
-      `STREAMING_OP_CNTL_OPERATION_FROM_NOC       : 
+      `STREAMING_OP_CNTL_OPERATION_TO_NOC       : 
         begin
           stOp__dma__strm0_ready = noc__stOp__strm_ready ;
         end
@@ -677,15 +616,15 @@ module streamingOps (
   // Stream 1
   always @(*)
     casex (strm1_destination)  // the strm1_source override the FROM in the operation
-      `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY       : 
+      `STREAMING_OP_CNTL_OPERATION_TO_MEMORY       : 
         begin
           stOp__dma__strm1_ready  =  ~fifo[1].fifo_almost_full ;
         end
-      `STREAMING_OP_CNTL_OPERATION_FROM_EXT : 
+      `STREAMING_OP_CNTL_OPERATION_TO_STD : 
         begin
           stOp__dma__strm1_ready  = 1'b0                  ;
         end
-      `STREAMING_OP_CNTL_OPERATION_FROM_NOC       : 
+      `STREAMING_OP_CNTL_OPERATION_TO_NOC       : 
         begin
           stOp__dma__strm1_ready = noc__stOp__strm_ready ;
         end
@@ -711,7 +650,7 @@ module streamingOps (
                                 (dma__stOp__strm0_cntl == `DMA_CONT_STRM_CNTL_EOP) ? dma__stOp__strm0_data_mask :
                                                                                      strm0_data_mask            ;
         end
-      `STREAMING_OP_CNTL_OPERATION_FROM_EXT : 
+      `STREAMING_OP_CNTL_OPERATION_FROM_STD : 
         begin
           strm0_data_mask   <=  (reset_poweron                                   ) ? 32'd0                      :
                                 (sti__stOp__strm0_cntl == `DMA_CONT_STRM_CNTL_EOP) ? sti__stOp__strm0_data_mask :
@@ -733,7 +672,7 @@ module streamingOps (
                                 (dma__stOp__strm0_cntl == `DMA_CONT_STRM_CNTL_EOP) ? dma__stOp__strm1_data_mask :
                                                                                      strm1_data_mask            ;
         end
-      `STREAMING_OP_CNTL_OPERATION_FROM_EXT : 
+      `STREAMING_OP_CNTL_OPERATION_FROM_STD : 
         begin
           strm1_data_mask   <=  (reset_poweron                                   ) ? 32'd0                      :
                                 (sti__stOp__strm0_cntl == `DMA_CONT_STRM_CNTL_EOP) ? sti__stOp__strm1_data_mask :
@@ -807,7 +746,7 @@ module streamingOps (
   endgenerate
   
    
-  assign     fifo[0].clear              = ~strm0_enable            ;
+  assign     fifo[0].clear              = reset_poweron            ;  // FIXME: need another clear as using the enable was too close to the actual STD starting
   assign     strm0_fifo_empty           = fifo[0].fifo_empty       ; 
   assign     fifo[0].fifo_read          = strm0_fifo_read          ; 
   assign     strm0_fifo_read_data       = fifo[0].fifo_read_data   ; 
@@ -817,7 +756,7 @@ module streamingOps (
   assign     fifo[0].fifo_write         = strm0_data_valid         ;  // with FIFO inputs, dont condition write with ready
   assign     strm0_fifo_data_available  = ~strm0_fifo_empty        ;
                                                                       // we need source to stop within two cycles
-  assign     fifo[1].clear              = ~strm1_enable            ;
+  assign     fifo[1].clear              = reset_poweron            ;  // FIXME: need another clear as using the enable was too close to the actual STD starting
   assign     strm1_fifo_empty           = fifo[1].fifo_empty       ; 
   assign     fifo[1].fifo_read          = strm1_fifo_read          ; 
   assign     strm1_fifo_read_data       = fifo[1].fifo_read_data   ; 
@@ -829,6 +768,13 @@ module streamingOps (
 
   assign     strm_fifo_data_available   = ~strm1_fifo_empty & ~strm0_fifo_empty ;
   assign     strm_fifo_empty            =  strm1_fifo_empty &  strm0_fifo_empty ;
+
+  // FIXME : need to make fifo registered output
+  always @(posedge clk)
+    begin
+      strm0_fifo_read_data_valid <= ( reset_poweron ) ? 1'b0 : strm0_fifo_read ;
+      strm1_fifo_read_data_valid <= ( reset_poweron ) ? 1'b0 : strm1_fifo_read ;
+    end
 
   //-------------------------------------------------------------------------------------------
   //-------------------------------------------------------------------------------------------

@@ -261,7 +261,7 @@
 //                                                                   strms  strms                   opcode                                 dest    dest   src     src
 `define STREAMING_OP_CNTL_OPERATION_MEM_MEM_BITSUM_TO_MEM            {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_BITSUM            ,   3'd0,   3'd1,  3'd1,   3'd1         } 
 `define STREAMING_OP_CNTL_OPERATION_MEM_MEM_BITSUM_TO_REG            {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_BITSUM            ,   3'd2,   3'd2,  3'd1,   3'd1         } 
-`define STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM              {2'd1,  2'd1,   5'd`STREAMING_OP_CNTL_OPERATION_NOP               ,   3'd0,   3'd1,  3'd2,   3'd2         } 
+`define STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM              {2'd1,  2'd1,   5'd`STREAMING_OP_CNTL_OPERATION_NOP               ,   3'd0,   3'd1,  3'd0,   3'd2         } 
 `define STREAMING_OP_CNTL_OPERATION_STD_STD_NOP_TO_MEM               {2'd2,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_NOP               ,   3'd1,   3'd1,  3'd2,   3'd2         } 
 `define STREAMING_OP_CNTL_OPERATION_MEM_MEM_FP_MAC_TO_MEM            {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAC            ,   3'd0,   3'd1,  3'd1,   3'd1         } 
 `define STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM            {2'd1,  2'd2,   5'd`STREAMING_OP_CNTL_OPERATION_FP_MAC            ,   3'd0,   3'd1,  3'd2,   3'd2         } 

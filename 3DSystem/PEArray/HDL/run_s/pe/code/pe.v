@@ -275,6 +275,7 @@ module pe (
         wire                                         reg__stOp__ready         ;
         wire                                         stOp__reg__valid         ;
         wire   [`STREAMING_OP_RESULT_RANGE        ]  stOp__reg__data          ;
+        wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  stOp__reg__cntl          ; 
 
         wire  [`STREAMING_OP_CNTL_OPERATION_RANGE ]  cntl__dma__operation     ;
 
@@ -413,6 +414,7 @@ module pe (
                                  .reg__stOp__ready               ( reg__stOp__ready               ),
                                  .stOp__reg__valid               ( stOp__reg__valid               ),
                                  .stOp__reg__data                ( stOp__reg__data                ),
+                                 .stOp__reg__cntl                ( stOp__reg__cntl                ),
 
                                  //--------------------------------------------------------------------------------
                                  // NoC interface

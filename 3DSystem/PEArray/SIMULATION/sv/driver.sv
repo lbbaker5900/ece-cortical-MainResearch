@@ -105,7 +105,8 @@ class driver;
                                 drv2oob.put(sys_operation)                    ;  // oob needs to prepare the PE
                                 // FIXME: Need to wait for the OOB process to send WU packet to PE (WIP)
 
-                                for (int i=0; i<strm_operation.size(); i++)
+                                // create stream objects and send to process driving downstream stream stack bus
+                                for (int i=0; i<sys_operation.stOp_operation.numberOfSrcStreams; i++)
                                     begin
                                         tmp_strm_operation                  = new            ;
                                         tmp_strm_operation.tId              = sys_operation.tId               ;
@@ -113,12 +114,13 @@ class driver;
                                         tmp_strm_operation.numberOfOperands = sys_operation.numberOfOperands ;
                                         //tmp_strm_operation.operands         = sys_operation.operands[i]      ;
                                         drv2lane[i].put(tmp_strm_operation)                    ;
+                                        $display("@%0t : LEE: {%d,%d} Passed to stream driver %1d", $time, Id[0], Id[1], i );
                                     end
 
 
                                 // put operations into golden mailbox
                                 drv2memP.put(sys_operation) ;  //Putting the instruction into the golden model mailbox                                              
-                                //$display("@%0t LEE: Send FP MAC operation to mem_checker: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
+                                //$display("@%0t LEE: Send operation to mem_checker: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
                                 @drv2memP_ack               ;
              
                                 gen2drv.get(sys_operation)  ;  //Removing the instruction from generator mailbox

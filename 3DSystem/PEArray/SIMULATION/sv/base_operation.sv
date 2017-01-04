@@ -144,13 +144,14 @@ package operation;
         }
 
         constraint c_operationType_copyStdToMem {
+            OpCode inside {`STREAMING_OP_CNTL_OPERATION_NOP                  } ;
             OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  } ;
             enableDestinationStream[0] == 1 ;  // destination address 0 is starting point for memory transfer from stack bus
             enableDestinationStream[1] == 0 ;
         }
 
         constraint c_numberOfOperands {
-            numberOfOperands inside {[20:100]};
+            numberOfOperands inside {[20:500]};
             //numberOfOperands inside {[0:65535]};
         }
 
@@ -227,6 +228,20 @@ package operation;
                         stOp_operation.stream0_source       = PE_STOP_SRC_IS_STD      ;
                         pe_stOp_stream0_src_data_type       = PE_DATA_TYPE_WORD       ;  
                         pe_stOp_stream1_src_data_type       = PE_DATA_TYPE_WORD       ;  
+                        pe_stOp_result0_dest_data_type      = PE_DATA_TYPE_WORD       ;  
+                        pe_stOp_result1_dest_data_type      = PE_DATA_TYPE_NA         ;  
+                    end
+                `STREAMING_OP_CNTL_OPERATION_NOP     :
+                    begin
+                        stOp_operation.numberOfDestStreams  = 1                       ;
+                        stOp_operation.numberOfSrcStreams   = 1                       ;
+                        stOp_operation.opcode               = PE_STOP_IS_NOP          ;
+                        stOp_operation.stream1_destination  = PE_STOP_DEST_IS_NA      ;
+                        stOp_operation.stream0_destination  = PE_STOP_DEST_IS_MEMORY  ;
+                        stOp_operation.stream1_source       = PE_STOP_SRC_IS_NA       ;
+                        stOp_operation.stream0_source       = PE_STOP_SRC_IS_STD      ;
+                        pe_stOp_stream0_src_data_type       = PE_DATA_TYPE_WORD       ;  
+                        pe_stOp_stream1_src_data_type       = PE_DATA_TYPE_NA         ;  
                         pe_stOp_result0_dest_data_type      = PE_DATA_TYPE_WORD       ;  
                         pe_stOp_result1_dest_data_type      = PE_DATA_TYPE_NA         ;  
                     end

@@ -1,8 +1,16 @@
 #! /bin/bash
 
+PROGNAME=$(basename $0)
+
+# exit on error
+set -e
+set -o pipefail
+
 # from www.linuxcommand.org/lc3_wss0140.php
 error_exit() {
-    echo "$1" 1>&2
+    echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+    #error_exit "$LINENO: An error has occurred."
+    #echo "$1" 1>&2
     exit 1
 }
 

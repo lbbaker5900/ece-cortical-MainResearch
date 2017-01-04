@@ -109,12 +109,16 @@ class regFile_driver;
                         vP_srf.cb_out.rs1           <= {32{1'b1}};
 
                         // struct contents debug
-                        //$display("@%0t INFO:regFile driver: struct size = %d \n", $time, $bits(sys_operation.stOp_operation));
-                        //$display("@%0t INFO:regFile driver: struct %b : %b \n", $time, sys_operation.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM);
+                        //$display("@%0t LEE:regFile driver: struct size = %d \n", $time, $bits(sys_operation.stOp_operation));
+                        $display("@%0t LEE:regFile driver: struct %b : %b \n", $time, sys_operation.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM);
+                        $display("@%0t LEE:regFile driver: struct %b : %b \n", $time, sys_operation.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  );
 
 
                         //----------------------------------------------------------------------------------------------------
                         // Acknowledge regFile outputs are set
+                        
+                        // FIXME: 
+                        //repeat(10) @(vP_vrf.cb_out);
 
                         gen2rfP.get(sys_operation);   //Remove the transaction from the driver mailbox
                         -> gen2rfP_ack;
