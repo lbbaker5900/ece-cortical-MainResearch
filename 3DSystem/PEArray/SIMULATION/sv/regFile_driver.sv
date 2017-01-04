@@ -31,7 +31,6 @@ class regFile_driver;
     event     finished      ;
 
     base_operation sys_operation;
-    PE_DATA_TYPE pe_data_type ;
 
     vRegFileScalarDrv2stOpCntl_T  vP_srf ;
     vRegFileLaneDrv2stOpCntl_T    vP_vrf ;
@@ -63,8 +62,8 @@ class regFile_driver;
                     begin
                         gen2rfP.peek(sys_operation);   //Taking the transaction from the generator mailbox
 
-                        pe_data_type = PE_DATA_TYPE_WORD ;
-                        
+                        //----------------------------------------------------------------------------------------------------
+                        // Info/Debug
                         case (sys_operation.OpType)
                             `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM :
                                 $display("@%0t INFO:regFile driver: Received FP MAC operation from driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
@@ -73,42 +72,45 @@ class regFile_driver;
                         endcase
 
                         //----------------------------------------------------------------------------------------------------
-                        // Ensure all memory accesses are local and within block allocated to lane
-
-                        for (int stream=0; stream<`PE_NUM_OF_STREAMS; stream++)
-                          begin
-                              if (sys_operation.enableDestinationStream[stream])
-                                begin
-                                  // Make sure address is local to PE
-                                  if (sys_operation.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] != Id[0])
-                                    begin
-                                      $display("@%0t ERROR: Stream %d Destination address not within this PE\'s local memory: {%0d,%0d} : %h\n", $time, stream, Id[0], Id[1], sys_operation.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] );
-                                    end
-                                  if (sys_operation.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] != Id[1])
-                                    begin
-                                      $display("@%0t ERROR: Stream %d Destination address not within this PE\'s local lane address space: {%0d,%0d} : %h\n", $time, stream, Id[0], Id[1], sys_operation.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] );
-                                    end
-                                end
-                          end
+                        // If enabled, ensure all memory accesses are local and within block allocated to lane
+                        if (sys_operation.memoryAccessesLocalized)
+                            begin
+                                for (int stream=0; stream<`PE_NUM_OF_STREAMS; stream++)
+                                  begin
+                                      if (sys_operation.enableDestinationStream[stream])
+                                        begin
+                                          // Make sure address is local to PE
+                                          if (sys_operation.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] != Id[0])
+                                            begin
+                                              $display("@%0t ERROR: Stream %d Destination address not within this PE\'s local memory: {%0d,%0d} : %h\n", $time, stream, Id[0], Id[1], sys_operation.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] );
+                                            end
+                                          if (sys_operation.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] != Id[1])
+                                            begin
+                                              $display("@%0t ERROR: Stream %d Destination address not within this PE\'s local lane address space: {%0d,%0d} : %h\n", $time, stream, Id[0], Id[1], sys_operation.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] );
+                                            end
+                                        end
+                                  end
+                            end
                         
                         //----------------------------------------------------------------------------------------------------
                         // Set register inputs to streamingOps_cntl
 
-                        //vP_vrf.r134 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | sys_operation.destinationAddress[0];
-                        //vP_vrf.r135 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | sys_operation.destinationAddress[1];
                         // Now address is constrained in the base_operation to be within a PE and lane portion of local memory
-                        vP_vrf.r134 = sys_operation.destinationAddress[0];
-                        vP_vrf.r135 = sys_operation.destinationAddress[1];
-                        //vP_vrf.r134 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | 32'b__0_0000_1000_0000;
-                        //vP_vrf.r135 = (Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1] << `PE_CHIPLET_LANE_ADDRESS_WIDTH) | 32'b__0_1000_0000_0000;
-                        //r134 [{1}] = 6'd32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
-                        vP_vrf.cb_out.r132[19:16] <= pe_data_type ;  // type (bit, nibble, byte, word)
-                        vP_vrf.cb_out.r132[15: 0] <= sys_operation.numberOfOperands ;    // num of types - for dma
-                        vP_vrf.cb_out.r133[19:16] <= pe_data_type ;  // type (bit, nibble, byte, word)
-                        vP_vrf.cb_out.r133[15: 0] <= sys_operation.numberOfOperands ;
-                        vP_srf.cb_out.rs0[0]      <= 1'b1;
-                        vP_srf.cb_out.rs0[31:1]   <= `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
-                        vP_srf.cb_out.rs1         <= {32{1'b1}};
+                        vP_vrf.cb_out.r134          <= sys_operation.destinationAddress[0]                ;
+                        vP_vrf.cb_out.r135          <= sys_operation.destinationAddress[1]                ;
+                        vP_vrf.cb_out.r132[19:16]   <= sys_operation.pe_stOp_stream0_src_data_type        ;  // type (bit, nibble, byte, word)
+                        vP_vrf.cb_out.r132[15: 0]   <= sys_operation.numberOfOperands                     ;  // num of types - for dma
+                        vP_vrf.cb_out.r133[19:16]   <= sys_operation.pe_stOp_stream1_src_data_type        ;  // type (bit, nibble, byte, word)
+                        vP_vrf.cb_out.r133[15: 0]   <= sys_operation.numberOfOperands                     ;
+                        vP_srf.cb_out.rs0[0]        <= 1'b1                                               ;
+                        // drive packed struct directly onto regFile register input for streamingOps_cntl
+                        vP_srf.cb_out.rs0[31:1]     <= sys_operation.stOp_operation                       ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
+                        //vP_srf.cb_out.rs0[31:1]     <= sys_operation.OpType                               ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
+                        vP_srf.cb_out.rs1           <= {32{1'b1}};
+
+                        // struct contents debug
+                        //$display("@%0t INFO:regFile driver: struct size = %d \n", $time, $bits(sys_operation.stOp_operation));
+                        //$display("@%0t INFO:regFile driver: struct %b : %b \n", $time, sys_operation.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM);
 
 
                         //----------------------------------------------------------------------------------------------------

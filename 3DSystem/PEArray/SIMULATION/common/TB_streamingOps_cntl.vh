@@ -26,7 +26,8 @@ typedef enum logic [`PE_DATA_TYPES_RANGE ] {
                                             PE_DATA_TYPE_NIBBLE        = 1,
                                             PE_DATA_TYPE_BYTE          = 2,
                                             PE_DATA_TYPE_SWORD         = 3,
-                                            PE_DATA_TYPE_WORD          = 4
+                                            PE_DATA_TYPE_WORD          = 4,
+                                            PE_DATA_TYPE_NA            = {`PE_DATA_TYPES_SIZE{1'b1}}
                                           } PE_DATA_TYPE ;
 
 typedef enum logic [`STREAMING_OP_CNTL_OPERATION_OPCODE_RANGE ] {
