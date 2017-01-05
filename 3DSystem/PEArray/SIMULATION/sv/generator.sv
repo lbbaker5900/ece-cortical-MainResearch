@@ -44,7 +44,7 @@ class generator;
     mailbox   gen2rfP         ;
     event     gen2rfP_ack     ;
         
-    integer num_operations = 1;
+    integer num_operations = 2;
     integer operationNum   = 0;  // used to set operation ID
 
     //variable to define the timeout in 'wrapup()' task in environment.sv
@@ -136,7 +136,7 @@ class generator;
                 @gen2drv_ack;
             end
            
-        -> final_operation;
+        //-> final_operation;
     endtask
 endclass
 

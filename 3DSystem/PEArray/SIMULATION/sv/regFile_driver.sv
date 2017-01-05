@@ -110,8 +110,8 @@ class regFile_driver;
 
                         // struct contents debug
                         //$display("@%0t LEE:regFile driver: struct size = %d \n", $time, $bits(sys_operation.stOp_operation));
-                        $display("@%0t LEE:regFile driver: struct %b : %b \n", $time, sys_operation.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM);
-                        $display("@%0t LEE:regFile driver: struct %b : %b \n", $time, sys_operation.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  );
+                        //$display("@%0t LEE:regFile driver: struct %b : %b \n", $time, sys_operation.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM);
+                        //$display("@%0t LEE:regFile driver: struct %b : %b \n", $time, sys_operation.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  );
 
 
                         //----------------------------------------------------------------------------------------------------
@@ -123,6 +123,14 @@ class regFile_driver;
                         gen2rfP.get(sys_operation);   //Remove the transaction from the driver mailbox
                         -> gen2rfP_ack;
                         $display ($time,": INFO:REGFILE DRIVER :: Operation driven for {%02d,%02d}", Id[0], Id[1]);
+ 
+                        //----------------------------------------------------------------------------------------------------
+                        // Wait for  streamingOps_cntl to be complete the deassert enable ( rs0[0]=0 )
+                        wait(vP_srf.cb_out.complete);
+                        $display ($time,": INFO:REGFILE DRIVER :: Operation complete for {%02d,%02d}", Id[0], Id[1]);
+                        vP_srf.cb_out.rs0[0]        <= 1'b0                                               ;
+                        wait(~vP_srf.cb_out.complete);
+      
                     end
                 else
                     begin

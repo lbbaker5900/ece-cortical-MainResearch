@@ -14,7 +14,7 @@ error_exit() {
     exit 1
 }
 
-/bin/rm $1
+/bin/touch $1 ; /bin/rm $1
 
 pushd ../../scripts  
 ./testbench.py  2>&1  | tee -a ../SIMULATION/sv/$1
@@ -48,5 +48,8 @@ vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common top.sv        
 
 
 vsim -c -sv_seed 3 -do "run.do" -novopt top 
-#vsim    -sv_seed 3              -novopt top &
+#vsim    -sv_seed 3   -l gTranscript  -novopt top &
+# transcript file ""
+# transcript file 'gTranscript"
+
 

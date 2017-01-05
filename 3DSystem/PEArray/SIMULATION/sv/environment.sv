@@ -132,10 +132,11 @@ class Environment;
             `include "TB_wait_for_final_operation.vh"
             // @(final_operation);
         join
+
         //join_none
         //wait fork ;
         //$display("@%0t LEE: Drivers taken all operations \n", $time);
-
+/*
         repeat (50)              //Running simulation for some time after the final transaction is sent
         begin
             fork                                                          //These end after the generator triggers the event "final_operation" after generating the final transaction.
@@ -144,6 +145,7 @@ class Environment;
                 //vSysLane2PeArray[0][0].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
             join_none
         end
+*/
 
         // check all memory checkers have finished
         for (int pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe++)

@@ -120,8 +120,10 @@ module top;
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
-               assign pe_array_inst.pe_inst[pe].pe.simd__cntl__rs0  =   RegFileScalar2StOpCntl[pe].rs0 ;  //.TB_regFileScalarDrv2stOpCntl
-               assign pe_array_inst.pe_inst[pe].pe.simd__cntl__rs1  =   RegFileScalar2StOpCntl[pe].rs1 ;  //.TB_regFileScalarDrv2stOpCntl
+               assign RegFileScalar2StOpCntl[pe].ready                  =  pe_array_inst.pe_inst[pe].pe.pe__sys__ready    ;  //.TB_regFileScalarDrv2stOpCntl
+               assign RegFileScalar2StOpCntl[pe].complete               =  pe_array_inst.pe_inst[pe].pe.pe__sys__complete ;  //.TB_regFileScalarDrv2stOpCntl
+               assign pe_array_inst.pe_inst[pe].pe.simd__cntl__rs0      =  RegFileScalar2StOpCntl[pe].rs0                 ;  //.TB_regFileScalarDrv2stOpCntl
+               assign pe_array_inst.pe_inst[pe].pe.simd__cntl__rs1      =  RegFileScalar2StOpCntl[pe].rs1                 ;  //.TB_regFileScalarDrv2stOpCntl
                for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
                    begin
                        assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r128[lane] =   RegFileLane2StOpCntl[pe][lane].r128 ;  //.TB_regFileLaneDrv2stOpCntl

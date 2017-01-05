@@ -82,6 +82,7 @@ class driver;
     endfunction
 
     task run();
+        //$display("@%0t LEE: Running driver : {%0d,%0d}\n", $time,Id[0], Id[1]);
 
         // Spawn 4 processes:
         // - first receives operations from the generator and splits it into two stream operations
@@ -114,7 +115,7 @@ class driver;
                                         tmp_strm_operation.numberOfOperands = sys_operation.numberOfOperands ;
                                         //tmp_strm_operation.operands         = sys_operation.operands[i]      ;
                                         drv2lane[i].put(tmp_strm_operation)                    ;
-                                        $display("@%0t : LEE: {%d,%d} Passed to stream driver %1d", $time, Id[0], Id[1], i );
+                                        //$display("@%0t : LEE: {%d,%d} Passed to stream driver %1d", $time, Id[0], Id[1], i );
                                     end
 
 
@@ -122,6 +123,7 @@ class driver;
                                 drv2memP.put(sys_operation) ;  //Putting the instruction into the golden model mailbox                                              
                                 //$display("@%0t LEE: Send operation to mem_checker: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
                                 @drv2memP_ack               ;
+                                // mem_checker only ack's once memory access(s) are complete, good or bad.
              
                                 gen2drv.get(sys_operation)  ;  //Removing the instruction from generator mailbox
                                 -> gen2drv_ack;
@@ -152,13 +154,16 @@ class driver;
                                     end  // while
                                     $display("@%0t : INFO: {%d,%d} Completed driving OOB", $time, Id[0], Id[1] );
                                 end
+                        // watch out for infinite loop if commenting out this section of code
+                        // a forever loop will need an @clk
                         else
                             begin 
                                 @(vSysOob2PeArray.cb_test);
                                 vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
                                 vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= 0  ;  
-                                vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 0  ;
+                                vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
                             end  // if
+
                     end  // forever
             end
             // FIXME : should use generate for the two following processes, but need to separate streams into separate interfaces so they can be indexed
@@ -172,6 +177,7 @@ class driver;
                                     begin
                                         drv2lane[0].peek(strm_operation[0]);                                                //Taking the instruction from generator 
            
+                                        transaction[0] = 0 ;
                                         while (transaction[0] < strm_operation[0].numberOfOperands)
                                             begin
                                                 @(vSysLane2PeArray.cb_test);
@@ -222,6 +228,7 @@ class driver;
                                     begin
                                         drv2lane[1].peek(strm_operation[1]);                                                //Taking the instruction from generator 
            
+                                        transaction[1] = 0 ;
                                         while (transaction[1] < strm_operation[1].numberOfOperands)
                                             begin
                                                 @(vSysLane2PeArray.cb_test);

@@ -369,18 +369,24 @@ interface regFileScalar2stOpCntl_ifc  (
                            input bit clk   );
 
     // RegFile Scalars -> stOp Controller
-    logic [`PE_EXEC_LANE_WIDTH_RANGE]  rs0  ;
-    logic [`PE_EXEC_LANE_WIDTH_RANGE]  rs1  ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  rs0       ;
+    logic [`PE_EXEC_LANE_WIDTH_RANGE]  rs1       ;
+    logic                              ready     ;
+    logic                              complete  ;
 
   clocking cb_in @(posedge clk);
-      input        rs0 , 
-                   rs1 ;
+      input        rs0      , 
+                   rs1      ;
+      output       ready    ;
+      output       complete ;
 
   endclocking : cb_in
 
   clocking cb_out @(posedge clk);
-      output       rs0 , 
-                   rs1 ;
+      output       rs0      , 
+                   rs1      ;
+      input        ready    ;
+      input        complete ;
 
   endclocking : cb_out
 

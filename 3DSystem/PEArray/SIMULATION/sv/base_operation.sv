@@ -113,8 +113,9 @@ package operation;
 
         function void pre_randomize();	//1 -> Turns on the constraint, 0-> Turns off the constraint
             // operations
-            this.c_operationType_fpMac.constraint_mode(1)        ;
-            this.c_operationType_copyStdToMem.constraint_mode(0) ;
+            //this.c_operationType_all.constraint_mode(1)          ;
+            this.c_operationType_fpMac.constraint_mode(0)        ;
+            this.c_operationType_copyStdToMem.constraint_mode(1) ;
             //
             this.c_streamSize.constraint_mode(1)                 ;
             this.c_operandValues.constraint_mode(1)              ;
@@ -151,7 +152,8 @@ package operation;
         }
 
         constraint c_numberOfOperands {
-            numberOfOperands inside {[20:500]};
+            //numberOfOperands inside {10};
+            numberOfOperands inside {[100:500]};
             //numberOfOperands inside {[0:65535]};
         }
 
