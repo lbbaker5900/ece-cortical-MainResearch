@@ -44,12 +44,13 @@ class generator;
     mailbox   gen2rfP         ;
     event     gen2rfP_ack     ;
         
-    integer num_operations = 2;
+    integer num_operations = 2;  // fp mac:{std,std}->mem, copy:std->mem, fp mac:{std,mem}->mem
     integer operationNum   = 0;  // used to set operation ID
 
     //variable to define the timeout in 'wrapup()' task in environment.sv
     integer transaction_timeout = 3000;
     integer timeout_option = 2; 
+
     //-------------------------------------------------------------------------
     // System random traffic variables
     int dist_type = 13;
@@ -64,6 +65,9 @@ class generator;
 
     base_operation    sys_operation     ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_gen ;  // operation packet containing all data associated with operation
+
+    // Keep track of previous command
+    base_operation    priorOperations[$]; //Queue to hold previous operations
 
     function new (
                   input int                   Id[2]             , 
@@ -101,12 +105,12 @@ class generator;
         repeat (num_operations)                 //Number of transactions to be generated
             begin
                 //assert (sys_operation_gen.randomize() );
-                sys_operation_gen.randomize() ;
                 sys_operation_gen.tId      = operationNum             ;
+                sys_operation_gen.randomize() ;
                 
                 if (sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM )   // NOP
                     begin
-                        $display("@%0t : INFO: Generating NOP transfer to memory operation: {%0d,%0d}\n", $time,Id[0], Id[1]);
+                        $display("@%0t : INFO: Generating NOP transfer to memory operation: {%0d,%0d}\n", $time, Id[0], Id[1]);
                         sys_operation_gen.create();
                         sys_operation = new sys_operation_gen ;
 
@@ -114,8 +118,7 @@ class generator;
                         //$display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         gen2rfP.put(sys_operation)                    ;
                         @gen2rfP_ack                                  ;  // wait for regFile inputs to be driven
-                        //$display("@%0t LEE:generator.sv: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
-                        gen2drv.put(sys_operation)                    ;
+                        //$display("@%0t LEE:generator.sv: Generating STD to memory copy operation to driver: {%0d,%0d} : starting at address %h: \n", $time, Id[0], Id[1], sys_operation.destinationAddress[0] );
                     end 
                 else if(sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM )   // NOP
                     begin
@@ -127,10 +130,14 @@ class generator;
                         //$display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);
                         gen2rfP.put(sys_operation)                    ;
                         @gen2rfP_ack                                  ;  // wait for regFile inputs to be driven
-                        //$display("@%0t LEE:generator.sv: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
-                        gen2drv.put(sys_operation)                    ;
+                        //$display("@%0t LEE:generator.sv: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                     end
                 
+                
+                // Send to driver
+                gen2drv.put(sys_operation)                    ;
+                // Keep copy of previous operations as they will influence future operations e.g. copy to memory influence o[erations getting operands from memory
+                priorOperations.push_back(sys_operation)       ;
                 // now wait for driver to take our sequence of operations
                 //sys_operation.displayOperation();
                 @gen2drv_ack;

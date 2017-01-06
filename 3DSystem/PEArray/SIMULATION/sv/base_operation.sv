@@ -47,12 +47,18 @@ package operation;
         //------------------------------------------------------------------------------------------------------
         // This struct contains the fields neccessary to form the stOp opcode
         // note: struct members cannot be rand, so fields outside this struct will be randomized and then applied to the struct fields
-        pe_stOp_operation                                   stOp_operation                                           ;  // create this from the other fields in the class
+        rand pe_stOp_operation                                   stOp_operation                                           ;  // create this from the other fields in the class
 
-        PE_DATA_TYPE                                        pe_stOp_stream0_src_data_type                            ;
-        PE_DATA_TYPE                                        pe_stOp_stream1_src_data_type                            ;
-        PE_DATA_TYPE                                        pe_stOp_result0_dest_data_type                           ;
-        PE_DATA_TYPE                                        pe_stOp_result1_dest_data_type                           ;
+        rand PE_DATA_TYPE                                        pe_stOp_stream0_src_data_type                  ;
+        rand PE_DATA_TYPE                                        pe_stOp_stream1_src_data_type                  ;
+        rand PE_DATA_TYPE                                        pe_stOp_stream0_dest_data_type                 ;
+        rand PE_DATA_TYPE                                        pe_stOp_stream1_dest_data_type                 ;
+
+        rand PE_STOP_DEST                                        pe_stOp_stream1_dest                           ;
+        rand PE_STOP_DEST                                        pe_stOp_stream0_dest                           ;
+        rand PE_STOP_SRC                                         pe_stOp_stream1_src                            ;
+        rand PE_STOP_SRC                                         pe_stOp_stream0_src                            ;
+
 
         //------------------------------------------------------------------------------------------------------
         // Fields used to drive regFile inputs to the PE streamingOps_cntl module
@@ -97,8 +103,6 @@ package operation;
         //------------------------------------------------------------------------------------------------------
         // DEBUG
         
-        // Keep track of previous command
-        static logic [`STREAMING_OP_CNTL_OPERATION_RANGE ]  priorOperations[$]; //Queue to hold previous operations
 
 
 
@@ -113,9 +117,9 @@ package operation;
 
         function void pre_randomize();	//1 -> Turns on the constraint, 0-> Turns off the constraint
             // operations
-            //this.c_operationType_all.constraint_mode(1)          ;
+            this.c_operationType_all.constraint_mode(1)          ;
             this.c_operationType_fpMac.constraint_mode(0)        ;
-            this.c_operationType_copyStdToMem.constraint_mode(1) ;
+            this.c_operationType_copyStdToMem.constraint_mode(0) ;
             //
             this.c_streamSize.constraint_mode(1)                 ;
             this.c_operandValues.constraint_mode(1)              ;
@@ -137,6 +141,55 @@ package operation;
             memoryAccessesLocalized  == 1 ;  
         }
 
+        constraint c_operationType_all {
+
+            if (tId == 0)
+                {
+                    OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM } ;
+                    OpCode inside {`STREAMING_OP_CNTL_OPERATION_FP_MAC                } ;
+                    enableDestinationStream[0]          == 1                            ;  // destination address 0 is the location where result is written
+                    enableDestinationStream[1]          == 0                            ;  
+                    pe_stOp_stream1_dest                == PE_STOP_DEST_IS_NA           ;
+                    pe_stOp_stream0_dest                == PE_STOP_DEST_IS_MEMORY       ;
+                    pe_stOp_stream1_src                 == PE_STOP_SRC_IS_STD           ;
+                    pe_stOp_stream0_src                 == PE_STOP_SRC_IS_STD           ;
+                    pe_stOp_stream0_src_data_type       == PE_DATA_TYPE_WORD            ;  
+                    pe_stOp_stream1_src_data_type       == PE_DATA_TYPE_WORD            ;  
+                    pe_stOp_stream0_dest_data_type      == PE_DATA_TYPE_WORD            ;  
+                    pe_stOp_stream1_dest_data_type      == PE_DATA_TYPE_NA              ;  
+                }
+            else if (tId == 1)
+                {
+                    OpCode inside {`STREAMING_OP_CNTL_OPERATION_NOP                  }  ;
+                    OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  }  ;
+                    enableDestinationStream[0]          == 1                            ;  // destination address 0 is starting point for memory transfer from stack bus
+                    enableDestinationStream[1]          == 0                            ;
+                    pe_stOp_stream1_dest                == PE_STOP_DEST_IS_NA           ;
+                    pe_stOp_stream0_dest                == PE_STOP_DEST_IS_MEMORY       ;
+                    pe_stOp_stream1_src                 == PE_STOP_SRC_IS_NA            ;
+                    pe_stOp_stream0_src                 == PE_STOP_SRC_IS_STD           ;
+                    pe_stOp_stream0_src_data_type       == PE_DATA_TYPE_WORD            ;  
+                    pe_stOp_stream1_src_data_type       == PE_DATA_TYPE_NA              ;  
+                    pe_stOp_stream0_dest_data_type      == PE_DATA_TYPE_WORD            ;  
+                    pe_stOp_stream1_dest_data_type      == PE_DATA_TYPE_NA              ;  
+                }
+            else 
+                {
+                    OpType inside {`STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM } ;
+                    OpCode inside {`STREAMING_OP_CNTL_OPERATION_FP_MAC                } ;
+                    enableDestinationStream[0]          == 1                            ;  // destination address 0 is starting point for memory transfer from stack bus
+                    enableDestinationStream[1]          == 0                            ;
+                    pe_stOp_stream1_dest                == PE_STOP_DEST_IS_NA           ;
+                    pe_stOp_stream0_dest                == PE_STOP_DEST_IS_MEMORY       ;
+                    pe_stOp_stream1_src                 == PE_STOP_SRC_IS_STD           ;
+                    pe_stOp_stream0_src                 == PE_STOP_SRC_IS_MEMORY        ;
+                    pe_stOp_stream0_src_data_type       == PE_DATA_TYPE_WORD            ;  
+                    pe_stOp_stream1_src_data_type       == PE_DATA_TYPE_WORD            ;  
+                    pe_stOp_stream0_dest_data_type      == PE_DATA_TYPE_WORD            ;  
+                    pe_stOp_stream1_dest_data_type      == PE_DATA_TYPE_NA              ;  
+                }
+        }
+
         constraint c_operationType_fpMac {
             OpCode inside {`STREAMING_OP_CNTL_OPERATION_FP_MAC                } ;
             OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM } ;
@@ -152,7 +205,7 @@ package operation;
         }
 
         constraint c_numberOfOperands {
-            //numberOfOperands inside {10};
+            //numberOfOperands inside {200};
             numberOfOperands inside {[100:500]};
             //numberOfOperands inside {[0:65535]};
         }
@@ -224,28 +277,12 @@ package operation;
                         stOp_operation.numberOfDestStreams  = 1                       ;
                         stOp_operation.numberOfSrcStreams   = 2                       ;
                         stOp_operation.opcode               = PE_STOP_IS_FP_MAC       ;
-                        stOp_operation.stream1_destination  = PE_STOP_DEST_IS_NA      ;
-                        stOp_operation.stream0_destination  = PE_STOP_DEST_IS_MEMORY  ;
-                        stOp_operation.stream1_source       = PE_STOP_SRC_IS_STD      ;
-                        stOp_operation.stream0_source       = PE_STOP_SRC_IS_STD      ;
-                        pe_stOp_stream0_src_data_type       = PE_DATA_TYPE_WORD       ;  
-                        pe_stOp_stream1_src_data_type       = PE_DATA_TYPE_WORD       ;  
-                        pe_stOp_result0_dest_data_type      = PE_DATA_TYPE_WORD       ;  
-                        pe_stOp_result1_dest_data_type      = PE_DATA_TYPE_NA         ;  
                     end
                 `STREAMING_OP_CNTL_OPERATION_NOP     :
                     begin
                         stOp_operation.numberOfDestStreams  = 1                       ;
                         stOp_operation.numberOfSrcStreams   = 1                       ;
                         stOp_operation.opcode               = PE_STOP_IS_NOP          ;
-                        stOp_operation.stream1_destination  = PE_STOP_DEST_IS_NA      ;
-                        stOp_operation.stream0_destination  = PE_STOP_DEST_IS_MEMORY  ;
-                        stOp_operation.stream1_source       = PE_STOP_SRC_IS_NA       ;
-                        stOp_operation.stream0_source       = PE_STOP_SRC_IS_STD      ;
-                        pe_stOp_stream0_src_data_type       = PE_DATA_TYPE_WORD       ;  
-                        pe_stOp_stream1_src_data_type       = PE_DATA_TYPE_NA         ;  
-                        pe_stOp_result0_dest_data_type      = PE_DATA_TYPE_WORD       ;  
-                        pe_stOp_result1_dest_data_type      = PE_DATA_TYPE_NA         ;  
                     end
 /*
                 default:
@@ -253,17 +290,13 @@ package operation;
                         stOp_operation.numberOfDestStreams  = 1                       ;
                         stOp_operation.numberOfSrcStreams   = 2                       ;
                         stOp_operation.opcode               = PE_STOP_IS_FP_MAC       ;
-                        stOp_operation.stream1_destination  = PE_STOP_DEST_IS_NA      ;
-                        stOp_operation.stream0_destination  = PE_STOP_DEST_IS_MEMORY  ;
-                        stOp_operation.stream1_source       = PE_STOP_SRC_IS_STD      ;
-                        stOp_operation.stream0_source       = PE_STOP_SRC_IS_STD      ;
-                        pe_stOp_stream0_src_data_type       = PE_DATA_TYPE_WORD       ;  
-                        pe_stOp_stream1_src_data_type       = PE_DATA_TYPE_WORD       ;  
-                        pe_stOp_result0_dest_data_type      = PE_DATA_TYPE_WORD       ;  
-                        pe_stOp_result1_dest_data_type      = PE_DATA_TYPE_NA         ;  
                     end
 */
             endcase
+            stOp_operation.stream1_destination  = pe_stOp_stream1_dest    ;
+            stOp_operation.stream0_destination  = pe_stOp_stream0_dest    ;
+            stOp_operation.stream1_source       = pe_stOp_stream1_src     ;
+            stOp_operation.stream0_source       = pe_stOp_stream0_src     ;
 
             //$display("%t: Result = %d\n", $time, result)              ;
         endfunction : post_randomize

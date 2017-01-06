@@ -42,12 +42,12 @@ typedef enum logic [`STREAMING_OP_CNTL_OPERATION_OPCODE_RANGE ] {
                                                                   PE_STOP_IS_NOP            = `STREAMING_OP_CNTL_OPERATION_NOP                  
                                                                 } PE_STOP_OPCODE ;
 
-typedef enum logic [`STREAMING_OP_CNTL_OPERATION_STREAM_SRC_RANGE ] {
-                                                                      PE_STOP_SRC_IS_NA     = `STREAMING_OP_CNTL_OPERATION_FROM_NONE       ,
-                                                                      PE_STOP_SRC_IS_MEMORY = `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY     ,
-                                                                      PE_STOP_SRC_IS_STD    = `STREAMING_OP_CNTL_OPERATION_FROM_STD        ,
-                                                                      PE_STOP_SRC_IS_NOC    = `STREAMING_OP_CNTL_OPERATION_FROM_NOC        
-                                                                } PE_STOP_SRC ;
+typedef enum logic [`STREAMING_OP_CNTL_OPERATION_STREAM_SRC_RANGE  ] {
+                                                                       PE_STOP_SRC_IS_NA     = `STREAMING_OP_CNTL_OPERATION_FROM_NONE       ,
+                                                                       PE_STOP_SRC_IS_MEMORY = `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY     ,
+                                                                       PE_STOP_SRC_IS_STD    = `STREAMING_OP_CNTL_OPERATION_FROM_STD        ,
+                                                                       PE_STOP_SRC_IS_NOC    = `STREAMING_OP_CNTL_OPERATION_FROM_NOC        
+                                                                     } PE_STOP_SRC ;
 
 
 typedef enum logic [`STREAMING_OP_CNTL_OPERATION_STREAM_DEST_RANGE ] {
