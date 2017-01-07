@@ -66,9 +66,11 @@ class regFile_driver;
                         // Info/Debug
                         case (sys_operation.OpType)
                             `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM :
-                                $display("@%0t INFO:regFile driver: Received FP MAC operation from driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
+                                $display("@%0t INFO:%s:%0d:: Received {STD,STD -> MEM} FP MAC operation from generator: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                             `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM   :
-                                $display("@%0t INFO:regFile driver: Received Downstream copy to memory from driver: {%0d,%0d} : written to address : 0x%6h (0b%24b)\n", $time,Id[0], Id[1], sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
+                                $display("@%0t INFO:%s:%0d:: Received Downstream copy to memory from generator: {%0d,%0d} : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
+                            `STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM :
+                                $display("@%0t INFO:%s:%0d:: Received {MEM,STD -> MEM} FP MAC operation from generator: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                         endcase
 
                         //----------------------------------------------------------------------------------------------------
@@ -96,12 +98,14 @@ class regFile_driver;
                         // Set register inputs to streamingOps_cntl
 
                         // Now address is constrained in the base_operation to be within a PE and lane portion of local memory
+                        vP_vrf.cb_out.r130          <= sys_operation.sourceAddress[0]                     ;
+                        vP_vrf.cb_out.r131          <= sys_operation.sourceAddress[1]                     ;
+                        vP_vrf.cb_out.r132[19:16]   <= sys_operation.pe_stOp_stream_src_data_type [0]     ;  // type (bit, nibble, byte, word)
+                        vP_vrf.cb_out.r132[15: 0]   <= sys_operation.numberOfOperands                     ;  // num of types - for dma
+                        vP_vrf.cb_out.r133[19:16]   <= sys_operation.pe_stOp_stream_src_data_type [1]     ;  // type (bit, nibble, byte, word)
+                        vP_vrf.cb_out.r133[15: 0]   <= sys_operation.numberOfOperands                     ;
                         vP_vrf.cb_out.r134          <= sys_operation.destinationAddress[0]                ;
                         vP_vrf.cb_out.r135          <= sys_operation.destinationAddress[1]                ;
-                        vP_vrf.cb_out.r132[19:16]   <= sys_operation.pe_stOp_stream0_src_data_type        ;  // type (bit, nibble, byte, word)
-                        vP_vrf.cb_out.r132[15: 0]   <= sys_operation.numberOfOperands                     ;  // num of types - for dma
-                        vP_vrf.cb_out.r133[19:16]   <= sys_operation.pe_stOp_stream1_src_data_type        ;  // type (bit, nibble, byte, word)
-                        vP_vrf.cb_out.r133[15: 0]   <= sys_operation.numberOfOperands                     ;
                         vP_srf.cb_out.rs0[0]        <= 1'b1                                               ;
                         // drive packed struct directly onto regFile register input for streamingOps_cntl
                         vP_srf.cb_out.rs0[31:1]     <= sys_operation.stOp_operation                       ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
@@ -122,12 +126,12 @@ class regFile_driver;
 
                         gen2rfP.get(sys_operation);   //Remove the transaction from the driver mailbox
                         -> gen2rfP_ack;
-                        $display ($time,": INFO:REGFILE DRIVER :: Operation driven for {%02d,%02d}", Id[0], Id[1]);
+                        $display ($time,": INFO:%s:%0d:: Operation driven for {%02d,%02d}", `__FILE__, `__LINE__, Id[0], Id[1]);
  
                         //----------------------------------------------------------------------------------------------------
                         // Wait for  streamingOps_cntl to be complete the deassert enable ( rs0[0]=0 )
                         wait(vP_srf.cb_out.complete);
-                        $display ($time,": INFO:REGFILE DRIVER :: Operation complete for {%02d,%02d}", Id[0], Id[1]);
+                        $display ($time,": INFO:%s:%0d:: Operation complete for {%02d,%02d}", `__FILE__, `__LINE__, Id[0], Id[1]);
                         vP_srf.cb_out.rs0[0]        <= 1'b0                                               ;
                         wait(~vP_srf.cb_out.complete);
       

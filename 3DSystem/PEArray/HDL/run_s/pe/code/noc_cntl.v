@@ -256,8 +256,8 @@ module noc_cntl (
   wire [`NOC_CONT_NOC_PORT_CNTL_RANGE      ]  local_cntl_toNoc     ;  // local output cntl to destination port to be sent directly to butterfly network
   reg  [`NOC_CONT_NOC_PORT_DATA_RANGE      ]  local_data_toNoc     ;  // local output data to destination port to be sent directly to butterfly network
 
-  wire [`PE_PE_ID_RANGE           ]  local_destinationPeId    ;  // destination peId from dma request address
-  wire [`PE_CHIPLET_ADDRESS_RANGE ]  local_dmaRequestAddress  ;  // full chiplet address from dma request at output of cp output queue
+  wire [`PE_PE_ID_RANGE                 ]  local_destinationPeId    ;  // destination peId from dma request address
+  wire [`PE_ARRAY_CHIPLET_ADDRESS_RANGE ]  local_dmaRequestAddress  ;  // full chiplet address from dma request at output of cp output queue
 
   wire                           local_destinationReq        ; // Destination accepts the request and this fsm doesnt know who
   reg [`PE_PE_ID_BITMASK_RANGE ] local_destinationReqAddr    ; // bitmask address from header of packet

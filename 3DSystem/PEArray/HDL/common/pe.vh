@@ -90,8 +90,8 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 // Used to determine which PE address resides
-`define PE_PE_DECODE_ADDRESS_MSB    `PE_CHIPLET_ADDRESS_MSB
-`define PE_PE_DECODE_ADDRESS_LSB    (`PE_CHIPLET_ADDRESS_MSB - ((`CLOG2(`PE_ARRAY_NUM_OF_PE))-1))
+`define PE_PE_DECODE_ADDRESS_MSB    `PE_ARRAY_CHIPLET_ADDRESS_MSB
+`define PE_PE_DECODE_ADDRESS_LSB    (`PE_PE_DECODE_ADDRESS_MSB - ((`CLOG2(`PE_ARRAY_NUM_OF_PE))-1))
 `define PE_PE_DECODE_ADDRESS_SIZE   (`PE_PE_DECODE_ADDRESS_MSB - `PE_PE_DECODE_ADDRESS_LSB +1)
 `define PE_PE_DECODE_ADDRESS_RANGE   `PE_PE_DECODE_ADDRESS_MSB : `PE_PE_DECODE_ADDRESS_LSB
 

@@ -60,9 +60,9 @@ class mem_checker;
             begin
                 if ( drv2memP.num() != 0 )
                     begin
-                        //$display ($time,": INFO:MEM_CHECKER :: Operation driven for {%02d,%02d}", Id[0], Id[1]);
+                        //$display ($time,":%s:%0d:: INFO:MEM_CHECKER :: Operation driven for {%02d,%02d}", `__FILE__, `__LINE__, Id[0], Id[1]);
                         drv2memP.peek(sys_operation);   //Taking the transaction from the driver mailbox
-                        //$display("@%0t LEE: Received FP MAC operation from driver: {%0d,%0d} with expected result of %f, %f <> %f written to address %h\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0]);
+                        //$display("@%0t:%s:%0d: LEE: Received FP MAC operation from driver: {%0d,%0d} with expected result of %f, %f <> %f written to address %h\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0]);
                         //while(~this.finished.triggered)
                         // waiting for the event doesnt seem to work????
 
@@ -84,13 +84,13 @@ class mem_checker;
                                                 if (($bitstoshortreal(vP_mem.cb.dma__memc__write_data) < sys_operation.resultLow) || ($bitstoshortreal(vP_mem.cb.dma__memc__write_data) > sys_operation.resultHigh))
                                                     $display ($time,": ERROR:MEM_CHECKER :: incorrect result data for {%d,%d}: expected %f, observed %f\n", Id[0], Id[1], sys_operation.result, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
                                                 else
-                                                    $display ($time,": INFO:PASS:MEM_CHECKER :: Correct result written to memory {%d,%d} : Hex : %h, FP : %f\n", Id[0], Id[1], vP_mem.cb.dma__memc__write_data, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
+                                                    $display ($time,":%s:%0d: INFO:PASS:MEM_CHECKER :: Correct result written to memory {%d,%d} : Hex : %h, FP : %f\n", `__FILE__, `__LINE__, Id[0], Id[1], vP_mem.cb.dma__memc__write_data, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
                                       
                                                 // check address
                                                 if (vP_mem.cb.dma__memc__write_address != sys_operation.destinationAddress[0][`PE_CHIPLET_ADDRESS_RANGE ]) 
-                                                    $display ($time,": ERROR:MEM_CHECKER :: incorrect address for {%d,%d}: expected %h, observed %h\n", Id[0], Id[1], sys_operation.destinationAddress[0][`PE_CHIPLET_ADDRESS_RANGE ], vP_mem.cb.dma__memc__write_address);
+                                                    $display ($time,":%s:%0d: ERROR:MEM_CHECKER :: incorrect address for {%d,%d}: expected %h, observed %h\n", `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.destinationAddress[0][`PE_CHIPLET_ADDRESS_RANGE ], vP_mem.cb.dma__memc__write_address);
                                                 else
-                                                    $display ($time,": INFO:PASS:MEM_CHECKER :: Correct address for result {%d,%d} : Hex : %h\n", Id[0], Id[1], vP_mem.cb.dma__memc__write_address);
+                                                    $display ($time,":%s:%0d:: INFO:PASS:MEM_CHECKER :: Correct address for result {%d,%d} : Hex : %h\n", `__FILE__, `__LINE__, Id[0], Id[1], vP_mem.cb.dma__memc__write_address);
                                       
                                                 -> this.finished ;
                                             end
@@ -99,15 +99,15 @@ class mem_checker;
                                                 // NOP means we are copying N operands to memory
                                       
                                                 if (vP_mem.cb.dma__memc__write_data != sys_operation.operands[0][transactionCount])
-                                                    $display ($time,": ERROR:MEM_CHECKER :: incorrect data for {%d,%d}: transaction %6d expected %h, observed %h\n", Id[0], Id[1], transactionCount, sys_operation.operands[0][transactionCount], vP_mem.cb.dma__memc__write_data);
+                                                    $display ($time,":%s:%0d: ERROR:MEM_CHECKER :: incorrect data for {%d,%d}: transaction %6d expected %h, observed %h\n", `__FILE__, `__LINE__, Id[0], Id[1], transactionCount, sys_operation.operands[0][transactionCount], vP_mem.cb.dma__memc__write_data);
                                       
                                                 // check address
                                                 if (vP_mem.cb.dma__memc__write_address !=  write_address) 
-                                                    $display ($time,": ERROR:MEM_CHECKER :: incorrect address for {%d,%d}: expected %h, observed %h\n", Id[0], Id[1], write_address, vP_mem.cb.dma__memc__write_address);
+                                                    $display ($time,":%s:%0d: ERROR:MEM_CHECKER :: incorrect address for {%d,%d}: expected %h, observed %h\n", `__FILE__, `__LINE__, Id[0], Id[1], write_address, vP_mem.cb.dma__memc__write_address);
 
                                                 if (sys_operation.numberOfOperands == (transactionCount+1))
                                                     begin
-                                                        $display ($time,": INFO:PASS:MEM_CHECKER :: Correct data written to memory {%d,%d} starting at address : %h\n", Id[0], Id[1], sys_operation.destinationAddress[0][`PE_CHIPLET_ADDRESS_RANGE ]);
+                                                        $display ($time,":%s:%0d: INFO:PASS:MEM_CHECKER :: Correct data written to memory {%d,%d} starting at address : %h\n", `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.destinationAddress[0][`PE_CHIPLET_ADDRESS_RANGE ]);
 
                                                         found = 1 ;
                                                         -> this.finished ;

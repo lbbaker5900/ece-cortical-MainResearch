@@ -20,6 +20,8 @@
 `include "pe_array.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
+`include "TB_streamingOps_cntl.vh"  // might cause an error if this is included in any of the above files
+
 
 import virtual_interface::*;
 import operation::*;
@@ -95,10 +97,10 @@ class driver;
                         // take the transaction from the generator, splits it into two streams and sends a stream operation to both the processes
                         // and send the sys_operation to the OOB process
                         @(vSysLane2PeArray.cb_test);
-                        //$display("@%0t : LEE: {%d,%d} Check mailbox", $time, Id[0], Id[1] );
+                        //$display("@%0t : LEE:driver.sv: {%d,%d} Check mailbox", $time, Id[0], Id[1] );
                         if ( gen2drv.num() != 0 )
                             begin
-                                //$display("@%0t : LEE: {%d,%d} received system trans", $time, Id[0], Id[1] );
+                                //$display("@%0t : LEE:driver.sv: {%d,%d} received system trans from generator", $time, Id[0], Id[1] );
                                 gen2drv.peek(sys_operation);                                                //Taking the instruction from generator 
                                 //$display("@%0t : LEE: IDs : { %d } ", $time, sys_operation.id);
                                 //$display("@%0t : LEE: IDs : { %d } ", $time, strm_operation[1].id);
@@ -109,25 +111,32 @@ class driver;
                                 // create stream objects and send to process driving downstream stream stack bus
                                 for (int i=0; i<sys_operation.stOp_operation.numberOfSrcStreams; i++)
                                     begin
-                                        tmp_strm_operation                  = new            ;
-                                        tmp_strm_operation.tId              = sys_operation.tId               ;
-                                        tmp_strm_operation.operands         = new[sys_operation.numberOfOperands](sys_operation.operands[i])      ;
-                                        tmp_strm_operation.numberOfOperands = sys_operation.numberOfOperands ;
-                                        //tmp_strm_operation.operands         = sys_operation.operands[i]      ;
-                                        drv2lane[i].put(tmp_strm_operation)                    ;
-                                        //$display("@%0t : LEE: {%d,%d} Passed to stream driver %1d", $time, Id[0], Id[1], i );
+                                        if (sys_operation.pe_stOp_stream_src [i] == PE_STOP_SRC_IS_STD ) 
+                                            begin
+                                                tmp_strm_operation                    = new                                                            ;
+                                                tmp_strm_operation.tId                = sys_operation.tId                                              ;
+                                                tmp_strm_operation.operands           = new[sys_operation.numberOfOperands](sys_operation.operands[i]) ;
+                                                tmp_strm_operation.numberOfOperands   = sys_operation.numberOfOperands                                 ;
+                                                //tmp_strm_operation.operands         = sys_operation.operands[i]                                      ;
+                                                drv2lane[i].put(tmp_strm_operation)                                                                    ;
+                                                //$display("@%0t : LEE:driver.sv: {%d,%d} Passed to stream driver %1d", $time, Id[0], Id[1], i );
+                                            end
+                                        else
+                                            begin
+                                                //sys_operation.displayOperation();
+                                            end
                                     end
 
 
                                 // put operations into golden mailbox
                                 drv2memP.put(sys_operation) ;  //Putting the instruction into the golden model mailbox                                              
-                                //$display("@%0t LEE: Send operation to mem_checker: {%0d,%0d} with expected result of %f, %f <> %f\n", $time,Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
+                                //$display("@%0t:%s:%0d: LEE: Send operation to mem_checker: {%0d,%0d} with expected result of %f, %f <> %f\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
                                 @drv2memP_ack               ;
                                 // mem_checker only ack's once memory access(s) are complete, good or bad.
              
                                 gen2drv.get(sys_operation)  ;  //Removing the instruction from generator mailbox
                                 -> gen2drv_ack;
-                                //$display("@%0t : LEE: {%d,%d} Passed to stream drivers", $time, Id[0], Id[1] );
+                                //$display("@%0t :%s:%0d: LEE: {%d,%d} Passed to stream drivers", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                                 
                             end
                     end
@@ -152,7 +161,7 @@ class driver;
                                         drv2oob.get(oob_operation)  ;  //Removing the instruction from generator mailbox
                                         
                                     end  // while
-                                    $display("@%0t : INFO: {%d,%d} Completed driving OOB", $time, Id[0], Id[1] );
+                                    $display("@%0t:%s:%0d:INFO: {%d,%d} Completed driving OOB", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                 end
                         // watch out for infinite loop if commenting out this section of code
                         // a forever loop will need an @clk
@@ -176,6 +185,7 @@ class driver;
                                 while(drv2lane[0].num() != 0)
                                     begin
                                         drv2lane[0].peek(strm_operation[0]);                                                //Taking the instruction from generator 
+                                        //$display("@%0t :%s:%0d: LEE: {%d,%d} Received stream 0 operation", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
            
                                         transaction[0] = 0 ;
                                         while (transaction[0] < strm_operation[0].numberOfOperands)
@@ -190,7 +200,7 @@ class driver;
                                                                                                                     ( transaction[0] == (strm_operation[0].numberOfOperands-1)                          ) ?  `COMMON_STD_INTF_CNTL_EOM         :
                                                                                                                                                                                                          `COMMON_STD_INTF_CNTL_MOM         ;
                                                         //if ((Id[0]==0)&&(Id[1]==0))
-                                                        //    $display("LEE: operand%d , %h\n", transaction[0], strm_operation[0].operands[transaction[0]] ) ;
+                                                        //    $display("%s:%0d:LEE: operand%d , %h\n", `__FILE__, `__LINE__, transaction[0], strm_operation[0].operands[transaction[0]] ) ;
                                                         vSysLane2PeArray.cb_test.std__pe__lane_strm0_data        <= strm_operation[0].operands[transaction[0]]  ;
                                                         vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
                                                         
@@ -199,6 +209,7 @@ class driver;
                                                     end
                                                 else
                                                     begin
+                                                        //$display("@%0t:%s:%0d: : LEE: {%d,%d} stream 0 flow controlled", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                                         vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
                                                         vSysLane2PeArray.cb_test.std__pe__lane_strm0_cntl        <= 0  ;         //Passing the instruction to the system interface
                                                         vSysLane2PeArray.cb_test.std__pe__lane_strm0_data        <= 0  ;
@@ -210,7 +221,7 @@ class driver;
                                         
                                     end  // while
                                     // processed sequence, acknowledge generator for new sequence
-                                    $display("@%0t : INFO: {%d,%d} Completed driving stream 0 sequence", $time, Id[0], Id[1] );
+                                    $display("@%0t:%s:%0d:INFO: {%d,%d} Completed driving stream 0 sequence", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                 end
                         else
                             begin 
@@ -227,6 +238,7 @@ class driver;
                                 while(drv2lane[1].num() != 0)
                                     begin
                                         drv2lane[1].peek(strm_operation[1]);                                                //Taking the instruction from generator 
+                                        //$display("@%0t:%s:%0d: LEE: {%d,%d} Received stream 1 operation", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
            
                                         transaction[1] = 0 ;
                                         while (transaction[1] < strm_operation[1].numberOfOperands)
@@ -248,6 +260,7 @@ class driver;
                                                     end
                                                 else
                                                     begin
+                                                        //$display("@%0t:%s:%0d:: LEE: {%d,%d} stream 1 flow controlled", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                                         vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
                                                         vSysLane2PeArray.cb_test.std__pe__lane_strm1_cntl        <= 0  ;         //Passing the instruction to the system interface
                                                         vSysLane2PeArray.cb_test.std__pe__lane_strm1_data        <= 0  ;
@@ -259,7 +272,7 @@ class driver;
                                         
                                     end  // while
                                     // processed sequence, acknowledge generator for new sequence
-                                    $display("@%0t : INFO: {%d,%d} Completed driving stream 1 sequence", $time, Id[0], Id[1] );
+                                    $display("@%0t:%s:%0d:INFO: {%d,%d} Completed driving stream 1 sequence", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                 end
                         else
                             begin 
