@@ -38,6 +38,7 @@ vlog -sv  +incdir+../../HDL/common ../../HDL/run_s/pe_array.v                   
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common base_operation.sv                                                                              2>&1   | tee -a $1  
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common driver.sv                                                                                      2>&1   | tee -a $1  
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common generator.sv                                                                                   2>&1   | tee -a $1  
+vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common manager.sv                                                                                     2>&1   | tee -a $1  
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common mem_checker.sv                                                                                 2>&1   | tee -a $1  
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common regFile_driver.sv                                                                              2>&1   | tee -a $1  
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common loadStore_driver.sv                                                                            2>&1   | tee -a $1  

@@ -42,7 +42,8 @@ class driver;
     event     drv2memP_ack     ;
 
     base_operation   sys_operation      ;
-    base_operation   oob_operation      ;  // a copy of the sys_operation sent to the OOB process
+    oob_packet       oob_packet_gen     ;  // constructed from the sys_operation and sent to the OOB process 
+    oob_packet       oob_packet_new     ;  // used in OOB process
     stream_operation tmp_strm_operation ;
     stream_operation strm_operation [] ;
 
@@ -74,7 +75,6 @@ class driver;
             begin
                 this.drv2lane[i]            = new             ;
             end
-        this.oob_operation       = new                        ;  // create a separate base_operation so we can split OOB into a different class in future
         this.strm_operation      = new[`PE_NUM_OF_STREAMS  ]  ;
         this.transaction         = new[`PE_NUM_OF_STREAMS  ]  ;
         //for (int i=0; i<transaction.size(); i++)
@@ -84,7 +84,7 @@ class driver;
     endfunction
 
     task run();
-        //$display("@%0t LEE: Running driver : {%0d,%0d}\n", $time,Id[0], Id[1]);
+        //$display("@%0t:%s:%0d: LEE: Running driver : {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
 
         // Spawn 4 processes:
         // - first receives operations from the generator and splits it into two stream operations
@@ -97,15 +97,25 @@ class driver;
                         // take the transaction from the generator, splits it into two streams and sends a stream operation to both the processes
                         // and send the sys_operation to the OOB process
                         @(vSysLane2PeArray.cb_test);
-                        //$display("@%0t : LEE:driver.sv: {%d,%d} Check mailbox", $time, Id[0], Id[1] );
+                        //$display("@%0t:%s:%0d: : LEE:driver.sv: {%d,%d} Check mailbox", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                         if ( gen2drv.num() != 0 )
                             begin
-                                //$display("@%0t : LEE:driver.sv: {%d,%d} received system trans from generator", $time, Id[0], Id[1] );
+                                //$display("@%0t : LEE:driver.sv: {%d,%d} received system trans from generator", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                 gen2drv.peek(sys_operation);                                                //Taking the instruction from generator 
-                                //$display("@%0t : LEE: IDs : { %d } ", $time, sys_operation.id);
-                                //$display("@%0t : LEE: IDs : { %d } ", $time, strm_operation[1].id);
+                                //$display("@%0t:%s:%0d: : LEE: IDs : { %d } ", $time, `__FILE__, `__LINE__, sys_operation.id);
+                                //$display("@%0t:%s:%0d: : LEE: IDs : { %d } ", $time, `__FILE__, `__LINE__, strm_operation[1].id);
                     
-                                drv2oob.put(sys_operation)                    ;  // oob needs to prepare the PE
+                                oob_packet_gen                    = new                                           ;  // create a OOB packet constructed from sys_operation
+                                oob_packet_gen.tag                = 0                                             ;
+                                oob_packet_gen.stOp_operation     = sys_operation.stOp_operation                  ;
+                                oob_packet_gen.sourceAddress      = sys_operation.sourceAddress                   ;
+                                oob_packet_gen.destinationAddress = sys_operation.destinationAddress              ;
+                                oob_packet_gen.src_data_type      = sys_operation.pe_stOp_stream_src_data_type    ;
+                                oob_packet_gen.dest_data_type     = sys_operation.pe_stOp_stream_dest_data_type   ;
+                                oob_packet_gen.numberOfOperands   = sys_operation.numberOfOperands                ;  // FIXME
+                                
+                                
+                                drv2oob.put(oob_packet_gen)                    ;  // oob needs to prepare the PE
                                 // FIXME: Need to wait for the OOB process to send WU packet to PE (WIP)
 
                                 // create stream objects and send to process driving downstream stream stack bus
@@ -119,7 +129,7 @@ class driver;
                                                 tmp_strm_operation.numberOfOperands   = sys_operation.numberOfOperands                                 ;
                                                 //tmp_strm_operation.operands         = sys_operation.operands[i]                                      ;
                                                 drv2lane[i].put(tmp_strm_operation)                                                                    ;
-                                                //$display("@%0t : LEE:driver.sv: {%d,%d} Passed to stream driver %1d", $time, Id[0], Id[1], i );
+                                                //$display("@%0t:%s:%0d: : LEE:driver.sv: {%d,%d} Passed to stream driver %1d", $time, `__FILE__, `__LINE__, Id[0], Id[1], i );
                                             end
                                         else
                                             begin
@@ -150,15 +160,15 @@ class driver;
                             begin
                                 while(drv2oob.num() != 0)
                                     begin
-                                        drv2oob.peek(oob_operation);                                                //Taking the instruction from generator 
+                                        drv2oob.peek(oob_packet_new) ;                             //Taking the instruction from generator 
            
-                                        @(vSysOob2PeArray.cb_test);
+                                        @(vSysOob2PeArray.cb_test) ;
            
                                         vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
                                         vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= 0  ;  
                                         vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
            
-                                        drv2oob.get(oob_operation)  ;  //Removing the instruction from generator mailbox
+                                        drv2oob.get(oob_packet_new)  ;  //Removing the instruction from generator mailbox
                                         
                                     end  // while
                                     $display("@%0t:%s:%0d:INFO: {%d,%d} Completed driving OOB", $time, `__FILE__, `__LINE__, Id[0], Id[1] );

@@ -36,7 +36,11 @@ package operation;
 
 
     //------------------------------------------------------------------------------------------------------
-    // Class
+    // Class - base_operation
+    //
+    // Contains information required to control the PE, operand data and how and where to check results 
+    //
+    //
 
     class base_operation ; 
     
@@ -59,16 +63,16 @@ package operation;
         //------------------------------------------------------------------------------------------------------
         // Fields used to drive regFile inputs to the PE streamingOps_cntl module
 
-        rand logic [`STREAMING_OP_CNTL_OPERATION_RANGE        ]   OpType                                            ; 
-        rand logic [`STREAMING_OP_CNTL_OPERATION_OPCODE_RANGE ]   OpCode                                            ; 
-        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE           ]   destinationAddress  [`PE_NUM_OF_STREAMS_RANGE ]   ;  
-        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE           ]   sourceAddress       [`PE_NUM_OF_STREAMS_RANGE ]   ;  
+        rand logic [`STREAMING_OP_CNTL_OPERATION_RANGE        ]  OpType                                            ; 
+        rand logic [`STREAMING_OP_CNTL_OPERATION_OPCODE_RANGE ]  OpCode                                            ; 
+        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE           ]  destinationAddress  [`PE_NUM_OF_STREAMS_RANGE ]   ;  
+        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE           ]  sourceAddress       [`PE_NUM_OF_STREAMS_RANGE ]   ;  
      
 
         // Keep track of previous command
         // Assumes all operations are copies of a seed and this seed knows what has been generated previously
         base_operation                                      priorOperations[$]               ; // Queue to hold previous operations. empty except seed object
-        base_operation                                      priorOperation                   ; // Queue to hold previous operations. empty except seed object
+        base_operation                                      priorOperation                   ; // operation object copy of previous operations
         int                                                 priorOperationNumberOfOperands   ;  // SV wont let me reference priorOperations as it might be null, so only reference priorOperations in post_randomize
 
         //------------------------------------------------------------------------------------------------------
@@ -84,6 +88,7 @@ package operation;
         // an array of operands that will be driven onto the stack bus, these words may be formed from other fields such as floating point operands
         rand bit [`PE_EXEC_LANE_WIDTH_RANGE ]               operands            [`PE_NUM_OF_STREAMS_RANGE ] []       ;
         rand int                                            numberOfOperands                                         ;
+        int                                                 setNumberOfOperands                                      ; 
 
         // fields used by floating point operations
         shortreal                                           operandsReal        [`PE_NUM_OF_STREAMS_RANGE ]          ;
@@ -103,6 +108,12 @@ package operation;
         
 
         //------------------------------------------------------------------------------------------------------
+        // Randomization help
+
+        logic    hasBeenRandomized ;  // we might randomize multiple times but the priorOperation queue must only be loaded the first time
+        
+
+        //------------------------------------------------------------------------------------------------------
         // DEBUG
         
 
@@ -111,7 +122,9 @@ package operation;
         int i,j,l,m;
      
         function new ();
-                    this.timeTag = $time ;
+                    this.timeTag              = $time ;
+                    this.setNumberOfOperands  = 0     ;  // constraint will check if this is zero before randomizing
+                    hasBeenRandomized         = 0     ;
         endfunction
 
         //------------------------------------------------------------------------------------------------------
@@ -133,6 +146,8 @@ package operation;
 
         //------------------------------------------------------------------------------------------------------
         // Constraints
+        //
+        // NOTE: cannot set non-rands in constraints
 
         constraint c_order {
             // we have some operation order dependencies. Dont perform a "from memory" operation unless there has been a "to memory" copy operation.
@@ -161,9 +176,13 @@ package operation;
 
         constraint c_operationType_definedOrder {
 
-            (tId == 0) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM  }};
-            (tId == 1) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM    }};
-            (tId >= 2) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM  }};
+            // if the object has already been randomized, then this object is being used by the generator and the OpType has
+            // already been set by the manager
+            if (~hasBeenRandomized) {
+                (tId == 0) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM  }};
+                (tId == 1) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM    }};
+                (tId >= 2) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM  }};
+            }
         }
 
         constraint c_operationType_all {
@@ -240,13 +259,16 @@ package operation;
             // set number of operands same as memCopy in previous operation
             if (OpType == `STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM ) {
                 numberOfOperands == priorOperationNumberOfOperands;
-            } else {
+            // test if number of operands had been set by manager
+            } else if (setNumberOfOperands == 0) {
                 //numberOfOperands inside {50};
                 numberOfOperands inside {[200:500]};
                 //numberOfOperands inside {[0:65535]};
+            } else {
+                // use number of operands set by manager
+                numberOfOperands == setNumberOfOperands;
             }
         }
-
         constraint c_streamSize {
             foreach (operands[i]) {
                     operands[i].size == numberOfOperands;
@@ -270,6 +292,9 @@ package operation;
 
             destinationAddress[0] inside {[((Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH)) : ((Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH))+1024 ]};
             destinationAddress[1] inside {[0:127 ]};
+            // source address will likely be set from prior operation destination address or directly
+            sourceAddress[0] inside {[((Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH)) : ((Id[0] << `PE_CHIPLET_ADDRESS_WIDTH ) | (Id[1]<<`PE_CHIPLET_LANE_ADDRESS_WIDTH))+1024 ]};
+            sourceAddress[1] inside {[0:127 ]};
         }
 
         constraint c_memoryLocalized {
@@ -299,14 +324,19 @@ package operation;
         function void post_randomize();
             result = 0.0 ;
 
+            setNumberOfOperands = numberOfOperands;  // NOTE: cannot set non-rands in constraints
             //------------------------------------------------------------------------------------------------------
             // Need to use prior operation if current operation uses memory for its operand
 
             // if previous operation is a copy to memory, then next operation will use that memory
             if (OpType == `STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM ) 
                 begin
-                    sourceAddress[0] = this.priorOperations [$].destinationAddress[0] ;
-                    //$display("@%0t:%s:%0d: LEE:base_operation.sv: {%0d,%0d} :  Prior destination address: %h \n", $time, `__FILE__, `__LINE__, Id[0], Id[1], this.priorOperations [$].destinationAddress[0]);
+                    // if no prior operation, we'll assume source address will be set elsewhere (or not used)
+                    if (this.priorOperations.size != 0)
+                        begin
+                            sourceAddress[0] = this.priorOperations [$].destinationAddress[0] ;
+                            //$display("@%0t:%s:%0d: LEE:base_operation.sv: {%0d,%0d} :  Prior destination address: %h \n", $time, `__FILE__, `__LINE__, Id[0], Id[1], this.priorOperations [$].destinationAddress[0]);
+                        end
                 end
 
             // if current operation has an operand coming from memory, we assume prior operation was a memCpy so use the prior operations zero operand to allow expected values to be calculated
@@ -392,9 +422,17 @@ package operation;
 
             // Keep copy of previous operations as they will influence future operations e.g. copy to memory influence o[erations getting operands from memory
             // This is only valid for our seed operation object and all only the seed operation object has its randomize method executed.
-            priorOperation                             = new this           ;  // copy this and put in prior queue
-            priorOperations.push_back(priorOperation)                       ;  
-            priorOperationNumberOfOperands             =   numberOfOperands ;
+            priorOperation      = new this                    ;  // copy this and put in prior queue
+            if (~hasBeenRandomized)
+                begin
+                    hasBeenRandomized   = 1                           ;
+                end
+//            else
+//                begin
+//                    priorOperations      = priorOperations[0:$-1]      ;  // we are randomizing again, so assume last entry wasnt used
+//                end
+//            priorOperations.push_back(priorOperation)                       ;  
+//            priorOperationNumberOfOperands             =   numberOfOperands ;
           
             // DEBUG
 /*
@@ -416,24 +454,65 @@ package operation;
         //------------------------------------------------------------------------------------------------------
         // Methods
 
-        function create();
+        function void setPriorOperations(base_operation priorOperations[$]);
+            this.priorOperations      = priorOperations    ;
+            if (priorOperations.size != 0)
+                begin
+                    this.priorOperation                        = priorOperations[$]                  ;
+                    this.priorOperationNumberOfOperands        = priorOperations[$].numberOfOperands ;
+                end
+            else
+                begin
+                    this.priorOperationNumberOfOperands        = 0                                   ;
+                end
+        endfunction                                            
+
+        function void clearPriors();
+            this.priorOperations.delete();
+        endfunction                                               // but we got the prior operation when we copied the manager operation
+
+        function void removePrior();
+            priorOperations      = priorOperations[0:$-1]      ;  // remove the operation created during the manager randomization, the generator randomization creates a different set of operands
+        endfunction                                               // but we got the prior operation when we copied the manager operation
+
+    
+        function void create();
 
         endfunction
     
-        function displayOperation();
-            $display("@%0t :%s:%0d:INFO:base_operation.sv: {PE,Lane} = {%2d,%2d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-            $display("@%0t :%s:%0d:INFO:base_operation.sv:{%0d,%0d}: stOp_operation : %b", $time, `__FILE__, `__LINE__, Id[0], Id[1], stOp_operation);
-            $display("@%0t :%s:%0d:INFO:base_operation.sv:{%0d,%0d}: src{0,1},dest{0,1} : {%3b,%3b,%3b,%3b}", $time, `__FILE__, `__LINE__, Id[0], Id[1], pe_stOp_stream_src[0], pe_stOp_stream_src[1], pe_stOp_stream_dest[0], pe_stOp_stream_dest[1]);
-            $display("@%0t :%s:%0d:INFO:base_operation.sv:{%0d,%0d}:      Source Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], sourceAddress[0], sourceAddress[1]);
-            $display("@%0t :%s:%0d:INFO:base_operation.sv:{%0d,%0d}: Destination Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], destinationAddress[0], destinationAddress[1]);
-            $display("@%0t :%s:%0d:INFO:base_operation.sv:{%0d,%0d}: Enable Destination: {%b,%b}", $time, `__FILE__, `__LINE__, Id[0], Id[1], enableDestinationStream[0], enableDestinationStream[1]);
+        function void displayOperation();
+            $display("@%0t :%s:%0d:INFO: {PE,Lane,tId} = {%0d,%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], tId);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: stOp_operation : %b", $time, `__FILE__, `__LINE__, Id[0], Id[1], stOp_operation);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: src{0,1},dest{0,1} : {%3b,%3b,%3b,%3b}", $time, `__FILE__, `__LINE__, Id[0], Id[1], pe_stOp_stream_src[0], pe_stOp_stream_src[1], pe_stOp_stream_dest[0], pe_stOp_stream_dest[1]);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:      Source Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], sourceAddress[0], sourceAddress[1]);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Destination Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], destinationAddress[0], destinationAddress[1]);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Enable Destination: {%b,%b}", $time, `__FILE__, `__LINE__, Id[0], Id[1], enableDestinationStream[0], enableDestinationStream[1]);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: {numberOfOperands, setNumberOfOperands, priorOperationNumberOfOperands} = {%0d,%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], numberOfOperands, setNumberOfOperands, priorOperationNumberOfOperands);
             for (int i=0; i<numberOfOperands-1; i++)
                 begin
                     operandsReal[0] = $bitstoshortreal({operands[0][i]});
                     operandsReal[1] = $bitstoshortreal({operands[1][i]});
-                    $display("@%0t :%s:%0d:INFO:base_operation.sv:{%0d,%0d}: Operand %3d {%f, %f}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsReal[0], operandsReal[1]);
+                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Operand %3d {%f, %f}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsReal[0], operandsReal[1]);
                 end
-            $display("@%0t :%s:%0d:INFO:base_operation.sv:{%0d,%0d}: Result %f ", $time, `__FILE__, `__LINE__, Id[0], Id[1], result);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Result %f ", $time, `__FILE__, `__LINE__, Id[0], Id[1], result);
+
+        endfunction
+    
+        function void displayOperationFoo(string fromFile, int fromLine);
+            $display("@%0t :%s:%0d:INFO: {PE,Lane,tId}:{%s,%0d}: = {%0d,%0d,%0d}", $time, `__FILE__, `__LINE__,  fromFile, fromLine, Id[0], Id[1], tId);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: stOp_operation : %b", $time, `__FILE__, `__LINE__, Id[0], Id[1], fromFile, fromLine, stOp_operation);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: src{0,1},dest{0,1} : {%3b,%3b,%3b,%3b}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], pe_stOp_stream_src[0], pe_stOp_stream_src[1], pe_stOp_stream_dest[0], pe_stOp_stream_dest[1]);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}:      Source Address: {%h,%h}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], sourceAddress[0], sourceAddress[1]);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Destination Address: {%h,%h}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], destinationAddress[0], destinationAddress[1]);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Enable Destination: {%b,%b}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], enableDestinationStream[0], enableDestinationStream[1]);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: {numberOfOperands, setNumberOfOperands, priorOperationNumberOfOperands} = {%0d,%0d}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], numberOfOperands, setNumberOfOperands, priorOperationNumberOfOperands);
+            for (int i=0; i<numberOfOperands-1; i++)
+                begin
+                    operandsReal[0] = $bitstoshortreal({operands[0][i]});
+                    operandsReal[1] = $bitstoshortreal({operands[1][i]});
+                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Operand %3d {%f, %f}, ", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], i, operandsReal[0], operandsReal[1]);
+                end
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Result %f ", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], result);
 
         endfunction
     
@@ -441,11 +520,14 @@ package operation;
 
     //------------------------------------------------------------------------------------------------------
     // Class
+    //
+    // Contains information required to drive the downstream operands for one stream
+    //
 
     class stream_operation ; 
     
-        time timeTag   ;
-        int  tId        ;
+        time timeTag    ;  // debug
+        int  tId        ;  // debug - transaction ID - same as source base_operation ID from generator (FIXME - WIP)
      
         bit [`PE_EXEC_LANE_WIDTH_RANGE ] operands        [] ;
         int                              numberOfOperands   ;
@@ -455,6 +537,61 @@ package operation;
         endfunction
     
     endclass
+
+
+    //------------------------------------------------------------------------------------------------------
+    // Class
+    //
+    // Contains Out-of-Band (OOB)information 
+    //
+
+    class oob_packet ; 
+    
+        time timeTag    ;  // debug
+        int  tId        ;  // debug - transaction ID 
+
+        rand bit   [`PE_STD_OOB_TAG_RANGE                     ]  tag                                                  ;  
+        rand pe_stOp_operation                                   stOp_operation                                       ;  
+        //rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE           ]  resultAddress                                        ;  
+        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE           ]  sourceAddress          [`PE_NUM_OF_STREAMS_RANGE ]   ;  
+        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE           ]  destinationAddress     [`PE_NUM_OF_STREAMS_RANGE ]   ;  
+        rand PE_DATA_TYPE                                        src_data_type          [`PE_NUM_OF_STREAMS_RANGE ]   ;
+        rand PE_DATA_TYPE                                        dest_data_type         [`PE_NUM_OF_STREAMS_RANGE ]   ;
+        rand bit   [`PE_MAX_NUM_OF_TYPES_RANGE                ]  numberOfOperands                                     ;
+     
+
+        function new ();
+            this.timeTag = $time ;
+        endfunction
+    
+    endclass
+
+
+    //------------------------------------------------------------------------------------------------------
+    // Class
+    //
+    // Contains Work Unit information 
+    //
+
+/*
+
+    class work_unit ; 
+    
+        time timeTag    ;  // debug
+        int  tId        ;  // debug - transaction ID - same as source base_operation ID from generator (FIXME - WIP)
+
+        logic 
+     
+        bit [`PE_EXEC_LANE_WIDTH_RANGE ] operands        [] ;
+        int                              numberOfOperands   ;
+
+        function new ();
+            this.timeTag = $time ;
+        endfunction
+    
+    endclass
+*/
+
 
 endpackage
 

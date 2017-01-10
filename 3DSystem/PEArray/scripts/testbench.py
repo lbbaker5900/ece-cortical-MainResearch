@@ -185,6 +185,9 @@ if __name__ == "__main__":
     pLine = pLine + '\n            begin'                                  
     pLine = pLine + '\n              ldst_driver[{0}].run()  ;'.format(pe) 
     pLine = pLine + '\n            end'
+    pLine = pLine + '\n            begin'                                  
+    pLine = pLine + '\n              mgr[{0}].run()  ;'.format(pe) 
+    pLine = pLine + '\n            end'
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n            begin'
       pLine = pLine + '\n              gen[{0}][{1}].run()  ;'.format(pe,lane) 

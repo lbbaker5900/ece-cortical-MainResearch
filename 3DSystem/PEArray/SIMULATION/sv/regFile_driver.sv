@@ -84,11 +84,11 @@ class regFile_driver;
                                           // Make sure address is local to PE
                                           if (sys_operation.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] != Id[0])
                                             begin
-                                              $display("@%0t ERROR: Stream %d Destination address not within this PE\'s local memory: {%0d,%0d} : %h\n", $time, stream, Id[0], Id[1], sys_operation.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] );
+                                              $display("@%0t:%s:%0d:ERROR:: {%0d,%0d} : Stream %d Destination address not within this PE\'s local memory : %h\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], stream, sys_operation.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] );
                                             end
                                           if (sys_operation.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] != Id[1])
                                             begin
-                                              $display("@%0t ERROR: Stream %d Destination address not within this PE\'s local lane address space: {%0d,%0d} : %h\n", $time, stream, Id[0], Id[1], sys_operation.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] );
+                                              $display("@%0t:%s:%0d:ERROR:: {%0d,%0d} : Stream %d Destination address not within this PE\'s local lane address space: %h\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], stream, sys_operation.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] );
                                             end
                                         end
                                   end
@@ -109,7 +109,6 @@ class regFile_driver;
                         vP_srf.cb_out.rs0[0]        <= 1'b1                                               ;
                         // drive packed struct directly onto regFile register input for streamingOps_cntl
                         vP_srf.cb_out.rs0[31:1]     <= sys_operation.stOp_operation                       ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
-                        //vP_srf.cb_out.rs0[31:1]     <= sys_operation.OpType                               ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
                         vP_srf.cb_out.rs1           <= {32{1'b1}};
 
                         // struct contents debug
@@ -125,6 +124,12 @@ class regFile_driver;
                         //repeat(10) @(vP_vrf.cb_out);
 
                         gen2rfP.get(sys_operation);   //Remove the transaction from the driver mailbox
+                        // DEBUG
+/*
+                        $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        if ((Id[0]  == 63) && (Id[1] == 31))
+                            sys_operation.displayOperation();
+*/
                         -> gen2rfP_ack;
                         $display ($time,": INFO:%s:%0d:: Operation driven for {%02d,%02d}", `__FILE__, `__LINE__, Id[0], Id[1]);
  

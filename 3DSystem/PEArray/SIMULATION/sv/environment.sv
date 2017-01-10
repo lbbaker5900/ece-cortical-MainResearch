@@ -26,6 +26,7 @@
 `include "streamingOps_cntl.vh"
 
 `include "interface.sv"
+`include "manager.sv"
 `include "generator.sv"
 `include "driver.sv"
 `include "mem_checker.sv"
@@ -36,24 +37,28 @@ import virtual_interface::*;
 
 class Environment;
     // each generator/driver pair handles the two streams in each pe/lane
-    generator          gen               [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
-    driver             drv               [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
-    mem_checker        mem_check         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
-    regFile_driver     rf_driver         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    manager            mgr               [`PE_ARRAY_NUM_OF_PE]                        ;
+    generator          gen               [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; 
+    driver             drv               [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ;
+    mem_checker        mem_check         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ;
+    regFile_driver     rf_driver         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ;
     loadStore_driver   ldst_driver       [`PE_ARRAY_NUM_OF_PE]                        ;
 
 
+    mailbox       mgr2gen          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
+    event         mgr2gen_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
+
     mailbox       gen2drv          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
-    event         gen2drv_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    event         gen2drv_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
     // an operation defines what is sent on both the streams in a pe/lane
-    event         new_operation    [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
-    event         final_operation  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ;
+    event         new_operation    [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
+    event         final_operation  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
 
     mailbox       drv2memP         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
-    event         drv2memP_ack     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ; 
+    event         drv2memP_ack     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;  
 
     mailbox       gen2rfP          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
-    event         gen2rfP_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; // [`PE_NUM_OF_STREAMS]  ; 
+    event         gen2rfP_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;  
 
     //mailbox       gen2ldstP         ;
     //event         gen2ldstP_ack    [`PE_ARRAY_NUM_OF_PE]                        ;
@@ -102,24 +107,28 @@ class Environment;
                         vSysLane2PeArray[pe][lane].cb_test.std__pe__lane_strm0_data_valid  <= 1'b0;
                         vSysLane2PeArray[pe][lane].cb_test.std__pe__lane_strm1_data_valid  <= 1'b0;
 
-                        //$display("@%0t LEE: Create generators and drivers : {%0d,%0d,%0d}\n", $time,pe,lane,stream);
+                        //$display("@%0t:%s:%0d: LEE: Create generators and drivers : {%0d,%0d,%0d}\n", $time, `__FILE__, `__LINE__,pe,lane,stream);
                         Id = {pe, lane};
+                        mgr2gen     [pe][lane]  = new () ;  // each manager will have mailboxes for each of its lane generators
                         gen2drv     [pe][lane]  = new () ;
                         drv2memP    [pe][lane]  = new () ;
                         gen2rfP     [pe][lane]  = new () ;
                         // remember, each gen/drv tuple handle both streams in a lane
-                        gen         [pe][lane]  = new ( Id, gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane],  vSysOob2PeArray [pe]       ,   vSysLane2PeArray [pe][lane] ,        gen2rfP[pe][lane],    gen2rfP_ack[pe][lane]  );
+                        gen         [pe][lane]  = new ( Id, mgr2gen[pe][lane] , mgr2gen_ack[pe][lane], gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane],  vSysOob2PeArray [pe]       ,   vSysLane2PeArray [pe][lane] ,        gen2rfP[pe][lane],    gen2rfP_ack[pe][lane]  );
                         drv         [pe][lane]  = new ( Id, gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane],                             vSysOob2PeArray [pe]       ,   vSysLane2PeArray [pe][lane] ,       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );
                         mem_check   [pe][lane]  = new ( Id,                                                                                                       vDma2Mem  [pe][lane] ,                                       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );  // monitor dma to memory interface for result check
                         rf_driver   [pe][lane]  = new ( Id,                                                                                      vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP[pe][lane],   gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
                     end
+                 
+                // manager is given the mailboxes to all lane generators, so need to create each lane mailbox before creating manager
+                mgr         [pe]  = new ( pe, mgr2gen[pe] , mgr2gen_ack[pe], vSysOob2PeArray [pe],   vSysLane2PeArray [pe] );
             end
 
 
     endtask
 
     task run();                                                       //This task spawns parallel run tasks of generator, driver, golden models and their respective checkers.
-        $display("@%0t : INFO:ENV: Run generators and drivers \n", $time);
+        $display("@%0t:%s:%0d: : INFO:ENV: Run generators and drivers \n", $time, `__FILE__, `__LINE__,);
         fork                                                          //These end after the generator triggers the event "final_operation" after generating the final transaction.
             // We have a generator, driver and checker for every pe/lane
             `include "TB_start_generators_and_drivers.vh"
@@ -127,7 +136,7 @@ class Environment;
             // drv.run();
         join_none
 
-        //$display("@%0t LEE: Wait for final operation\n", $time);
+        //$display("@%0t%s:%0d: LEE: Wait for final operation\n", $time, `__FILE__, `__LINE__,);
         fork                                                          //These end after the generator triggers the event "final_operation" after generating the final transaction.
             `include "TB_wait_for_final_operation.vh"
             // @(final_operation);
@@ -135,7 +144,7 @@ class Environment;
 
         //join_none
         //wait fork ;
-        //$display("@%0t LEE: Drivers taken all operations \n", $time);
+        //$display("@%0t:%s:%0d: LEE: Drivers taken all operations \n", $time, `__FILE__, `__LINE__);
 /*
         repeat (50)              //Running simulation for some time after the final transaction is sent
         begin
@@ -153,10 +162,10 @@ class Environment;
                 for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                     begin
                         // this will help finding any unfinished checkers
-                        $display("@%0t INFO: Mem checker complete : {%0d,%0d}\n", $time,pe,lane);
+                        $display("@%0t:%s:%0d: INFO: Mem checker complete : {%0d,%0d}\n", $time, `__FILE__, `__LINE__,pe,lane);
                         //wait (mem_check[pe][lane].finished.triggered);  // doesnt seem to work???
                         wait (mem_check[pe][lane].found == 1);
-                        //$display("@%0t LEE: Mem checker complete : {%0d,%0d}\n", $time,pe,lane);
+                        //$display("@%0t:%s:%0d: LEE: Mem checker complete : {%0d,%0d}\n", $time, `__FILE__, `__LINE__,pe,lane);
                         mem_check[pe][lane].finished = null ;
                     end
             end
@@ -164,7 +173,7 @@ class Environment;
     endtask
 
     task wrap_up();                                               //This task marks the completion of verification.
-        $display("Complete!");
+        $display("@%0t:%s:%0d:Complete!",$time, `__FILE__, `__LINE__);
     endtask : wrap_up
 
 
