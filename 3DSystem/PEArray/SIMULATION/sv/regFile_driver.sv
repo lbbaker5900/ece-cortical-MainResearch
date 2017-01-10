@@ -30,7 +30,8 @@ class regFile_driver;
     event     gen2rfP_ack  ;
     event     finished      ;
 
-    base_operation sys_operation;
+    //base_operation sys_operation;
+    oob_packet       oob_packet_new ;
 
     vRegFileScalarDrv2stOpCntl_T  vP_srf ;
     vRegFileLaneDrv2stOpCntl_T    vP_vrf ;
@@ -54,16 +55,19 @@ class regFile_driver;
 
     task run (); 
 
-        sys_operation=new();
+        //sys_operation=new();
 
         forever 
             begin
                 if ( gen2rfP.num() != 0 )
                     begin
-                        gen2rfP.peek(sys_operation);   //Taking the transaction from the generator mailbox
+                        //gen2rfP.peek(sys_operation);   //Taking the transaction from the generator mailbox
+                        gen2rfP.peek(oob_packet_new);   //Taking the transaction from the oob driver 
 
                         //----------------------------------------------------------------------------------------------------
                         // Info/Debug
+                        $display("@%0t INFO:%s:%0d:: Received Optype from generator : {%0d,%0d} : 0b%0b\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], oob_packet_new.stOp_operation);
+/*
                         case (sys_operation.OpType)
                             `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM :
                                 $display("@%0t INFO:%s:%0d:: Received {STD,STD -> MEM} FP MAC operation from generator: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
@@ -73,48 +77,44 @@ class regFile_driver;
                                 $display("@%0t INFO:%s:%0d:: Received {MEM,STD -> MEM} FP MAC operation from generator: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                         endcase
 
+*/
+
                         //----------------------------------------------------------------------------------------------------
                         // If enabled, ensure all memory accesses are local and within block allocated to lane
-                        if (sys_operation.memoryAccessesLocalized)
-                            begin
-                                for (int stream=0; stream<`PE_NUM_OF_STREAMS; stream++)
-                                  begin
-                                      if (sys_operation.enableDestinationStream[stream])
-                                        begin
-                                          // Make sure address is local to PE
-                                          if (sys_operation.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] != Id[0])
-                                            begin
-                                              $display("@%0t:%s:%0d:ERROR:: {%0d,%0d} : Stream %d Destination address not within this PE\'s local memory : %h\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], stream, sys_operation.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] );
-                                            end
-                                          if (sys_operation.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] != Id[1])
-                                            begin
-                                              $display("@%0t:%s:%0d:ERROR:: {%0d,%0d} : Stream %d Destination address not within this PE\'s local lane address space: %h\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], stream, sys_operation.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] );
-                                            end
-                                        end
-                                  end
-                            end
+                        for (int stream=0; stream<`PE_NUM_OF_STREAMS; stream++)
+                          begin
+                              // Make sure address is local to PE
+                              if (oob_packet_new.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] != Id[0])
+                                begin
+                                  $display("@%0t:%s:%0d:ERROR:: {%0d,%0d} : Stream %d Destination address not within this PE\'s local memory : %h\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], stream, oob_packet_new.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] );
+                                end
+                              if (oob_packet_new.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] != Id[1])
+                                begin
+                                  $display("@%0t:%s:%0d:ERROR:: {%0d,%0d} : Stream %d Destination address not within this PE\'s local lane address space: %h\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], stream, oob_packet_new.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] );
+                                end
+                          end
                         
                         //----------------------------------------------------------------------------------------------------
                         // Set register inputs to streamingOps_cntl
 
                         // Now address is constrained in the base_operation to be within a PE and lane portion of local memory
-                        vP_vrf.cb_out.r130          <= sys_operation.sourceAddress[0]                     ;
-                        vP_vrf.cb_out.r131          <= sys_operation.sourceAddress[1]                     ;
-                        vP_vrf.cb_out.r132[19:16]   <= sys_operation.pe_stOp_stream_src_data_type [0]     ;  // type (bit, nibble, byte, word)
-                        vP_vrf.cb_out.r132[15: 0]   <= sys_operation.numberOfOperands                     ;  // num of types - for dma
-                        vP_vrf.cb_out.r133[19:16]   <= sys_operation.pe_stOp_stream_src_data_type [1]     ;  // type (bit, nibble, byte, word)
-                        vP_vrf.cb_out.r133[15: 0]   <= sys_operation.numberOfOperands                     ;
-                        vP_vrf.cb_out.r134          <= sys_operation.destinationAddress[0]                ;
-                        vP_vrf.cb_out.r135          <= sys_operation.destinationAddress[1]                ;
+                        vP_vrf.cb_out.r130          <= oob_packet_new.sourceAddress[0]                     ;
+                        vP_vrf.cb_out.r131          <= oob_packet_new.sourceAddress[1]                     ;
+                        vP_vrf.cb_out.r132[19:16]   <= oob_packet_new.src_data_type [0]     ;  // type (bit, nibble, byte, word)
+                        vP_vrf.cb_out.r132[15: 0]   <= oob_packet_new.numberOfOperands                     ;  // num of types - for dma
+                        vP_vrf.cb_out.r133[19:16]   <= oob_packet_new.src_data_type [1]     ;  // type (bit, nibble, byte, word)
+                        vP_vrf.cb_out.r133[15: 0]   <= oob_packet_new.numberOfOperands                     ;
+                        vP_vrf.cb_out.r134          <= oob_packet_new.destinationAddress[0]                ;
+                        vP_vrf.cb_out.r135          <= oob_packet_new.destinationAddress[1]                ;
                         vP_srf.cb_out.rs0[0]        <= 1'b1                                               ;
                         // drive packed struct directly onto regFile register input for streamingOps_cntl
-                        vP_srf.cb_out.rs0[31:1]     <= sys_operation.stOp_operation                       ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
+                        vP_srf.cb_out.rs0[31:1]     <= oob_packet_new.stOp_operation                       ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
                         vP_srf.cb_out.rs1           <= {32{1'b1}};
 
                         // struct contents debug
-                        //$display("@%0t LEE:regFile driver: struct size = %d \n", $time, $bits(sys_operation.stOp_operation));
-                        //$display("@%0t LEE:regFile driver: struct %b : %b \n", $time, sys_operation.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM);
-                        //$display("@%0t LEE:regFile driver: struct %b : %b \n", $time, sys_operation.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  );
+                        //$display("@%0t LEE:regFile driver: struct size = %d \n", $time, $bits(oob_packet_new.stOp_operation));
+                        //$display("@%0t LEE:regFile driver: struct %b : %b \n", $time, oob_packet_new.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM);
+                        //$display("@%0t LEE:regFile driver: struct %b : %b \n", $time, oob_packet_new.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  );
 
 
                         //----------------------------------------------------------------------------------------------------
@@ -123,7 +123,8 @@ class regFile_driver;
                         // FIXME: 
                         //repeat(10) @(vP_vrf.cb_out);
 
-                        gen2rfP.get(sys_operation);   //Remove the transaction from the driver mailbox
+                        gen2rfP.get(oob_packet_new);   //Remove the transaction from the driver mailbox
+
                         // DEBUG
 /*
                         $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);

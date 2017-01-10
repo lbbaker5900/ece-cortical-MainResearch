@@ -32,7 +32,7 @@ class driver;
     event     gen2drv_ack      ;
     event     new_operation    ;
 
-    mailbox   drv2oob          ;  // create a mailbox for the OOB
+//    mailbox   drv2oob          ;  // create a mailbox for the OOB
     mailbox   drv2lane []      ;  // create a mailbox for each stream driver
     int transaction    []      ;
 
@@ -42,8 +42,8 @@ class driver;
     event     drv2memP_ack     ;
 
     base_operation   sys_operation      ;
-    oob_packet       oob_packet_gen     ;  // constructed from the sys_operation and sent to the OOB process 
-    oob_packet       oob_packet_new     ;  // used in OOB process
+//    oob_packet       oob_packet_gen     ;  // constructed from the sys_operation and sent to the OOB process 
+//    oob_packet       oob_packet_new     ;  // used in OOB process
     stream_operation tmp_strm_operation ;
     stream_operation strm_operation [] ;
 
@@ -69,7 +69,7 @@ class driver;
         this.vSysLane2PeArray    = vSysLane2PeArray           ;
         this.drv2memP            = drv2memP                   ;
         this.drv2memP_ack        = drv2memP_ack               ;
-        this.drv2oob             = new                        ;
+//        this.drv2oob             = new                        ;
         this.drv2lane            = new[`PE_NUM_OF_STREAMS  ]  ;
         for (int i=0; i<drv2lane.size(); i++)
             begin
@@ -105,18 +105,13 @@ class driver;
                                 //$display("@%0t:%s:%0d: : LEE: IDs : { %d } ", $time, `__FILE__, `__LINE__, sys_operation.id);
                                 //$display("@%0t:%s:%0d: : LEE: IDs : { %d } ", $time, `__FILE__, `__LINE__, strm_operation[1].id);
                     
+/*
                                 oob_packet_gen                    = new                                           ;  // create a OOB packet constructed from sys_operation
-                                oob_packet_gen.tag                = 0                                             ;
-                                oob_packet_gen.stOp_operation     = sys_operation.stOp_operation                  ;
-                                oob_packet_gen.sourceAddress      = sys_operation.sourceAddress                   ;
-                                oob_packet_gen.destinationAddress = sys_operation.destinationAddress              ;
-                                oob_packet_gen.src_data_type      = sys_operation.pe_stOp_stream_src_data_type    ;
-                                oob_packet_gen.dest_data_type     = sys_operation.pe_stOp_stream_dest_data_type   ;
-                                oob_packet_gen.numberOfOperands   = sys_operation.numberOfOperands                ;  // FIXME
-                                
+                                oob_packet_gen.createFromOperation(0, sys_operation)                              ;
                                 
                                 drv2oob.put(oob_packet_gen)                    ;  // oob needs to prepare the PE
                                 // FIXME: Need to wait for the OOB process to send WU packet to PE (WIP)
+*/
 
                                 // create stream objects and send to process driving downstream stream stack bus
                                 for (int i=0; i<sys_operation.stOp_operation.numberOfSrcStreams; i++)
@@ -151,6 +146,7 @@ class driver;
                             end
                     end
             end
+/*
             // FIXME: currently PE OOB passed to all stream drivers so all lane drivers will drive single per PE OOB interface
             // OOB needs to configure PE before streaming
             begin
@@ -185,6 +181,7 @@ class driver;
 
                     end  // forever
             end
+*/
             // FIXME : should use generate for the two following processes, but need to separate streams into separate interfaces so they can be indexed
             // dont think a generate can be put inside a class or task
             begin

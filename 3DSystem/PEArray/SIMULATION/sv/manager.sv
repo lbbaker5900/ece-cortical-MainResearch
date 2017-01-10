@@ -76,11 +76,16 @@ class manager;
     base_operation    sys_operation_mgr  ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_lane ;  // copy for each lane
 
+    oob_packet       oob_packet_mgr     ;  // constructed from the sys_operation and sent to the OOB driver
+    oob_packet       oob_packet_new     ;  // used in OOB process
+
     // Keep track of previous command
     base_operation    priorOperations[$]; //Queue to hold previous operations
 
     function new (
                   input int                   Id                                       , 
+                  input mailbox               mgr2oob                                  ,
+                  input event                 mgr2oob_ack                              ,
                   input mailbox               mgr2gen          [`PE_NUM_OF_EXEC_LANES] ,
                   input event                 mgr2gen_ack      [`PE_NUM_OF_EXEC_LANES] ,
                   //input event                 new_operation                            ,
@@ -92,6 +97,8 @@ class manager;
                  );
 
         this.Id                = Id                 ;
+        this.mgr2oob           = mgr2oob            ;
+        this.mgr2oob_ack       = mgr2oob_ack        ;
         this.mgr2gen           = mgr2gen            ;
         this.mgr2gen_ack       = mgr2gen_ack        ;
         //this.new_operation     = new_operation      ;
@@ -126,14 +133,28 @@ class manager;
                 // Note: this is also kept in the sys_operation_mgr as we dont create a new for each transaction
                 priorOperations.push_back(sys_operation_mgr)       ;
 
+                //----------------------------------------------------------------------------------------------------
+                // Create an OOB packet and send to OOB driver
+
+                oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
+                oob_packet_mgr.createFromOperation(0, sys_operation_mgr)     ;
+                mgr2oob.put(oob_packet_mgr)                                  ;  // oob needs to prepare the PE
+
+
+
+                //----------------------------------------------------------------------------------------------------
+                // Create an OOB packet and send to OOB driver
+
                 // send this to all the lane generators for this PE
                 for (int lane=0; lane < `PE_NUM_OF_EXEC_LANES; lane++)
                     begin
                         sys_operation_lane = new sys_operation_mgr ;
                         sys_operation_lane.Id[1]  =  lane      ;  // set lane for address generation
+
                         // Send to driver
                         //$display("@%0t:%s:%0d:LEE: sys_operation_mgr : {%0d,%0d}:%h\n", $time, `__FILE__, `__LINE__, Id, lane, sys_operation_mgr);
                         mgr2gen[lane].put(sys_operation_lane)                    ;
+
                         // now wait for generator
                         //sys_operation.displayOperation();
                         //@mgr2gen_ack[lane];
@@ -141,46 +162,6 @@ class manager;
                     end
                 operationNum++                                ;
 
-/*  FIXME: will manager will set lane regFiles as this is an OOB operation
-                if (sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM )   // NOP
-                    begin
-                        $display("@%0t :%s:%0d: INFO: Generating NOP transfer to memory operation: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                        sys_operation_gen.create();
-                        sys_operation = new sys_operation_gen ;  // create new operation and copy sys_operation_gen
-
-                        operationNum++                                ;
-                        //$display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);
-                        mgr2rfP.put(sys_operation)                    ;
-                        @mgr2rfP_ack                                  ;  // wait for regFile inputs to be driven
-                        //$display("@%0t:%s:%0d: LEE:generator.sv: Generating STD to memory copy operation to driver: {%0d,%0d} : starting at address %h: \n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.destinationAddress[0] );
-                    end 
-
-                else if(sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM )   // NOP
-                    begin
-                        $display("@%0t:%s:%0d: : INFO: Generating FP MAC operation: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                        sys_operation_gen.create();
-                        sys_operation = new sys_operation_gen ;  // create new operation and copy sys_operation_gen
-
-                        operationNum++                                ;
-                        //$display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);
-                        mgr2rfP.put(sys_operation)                    ;
-                        @mgr2rfP_ack                                  ;  // wait for regFile inputs to be driven
-                        //$display("@%0t:%s:%0d: LEE:generator.sv: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
-                    end
-                
-                else if(sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM )  
-                    begin
-                        $display("@%0t:%s:%0d: : INFO: Generating FP MAC operation: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                        sys_operation_gen.create();
-                        sys_operation = new sys_operation_gen ;  // create new operation and copy sys_operation_gen
-
-                        operationNum++                                ;
-                        //$display("@%0t LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time,Id[0], Id[1]);
-                        mgr2rfP.put(sys_operation)                    ;
-                        @mgr2rfP_ack                                  ;  // wait for regFile inputs to be driven
-                        //$display("@%0t:%s:%0d: LEE:generator.sv: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
-                    end
-*/
                 
                 
             end

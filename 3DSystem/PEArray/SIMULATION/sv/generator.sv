@@ -34,6 +34,8 @@ class generator;
 
     mailbox mgr2gen          ;
     event   mgr2gen_ack      ;
+    mailbox gen2oob          ;
+    event   gen2oob_ack      ;
     mailbox gen2drv          ;
     event   gen2drv_ack      ;
     event   new_operation    ;
@@ -73,6 +75,7 @@ class generator;
     base_operation    sys_operation     ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_mgr ;  // seed operation packet from manager
     base_operation    sys_operation_gen ;  // operation packet modified from manager operation for this lane
+    oob_packet        oob_packet_new    ;
 
     // Keep track of previous command
     base_operation    priorOperations[$]               ; //Queue to hold previous operations
@@ -85,6 +88,8 @@ class generator;
                   input event                 mgr2gen_ack       ,
                   input mailbox               gen2drv           ,
                   input event                 gen2drv_ack       ,
+                  input mailbox               gen2oob           ,
+                  input event                 gen2oob_ack       ,
                   input event                 new_operation     ,
                   input event                 final_operation   ,
                   input vSysOob2PeArray_T     vSysOob2PeArray   ,
@@ -98,6 +103,8 @@ class generator;
         this.mgr2gen_ack       = mgr2gen_ack        ;
         this.gen2drv           = gen2drv            ;
         this.gen2drv_ack       = gen2drv_ack        ;
+        this.gen2oob           = gen2oob            ;
+        this.gen2oob_ack       = gen2oob_ack        ;
         this.new_operation     = new_operation      ;
         this.final_operation   = final_operation    ;
         this.vSysOob2PeArray   = vSysOob2PeArray    ;
@@ -134,15 +141,20 @@ class generator;
                         sys_operation_gen                 =  new sys_operation_mgr  ;  // seed object. Dont use directly as all lanes will use the same operation
                         sys_operation_gen.setPriorOperations(priorOperations) ;  // object may need to know what went before
 
-                        // DEBUG
 /*
-                        if ((Id[0]  == 63) && (Id[1] == 31) && (priorOperations.size > 0))
-                            $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                        if ((Id[0]  == 63) && (Id[1] == 31) && (priorOperations.size > 0))
+                        // DEBUG
+
+                        $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        sys_operation_gen.displayOperationFoo(`__FILE__, `__LINE__);
+
+                        if ((Id[0]  == 63) && (Id[1] == 0) && (priorOperations.size > 0))
                             priorOperations[$].displayOperation();
-                        else if ((Id[0]  == 63) && (Id[1] == 31))
-                            $display("@%0t:%s:%0d:LEE:DEBUGi:No prior operation:{%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        else if ((Id[0]  == 63) && (Id[1] == 0))
+                            $display("@%0t:%s:%0d:LEE:DEBUG:No prior operation:{%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+
 */
+
+
                         // randomize again to create operand values
                         assert(sys_operation_gen.randomize()) ;  // A previous randomize in the manager will have set the number of operands, so everything will be randomized except numberOfOperands
 
@@ -155,8 +167,11 @@ class generator;
                                 sys_operation = new sys_operation_gen ;  // create new operation and copy sys_operation_gen
                        
                                 //$display("@%0t:%s:%0d:LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                                gen2rfP.put(sys_operation)                    ;
-                                @gen2rfP_ack                                  ;  // wait for regFile inputs to be driven
+                                oob_packet_new = new                                 ;
+                                oob_packet_new.createFromOperation(0, sys_operation) ;
+                                gen2rfP.put(oob_packet_new)                          ;
+                                @gen2rfP_ack                                         ;  // wait for regFile inputs to be driven
+
                                 //$display("@%0t:%s:%0d:LEE: Generating STD to memory copy operation to driver: {%0d,%0d} : starting at address %h: \n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.destinationAddress[0] );
                             end 
                        
@@ -166,9 +181,13 @@ class generator;
                                 sys_operation_gen.create();
                                 sys_operation = new sys_operation_gen ;  // create new operation and copy sys_operation_gen
                        
+
                                 //$display("@%0t:%s:%0d:LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                                gen2rfP.put(sys_operation)                    ;
-                                @gen2rfP_ack                                  ;  // wait for regFile inputs to be driven
+                                oob_packet_new = new                                 ;
+                                oob_packet_new.createFromOperation(0, sys_operation) ;
+                                gen2rfP.put(oob_packet_new)                          ;
+                                @gen2rfP_ack                                         ;  // wait for regFile inputs to be driven
+
                                 //$display("@%0t:%s:%0d:LEE: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                             end
                         
@@ -177,20 +196,32 @@ class generator;
                                 $display("@%0t:%s:%0d: : INFO: Generating FP MAC operation: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
                                 sys_operation_gen.create();
                                 sys_operation = new sys_operation_gen ;  // create new operation and copy sys_operation_gen
-                       
+                      
                                 //$display("@%0t:%s:%0d:LEE:Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                                gen2rfP.put(sys_operation)                    ;
-                                @gen2rfP_ack                                  ;  // wait for regFile inputs to be driven
+                                oob_packet_new = new                                 ;
+                                oob_packet_new.createFromOperation(0, sys_operation) ;
+                                gen2rfP.put(oob_packet_new)                          ;
+                                @gen2rfP_ack                                         ;  // wait for regFile inputs to be driven
+
                                 //$display("@%0t:%s:%0d:LEE: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                             end
+
+/*
+                        $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        //if ((Id[0]  == 63) && (Id[1] == 0) )
+                        sys_operation.displayOperationFoo(`__FILE__, `__LINE__);
+*/
+
 
                         sys_operation.clearPriors();  // avoid nested pointers as we dont need here
                         priorOperations.push_back(sys_operation)                       ;  
 
                         // Send to driver
                         gen2drv.put(sys_operation)                    ;
+
                         // Keep copy of previous operations as they may influence future operations
                         priorOperations.push_back(sys_operation)       ;  // FIXME: do we need a queue in the base_operation??
+
                         // now wait for driver to take our sequence of operations
                         //sys_operation.displayOperation();
                         @gen2drv_ack;

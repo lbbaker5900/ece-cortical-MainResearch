@@ -29,6 +29,7 @@
 `include "manager.sv"
 `include "generator.sv"
 `include "driver.sv"
+`include "oob_driver.sv"
 `include "mem_checker.sv"
 `include "regFile_driver.sv"
 `include "loadStore_driver.sv"
@@ -40,16 +41,24 @@ class Environment;
     manager            mgr               [`PE_ARRAY_NUM_OF_PE]                        ;
     generator          gen               [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; 
     driver             drv               [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ;
+    oob_driver         oob_drv           [`PE_ARRAY_NUM_OF_PE]                        ;
     mem_checker        mem_check         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ;
     regFile_driver     rf_driver         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ;
     loadStore_driver   ldst_driver       [`PE_ARRAY_NUM_OF_PE]                        ;
 
+
+    mailbox       mgr2oob          [`PE_ARRAY_NUM_OF_PE]                         ;
+    event         mgr2oob_ack      [`PE_ARRAY_NUM_OF_PE]                         ; 
+
+    mailbox       gen2oob          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;  // generator provides customized addresses for OOB driver
+    event         gen2oob_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
 
     mailbox       mgr2gen          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
     event         mgr2gen_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
 
     mailbox       gen2drv          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
     event         gen2drv_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
+
     // an operation defines what is sent on both the streams in a pe/lane
     event         new_operation    [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
     event         final_operation  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
@@ -101,6 +110,8 @@ class Environment;
         for (int pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe++)
             begin
                 //gen2ldstP   = new () ;
+                mgr2oob     [pe]  = new () ;
+
                 ldst_driver [pe]  = new ( Id,            vLoadStoreDrv2memCntl [pe] ); // ,                                      gen2ldstP, gen2ldstP_ack [pe]        );  // load/store driver for mem controller inputs
                 for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                     begin
@@ -111,17 +122,18 @@ class Environment;
                         Id = {pe, lane};
                         mgr2gen     [pe][lane]  = new () ;  // each manager will have mailboxes for each of its lane generators
                         gen2drv     [pe][lane]  = new () ;
+                        gen2oob     [pe][lane]  = new () ;
                         drv2memP    [pe][lane]  = new () ;
                         gen2rfP     [pe][lane]  = new () ;
                         // remember, each gen/drv tuple handle both streams in a lane
-                        gen         [pe][lane]  = new ( Id, mgr2gen[pe][lane] , mgr2gen_ack[pe][lane], gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane],  vSysOob2PeArray [pe]       ,   vSysLane2PeArray [pe][lane] ,        gen2rfP[pe][lane],    gen2rfP_ack[pe][lane]  );
+                        gen         [pe][lane]  = new ( Id, mgr2gen[pe][lane] , mgr2gen_ack[pe][lane], gen2drv[pe][lane] , gen2drv_ack[pe][lane], gen2oob[pe][lane] , gen2oob_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane],  vSysOob2PeArray [pe]       ,   vSysLane2PeArray [pe][lane] ,        gen2rfP[pe][lane],    gen2rfP_ack[pe][lane]  );
                         drv         [pe][lane]  = new ( Id, gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane],                             vSysOob2PeArray [pe]       ,   vSysLane2PeArray [pe][lane] ,       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );
                         mem_check   [pe][lane]  = new ( Id,                                                                                                       vDma2Mem  [pe][lane] ,                                       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );  // monitor dma to memory interface for result check
                         rf_driver   [pe][lane]  = new ( Id,                                                                                      vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP[pe][lane],   gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
                     end
                  
-                // manager is given the mailboxes to all lane generators, so need to create each lane mailbox before creating manager
-                mgr         [pe]  = new ( pe, mgr2gen[pe] , mgr2gen_ack[pe], vSysOob2PeArray [pe],   vSysLane2PeArray [pe] );
+                mgr         [pe]  = new ( pe, mgr2oob[pe] , mgr2oob_ack[pe], mgr2gen[pe] , mgr2gen_ack[pe],    vSysOob2PeArray [pe],   vSysLane2PeArray [pe] );
+                oob_drv     [pe]  = new ( pe, mgr2oob[pe],  mgr2oob_ack[pe], gen2oob[pe],   gen2oob_ack[pe],   vSysOob2PeArray [pe],   vSysLane2PeArray [pe] );
             end
 
 
