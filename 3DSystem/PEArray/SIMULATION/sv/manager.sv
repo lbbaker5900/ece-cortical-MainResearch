@@ -34,10 +34,21 @@ import operation::*;
 
 class manager;
 
+    //----------------------------------------------------------------------------------------------------
+    //  Manager sends base operation to OOB driver
+
     mailbox mgr2oob                                   ;
     event   mgr2oob_ack                               ;
+
+    //----------------------------------------------------------------------------------------------------
+    //  Manager sends base operation to generator
+
     mailbox mgr2gen          [`PE_NUM_OF_EXEC_LANES]  ;  // manager communicates will lane generators 
     event   mgr2gen_ack      [`PE_NUM_OF_EXEC_LANES]  ;  // manager communicates will lane generators 
+
+
+    //----------------------------------------------------------------------------------------------------
+
     event   new_operation                             ;
     event   final_operation                           ;
     int     Id                                        ; // PE

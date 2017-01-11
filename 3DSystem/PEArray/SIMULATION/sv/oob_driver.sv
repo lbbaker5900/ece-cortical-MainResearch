@@ -6,8 +6,9 @@
     Email       : lbbaker@ncsu.edu
     
     Description : This file contains the oob driver.
-                  It takes the operation from the generator and drives it through the stack interface.
-                  The oob driver accesses all lanes.
+                  It takes the operation from the manager and generators and drives it through the stack interface.
+                  The oob driver accesses all lanes so it will wait for the manager operation and each generator operation before driving the bus.
+                  We need generator info because the generator randomizes the address for each lane.
 *********************************************************************************************/
 
 `include "common.vh"
@@ -91,43 +92,6 @@ class oob_driver;
 
                                     // FIXME:needs to collect oob_packets from the generator also before constructing WU
            
-/*
-                                    // spawn processes to drive oob and the lanes
-                                    fork
-                                        begin
-                                            @(vSysOob2PeArray.cb_test) ;
-                                          
-                                            vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
-                                            vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= 0  ;  
-                                            vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
-                                        end
-                                    join_none
-                                    for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1) 
-                                        begin
-                                            tmp_vSysLane2PeArray = vSysLane2PeArray[lane];
-                                            tmp_oob2rfP          = oob2rfP[lane];
-                                            tmp_oob2rfP_ack      = oob2rfP_ack[lane];
-                                            fork
-                                                begin
-                                                    @(tmp_vSysLane2PeArray.cb_test);
-                                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
-                                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_cntl        <= 0  ;         //Passing the instruction to the system interface
-                                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data        <= 32'hdead_beef  ;
-                                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
-                                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
-                                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_cntl        <= 0  ;         //Passing the instruction to the system interface
-                                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data        <= 32'hbabe_cafe  ;
-                                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
-
-                                                    // FIXME: OOB WIP so drive regFile
-                                                    tmp_oob2rfP.put(oob_packet_new)                   ;
-                                                    @tmp_oob2rfP_ack                                  ;  // wait for regFile inputs to be driven
-                                                end
-                                            join_none
-                                        end 
-                                    
-                                    wait fork;
-*/
            
                                     vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
                                     vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= 0  ;  

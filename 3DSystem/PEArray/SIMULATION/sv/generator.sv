@@ -32,19 +32,29 @@ import operation::*;
 
 class generator;
 
+    //----------------------------------------------------------------------------------------------------
+    // generator gets the seed operation from the manager
     mailbox mgr2gen          ;
     event   mgr2gen_ack      ;
+
+    //----------------------------------------------------------------------------------------------------
+    // generator randomizes addresses and sends changes to OOB
     mailbox gen2oob          ;
     event   gen2oob_ack      ;
+
+    //----------------------------------------------------------------------------------------------------
+    // send lane data to driver to drive stack bus
     mailbox gen2drv          ;
     event   gen2drv_ack      ;
+
+    //----------------------------------------------------------------------------------------------------
     event   new_operation    ;
     event   final_operation  ;
     int     Id [2]           ; // PE, Lane
 
+    //----------------------------------------------------------------------------------------------------
+    // Generator sends packet to regFile driver so each regFile lane can drive the streamingOps_cntl signals
     // Drive regFile interface
-    // FIXME : should this be in the driver??
-    // FIXME: may go away once SIMD and result path is working
     mailbox   gen2rfP         ;
     event     gen2rfP_ack     ;
         

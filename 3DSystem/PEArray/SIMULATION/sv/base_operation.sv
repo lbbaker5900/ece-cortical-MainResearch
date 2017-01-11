@@ -290,8 +290,8 @@ package operation;
                 numberOfOperands == priorOperationNumberOfOperands;
             // test if number of operands had been set by manager
             } else if (setNumberOfOperands == 0) {
-                numberOfOperands inside {20};
-                //numberOfOperands inside {[200:500]};
+                //numberOfOperands inside {20};
+                numberOfOperands inside {[200:500]};
                 //numberOfOperands inside {[0:65535]};
             } else {
                 // use number of operands set by manager
