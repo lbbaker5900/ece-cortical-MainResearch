@@ -578,6 +578,7 @@ package operation;
     class oob_packet ; 
     
         time timeTag    ;  // debug
+        int  Id [2]     ; // PE, Lane
         int  tId        ;  // debug - transaction ID 
 
         rand bit   [`PE_STD_OOB_TAG_RANGE                     ]  tag                                                  ;  
@@ -597,6 +598,7 @@ package operation;
         function void createFromOperation(int tag, base_operation operation);
             
             this.tag                =   tag                                       ;
+            this.Id                 =   operation.Id                              ;
             this.stOp_operation     =   operation.stOp_operation                  ;
             this.sourceAddress      =   operation.sourceAddress                   ;
             this.destinationAddress =   operation.destinationAddress              ;
@@ -606,6 +608,17 @@ package operation;
 
         endfunction
     
+        function void displayPacket();
+            $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
+            $display("@%0t :%s:%0d:INFO: OOB Packet for {PE,Lane,tId,tag} = {%0d,%0d,%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], tId, tag);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: stOp_operation : %b", $time, `__FILE__, `__LINE__, Id[0], Id[1], stOp_operation);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: srcType{0,1},destType{0,1} : {%0b,%0b},{%0b,%0b}", $time, `__FILE__, `__LINE__, Id[0], Id[1], src_data_type[0], src_data_type[1], dest_data_type[0], dest_data_type[1]);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:      Source Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], sourceAddress[0], sourceAddress[1]);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Destination Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], destinationAddress[0], destinationAddress[1]);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: {numberOfOperands} = {%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], numberOfOperands);
+            $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
+
+        endfunction
     endclass
 
 

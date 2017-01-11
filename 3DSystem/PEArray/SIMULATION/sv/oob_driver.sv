@@ -33,27 +33,24 @@ class oob_driver;
     mailbox   mgr2oob                                        ;
     event     mgr2oob_ack                                    ;
 
-    mailbox   gen2oob     [`PE_NUM_OF_EXEC_LANES_RANGE ]     ;
-    event     gen2oob_ack [`PE_NUM_OF_EXEC_LANES_RANGE ]     ;
+    mailbox   gen2oob                                        ;  // all generators put oob_packet in the same single mailbox
+    event     gen2oob_ack [`PE_NUM_OF_EXEC_LANES_RANGE ]     ;  // but each generator gets its own ack
 
 
-    oob_packet       oob_packet_gen     ;  // constructed from the sys_operation and sent to the OOB process 
-    oob_packet       oob_packet_new     ;  // used in OOB process
+    oob_packet       oob_packet_mgr     ;  // from manager
+    oob_packet       oob_packet_gen     ;  // from generator
 
     // OOB driver needs oob signals and lane signals to send oob packet
     vSysOob2PeArray_T  vSysOob2PeArray                                 ;  // FIXME: OOB is a per PE interface but we have driver objects for all PE/Lanes
     vSysLane2PeArray_T vSysLane2PeArray [`PE_NUM_OF_EXEC_LANES_RANGE ] ;
     vSysLane2PeArray_T tmp_vSysLane2PeArray ;
 
+
     //----------------------------------------------------------------------------------------------------
     // Misc
 
-    // Drive regFile interface
-    // FIXME: may go away once SIMD and result path is working
-    mailbox   oob2rfP                                        ;
-    event     oob2rfP_ack                                    ;
-    mailbox   tmp_oob2rfP                                    ;
-    event     tmp_oob2rfP_ack                                ;
+    logic      receivedManagerOobPacket     ;
+    logic      receivedGeneratorOobPackets  ;
 
     //----------------------------------------------------------------------------------------------------
 
@@ -63,71 +60,105 @@ class oob_driver;
                   input int                   Id                                           ,
                   input mailbox               mgr2oob                                      ,   
                   input event                 mgr2oob_ack                                  ,
-                  input mailbox               gen2oob           [`PE_NUM_OF_EXEC_LANES   ] ,
+                  input mailbox               gen2oob                                      ,
                   input event                 gen2oob_ack       [`PE_NUM_OF_EXEC_LANES   ] ,
                   input vSysOob2PeArray_T     vSysOob2PeArray                              ,
                   input vSysLane2PeArray_T    vSysLane2PeArray  [`PE_NUM_OF_EXEC_LANES   ] );
 
-        this.Id                  = Id                         ;
-        this.mgr2oob             = mgr2oob                    ;
-        this.mgr2oob_ack         = mgr2oob_ack                ;
-        this.gen2oob             = gen2oob                    ;
-        this.gen2oob_ack         = gen2oob_ack                ;
-        this.vSysOob2PeArray     = vSysOob2PeArray            ;
-        this.vSysLane2PeArray    = vSysLane2PeArray           ;
+        this.Id                            = Id                    ;
+        this.mgr2oob                       = mgr2oob               ;
+        this.mgr2oob_ack                   = mgr2oob_ack           ;
+        this.gen2oob                       = gen2oob               ;
+        this.gen2oob_ack                   = gen2oob_ack           ;
+        this.vSysOob2PeArray               = vSysOob2PeArray       ;
+        this.vSysLane2PeArray              = vSysLane2PeArray      ;
+        this.receivedManagerOobPacket      = 0                     ;
+        this.receivedGeneratorOobPackets   = 0                     ;
     endfunction
 
     task run();
         //$display("@%0t:%s:%0d: LEE: Running OOB driver : {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+        
 
         // OOB process will configure the PE (WIP)
             forever
                 begin
-                    if ( mgr2oob.num() != 0 )
+                    if (( mgr2oob.num() != 0 ) && (receivedManagerOobPacket == 0) )
                         begin
-                            while(mgr2oob.num() != 0)
-                                begin
-                                    mgr2oob.peek(oob_packet_new) ;                             //Taking the instruction from generator 
-                                    $display("@%0t%s:%0d:LEE:oob_driver.sv: {%0d} received OOB packet from manager: %0b", $time, `__FILE__, `__LINE__, Id, oob_packet_new.stOp_operation );
-
-                                    // FIXME:needs to collect oob_packets from the generator also before constructing WU
-           
-           
-                                    vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
-                                    vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= 0  ;  
-                                    vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
-
-                                    for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1) 
-                                        begin
-                                             //@(tmp_vSysLane2PeArray[lane].cb_test);
-                                             vSysLane2PeArray[lane].cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
-                                             vSysLane2PeArray[lane].cb_test.std__pe__lane_strm0_cntl        <= 0  ;         //Passing the instruction to the system interface
-                                             vSysLane2PeArray[lane].cb_test.std__pe__lane_strm0_data        <= 32'hdead_beef  ;
-                                             vSysLane2PeArray[lane].cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
-                                             vSysLane2PeArray[lane].cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
-                                             vSysLane2PeArray[lane].cb_test.std__pe__lane_strm1_cntl        <= 0  ;         //Passing the instruction to the system interface
-                                             vSysLane2PeArray[lane].cb_test.std__pe__lane_strm1_data        <= 32'hbabe_cafe  ;
-                                             vSysLane2PeArray[lane].cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
-
-                                             // FIXME: OOB WIP so drive regFile
-                                             //oob2rfP[lane].put(oob_packet_new)                   ;
-                                             //@oob2rfP_ack[lane]                                  ;  // wait for regFile inputs to be driven
-                                        end 
-
-                                    mgr2oob.get(oob_packet_new)  ;  //Removing the instruction from generator mailbox
-                                    
-                                end  // while
-                                $display("@%0t:%s:%0d:INFO: {%d,%d} Completed driving OOB", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
-                            end
+                            mgr2oob.peek(oob_packet_mgr) ;                             //Taking the instruction from the manager 
+                            //$display("@%0t%s:%0d:LEE: {%0d} received OOB packet from manager: %0b", $time, `__FILE__, `__LINE__, Id, oob_packet_mgr.stOp_operation );
+                            receivedManagerOobPacket      = 1                     ;
+                        end
+                    else if (( gen2oob.num() == `PE_NUM_OF_EXEC_LANES ) && (receivedGeneratorOobPackets == 0) )
+                        begin
+                            //$display("@%0t%s:%0d:LEE: {%0d} received all OOB packets from generators", $time, `__FILE__, `__LINE__, Id);
+                            receivedGeneratorOobPackets   = 1                     ;
+                        end
                     // watch out for infinite loop if commenting out this section of code
                     // a forever loop will need an @clk
-                    else
-                        begin 
-                            @(vSysOob2PeArray.cb_test);
-                            vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
-                            vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= 0  ;  
+
+                    if ( (receivedManagerOobPacket == 1) && (receivedGeneratorOobPackets == 1) )
+                        begin
+                            mgr2oob.get(oob_packet_mgr)  ;  //Removing the instruction from manager mailbox
+                            //$display("@%0t:%s:%0d: LEE: Driving OOB with contents of OOB packet from manager : {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                            //oob_packet_mgr.displayPacket();
+
+                            vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 1  ;  // FIXME: temporary drive OOB to non-X
+                            vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;  
                             vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
-                        end  // if
+
+                            for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+                                begin
+                                    gen2oob.get(oob_packet_gen)  ;  //Removing the instruction from manager mailbox
+                                    gen2oob.put(oob_packet_gen)  ;  // we need each packet later
+                                    //$display("@%0t:%s:%0d: LEE: Driving OOB Lane with contents of OOB packet from generator %0d : {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], oob_packet_gen.Id[1]);
+                                    //oob_packet_mgr.displayPacket();
+                                    tmp_vSysLane2PeArray = vSysLane2PeArray[oob_packet_gen.Id[1]];
+
+                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 1  ;
+                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_cntl        <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;         //Passing the instruction to the system interface
+                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data        <= 32'hdead_beef  ;
+                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
+                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 1  ;
+                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_cntl        <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;         //Passing the instruction to the system interface
+                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data        <= 32'hbabe_cafe  ;
+                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
+
+                                end
+      
+
+                            @(vSysOob2PeArray.cb_test);
+
+                            vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
+
+                            for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+                                begin
+                                    gen2oob.get(oob_packet_gen)  ;  //Removing the instruction from manager mailbox
+                                    //fork
+                                        tmp_vSysLane2PeArray = vSysLane2PeArray[oob_packet_gen.Id[1]];
+                                        tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
+                                        tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
+                                    //join_none
+                                end
+
+
+                            // Ack manager
+                            -> mgr2oob_ack;
+                            receivedManagerOobPacket      = 0                     ;
+
+                            // Ack generator
+                            for (int i=0; i<`PE_NUM_OF_EXEC_LANES; i++)
+                                begin
+                                    -> gen2oob_ack[i];
+                                end
+                            receivedGeneratorOobPackets   = 0                     ;
+                            $display("@%0t:%s:%0d:INFO: {%d} Completed driving OOB", $time, `__FILE__, `__LINE__, Id );
+                        end
+                    else
+                        begin
+                            @(vSysOob2PeArray.cb_test);
+                            vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // driver.sv takes care of stream valids
+                        end
 
                 end  // forever
     endtask

@@ -3437,7 +3437,7 @@ if __name__ == "__main__":
       pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_cntl        =  std__pe__lane{0}_strm{1}_cntl      ;'.format(lane,strm) 
       pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_data        =  std__pe__lane{0}_strm{1}_data      ;'.format(lane,strm) 
       pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_data_mask   =  std__pe__lane{0}_strm{1}_data_mask ;'.format(lane,strm) 
-      pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_data_valid  =  std__pe__lane{0}_strm{1}_data_valid;'.format(lane,strm) 
+      pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_data_valid  =  std__pe__lane{0}_strm{1}_data_valid & ~std__pe__oob_valid   ; // not for stOp if OOB valid'.format(lane,strm) 
       pLine = pLine + '\n'
 
   f.write(pLine)

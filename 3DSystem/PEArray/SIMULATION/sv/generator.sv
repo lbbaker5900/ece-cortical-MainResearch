@@ -140,16 +140,16 @@ class generator;
                     begin
                         mgr2gen.peek(sys_operation_mgr);   //Taking the instruction from the manager
                         mgr2gen.get(sys_operation_mgr)  ;  //Removing the instruction from manager mailbox
-                        //$display("@%0t:%s:%0d:LEE:Received operation from manager: {%0d,%0d}:%h\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation_mgr);
-                        //sys_operation_mgr.displayOperationFoo(`__FILE__, `__LINE__);
+//                        $display("@%0t:%s:%0d:LEE:Received operation from manager: {%0d,%0d}:%h\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation_mgr);
+//                        sys_operation_mgr.displayOperationFoo(`__FILE__, `__LINE__);
                         -> mgr2gen_ack;  // have to ack right away and manager is in a for loop for each lane
                 
                         
                         // Create a base operation and all operation sent to driver will be copies of this
                         // This allows us to keep track of what has been generated
                      
-                        sys_operation_gen                 =  new sys_operation_mgr  ;  // seed object. Dont use directly as all lanes will use the same operation
-                        sys_operation_gen.setPriorOperations(priorOperations) ;  // object may need to know what went before
+                        sys_operation_gen             =  new sys_operation_mgr  ;  // seed object. Dont use directly as all lanes will use the same operation
+                        sys_operation_gen.setPriorOperations(priorOperations)   ;  // object may need to know what went before
 
 /*
                         // DEBUG
@@ -173,48 +173,27 @@ class generator;
                         if (sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM )   // NOP
                             begin
                                 $display("@%0t :%s:%0d: INFO: Generating NOP transfer to memory operation: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                                sys_operation_gen.create();
-                                sys_operation = new sys_operation_gen ;  // create new operation and copy sys_operation_gen
-                       
-                                //$display("@%0t:%s:%0d:LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                                oob_packet_new = new                                 ;
-                                oob_packet_new.createFromOperation(0, sys_operation) ;
-                                gen2rfP.put(oob_packet_new)                          ;
-                                @gen2rfP_ack                                         ;  // wait for regFile inputs to be driven
-
-                                //$display("@%0t:%s:%0d:LEE: Generating STD to memory copy operation to driver: {%0d,%0d} : starting at address %h: \n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.destinationAddress[0] );
                             end 
-                       
                         else if(sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM )   // NOP
                             begin
                                 $display("@%0t:%s:%0d: : INFO: Generating FP MAC operation: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                                sys_operation_gen.create();
-                                sys_operation = new sys_operation_gen ;  // create new operation and copy sys_operation_gen
-                       
-
-                                //$display("@%0t:%s:%0d:LEE: Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                                oob_packet_new = new                                 ;
-                                oob_packet_new.createFromOperation(0, sys_operation) ;
-                                gen2rfP.put(oob_packet_new)                          ;
-                                @gen2rfP_ack                                         ;  // wait for regFile inputs to be driven
-
-                                //$display("@%0t:%s:%0d:LEE: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                             end
                         
                         else if(sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM )  
                             begin
                                 $display("@%0t:%s:%0d: : INFO: Generating FP MAC operation: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                                sys_operation_gen.create();
-                                sys_operation = new sys_operation_gen ;  // create new operation and copy sys_operation_gen
-                      
-                                //$display("@%0t:%s:%0d:LEE:Setting regFile interface to stOp Controller driver: {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                                oob_packet_new = new                                 ;
-                                oob_packet_new.createFromOperation(0, sys_operation) ;
-                                gen2rfP.put(oob_packet_new)                          ;
-                                @gen2rfP_ack                                         ;  // wait for regFile inputs to be driven
-
-                                //$display("@%0t:%s:%0d:LEE: Generating FP MAC operation to driver: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                             end
+
+                        sys_operation_gen.create();
+                        sys_operation = new sys_operation_gen ;  // create new operation and copy sys_operation_gen
+                        oob_packet_new = new                                 ;
+                        oob_packet_new.createFromOperation(0, sys_operation) ;
+
+                        gen2oob.put(oob_packet_new)                          ;
+                        @gen2oob_ack                                         ;  // wait for OOB
+
+                        gen2rfP.put(oob_packet_new)                          ;
+                        @gen2rfP_ack                                         ;  // wait for regFile inputs to be driven
 
 /*
                         $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
