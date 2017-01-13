@@ -63,11 +63,11 @@ package operation;
         // note: struct members cannot be rand, so fields outside this struct will be randomized and then applied to the struct fields
         rand pe_stOp_operation                                   stOp_operation                                                ;  // create this from the other fields in the class
 
-        rand PE_DATA_TYPE                                        pe_stOp_stream_src_data_type   [`PE_NUM_OF_STREAMS_RANGE ]    ;
-        rand PE_DATA_TYPE                                        pe_stOp_stream_dest_data_type  [`PE_NUM_OF_STREAMS_RANGE ]    ;
+        rand pe_data_type                                        pe_stOp_stream_src_data_type   [`PE_NUM_OF_STREAMS_RANGE ]    ;
+        rand pe_data_type                                        pe_stOp_stream_dest_data_type  [`PE_NUM_OF_STREAMS_RANGE ]    ;
 
-        rand PE_STOP_DEST                                        pe_stOp_stream_dest            [`PE_NUM_OF_STREAMS_RANGE ]    ;
-        rand PE_STOP_SRC                                         pe_stOp_stream_src             [`PE_NUM_OF_STREAMS_RANGE ]    ;
+        rand pe_stop_dest                                        pe_stOp_stream_dest            [`PE_NUM_OF_STREAMS_RANGE ]    ;
+        rand pe_stop_src                                         pe_stOp_stream_src             [`PE_NUM_OF_STREAMS_RANGE ]    ;
 
 
         //------------------------------------------------------------------------------------------------------
@@ -581,14 +581,13 @@ package operation;
         int  Id [2]     ; // PE, Lane
         int  tId        ;  // debug - transaction ID 
 
-        rand bit   [`PE_STD_OOB_TAG_RANGE                     ]  tag                                                  ;  
-        rand pe_stOp_operation                                   stOp_operation                                       ;  
-        //rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE           ]  resultAddress                                        ;  
-        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE           ]  sourceAddress          [`PE_NUM_OF_STREAMS_RANGE ]   ;  
-        rand bit   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE           ]  destinationAddress     [`PE_NUM_OF_STREAMS_RANGE ]   ;  
-        rand PE_DATA_TYPE                                        src_data_type          [`PE_NUM_OF_STREAMS_RANGE ]   ;
-        rand PE_DATA_TYPE                                        dest_data_type         [`PE_NUM_OF_STREAMS_RANGE ]   ;
-        rand bit   [`PE_MAX_NUM_OF_TYPES_RANGE                ]  numberOfOperands                                     ;
+        rand bit               [`PE_STD_OOB_TAG_RANGE            ]  tag                                                  ;  
+        rand pe_stOp_operation                                      stOp_operation                                       ;  
+        rand bit               [`PE_ARRAY_CHIPLET_ADDRESS_RANGE  ]  sourceAddress          [`PE_NUM_OF_STREAMS_RANGE ]   ;  
+        rand bit               [`PE_ARRAY_CHIPLET_ADDRESS_RANGE  ]  destinationAddress     [`PE_NUM_OF_STREAMS_RANGE ]   ;  
+        rand pe_data_type                                           src_data_type          [`PE_NUM_OF_STREAMS_RANGE ]   ;
+        rand pe_data_type                                           dest_data_type         [`PE_NUM_OF_STREAMS_RANGE ]   ;
+        rand bit               [`PE_MAX_NUM_OF_TYPES_RANGE       ]  numberOfOperands                                     ;
      
 
         function new ();

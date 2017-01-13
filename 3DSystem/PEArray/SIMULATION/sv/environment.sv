@@ -62,7 +62,7 @@ class Environment;
 
     // an operation defines what is sent on both the streams in a pe/lane
     event         new_operation    [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
-    event         final_operation  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
+    event         final_operation  [`PE_ARRAY_NUM_OF_PE]                         ;
 
     mailbox       drv2memP         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
     event         drv2memP_ack     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;  
@@ -127,14 +127,14 @@ class Environment;
                         drv2memP    [pe][lane]  = new () ;
                         gen2rfP     [pe][lane]  = new () ;
                         // remember, each gen/drv tuple handle both streams in a lane
-                        gen         [pe][lane]  = new ( Id, mgr2gen[pe][lane] , mgr2gen_ack[pe][lane], gen2drv[pe][lane] , gen2drv_ack[pe][lane], gen2oob[pe] , gen2oob_ack[pe][lane], new_operation[pe][lane], final_operation[pe][lane],  vSysOob2PeArray [pe]       ,   vSysLane2PeArray [pe][lane] ,        gen2rfP[pe][lane],    gen2rfP_ack[pe][lane]  );
+                        gen         [pe][lane]  = new ( Id, mgr2gen[pe][lane] , mgr2gen_ack[pe][lane], gen2drv[pe][lane] , gen2drv_ack[pe][lane], gen2oob[pe] , gen2oob_ack[pe][lane], new_operation[pe][lane], vSysOob2PeArray [pe]       ,   vSysLane2PeArray [pe][lane] ,        gen2rfP[pe][lane],    gen2rfP_ack[pe][lane]  );
                         drv         [pe][lane]  = new ( Id, gen2drv[pe][lane] , gen2drv_ack[pe][lane], new_operation[pe][lane],                             vSysOob2PeArray [pe]       ,   vSysLane2PeArray [pe][lane] ,       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );
                         mem_check   [pe][lane]  = new ( Id,                                                                                                       vDma2Mem  [pe][lane] ,                                       drv2memP[pe][lane],   drv2memP_ack[pe][lane]  );  // monitor dma to memory interface for result check
                         rf_driver   [pe][lane]  = new ( Id,                                                                                      vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP[pe][lane],   gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
                     end
                  
-                mgr         [pe]  = new ( pe, mgr2oob[pe] , mgr2oob_ack[pe], mgr2gen[pe] , mgr2gen_ack[pe],   vSysOob2PeArray [pe],   vSysLane2PeArray [pe] );
-                oob_drv     [pe]  = new ( pe, mgr2oob[pe],  mgr2oob_ack[pe], gen2oob[pe],  gen2oob_ack[pe],   vSysOob2PeArray [pe],   vSysLane2PeArray [pe] );
+                mgr         [pe]  = new ( pe, mgr2oob[pe] , mgr2oob_ack[pe], mgr2gen[pe] , mgr2gen_ack[pe],  final_operation[pe], vSysOob2PeArray [pe],   vSysLane2PeArray [pe] );
+                oob_drv     [pe]  = new ( pe, mgr2oob[pe],  mgr2oob_ack[pe], gen2oob[pe],  gen2oob_ack[pe],                       vSysOob2PeArray [pe],   vSysLane2PeArray [pe] );
             end
 
 
@@ -142,7 +142,7 @@ class Environment;
 
     task run();                                                       //This task spawns parallel run tasks of generator, driver, golden models and their respective checkers.
         $display("@%0t:%s:%0d: : INFO:ENV: Run generators and drivers \n", $time, `__FILE__, `__LINE__,);
-        fork                                                          //These end after the generator triggers the event "final_operation" after generating the final transaction.
+        fork                                                          
             // We have a generator, driver and checker for every pe/lane
             `include "TB_start_generators_and_drivers.vh"
             // gen.run();
@@ -150,25 +150,15 @@ class Environment;
         join_none
 
         //$display("@%0t%s:%0d: LEE: Wait for final operation\n", $time, `__FILE__, `__LINE__,);
-        fork                                                          //These end after the generator triggers the event "final_operation" after generating the final transaction.
+        fork                                                          //These end after the manager triggers the event "final_operation" after generating the final transaction.
             `include "TB_wait_for_final_operation.vh"
-            // @(final_operation);
         join
 
         //join_none
         //wait fork ;
         //$display("@%0t:%s:%0d: LEE: Drivers taken all operations \n", $time, `__FILE__, `__LINE__);
-/*
-        repeat (50)              //Running simulation for some time after the final transaction is sent
-        begin
-            fork                                                          //These end after the generator triggers the event "final_operation" after generating the final transaction.
-                `include "TB_quiesce_all_generators.vh"
-                //@vSysLane2PeArray[0][0].cb_test;
-                //vSysLane2PeArray[0][0].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
-            join_none
-        end
-*/
 
+/*
         // check all memory checkers have finished
         for (int pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe++)
             begin
@@ -182,6 +172,7 @@ class Environment;
                         mem_check[pe][lane].finished = null ;
                     end
             end
+*/
 
     endtask
 

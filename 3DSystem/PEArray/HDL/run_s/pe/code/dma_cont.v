@@ -34,6 +34,7 @@
 `include "common.vh"
 `include "pe_array.vh"
 `include "pe.vh"
+`include "stack_interface.vh"
 `include "streamingOps_cntl.vh"
 `include "mem_acc_cont.vh"
 `include "streamingOps.vh"
@@ -599,13 +600,13 @@ module dma_cont (
       begin: strm_type_info
 
         wire [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]  num_of_types             ;
-        wire [`DMA_CONT_DATA_TYPES_RANGE       ]  type                     ;
+        wire [`DMA_CONT_DATA_TYPES_RANGE       ]  typee                    ;
         reg  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]  type_count_init          ;
         reg  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]  types_in_last_data       ;
         reg  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]  types_in_last_data_next  ;
 
         always @(*)
-          casex (type)
+          casex (typee)
             `DMA_CONT_DATA_TYPE_BIT       : type_count_init  = (num_of_types >> `DMA_CONT_BIT_ADDRESS_SHIFT    ) ;
             `DMA_CONT_DATA_TYPE_NIBBLE    : type_count_init  = (num_of_types >> `DMA_CONT_NIBBLE_ADDRESS_SHIFT ) ;
             `DMA_CONT_DATA_TYPE_BYTE      : type_count_init  = (num_of_types >> `DMA_CONT_BYTE_ADDRESS_SHIFT   ) ;
@@ -615,7 +616,7 @@ module dma_cont (
           endcase // always @
    
         always @(*)
-          casex (type)
+          casex (typee)
             `DMA_CONT_DATA_TYPE_BIT       : types_in_last_data_next  = num_of_types[`DMA_CONT_BIT_ADDRESS_SHIFT     -1 :0];
             `DMA_CONT_DATA_TYPE_NIBBLE    : types_in_last_data_next  = num_of_types[`DMA_CONT_NIBBLE_ADDRESS_SHIFT  -1 :0];
             `DMA_CONT_DATA_TYPE_BYTE      : types_in_last_data_next  = num_of_types[`DMA_CONT_BYTE_ADDRESS_SHIFT    -1 :0];
@@ -631,7 +632,7 @@ module dma_cont (
         reg [`DMA_CONT_MEMORY_DATA_RANGE] mask;
         
         always @(*)
-          casex (type)
+          casex (typee)
             `DMA_CONT_DATA_TYPE_BIT       : 
               begin
                 casex (types_in_last_data)
@@ -711,10 +712,10 @@ module dma_cont (
       end
   endgenerate
 
-  assign strm_type_info[0].type = type0;
+  assign strm_type_info[0].typee        = type0;
   assign strm_type_info[0].num_of_types = num_of_types0;
 
-  assign strm_type_info[1].type = type1;
+  assign strm_type_info[1].typee        = type1;
   assign strm_type_info[1].num_of_types = num_of_types1;
 
   //-------------------------------------------------------------------------------------------------

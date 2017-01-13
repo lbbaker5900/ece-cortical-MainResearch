@@ -31,9 +31,9 @@ vlog +incdir+../../HDL/common ../../HDL/run_s/pe/code/streamingOps.v            
 vlog +incdir+../../HDL/common ../../HDL/run_s/pe/code/streamingOps_datapath.v                                                                                    2>&1   | tee -a $1  
 vlog +incdir+../../HDL/common ../../HDL/run_s/pe/code/noc_cntl.v                                                                                                 2>&1   | tee -a $1  
 vlog -sv +incdir+../../HDL/common ../../HDL/run_s/pe/code/stack_interface.v                                                                                      2>&1   | tee -a $1  
-vlog -sv  +incdir+../../HDL/common ../../HDL/run_s/pe/code/pe.v                                                                                                  2>&1   | tee -a $1  
-vlog -sv  +incdir+../../MEMORY/65nm/FIFOs/compout/views/sasslnpky2p32x35cm4sw0bk1ltlc1 +incdir+../../HDL/common ../../HDL/run_s/pe/code/streamingOps_cntl.v      2>&1   | tee -a $1                            
-vlog -sv  +incdir+../../HDL/common ../../HDL/run_s/pe_array.v                                                                                                    2>&1   | tee -a $1  
+vlog -sv +incdir+../../HDL/common ../../HDL/run_s/pe/code/pe.v                                                                                                  2>&1   | tee -a $1  
+vlog -sv +incdir+../../MEMORY/65nm/FIFOs/compout/views/sasslnpky2p32x35cm4sw0bk1ltlc1 +incdir+../../HDL/common ../../HDL/run_s/pe/code/streamingOps_cntl.v      2>&1   | tee -a $1                            
+vlog -sv +incdir+../../HDL/common ../../HDL/run_s/pe_array.v                                                                                                    2>&1   | tee -a $1  
                                                                                                                                                                  
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common base_operation.sv                                                                              2>&1   | tee -a $1  
 vlog -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common driver.sv                                                                                      2>&1   | tee -a $1  

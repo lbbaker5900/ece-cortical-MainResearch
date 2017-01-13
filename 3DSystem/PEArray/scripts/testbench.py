@@ -102,7 +102,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe{0}__oob_cntl            ;'.format(pe) 
     pLine = pLine + '\n  input                                         std__pe{0}__oob_valid           ;'.format(pe) 
     pLine = pLine + '\n  output                                        pe{0}__std__oob_ready           ;'.format(pe) 
-    pLine = pLine + '\n  input [`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
+    pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
     #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
@@ -131,7 +131,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe{0}__oob_cntl            ;'.format(pe) 
     pLine = pLine + '\n  wire                                        std__pe{0}__oob_valid           ;'.format(pe) 
     pLine = pLine + '\n  wire                                        pe{0}__std__oob_ready           ;'.format(pe) 
-    pLine = pLine + '\n  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
+    pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
     #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
@@ -213,12 +213,12 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
-    for lane in range (0, numOfExecLanes):
-      pLine = pLine + '\n            begin'
-      pLine = pLine + '\n              @(final_operation[{0}][{1}]) ;'.format(pe,lane) 
-      pLine = pLine + '\n              //$display("@%0t LEE: Received final operation event for {0},{1}\\n", $time);'.format(pe,lane) 
-      pLine = pLine + '\n            end'                                         
-    pLine = pLine + '\n'
+    pLine = pLine + '\n            begin'
+    pLine = pLine + '\n              wait(final_operation[{0}].triggered) ; // we start waiting before the event will occur'.format(pe) 
+    pLine = pLine + '\n              //@(final_operation[{0}]) ;'.format(pe) 
+    pLine = pLine + '\n              //$display("@%0t LEE: Received final operation event for manager {0}\\n", $time);'.format(pe) 
+    pLine = pLine + '\n            end'                                         
+  pLine = pLine + '\n'
 
   f.write(pLine)
   f.close()
@@ -234,6 +234,28 @@ if __name__ == "__main__":
         pLine = pLine + '\n                vSysLane2PeArray [{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid  <= 0  ;'.format(pe,lane,strm) 
       pLine = pLine + '\n            end'                                         
     pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../SIMULATION/common/TB_manager_send_operation_to_generators.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n            fork                                                                                                                                  '.format(lane) 
+    pLine = pLine + '\n                sys_operation_lane[{0}] = new sys_operation_mgr ;                                                                                 '.format(lane) 
+    pLine = pLine + '\n                sys_operation_lane[{0}].Id[1]  =  {0}      ;  // set lane for address generation                                                  '.format(lane) 
+    pLine = pLine + '\n                                                                                                                                                  '.format(lane) 
+    pLine = pLine + '\n                // Send to driver                                                                                                                 '.format(lane) 
+    pLine = pLine + '\n                //$display("@%0t:%s:%0d:LEE: sys_operation_mgr : {{%0d,{0}}}:%h\\n", $time, `__FILE__, `__LINE__, Id, sys_operation_mgr);            '.format(lane) 
+    pLine = pLine + '\n                mgr2gen[{0}].put(sys_operation_lane[{0}])                    ;                                                                    '.format(lane) 
+    pLine = pLine + '\n                                                                                                                                                  '.format(lane) 
+    pLine = pLine + '\n                // now wait for generator                                                                                                         '.format(lane) 
+    pLine = pLine + '\n                //sys_operation.displayOperation();                                                                                               '.format(lane) 
+    pLine = pLine + '\n                @mgr2gen_ack[{0}];                                                                                                              '.format(lane) 
+    pLine = pLine + '\n            join_none                                                                                                                             '.format(lane) 
+  pLine = pLine + '\n'
 
   f.write(pLine)
   f.close()

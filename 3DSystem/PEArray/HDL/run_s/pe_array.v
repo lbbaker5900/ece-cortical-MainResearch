@@ -20,6 +20,7 @@
 
 
 `include "common.vh"
+`include "stack_interface.vh"
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
 `include "dma_cont.vh"

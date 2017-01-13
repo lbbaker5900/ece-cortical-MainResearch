@@ -77,31 +77,38 @@ class oob_driver;
     endfunction
 
     task run();
-        //$display("@%0t:%s:%0d: LEE: Running OOB driver : {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+        //$display("@%0t:%s:%0d: DEBUG: {%0d,%0d} Running OOB driver : ", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
         
 
         // OOB process will configure the PE (WIP)
+
+        // oob_driver receives an oob_packet from the manager and oob_packets from each generator.
+        // All oob_packets need to be received before the oob_command is driven on the STD but.
+
             forever
                 begin
                     if (( mgr2oob.num() != 0 ) && (receivedManagerOobPacket == 0) )
                         begin
                             mgr2oob.peek(oob_packet_mgr) ;                             //Taking the instruction from the manager 
-                            //$display("@%0t%s:%0d:LEE: {%0d} received OOB packet from manager: %0b", $time, `__FILE__, `__LINE__, Id, oob_packet_mgr.stOp_operation );
+                            //$display("@%0t%s:%0d:DEBUG:{%0d}: received OOB packet from manager: %0b", $time, `__FILE__, `__LINE__, Id, oob_packet_mgr.stOp_operation );
                             receivedManagerOobPacket      = 1                     ;
                         end
                     else if (( gen2oob.num() == `PE_NUM_OF_EXEC_LANES ) && (receivedGeneratorOobPackets == 0) )
                         begin
-                            //$display("@%0t%s:%0d:LEE: {%0d} received all OOB packets from generators", $time, `__FILE__, `__LINE__, Id);
+                            //$display("@%0t%s:%0d:DEBUG: {%0d} received all OOB packets from generators", $time, `__FILE__, `__LINE__, Id);
                             receivedGeneratorOobPackets   = 1                     ;
                         end
                     // watch out for infinite loop if commenting out this section of code
                     // a forever loop will need an @clk
 
+                    //----------------------------------------------------------------------
+                    // If we have all the oob_packets, drive the STD busA
+
                     if ( (receivedManagerOobPacket == 1) && (receivedGeneratorOobPackets == 1) )
                         begin
                             mgr2oob.get(oob_packet_mgr)  ;  //Removing the instruction from manager mailbox
-                            //$display("@%0t:%s:%0d: LEE: Driving OOB with contents of OOB packet from manager : {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                            //oob_packet_mgr.displayPacket();
+                            $display("@%0t:%s:%0d: INFO:{%0d}: Driving WU via OOB with contents of OOB packet from manager : {%0d,%0d}", $time, `__FILE__, `__LINE__, Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1]);
+                            oob_packet_mgr.displayPacket();
 
                             vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 1  ;  // FIXME: temporary drive OOB to non-X
                             vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;  
@@ -109,9 +116,9 @@ class oob_driver;
 
                             for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                                 begin
-                                    gen2oob.get(oob_packet_gen)  ;  //Removing the instruction from manager mailbox
+                                    gen2oob.get(oob_packet_gen)  ;  // Removing the instruction from manager mailbox
                                     gen2oob.put(oob_packet_gen)  ;  // we need each packet later
-                                    //$display("@%0t:%s:%0d: LEE: Driving OOB Lane with contents of OOB packet from generator %0d : {%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], oob_packet_gen.Id[1]);
+                                    //$display("@%0t:%s:%0d: DEBUG:{%0d}: Driving OOB Lane with contents of OOB packet from generator : {%0d,%0d}", $time, `__FILE__, `__LINE__, Id, oob_packet_gen.Id[0], oob_packet_gen.Id[1]);
                                     //oob_packet_mgr.displayPacket();
                                     tmp_vSysLane2PeArray = vSysLane2PeArray[oob_packet_gen.Id[1]];
 
@@ -127,10 +134,10 @@ class oob_driver;
                                 end
       
 
+                            // Now quiesce the STD bus by deasserting valid
                             @(vSysOob2PeArray.cb_test);
 
                             vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
-
                             for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                                 begin
                                     gen2oob.get(oob_packet_gen)  ;  //Removing the instruction from manager mailbox
@@ -142,11 +149,14 @@ class oob_driver;
                                 end
 
 
+                            //----------------------------------------------------------------------
+                            // Ack manager and generators
+
                             // Ack manager
                             -> mgr2oob_ack;
                             receivedManagerOobPacket      = 0                     ;
 
-                            // Ack generator
+                            // Ack generator(s)
                             for (int i=0; i<`PE_NUM_OF_EXEC_LANES; i++)
                                 begin
                                     -> gen2oob_ack[i];
@@ -155,6 +165,8 @@ class oob_driver;
                             $display("@%0t:%s:%0d:INFO: {%d} Completed driving OOB", $time, `__FILE__, `__LINE__, Id );
                         end
                     else
+                        //----------------------------------------------------------------------
+                        // make sure we dont have a zero delay loop
                         begin
                             @(vSysOob2PeArray.cb_test);
                             vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // driver.sv takes care of stream valids

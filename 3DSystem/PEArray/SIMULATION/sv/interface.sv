@@ -19,6 +19,8 @@
 `include "mem_acc_cont.vh"
 `include "pe.vh"
 `include "pe_array.vh"
+`include "stack_interface.vh"
+`include "stack_interface_typedef.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
 
@@ -33,18 +35,18 @@ interface std_pe_oob_ifc(
 
     // Stack Bus - downstream Out-of-band
     // FIXME - right now type is a per lane signal??
-    logic [`STACK_DOWN_INTF_TYPE_RANGE   ]       std__pe__oob_type        ;  // Control or Data, Vector or scalar
+    stack_down_oob_type                         std__pe__oob_type        ;  // Control or Data, Vector or scalar
 
-    logic                                        std__pe__oob_valid        ;
-    logic [`COMMON_STD_INTF_CNTL_RANGE   ]       std__pe__oob_cntl         ;
-    logic                                        pe__std__oob_ready        ;
-
-    logic                                        sys__pe__allSynchronized  ;
-    logic                                        pe__sys__thisSynchronized ;
-
-    logic [`PE_PE_ID_RANGE               ]       sys__pe__peId             ;
-    logic                                        pe__sys__ready            ;
-    logic                                        pe__sys__complete         ;
+    logic                                       std__pe__oob_valid        ;
+    logic [`COMMON_STD_INTF_CNTL_RANGE  ]       std__pe__oob_cntl         ;
+    logic                                       pe__std__oob_ready        ;
+                                        
+    logic                                       sys__pe__allSynchronized  ;
+    logic                                       pe__sys__thisSynchronized ;
+                                        
+    logic [`PE_PE_ID_RANGE              ]       sys__pe__peId             ;
+    logic                                       pe__sys__ready            ;
+    logic                                       pe__sys__complete         ;
 
     clocking cb_test @(posedge clk_oob);
 

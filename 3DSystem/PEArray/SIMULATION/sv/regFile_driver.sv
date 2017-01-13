@@ -66,15 +66,15 @@ class regFile_driver;
 
                         //----------------------------------------------------------------------------------------------------
                         // Info/Debug
-                        $display("@%0t INFO:%s:%0d:: Received Optype from generator : {%0d,%0d} : 0b%0b\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], oob_packet_new.stOp_operation);
+                        $display("@%0t:%s:%0d: INFO: Received Optype from generator : {%0d,%0d} : 0b%0b", $time, `__FILE__, `__LINE__, Id[0], Id[1], oob_packet_new.stOp_operation);
 /*
                         case (sys_operation.OpType)
                             `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM :
-                                $display("@%0t INFO:%s:%0d:: Received {STD,STD -> MEM} FP MAC operation from generator: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
+                                $display("@%0t INFO:%s:%0d:: Received {STD,STD -> MEM} FP MAC operation from generator: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                             `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM   :
-                                $display("@%0t INFO:%s:%0d:: Received Downstream copy to memory from generator: {%0d,%0d} : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
+                                $display("@%0t INFO:%s:%0d:: Received Downstream copy to memory from generator: {%0d,%0d} : written to address : 0x%6h (0b%24b)", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                             `STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM :
-                                $display("@%0t INFO:%s:%0d:: Received {MEM,STD -> MEM} FP MAC operation from generator: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
+                                $display("@%0t INFO:%s:%0d:: Received {MEM,STD -> MEM} FP MAC operation from generator: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                         endcase
 
 */
@@ -86,11 +86,11 @@ class regFile_driver;
                               // Make sure address is local to PE
                               if (oob_packet_new.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] != Id[0])
                                 begin
-                                  $display("@%0t:%s:%0d:ERROR:: {%0d,%0d} : Stream %d Destination address not within this PE\'s local memory : %h\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], stream, oob_packet_new.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] );
+                                  $display("@%0t:%s:%0d:ERROR:: {%0d,%0d} : Stream %d Destination address not within this PE\'s local memory : %h", $time, `__FILE__, `__LINE__, Id[0], Id[1], stream, oob_packet_new.destinationAddress[stream][`PE_CHIPLET_ADDR_BITS_RANGE] );
                                 end
                               if (oob_packet_new.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] != Id[1])
                                 begin
-                                  $display("@%0t:%s:%0d:ERROR:: {%0d,%0d} : Stream %d Destination address not within this PE\'s local lane address space: %h\n", $time, `__FILE__, `__LINE__, Id[0], Id[1], stream, oob_packet_new.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] );
+                                  $display("@%0t:%s:%0d:ERROR:: {%0d,%0d} : Stream %d Destination address not within this PE\'s local lane address space: %h", $time, `__FILE__, `__LINE__, Id[0], Id[1], stream, oob_packet_new.destinationAddress[stream][`PE_CHIPLET_LANE_ADDR_BITS_RANGE] );
                                 end
                           end
                         
@@ -112,9 +112,9 @@ class regFile_driver;
                         vP_srf.cb_out.rs1           <= {32{1'b1}};
 
                         // struct contents debug
-                        //$display("@%0t LEE:regFile driver: struct size = %d \n", $time, $bits(oob_packet_new.stOp_operation));
-                        //$display("@%0t LEE:regFile driver: struct %b : %b \n", $time, oob_packet_new.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM);
-                        //$display("@%0t LEE:regFile driver: struct %b : %b \n", $time, oob_packet_new.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  );
+                        //$display("@%0t LEE:regFile driver: struct size = %d ", $time, $bits(oob_packet_new.stOp_operation));
+                        //$display("@%0t LEE:regFile driver: struct %b : %b ", $time, oob_packet_new.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM);
+                        //$display("@%0t LEE:regFile driver: struct %b : %b ", $time, oob_packet_new.stOp_operation, `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM  );
 
 
                         //----------------------------------------------------------------------------------------------------
@@ -127,17 +127,17 @@ class regFile_driver;
 
                         // DEBUG
 /*
-                        $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}\n", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
                         if ((Id[0]  == 63) && (Id[1] == 31))
                             sys_operation.displayOperation();
 */
                         -> gen2rfP_ack;
-                        $display ($time,": INFO:%s:%0d:: Operation driven for {%02d,%02d}", `__FILE__, `__LINE__, Id[0], Id[1]);
+                        $display ("@%0t:%s:%0d:INFO: Operation driven for {%02d,%02d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
  
                         //----------------------------------------------------------------------------------------------------
                         // Wait for  streamingOps_cntl to be complete the deassert enable ( rs0[0]=0 )
                         wait(vP_srf.cb_out.complete);
-                        $display ($time,": INFO:%s:%0d:: Operation complete for {%02d,%02d}", `__FILE__, `__LINE__, Id[0], Id[1]);
+                        $display ("@%0t:%s:%0d:INFO: streamingOps_cntl complete for {%02d,%02d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
                         vP_srf.cb_out.rs0[0]        <= 1'b0                                               ;
                         wait(~vP_srf.cb_out.complete);
       

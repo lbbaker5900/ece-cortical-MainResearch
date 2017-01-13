@@ -3121,7 +3121,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe{0}__oob_cntl            ;'.format(pe) 
     pLine = pLine + '\n  input                                         std__pe{0}__oob_valid           ;'.format(pe) 
     pLine = pLine + '\n  output                                        pe{0}__std__oob_ready           ;'.format(pe) 
-    pLine = pLine + '\n  input [`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
+    pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
     #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
@@ -3150,7 +3150,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe{0}__oob_cntl            ;'.format(pe) 
     pLine = pLine + '\n  wire                                        std__pe{0}__oob_valid           ;'.format(pe) 
     pLine = pLine + '\n  wire                                        pe{0}__std__oob_ready           ;'.format(pe) 
-    pLine = pLine + '\n  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
+    pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
     #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
@@ -3286,7 +3286,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;'.format(lane,pe,strm) 
   pLine = pLine + '\n  input                                         std__pe__oob_valid           ;'.format(lane,pe,strm) 
   pLine = pLine + '\n  output                                        pe__std__oob_ready           ;'.format(lane,pe,strm) 
-  pLine = pLine + '\n  input [`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe__oob_type            ;'.format(lane,pe,strm) 
+  pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;'.format(lane,pe,strm) 
   #
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  // Lane operand bus                 '.format(lane)
@@ -3319,7 +3319,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;' 
   pLine = pLine + '\n  wire                                        std__pe__oob_valid           ;' 
   pLine = pLine + '\n  wire                                        pe__std__oob_ready           ;' 
-  pLine = pLine + '\n  wire[`STACK_OOB_DOWN_INTF_TYPE_RANGE ]      std__pe__oob_type            ;' 
+  pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;' 
   #
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  // Lane operand bus                 '.format(lane)

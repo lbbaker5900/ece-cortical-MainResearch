@@ -83,9 +83,10 @@ class manager;
     vSysOob2PeArray_T    vSysOob2PeArray                            ;  // FIXME OOB interface is a per PE i/f where generator is per lane
     vSysLane2PeArray_T   vSysLane2PeArray  [`PE_NUM_OF_EXEC_LANES]  ;  // manager communicates will lane generators
 
-    base_operation    sys_operation      ;  // operation packet containing all data associated with operation
-    base_operation    sys_operation_mgr  ;  // operation packet containing all data associated with operation
-    base_operation    sys_operation_lane ;  // copy for each lane
+    base_operation    sys_operation                              ;  // operation packet containing all data associated with operation
+    base_operation    sys_operation_mgr                          ;  // operation packet containing all data associated with operation
+    //base_operation    sys_operation_lane                         ;  // copy for each lane
+    base_operation    sys_operation_lane [`PE_NUM_OF_EXEC_LANES] ;  // copy for each lane
 
     oob_packet       oob_packet_mgr     ;  // constructed from the sys_operation and sent to the OOB driver
     oob_packet       oob_packet_new     ;  // used in OOB process
@@ -100,32 +101,33 @@ class manager;
                   input mailbox               mgr2gen          [`PE_NUM_OF_EXEC_LANES] ,
                   input event                 mgr2gen_ack      [`PE_NUM_OF_EXEC_LANES] ,
                   //input event                 new_operation                            ,
-                  //input event                 final_operation                          ,
+                  input event                 final_operation                          ,
                   input vSysOob2PeArray_T     vSysOob2PeArray                          ,
                   input vSysLane2PeArray_T    vSysLane2PeArray [`PE_NUM_OF_EXEC_LANES] 
                   //input mailbox               mgr2rfP                                  ,
                   //input event                 mgr2rfP_ack       
                  );
 
-        this.Id                = Id                 ;
-        this.mgr2oob           = mgr2oob            ;
-        this.mgr2oob_ack       = mgr2oob_ack        ;
-        this.mgr2gen           = mgr2gen            ;
-        this.mgr2gen_ack       = mgr2gen_ack        ;
-        //this.new_operation     = new_operation      ;
-        //this.final_operation   = final_operation    ;
-        this.vSysOob2PeArray   = vSysOob2PeArray    ;
-        this.vSysLane2PeArray  = vSysLane2PeArray   ;
-        //this.mgr2rfP           = mgr2rfP            ;
-        //this.mgr2rfP_ack       = mgr2rfP_ack        ;
+        this.Id                     = Id                 ;
+        this.mgr2oob                = mgr2oob            ;
+        this.mgr2oob_ack            = mgr2oob_ack        ;
+        this.mgr2gen                = mgr2gen            ;
+        this.mgr2gen_ack            = mgr2gen_ack        ;
+        //this.new_operation          = new_operation      ;
+        this.final_operation        = final_operation    ;
+        this.vSysOob2PeArray        = vSysOob2PeArray    ;
+        this.vSysLane2PeArray       = vSysLane2PeArray   ;
+        //this.mgr2rfP                = mgr2rfP            ;
+        //this.mgr2rfP_ack            = mgr2rfP_ack        ;
 
     endfunction
 
     task run ();
-        //$display("@%0t:%s:%0d:LEE: Running manager : {%0d}\n", $time, `__FILE__, `__LINE__, Id);
+        //$display("@%0t:%s:%0d:LEE: Running manager : {%0d}", $time, `__FILE__, `__LINE__, Id);
         // wait a few cycles before starting
         repeat (20) @(vSysOob2PeArray.cb_test);  
 
+        $display("@%0t:%s:%0d:INFO:Manager {%0d} Running operations:%0d", $time, `__FILE__, `__LINE__, Id, num_operations);
         repeat (num_operations)                 //Number of transactions to be generated
             begin
                 // Create a base operation and send the generator which will then spawn further operations for each lane.
@@ -145,39 +147,39 @@ class manager;
                 priorOperations.push_back(sys_operation_mgr)       ;
 
                 //----------------------------------------------------------------------------------------------------
-                // Create an OOB packet and send to OOB driver
+                // Create an oob_packet and send to OOB driver
 
                 oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
                 oob_packet_mgr.createFromOperation(0, sys_operation_mgr)     ;
                 mgr2oob.put(oob_packet_mgr)                                  ;  // oob needs to prepare the PE
+                $display("@%0t:%s:%0d:LEE: Manager {%0d} sent oob_packet {%0d} to oob_driver", $time, `__FILE__, `__LINE__, Id, operationNum);
 
-
+                //  The manager sends OOB packet to oob_driver and the same operation to each generator
+                //  The oob_driver will get oob information from the generator in case the generator has made changes to the operation
+                //  e.g. perhaps we have different operations per lane
+                //
+                // so we will not get the ack from the oob or geneators until we have sent both the oob-packet and the operations
+                // the oob_driver and generator make sure the OOB WU gets sent before operation data
 
                 //----------------------------------------------------------------------------------------------------
-                // Create an OOB packet and send to OOB driver
+                // Create copies of the base_operation and send to each lane generator 
 
-                // send this to all the lane generators for this PE
-                for (int lane=0; lane < `PE_NUM_OF_EXEC_LANES; lane++)
-                    begin
-                        sys_operation_lane = new sys_operation_mgr ;
-                        sys_operation_lane.Id[1]  =  lane      ;  // set lane for address generation
+                // send this to all the lane generators for this PE and wait for acknowledge
+                        
+                $display("@%0t:%s:%0d:LEE: Manager {%0d} sending operation {%0d} to generators and waiting for ack", $time, `__FILE__, `__LINE__, Id, operationNum);
+                `include "TB_manager_send_operation_to_generators.vh"
+                wait fork;
 
-                        // Send to driver
-                        //$display("@%0t:%s:%0d:LEE: sys_operation_mgr : {%0d,%0d}:%h\n", $time, `__FILE__, `__LINE__, Id, lane, sys_operation_mgr);
-                        mgr2gen[lane].put(sys_operation_lane)                    ;
+                // wait till OOB packet is complete before startng next operation
+                //@mgr2oob_ack ;
+                //wait(mgr2oob_ack.triggered) ;
+                $display("@%0t:%s:%0d:LEE: Manager {%0d} operation {%0d} acked by generators", $time, `__FILE__, `__LINE__, Id, operationNum);
 
-                        // now wait for generator
-                        //sys_operation.displayOperation();
-                        //@mgr2gen_ack[lane];
-                    
-                    end
                 operationNum++                                ;
-
-                
                 
             end
            
-        //-> final_operation;
+        -> final_operation;
     endtask
 endclass
 

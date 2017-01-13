@@ -21,6 +21,7 @@
 `include "common.vh"
 `include "pe_array.vh"
 `include "pe.vh"
+`include "stack_interface.vh"
 `include "streamingOps_cntl.vh"
 `include "dma_cont.vh"
 `include "streamingOps.vh"
