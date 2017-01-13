@@ -23,7 +23,7 @@ DIR="mti_lib"
 if [ ! -d $DIR ];
 then
     echo "Create library"
-    mkdir mti_lib
+    vlib mti_lib
 fi
 
 
