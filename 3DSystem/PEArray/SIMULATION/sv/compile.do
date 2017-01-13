@@ -17,11 +17,6 @@ error_exit() {
 /bin/touch $1 ; /bin/rm $1
 
 
-add modelsim10.3b
-add synopsys2015
-add cadence2015
-export MODELSIM="modelsim.ini"
-
 #DIR=$1
 DIR="mti_lib"
 
