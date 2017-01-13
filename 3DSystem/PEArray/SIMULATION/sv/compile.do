@@ -16,6 +16,22 @@ error_exit() {
 
 /bin/touch $1 ; /bin/rm $1
 
+
+add modelsim10.3b
+add synopsys2015
+add cadence2015
+export MODELSIM="modelsim.ini"
+
+#DIR=$1
+DIR="mti_lib"
+
+if [ ! -d $DIR ];
+then
+    echo "Create library"
+    mkdir mti_lib
+fi
+
+
 pushd ../../scripts  
 ./testbench.py  2>&1  | tee -a ../SIMULATION/sv/$1
 ./peArray.py 2>&1   | tee -a ../SIMULATION/sv/$1
