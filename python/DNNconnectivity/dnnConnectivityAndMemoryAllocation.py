@@ -15,10 +15,28 @@
 ##
 
 import numpy as np
+import math
 import sys
 import os
+from collections import namedtuple
+from rcdtype import *
+
+########################################################################################################################
+## Globals
+
+## Memory
+WORDSIZE = 32
+
+
 
 ##DEBUG = []
+
+
+
+
+
+########################################################################################################################
+
 
 #print sys.argv.__len__()
 #print sys.argv[0]
@@ -41,16 +59,109 @@ import os
 ##----------------------------------------------------------------------------------------------------
 ## FIXME's
 ##
-## the layer is now a 3-D array of cells but in the lot of cases we only refer to the first cell in the Z-dimension
+## the layer is now a 3-D array of cells but in the lot of cases we only refer to the first cell in the Z-dimension shit
 ## => fix where we have .cells[0]...
 
+point = namedtuple("point", "z y x") 
+Point = recordtype('Point', 'z y x')
+
+########################################################################################################################
+## KERNELS
+
+class Kernel():
+
+    def __init__(self, z, y, x):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    
+
+########################################################################################################################
+## MEMORY
+
+## DiRAM4 memory is channels/banks/pages
+class Page():
+    ## memory location is a word within a page
+    def __init__(self, sizeOfPage):
+        self.Words         = []
+        for word in range(sizeOfPage/WORDSIZE):
+            newWord = 0 # init
+            self.Words.append(newWord)
+
+class Bank():
+    ## memory location is a word within a page
+    def __init__(self, numOfPages, sizeOfPage):
+        self.numOfPages    = numOfPages    
+        self.openPage      = []
+        self.Pages         = []
+        for page in range(numOfPages):
+            newPage = Page(sizeOfPage)
+            self.Pages.append(newPage)
+
+class Channel():
+    ## memory location is a word within a page
+    def __init__(self, numOfBanks, numOfPagesPerBank, sizeOfPage):
+        self.numOfBanks    = numOfBanks    
+        self.Banks         = []
+        for bank in range(numOfBanks):
+            newBank = Bank(numOfPagesPerBank, sizeOfPage)
+            self.Banks.append(newBank)
+
+class Memory():
+    ## memory location is a word within a page
+    def __init__(self, numOfChannels, numOfBanksPerChannel, numOfPagesPerBank, sizeOfPage):
+        self.numOfChannels           = numOfChannels 
+        self.numOfBanksPerChannel    = numOfBanksPerChannel    
+        self.numOfPagesPerBank       = numOfPagesPerBank    
+        self.sizeOfPage              = sizeOfPage    
+        self.Channels                = []
+        for ch in range(numOfChannels):
+            newChannel = Channel(numOfBanksPerChannel, numOfPagesPerBank, sizeOfPage)
+            self.Channels.append(newChannel)
+
+    def __str__(self):
+        return "Channels:{0}:Banks/Channel:{1}:Pages/Bank:{2}:Words/Page:{3}:".format(self.numOfChannels, self.numOfBanksPerChannel, self.numOfPagesPerBank, self.sizeOfPage/WORDSIZE)
+
+## Kernels are usually stored across muliple pages with each page containing 4 weights of 32 kernels
+## e.g. page = {K0(0), K1(0), .... K31(0), K0(1), K1(1), .... K31(1), K0(2), K1(2), .... K31(2), K0(3), K1(3), .... K31(3)}
+## A page is read and each work is sent to a lane
+
+## Cell state is an ROI to the next layer and is stored contiguously in a page. 
+## The order is feature, coordinate where a cell is a part of a feature map where there are Z feature maps with each having a YxX dimension.
+## e.g. page = {cell(0,0,0), cell(1,0,0), .... cell(Z-1,0,0), cell(0,1,0), cell(1,1,0) ... cell(Z-1,1,0), cell(0,2,0), cell(1,2,0), ....
+## 
+
+class MemoryLocation():
+    ## memory location is a word within a page
+    def __init__(self, channel, bank, page, word):
+        self.channel = channel;
+        self.bank    = bank   ;
+        self.page    = page   ;
+        self.word    = word   ;
+
+    def __str__(self):
+        return "Channel:{0}, Bank:{1}, Page:{2}, Word:{3}".format(self.channel, self.bank, self.page, self.word)
+
+
+
+########################################################################################################################
+## NETWORK
+
+
+#----------------------------------------------------------------------------------------------------
+# CELL
 
 class Cell():
 
-    def __init__(self, parentLayer):
-        self.PE = np.empty(2)
+    def __init__(self, parentLayer, z, y, x):
         # keep track of the {x,y} location of PE processing this cell
-        self.peID = np.empty(2)
+        self.PE = np.empty(2)
+        self.roi = np.empty(4)
+        # Keep ID locally
+        self.Z = z
+        self.Y = y
+        self.X = x
         # Fanin and fanout of this cell
         self.sourceCells = dict() 
         self.targetCells = dict()
@@ -58,8 +169,50 @@ class Cell():
         self.targetPEs = dict() # index using tuple(PE{x,y}) to find how many cells in PE{x,y} this cell connect to
         self.layerID = parentLayer.layerID
         self.parentLayer = parentLayer
+        self.memoryLocation = MemoryLocation(0,0,0,0)
+        self.kernel = Kernel(0,0,0)
+
+    #----------------------------------------------------------------------------------------------------
+    # ROI
+    
+    def findROI(self):
+        sCells = []
+        for sc in self.sourceCells:
+          c = self.parentLayer.parentNetwork.Layers[self.parentLayer.layerID-1].cells[sc[0]][sc[1]][sc[2]]
+          sCells.append(c)
+        minx = np.inf
+        miny = np.inf
+        maxx = 0
+        maxy = 0
+        for sc in sCells:
+            if sc.Y < miny:
+                miny = sc.Y
+            if sc.Y > maxy:
+                maxy = sc.Y
+            if sc.X < minx:
+                minx = sc.X
+            if sc.X > maxx:
+                maxx = sc.X
+        self.roi = np.array([miny, maxy, minx, maxx] )
+        return self.roi
+        #print minx, ",", maxx, ",", miny, ",", maxy
+    #----------------------------------------------------------------------------------------------------
+    # print
+
+    def __str__(self):
+        pLine = ""
+        pLine = pLine + '\nCell'.format(self.layerID)
+        pLine = pLine + '\nID{{Z,Y,X}} : {0},{1},{2}'.format(self.Z, self.Y, self.X)
+        pLine = pLine + '\nPE{{Y,X}} : {0},{1}'.format(self.PE[0], self.PE[1])
+        pLine = pLine + '\nOther fields: sourceCells{}, targetCells{}, sourcePEs{}, targetPEs{}'
+        return pLine
+        
+
+    #----------------------------------------------------------------------------------------------------
 
 
+#----------------------------------------------------------------------------------------------------
+# LAYER
 
 class Layer():
 
@@ -76,15 +229,79 @@ class Layer():
         self.stride = stride
         self.cells = []
         # create a 3-D grid of cells
+
         for z in range(Z):
           yCells = []
           for y in range(Y):
             xCells = []
             for x in range(X):
-                newCell = Cell(self)
+                newCell = Cell(self, z, y, x)
                 xCells.append(newCell)
             yCells.append(xCells)
           self.cells.append(yCells)
+
+    #----------------------------------------------------------------------------------------------------
+    # print
+
+    def __str__(self):
+        pLine = ""
+        pLine = pLine + '\nLayer {0}'.format(self.layerID)
+        pLine = pLine + '\n{{Z,Y,X}} : {0},{1},{2}'.format(self.Z, self.Y, self.X)
+        pLine = pLine + '\n{{Kz,Ky,Kx}} : {0},{1},{2}'.format(self.Kz, self.Ky, self.Kx)
+        pLine = pLine + '\nOther fields: cells[][][]'.format(self.Kz, self.Ky, self.Kx)
+        return pLine
+        
+
+    #----------------------------------------------------------------------------------------------------
+    # Memory assignment
+
+    def allocateMemory(self):  
+        # - after creating the cells, they will be allocated a state memory location
+        initialChannel   = 0
+        channelIncrement = 1
+        initialBank      = 0
+        bankIncrement    = 2
+        initialPage      = 0
+        pageIncrement    = 1
+        initialWord      = 0
+        wordIncrement    = 1
+        padWordRadix2    = 'Y'
+
+        if padWordRadix2 is 'Y' :
+          numberOfAllocatedFeaturess = 2**(math.ceil(math.log(self.Z,2)))
+
+        channel = initialChannel
+        bank    = initialBank
+        page    = initialPage
+        word    = initialWord
+
+        for y in range(self.Y):
+          for x in range(self.X):
+            for z in range(self.Z):
+              self.cells[z][y][x].memoryLocation.channel = int(channel)
+              self.cells[z][y][x].memoryLocation.bank    = int(bank)
+              self.cells[z][y][x].memoryLocation.page    = int(page)
+              self.cells[z][y][x].memoryLocation.word    = int(word)
+              
+              word = word + wordIncrement
+              if padWordRadix2 is 'Y' :
+                if word%numberOfAllocatedFeaturess == self.Z:
+                    word = (int(word/numberOfAllocatedFeaturess)+1) * numberOfAllocatedFeaturess
+              if word == (memory.sizeOfPage/WORDSIZE):
+                word = 0
+                page = page + pageIncrement
+              
+              if page == (memory.numOfPagesPerBank):
+                page = 0
+                bank = bank + bankIncrement
+              
+              if bank == (memory.numOfBanksPerChannel):
+                bank = 0
+                channel = channel + channelIncrement
+              
+              if channel == (memory.numOfChannels):
+                channel = 0
+              
 
     def getPreviousLayer(self):
         return self.parentNetwork.getLayer(self.layerID-1)
@@ -177,9 +394,9 @@ class Layer():
                             self.cells[f][y][x].PE = [yPe,xPe]
                             self.parentNetwork.peArray.addCell(np.array([yPe,xPe]), self.layerID, np.array([f,y,x]))
                             #print 'LEE:DEBUG:AddCell', self.layerID,':', f ,y ,x
-                            #print 'LEE:DEBUG:', self.layerID,':', yCell, xCell, f ,y ,x, xOffset, yOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
+                            #print 'LEE:DEBUG:', self.layerID,':', yCell, xCell, ':', f ,y ,x, ':', xOffset, yOffset, ':', xPe, yPe, ':', self.peArrayXYcellCount[yPe][xPe], ':', self.Z, self.Y, self.X
                         except:
-                            print 'LEE:DEBUG:', self.layerID,':', yCell, xCell, f ,y ,x, xOffset, yOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
+                            print 'LEE:ERROR:DEBUG:', self.layerID,':', yCell, xCell, f ,y ,x, xOffset, yOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
                             raise
                 xOffset += int(self.peArrayXYcellCount[yPe][xPe][1])
             yOffset += int(self.peArrayXYcellCount[yPe][xPe][0])
@@ -206,8 +423,8 @@ class Layer():
                     # Cycle thru the source cells and 
                     #   a) add this cells PE to the list of target PE's of the source cell
                     #   b) add this cells ID to the list of target cell's of the source cell
-                    #   c) Add the source cells to this cells list of source cells
-                    #   d) Add the source cells PE to this cells list of source PE's
+                    #   c) Add the source cells PE to this cells list of source PE's
+                    #   d) Add the source cells to this cells list of source cells
                     for ySrcCell in tmpY:
                         for xSrcCell in tmpX:
                             for fSrcCell in range(self.parentNetwork.Layers[self.layerID-1].Z) :
@@ -378,18 +595,76 @@ class Layer():
                     
 
 
+#----------------------------------------------------------------------------------------------------
+# PE
+
 class PE():
 
     def __init__(self, parentPEarray, numberOfLayers, peId):
         self.ID = peId
+        # which cells in layer n are being processed by which pe
         self.cellsProcessed = []
+        self.roi = []
         # cellsProcessed is a vector with each entry being a list of cells this PE processes at a particular layer
         for l in range(numberOfLayers):
           self.cellsProcessed.append([])
+          self.roi.append([])
         self.parentPEarray = parentPEarray
 
+    #----------------------------------------------------------------------------------------------------
+    # print
+
+    def __str__(self):
+        pLine = ""
+        pLine = pLine + '\nPE {0},{1}'.format(self.ID[0], self.ID[1])
+        pLine = pLine + '\nOther fields: cellsProcessed[], roi[yMin, yMax, xMin, xMax]'
+        return pLine
+        
+    #----------------------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------------------
+    # ROI
+    
+    def findROI(self, layerID):
+        processedCells = self.cellsProcessed[layerID]
+        pCells = []
+        sCells = []
+        for cellId in processedCells:
+            #print cellId
+            #pc = self.parentPEarray.parentNetwork.Layers[layerID].cells[cellId[0]][cellId[1]][cellId[2]]
+            pc = cellId
+            sCellIds = pc.sourceCells
+            for sc in sCellIds:
+              c = self.parentPEarray.parentNetwork.Layers[layerID-1].cells[sc[0]][sc[1]][sc[2]]
+              if sCells.count(c) == 0: # avoid duplicates
+                sCells.append(c)
+        minx = np.inf
+        miny = np.inf
+        maxx = 0
+        maxy = 0
+        for sc in sCells:
+            if sc.Y < miny:
+                miny = sc.Y
+            if sc.Y > maxy:
+                maxy = sc.Y
+            if sc.X < minx:
+                minx = sc.X
+            if sc.X > maxx:
+                maxx = sc.X
+        self.roi[layerID] = np.array([miny, maxy, minx, maxx] )
+        return self.roi
+        #print minx, ",", maxx, ",", miny, ",", maxy
+
+
+    #----------------------------------------------------------------------------------------------------
+    # processed Cells
+    
     def addCell(self, layerId, cellId):
-        self.cellsProcessed[layerId].append(cellId)
+        # avoid duplicates
+        if self.cellsProcessed.count(self.parentPEarray.parentNetwork.Layers[layerId].cells[cellId[0]][cellId[1]][cellId[2]]) == 0:
+            self.cellsProcessed[layerId].append(self.parentPEarray.parentNetwork.Layers[layerId].cells[cellId[0]][cellId[1]][cellId[2]])
+
+#----------------------------------------------------------------------------------------------------
+# PE ARRAY
 
 class PEarray():
 
@@ -402,8 +677,22 @@ class PEarray():
                 peArrayX.append(PE(self, numberOfLayers, np.array([y,x])))
             self.pe.append(peArrayX)
 
+    #----------------------------------------------------------------------------------------------------
+    # print
+
+    def __str__(self):
+        pLine = ""
+        pLine = pLine + '\nPE Array'
+        pLine = pLine + '\nPEs:{{Y,X}} : {0},{1}'.format(self.pe[0].__len__(), self.pe.__len__())
+        pLine = pLine + '\nfields: pe[][]'
+        return pLine
+        
+    #----------------------------------------------------------------------------------------------------
     def addCell(self, peId, layerId, cellId):
         self.pe[peId[0]][peId[1]].addCell(layerId, cellId)
+
+#----------------------------------------------------------------------------------------------------
+# NETWORK
 
 class Network():
 
@@ -415,6 +704,17 @@ class Network():
         self.peX = peX
         #self.peArray = PEarray(self, peY, peX, self.maxNumberOfLayers)
 
+    #----------------------------------------------------------------------------------------------------
+    # print
+
+    def __str__(self):
+        pLine = ""
+        pLine = pLine + '\nNetwork'
+        pLine = pLine + '\nLayers:{0}'.format(self.numberOfLayers)
+        pLine = pLine + '\nOther fields: Layers[], peArray'
+        return pLine
+        
+    #----------------------------------------------------------------------------------------------------
 
     def addLayer(self, type, X, Y, Z, Kx=0, Ky=0, Kz=0, stride=0):
         if self.numberOfLayers != self.maxNumberOfLayers:
@@ -428,6 +728,8 @@ class Network():
         return self.Layers[l]
 
     def assignPEs(self):
+        #----------------------------------------------------------------------------------------------------
+        # create PE Array
         self.peArray = PEarray(self, self.peY, self.peX, self.numberOfLayers)
         # assign PE's to each cell of each layer
         for l in self.Layers:
@@ -530,6 +832,14 @@ class Network():
         print 'Total number of internal cells is ', totalNumberOfInternalCells
       
 
+
+########################################################################################################################
+## MAIN
+
+# Create memory
+memory = Memory(2,32,8,4096)
+
+# Create DNN
 network = Network()
 #                                    X    Y    Z    Kx   Ky   Kz   stride
 # network.addLayer('Input',          224, 224,    3                      ) #    3 
@@ -544,19 +854,20 @@ network = Network()
 
 network.addLayer('Input',          224, 224,    3                      ) #    3 
 network.addLayer('Convolutional',   55,  55,   10,   11,  11,    3,   4 ) #   96,
-network.addLayer('Convolutional',   27,  27,    5,    5,   5,   10,   2 ) #  256,
-network.addLayer('Convolutional',   13,  13,   10,    3,   3,    5,   2 ) #  384,
-network.addLayer('Convolutional',   13,  13,    8,    3,   3,   10,   1 ) #  384,
-network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
-network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
-network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    6,   1 ) # 4096,
-network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    4,   1 ) # 1024,
+##network.addLayer('Convolutional',   27,  27,    5,    5,   5,   10,   2 ) #  256,
+#network.addLayer('Convolutional',   13,  13,   10,    3,   3,    5,   2 ) #  384,
+#network.addLayer('Convolutional',   13,  13,    8,    3,   3,   10,   1 ) #  384,
+#network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
+#network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
+#network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    6,   1 ) # 4096,
+#network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    4,   1 ) # 1024,
 network.assignPEs()
 
-for l in [1,2,3,4]:
+for l in [1]:
     print l
     network.Layers[l].updateSourceCellsTargetList()
         
+network.Layers[0].allocateMemory()
 
 # network.updateSourceCellsTargetList()
 
@@ -598,13 +909,66 @@ if 'DEBUG' in globals():
             cp = network.peArray.pe[peY][peX].cellsProcessed[layerID]
             len(cp)
 
+if 'DEBUG' in globals():
+    layerID = 1
+    cell = np.array([0, 20,20])
+    pe = np.array([0,1])
+    cp = network.peArray.pe[pe[0]][pe[1]].cellsProcessed[layerID]
+    pass
+    minx = np.inf
+    miny = np.inf
+    maxx = 0
+    maxy = 0
+    for c in range(cp.__len__()):
+        if cp[c][1] < miny:
+            miny = cp[c][1]
+        if cp[c][1] > maxy:
+            maxy = cp[c][1]
+        if cp[c][2] < minx:
+            minx = cp[c][2]
+        if cp[c][2] > maxx:
+            maxx = cp[c][2]
+
+    print minx, ",", maxx, ",", miny, ",", maxy
+
+if 'DEBUG' in globals():
+    layerID = 1
+    PE = np.array([0, 0])
+    pe = network.peArray.pe[PE[0]][PE[1]]
+    processedCells = pe.cellsProcessed[layerID]
+    pCells = []
+    sCells = []
+    for cellId in processedCells:
+        #print cellId
+        pc = network.Layers[layerID].cells[cellId[0]][cellId[1]][cellId[2]]
+        sCellIds = pc.sourceCells
+        for sc in sCellIds:
+          c = network.Layers[layerID-1].cells[sc[0]][sc[1]][sc[2]]
+          if sCells.count(c) == 0: # avoid duplicates
+            sCells.append(network.Layers[layerID-1].cells[sc[0]][sc[1]][sc[2]])
+    minx = np.inf
+    miny = np.inf
+    maxx = 0
+    maxy = 0
+    for sc in sCells:
+        if sc.Y < miny:
+            miny = sc.Y
+        if sc.Y > maxy:
+            maxy = sc.Y
+        if sc.X < minx:
+            minx = sc.X
+        if sc.X > maxx:
+            maxx = sc.X
+      
+
+
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
 ##              HELP
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
 
-#from createRoutingTable import *
+#from dnnConnectivityAndMemoryAllocation import *
 #network.displayPeAssignments()
 #network.displayCellsPerLayer()
 #network.updateSourceCellsTargetList()
@@ -614,6 +978,13 @@ if 'DEBUG' in globals():
 #        print l.layerID
 #        l.updateSourceCellsTargetList()
 ##        l.assignPEs(8,8)
-        
-    
+
+##print network.Layers[0].cells[0][0][1].memoryLocation
+##print memory
+
+##for y in range(2):
+##  for x in range(224):
+##    for z in range(3):
+##      print '{{{0},{1},{2}}}:{3}'.format(z,y,x,network.Layers[0].cells[z][y][x].memoryLocation)
+
 
