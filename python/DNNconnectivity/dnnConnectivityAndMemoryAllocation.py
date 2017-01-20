@@ -29,9 +29,27 @@ WORDSIZE = 32
 
 
 
-##DEBUG = []
+DEBUG = []
 
+## citation:http://stackoverflow.com/questions/6810999/how-to-determine-file-function-and-line-number
+class __LINE__(object):
+    import sys
 
+    def __repr__(self):
+        try:
+            raise Exception
+        except:
+            return str(sys.exc_info()[2].tb_frame.f_back.f_lineno)
+
+__FILE__ = 'dnnConnectivityAndMemoryAllocation.py'
+
+## citation:http://stackoverflow.com/questions/1911281/how-do-i-get-list-of-methods-in-a-python-class
+from types import FunctionType
+def methods(cls):
+    ## too ugly return [x for x, y in cls.__dict__.items() if type(y) == FunctionType]
+    return [func for func in dir(cls) if callable(getattr(cls, func)) and not func.startswith("__")]
+def fields(cls):
+    return vars(cls).keys()
 
 
 
@@ -156,17 +174,20 @@ class Cell():
 
     def __init__(self, parentLayer, z, y, x):
         # keep track of the {x,y} location of PE processing this cell
-        self.PE = np.empty(2)
-        self.roi = np.empty(4)
+        self.PE = []
+        self.roiFromSrcCells = np.empty(4)
+        self.roiFromAssign = []
         # Keep ID locally
         self.Z = z
         self.Y = y
         self.X = x
         # Fanin and fanout of this cell
-        self.sourceCells = dict() 
-        self.targetCells = dict()
-        self.sourcePEs = dict() # index using tuple(PE{x,y}) to find how many cells in PE{x,y} this cell connect to
-        self.targetPEs = dict() # index using tuple(PE{x,y}) to find how many cells in PE{x,y} this cell connect to
+        #self.sourceCells = dict() 
+        self.sourceCells = []
+        #self.targetCells = dict()
+        self.targetCells = []
+        self.sourcePEs = []
+        self.targetPEs = []
         self.layerID = parentLayer.layerID
         self.parentLayer = parentLayer
         self.memoryLocation = MemoryLocation(0,0,0,0)
@@ -178,8 +199,9 @@ class Cell():
     def findROI(self):
         sCells = []
         for sc in self.sourceCells:
-          c = self.parentLayer.parentNetwork.Layers[self.parentLayer.layerID-1].cells[sc[0]][sc[1]][sc[2]]
-          sCells.append(c)
+          #c = self.parentLayer.parentNetwork.Layers[self.parentLayer.layerID-1].cells[sc[0]][sc[1]][sc[2]]
+          #sCells.append(c)
+          sCells.append(sc)
         minx = np.inf
         miny = np.inf
         maxx = 0
@@ -193,8 +215,8 @@ class Cell():
                 minx = sc.X
             if sc.X > maxx:
                 maxx = sc.X
-        self.roi = np.array([miny, maxy, minx, maxx] )
-        return self.roi
+        self.roiFromSrcCells = np.array([miny, maxy, minx, maxx] )
+        return self.roiFromSrcCells
         #print minx, ",", maxx, ",", miny, ",", maxy
     #----------------------------------------------------------------------------------------------------
     # print
@@ -203,8 +225,9 @@ class Cell():
         pLine = ""
         pLine = pLine + '\nCell'.format(self.layerID)
         pLine = pLine + '\nID{{Z,Y,X}} : {0},{1},{2}'.format(self.Z, self.Y, self.X)
-        pLine = pLine + '\nPE{{Y,X}} : {0},{1}'.format(self.PE[0], self.PE[1])
-        pLine = pLine + '\nOther fields: sourceCells{}, targetCells{}, sourcePEs{}, targetPEs{}'
+        pLine = pLine + '\nPE{{Y,X}} : {0},{1}'.format(self.PE.ID[0], self.PE.ID[1])
+        pLine = pLine + '\nMethods: {0}'.format(methods(self))
+        pLine = pLine + '\nFields: {0}'.format(fields(self))
         return pLine
         
 
@@ -248,7 +271,8 @@ class Layer():
         pLine = pLine + '\nLayer {0}'.format(self.layerID)
         pLine = pLine + '\n{{Z,Y,X}} : {0},{1},{2}'.format(self.Z, self.Y, self.X)
         pLine = pLine + '\n{{Kz,Ky,Kx}} : {0},{1},{2}'.format(self.Kz, self.Ky, self.Kx)
-        pLine = pLine + '\nOther fields: cells[][][]'.format(self.Kz, self.Ky, self.Kx)
+        pLine = pLine + '\nMethods: {0}'.format(methods(self))
+        pLine = pLine + '\nFields: {0}'.format(fields(self))
         return pLine
         
 
@@ -391,7 +415,7 @@ class Layer():
                         y=yCell+yOffset
                         # index is z,y,x
                         try:
-                            self.cells[f][y][x].PE = [yPe,xPe]
+                            self.cells[f][y][x].PE = self.parentNetwork.peArray.pe[yPe][xPe]
                             self.parentNetwork.peArray.addCell(np.array([yPe,xPe]), self.layerID, np.array([f,y,x]))
                             #print 'LEE:DEBUG:AddCell', self.layerID,':', f ,y ,x
                             #print 'LEE:DEBUG:', self.layerID,':', yCell, xCell, ':', f ,y ,x, ':', xOffset, yOffset, ':', xPe, yPe, ':', self.peArrayXYcellCount[yPe][xPe], ':', self.Z, self.Y, self.X
@@ -402,75 +426,104 @@ class Layer():
             yOffset += int(self.peArrayXYcellCount[yPe][xPe][0])
     #----------------------------------------------------------------------------------------------------
       
-    def updateSourceCellsTargetList(self):
+    def generateConnections(self):
         # For each cell in this layer, identify the cells from the previous layer that feed this cell and add this cell's PE
         # to the target list
         for y in range(self.Y):
+            print 'Updating Layer {0} connections'.format(self.layerID) + ' for features in row :{0}'.format(y)
             for x in range(self.X):
+                #print 'Updating Layer {0} connections'.format(self.layerID) + ' for features at row :{0},{1}'.format(y,x)
                 for f in range(self.Z):
 
-                    #print 'Updating Layer ', self.layerID, ' cell {', y, ',', x, '} target cells'
                     #print self.stride, self.Ky, self.Kx, self.kernelTopOffset, self.kernelLeftOffset
              
                     # Identify the row and columns of the source cells from layer n-1
+                    # We are taking the kernel and moving it across the input
+                    # Need to account for the 1st kernel and last kernel being outside the edge of the input
                     tmpY = range(max(0, self.kernelTopOffset+y*self.stride), min(self.parentNetwork.Layers[self.layerID-1].Y, self.kernelTopOffset+y*self.stride+self.Ky))
                     tmpX = range(max(0, self.kernelLeftOffset+x*self.stride), min(self.parentNetwork.Layers[self.layerID-1].X, self.kernelLeftOffset+x*self.stride+self.Kx))
              
                     #print 'Layer n-1 cells for Layer n cell {', x, ',', y, '}'
-                    #print 'Y : ', tmpY
-                    #print 'X : ', tmpX
+                    #print 'tmpY : ', tmpY
+                    #print 'tmpX : ', tmpX
              
+                    # tmpy,tmpX are the X,Y ROI of the cell (f,y,x)
+                    # FIXME: this ROI should match the the findROI method which uses the list of sourceCells to construct the ROI
+                    #self.cells[f][y][x].roiFromAssign = []
+                    self.cells[f][y][x].roiFromAssign.append(tmpY)
+                    self.cells[f][y][x].roiFromAssign.append(tmpX)
+
                     # Cycle thru the source cells and 
                     #   a) add this cells PE to the list of target PE's of the source cell
                     #   b) add this cells ID to the list of target cell's of the source cell
                     #   c) Add the source cells PE to this cells list of source PE's
                     #   d) Add the source cells to this cells list of source cells
+                    tgtPE   = self.cells[f][y][x].PE
+                    tgtCell = self.cells[f][y][x]
                     for ySrcCell in tmpY:
                         for xSrcCell in tmpX:
                             for fSrcCell in range(self.parentNetwork.Layers[self.layerID-1].Z) :
              
-                                #print '{', ySrcCell,',', xSrcCell, '}', type(self.parentNetwork.Layers[self.layerID-1].cells[ySrcCell][xSrcCell].targetPEs)
-                                #print list(self.parentNetwork.Layers[self.layerID-1].cells[ySrcCell][xSrcCell].targetPEs.keys())
+                                srcPE   = self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].PE
+                                srcCell = self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell]
+
                                 # a) Update source cells target PE list
-                                try :
-                                    if tuple(list(self.cells[f][y][x].PE)) in self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs:
-                                        pass
-                                        self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs[tuple(self.cells[f][y][x].PE)] += 1
-                                    else:
-                                        pass
-                                        self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs.update({tuple(list(self.cells[f][y][x].PE)) : 1})
-                                except :
-                                    print 'LEE:DEBUG:', self.layerID,':', ySrcCell, xSrcCell, f, y, x, tuple(self.cells[0][y][x].PE), tmpY, tmpX
-                                    raise
+                                self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs.append(self.cells[f][y][x].PE)
+##                                try :
+##                                    if self.cells[f][y][x].PE not in self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs:
+##                                        self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs.append(self.cells[f][y][x].PE)
+##                                except :
+##                                    print 'ERROR:', self.layerID,':', ySrcCell, xSrcCell, f, y, x, self.cells[0][y][x].PE, tmpY, tmpX
+##                                    raise
              
                                 # b) Update source cells target cell list
-                                if tuple([f,y,x]) in self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells:
-                                    pass
-                                    self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells[tuple([f,y,x])] += 1
-                                else:
-                                    pass
-                                    self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells.update({tuple([f,y,x]) : 1})
+                                self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells.append(tgtCell)
+##                                if tgtCell not in self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells:
+##                                    self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells.append(tgtCell)
                              
-                                srcPE = tuple(self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].PE)
-                                srcCell = tuple([fSrcCell, ySrcCell, xSrcCell])
+                                #srcCell = tuple([fSrcCell, ySrcCell, xSrcCell])
                              
                                 # c) Update this cells source PE list
-                                if srcPE in self.cells[f][y][x].sourcePEs :
-                                    pass
-                                    self.cells[f][y][x].sourcePEs[srcPE] += 1
-                                else:
-                                    pass
-                                    self.cells[f][y][x].sourcePEs.update({srcPE : 1})
+                                self.cells[f][y][x].sourcePEs.append(srcPE)
+##                                if srcPE not in self.cells[f][y][x].sourcePEs :
+##                                    self.cells[f][y][x].sourcePEs.append(srcPE)
              
                                 # d) Update this cells source cell list
-                                if srcCell in self.cells[f][y][x].sourceCells :
-                                    pass
-                                    self.cells[f][y][x].sourceCells[srcCell] += 1
-                                else:
-                                    pass
-                                    self.cells[f][y][x].sourceCells.update({srcCell : 1})
+                                #if srcCell in self.cells[f][y][x].sourceCells :
+                                #    pass
+                                #    self.cells[f][y][x].sourceCells[srcCell] += 1
+                                #else:
+                                #    pass
+                                #    self.cells[f][y][x].sourceCells.update({srcCell : 1})
+                                self.cells[f][y][x].sourceCells.append(srcCell)
+##                                if srcCell not in self.cells[f][y][x].sourceCells :
+##                                    self.cells[f][y][x].sourceCells.append(srcCell)
+                     
+                #print 'Completed layer {0} connections for features at : {1},{2}'.format(self.layerID, y, x)
+
+        ##----------------------------------------------------------------------------------------------------
+        ## remove duplicates
+        print 'Removing duplicates in source and target cell lists of Layers {0} and {1} respectively'.format(self.layerID, self.layerID-1)
+
+        for y in range(self.Y):
+            for x in range(self.X):
+                for f in range(self.Z):
+                    tmpSrcPE = set(self.cells[f][y][x].sourcePEs)
+                    self.cells[f][y][x].sourcePEs = list(tmpSrcPE)
+                    tmpSrcCell = set(self.cells[f][y][x].sourceCells)
+                    self.cells[f][y][x].sourceCells = list(tmpSrcCell)
+
+        
+        for y in range(self.parentNetwork.Layers[self.layerID-1].Y):
+            for x in range(self.parentNetwork.Layers[self.layerID-1].X):
+                for f in range(self.parentNetwork.Layers[self.layerID-1].Z):
+                    tmpTgtPEs = set(self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs)
+                    self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs = list(tmpTgtPEs)
+                    tmpTgtCells = set(self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells)
+                    self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells = list(tmpTgtCells)
                         
 
+    #----------------------------------------------------------------------------------------------------
     def calculateKernelOffset(self):
         # Determine Kernel overlap at edge of input array
         if self.layerID != 0:
@@ -481,18 +534,23 @@ class Layer():
             self.kernelTopOffset  = 0
         print 'Layer ', self.layerID, ' left Kernel offset is ', int(self.kernelLeftOffset),  ', top Kernel offset is ', int(self.kernelTopOffset) 
 
+    #----------------------------------------------------------------------------------------------------
     def getNumberOfMultiplies(self):
             return self.getNumberOfKernelParameters() * self.getNumberOfCells()
 
+    #----------------------------------------------------------------------------------------------------
     def getNumberOfAdditions(self):
             return (self.getNumberOfMultiplies() -1) 
 
+    #----------------------------------------------------------------------------------------------------
     def getNumberOfParameters(self):
             return self.getNumberOfKernelParameters() * self.Z
 
+    #----------------------------------------------------------------------------------------------------
     def getNumberOfKernelParameters(self):
             return self.Kx*self.Ky*self.Kz
 
+    #----------------------------------------------------------------------------------------------------
     def getNumberOfCells(self):
             return self.X*self.Y*self.Z
 
@@ -500,6 +558,7 @@ class Layer():
     ## Display Routines
 
 
+    #----------------------------------------------------------------------------------------------------
     def displayPeCellArrangement(self):
         print 'Layer ', self.layerID, ' PE pixel assignments'
         for y in range(peY):
@@ -507,30 +566,35 @@ class Layer():
                 print '{', y, ',', x, '} : ', self.peArrayXYcellCount[y][x]
 
 
+    #----------------------------------------------------------------------------------------------------
     def displayCellPeAssignments(self):
         for y in range(self.Y):
             for x in range(self.X):
                 print self.cells[0][y][x].PE, ' ', 
             print
 
+    #----------------------------------------------------------------------------------------------------
     def displayTargetPEs(self):
         for y in range(self.Y):
             for x in range(self.X):
                 print self.cells[0][y][x].targetPEs, '||||', 
             print
 
+    #----------------------------------------------------------------------------------------------------
     def displayTargetCells(self):
         for y in range(self.Y):
             for x in range(self.X):
                 print self.cells[0][y][x].targetCells, '||||', 
             print
 
+    #----------------------------------------------------------------------------------------------------
     def displaySourcePEs(self):
         for y in range(self.Y):
             for x in range(self.X):
                 print self.cells[0][y][x].sourcePEs, '||||', 
             print
 
+    #----------------------------------------------------------------------------------------------------
     def displaySourceCells(self, cellCoords=[]):
         if len(cellCoords) == 0:
             for y in range(self.Y):
@@ -540,21 +604,27 @@ class Layer():
         else:
             print self.cells[0][cellCoords[0]][cellCoords[1]].sourceCells, '||||', 
 
+    #----------------------------------------------------------------------------------------------------
     def getSourceCells(self, cellCoords):
         return self.cells[cellCoords[0]][cellCoords[1]][cellCoords[2]].sourceCells
 
+    #----------------------------------------------------------------------------------------------------
     def getTargetCells(self, cellCoords):
         return self.cells[cellCoords[0]][cellCoords[1]][cellCoords[2]].targetCells
 
+    #----------------------------------------------------------------------------------------------------
     def getSourcePEs(self, cellCoords):
         return self.cells[cellCoords[0]][cellCoords[1]][cellCoords[2]].sourcePEs
 
+    #----------------------------------------------------------------------------------------------------
     def getTargetPEs(self, cellCoords):
         return self.cells[cellCoords[0]][cellCoords[1]][cellCoords[2]].targetPEs
 
+    #----------------------------------------------------------------------------------------------------
     def displayNumberOfCells(self):
         print 'Layer ', self.layerID, 'number of cells is ', self.X*self.Y*self.Z
 
+    #----------------------------------------------------------------------------------------------------
     def createCellTargetPEFile(self):
         outFile = 'layer'+ str(self.layerID) + '_cellTargetList.txt'
         oFile = open(outFile, 'w')
@@ -578,6 +648,7 @@ class Layer():
         oFile.close()
                     
 
+    #----------------------------------------------------------------------------------------------------
     def createSourceCellFile(self):
         outFile = 'layer'+ str(self.layerID) + '_sourceCellList.txt'
         oFile = open(outFile, 'w')
@@ -604,10 +675,12 @@ class PE():
         self.ID = peId
         # which cells in layer n are being processed by which pe
         self.cellsProcessed = []
+        self.processedRegion = []
         self.roi = []
         # cellsProcessed is a vector with each entry being a list of cells this PE processes at a particular layer
         for l in range(numberOfLayers):
           self.cellsProcessed.append([])
+          self.processedRegion.append([])
           self.roi.append([])
         self.parentPEarray = parentPEarray
 
@@ -617,7 +690,8 @@ class PE():
     def __str__(self):
         pLine = ""
         pLine = pLine + '\nPE {0},{1}'.format(self.ID[0], self.ID[1])
-        pLine = pLine + '\nOther fields: cellsProcessed[], roi[yMin, yMax, xMin, xMax]'
+        pLine = pLine + '\nMethods: {0}'.format(methods(self))
+        pLine = pLine + '\nFields: {0}'.format(fields(self))
         return pLine
         
     #----------------------------------------------------------------------------------------------------
@@ -625,23 +699,12 @@ class PE():
     # ROI
     
     def findROI(self, layerID):
-        processedCells = self.cellsProcessed[layerID]
-        pCells = []
-        sCells = []
-        for cellId in processedCells:
-            #print cellId
-            #pc = self.parentPEarray.parentNetwork.Layers[layerID].cells[cellId[0]][cellId[1]][cellId[2]]
-            pc = cellId
-            sCellIds = pc.sourceCells
-            for sc in sCellIds:
-              c = self.parentPEarray.parentNetwork.Layers[layerID-1].cells[sc[0]][sc[1]][sc[2]]
-              if sCells.count(c) == 0: # avoid duplicates
-                sCells.append(c)
         minx = np.inf
         miny = np.inf
         maxx = 0
         maxy = 0
-        for sc in sCells:
+        for pc in self.cellsProcessed[layerID] :
+          for sc in pc.sourceCells:
             if sc.Y < miny:
                 miny = sc.Y
             if sc.Y > maxy:
@@ -651,7 +714,26 @@ class PE():
             if sc.X > maxx:
                 maxx = sc.X
         self.roi[layerID] = np.array([miny, maxy, minx, maxx] )
-        return self.roi
+        return self.roi[layerID]
+        #print minx, ",", maxx, ",", miny, ",", maxy
+
+
+    def findCellsProcessedRegion(self, layerID):
+        minx = np.inf
+        miny = np.inf
+        maxx = 0
+        maxy = 0
+        for pc in self.cellsProcessed[layerID] :
+          if pc.Y < miny:
+              miny = pc.Y
+          if pc.Y > maxy:
+              maxy = pc.Y
+          if pc.X < minx:
+              minx = pc.X
+          if pc.X > maxx:
+              maxx = pc.X
+        self.processedRegion[layerID] = np.array([miny, maxy, minx, maxx] )
+        return self.processedRegion[layerID]
         #print minx, ",", maxx, ",", miny, ",", maxy
 
 
@@ -659,8 +741,8 @@ class PE():
     # processed Cells
     
     def addCell(self, layerId, cellId):
-        # avoid duplicates
-        if self.cellsProcessed.count(self.parentPEarray.parentNetwork.Layers[layerId].cells[cellId[0]][cellId[1]][cellId[2]]) == 0:
+        # list of cell pointers
+        if self.parentPEarray.parentNetwork.Layers[layerId].cells[cellId[0]][cellId[1]][cellId[2]] not in self.cellsProcessed :
             self.cellsProcessed[layerId].append(self.parentPEarray.parentNetwork.Layers[layerId].cells[cellId[0]][cellId[1]][cellId[2]])
 
 #----------------------------------------------------------------------------------------------------
@@ -684,7 +766,8 @@ class PEarray():
         pLine = ""
         pLine = pLine + '\nPE Array'
         pLine = pLine + '\nPEs:{{Y,X}} : {0},{1}'.format(self.pe[0].__len__(), self.pe.__len__())
-        pLine = pLine + '\nfields: pe[][]'
+        pLine = pLine + '\nMethods: {0}'.format(methods(self))
+        pLine = pLine + '\nFields: {0}'.format(fields(self))
         return pLine
         
     #----------------------------------------------------------------------------------------------------
@@ -711,7 +794,8 @@ class Network():
         pLine = ""
         pLine = pLine + '\nNetwork'
         pLine = pLine + '\nLayers:{0}'.format(self.numberOfLayers)
-        pLine = pLine + '\nOther fields: Layers[], peArray'
+        pLine = pLine + '\nMethods: {0}'.format(methods(self))
+        pLine = pLine + '\nFields: {0}'.format(fields(self))
         return pLine
         
     #----------------------------------------------------------------------------------------------------
@@ -863,11 +947,14 @@ network.addLayer('Convolutional',   55,  55,   10,   11,  11,    3,   4 ) #   96
 #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    4,   1 ) # 1024,
 network.assignPEs()
 
-for l in [1]:
-    print l
-    network.Layers[l].updateSourceCellsTargetList()
+# Dont do all cells until debugged
+#network.updateSourceCellsTargetList()
+if 'DEBUG' in globals():
+    for l in [1]:
+        print l
+        network.Layers[l].generateConnections()
         
-network.Layers[0].allocateMemory()
+#network.Layers[0].allocateMemory()
 
 # network.updateSourceCellsTargetList()
 
@@ -883,7 +970,7 @@ network.Layers[0].allocateMemory()
 # import LayerPartitioning as l
 # reload(l)
 
-if 'DEBUG' in globals():
+if 'DEBUGFOO' in globals():
     layerID = 1
     cell = np.array([0, 20,20])
     pe = np.array([0,1])
@@ -909,7 +996,7 @@ if 'DEBUG' in globals():
             cp = network.peArray.pe[peY][peX].cellsProcessed[layerID]
             len(cp)
 
-if 'DEBUG' in globals():
+if 'DEBUGFOO' in globals():
     layerID = 1
     cell = np.array([0, 20,20])
     pe = np.array([0,1])
@@ -931,7 +1018,7 @@ if 'DEBUG' in globals():
 
     print minx, ",", maxx, ",", miny, ",", maxy
 
-if 'DEBUG' in globals():
+if 'DEBUGFOO' in globals():
     layerID = 1
     PE = np.array([0, 0])
     pe = network.peArray.pe[PE[0]][PE[1]]
@@ -987,4 +1074,27 @@ if 'DEBUG' in globals():
 ##    for z in range(3):
 ##      print '{{{0},{1},{2}}}:{3}'.format(z,y,x,network.Layers[0].cells[z][y][x].memoryLocation)
 
+# foo = Cell(network.Layers[1],1,2,3)
 
+if 'DEBUG' in globals():
+    c_1_0_0_4 = network.Layers[1].cells[0][0][4]
+    pe_0_0 = network.peArray.pe[0][0]
+    pass
+    if c_1_0_0_4 in pe_0_0.cellsProcessed[1]:
+        print 'foo1'
+    print pe_0_0.findROI(1)
+    print pe_0_0.findCellsProcessedRegion(1)
+
+if 'DEBUG' in globals():
+    c_0_0_0_16 = network.Layers[0].cells[0][0][16]
+    tc_0_0_0_16 = c_0_0_0_16.targetCells
+    if c_1_0_0_4 in tc_0_0_0_16:
+        print 'foo2'
+    if c_0_0_0_16 in c_1_0_0_4.sourceCells:
+        print 'foo3'
+
+if 'DEBUG' in globals():
+    network.peArray.pe[0][0].findROI(1)
+    network.peArray.pe[1][1].findROI(1)
+    network.peArray.pe[2][2].findROI(1)
+    network.peArray.pe[7][7].findROI(1)
