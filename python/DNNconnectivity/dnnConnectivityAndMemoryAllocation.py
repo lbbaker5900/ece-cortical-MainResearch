@@ -18,8 +18,17 @@ import numpy as np
 import math
 import sys
 import os
+import copy
+from copy import deepcopy
+from copy import copy
 from collections import namedtuple
 from rcdtype import *
+# Plotting
+# 
+import matplotlib.pyplot as plt
+from pylab import *
+from matplotlib.colors import BoundaryNorm
+from matplotlib.ticker import MaxNLocator
 
 ########################################################################################################################
 ## Globals
@@ -31,6 +40,7 @@ WORDSIZE = 32
 
 DEBUG = []
 
+## Create __FILE__ and __LINE__ for prints
 ## citation:http://stackoverflow.com/questions/6810999/how-to-determine-file-function-and-line-number
 class __LINE__(object):
     import sys
@@ -43,6 +53,7 @@ class __LINE__(object):
 
 __FILE__ = 'dnnConnectivityAndMemoryAllocation.py'
 
+## Extract class methods and fields for prints
 ## citation:http://stackoverflow.com/questions/1911281/how-do-i-get-list-of-methods-in-a-python-class
 from types import FunctionType
 def methods(cls):
@@ -77,7 +88,7 @@ def fields(cls):
 ##----------------------------------------------------------------------------------------------------
 ## FIXME's
 ##
-## the layer is now a 3-D array of cells but in the lot of cases we only refer to the first cell in the Z-dimension shit
+## the layer is now a 3-D array of cells but in the lot of cases we only refer to the first cell in the Z-dimension
 ## => fix where we have .cells[0]...
 
 point = namedtuple("point", "z y x") 
@@ -139,7 +150,11 @@ class Memory():
             self.Channels.append(newChannel)
 
     def __str__(self):
-        return "Channels:{0}:Banks/Channel:{1}:Pages/Bank:{2}:Words/Page:{3}:".format(self.numOfChannels, self.numOfBanksPerChannel, self.numOfPagesPerBank, self.sizeOfPage/WORDSIZE)
+        pLine = ""
+        pLine = pLine + "Channels:{0}:Banks/Channel:{1}:Pages/Bank:{2}:Words/Page:{3}:".format(self.numOfChannels, self.numOfBanksPerChannel, self.numOfPagesPerBank, self.sizeOfPage/WORDSIZE)
+        pLine = pLine + '\nMethods: {0}'.format(methods(self))
+        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        return pLine
 
 ## Kernels are usually stored across muliple pages with each page containing 4 weights of 32 kernels
 ## e.g. page = {K0(0), K1(0), .... K31(0), K0(1), K1(1), .... K31(1), K0(2), K1(2), .... K31(2), K0(3), K1(3), .... K31(3)}
@@ -159,14 +174,20 @@ class MemoryLocation():
         self.word    = word   ;
 
     def __str__(self):
-        return "Channel:{0}, Bank:{1}, Page:{2}, Word:{3}".format(self.channel, self.bank, self.page, self.word)
+        pLine = ""
+        pLine = pLine + "Channel:{0}, Bank:{1}, Page:{2}, Word:{3}".format(self.channel, self.bank, self.page, self.word)
+        pLine = pLine + '\nMethods: {0}'.format(methods(self))
+        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        return pLine
 
 
 
 ########################################################################################################################
+########################################################################################################################
 ## NETWORK
 
 
+########################################################################################################################
 #----------------------------------------------------------------------------------------------------
 # CELL
 
@@ -234,6 +255,7 @@ class Cell():
     #----------------------------------------------------------------------------------------------------
 
 
+########################################################################################################################
 #----------------------------------------------------------------------------------------------------
 # LAYER
 
@@ -517,10 +539,14 @@ class Layer():
         for y in range(self.parentNetwork.Layers[self.layerID-1].Y):
             for x in range(self.parentNetwork.Layers[self.layerID-1].X):
                 for f in range(self.parentNetwork.Layers[self.layerID-1].Z):
-                    tmpTgtPEs = set(self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs)
-                    self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs = list(tmpTgtPEs)
-                    tmpTgtCells = set(self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells)
-                    self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells = list(tmpTgtCells)
+                    if self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetPEs.__len__() > 1: # if only for DEBUG
+                        tmpTgtPEs = set(self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetPEs)
+                        self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetPEs = list(tmpTgtPEs)
+                        #print '{0},{1},{2}:targetPe.len() = '.format(f, y, x) + str(self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetPEs.__len__())
+                    tmpTgtCells = set(self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetCells)
+                    self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetCells = list(tmpTgtCells)
+
+        print 'Connections complete from Layer {0} to {1}'.format(self.layerID-1, self.layerID)
                         
 
     #----------------------------------------------------------------------------------------------------
@@ -556,6 +582,63 @@ class Layer():
 
     ##----------------------------------------------------------------------------------------------------
     ## Display Routines
+
+
+    #----------------------------------------------------------------------------------------------------
+    def getTargetPECounts(self):
+        # return a grid of PE values the size of the input array Y,X
+        yGrid, xGrid = np.mgrid[slice(0, self.Y),
+                                slice(0, self.X)]
+        numOfPEs = np.zeros_like(xGrid)
+
+        for y in range(self.Y):
+            for x in range(self.X):
+                numOfPEs[y][x] = self.cells[0][y][x].targetPEs.__len__()
+        return numOfPEs
+
+    #----------------------------------------------------------------------------------------------------
+    def displayTargetPECountsRegion(self, region):
+        yGrid, xGrid = np.mgrid[slice(region[0], region[1]), slice(region[2], region[3])]
+        numOfPEs = np.zeros_like(xGrid)
+
+        pLine = ''
+        for y in range(region[0], region[1]):
+            for x in range(region[2], region[3]):
+                pLine = pLine + '{0},'.format(self.cells[0][y][x].targetPEs.__len__())
+                numOfPEs[y-region[0]][x-region[2]] = self.cells[0][y][x].targetPEs.__len__()
+            pLine = pLine + '\n'
+        #print pLine
+        c = plt.contourf(xGrid,yGrid,numOfPEs, linspace(-1,5,7))
+        #c = plt.contourf(xGrid,yGrid,numOfPEs, linspace(-0.5,4.5,6))
+        b = plt.colorbar(c, orientation='vertical')
+        lx = plt.xlabel("x")
+        ly = plt.ylabel("y")
+        plt.show()
+
+        """
+        c = plt.contour(xGrid,yGrid,numOfPEs)
+        l = plt.clabel(c)
+        lx = plt.xlabel("x")
+        ly = plt.ylabel("y")
+        #levels = MaxNLocator(nbins=4).tick_values(numOfPEs.min(), numOfPEs.max())
+        levels = np.array([0,1,2,3,4])
+        
+        cmap = plt.get_cmap('PiYG')
+        norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
+        
+        fig, ax = plt.subplots(nrows=1)
+        
+        im = ax.pcolormesh(xGrid, yGrid, numOfPEs, cmap=cmap, norm=norm)
+        fig.colorbar(im, ax=ax)
+        ax.set_title('Number of target PEs')
+        fig.tight_layout()
+        plt.show()
+        """
+
+
+    def displayTargetPECounts(self):
+         region = np.array([0, self.Y, 0, self.X])
+         self.displayTargetPECountsRegion(region)
 
 
     #----------------------------------------------------------------------------------------------------
@@ -666,6 +749,7 @@ class Layer():
                     
 
 
+########################################################################################################################
 #----------------------------------------------------------------------------------------------------
 # PE
 
@@ -673,15 +757,20 @@ class PE():
 
     def __init__(self, parentPEarray, numberOfLayers, peId):
         self.ID = peId
-        # which cells in layer n are being processed by which pe
-        self.cellsProcessed = []
+
         self.processedRegion = []
-        self.roi = []
+        self.roi             = []  # array([ yMin, yMax, xMin, xMax ])
+        self.roiCells        = []  # copy of ROI of previous layer cells
+
+        # which cells in layer n are being processed by this pe
+        self.cellsProcessed = []
         # cellsProcessed is a vector with each entry being a list of cells this PE processes at a particular layer
         for l in range(numberOfLayers):
           self.cellsProcessed.append([])
           self.processedRegion.append([])
           self.roi.append([])
+          self.roiCells.append([])
+
         self.parentPEarray = parentPEarray
 
     #----------------------------------------------------------------------------------------------------
@@ -714,8 +803,31 @@ class PE():
             if sc.X > maxx:
                 maxx = sc.X
         self.roi[layerID] = np.array([miny, maxy, minx, maxx] )
+
         return self.roi[layerID]
         #print minx, ",", maxx, ",", miny, ",", maxy
+
+    def memCpyROI(self, layerID):
+
+        # Create a copy of all the ROI cells as these will be copied to each targetPE
+        # we also want them in the list in the order of processing
+        roi = self.findROI(layerID)
+        xLen = self.roi[layerID][3]-self.roi[layerID][2]
+        yLen = self.roi[layerID][1]-self.roi[layerID][0]
+        zLen = self.parentPEarray.parentNetwork.Layers[layerID].Z
+        
+        roiLayerCells = []
+        for roiZ in range(self.parentPEarray.parentNetwork.Layers[layerID-1].Z) :
+          roiLayerCellsY = []
+          for roiY in range(self.roi[layerID][0], self.roi[layerID][1]+1) :
+            roiLayerCellsX = []
+            for roiX in range(self.roi[layerID][2], self.roi[layerID][3]+1) :
+              copiedCell = copy(self.parentPEarray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX])
+              roiLayerCellsX.append(copiedCell)
+            roiLayerCellsY.append(roiLayerCellsX)
+          roiLayerCells.append(roiLayerCellsY)
+        self.roiCells[layerID] = roiLayerCells
+
 
 
     def findCellsProcessedRegion(self, layerID):
@@ -745,6 +857,9 @@ class PE():
         if self.parentPEarray.parentNetwork.Layers[layerId].cells[cellId[0]][cellId[1]][cellId[2]] not in self.cellsProcessed :
             self.cellsProcessed[layerId].append(self.parentPEarray.parentNetwork.Layers[layerId].cells[cellId[0]][cellId[1]][cellId[2]])
 
+
+
+########################################################################################################################
 #----------------------------------------------------------------------------------------------------
 # PE ARRAY
 
@@ -774,6 +889,9 @@ class PEarray():
     def addCell(self, peId, layerId, cellId):
         self.pe[peId[0]][peId[1]].addCell(layerId, cellId)
 
+
+
+########################################################################################################################
 #----------------------------------------------------------------------------------------------------
 # NETWORK
 
@@ -916,137 +1034,56 @@ class Network():
         print 'Total number of internal cells is ', totalNumberOfInternalCells
       
 
-
 ########################################################################################################################
 ## MAIN
 
-# Create memory
-memory = Memory(2,32,8,4096)
+#print 'LEE:' + __name__
 
-# Create DNN
-network = Network()
-#                                    X    Y    Z    Kx   Ky   Kz   stride
-# network.addLayer('Input',          224, 224,    3                      ) #    3 
-# network.addLayer('Convolutional',   55,  55,   96,   11,  11,    3,   4 ) #   96,
-# network.addLayer('Convolutional',   27,  27,  256,    5,   5,   96,   2 ) #  256,
-# network.addLayer('Convolutional',   13,  13,  384,    3,   3,  256,   2 ) #  384,
-# network.addLayer('Convolutional',   13,  13,  384,    3,   3,  384,   1 ) #  384,
-# network.addLayer('Fully Connected', 13,  13,  256,    3,   3,  384,   1 ) #  256,
-# network.addLayer('Fully Connected',  1,   1, 4096,   13,  13,  256,   1 ) # 4096,
-# network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
-# network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
+def main():
 
-network.addLayer('Input',          224, 224,    3                      ) #    3 
-network.addLayer('Convolutional',   55,  55,   10,   11,  11,    3,   4 ) #   96,
-##network.addLayer('Convolutional',   27,  27,    5,    5,   5,   10,   2 ) #  256,
-#network.addLayer('Convolutional',   13,  13,   10,    3,   3,    5,   2 ) #  384,
-#network.addLayer('Convolutional',   13,  13,    8,    3,   3,   10,   1 ) #  384,
-#network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
-#network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
-#network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    6,   1 ) # 4096,
-#network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    4,   1 ) # 1024,
-network.assignPEs()
-
-# Dont do all cells until debugged
-#network.updateSourceCellsTargetList()
-if 'DEBUG' in globals():
-    for l in [1]:
-        print l
-        network.Layers[l].generateConnections()
-        
-#network.Layers[0].allocateMemory()
-
-# network.updateSourceCellsTargetList()
-
-#print network.Layers[5].displayPeAssignments()
-#print 'Targets for layer n-1'
-#print network.displayTargetPEs()
-#print network.displayTargetCells()
-#print network.displaySourcePEs()
-#print network.displaySourceCells()
-
-#print network.displaySourceCells(1, np.array([0,0]))
-
-# import LayerPartitioning as l
-# reload(l)
-
-if 'DEBUGFOO' in globals():
-    layerID = 1
-    cell = np.array([0, 20,20])
-    pe = np.array([0,1])
+    # Create memory
+    memory = Memory(2,32,8,4096)
     
-    sc = network.getSourceCells(layerID, cell)
-    sck=sc.keys()
-    sck.sort()
-    sck
-    tc = network.getTargetCells(layerID, cell)
-    tck=tc.keys()
-    tck.sort()
-    tck
-    sp = network.getSourcePEs(layerID, cell)
-    spk=sp.keys()
-    spk.sort()
-    spk
-    tp = network.getTargetPEs(layerID, cell)
-    tpk=tp.keys()
-    tpk.sort()
-    tpk
-    for peY in range(8):
-        for peX in range(8):
-            cp = network.peArray.pe[peY][peX].cellsProcessed[layerID]
-            len(cp)
+    # Create DNN
+    network = Network()
+    #                                    X    Y    Z    Kx   Ky   Kz   stride
+    # network.addLayer('Input',          224, 224,    3                      ) #    3 
+    # network.addLayer('Convolutional',   55,  55,   96,   11,  11,    3,   4 ) #   96,
+    # network.addLayer('Convolutional',   27,  27,  256,    5,   5,   96,   2 ) #  256,
+    # network.addLayer('Convolutional',   13,  13,  384,    3,   3,  256,   2 ) #  384,
+    # network.addLayer('Convolutional',   13,  13,  384,    3,   3,  384,   1 ) #  384,
+    # network.addLayer('Fully Connected', 13,  13,  256,    3,   3,  384,   1 ) #  256,
+    # network.addLayer('Fully Connected',  1,   1, 4096,   13,  13,  256,   1 ) # 4096,
+    # network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
+    # network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
+    
+    network.addLayer('Input',          224, 224,    3                      ) #    3 
+    network.addLayer('Convolutional',   55,  55,   10,   11,  11,    3,   4 ) #   96,
+    ##network.addLayer('Convolutional',   27,  27,    5,    5,   5,   10,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,   10,    3,   3,    5,   2 ) #  384,
+    #network.addLayer('Convolutional',   13,  13,    8,    3,   3,   10,   1 ) #  384,
+    #network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
+    #network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
+    #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    6,   1 ) # 4096,
+    #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    4,   1 ) # 1024,
+    network.assignPEs()
+    
+    # Dont do all cells until debugged
+    #network.updateSourceCellsTargetList()
+    if 'DEBUG' in globals():
+        for l in range(1, network.numberOfLayers):
+            print l
+            network.Layers[l].generateConnections()
+            
+    
+    # import LayerPartitioning as l
+    # reload(l)
+        
+    
+if __name__ == "__main__":main()
+    
 
-if 'DEBUGFOO' in globals():
-    layerID = 1
-    cell = np.array([0, 20,20])
-    pe = np.array([0,1])
-    cp = network.peArray.pe[pe[0]][pe[1]].cellsProcessed[layerID]
-    pass
-    minx = np.inf
-    miny = np.inf
-    maxx = 0
-    maxy = 0
-    for c in range(cp.__len__()):
-        if cp[c][1] < miny:
-            miny = cp[c][1]
-        if cp[c][1] > maxy:
-            maxy = cp[c][1]
-        if cp[c][2] < minx:
-            minx = cp[c][2]
-        if cp[c][2] > maxx:
-            maxx = cp[c][2]
 
-    print minx, ",", maxx, ",", miny, ",", maxy
-
-if 'DEBUGFOO' in globals():
-    layerID = 1
-    PE = np.array([0, 0])
-    pe = network.peArray.pe[PE[0]][PE[1]]
-    processedCells = pe.cellsProcessed[layerID]
-    pCells = []
-    sCells = []
-    for cellId in processedCells:
-        #print cellId
-        pc = network.Layers[layerID].cells[cellId[0]][cellId[1]][cellId[2]]
-        sCellIds = pc.sourceCells
-        for sc in sCellIds:
-          c = network.Layers[layerID-1].cells[sc[0]][sc[1]][sc[2]]
-          if sCells.count(c) == 0: # avoid duplicates
-            sCells.append(network.Layers[layerID-1].cells[sc[0]][sc[1]][sc[2]])
-    minx = np.inf
-    miny = np.inf
-    maxx = 0
-    maxy = 0
-    for sc in sCells:
-        if sc.Y < miny:
-            miny = sc.Y
-        if sc.Y > maxy:
-            maxy = sc.Y
-        if sc.X < minx:
-            minx = sc.X
-        if sc.X > maxx:
-            maxx = sc.X
-      
 
 
 ##----------------------------------------------------------------------------------------------------
@@ -1054,47 +1091,238 @@ if 'DEBUGFOO' in globals():
 ##              HELP
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
+"""
+pylab inline
+import dnnConnectivityAndMemoryAllocation as dc
+from dnnConnectivityAndMemoryAllocation import *
+network.displayPeAssignments()
+network.displayCellsPerLayer()
+network.updateSourceCellsTargetList()
 
-#from dnnConnectivityAndMemoryAllocation import *
-#network.displayPeAssignments()
-#network.displayCellsPerLayer()
-#network.updateSourceCellsTargetList()
-#
-#for l in network.Layers:
-#    if l.layerID != 0 :
-#        print l.layerID
-#        l.updateSourceCellsTargetList()
-##        l.assignPEs(8,8)
+for l in network.Layers:
+    if l.layerID != 0 :
+        print l.layerID
+        l.updateSourceCellsTargetList()
+#        l.assignPEs(8,8)
 
-##print network.Layers[0].cells[0][0][1].memoryLocation
-##print memory
+#print network.Layers[0].cells[0][0][1].memoryLocation
+#print memory
 
-##for y in range(2):
-##  for x in range(224):
-##    for z in range(3):
-##      print '{{{0},{1},{2}}}:{3}'.format(z,y,x,network.Layers[0].cells[z][y][x].memoryLocation)
+#for y in range(2):
+#  for x in range(224):
+#    for z in range(3):
+#      print '{{{0},{1},{2}}}:{3}'.format(z,y,x,network.Layers[0].cells[z][y][x].memoryLocation)
 
-# foo = Cell(network.Layers[1],1,2,3)
+ foo = Cell(network.Layers[1],1,2,3)
+"""
+"""
+c_1_0_0_4 = dc.network.Layers[1].cells[0][0][4]
+pe_0_0 = network.peArray.pe[0][0]
+pass
+if c_1_0_0_4 in pe_0_0.cellsProcessed[1]:
+    print 'foo1'
+print pe_0_0.findROI(1)
+print pe_0_0.findCellsProcessedRegion(1)
 
-if 'DEBUG' in globals():
-    c_1_0_0_4 = network.Layers[1].cells[0][0][4]
-    pe_0_0 = network.peArray.pe[0][0]
-    pass
-    if c_1_0_0_4 in pe_0_0.cellsProcessed[1]:
-        print 'foo1'
-    print pe_0_0.findROI(1)
-    print pe_0_0.findCellsProcessedRegion(1)
+c_0_0_0_16 = network.Layers[0].cells[0][0][16]
+tc_0_0_0_16 = c_0_0_0_16.targetCells
+if c_1_0_0_4 in tc_0_0_0_16:
+    print 'foo2'
+if c_0_0_0_16 in c_1_0_0_4.sourceCells:
+    print 'foo3'
 
-if 'DEBUG' in globals():
-    c_0_0_0_16 = network.Layers[0].cells[0][0][16]
-    tc_0_0_0_16 = c_0_0_0_16.targetCells
-    if c_1_0_0_4 in tc_0_0_0_16:
-        print 'foo2'
-    if c_0_0_0_16 in c_1_0_0_4.sourceCells:
-        print 'foo3'
+print network.peArray.pe[0][0].findROI(1)
+print network.peArray.pe[1][1].findROI(1)
+print network.peArray.pe[2][2].findROI(1)
+print network.peArray.pe[7][7].findROI(1)
+"""
 
-if 'DEBUG' in globals():
-    network.peArray.pe[0][0].findROI(1)
-    network.peArray.pe[1][1].findROI(1)
-    network.peArray.pe[2][2].findROI(1)
-    network.peArray.pe[7][7].findROI(1)
+
+
+
+
+"""
+network.Layers[0].displayTargetPECounts()
+
+lid = 0
+yGrid, xGrid = np.mgrid[slice(0, network.Layers[lid].Y),  slice(0, network.Layers[lid].X)]
+
+numOfPEs = network.Layers[lid].getTargetPECounts()
+
+c = plt.contourf(xGrid,yGrid,numOfPEs, linspace(-0.5,4.5,6))
+b = plt.colorbar(c, orientation='vertical')
+#l = plt.clabel(c)
+lx = plt.xlabel("x")
+ly = plt.ylabel("y")
+plt.show()
+
+levels = MaxNLocator(nbins=4).tick_values(numOfPEs.min(), numOfPEs.max())
+levels = np.array([1,2,3,4])
+
+cmap = plt.get_cmap('PiYG')
+norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
+
+fig, ax = plt.subplots(nrows=1)
+
+im = ax.pcolormesh(xGrid, yGrid, numOfPEs, cmap=cmap, norm=norm)
+fig.colorbar(im, ax=ax)
+ax.set_title('Number of target PEs')
+fig.tight_layout()
+plt.show()
+
+
+
+
+
+layerID = 1
+cell = np.array([0, 20,20])
+pe = np.array([0,1])
+
+sc = network.getSourceCells(layerID, cell)
+sck=sc.keys()
+sck.sort()
+sck
+tc = network.getTargetCells(layerID, cell)
+tck=tc.keys()
+tck.sort()
+tck
+sp = network.getSourcePEs(layerID, cell)
+spk=sp.keys()
+spk.sort()
+spk
+tp = network.getTargetPEs(layerID, cell)
+tpk=tp.keys()
+tpk.sort()
+tpk
+for peY in range(8):
+    for peX in range(8):
+        cp = network.peArray.pe[peY][peX].cellsProcessed[layerID]
+        len(cp)
+
+
+
+
+layerID = 1
+cell = np.array([0, 20,20])
+pe = np.array([0,1])
+cp = network.peArray.pe[pe[0]][pe[1]].cellsProcessed[layerID]
+pass
+minx = np.inf
+miny = np.inf
+maxx = 0
+maxy = 0
+for c in range(cp.__len__()):
+    if cp[c][1] < miny:
+        miny = cp[c][1]
+    if cp[c][1] > maxy:
+        maxy = cp[c][1]
+    if cp[c][2] < minx:
+        minx = cp[c][2]
+    if cp[c][2] > maxx:
+        maxx = cp[c][2]
+
+print minx, ",", maxx, ",", miny, ",", maxy
+
+
+
+
+layerID = 1
+PE = np.array([0, 0])
+pe = network.peArray.pe[PE[0]][PE[1]]
+processedCells = pe.cellsProcessed[layerID]
+pCells = []
+sCells = []
+for cellId in processedCells:
+    #print cellId
+    pc = network.Layers[layerID].cells[cellId[0]][cellId[1]][cellId[2]]
+    sCellIds = pc.sourceCells
+    for sc in sCellIds:
+      c = network.Layers[layerID-1].cells[sc[0]][sc[1]][sc[2]]
+      if sCells.count(c) == 0: # avoid duplicates
+        sCells.append(network.Layers[layerID-1].cells[sc[0]][sc[1]][sc[2]])
+minx = np.inf
+miny = np.inf
+maxx = 0
+maxy = 0
+for sc in sCells:
+    if sc.Y < miny:
+        miny = sc.Y
+    if sc.Y > maxy:
+        maxy = sc.Y
+    if sc.X < minx:
+        minx = sc.X
+    if sc.X > maxx:
+                maxx = sc.X
+          
+
+
+"""
+
+
+
+
+##----------------------------------------------------------------------------------------------------
+##----------------------------------------------------------------------------------------------------
+##              CITATIONS
+##----------------------------------------------------------------------------------------------------
+##----------------------------------------------------------------------------------------------------
+
+##----------------------------------------------------------------------------------------------------
+# put in paper
+##----------------------------------------------------------------------------------------------------
+
+"""
+@Article{Hunter:2007,
+  Author    = {Hunter, J. D.},
+  Title     = {Matplotlib: A 2D graphics environment},
+  Journal   = {Computing In Science \& Engineering},
+  Volume    = {9},
+  Number    = {3},
+  Pages     = {90--95},
+  abstract  = {Matplotlib is a 2D graphics package used for Python
+  for application development, interactive scripting, and
+  publication-quality image generation across user
+  interfaces and operating systems.},
+  publisher = {IEEE COMPUTER SOC},
+  doi = {10.1109/MCSE.2007.55},
+  year      = 2007
+}
+
+"""
+
+
+##----------------------------------------------------------------------------------------------------
+# Do not put in paper
+##----------------------------------------------------------------------------------------------------
+
+"""
+@misc{stackoverflow1,
+  title = {Stack Overflow 1},
+  author={Various},
+  howpublished = {\url{http://stackoverflow.com/questions/6810999/how-to-determine-file-function-and-line-number}},
+  note = {Accessed: 2017-01-16}
+}
+@misc{stackoverflow2,
+  title = {Stack Overflow 2},
+  author={Various},
+  howpublished = {\url{http://stackoverflow.com/questions/1911281/how-do-i-get-list-of-methods-in-a-python-class}},
+  note = {Accessed: 2017-01-16}
+}
+@misc{stackoverflow3,
+  title = {Stack Overflow 3},
+  author={Various},
+  howpublished = {\url{http://kestrel.nmt.edu/~raymond/software/python_notes/paper004.html}},
+  note = {Accessed: 2017-XX-XX}
+}
+
+
+
+# URL Example
+@misc{stackoverflow<n>,
+  title = {Stack Overflow <n>},
+  author={Various},
+  howpublished = {\url{}},
+  note = {Accessed: 2017-XX-XX}
+}
+"""
+
