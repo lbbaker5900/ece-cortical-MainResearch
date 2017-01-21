@@ -20,7 +20,7 @@ import sys
 import os
 import copy
 from copy import deepcopy
-from copy import copy
+from copy import copy as copy_copy
 from collections import namedtuple
 from rcdtype import *
 # Plotting
@@ -244,9 +244,11 @@ class Cell():
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + '\nCell'.format(self.layerID)
+        pLine = pLine + '\nCell:{0},{1},{2}'.format(self.Z, self.Y, self.X)
+        pLine = pLine + '\nLayer:{0}'.format(self.layerID)
         pLine = pLine + '\nID{{Z,Y,X}} : {0},{1},{2}'.format(self.Z, self.Y, self.X)
         pLine = pLine + '\nPE{{Y,X}} : {0},{1}'.format(self.PE.ID[0], self.PE.ID[1])
+        pLine = pLine + '\nroiFromAssign,roiFromSrcCells : {0},{1}'.format(self.roiFromAssign, self.roiFromSrcCells)
         pLine = pLine + '\nMethods: {0}'.format(methods(self))
         pLine = pLine + '\nFields: {0}'.format(fields(self))
         return pLine
@@ -769,7 +771,7 @@ class PE():
           self.cellsProcessed.append([])
           self.processedRegion.append([])
           self.roi.append([])
-          self.roiCells.append([])
+          self.roiCells.append(None)
 
         self.parentPEarray = parentPEarray
 
@@ -812,17 +814,19 @@ class PE():
         # Create a copy of all the ROI cells as these will be copied to each targetPE
         # we also want them in the list in the order of processing
         roi = self.findROI(layerID)
-        xLen = self.roi[layerID][3]-self.roi[layerID][2]
-        yLen = self.roi[layerID][1]-self.roi[layerID][0]
+        xLen = self.roi[layerID][3]-self.roi[layerID][2]+1  
+        yLen = self.roi[layerID][1]-self.roi[layerID][0]+1
         zLen = self.parentPEarray.parentNetwork.Layers[layerID].Z
         
         roiLayerCells = []
+        # FIXME: will PE always process all features at Y,X location
         for roiZ in range(self.parentPEarray.parentNetwork.Layers[layerID-1].Z) :
           roiLayerCellsY = []
           for roiY in range(self.roi[layerID][0], self.roi[layerID][1]+1) :
             roiLayerCellsX = []
             for roiX in range(self.roi[layerID][2], self.roi[layerID][3]+1) :
-              copiedCell = copy(self.parentPEarray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX])
+              # Note: just using copy creates a numpy array?????
+              copiedCell = copy_copy(self.parentPEarray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX])
               roiLayerCellsX.append(copiedCell)
             roiLayerCellsY.append(roiLayerCellsX)
           roiLayerCells.append(roiLayerCellsY)
