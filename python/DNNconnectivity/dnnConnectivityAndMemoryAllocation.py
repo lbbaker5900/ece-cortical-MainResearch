@@ -196,6 +196,8 @@ class Cell():
     def __init__(self, parentLayer, z, y, x):
         # keep track of the {x,y} location of PE processing this cell
         self.PE = []
+        self.originalCell = self             # so copies of cell can communicate with original so we can keep track of copies
+        self.copiedTo     = []               # pointer to copied cell. we can extract Memory address of copied cell to create memory copy stats
         self.roiFromSrcCells = np.empty(4)
         self.roiFromAssign = []
         # Keep ID locally
@@ -493,35 +495,17 @@ class Layer():
 
                                 # a) Update source cells target PE list
                                 self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs.append(self.cells[f][y][x].PE)
-##                                try :
-##                                    if self.cells[f][y][x].PE not in self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs:
-##                                        self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs.append(self.cells[f][y][x].PE)
-##                                except :
-##                                    print 'ERROR:', self.layerID,':', ySrcCell, xSrcCell, f, y, x, self.cells[0][y][x].PE, tmpY, tmpX
-##                                    raise
              
                                 # b) Update source cells target cell list
                                 self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells.append(tgtCell)
-##                                if tgtCell not in self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells:
-##                                    self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells.append(tgtCell)
                              
                                 #srcCell = tuple([fSrcCell, ySrcCell, xSrcCell])
                              
                                 # c) Update this cells source PE list
                                 self.cells[f][y][x].sourcePEs.append(srcPE)
-##                                if srcPE not in self.cells[f][y][x].sourcePEs :
-##                                    self.cells[f][y][x].sourcePEs.append(srcPE)
              
                                 # d) Update this cells source cell list
-                                #if srcCell in self.cells[f][y][x].sourceCells :
-                                #    pass
-                                #    self.cells[f][y][x].sourceCells[srcCell] += 1
-                                #else:
-                                #    pass
-                                #    self.cells[f][y][x].sourceCells.update({srcCell : 1})
                                 self.cells[f][y][x].sourceCells.append(srcCell)
-##                                if srcCell not in self.cells[f][y][x].sourceCells :
-##                                    self.cells[f][y][x].sourceCells.append(srcCell)
                      
                 #print 'Completed layer {0} connections for features at : {1},{2}'.format(self.layerID, y, x)
 
@@ -825,8 +809,11 @@ class PE():
           for roiY in range(self.roi[layerID][0], self.roi[layerID][1]+1) :
             roiLayerCellsX = []
             for roiX in range(self.roi[layerID][2], self.roi[layerID][3]+1) :
-              # Note: just using copy creates a numpy array?????
+              # Note: Just using copy using "from copy import copy" creates a numpy array?????
+              #       had to use "from copy import copy as copy_copy"
               copiedCell = copy_copy(self.parentPEarray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX])
+              # Keep track of copies in original layer cell
+              self.parentPEarray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX].copiedTo.append(copiedCell)
               roiLayerCellsX.append(copiedCell)
             roiLayerCellsY.append(roiLayerCellsX)
           roiLayerCells.append(roiLayerCellsY)
@@ -1046,14 +1033,14 @@ class Network():
 def main():
 
     # Create memory
-    memory = Memory(2,32,8,4096)
+    memory = dc.Memory(2,32,8,4096)
     
     # Create DNN
-    network = Network()
+    network = dc.Network()
     #                                    X    Y    Z    Kx   Ky   Kz   stride
-    # network.addLayer('Input',          224, 224,    3                      ) #    3 
-    # network.addLayer('Convolutional',   55,  55,   96,   11,  11,    3,   4 ) #   96,
-    # network.addLayer('Convolutional',   27,  27,  256,    5,   5,   96,   2 ) #  256,
+    network.addLayer('Input',          224, 224,    3                      ) #    3 
+    network.addLayer('Convolutional',   55,  55,   96,   11,  11,    3,   4 ) #   96,
+    network.addLayer('Convolutional',   27,  27,  256,    5,   5,   96,   2 ) #  256,
     # network.addLayer('Convolutional',   13,  13,  384,    3,   3,  256,   2 ) #  384,
     # network.addLayer('Convolutional',   13,  13,  384,    3,   3,  384,   1 ) #  384,
     # network.addLayer('Fully Connected', 13,  13,  256,    3,   3,  384,   1 ) #  256,
@@ -1061,29 +1048,64 @@ def main():
     # network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
     # network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
     
-    network.addLayer('Input',          224, 224,    3                      ) #    3 
-    network.addLayer('Convolutional',   55,  55,   10,   11,  11,    3,   4 ) #   96,
-    ##network.addLayer('Convolutional',   27,  27,    5,    5,   5,   10,   2 ) #  256,
+    #network.addLayer('Input',          224, 224,    3                      ) #    3 
+    #network.addLayer('Convolutional',   55,  55,   10,   11,  11,    3,   4 ) #   96,
+    #network.addLayer('Input',           55,  55,   10,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,    5,    5,   5,   10,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,   10,    3,   3,    5,   2 ) #  384,
     #network.addLayer('Convolutional',   13,  13,    8,    3,   3,   10,   1 ) #  384,
     #network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
     #network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    6,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    4,   1 ) # 1024,
+    
     network.assignPEs()
     
-    # Dont do all cells until debugged
-    #network.updateSourceCellsTargetList()
-    if 'DEBUG' in globals():
-        for l in range(1, network.numberOfLayers):
-            print l
-            network.Layers[l].generateConnections()
-            
+    for l in range(1, network.numberOfLayers):
+      network.Layers[l].generateConnections()
     
-    # import LayerPartitioning as l
-    # reload(l)
+    network.Layers[0].displayTargetPECounts()
+    
+    lid = 0
+    numOfPEs = network.Layers[lid].getTargetPECounts()
+    
+    
+    # In[8]:
+    
+    opt = np.get_printoptions()
+    np.set_printoptions(threshold=np.inf)
+    #print numOfPEs
+    np.set_printoptions(threshold=1000)
+    
+    
+    
+    # In[12]:
+    
+    region = np.array([50,65,45,65])
+    #region = np.array([12,20,9,21])
+    network.Layers[0].displayTargetPECountsRegion(region)
+    
+    
+    # In[15]:
+    
+    network.peArray.pe[4][4].memCpyROI(1)
+    
+    
+    # In[30]:
+    
+    network.peArray.pe[4][4].roiCells[1][1][0][0]
+    
+    
+    # In[26]:
+    
+    network.peArray.pe[4][4].roiCells[1][1][0][0].originalCell
+    
+    
+    # In[29]:
+    
+    network.Layers[0].cells[1][110][106]
+    
         
-    
 if __name__ == "__main__":main()
     
 
