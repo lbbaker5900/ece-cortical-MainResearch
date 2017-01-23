@@ -151,9 +151,9 @@ class Memory():
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + "Channels:{0}:Banks/Channel:{1}:Pages/Bank:{2}:Words/Page:{3}:".format(self.numOfChannels, self.numOfBanksPerChannel, self.numOfPagesPerBank, self.sizeOfPage/WORDSIZE)
-        pLine = pLine + '\nMethods: {0}'.format(methods(self))
-        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        pLine = pLine + 'Channels:{0}:Banks/Channel:{1}:Pages/Bank:{2}:Words/Page:{3}:    '.format(self.numOfChannels, self.numOfBanksPerChannel, self.numOfPagesPerBank, self.sizeOfPage/WORDSIZE)
+        pLine = pLine + '\nMethods: {0}                                                   '.format(methods(self))
+        pLine = pLine + '\nFields: {0}                                                    '.format(fields(self))
         return pLine
 
 ## Kernels are usually stored across muliple pages with each page containing 4 weights of 32 kernels
@@ -176,9 +176,9 @@ class MemoryLocation():
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + "Channel:{0}, Bank:{1}, Page:{2}, Word:{3}".format(self.channel, self.bank, self.page, self.word)
-        pLine = pLine + '\nMethods: {0}'.format(methods(self))
-        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        pLine = pLine + 'Channel:{0}, Bank:{1}, Page:{2}, Word:{3}  '.format(self.channel, self.bank, self.page, self.word)
+        pLine = pLine + '\nMethods: {0}                             '.format(methods(self))
+        pLine = pLine + '\nFields: {0}                              '.format(fields(self))
         return pLine
 
 
@@ -196,41 +196,38 @@ class Cell():
 
     def __init__(self, parentLayer, z, y, x):
         # keep track of the {x,y} location of PE processing this cell
-        self.PE = []
-        self.originalCell = self             # so copies of cell can communicate with original so we can keep track of copies
-        self.copiedTo     = []               # pointer to copied cell. we can extract Memory address of copied cell to create memory copy stats
-        self.roiFromSrcCells = np.zeros(4)
-        self.roiFromAssign = []
+        self.PE              = []
+        self.originalCell    = self                             # so copies of cell can communicate with original so we can keep track of copies
+        self.copiedTo        = []                               # pointer to copied cell. we can extract Memory address of copied cell to create memory copy stats
+        self.roiFromSrcCells = np.zeros([2,3], dtype=np.int)    # corners of ROI [[Z,Y,X],[Z,Y,X]] extracted from list of source cells
+        self.roi             = np.zeros([2,3], dtype=np.int)    # corners of ROI [[Z,Y,X],[Z,Y,X]] generated when running assignPE in the layer
         # Keep ID locally
-        self.Z = z
-        self.Y = y
-        self.X = x
+        self.Z               = z
+        self.Y               = y
+        self.X               = x
         # Fanin and fanout of this cell
-        #self.sourceCells = dict() 
-        self.sourceCells = []
-        #self.targetCells = dict()
-        self.targetCells = []
-        self.sourcePEs = []
-        self.targetPEs = []
-        self.layerID = parentLayer.layerID
-        self.parentLayer = parentLayer
-        self.memoryLocation = MemoryLocation(None,0,0,0,0)
-        self.kernel = Kernel(0,0,0)
+        self.sourceCells     = []
+        self.targetCells     = []
+        self.sourcePEs       = []
+        self.targetPEs       = []
+        self.layerID         = parentLayer.layerID
+        self.parentLayer     = parentLayer
+        self.memoryLocation  = MemoryLocation(None,0,0,0,0)
+        self.kernel          = Kernel(0,0,0)
 
     #----------------------------------------------------------------------------------------------------
     # ROI
     
     def findROI(self):
-        sCells = []
-        for sc in self.sourceCells:
-          #c = self.parentLayer.parentNetwork.Layers[self.parentLayer.layerID-1].cells[sc[0]][sc[1]][sc[2]]
-          #sCells.append(c)
-          sCells.append(sc)
+
+        # Parse the source cells and find Y,X corners of ROI
         minx = np.inf
         miny = np.inf
+        minz = np.inf
         maxx = 0
         maxy = 0
-        for sc in sCells:
+        maxz = 0
+        for sc in self.sourceCells:
             if sc.Y < miny:
                 miny = sc.Y
             if sc.Y > maxy:
@@ -239,22 +236,37 @@ class Cell():
                 minx = sc.X
             if sc.X > maxx:
                 maxx = sc.X
-        self.roiFromSrcCells = np.array([miny, maxy, minx, maxx] )
+
+        # examine cells at corners of ROI to find min and max Z
+        for sc in self.sourceCells:
+            if (sc.Y == miny) and (sc.X == minx):
+                if sc.Z < minz:
+                    minz = sc.Z
+            if (sc.Y == maxy) and (sc.X == maxx):
+                if sc.Z > maxz:
+                    maxz = sc.Z
+
+        self.roiFromSrcCells = np.array([[minz, miny, minx], [maxz, maxy, maxx]] )
         return self.roiFromSrcCells
-        #print minx, ",", maxx, ",", miny, ",", maxy
+
+    def getROI(self):
+        if not self.roiFromSrcCells.any() :
+            return self.findROI()
+        else:
+            return self.roiFromSrcCells
+
     #----------------------------------------------------------------------------------------------------
     # print
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + '\nCell:{0},{1},{2}'.format(self.Z, self.Y, self.X)
-        pLine = pLine + '\nLayer:{0}'.format(self.layerID)
-        pLine = pLine + '\nID{{Z,Y,X}} : {0},{1},{2}'.format(self.Z, self.Y, self.X)
-        pLine = pLine + '\nPE{{Y,X}} : {0},{1}'.format(self.PE.ID[0], self.PE.ID[1])
-        pLine = pLine + '\nMemory:{{Ch, Bank, Page, Word}}:{0},{1},{2},{3}'.format(self.memoryLocation.channel, self.memoryLocation.bank, self.memoryLocation.page, self.memoryLocation.word)
-        pLine = pLine + '\nroiFromAssign,roiFromSrcCells : {0},{1}'.format(self.roiFromAssign, self.roiFromSrcCells)
-        pLine = pLine + '\nMethods: {0}'.format(methods(self))
-        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        pLine = pLine + '\nCell:{0},{1},{2}                                               '.format(self.Z, self.Y, self.X)
+        pLine = pLine + '\nLayer:{0}                                                      '.format(self.layerID)
+        pLine = pLine + '\nPE{{Y,X}} : {0},{1}                                            '.format(self.PE.ID[0], self.PE.ID[1])
+        pLine = pLine + '\nMemory:{{Ch, Bank, Page, Word}}:{0},{1},{2},{3}                '.format(self.memoryLocation.channel, self.memoryLocation.bank, self.memoryLocation.page, self.memoryLocation.word)
+        pLine = pLine + '\nroi || roiFromSrcCells(findROI()) coords : {0} {1} || {2},{3}  '.format(self.roi[0], self.roi[1], self.roiFromSrcCells[0], self.roiFromSrcCells[1] )
+        pLine = pLine + '\nMethods: {0}                                                   '.format(methods(self))
+        pLine = pLine + '\nFields: {0}                                                    '.format(fields(self))
         return pLine
         
 
@@ -296,11 +308,11 @@ class Layer():
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + '\nLayer {0}'.format(self.layerID)
-        pLine = pLine + '\n{{Z,Y,X}} : {0},{1},{2}'.format(self.Z, self.Y, self.X)
-        pLine = pLine + '\n{{Kz,Ky,Kx}} : {0},{1},{2}'.format(self.Kz, self.Ky, self.Kx)
-        pLine = pLine + '\nMethods: {0}'.format(methods(self))
-        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        pLine = pLine + '\nLayer {0}                    '.format(self.layerID)
+        pLine = pLine + '\n{{Z,Y,X}} : {0},{1},{2}      '.format(self.Z, self.Y, self.X)
+        pLine = pLine + '\n{{Kz,Ky,Kx}} : {0},{1},{2}   '.format(self.Kz, self.Ky, self.Kx)
+        pLine = pLine + '\nMethods: {0}                 '.format(methods(self))
+        pLine = pLine + '\nFields: {0}                  '.format(fields(self))
         return pLine
         
 
@@ -377,7 +389,7 @@ class Layer():
         for y in range(peY):
           eX = []
           for x in range(peX):
-              eX.append(np.zeros(2))
+              eX.append(np.zeros(2, dtype=np.int))
           self.peArrayXYcellCount.append(eX)
 
         # 
@@ -391,7 +403,7 @@ class Layer():
         # we add a column to k PE's so k PE's will have 'n+1' columns with the remainder PE's having 'n' columns
 
         # We know the remainder of X/l is less than peX, so between 1 and 7
-        # So now keep iterating by deleting n+1 nitially from X to create Xp, we will reach a point where Xp is an integer multiple of l and 8-l multiples of n+1
+        # So now keep iterating by deleting n+1 initially from X to create Xp, we will reach a point where Xp is an integer multiple of l and 8-l multiples of n+1
         
         nx=np.floor(self.X*self.Z/peX) # n is the integer part meaning peX-1 PE's will be assigned n columns and the peXth PE would be assigned X-(peX-1)*n cols
         #l=peX
@@ -475,15 +487,11 @@ class Layer():
                     tmpY = range(max(0, self.kernelTopOffset+y*self.stride), min(self.parentNetwork.Layers[self.layerID-1].Y, self.kernelTopOffset+y*self.stride+self.Ky))
                     tmpX = range(max(0, self.kernelLeftOffset+x*self.stride), min(self.parentNetwork.Layers[self.layerID-1].X, self.kernelLeftOffset+x*self.stride+self.Kx))
              
-                    #print 'Layer n-1 cells for Layer n cell {', x, ',', y, '}'
-                    #print 'tmpY : ', tmpY
-                    #print 'tmpX : ', tmpX
-             
                     # tmpy,tmpX are the X,Y ROI of the cell (f,y,x)
                     # FIXME: this ROI should match the the findROI method which uses the list of sourceCells to construct the ROI
-                    #self.cells[f][y][x].roiFromAssign = []
-                    self.cells[f][y][x].roiFromAssign.append(tmpY)
-                    self.cells[f][y][x].roiFromAssign.append(tmpX)
+                    # create corners of ROI
+                    self.cells[f][y][x].roi[0] = [                                            0, min(tmpY), min(tmpX)]
+                    self.cells[f][y][x].roi[1] = [self.parentNetwork.Layers[self.layerID-1].Z-1, max(tmpY), max(tmpX)]
 
                     # Cycle thru the source cells and 
                     #   a) add this cells PE to the list of target PE's of the source cell
@@ -581,7 +589,7 @@ class Layer():
         # return a grid of PE values the size of the input array Y,X
         yGrid, xGrid = np.mgrid[slice(0, self.Y),
                                 slice(0, self.X)]
-        numOfPEs = np.zeros_like(xGrid)
+        numOfPEs = np.zeros_like(xGrid, dtype=np.int)
 
         for y in range(self.Y):
             for x in range(self.X):
@@ -591,7 +599,7 @@ class Layer():
     #----------------------------------------------------------------------------------------------------
     def displayTargetPECountsRegion(self, region):
         yGrid, xGrid = np.mgrid[slice(region[0], region[1]), slice(region[2], region[3])]
-        numOfPEs = np.zeros_like(xGrid)
+        numOfPEs = np.zeros_like(xGrid, dtype=np.int)
 
         pLine = ''
         for y in range(region[0], region[1]):
@@ -768,9 +776,18 @@ class PE():
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + '\nPE {0},{1}'.format(self.ID[0], self.ID[1])
-        pLine = pLine + '\nMethods: {0}'.format(methods(self))
-        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        pLine = pLine + '\nPE {0},{1}               '.format(self.ID[0], self.ID[1])
+        cnt = 0
+        for roi in self.roi:
+           # if its not a np-array then not been set yet
+           if isinstance(roi, list):
+              pLine = pLine + '\nlayer{0} Not calculated '.format(cnt)
+              cnt += 1
+           else :
+              pLine = pLine + '\nlayer{0} roi coords: {1},{2} '.format(cnt, roi[0], roi[1])
+              cnt += 1
+        pLine = pLine + '\nMethods: {0}             '.format(methods(self))
+        pLine = pLine + '\nFields: {0}              '.format(fields(self))
         return pLine
         
     #----------------------------------------------------------------------------------------------------
@@ -778,10 +795,15 @@ class PE():
     # ROI
     
     def findROI(self, layerID):
+
+        # Parse the source cells and find Y,X corners of ROI
         minx = np.inf
         miny = np.inf
+        minz = np.inf
         maxx = 0
         maxy = 0
+        maxz = 0
+
         for pc in self.cellsProcessed[layerID] :
           for sc in pc.sourceCells:
             if sc.Y < miny:
@@ -792,14 +814,25 @@ class PE():
                 minx = sc.X
             if sc.X > maxx:
                 maxx = sc.X
-        self.roi[layerID] = np.array([miny, maxy, minx, maxx] )
+
+        # examine cells at corners of ROI to find min and max Z
+        for pc in self.cellsProcessed[layerID] :
+          for sc in pc.sourceCells:
+              if (sc.Y == miny) and (sc.X == minx):
+                  if sc.Z < minz:
+                      minz = sc.Z
+              if (sc.Y == maxy) and (sc.X == maxx):
+                  if sc.Z > maxz:
+                      maxz = sc.Z
+
+        self.roi[layerID] = np.array([[minz, miny, minx],[maxz, maxy, maxx]])
 
         return self.roi[layerID]
 
 
     def getROI(self, layerID):
-        if self.roi == [[],[],[],[]]:
-            return self.findROI[layerID]
+        if not self.roi[layerID].any() :
+            return self.findROI(layerID)
         else:
             return self.roi[layerID]
 
@@ -917,10 +950,10 @@ class ManagerArray():
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + '\nManager Array'
+        pLine = pLine + '\nManager Array             '
         pLine = pLine + '\nManagers:{{Y,X}} : {0},{1}'.format(self.manager[0].__len__(), self.manager.__len__())
-        pLine = pLine + '\nMethods: {0}'.format(methods(self))
-        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        pLine = pLine + '\nMethods: {0}              '.format(methods(self))
+        pLine = pLine + '\nFields: {0}               '.format(fields(self))
         return pLine
         
     #----------------------------------------------------------------------------------------------------
@@ -949,9 +982,9 @@ class Manager():
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + '\nManager {0},{1}'.format(self.ID[0], self.ID[1])
-        pLine = pLine + '\nMethods: {0}'.format(methods(self))
-        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        pLine = pLine + '\nManager {0},{1} '.format(self.ID[0], self.ID[1])
+        pLine = pLine + '\nMethods: {0}    '.format(methods(self))
+        pLine = pLine + '\nFields: {0}     '.format(fields(self))
         return pLine
         
     #----------------------------------------------------------------------------------------------------
@@ -964,17 +997,22 @@ class Manager():
         # Create a copy of all the ROI cells as these will be copied to each manager associated with the PE
         # we also want them in the list in the order of processing
         roi = self.pe.getROI(layerID)
-        xLen = roi[3]-roi[2]+1  
-        yLen = roi[1]-roi[0]+1
+        print roi
+        xLen = roi[1][2]-roi[0][2]+1  
+        yLen = roi[1][1]-roi[0][1]+1
+
+        # copy all features
+        #zLen = roi[1][0]-roi[0][0]+1
         zLen = self.parentManagerArray.parentNetwork.Layers[layerID].Z
         
         roiLayerCells = []
+
         # FIXME: will PE always process all features at Y,X location
         for roiZ in range(self.parentManagerArray.parentNetwork.Layers[layerID-1].Z) :
           roiLayerCellsY = []
-          for roiY in range(roi[0], roi[1]+1) :
+          for roiY in range(roi[0][1], roi[1][1]+1) :
             roiLayerCellsX = []
-            for roiX in range(roi[2], roi[3]+1) :
+            for roiX in range(roi[0][2], roi[1][2]+1) :
               # Note: Just using copy using "from copy import copy" creates a numpy array?????
               #       had to use "from copy import copy as copy_copy"
               copiedCell = copy_copy(self.parentManagerArray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX])
@@ -1065,10 +1103,10 @@ class Network():
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + '\nNetwork'
-        pLine = pLine + '\nLayers:{0}'.format(self.numberOfLayers)
-        pLine = pLine + '\nMethods: {0}'.format(methods(self))
-        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        pLine = pLine + '\nNetwork       '
+        pLine = pLine + '\nLayers:{0}    '.format(self.numberOfLayers)
+        pLine = pLine + '\nMethods: {0}  '.format(methods(self))
+        pLine = pLine + '\nFields: {0}   '.format(fields(self))
         return pLine
         
     #----------------------------------------------------------------------------------------------------
@@ -1206,12 +1244,12 @@ def main():
     
     # coding: utf-8
     
-    # In[1]:
+    # In[220]:
     
     #pylab inline
     
     
-    # In[2]:
+    # In[432]:
     
     try:
         reload(dc)
@@ -1221,8 +1259,9 @@ def main():
         
     
     
-    # In[3]:
+    # In[433]:
     
+    WORDSIZE = 32
     import dnnConnectivityAndMemoryAllocation as dc
     
     # Create memory
@@ -1231,9 +1270,9 @@ def main():
     # Create DNN
     network = dc.Network()
     #                                    X    Y    Z    Kx   Ky   Kz   stride
-    network.addLayer('Input',          224, 224,    3                      ) #    3 
-    network.addLayer('Convolutional',   55,  55,   96,   11,  11,    3,   4 ) #   96,
-    network.addLayer('Convolutional',   27,  27,  256,    5,   5,   96,   2 ) #  256,
+    #network.addLayer('Input',          224, 224,    3                      ) #    3 
+    #network.addLayer('Convolutional',   55,  55,   96,   11,  11,    3,   4 ) #   96,
+    #network.addLayer('Convolutional',   27,  27,  256,    5,   5,   96,   2 ) #  256,
     # network.addLayer('Convolutional',   13,  13,  384,    3,   3,  256,   2 ) #  384,
     # network.addLayer('Convolutional',   13,  13,  384,    3,   3,  384,   1 ) #  384,
     # network.addLayer('Fully Connected', 13,  13,  256,    3,   3,  384,   1 ) #  256,
@@ -1243,9 +1282,9 @@ def main():
     
     #network.addLayer('Input',          224, 224,    3                      ) #    3 
     #network.addLayer('Convolutional',   55,  55,   10,   11,  11,    3,   4 ) #   96,
-    #network.addLayer('Input',           55,  55,    3,                      ) #   96,
-    #network.addLayer('Convolutional',   27,  27,    5,    5,   5,    3,   2 ) #  256,
-    #network.addLayer('Convolutional',   13,  13,   10,    3,   3,    5,   2 ) #  384,
+    network.addLayer('Input',           55,  55,    3,                      ) #   96,
+    network.addLayer('Convolutional',   27,  27,    5,    5,   5,    3,   2 ) #  256,
+    network.addLayer('Convolutional',   13,  13,   10,    3,   3,    5,   2 ) #  384,
     #network.addLayer('Convolutional',   13,  13,    8,    3,   3,   10,   1 ) #  384,
     #network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
     #network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
@@ -1259,24 +1298,24 @@ def main():
     
     
     
-    # In[4]:
+    # In[434]:
     
     for l in range(1, network.numberOfLayers):
       network.Layers[l].generateConnections()
     
     
-    # In[ ]:
+    # In[435]:
     
     network.Layers[0].displayTargetPECounts()
     
     
-    # In[ ]:
+    # In[436]:
     
     lid = 0
     numOfPEs = network.Layers[lid].getTargetPECounts()
     
     
-    # In[ ]:
+    # In[437]:
     
     opt = np.get_printoptions()
     np.set_printoptions(threshold=np.inf)
@@ -1285,19 +1324,20 @@ def main():
     
     
     
-    # In[ ]:
+    # In[438]:
     
     #region = np.array([50,65,45,65])
     region = np.array([12,20,9,21])
     network.Layers[0].displayTargetPECountsRegion(region)
     
     
-    # In[ ]:
+    # In[439]:
     
     layerID = 1
     for peY in range(network.peY) :
       for peX in range(network.peX) :
         network.peArray.pe[peY][peX].findROI(layerID)
+        print network.peArray.pe[peY][peX]
         network.managerArray.manager[peY][peX].memCpyROI(layerID)
     
     
@@ -1312,11 +1352,6 @@ def main():
     # In[ ]:
     
     print network.managerArray.manager[4][4].roiCells[1][1][0][0]
-    
-    
-    # In[ ]:
-    
-    
     
     
     # In[ ]:
@@ -1360,63 +1395,6 @@ def main():
     
     # In[ ]:
     
-    roiCells = network.managerArray.manager[0][0].roiCells 
-    
-    initialChannel   = 0
-    channelIncrement = 1
-    initialBank      = 0
-    bankIncrement    = 2
-    initialPage      = 0
-    pageIncrement    = 2
-    initialWord      = 0
-    wordIncrement    = 1
-    padWordRadix2    = 'Y'
-    
-    # if the number of features is not radix-2, do we pad features to align radix-2
-    numOfFeatures = roiCells[layerID].__len__()
-    if padWordRadix2 is 'Y' :
-      numberOfAllocatedFeatures = 2**(math.ceil(math.log(numOfFeatures,2)))
-    
-    channel = initialChannel
-    bank    = initialBank
-    page    = initialPage
-    word    = initialWord
-    
-    for y in range(roiCells[layerID][0].__len__()):
-      for x in range(roiCells[layerID][0][0].__len__()):
-        for z in range(roiCells[layerID].__len__()):
-          roiCells[layerID][z][y][x].memoryLocation.memory  = memory
-          roiCells[layerID][z][y][x].memoryLocation.channel = int(channel)
-          roiCells[layerID][z][y][x].memoryLocation.bank    = int(bank)
-          roiCells[layerID][z][y][x].memoryLocation.page    = int(page)
-          roiCells[layerID][z][y][x].memoryLocation.word    = int(word)
-          
-          channel = channel + channelIncrement
-          if channel == (memory.numOfChannels):
-            channel = 0
-            word = word + wordIncrement
-          if padWordRadix2 is 'Y' :
-            if word%numberOfAllocatedFeatures == numOfFeatures:
-                word = (int(word/numberOfAllocatedFeatures)+1) * numberOfAllocatedFeatures
-          if word == (memory.sizeOfPage/WORDSIZE):
-            word = 0
-            page = page + pageIncrement
-          
-          if page == (memory.numOfPagesPerBank):
-            page = 0
-            bank = bank + bankIncrement
-          
-          if bank == (memory.numOfBanksPerChannel):
-            bank = 0
-                  
-    for y in range(roiCells[layerID][0].__len__()):
-      for x in range(roiCells[layerID][0][0].__len__()):
-        for z in range(roiCells[layerID].__len__()):
-            print roiCells[layerID][z][y][x]
-    
-    
-    # In[ ]:
-    
     print network.Layers[1].cells[0][25][25]
     
     
@@ -1424,7 +1402,39 @@ def main():
     
     print network.peArray.pe[3][3].getROI(1)
     
-            
+    
+    # In[ ]:
+    
+    layerID = 1
+    x = 3
+    y = 4
+    print network.managerArray.manager[y][x]
+    print network.managerArray.manager[y][x].pe
+    print network.managerArray.manager[y][x].pe.roi
+    for c in network.managerArray.manager[y][x].pe.cellsProcessed[layerID] :
+      c.findROI()
+      print c
+    x += 1
+    print network.managerArray.manager[y][x]
+    print network.managerArray.manager[y][x].pe
+    print network.managerArray.manager[y][x].pe.roi
+    for c in network.managerArray.manager[y][x].pe.cellsProcessed[layerID] :
+      c.findROI()
+      print c
+        
+    
+    
+    
+    
+    
+    # In[ ]:
+    
+    for c in network.managerArray.manager[y][x].pe.cellsProcessed[layerID][0].sourceCells :
+      print c
+    for c in network.managerArray.manager[y][x].pe.cellsProcessed[layerID][0].sourceCells :
+      print c
+    
+                
 if __name__ == "__main__":main()
     
 
