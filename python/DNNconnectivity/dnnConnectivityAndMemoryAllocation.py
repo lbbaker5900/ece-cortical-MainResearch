@@ -167,8 +167,9 @@ class Memory():
 
 class MemoryLocation():
     ## memory location is a word within a page
-    def __init__(self, channel, bank, page, word):
-        self.channel = channel;
+    def __init__(self, memory, channel, bank, page, word):
+        self.memory  = memory ; # pointer to actual memory
+        self.channel = channel; # rest is location in the memory
         self.bank    = bank   ;
         self.page    = page   ;
         self.word    = word   ;
@@ -198,7 +199,7 @@ class Cell():
         self.PE = []
         self.originalCell = self             # so copies of cell can communicate with original so we can keep track of copies
         self.copiedTo     = []               # pointer to copied cell. we can extract Memory address of copied cell to create memory copy stats
-        self.roiFromSrcCells = np.empty(4)
+        self.roiFromSrcCells = np.zeros(4)
         self.roiFromAssign = []
         # Keep ID locally
         self.Z = z
@@ -213,7 +214,7 @@ class Cell():
         self.targetPEs = []
         self.layerID = parentLayer.layerID
         self.parentLayer = parentLayer
-        self.memoryLocation = MemoryLocation(0,0,0,0)
+        self.memoryLocation = MemoryLocation(None,0,0,0,0)
         self.kernel = Kernel(0,0,0)
 
     #----------------------------------------------------------------------------------------------------
@@ -250,6 +251,7 @@ class Cell():
         pLine = pLine + '\nLayer:{0}'.format(self.layerID)
         pLine = pLine + '\nID{{Z,Y,X}} : {0},{1},{2}'.format(self.Z, self.Y, self.X)
         pLine = pLine + '\nPE{{Y,X}} : {0},{1}'.format(self.PE.ID[0], self.PE.ID[1])
+        pLine = pLine + '\nMemory:{{Ch, Bank, Page, Word}}:{0},{1},{2},{3}'.format(self.memoryLocation.channel, self.memoryLocation.bank, self.memoryLocation.page, self.memoryLocation.word)
         pLine = pLine + '\nroiFromAssign,roiFromSrcCells : {0},{1}'.format(self.roiFromAssign, self.roiFromSrcCells)
         pLine = pLine + '\nMethods: {0}'.format(methods(self))
         pLine = pLine + '\nFields: {0}'.format(fields(self))
@@ -302,8 +304,11 @@ class Layer():
         return pLine
         
 
+    """
     #----------------------------------------------------------------------------------------------------
     # Memory assignment
+    #
+    # FIXME : now in manager class
 
     def allocateMemory(self):  
         # - after creating the cells, they will be allocated a state memory location
@@ -351,6 +356,7 @@ class Layer():
               
               if channel == (memory.numOfChannels):
                 channel = 0
+    """
               
 
     def getPreviousLayer(self):
@@ -746,7 +752,6 @@ class PE():
 
         self.processedRegion = []
         self.roi             = []  # array([ yMin, yMax, xMin, xMax ])
-        self.roiCells        = []  # copy of ROI of previous layer cells
 
         # which cells in layer n are being processed by this pe
         self.cellsProcessed = []
@@ -755,7 +760,6 @@ class PE():
           self.cellsProcessed.append([])
           self.processedRegion.append([])
           self.roi.append([])
-          self.roiCells.append(None)
 
         self.parentPEarray = parentPEarray
 
@@ -791,8 +795,16 @@ class PE():
         self.roi[layerID] = np.array([miny, maxy, minx, maxx] )
 
         return self.roi[layerID]
-        #print minx, ",", maxx, ",", miny, ",", maxy
 
+
+    def getROI(self, layerID):
+        if self.roi == [[],[],[],[]]:
+            return self.findROI[layerID]
+        else:
+            return self.roi[layerID]
+
+    """
+    # Now in manager class
     def memCpyROI(self, layerID):
 
         # Create a copy of all the ROI cells as these will be copied to each targetPE
@@ -812,13 +824,17 @@ class PE():
               # Note: Just using copy using "from copy import copy" creates a numpy array?????
               #       had to use "from copy import copy as copy_copy"
               copiedCell = copy_copy(self.parentPEarray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX])
+
+              # copied Cell will be in different memory location and we only did a shallow copy
+              copiedCell.memoryLocation = MemoryLocation(0,0,0,0)
+
               # Keep track of copies in original layer cell
               self.parentPEarray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX].copiedTo.append(copiedCell)
               roiLayerCellsX.append(copiedCell)
             roiLayerCellsY.append(roiLayerCellsX)
           roiLayerCells.append(roiLayerCellsY)
         self.roiCells[layerID] = roiLayerCells
-
+    """
 
 
     def findCellsProcessedRegion(self, layerID):
@@ -881,6 +897,154 @@ class PEarray():
         self.pe[peId[0]][peId[1]].addCell(layerId, cellId)
 
 
+########################################################################################################################
+#----------------------------------------------------------------------------------------------------
+# Manager ARRAY
+
+class ManagerArray():
+
+    def __init__(self, parentNetwork, mgrY, mgrX, numberOfLayers):
+        self.parentNetwork = parentNetwork
+        self.manager = []
+        for y in range(mgrY):
+            mgrArrayX = []
+            for x in range(mgrX):
+                mgrArrayX.append(Manager(self, numberOfLayers, np.array([y,x])))
+            self.manager.append(mgrArrayX)
+
+    #----------------------------------------------------------------------------------------------------
+    # print
+
+    def __str__(self):
+        pLine = ""
+        pLine = pLine + '\nManager Array'
+        pLine = pLine + '\nManagers:{{Y,X}} : {0},{1}'.format(self.manager[0].__len__(), self.manager.__len__())
+        pLine = pLine + '\nMethods: {0}'.format(methods(self))
+        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        return pLine
+        
+    #----------------------------------------------------------------------------------------------------
+    def addCell(self, peId, layerId, cellId):
+        self.pe[peId[0]][peId[1]].addCell(layerId, cellId)
+
+
+########################################################################################################################
+#----------------------------------------------------------------------------------------------------
+# Manager
+
+class Manager():
+
+    def __init__(self, parentManagerArray, numberOfLayers, mgrId):
+        self.ID                 = mgrId
+        self.parentManagerArray = parentManagerArray
+        self.pe                 = self.parentManagerArray.parentNetwork.peArray.pe[self.ID[0]][self.ID[1]]
+        self.roiCells           = []  # copy of ROI of previous layer cells
+
+        for l in range(numberOfLayers):
+          self.roiCells.append(None)
+
+
+    #----------------------------------------------------------------------------------------------------
+    # print
+
+    def __str__(self):
+        pLine = ""
+        pLine = pLine + '\nManager {0},{1}'.format(self.ID[0], self.ID[1])
+        pLine = pLine + '\nMethods: {0}'.format(methods(self))
+        pLine = pLine + '\nFields: {0}'.format(fields(self))
+        return pLine
+        
+    #----------------------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------------------
+    # Mem Copy
+    # copy ROI from roi in associated PE
+
+    def memCpyROI(self, layerID):
+
+        # Create a copy of all the ROI cells as these will be copied to each manager associated with the PE
+        # we also want them in the list in the order of processing
+        roi = self.pe.getROI(layerID)
+        xLen = roi[3]-roi[2]+1  
+        yLen = roi[1]-roi[0]+1
+        zLen = self.parentManagerArray.parentNetwork.Layers[layerID].Z
+        
+        roiLayerCells = []
+        # FIXME: will PE always process all features at Y,X location
+        for roiZ in range(self.parentManagerArray.parentNetwork.Layers[layerID-1].Z) :
+          roiLayerCellsY = []
+          for roiY in range(roi[0], roi[1]+1) :
+            roiLayerCellsX = []
+            for roiX in range(roi[2], roi[3]+1) :
+              # Note: Just using copy using "from copy import copy" creates a numpy array?????
+              #       had to use "from copy import copy as copy_copy"
+              copiedCell = copy_copy(self.parentManagerArray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX])
+
+              # copied Cell will be in different memory location and we only did a shallow copy
+              copiedCell.memoryLocation = MemoryLocation(None,0,0,0,0) # just provide dummy memory for now
+
+              # Keep track of copies in original layer cell
+              self.parentManagerArray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX].copiedTo.append(copiedCell)
+              roiLayerCellsX.append(copiedCell)
+            roiLayerCellsY.append(roiLayerCellsX)
+          roiLayerCells.append(roiLayerCellsY)
+
+        self.roiCells[layerID] = roiLayerCells
+
+    #----------------------------------------------------------------------------------------------------
+    # Memory assignment
+
+    def allocateMemory(self, memory, layerID):  
+        # - after copying the ROI from thwe input array to the manager, they will be allocated a state memory location
+        # We can create a DMA transfer from the ROI cell and the original cell
+        initialChannel   = 0
+        channelIncrement = 1
+        initialBank      = 0
+        bankIncrement    = 2
+        initialPage      = 0
+        pageIncrement    = 2
+        initialWord      = 0
+        wordIncrement    = 1
+        padWordRadix2    = 'Y'
+
+        # if the number of features is not radix-2, do we pad features to align radix-2
+        numOfFeatures = self.roiCells[layerID].__len__()
+        if padWordRadix2 is 'Y' :
+          numberOfAllocatedFeatures = 2**(math.ceil(math.log(numOfFeatures,2)))
+
+        channel = initialChannel
+        bank    = initialBank
+        page    = initialPage
+        word    = initialWord
+
+        for y in range(self.roiCells[layerID][0].__len__()):
+          for x in range(self.roiCells[layerID][0][0].__len__()):
+            for z in range(self.roiCells[layerID].__len__()):
+              self.roiCells[layerID][z][y][x].memoryLocation.memory  = memory
+              self.roiCells[layerID][z][y][x].memoryLocation.channel = int(channel)
+              self.roiCells[layerID][z][y][x].memoryLocation.bank    = int(bank)
+              self.roiCells[layerID][z][y][x].memoryLocation.page    = int(page)
+              self.roiCells[layerID][z][y][x].memoryLocation.word    = int(word)
+              
+              channel = channel + channelIncrement
+              if channel == (memory.numOfChannels):
+                channel = 0
+                word = word + wordIncrement
+              if padWordRadix2 is 'Y' :
+                if word%numberOfAllocatedFeatures == numOfFeatures:
+                    word = (int(word/numberOfAllocatedFeatures)+1) * numberOfAllocatedFeatures
+              if word == (memory.sizeOfPage/WORDSIZE):
+                word = 0
+                page = page + pageIncrement
+              
+              if page == (memory.numOfPagesPerBank):
+                page = 0
+                bank = bank + bankIncrement
+              
+              if bank == (memory.numOfBanksPerChannel):
+                bank = 0
+              
+
+
 
 ########################################################################################################################
 #----------------------------------------------------------------------------------------------------
@@ -922,12 +1086,18 @@ class Network():
 
     def assignPEs(self):
         #----------------------------------------------------------------------------------------------------
-        # create PE Array
+        # create Manager and PE Array
+        # First build PE then associate a manager with each PE
+
+        # a) PE's
         self.peArray = PEarray(self, self.peY, self.peX, self.numberOfLayers)
         # assign PE's to each cell of each layer
         for l in self.Layers:
             l.assignPEs(self.peX,self.peY)
             l.calculateKernelOffset()
+
+        # b) Manager's
+        self.managerArray = ManagerArray(self, self.peY, self.peX, self.numberOfLayers)
 
     def updateSourceCellsTargetList(self):
         for l in self.Layers:
@@ -1032,6 +1202,29 @@ class Network():
 
 def main():
 
+
+    
+    # coding: utf-8
+    
+    # In[1]:
+    
+    #pylab inline
+    
+    
+    # In[2]:
+    
+    try:
+        reload(dc)
+        print  'dc reloaded'
+    except Exception:
+        print 'dc not loaded yet'
+        
+    
+    
+    # In[3]:
+    
+    import dnnConnectivityAndMemoryAllocation as dc
+    
     # Create memory
     memory = dc.Memory(2,32,8,4096)
     
@@ -1050,8 +1243,8 @@ def main():
     
     #network.addLayer('Input',          224, 224,    3                      ) #    3 
     #network.addLayer('Convolutional',   55,  55,   10,   11,  11,    3,   4 ) #   96,
-    #network.addLayer('Input',           55,  55,   10,                      ) #   96,
-    #network.addLayer('Convolutional',   27,  27,    5,    5,   5,   10,   2 ) #  256,
+    #network.addLayer('Input',           55,  55,    3,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,    5,    5,   5,    3,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,   10,    3,   3,    5,   2 ) #  384,
     #network.addLayer('Convolutional',   13,  13,    8,    3,   3,   10,   1 ) #  384,
     #network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
@@ -1061,16 +1254,29 @@ def main():
     
     network.assignPEs()
     
+    
+    
+    
+    
+    
+    # In[4]:
+    
     for l in range(1, network.numberOfLayers):
       network.Layers[l].generateConnections()
     
+    
+    # In[ ]:
+    
     network.Layers[0].displayTargetPECounts()
+    
+    
+    # In[ ]:
     
     lid = 0
     numOfPEs = network.Layers[lid].getTargetPECounts()
     
     
-    # In[8]:
+    # In[ ]:
     
     opt = np.get_printoptions()
     np.set_printoptions(threshold=np.inf)
@@ -1079,33 +1285,146 @@ def main():
     
     
     
-    # In[12]:
+    # In[ ]:
     
-    region = np.array([50,65,45,65])
-    #region = np.array([12,20,9,21])
+    #region = np.array([50,65,45,65])
+    region = np.array([12,20,9,21])
     network.Layers[0].displayTargetPECountsRegion(region)
     
     
-    # In[15]:
+    # In[ ]:
     
-    network.peArray.pe[4][4].memCpyROI(1)
-    
-    
-    # In[30]:
-    
-    network.peArray.pe[4][4].roiCells[1][1][0][0]
-    
-    
-    # In[26]:
-    
-    network.peArray.pe[4][4].roiCells[1][1][0][0].originalCell
+    layerID = 1
+    for peY in range(network.peY) :
+      for peX in range(network.peX) :
+        network.peArray.pe[peY][peX].findROI(layerID)
+        network.managerArray.manager[peY][peX].memCpyROI(layerID)
     
     
-    # In[29]:
+    # In[ ]:
     
-    network.Layers[0].cells[1][110][106]
+    tempZ = network.managerArray.manager[4][4].roiCells[1][1][0][0].Z
+    tempY = network.managerArray.manager[4][4].roiCells[1][1][0][0].Y
+    tempX = network.managerArray.manager[4][4].roiCells[1][1][0][0].X
+    network.managerArray.manager[4][4].roiCells[1][1][0][0]
     
-        
+    
+    # In[ ]:
+    
+    print network.managerArray.manager[4][4].roiCells[1][1][0][0]
+    
+    
+    # In[ ]:
+    
+    
+    
+    
+    # In[ ]:
+    
+    network.managerArray.manager[4][4].roiCells[1][1][0][0].memoryLocation
+    
+    
+    # In[ ]:
+    
+    network.managerArray.manager[4][4].roiCells[1][1][0][0].originalCell
+    
+    
+    # In[ ]:
+    
+    network.Layers[0].cells[tempZ][tempY][tempX]
+    
+    
+    # In[ ]:
+    
+    print network.Layers[0].cells[tempZ][tempY][tempX]
+    
+    
+    # In[ ]:
+    
+    network.Layers[0].cells[tempZ][tempY][tempX].memoryLocation
+    
+    
+    # In[ ]:
+    
+    network.Layers[0].cells[tempZ][tempY][tempX].copiedTo
+    
+    
+    # In[ ]:
+    
+    network.managerArray.manager[0][0].allocateMemory(memory,layerID)
+    for y in range(network.managerArray.manager[0][0].roiCells[layerID][0].__len__()):
+      for x in range(network.managerArray.manager[0][0].roiCells[layerID][0][0].__len__()):
+        for z in range(network.managerArray.manager[0][0].roiCells[layerID].__len__()):
+            print network.managerArray.manager[0][0].roiCells[layerID][z][y][x]
+    
+    
+    # In[ ]:
+    
+    roiCells = network.managerArray.manager[0][0].roiCells 
+    
+    initialChannel   = 0
+    channelIncrement = 1
+    initialBank      = 0
+    bankIncrement    = 2
+    initialPage      = 0
+    pageIncrement    = 2
+    initialWord      = 0
+    wordIncrement    = 1
+    padWordRadix2    = 'Y'
+    
+    # if the number of features is not radix-2, do we pad features to align radix-2
+    numOfFeatures = roiCells[layerID].__len__()
+    if padWordRadix2 is 'Y' :
+      numberOfAllocatedFeatures = 2**(math.ceil(math.log(numOfFeatures,2)))
+    
+    channel = initialChannel
+    bank    = initialBank
+    page    = initialPage
+    word    = initialWord
+    
+    for y in range(roiCells[layerID][0].__len__()):
+      for x in range(roiCells[layerID][0][0].__len__()):
+        for z in range(roiCells[layerID].__len__()):
+          roiCells[layerID][z][y][x].memoryLocation.memory  = memory
+          roiCells[layerID][z][y][x].memoryLocation.channel = int(channel)
+          roiCells[layerID][z][y][x].memoryLocation.bank    = int(bank)
+          roiCells[layerID][z][y][x].memoryLocation.page    = int(page)
+          roiCells[layerID][z][y][x].memoryLocation.word    = int(word)
+          
+          channel = channel + channelIncrement
+          if channel == (memory.numOfChannels):
+            channel = 0
+            word = word + wordIncrement
+          if padWordRadix2 is 'Y' :
+            if word%numberOfAllocatedFeatures == numOfFeatures:
+                word = (int(word/numberOfAllocatedFeatures)+1) * numberOfAllocatedFeatures
+          if word == (memory.sizeOfPage/WORDSIZE):
+            word = 0
+            page = page + pageIncrement
+          
+          if page == (memory.numOfPagesPerBank):
+            page = 0
+            bank = bank + bankIncrement
+          
+          if bank == (memory.numOfBanksPerChannel):
+            bank = 0
+                  
+    for y in range(roiCells[layerID][0].__len__()):
+      for x in range(roiCells[layerID][0][0].__len__()):
+        for z in range(roiCells[layerID].__len__()):
+            print roiCells[layerID][z][y][x]
+    
+    
+    # In[ ]:
+    
+    print network.Layers[1].cells[0][25][25]
+    
+    
+    # In[ ]:
+    
+    print network.peArray.pe[3][3].getROI(1)
+    
+            
 if __name__ == "__main__":main()
     
 
