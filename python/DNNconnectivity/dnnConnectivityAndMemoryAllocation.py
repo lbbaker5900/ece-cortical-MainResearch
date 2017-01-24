@@ -53,6 +53,8 @@ class __LINE__(object):
 
 __FILE__ = 'dnnConnectivityAndMemoryAllocation.py'
 
+#lineNo = __LINE__()
+
 ## Extract class methods and fields for prints
 ## citation:http://stackoverflow.com/questions/1911281/how-do-i-get-list-of-methods-in-a-python-class
 from types import FunctionType
@@ -221,6 +223,21 @@ class Cell():
     def findROI(self):
 
         # Parse the source cells and find Y,X corners of ROI
+        absCellMin = np.inf
+        absCellMax = 0
+
+        for sc in self.sourceCells:
+          absCellNum = sc.Y*sc.parentLayer.X*sc.parentLayer.Z + sc.X*sc.parentLayer.Z + sc.Z
+          if absCellNum < absCellMin :
+              absCellMin = absCellNum
+              cellMin = sc
+          if absCellNum > absCellMax :
+              absCellMax = absCellNum
+              cellMax = sc
+
+        self.roiFromSrcCells = np.array([[cellMin.Z, cellMin.Y, cellMin.X],[cellMax.Z, cellMax.Y, cellMax.X]])
+
+        """
         minx = np.inf
         miny = np.inf
         minz = np.inf
@@ -247,6 +264,8 @@ class Cell():
                     maxz = sc.Z
 
         self.roiFromSrcCells = np.array([[minz, miny, minx], [maxz, maxy, maxx]] )
+        """
+
         return self.roiFromSrcCells
 
     def getROI(self):
@@ -283,6 +302,8 @@ class Layer():
         self.parentNetwork = network
         self.layerID = layerID
         self.type = type
+        self.assignType = 'linearAll'
+        #self.assignType = 'linearX'
         self.X = X
         self.Y = Y
         self.Z = Z
@@ -382,92 +403,178 @@ class Layer():
         # for example, with a 55x55x256 array of feature maps, PE{0,0} may be assigned a 6x6x256 array of feature maps
         # where PE{0,1} may be assigned a 7x7x256 array of feature maps
 
+        # Type:
+        # 'linearAll' : total number of cells are pread across 64 PE's
+        # 'linearX'   : all cells (e.g. peX*f) are allocated across X and evenly assigned to PE's in X dimension. PE's are assigned across Y dimension
+
         # Create an array of lists with each PE assigned a list
         # This list will contain index of all cells assigned to the PE
 
-        self.peArrayXYcellCount = []
-        for y in range(peY):
-          eX = []
-          for x in range(peX):
-              eX.append(np.zeros(2, dtype=np.int))
-          self.peArrayXYcellCount.append(eX)
+        # Create an array of PE values which hold number of cells
+        if (self.assignType == 'linearX') :
+            # LinearX means [0] holds the number of z,x cells and [1] holds the number of rows
+            self.peArrayXYcellCount = []
+            for y in range(peY):
+              eX = []
+              for x in range(peX):
+                  eX.append(np.zeros(2, dtype=np.int))
+              self.peArrayXYcellCount.append(eX)
+        elif (self.assignType == 'linearAll') :
+            # LinearAll means [0] holds the number of z,y,x cells
+            self.peArrayXYcellCount = []
+            for y in range(peY):
+              eX = []
+              for x in range(peX):
+                  eX.append(np.zeros(1, dtype=np.int))
+              self.peArrayXYcellCount.append(eX)
+ 
+        if (self.assignType == 'linearX') :
+            # 
+            #                                                  X*Z
+            #     |------------------------------------------------------------------------------------------|
+            #           nx         
+            #     |-------------|-------------|-------------|-------------|-------------|-------------|
+            #                                                                                          mx~1-7
+            #                                                                                         |------|
+ 
+            # we add a column to m PE's so k PE's will have 'n+1' columns with the remainder PE's having 'n' columns
+ 
+            # We know the remainder of X/peX is less than peX, so between 0 and 7
+            # So now keep iterating by deleting n+1 initially from X to create Xp, we will reach a point where Xp is an integer multiple of l and 8-l multiples of n+1
+            
+            nx=int(np.floor(self.X*self.Z/peX)) # n is the integer part meaning peX-m PE's will be assigned n columns and m PE's will be assigned n+1 cols
+            mx=int(np.remainder(self.X*self.Z, peX))
+            lx=peX-mx         # lx PE's are assigned nx cells, peX-lx are assigned nx+1 cells
+          
+            for y in range(peY):
+                for x in range(peX):
+                    if x<lx:     # if remainder was 0, all PE's will be assigned nx cells
+                        self.peArrayXYcellCount[y][x][1] = int(nx)
+                        #print 'DEBUG1 ', y, x
+                    else:              
+                        #print 'DEBUG2 ', y, x
+                        self.peArrayXYcellCount[y][x][1] = int(nx+1)
+ 
+ 
+ 
+            ny=int(np.floor(self.Y/peY)) # n is the integer part meaning peX-1 PE's will be assigned n columns and the peXth PE would be assigned X-(peX-1)*n cols
+            my=int(np.remainder(self.Y, peY))
+            ly=peY-my
+          
+            for y in range(peY):
+                for x in range(peX):
+                    if y<my:            
+                        self.peArrayXYcellCount[y][x][0] = int(ny+1)
+                    else:              
+                        self.peArrayXYcellCount[y][x][0] = int(ny)
 
-        # 
-        #                                                  X
-        #     |-----------------------------------------------------------------------------------------|
-        #            n         
-        #     |-------------|-------------|-------------|-------------|-------------|-------------|
-        #                                                                                          k~1-7
-        #                                                                                         |-----|
-
-        # we add a column to k PE's so k PE's will have 'n+1' columns with the remainder PE's having 'n' columns
-
-        # We know the remainder of X/l is less than peX, so between 1 and 7
-        # So now keep iterating by deleting n+1 initially from X to create Xp, we will reach a point where Xp is an integer multiple of l and 8-l multiples of n+1
-        
-        nx=np.floor(self.X*self.Z/peX) # n is the integer part meaning peX-1 PE's will be assigned n columns and the peXth PE would be assigned X-(peX-1)*n cols
-        #l=peX
-        #Xp = self.X
-        #while np.remainder(Xp, l) != 0 :
-        #   Xp = Xp - (n+1)
-        #   l = l-1
-        #m=peX-l
-        #self.m = m
-        #self.l = l
-        mx=np.remainder(self.X*self.Z, peX)
-        lx=peX-mx
-        nxp1 = nx+1
-      
-        for y in range(peY):
-            for x in range(peX):
-                if x<lx:
-                    self.peArrayXYcellCount[y][x][1] = int(nx)
-                    #print 'DEBUG1 ', y, x
-                else:              
-                    #print 'DEBUG2 ', y, x
-                    self.peArrayXYcellCount[y][x][1] = int(nx+1)
-
-
-
-        ny=np.floor(self.Y/peY) # n is the integer part meaning peX-1 PE's will be assigned n columns and the peXth PE would be assigned X-(peX-1)*n cols
-        my=np.remainder(self.Y, peY)
-        ly=peY-my
-        nyp1 = ny+1
-      
-        for y in range(peY):
-            for x in range(peX):
-                if y<my:            
-                    self.peArrayXYcellCount[y][x][0] = int(ny+1)
-                else:              
-                    self.peArrayXYcellCount[y][x][0] = int(ny)
-
-
+        elif (self.assignType == 'linearAll') :
+            # 
+            #                                                  X*Y*Z
+            #     |-----------------------------------------------------------------------------------------|
+            #            n         
+            #     |-------------|-------------|-------------|-------------|-------------|-------------|
+            #                                                                                          m~1-7
+            #                                                                                         |-----|
+            n=np.floor(self.Y*self.X*self.Z/(peX*peY)) # n is the integer part meaning pe^2-m PE's will be assigned n columns and m PE's will be assigned n+1 cells
+            m=np.remainder(self.Y*self.X*self.Z, (peX*peY))
+            l=peY*peX-m         # l PE's are assigned n cells, pe**2-l are assigned n+1 cells
+          
+            for y in range(peY):
+                for x in range(peX):
+                    if (y*peX+x)<l:     # if remainder was 0, all PE's will be assigned nx cells
+                        self.peArrayXYcellCount[y][x][0] = int(n)
+                        #print 'DEBUG1 ', y, x
+                    else:              
+                        #print 'DEBUG2 ', y, x
+                        self.peArrayXYcellCount[y][x][0] = int(n+1)
+ 
+ 
+ 
         # Let each cell in the layer know which PE it is assigned to
         # and let each PE in the PE array know its processing this cell
         # print 'LEE:DEBUG:assign PE:', peY, peX
-        yOffset = 0 # keep track of the row cell number and construct z,y,x location based on number of features and cells per PE
-        for yPe in range(peY):
-            xOffset = 0  # keep track of the column cell number and construct z,y,x location based on number of features and cells per PE
-            for xPe in range(peX):
-                for yCell in range(int(self.peArrayXYcellCount[yPe][xPe][0])):
-                #for i in range(yOffset, yOffset+int(self.peArrayXYcellCount[y][x][0,0])):
-                #for j in range(xOffset, xOffset+int(self.peArrayXYcellCount[y][x][0,1])):
-                    for xCell in range(int(self.peArrayXYcellCount[yPe][xPe][1])):
-                        f=np.remainder(xOffset+xCell,self.Z)
-                        x=int((xOffset+xCell)/self.Z)
-                        #y=int((yOffset+yCell)/self.Z)
-                        y=yCell+yOffset
-                        # index is z,y,x
-                        try:
-                            self.cells[f][y][x].PE = self.parentNetwork.peArray.pe[yPe][xPe]
-                            self.parentNetwork.peArray.addCell(np.array([yPe,xPe]), self.layerID, np.array([f,y,x]))
-                            #print 'LEE:DEBUG:AddCell', self.layerID,':', f ,y ,x
-                            #print 'LEE:DEBUG:', self.layerID,':', yCell, xCell, ':', f ,y ,x, ':', xOffset, yOffset, ':', xPe, yPe, ':', self.peArrayXYcellCount[yPe][xPe], ':', self.Z, self.Y, self.X
-                        except:
-                            print 'LEE:ERROR:DEBUG:', self.layerID,':', yCell, xCell, f ,y ,x, xOffset, yOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
-                            raise
-                xOffset += int(self.peArrayXYcellCount[yPe][xPe][1])
-            yOffset += int(self.peArrayXYcellCount[yPe][xPe][0])
+
+        # Cycle thru all PE's
+
+        # FIXME
+        foo = 0
+        for y in range(peY):
+            for x in range(peX):
+                  print 'LEE:DEBUG:line 486', self.layerID,':', y, x, self.peArrayXYcellCount[y][x][0]
+                  if (self.assignType == 'linearX') :
+                      foo += self.peArrayXYcellCount[y][x][0]*self.peArrayXYcellCount[y][x][1]
+                  else :
+                      foo += self.peArrayXYcellCount[y][x][0]
+                  print foo
+
+        
+        if (self.assignType == 'linearX') :
+            yOffset = 0 # keep track of the row cell number and construct z,y,x location based on number of features and cells per PE
+            for yPe in range(peY):
+                xOffset = 0  # keep track of the column cell number and construct z,y,x location based on number of features and cells per PE
+                for xPe in range(peX):
+          
+                        # Cycle thru cells assigned to each PE
+                        # Here yCell is row and xCell is the cell from a list of X*Z cells
+                        for yCell in range(int(self.peArrayXYcellCount[yPe][xPe][0])):
+                            for xCell in range(int(self.peArrayXYcellCount[yPe][xPe][1])):
+                                # divide by number of features to find column x
+                                f=np.remainder(xOffset+xCell,self.Z)
+                                x=int((xOffset+xCell)/self.Z)
+                                #y=int((yOffset+yCell)/self.Z)
+                                y=yCell+yOffset
+                                # index is z,y,x
+                                try: # FIXME
+                                    self.cells[f][y][x].PE = self.parentNetwork.peArray.pe[yPe][xPe]
+                                    self.parentNetwork.peArray.addCell(np.array([yPe,xPe]), self.layerID, np.array([f,y,x]))
+                                    #print 'LEE:DEBUG:AddCell', self.layerID,':', f ,y ,x
+                                    #print 'LEE:DEBUG:', self.layerID,':', yCell, xCell, ':', f ,y ,x, ':', xOffset, yOffset, ':', xPe, yPe, ':', self.peArrayXYcellCount[yPe][xPe], ':', self.Z, self.Y, self.X
+                                except:
+                                    print 'LEE:ERROR:DEBUG:', self.layerID,':', yCell, xCell, f ,y ,x, xOffset, yOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
+                                    raise
+                        xOffset += int(self.peArrayXYcellCount[yPe][xPe][1])
+          
+                yOffset += int(self.peArrayXYcellCount[yPe][xPe][0])
+
+        elif (self.assignType == 'linearAll') :
+            xOffset = 0 # keep track of the row and col cell number and construct z,y,x location based on number of features and cells per PE
+            yOffset = 0 
+            yPeCurr = 0
+            for pe in range(peY*peX):
+                xPe = np.remainder(pe,peX)
+                yPe = pe/peX
+
+                if yPe != yPeCurr :
+                    yOffset += xOffset
+                    xOffset = 0  # keep track of the column cell number and construct z,y,x location based on number of features and cells per PE
+                    yPeCurr = yPe
+                # We are processing absolute cells yOffset+xOffset+cell
+                for cell in range(int(self.peArrayXYcellCount[yPe][xPe][0])):
+                    ca = (cell + xOffset + yOffset)
+                    #print ca
+
+                    f = np.remainder(ca, self.Z)
+                    fa = ca/self.Z
+                    x = np.remainder(fa, self.X)
+                    y = fa/self.X
+                    try: # FIXME
+                        self.cells[f][y][x].PE = self.parentNetwork.peArray.pe[yPe][xPe]
+                        self.parentNetwork.peArray.addCell(np.array([yPe,xPe]), self.layerID, np.array([f,y,x]))
+                    except:
+                        print 'LEE:ERROR:DEBUG:', self.layerID,':', cell, pe, f ,y ,x, xOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
+                        raise
+                xOffset += int(self.peArrayXYcellCount[yPe][xPe][0])
+
+        # FIXME
+        # Check all cells have been assigned a PE
+        for y in range(self.Y):
+            for x in range(self.X):
+                for f in range(self.Z):
+                    if isinstance(self.cells[f][y][x].PE, list): # FIXME
+                        print 'LEE:DEBUG:line 550', self.layerID,':', f ,y ,x
+                        raise
+
     #----------------------------------------------------------------------------------------------------
       
     def generateConnections(self):
@@ -516,6 +623,10 @@ class Layer():
                                 #srcCell = tuple([fSrcCell, ySrcCell, xSrcCell])
                              
                                 # c) Update this cells source PE list
+                                if isinstance(srcPE, list): # FIXME
+                                    #print __FILE__ + lineNo.__repr__() + 'DEBUG:ERROR: {0}, {1}, {2}'.format(f,y,x)
+                                    print 'Foo line 590: {0},{1},{2}'.format(fSrcCell, ySrcCell, xSrcCell)
+                                    raise
                                 self.cells[f][y][x].sourcePEs.append(srcPE)
              
                                 # d) Update this cells source cell list
@@ -530,10 +641,15 @@ class Layer():
         for y in range(self.Y):
             for x in range(self.X):
                 for f in range(self.Z):
-                    tmpSrcPE = set(self.cells[f][y][x].sourcePEs)
-                    self.cells[f][y][x].sourcePEs = list(tmpSrcPE)
-                    tmpSrcCell = set(self.cells[f][y][x].sourceCells)
-                    self.cells[f][y][x].sourceCells = list(tmpSrcCell)
+                    try: # FIXME
+                        tmpSrcPE = set(self.cells[f][y][x].sourcePEs)
+                        self.cells[f][y][x].sourcePEs = list(tmpSrcPE)
+                        tmpSrcCell = set(self.cells[f][y][x].sourceCells)
+                        self.cells[f][y][x].sourceCells = list(tmpSrcCell)
+                    except:
+                        #print __FILE__ + lineNo.__repr__() + 'ERROR: {0}, {1}, {2}'.format(f,y,x)
+                        print 'Foo line 613'
+                        raise
 
         
         for y in range(self.parentNetwork.Layers[self.layerID-1].Y):
@@ -797,13 +913,29 @@ class PE():
     def findROI(self, layerID):
 
         # Parse the source cells and find Y,X corners of ROI
+
+        absCellMin = np.inf
+        absCellMax = 0
+
+        for pc in self.cellsProcessed[layerID] :
+          for sc in pc.sourceCells:
+            absCellNum = sc.Y*sc.parentLayer.X*sc.parentLayer.Z + sc.X*sc.parentLayer.Z + sc.Z
+            if absCellNum < absCellMin :
+                absCellMin = absCellNum
+                cellMin = sc
+            if absCellNum > absCellMax :
+                absCellMax = absCellNum
+                cellMax = sc
+
+        self.roi[layerID] = np.array([[cellMin.Z, cellMin.Y, cellMin.X],[cellMax.Z, cellMax.Y, cellMax.X]])
+
+        """
         minx = np.inf
         miny = np.inf
         minz = np.inf
         maxx = 0
         maxy = 0
         maxz = 0
-
         for pc in self.cellsProcessed[layerID] :
           for sc in pc.sourceCells:
             if sc.Y < miny:
@@ -826,6 +958,7 @@ class PE():
                       maxz = sc.Z
 
         self.roi[layerID] = np.array([[minz, miny, minx],[maxz, maxy, maxx]])
+        """
 
         return self.roi[layerID]
 
