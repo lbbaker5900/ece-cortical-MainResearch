@@ -227,6 +227,7 @@ class Cell():
         absCellMax = 0
 
         for sc in self.sourceCells:
+          print sc
           absCellNum = sc.Y*sc.parentLayer.X*sc.parentLayer.Z + sc.X*sc.parentLayer.Z + sc.Z
           if absCellNum < absCellMin :
               absCellMin = absCellNum
@@ -234,7 +235,6 @@ class Cell():
           if absCellNum > absCellMax :
               absCellMax = absCellNum
               cellMax = sc
-
         self.roiFromSrcCells = np.array([[cellMin.Z, cellMin.Y, cellMin.X],[cellMax.Z, cellMax.Y, cellMax.X]])
 
         """
@@ -497,16 +497,18 @@ class Layer():
 
         # Cycle thru all PE's
 
-        # FIXME
+        """
+        # FIXME : Calculate total number of cells by counting per PE assignments
         foo = 0
         for y in range(peY):
             for x in range(peX):
-                  print 'LEE:DEBUG:line 486', self.layerID,':', y, x, self.peArrayXYcellCount[y][x][0]
+                  #print 'LEE:DEBUG:line 486', self.layerID,':', y, x, self.peArrayXYcellCount[y][x][0]
                   if (self.assignType == 'linearX') :
                       foo += self.peArrayXYcellCount[y][x][0]*self.peArrayXYcellCount[y][x][1]
                   else :
                       foo += self.peArrayXYcellCount[y][x][0]
                   print foo
+        """
 
         
         if (self.assignType == 'linearX') :
@@ -703,13 +705,15 @@ class Layer():
     #----------------------------------------------------------------------------------------------------
     def getTargetPECounts(self):
         # return a grid of PE values the size of the input array Y,X
-        yGrid, xGrid = np.mgrid[slice(0, self.Y),
-                                slice(0, self.X)]
+        zGrid, yGrid, xGrid = np.mgrid[slice(0, self.Z),
+                                       slice(0, self.Y),
+                                       slice(0, self.X)]
         numOfPEs = np.zeros_like(xGrid, dtype=np.int)
 
         for y in range(self.Y):
             for x in range(self.X):
-                numOfPEs[y][x] = self.cells[0][y][x].targetPEs.__len__()
+                for z in range(self.Z):
+                    numOfPEs[z][y][x] = self.cells[z][y][x].targetPEs.__len__()
         return numOfPEs
 
     #----------------------------------------------------------------------------------------------------
@@ -1130,7 +1134,6 @@ class Manager():
         # Create a copy of all the ROI cells as these will be copied to each manager associated with the PE
         # we also want them in the list in the order of processing
         roi = self.pe.getROI(layerID)
-        print roi
         xLen = roi[1][2]-roi[0][2]+1  
         yLen = roi[1][1]-roi[0][1]+1
 
@@ -1372,17 +1375,16 @@ class Network():
 #print 'LEE:' + __name__
 
 def main():
-
-
+    
     
     # coding: utf-8
     
-    # In[220]:
+    # In[1]:
     
     #pylab inline
     
     
-    # In[432]:
+    # In[16]:
     
     try:
         reload(dc)
@@ -1392,10 +1394,11 @@ def main():
         
     
     
-    # In[433]:
+    # In[17]:
     
     WORDSIZE = 32
     import dnnConnectivityAndMemoryAllocation as dc
+    import numpy as np
     
     # Create memory
     memory = dc.Memory(2,32,8,4096)
@@ -1431,94 +1434,51 @@ def main():
     
     
     
-    # In[434]:
+    # In[18]:
     
     for l in range(1, network.numberOfLayers):
       network.Layers[l].generateConnections()
     
     
-    # In[435]:
+    # In[19]:
     
     network.Layers[0].displayTargetPECounts()
     
     
-    # In[436]:
+    # In[20]:
     
     lid = 0
     numOfPEs = network.Layers[lid].getTargetPECounts()
     
     
-    # In[437]:
+    
+    # In[21]:
     
     opt = np.get_printoptions()
     np.set_printoptions(threshold=np.inf)
-    #print numOfPEs
+    print numOfPEs
     np.set_printoptions(threshold=1000)
     
     
-    
-    # In[438]:
+    # In[22]:
     
     #region = np.array([50,65,45,65])
     region = np.array([12,20,9,21])
     network.Layers[0].displayTargetPECountsRegion(region)
     
     
-    # In[439]:
+    # In[26]:
+    
+    for layerID in range(1,network.numberOfLayers):
+      for peY in range(network.peY) :
+        for peX in range(network.peX) :
+          nv = network.peArray.pe[peY][peX].findROI(layerID)
+          network.managerArray.manager[peY][peX].memCpyROI(layerID)
+    
+    
+    # In[27]:
     
     layerID = 1
-    for peY in range(network.peY) :
-      for peX in range(network.peX) :
-        network.peArray.pe[peY][peX].findROI(layerID)
-        print network.peArray.pe[peY][peX]
-        network.managerArray.manager[peY][peX].memCpyROI(layerID)
-    
-    
-    # In[ ]:
-    
-    tempZ = network.managerArray.manager[4][4].roiCells[1][1][0][0].Z
-    tempY = network.managerArray.manager[4][4].roiCells[1][1][0][0].Y
-    tempX = network.managerArray.manager[4][4].roiCells[1][1][0][0].X
-    network.managerArray.manager[4][4].roiCells[1][1][0][0]
-    
-    
-    # In[ ]:
-    
-    print network.managerArray.manager[4][4].roiCells[1][1][0][0]
-    
-    
-    # In[ ]:
-    
-    network.managerArray.manager[4][4].roiCells[1][1][0][0].memoryLocation
-    
-    
-    # In[ ]:
-    
-    network.managerArray.manager[4][4].roiCells[1][1][0][0].originalCell
-    
-    
-    # In[ ]:
-    
-    network.Layers[0].cells[tempZ][tempY][tempX]
-    
-    
-    # In[ ]:
-    
-    print network.Layers[0].cells[tempZ][tempY][tempX]
-    
-    
-    # In[ ]:
-    
-    network.Layers[0].cells[tempZ][tempY][tempX].memoryLocation
-    
-    
-    # In[ ]:
-    
-    network.Layers[0].cells[tempZ][tempY][tempX].copiedTo
-    
-    
-    # In[ ]:
-    
     network.managerArray.manager[0][0].allocateMemory(memory,layerID)
     for y in range(network.managerArray.manager[0][0].roiCells[layerID][0].__len__()):
       for x in range(network.managerArray.manager[0][0].roiCells[layerID][0][0].__len__()):
@@ -1526,48 +1486,23 @@ def main():
             print network.managerArray.manager[0][0].roiCells[layerID][z][y][x]
     
     
-    # In[ ]:
+    # In[38]:
     
-    print network.Layers[1].cells[0][25][25]
+    pLine = ''
+    for layerID in range(0,network.numberOfLayers):
+        for y in range(network.peY) :
+            for x in range(network.peX) :
+                #print network.managerArray.manager[y][x]
+                #print network.managerArray.manager[y][x].pe
+                pLine = pLine + '{0:5}'.format(str(network.managerArray.manager[y][x].pe.cellsProcessed[layerID].__len__()))
+                #for c in network.managerArray.manager[y][x].pe.cellsProcessed[layerID] : 
+                #    nv = c.findROI()
+                #    print c
+            pLine = pLine + '\n'
+        pLine = pLine + '\n\n'
+    print pLine
     
-    
-    # In[ ]:
-    
-    print network.peArray.pe[3][3].getROI(1)
-    
-    
-    # In[ ]:
-    
-    layerID = 1
-    x = 3
-    y = 4
-    print network.managerArray.manager[y][x]
-    print network.managerArray.manager[y][x].pe
-    print network.managerArray.manager[y][x].pe.roi
-    for c in network.managerArray.manager[y][x].pe.cellsProcessed[layerID] :
-      c.findROI()
-      print c
-    x += 1
-    print network.managerArray.manager[y][x]
-    print network.managerArray.manager[y][x].pe
-    print network.managerArray.manager[y][x].pe.roi
-    for c in network.managerArray.manager[y][x].pe.cellsProcessed[layerID] :
-      c.findROI()
-      print c
-        
-    
-    
-    
-    
-    
-    # In[ ]:
-    
-    for c in network.managerArray.manager[y][x].pe.cellsProcessed[layerID][0].sourceCells :
-      print c
-    for c in network.managerArray.manager[y][x].pe.cellsProcessed[layerID][0].sourceCells :
-      print c
-    
-                
+                    
 if __name__ == "__main__":main()
     
 
