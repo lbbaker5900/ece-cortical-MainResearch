@@ -97,6 +97,25 @@ def fields(cls):
 point = namedtuple("point", "z y x") 
 Point = recordtype('Point', 'z y x')
 
+MemoryConfiguration = namedtuple('MemoryConfiguration',\
+                                 'numOfChannels        \
+                                  numOfBanksPerChannel \
+                                  numOfPagesPerBank    \
+                                  sizeOfPage          ')
+
+MemoryAllocationOptions = namedtuple('MemoryAllocationOptions',\
+                                     'initialChannel           \
+                                      channelIncrement         \
+                                      initialBank              \
+                                      bankIncrement            \
+                                      initialPage              \
+                                      pageIncrement            \
+                                      initialWord              \
+                                      wordIncrement            \
+                                      padWordRadix2           ')
+
+
+
 ########################################################################################################################
 ## KERNELS
 
@@ -142,19 +161,17 @@ class Channel():
 
 class Memory():
     ## memory location is a word within a page
-    def __init__(self, numOfChannels, numOfBanksPerChannel, numOfPagesPerBank, sizeOfPage):
-        self.numOfChannels           = numOfChannels 
-        self.numOfBanksPerChannel    = numOfBanksPerChannel    
-        self.numOfPagesPerBank       = numOfPagesPerBank    
-        self.sizeOfPage              = sizeOfPage    
+    #def __init__(self, numOfChannels, numOfBanksPerChannel, numOfPagesPerBank, sizeOfPage):
+    def __init__(self, memoryConfiguration):
+        self.configuration           = memoryConfiguration
         self.Channels                = []
-        for ch in range(numOfChannels):
-            newChannel = Channel(numOfBanksPerChannel, numOfPagesPerBank, sizeOfPage)
+        for ch in range(self.configuration.numOfChannels):
+            newChannel = Channel(self.configuration.numOfBanksPerChannel, self.configuration.numOfPagesPerBank, self.configuration.sizeOfPage)
             self.Channels.append(newChannel)
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + 'Channels:{0}:Banks/Channel:{1}:Pages/Bank:{2}:Words/Page:{3}:    '.format(self.numOfChannels, self.numOfBanksPerChannel, self.numOfPagesPerBank, self.sizeOfPage/WORDSIZE)
+        pLine = pLine + 'Channels:{0}:Banks/Channel:{1}:Pages/Bank:{2}:Words/Page:{3}:    '.format(self.configuration.numOfChannels, self.configuration.numOfBanksPerChannel, self.configuration.numOfPagesPerBank, self.configuration.sizeOfPage/WORDSIZE)
         pLine = pLine + '\nMethods: {0}                                                   '.format(methods(self))
         pLine = pLine + '\nFields: {0}                                                    '.format(fields(self))
         return pLine
@@ -338,60 +355,6 @@ class Layer():
         return pLine
         
 
-    """
-    #----------------------------------------------------------------------------------------------------
-    # Memory assignment
-    #
-    # FIXME : now in manager class
-
-    def allocateMemory(self):  
-        # - after creating the cells, they will be allocated a state memory location
-        initialChannel   = 0
-        channelIncrement = 1
-        initialBank      = 0
-        bankIncrement    = 2
-        initialPage      = 0
-        pageIncrement    = 1
-        initialWord      = 0
-        wordIncrement    = 1
-        padWordRadix2    = 'Y'
-
-        if padWordRadix2 is 'Y' :
-          numberOfAllocatedFeaturess = 2**(math.ceil(math.log(self.Z,2)))
-
-        channel = initialChannel
-        bank    = initialBank
-        page    = initialPage
-        word    = initialWord
-
-        for y in range(self.Y):
-          for x in range(self.X):
-            for z in range(self.Z):
-              self.cells[z][y][x].memoryLocation.channel = int(channel)
-              self.cells[z][y][x].memoryLocation.bank    = int(bank)
-              self.cells[z][y][x].memoryLocation.page    = int(page)
-              self.cells[z][y][x].memoryLocation.word    = int(word)
-              
-              word = word + wordIncrement
-              if padWordRadix2 is 'Y' :
-                if word%numberOfAllocatedFeaturess == self.Z:
-                    word = (int(word/numberOfAllocatedFeaturess)+1) * numberOfAllocatedFeaturess
-              if word == (memory.sizeOfPage/WORDSIZE):
-                word = 0
-                page = page + pageIncrement
-              
-              if page == (memory.numOfPagesPerBank):
-                page = 0
-                bank = bank + bankIncrement
-              
-              if bank == (memory.numOfBanksPerChannel):
-                bank = 0
-                channel = channel + channelIncrement
-              
-              if channel == (memory.numOfChannels):
-                channel = 0
-    """
-              
 
     def getPreviousLayer(self):
         return self.parentNetwork.getLayer(self.layerID-1)
@@ -399,7 +362,7 @@ class Layer():
     #----------------------------------------------------------------------------------------------------
     # PE assignment
 
-    def assignPEs(self, peX, peY): # assign an array of X by Y PE's
+    def assignPEs(self, peX, peY, assignType): # assign an array of X by Y PE's
         # e.g. each PE will be assigned a set of X-Y-Z feature maps
         # for example, with a 55x55x256 array of feature maps, PE{0,0} may be assigned a 6x6x256 array of feature maps
         # where PE{0,1} may be assigned a 7x7x256 array of feature maps
@@ -408,6 +371,7 @@ class Layer():
         # 'linearAll' : total number of cells are spread across 64 PE's
         # 'linearX'   : all cells in a row (e.g. X*f) are allocated across X and evenly assigned to PE's in X dimension. rows are assigned to PE's in Y dimension
 
+        self.assignType = assignType
         # Create an array of lists with each PE assigned a list
         # This list will contain index of all cells assigned to the PE
 
@@ -1004,39 +968,6 @@ class PE():
         else:
             return self.roi[layerID]
 
-    """
-    # Now in manager class
-    def memCpyROI(self, layerID):
-
-        # Create a copy of all the ROI cells as these will be copied to each targetPE
-        # we also want them in the list in the order of processing
-        roi = self.findROI(layerID)
-        xLen = self.roi[layerID][3]-self.roi[layerID][2]+1  
-        yLen = self.roi[layerID][1]-self.roi[layerID][0]+1
-        zLen = self.parentPEarray.parentNetwork.Layers[layerID].Z
-        
-        roiLayerCells = []
-        # FIXME: will PE always process all features at Y,X location
-        for roiZ in range(self.parentPEarray.parentNetwork.Layers[layerID-1].Z) :
-          roiLayerCellsY = []
-          for roiY in range(self.roi[layerID][0], self.roi[layerID][1]+1) :
-            roiLayerCellsX = []
-            for roiX in range(self.roi[layerID][2], self.roi[layerID][3]+1) :
-              # Note: Just using copy using "from copy import copy" creates a numpy array?????
-              #       had to use "from copy import copy as copy_copy"
-              copiedCell = copy_copy(self.parentPEarray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX])
-
-              # copied Cell will be in different memory location and we only did a shallow copy
-              copiedCell.memoryLocation = MemoryLocation(0,0,0,0)
-
-              # Keep track of copies in original layer cell
-              self.parentPEarray.parentNetwork.Layers[layerID-1].cells[roiZ][roiY][roiX].copiedTo.append(copiedCell)
-              roiLayerCellsX.append(copiedCell)
-            roiLayerCellsY.append(roiLayerCellsX)
-          roiLayerCells.append(roiLayerCellsY)
-        self.roiCells[layerID] = roiLayerCells
-    """
-
 
     def findCellsProcessedRegion(self, layerID):
         minx = np.inf
@@ -1164,6 +1095,8 @@ class Manager():
 
         # Create a copy of all the ROI cells as these will be copied to each manager associated with the PE
         # we also want them in the list in the order of processing
+
+        # what ROI does the PE need
         roi = self.pe.getROI(layerID)
         xLen = roi[1][2]-roi[0][2]+1  
         yLen = roi[1][1]-roi[0][1]+1
@@ -1198,18 +1131,18 @@ class Manager():
     #----------------------------------------------------------------------------------------------------
     # Memory assignment
 
-    def allocateMemory(self, memory, layerID):  
+    def allocateMemory(self, memory, layerID, allocateOptions):  
         # - after copying the ROI from thwe input array to the manager, they will be allocated a state memory location
         # We can create a DMA transfer from the ROI cell and the original cell
-        initialChannel   = 0
-        channelIncrement = 1
-        initialBank      = 0
-        bankIncrement    = 2
-        initialPage      = 0
-        pageIncrement    = 2
-        initialWord      = 0
-        wordIncrement    = 1
-        padWordRadix2    = 'Y'
+        initialChannel   = allocateOptions.initialChannel    # 0
+        channelIncrement = allocateOptions.channelIncrement  # 1
+        initialBank      = allocateOptions.initialBank       # 0
+        bankIncrement    = allocateOptions.bankIncrement     # 2
+        initialPage      = allocateOptions.initialPage       # 0
+        pageIncrement    = allocateOptions.pageIncrement     # 2
+        initialWord      = allocateOptions.initialWord       # 0
+        wordIncrement    = allocateOptions.wordIncrement     # 1
+        padWordRadix2    = allocateOptions.padWordRadix2     # 'Y'
 
         # if the number of features is not radix-2, do we pad features to align radix-2
         numOfFeatures = self.roiCells[layerID].__len__()
@@ -1231,21 +1164,21 @@ class Manager():
               self.roiCells[layerID][z][y][x].memoryLocation.word    = int(word)
               
               channel = channel + channelIncrement
-              if channel == (memory.numOfChannels):
+              if channel == (memory.configuration.numOfChannels):
                 channel = 0
                 word = word + wordIncrement
               if padWordRadix2 is 'Y' :
                 if word%numberOfAllocatedFeatures == numOfFeatures:
                     word = (int(word/numberOfAllocatedFeatures)+1) * numberOfAllocatedFeatures
-              if word == (memory.sizeOfPage/WORDSIZE):
+              if word == (memory.configuration.sizeOfPage/WORDSIZE):
                 word = 0
                 page = page + pageIncrement
               
-              if page == (memory.numOfPagesPerBank):
+              if page == (memory.configuration.numOfPagesPerBank):
                 page = 0
                 bank = bank + bankIncrement
               
-              if bank == (memory.numOfBanksPerChannel):
+              if bank == (memory.configuration.numOfBanksPerChannel):
                 bank = 0
               
 
@@ -1289,7 +1222,7 @@ class Network():
     def getLayer(self, l):
         return self.Layers[l]
 
-    def assignPEs(self):
+    def assignPEs(self, assignType):
         #----------------------------------------------------------------------------------------------------
         # create Manager and PE Array
         # First build PE then associate a manager with each PE
@@ -1298,7 +1231,7 @@ class Network():
         self.peArray = PEarray(self, self.peY, self.peX, self.numberOfLayers)
         # assign PE's to each cell of each layer
         for l in self.Layers:
-            l.assignPEs(self.peX,self.peY)
+            l.assignPEs(self.peX,self.peY, assignType)
             l.calculateKernelOffset()
 
         # b) Manager's
@@ -1409,7 +1342,7 @@ def main():
     
 
     
-    # In[80]:
+# In[129]:
     
     try:
         reload(dc)
@@ -1419,14 +1352,15 @@ def main():
         
     
     
-    # In[81]:
+    # In[147]:
     
     WORDSIZE = 32
     import dnnConnectivityAndMemoryAllocation as dc
     import numpy as np
     
     # Create memory
-    memory = dc.Memory(2,32,8,4096)
+    mainMemoryConfig = dc.MemoryConfiguration(2,32,8,4096)
+    mainMemory = dc.Memory(mainMemoryConfig)
     
     # Create DNN
     network = dc.Network()
@@ -1446,38 +1380,38 @@ def main():
     network.addLayer('Input',           55,  55,    3,                      ) #   96,
     network.addLayer('Convolutional',   27,  27,    5,    5,   5,    3,   2 ) #  256,
     network.addLayer('Convolutional',   13,  13,   10,    3,   3,    5,   2 ) #  384,
-    #network.addLayer('Convolutional',   13,  13,    8,    3,   3,   10,   1 ) #  384,
+    network.addLayer('Convolutional',   13,  13,    8,    3,   3,   10,   1 ) #  384,
     #network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
     #network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    6,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    4,   1 ) # 1024,
     
-    network.assignPEs()
+    network.assignPEs('linearAll')
     
     
     
     
     
     
-    # In[82]:
+    # In[148]:
     
     for l in range(1, network.numberOfLayers):
       network.Layers[l].generateConnections()
     
     
-    # In[83]:
+    # In[149]:
     
-    layerID = 1
-    network.Layers[layerID].displayTargetPECounts()
+    for layerID in range(0,network.numberOfLayers-1):
+      network.Layers[layerID].displayTargetPECounts()
     
     
-    # In[84]:
+    # In[150]:
     
     numOfPEs = network.Layers[layerID].getTargetPECounts()
     
     
     
-    # In[85]:
+    # In[151]:
     
     opt = np.get_printoptions()
     np.set_printoptions(threshold=np.inf)
@@ -1486,13 +1420,13 @@ def main():
     np.set_printoptions(threshold=1000)
     
     
-    # In[86]:
+    # In[152]:
     
     coords = np.array([[0,0],[10,10]])
     network.Layers[1].displayTargetPECountsRegion(coords)
     
     
-    # In[87]:
+    # In[153]:
     
     pLine = ''
     for layerID in range(1,network.numberOfLayers):
@@ -1510,17 +1444,18 @@ def main():
       
     
     
-    # In[88]:
+    # In[154]:
     
     layerID = 1
-    network.managerArray.manager[0][0].allocateMemory(memory,layerID)
+    allocationOptions = dc.MemoryAllocationOptions(0,1,0,2,0,2,0,1,'Y')
+    network.managerArray.manager[0][0].allocateMemory(mainMemory, layerID, allocationOptions)
     for y in range(network.managerArray.manager[0][0].roiCells[layerID][0].__len__()):
       for x in range(network.managerArray.manager[0][0].roiCells[layerID][0][0].__len__()):
         for z in range(network.managerArray.manager[0][0].roiCells[layerID].__len__()):
             print network.managerArray.manager[0][0].roiCells[layerID][z][y][x]
     
     
-    # In[89]:
+    # In[155]:
     
     pLine = ''
     for layerID in range(0,network.numberOfLayers):
@@ -1535,6 +1470,7 @@ def main():
             pLine = pLine + '\n'
         pLine = pLine + '\n\n'
     print pLine
+    
     
     
                     
