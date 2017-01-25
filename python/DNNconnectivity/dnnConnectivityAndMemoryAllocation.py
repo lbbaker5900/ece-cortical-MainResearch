@@ -704,8 +704,11 @@ class Layer():
         numPts = 0
         for e in numOfPEs:
           numPts += e.__len__()
-        s =  10*(math.log((30000.0/numPts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
-        s = numOfPEs * s
+        s =  10.0*(math.log((30000.0/numPts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
+        if s < 0.01:
+            s = 0.01
+        else:
+            s = numOfPEs * s
         sc = plt.scatter(xGrid, yGrid, c=numOfPEs, s=s, vmin=0, vmax=6, cmap=cmap, norm=norm)  # s=size
         plt.colorbar(sc, orientation='vertical')
         plt.show()
@@ -1375,12 +1378,12 @@ def main():
     # network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
     # network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
     
-    #network.addLayer('Input',          224, 224,    3                      ) #    3 
-    #network.addLayer('Convolutional',   55,  55,   10,   11,  11,    3,   4 ) #   96,
-    network.addLayer('Input',           55,  55,    3,                      ) #   96,
-    network.addLayer('Convolutional',   27,  27,    5,    5,   5,    3,   2 ) #  256,
-    network.addLayer('Convolutional',   13,  13,   10,    3,   3,    5,   2 ) #  384,
-    network.addLayer('Convolutional',   13,  13,    8,    3,   3,   10,   1 ) #  384,
+    network.addLayer('Input',          224, 224,    3                       ) #    3 
+    network.addLayer('Convolutional',   55,  55,    4,    8,   8,    3,   4 ) #   96,
+    #network.addLayer('Input',           55,  55,    3,                      ) #   96,
+    network.addLayer('Convolutional',   27,  27,    8,    5,   5,    4,   2 ) #  256,
+    network.addLayer('Convolutional',   13,  13,    4,    3,   3,    8,   2 ) #  384,
+    network.addLayer('Convolutional',   13,  13,    2,    3,   3,    4,   1 ) #  384,
     #network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
     #network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    6,   1 ) # 4096,
@@ -1422,8 +1425,8 @@ def main():
     
     # In[152]:
     
-    coords = np.array([[0,0],[10,10]])
-    network.Layers[1].displayTargetPECountsRegion(coords)
+    #coords = np.array([[0,0],[10,10]])
+    #network.Layers[1].displayTargetPECountsRegion(coords)
     
     
     # In[153]:
@@ -1452,7 +1455,8 @@ def main():
     for y in range(network.managerArray.manager[0][0].roiCells[layerID][0].__len__()):
       for x in range(network.managerArray.manager[0][0].roiCells[layerID][0][0].__len__()):
         for z in range(network.managerArray.manager[0][0].roiCells[layerID].__len__()):
-            print network.managerArray.manager[0][0].roiCells[layerID][z][y][x]
+            pass
+            #print network.managerArray.manager[0][0].roiCells[layerID][z][y][x]
     
     
     # In[155]:
