@@ -29,6 +29,7 @@ import matplotlib.pyplot as plt
 from pylab import *
 from matplotlib.colors import BoundaryNorm
 from matplotlib.ticker import MaxNLocator
+from mpl_toolkits.mplot3d import Axes3D
 
 ########################################################################################################################
 ## Globals
@@ -404,8 +405,8 @@ class Layer():
         # where PE{0,1} may be assigned a 7x7x256 array of feature maps
 
         # Type:
-        # 'linearAll' : total number of cells are pread across 64 PE's
-        # 'linearX'   : all cells (e.g. peX*f) are allocated across X and evenly assigned to PE's in X dimension. PE's are assigned across Y dimension
+        # 'linearAll' : total number of cells are spread across 64 PE's
+        # 'linearX'   : all cells in a row (e.g. X*f) are allocated across X and evenly assigned to PE's in X dimension. rows are assigned to PE's in Y dimension
 
         # Create an array of lists with each PE assigned a list
         # This list will contain index of all cells assigned to the PE
@@ -717,23 +718,55 @@ class Layer():
         return numOfPEs
 
     #----------------------------------------------------------------------------------------------------
-    def displayTargetPECountsRegion(self, region):
-        yGrid, xGrid = np.mgrid[slice(region[0], region[1]), slice(region[2], region[3])]
+    def displayTargetPECountsRegion(self, coords):
+        yGrid, xGrid = np.mgrid[slice(coords[0][0], coords[1][0]), slice(coords[0][1], coords[1][1])]
         numOfPEs = np.zeros_like(xGrid, dtype=np.int)
 
         pLine = ''
-        for y in range(region[0], region[1]):
-            for x in range(region[2], region[3]):
+        for y in range(coords[0][0], coords[1][0]):
+            for x in range(coords[0][1], coords[1][1]):
                 pLine = pLine + '{0},'.format(self.cells[0][y][x].targetPEs.__len__())
-                numOfPEs[y-region[0]][x-region[2]] = self.cells[0][y][x].targetPEs.__len__()
+                numOfPEs[y-coords[0][0]][x-coords[0][1]] = self.cells[0][y][x].targetPEs.__len__()
             pLine = pLine + '\n'
         #print pLine
+
+        cmap = plt.cm.get_cmap('RdYlBu')
+        #cmap = plt.get_cmap('PiYG')
+        levels = np.array([0,1,2,3,4,5])
+        norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
+
+        # scale point based on number of elements
+        # FIXME: this was empirically done
+        numPts = 0
+        for e in numOfPEs:
+          numPts += e.__len__()
+        s =  10*(math.log((30000.0/numPts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
+        s = numOfPEs * s
+        sc = plt.scatter(xGrid, yGrid, c=numOfPEs, s=s, vmin=0, vmax=6, cmap=cmap, norm=norm)  # s=size
+        plt.colorbar(sc, orientation='vertical')
+        plt.show()
+
+
+        """
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        # Plot the surface
+        #ax.plot_surface(xGrid, yGrid, numOfPEs, color='b')
+        cmap = plt.get_cmap('PiYG')
+        levels = np.array([0,1,2,3,4])
+        norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
+        p = ax.scatter(xGrid, yGrid, c=numOfPEs, cmap=cmap, norm=norm)
+        fig.colorbar(p, ax=ax)
+        cb = fig.colorbar(p, orientation='vertical')
+        #b = fig.colorbar(p, orientation='vertical')
+        """
+        
+        """
         c = plt.contourf(xGrid,yGrid,numOfPEs, linspace(-1,5,7))
-        #c = plt.contourf(xGrid,yGrid,numOfPEs, linspace(-0.5,4.5,6))
         b = plt.colorbar(c, orientation='vertical')
         lx = plt.xlabel("x")
         ly = plt.ylabel("y")
-        plt.show()
+        """
 
         """
         c = plt.contour(xGrid,yGrid,numOfPEs)
@@ -742,23 +775,21 @@ class Layer():
         ly = plt.ylabel("y")
         #levels = MaxNLocator(nbins=4).tick_values(numOfPEs.min(), numOfPEs.max())
         levels = np.array([0,1,2,3,4])
-        
         cmap = plt.get_cmap('PiYG')
         norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
-        
         fig, ax = plt.subplots(nrows=1)
-        
         im = ax.pcolormesh(xGrid, yGrid, numOfPEs, cmap=cmap, norm=norm)
         fig.colorbar(im, ax=ax)
         ax.set_title('Number of target PEs')
         fig.tight_layout()
-        plt.show()
         """
+
+        plt.show()
 
 
     def displayTargetPECounts(self):
-         region = np.array([0, self.Y, 0, self.X])
-         self.displayTargetPECountsRegion(region)
+         coords = np.array([[0,0],[self.Y,self.X]])
+         self.displayTargetPECountsRegion(coords)
 
 
     #----------------------------------------------------------------------------------------------------
@@ -1376,15 +1407,9 @@ class Network():
 
 def main():
     
+
     
-    # coding: utf-8
-    
-    # In[1]:
-    
-    #pylab inline
-    
-    
-    # In[16]:
+    # In[80]:
     
     try:
         reload(dc)
@@ -1394,7 +1419,7 @@ def main():
         
     
     
-    # In[17]:
+    # In[81]:
     
     WORDSIZE = 32
     import dnnConnectivityAndMemoryAllocation as dc
@@ -1434,49 +1459,58 @@ def main():
     
     
     
-    # In[18]:
+    # In[82]:
     
     for l in range(1, network.numberOfLayers):
       network.Layers[l].generateConnections()
     
     
-    # In[19]:
+    # In[83]:
     
-    network.Layers[0].displayTargetPECounts()
-    
-    
-    # In[20]:
-    
-    lid = 0
-    numOfPEs = network.Layers[lid].getTargetPECounts()
+    layerID = 1
+    network.Layers[layerID].displayTargetPECounts()
     
     
+    # In[84]:
     
-    # In[21]:
+    numOfPEs = network.Layers[layerID].getTargetPECounts()
+    
+    
+    
+    # In[85]:
     
     opt = np.get_printoptions()
     np.set_printoptions(threshold=np.inf)
-    print numOfPEs
+    #print numOfPEs
+    #print numOfPEs.shape
     np.set_printoptions(threshold=1000)
     
     
-    # In[22]:
+    # In[86]:
     
-    #region = np.array([50,65,45,65])
-    region = np.array([12,20,9,21])
-    network.Layers[0].displayTargetPECountsRegion(region)
+    coords = np.array([[0,0],[10,10]])
+    network.Layers[1].displayTargetPECountsRegion(coords)
     
     
-    # In[26]:
+    # In[87]:
     
+    pLine = ''
     for layerID in range(1,network.numberOfLayers):
       for peY in range(network.peY) :
         for peX in range(network.peX) :
           nv = network.peArray.pe[peY][peX].findROI(layerID)
+          pLine = pLine + '{0:12},{1:12}  |  '.format(nv[0], nv[1])
           network.managerArray.manager[peY][peX].memCpyROI(layerID)
+        pLine = pLine + '\n'
+      pLine = pLine + '\n------------------------------------------------------------'
+    print pLine
+    print nv[0]
+    print nv[1]
+    
+      
     
     
-    # In[27]:
+    # In[88]:
     
     layerID = 1
     network.managerArray.manager[0][0].allocateMemory(memory,layerID)
@@ -1486,7 +1520,7 @@ def main():
             print network.managerArray.manager[0][0].roiCells[layerID][z][y][x]
     
     
-    # In[38]:
+    # In[89]:
     
     pLine = ''
     for layerID in range(0,network.numberOfLayers):
@@ -1501,6 +1535,7 @@ def main():
             pLine = pLine + '\n'
         pLine = pLine + '\n\n'
     print pLine
+    
     
                     
 if __name__ == "__main__":main()
