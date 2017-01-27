@@ -26,10 +26,11 @@ from rcdtype import *
 # Plotting
 # 
 import matplotlib.pyplot as plt
+import matplotlib.animation as manimation
 from pylab import *
 from matplotlib.colors import BoundaryNorm
 from matplotlib.ticker import MaxNLocator
-from mpl_toolkits.mplot3d import Axes3D
+#from mpl_toolkits.mplot3d import Axes3D
 
 ########################################################################################################################
 ## Globals
@@ -664,7 +665,7 @@ class Layer():
             return self.X*self.Y*self.Z
 
     ##----------------------------------------------------------------------------------------------------
-    ## Display Routines
+    ## Display Routines along with gets for what is displayed
 
 
     #----------------------------------------------------------------------------------------------------
@@ -681,7 +682,19 @@ class Layer():
                     numOfPEs[z][y][x] = self.cells[z][y][x].targetPEs.__len__()
         return numOfPEs
 
-    #----------------------------------------------------------------------------------------------------
+    def getTargetPECountsRegion(self, coords):
+        yGrid, xGrid = np.mgrid[slice(coords[0][0], coords[1][0]), slice(coords[0][1], coords[1][1])]
+        numOfPEs = np.zeros_like(xGrid, dtype=np.int)
+
+        pLine = ''
+        for y in range(coords[0][0], coords[1][0]):
+            for x in range(coords[0][1], coords[1][1]):
+                pLine = pLine + '{0},'.format(self.cells[0][y][x].targetPEs.__len__())
+                numOfPEs[y-coords[0][0]][x-coords[0][1]] = self.cells[0][y][x].targetPEs.__len__()
+            pLine = pLine + '\n'
+        return numOfPEs
+
+
     def displayTargetPECountsRegion(self, coords):
         yGrid, xGrid = np.mgrid[slice(coords[0][0], coords[1][0]), slice(coords[0][1], coords[1][1])]
         numOfPEs = np.zeros_like(xGrid, dtype=np.int)
@@ -711,7 +724,8 @@ class Layer():
             s = numOfPEs * s
         sc = plt.scatter(xGrid, yGrid, c=numOfPEs, s=s, vmin=0, vmax=6, cmap=cmap, norm=norm)  # s=size
         plt.colorbar(sc, orientation='vertical')
-        plt.show()
+        plt.gca().invert_yaxis()
+        plt.show(block=False)
 
 
         """
@@ -751,7 +765,11 @@ class Layer():
         fig.tight_layout()
         """
 
-        plt.show()
+
+
+    def getTargetPECounts(self):
+         coords = np.array([[0,0],[self.Y,self.X]])
+         return self.getTargetPECountsRegion(coords)
 
 
     def displayTargetPECounts(self):
@@ -877,7 +895,9 @@ class PE():
         self.ID = peId
 
         self.processedRegion = []
-        self.roi             = []  # array([ yMin, yMax, xMin, xMax ])
+        self.roi             = []  # array([ {z,y,x}min, {z,y,x}max ])
+        # Each element of roi grid will be the same size as the input with each bit indicating the cell is in the ROI
+        self.roiGrid         = []
 
         # which cells in layer n are being processed by this pe
         self.cellsProcessed = []
@@ -886,6 +906,7 @@ class PE():
           self.cellsProcessed.append([])
           self.processedRegion.append([])
           self.roi.append([])
+          self.roiGrid.append([])
 
         self.parentPEarray = parentPEarray
 
@@ -914,7 +935,12 @@ class PE():
     
     def findROI(self, layerID):
 
-        # Parse the source cells and find Y,X corners of ROI
+        # Parse the source cells and find Y,X corners of ROI and fill the roiGrid
+
+        # roiGrid is the same size as the input/previous layer
+        roiGrid         = np.zeros(shape=(self.parentPEarray.parentNetwork.Layers[layerID-1].Z, \
+                                          self.parentPEarray.parentNetwork.Layers[layerID-1].Y, \
+                                          self.parentPEarray.parentNetwork.Layers[layerID-1].X), dtype=np.int)
 
         absCellMin = np.inf
         absCellMax = 0
@@ -928,8 +954,16 @@ class PE():
             if absCellNum > absCellMax :
                 absCellMax = absCellNum
                 cellMax = sc
+            try:
+                roiGrid[sc.Z][sc.Y][sc.X] = 1
+            except:
+                print sc
+                print sc.Z,sc.Y,sc.X
+                raise
 
-        self.roi[layerID] = np.array([[cellMin.Z, cellMin.Y, cellMin.X],[cellMax.Z, cellMax.Y, cellMax.X]])
+        self.roi[layerID]     = np.array([[cellMin.Z, cellMin.Y, cellMin.X],[cellMax.Z, cellMax.Y, cellMax.X]])
+        self.roiGrid[layerID] = roiGrid
+
 
         """
         minx = np.inf
@@ -1000,6 +1034,152 @@ class PE():
             self.cellsProcessed[layerId].append(self.parentPEarray.parentNetwork.Layers[layerId].cells[cellId[0]][cellId[1]][cellId[2]])
 
 
+    #----------------------------------------------------------------------------------------------------
+    # Display along with gets for what is displayed
+    
+    def displayROIgridRegion(self, layerID, coords):
+
+        yGrid, xGrid = np.mgrid[slice(coords[0][0], coords[1][0]+1), slice(coords[0][1], coords[1][1]+1)]
+        tmpRoiGrid = np.zeros_like(xGrid, dtype=np.int)
+
+        pLine = '\n'
+        #for y in range(self.roiGrid[layerID][0].__len__()):
+        for y in range(coords[0][0], coords[1][0]+1):
+          #for x in range(self.roiGrid[layerID][0][0].__len__()):
+          for x in range(coords[0][1], coords[1][1]+1):
+            # display the Y,X locations as a sized point to reflect how many features are set
+            zCnt = 0
+            for z in range(self.roiGrid[layerID].__len__()):
+              try:
+                pLine = pLine + '{0:1}'.format(self.roiGrid[layerID][z][y][x])
+                zCnt += self.roiGrid[layerID][z][y][x]
+              except:
+                print layerID,z,y,x
+                raise
+            tmpRoiGrid[y-coords[0][0]][x-coords[0][1]] = zCnt
+            pLine = pLine + ' '
+          pLine = pLine + '\n'
+
+        cmap = plt.cm.get_cmap('RdYlBu')
+
+        # scale point based on number of elements
+        # FIXME: this was empirically done
+        numPts = 0
+        for e in tmpRoiGrid:
+          numPts += e.__len__()
+        s =  10.0*(math.log((30000.0/numPts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
+        if s < 0.01:
+            s = 0.01
+        else:
+            s = tmpRoiGrid * s
+        
+        sc = plt.scatter(xGrid, yGrid, c=tmpRoiGrid, s=s, vmin=0, vmax=6, cmap=cmap)  # s=size
+        plt.gca().invert_yaxis()
+        plt.show(block=False)
+            
+    def displayROIgrid(self, layerID):
+         coords = np.array([[0,0],[self.roiGrid[layerID][0].__len__()-1,self.roiGrid[layerID][0][0].__len__()-1]])
+         self.displayROIgridRegion(layerID, coords)
+
+    def getROIgridRegion(self, layerID, coords):
+
+        yGrid, xGrid = np.mgrid[slice(coords[0][0], coords[1][0]+1), slice(coords[0][1], coords[1][1]+1)]
+        tmpRoiGrid = np.zeros_like(xGrid, dtype=np.int)
+
+        #for y in range(self.roiGrid[layerID][0].__len__()):
+        for y in range(coords[0][0], coords[1][0]+1):
+          #for x in range(self.roiGrid[layerID][0][0].__len__()):
+          for x in range(coords[0][1], coords[1][1]+1):
+            # display the Y,X locations as a sized point to reflect how many features are set
+            zCnt = 0
+            for z in range(self.roiGrid[layerID].__len__()):
+              try:
+                zCnt += self.roiGrid[layerID][z][y][x]
+              except:
+                print layerID,z,y,x
+                raise
+            tmpRoiGrid[y-coords[0][0]][x-coords[0][1]] = zCnt
+
+        return tmpRoiGrid
+
+    def getROIgrid(self, layerID):
+         coords = np.array([[0,0],[self.roiGrid[layerID][0].__len__()-1,self.roiGrid[layerID][0][0].__len__()-1]])
+         return self.getROIgridRegion(layerID, coords)
+
+    #----------------------------------------------------------------------------------------------------
+    
+    def displayCellsProcessedRegion(self, layerID, coords, noDisplay):
+
+        # Return fig,plt,array if noDisplay is False
+        # Return array if noDisplay is True
+
+        zGrid, yGrid, xGrid = np.mgrid[slice(0, self.parentPEarray.parentNetwork.Layers[layerID].Z), \
+                                       slice(coords[0][0], coords[1][0]+1),                          \
+                                       slice(coords[0][1], coords[1][1]+1)]
+        tmpCellsProcessed        = np.zeros_like(xGrid, dtype=np.int)
+        # when we do a 2D scatter plot, z is reflected in size of point
+        tmpCellsProcessedForPlot = np.zeros_like(xGrid[0], dtype=np.int) # create Y,X array
+
+        for pc in self.cellsProcessed[layerID] :
+          if (pc.Y >= coords[0][0]) and (pc.Y <= coords[1][0]) :
+            if (pc.X >= coords[0][1]) and (pc.X <= coords[1][1]) :
+              pass
+              tmpCellsProcessed[pc.Z][pc.Y][pc.X] += 1
+
+        pLine = '\n'
+        for y in range(tmpCellsProcessed[0].__len__()) :
+          for x in range(tmpCellsProcessed[0][0].__len__()) :
+            zCnt = 0
+            for z in range(tmpCellsProcessed.__len__()) :
+              try:
+                pLine = pLine + '{0:1}'.format(tmpCellsProcessed[z][y][x])
+                zCnt += tmpCellsProcessed[z][y][x]
+              except:
+                print layerID,z,y,x
+                raise
+            # number of features processed at this Y,X location
+            tmpCellsProcessedForPlot[y][x] += zCnt
+            pLine = pLine + ' '
+          pLine = pLine + '\n'
+
+        xG = np.concatenate(xGrid[0])
+        yG = np.concatenate(yGrid[0])
+        cP = np.concatenate(tmpCellsProcessedForPlot)
+
+        if noDisplay == False :
+
+            #print pLine
+            # Now plot
+            cmap = plt.cm.get_cmap('RdYlBu')
+ 
+            # scale point based on number of elements
+            # FIXME: this was empirically done
+            numPts = 0
+            for e in tmpCellsProcessedForPlot:
+              numPts += e.__len__()
+            s =  10.0*(math.log((30000.0/numPts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
+            if s < 0.01:
+                s = 0.01
+            else:
+                s = tmpCellsProcessedForPlot* s
+            
+            #fig = plt.figure()
+            fig, ax = plt.subplots()
+            sc = ax.scatter(xG, yG, c=cP, s=s, vmin=0, vmax=6, cmap=cmap)  # s=size
+            plt.gca().invert_yaxis()
+            plt.show(block=False)
+
+        if noDisplay == True :
+            retVal = [cP, xG, yG]
+        else :
+            retVal = [fig, sc, cP, xG, yG]
+        return retVal
+            
+    def displayCellsProcessed(self, layerID, noDisplay):
+        coords = np.array([[0,0],[self.parentPEarray.parentNetwork.Layers[layerID].Y-1, self.parentPEarray.parentNetwork.Layers[layerID].X-1]])
+        return self.displayCellsProcessedRegion(layerID, coords, noDisplay)
+
+
 
 ########################################################################################################################
 #----------------------------------------------------------------------------------------------------
@@ -1010,6 +1190,8 @@ class PEarray():
     def __init__(self, parentNetwork, peY, peX, numberOfLayers):
         self.parentNetwork = parentNetwork
         self.pe = []
+        self.Y = peY
+        self.X = peY
         for y in range(peY):
             peArrayX = []
             for x in range(peX):
@@ -1030,6 +1212,127 @@ class PEarray():
     #----------------------------------------------------------------------------------------------------
     def addCell(self, peId, layerId, cellId):
         self.pe[peId[0]][peId[1]].addCell(layerId, cellId)
+
+
+    #----------------------------------------------------------------------------------------------------
+    # Display
+    
+    def createProcessedCellsMovie(self, layerID):
+        pass
+        global lId
+        global cp_info
+        global pt_scale
+        global scat
+        
+        lId = layerID
+        c, x, y = self.pe[0][0].displayCellsProcessed(layerID=layerID,noDisplay=True)
+        
+        num_pts = c.__len__()
+        xLim = self.parentNetwork.Layers[lId].X
+        yLim = self.parentNetwork.Layers[lId].Y
+ 
+        cp_info = np.zeros(num_pts, dtype=[('position', int, 2   ),  \
+                                           ('size'    , int, 1   ),  \
+                                           ('color'   , float, 4 )])  
+        cp_info['position'][:, 0] = y
+        cp_info['position'][:, 1] = x
+        pt_scale =  10.0*(math.log((30000.0/num_pts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
+        cp_info['size'    ]       = pt_scale*c
+        
+        numframes = self.Y*self.X
+        
+        fig = plt.figure(figsize=(7, 7))
+        #ax = fig.add_axes([0.05, 0.05, 0.9, 0.9], frameon=False) # r,l,w,h
+        ax = fig.add_axes([0, 0, 1, 1], frameon=False) # r,l,w,h
+        ax.set_xlim(-1, xLim) # , ax.set_xticks([])
+        ax.set_ylim(-1, yLim) # , ax.set_yticks([])
+          
+        cmap = plt.cm.get_cmap('RdYlBu')
+        scat = ax.scatter(cp_info['position'][:, 0], cp_info['position'][:, 1],   \
+                          s=cp_info['size'],                                      \
+                          vmin=0, vmax=6,                                         \
+                          cmap=cmap)
+        plt.gca().invert_yaxis()
+        plt.gca().invert_xaxis()
+        
+        
+        ani = manimation.FuncAnimation(fig, self.update_plot,    \
+                                      frames=xrange(numframes),  \
+                                      interval = 500,            \
+                                      repeat   = True,           \
+                                      blit     = False           )
+        #                             fargs=(layerID)         )
+        plt.show()
+
+
+    def update_plot(self, frame_number):
+        xPe = np.remainder(frame_number,8)
+        yPe = frame_number/8
+        c, x, y = self.pe[yPe][xPe].displayCellsProcessed(layerID=lId,noDisplay=True)
+        cp_info['position'][:, 0] = y
+        cp_info['position'][:, 1] = x
+        cp_info['size'    ]       = pt_scale*c
+        scat.set_sizes(cp_info['size'])
+        scat.set_offsets(cp_info['position'])
+
+
+        """
+
+        fig,scat,d = self.pe[0][0].displayCellsProcessed(layerID=layerID,noDisplay=False)
+
+        numframes = self.Y*self.X
+        data = np.empty(shape=(numframes, self.parentNetwork.Layers[layerID].Y * self.parentNetwork.Layers[layerID].X))
+
+        cnt=0
+        for yPe in range(self.Y):
+            for xPe in range(self.X):
+                pass
+                #rv = self.pe[yPe][xPe].displayCellsProcessed(layerID=layerID,noDisplay=False)
+                #if rv.__len__() == 3:
+                #  data[cnt] = np.concatenate(rv[2])
+                #else:
+                #  data[cnt] = np.concatenate(rv[0])
+                data[cnt] = np.concatenate(self.pe[yPe][xPe].displayCellsProcessed(layerID=layerID,noDisplay=True))
+                cnt += 1
+
+
+        #numpoints = 10
+        #color_data = np.random.random((numframes, numpoints))
+        #x, y, c = np.random.random((3, numpoints))
+        
+        #fig = plt.figure()
+        #scat = plt.scatter(x, y, c=c, s=100)
+        
+        ani = manimation.FuncAnimation(fig, self.update_plot,    \
+                                      frames=xrange(numframes),  \
+                                      interval = 200,            \
+                                      repeat   = False,          \
+                                      blit     = False,          \
+                                      fargs=(data, scat))
+        
+        plt.show(block=False)
+        """
+
+        """
+        FFMpegWriter = manimation.writers['ffmpeg']
+        metadata = dict(title='Movie Test', artist='Matplotlib', \
+                        comment='Movie support!')
+        writer = FFMpegWriter(fps=15, metadata=metadata)
+        rv = self.pe[0][0].displayCellsProcessed(layerID,False) 
+        with writer.saving(rv[0], "writer_test.mp4", self.Y*self.X):
+          for yPe in range(self.Y):
+              for xPe in range(self.X):
+                  pass
+                  a = self.pe[yPe][xPe].displayCellsProcessed(layerID,True)
+                  print type(a) 
+                  rv[1].set_array(a)
+                  writer.grab_frame()
+    # i will be passed contents of frame argument in FuncAnimation
+    def update_plot(self, i, data, scat):
+        print 'TEST'
+        scat.set_array(data[i])
+        return scat,
+        """
 
 
 ########################################################################################################################
@@ -1103,6 +1406,7 @@ class Manager():
         roi = self.pe.getROI(layerID)
         xLen = roi[1][2]-roi[0][2]+1  
         yLen = roi[1][1]-roi[0][1]+1
+        zLen = roi[1][0]-roi[0][0]+1
 
         # copy all features
         #zLen = roi[1][0]-roi[0][0]+1
@@ -1382,14 +1686,14 @@ def main():
     network.addLayer('Convolutional',   55,  55,    4,    8,   8,    3,   4 ) #   96,
     #network.addLayer('Input',           55,  55,    3,                      ) #   96,
     network.addLayer('Convolutional',   27,  27,    8,    5,   5,    4,   2 ) #  256,
-    network.addLayer('Convolutional',   13,  13,    4,    3,   3,    8,   2 ) #  384,
-    network.addLayer('Convolutional',   13,  13,    2,    3,   3,    4,   1 ) #  384,
+    #network.addLayer('Convolutional',   13,  13,    4,    3,   3,    8,   2 ) #  384,
+    #network.addLayer('Convolutional',   13,  13,    2,    3,   3,    4,   1 ) #  384,
     #network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
     #network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    6,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    4,   1 ) # 1024,
     
-    network.assignPEs('linearAll')
+    network.assignPEs('linearX')
     
     
     
@@ -1405,7 +1709,8 @@ def main():
     # In[149]:
     
     for layerID in range(0,network.numberOfLayers-1):
-      network.Layers[layerID].displayTargetPECounts()
+      pass
+      #network.Layers[layerID].displayTargetPECounts()
     
     
     # In[150]:
@@ -1473,10 +1778,15 @@ def main():
                 #    print c
             pLine = pLine + '\n'
         pLine = pLine + '\n\n'
-    print pLine
+    #print pLine
     
+    #network.peArray.pe[0][0].displayROIgrid(1) 
+
+    #network.peArray.pe[0][0].displayCellsProcessed(1,False) 
+    network.peArray.createProcessedCellsMovie(1)
     
-    
+
+
                     
 if __name__ == "__main__":main()
     
@@ -1489,6 +1799,175 @@ if __name__ == "__main__":main()
 ##              HELP
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
+
+"""
+import numpy as np
+import math
+import sys
+import os
+import copy
+from copy import deepcopy
+from copy import copy as copy_copy
+from collections import namedtuple
+from rcdtype import *
+# Plotting
+# 
+import matplotlib.pyplot as plt
+import matplotlib.animation as manimation
+from pylab import *
+from matplotlib.colors import BoundaryNorm
+from matplotlib.ticker import MaxNLocator
+
+WORDSIZE = 32
+import dnnConnectivityAndMemoryAllocation as dc
+import numpy as np
+
+
+# Create memory
+mainMemoryConfig = dc.MemoryConfiguration(2,32,8,4096)
+mainMemory = dc.Memory(mainMemoryConfig)
+
+# Create DNN
+network = dc.Network()
+network.addLayer('Input',          224, 224,    3                       ) #    3 
+network.addLayer('Convolutional',   55,  55,    4,    8,   8,    3,   4 ) #   96,
+network.addLayer('Convolutional',   27,  27,    8,    5,   5,    4,   2 ) #  256,
+
+network.assignPEs('linearAll')
+
+for l in range(1, network.numberOfLayers):
+  network.Layers[l].generateConnections()
+
+layerID = 1
+c, x, y = network.peArray.pe[0][0].displayCellsProcessed(layerID=layerID,noDisplay=True)
+
+num_pts = c.__len__()
+cp_info = np.zeros(num_pts, dtype=[('position', int, 2   ),  \
+                                   ('size'    , int, 1   ),  \
+                                   ('color'   , float, 4 )])  
+cp_info['position'][:, 0] = y
+cp_info['position'][:, 1] = x
+s =  10.0*(math.log((30000.0/num_pts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
+cp_info['size'    ]       = s*c
+
+numframes = network.peArray.Y*network.peArray.X
+
+fig = plt.figure(figsize=(7, 7))
+ax = fig.add_axes([0, 0, 1, 1], frameon=False)
+#ax.set_xlim(0, 1), ax.set_xticks([])
+#ax.set_ylim(0, 1), ax.set_yticks([])
+  
+cmap = plt.cm.get_cmap('RdYlBu')
+scat = plt.scatter(cp_info['position'][:, 0], cp_info['position'][:, 1],   \
+                  s=cp_info['size'],                                      \
+                  vmin=0, vmax=6,                                         \
+                  cmap=cmap)
+plt.gca().invert_yaxis()
+plt.gca().invert_xaxis()
+
+def update_plot(frame_number):
+    xPe = np.remainder(frame_number,8)
+    yPe = frame_number/8
+    c, x, y = network.peArray.pe[yPe][xPe].displayCellsProcessed(layerID=layerID,noDisplay=True)
+    cp_info['position'][:, 0] = y
+    cp_info['position'][:, 1] = x
+    cp_info['size'    ]       = c
+    scat.set_sizes(cp_info['size'])
+    scat.set_offsets(cp_info['position'])
+
+ani = manimation.FuncAnimation(fig, update_plot,         \
+                              frames=xrange(numframes),  \
+                              interval = 200,            \
+                              repeat   = True,           \
+                              blit     = False           )
+plt.show()
+
+"""
+"""
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.animation as manimation
+
+def update_plot(i, data, scat):
+    scat.set_array(data[i])
+    return scat,
+
+numframes = 100
+numpoints = 10
+color_data = np.random.random((numframes, numpoints))
+x, y, c = np.random.random((3, numpoints))
+
+fig = plt.figure()
+scat = plt.scatter(x, y, c=c, s=100)
+
+ani = manimation.FuncAnimation(fig, update_plot, frames=xrange(numframes),
+                              fargs=(color_data, scat))
+plt.show(block=False)
+
+"""
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+
+# Create new Figure and an Axes which fills it.
+fig = plt.figure(figsize=(7, 7))
+ax = fig.add_axes([0, 0, 1, 1], frameon=False)
+ax.set_xlim(0, 1), ax.set_xticks([])
+ax.set_ylim(0, 1), ax.set_yticks([])
+
+# Create rain data
+n_drops = 50
+rain_drops = np.zeros(n_drops, dtype=[('position', float, 2),  \
+                                      ('size',     float, 1),  \
+                                      ('growth',   float, 1),  \
+                                      ('color',    float, 4)])  
+
+# Initialize the raindrops in random positions and with
+# random growth rates.
+rain_drops['position'] = np.random.uniform(0, 1, (n_drops, 2))
+rain_drops['growth'] = np.random.uniform(50, 200, n_drops)
+
+# Construct the scatter which we will update during animation
+# as the raindrops develop.
+scat = ax.scatter(rain_drops['position'][:, 0], rain_drops['position'][:, 1],   \
+                  s=rain_drops['size'], lw=0.5, edgecolors=rain_drops['color'], \
+                  facecolors='none')
+
+
+def update(frame_number):
+    # Get an index which we can use to re-spawn the oldest raindrop.
+    current_index = frame_number % n_drops
+    pass
+    # Make all colors more transparent as time progresses.
+    rain_drops['color'][:, 3] -= 1.0/len(rain_drops)
+    rain_drops['color'][:, 3] = np.clip(rain_drops['color'][:, 3], 0, 1)
+    pass
+    # Make all circles bigger.
+    rain_drops['size'] += rain_drops['growth']
+    pass
+    # Pick a new position for oldest rain drop, resetting its size,
+    # color and growth factor.
+    rain_drops['position'][current_index] = np.random.uniform(0, 1, 2)
+    rain_drops['size'][current_index] = 5
+    rain_drops['color'][current_index] = (0, 0, 0, 1)
+    rain_drops['growth'][current_index] = np.random.uniform(50, 200)
+    pass
+    # Update the scatter collection, with the new colors, sizes and positions.
+    scat.set_edgecolors(rain_drops['color'])
+    scat.set_sizes(rain_drops['size'])
+    scat.set_offsets(rain_drops['position'])
+
+
+# Construct the animation, using the update function as the animation
+# director.
+animation = FuncAnimation(fig, update, interval=10)
+plt.show()
+"""
+
+
+
 """
 pylab inline
 import dnnConnectivityAndMemoryAllocation as dc
@@ -1552,7 +2031,7 @@ b = plt.colorbar(c, orientation='vertical')
 #l = plt.clabel(c)
 lx = plt.xlabel("x")
 ly = plt.ylabel("y")
-plt.show()
+plt.show(block=False)
 
 levels = MaxNLocator(nbins=4).tick_values(numOfPEs.min(), numOfPEs.max())
 levels = np.array([1,2,3,4])
@@ -1566,7 +2045,7 @@ im = ax.pcolormesh(xGrid, yGrid, numOfPEs, cmap=cmap, norm=norm)
 fig.colorbar(im, ax=ax)
 ax.set_title('Number of target PEs')
 fig.tight_layout()
-plt.show()
+plt.show(block=False)
 
 
 
