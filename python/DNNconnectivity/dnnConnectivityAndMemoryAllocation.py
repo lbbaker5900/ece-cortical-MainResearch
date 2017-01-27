@@ -1234,33 +1234,38 @@ class PEarray():
         cp_info = np.zeros(num_pts, dtype=[('position', int, 2   ),  \
                                            ('size'    , int, 1   ),  \
                                            ('color'   , float, 4 )])  
-        cp_info['position'][:, 0] = y
-        cp_info['position'][:, 1] = x
+        # scatter wants x first so put x in zero location
+        cp_info['position'][:, 1] = y
+        cp_info['position'][:, 0] = x
         pt_scale =  10.0*(math.log((30000.0/num_pts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
         cp_info['size'    ]       = pt_scale*c
         
         numframes = self.Y*self.X
         
         fig = plt.figure(figsize=(7, 7))
-        #ax = fig.add_axes([0.05, 0.05, 0.9, 0.9], frameon=False) # r,l,w,h
-        ax = fig.add_axes([0, 0, 1, 1], frameon=False) # r,l,w,h
-        ax.set_xlim(-1, xLim) # , ax.set_xticks([])
-        ax.set_ylim(-1, yLim) # , ax.set_yticks([])
+        ax = fig.add_axes([0.05, 0.05, 0.9, 0.9], frameon=False) # r,l,w,h
+        #ax = fig.add_axes([0, 0, 1, 1], frameon=False) # r,l,w,h
+        ax.set_xlim(-1, xLim)  , ax.set_xticks(x)
+        ax.set_ylim(-1, yLim)  , ax.set_yticks(y)
+        #ax.set_xlim(-1, xLim) # , ax.set_xticks([])
+        #ax.set_ylim(-1, yLim) # , ax.set_yticks([])
           
         cmap = plt.cm.get_cmap('RdYlBu')
-        scat = ax.scatter(cp_info['position'][:, 0], cp_info['position'][:, 1],   \
-                          s=cp_info['size'],                                      \
-                          vmin=0, vmax=6,                                         \
-                          cmap=cmap)
+        scat = ax.scatter(cp_info['position'][::1, 0], cp_info['position'][::1, 1],   \
+                          s=cp_info['size'],                                          \
+                          vmin=0, vmax=6,                                             \
+                          cmap=cmap                                                   )
         plt.gca().invert_yaxis()
-        plt.gca().invert_xaxis()
-        
+        ax.xaxis.set_tick_params(labeltop='on')
+        ax.yaxis.set_tick_params(labelright='on')
+        for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +  ax.get_xticklabels() + ax.get_yticklabels()):
+            item.set_fontsize(10)
         
         ani = manimation.FuncAnimation(fig, self.update_plot,    \
                                       frames=xrange(numframes),  \
                                       interval = 500,            \
                                       repeat   = True,           \
-                                      blit     = False           )
+                                      blit     = False           )  # causes an error if True
         #                             fargs=(layerID)         )
         plt.show()
 
@@ -1269,8 +1274,8 @@ class PEarray():
         xPe = np.remainder(frame_number,8)
         yPe = frame_number/8
         c, x, y = self.pe[yPe][xPe].displayCellsProcessed(layerID=lId,noDisplay=True)
-        cp_info['position'][:, 0] = y
-        cp_info['position'][:, 1] = x
+        cp_info['position'][::1, 0] = x
+        cp_info['position'][::1, 1] = y
         cp_info['size'    ]       = pt_scale*c
         scat.set_sizes(cp_info['size'])
         scat.set_offsets(cp_info['position'])
@@ -1799,6 +1804,83 @@ if __name__ == "__main__":main()
 ##              HELP
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
+"""
+import numpy as np
+import math
+import sys
+import os
+import copy
+from copy import deepcopy
+from copy import copy as copy_copy
+from collections import namedtuple
+from rcdtype import *
+# Plotting
+# 
+import matplotlib.pyplot as plt
+import matplotlib.animation as manimation
+from pylab import *
+from matplotlib.colors import BoundaryNorm
+from matplotlib.ticker import MaxNLocator
+
+
+def test_update_plot(frame_number):
+    cp_info['position'][::1, 0] = x
+    cp_info['position'][::1, 1] = y
+    cp_info['size'    ]       = pt_scale*c[frame_number]
+    scat.set_sizes(cp_info['size'])
+    scat.set_offsets(cp_info['position'])
+
+
+numframes = 10
+num_pts = 20
+y = linspace(0,18,num=num_pts)
+x = range(num_pts)
+c = np.random.random((numframes, num_pts))
+ 
+
+cp_info = np.zeros(num_pts, dtype=[('position', float, 2   ),  \
+                                   ('size'    , int, 1   ),  \
+                                   ('color'   , float, 4 )])  
+cp_info['position'][:, 0] = y
+cp_info['position'][:, 1] = x
+pt_scale =  10.0*(math.log((30000.0/num_pts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
+cp_info['size'    ]       = pt_scale*c[0]
+
+xLim = num_pts +1
+yLim = num_pts +1
+fig = plt.figure(figsize=(7, 7))
+ax = fig.add_axes([0.05, 0.05, 0.9, 0.9], frameon=False) # r,l,w,h
+#ax = fig.add_axes([0, 0, 1, 1], frameon=True) # r,l,w,h
+ax.set_xlim(-1, xLim)  , ax.set_xticks(x)
+ax.set_ylim(-1, yLim)  , ax.set_yticks(y)
+#ax.set_ylim(ax.get_ylim()[::-1])
+for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +  ax.get_xticklabels() + ax.get_yticklabels()):
+    item.set_fontsize(8)
+  
+cmap = plt.cm.get_cmap('RdYlBu')
+#                                 x                     y
+scat = ax.scatter(cp_info['position'][::1, 0], cp_info['position'][::1, 1],   \
+                  s=cp_info['size'],                                          \
+                  vmin=0, vmax=6,                                             \
+                  cmap=cmap)#                                                   \
+#                  origin='lower'                                                )
+plt.gca().invert_yaxis()
+#plt.gca().invert_xaxis()
+#ax.spines['bottom'].set_position(('axes',0.5)) # move the lower axes up but data stays as is
+ax.xaxis.set_tick_params(labeltop='on')
+ax.yaxis.set_tick_params(labelright='on')
+
+ani = manimation.FuncAnimation(fig, test_update_plot,    \
+                              frames=xrange(numframes),  \
+                              interval = 500,            \
+                              repeat   = True,           \
+                              blit     = False           )
+#                             fargs=(layerID)         )
+plt.show(block=False)
+
+
+"""
+
 
 """
 import numpy as np
@@ -1913,7 +1995,7 @@ from matplotlib.animation import FuncAnimation
 
 # Create new Figure and an Axes which fills it.
 fig = plt.figure(figsize=(7, 7))
-ax = fig.add_axes([0, 0, 1, 1], frameon=False)
+ax = fig.add_axes([0.05, 0.05, 0.9, 0.9], frameon=False)
 ax.set_xlim(0, 1), ax.set_xticks([])
 ax.set_ylim(0, 1), ax.set_yticks([])
 
