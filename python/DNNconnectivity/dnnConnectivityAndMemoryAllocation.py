@@ -1000,7 +1000,8 @@ class PE():
 
 
     def getROI(self, layerID):
-        if not self.roi[layerID].any() :
+
+        if isinstance(self.roi[layerID], list):
             return self.findROI(layerID)
         else:
             return self.roi[layerID]
@@ -1037,17 +1038,32 @@ class PE():
     #----------------------------------------------------------------------------------------------------
     # Display along with gets for what is displayed
     
-    def displayROIgridRegion(self, layerID, coords):
+    #----------------------------------------------------------------------------------------------------
+    def displayROIgridRegion(self, params) : #layerID, coords, Display):
+
+        if 'plot' in params.keys():
+            plotEnable = params['plot']
+        else :
+            plotEnable = False
+        
+        if 'print' in params.keys():
+            printEnable = params['print']
+        else :
+            printEnable = False
+        
+        try :
+            layerID = params['layer']
+            coords  = params['coords']
+        except:
+            print 'line 1051: ERROR'
+            raise
 
         yGrid, xGrid = np.mgrid[slice(coords[0][0], coords[1][0]+1), slice(coords[0][1], coords[1][1]+1)]
         tmpRoiGrid = np.zeros_like(xGrid, dtype=np.int)
 
         pLine = '\n'
-        #for y in range(self.roiGrid[layerID][0].__len__()):
-        for y in range(coords[0][0], coords[1][0]+1):
-          #for x in range(self.roiGrid[layerID][0][0].__len__()):
+        for y in   range(coords[0][0], coords[1][0]+1):
           for x in range(coords[0][1], coords[1][1]+1):
-            # display the Y,X locations as a sized point to reflect how many features are set
             zCnt = 0
             for z in range(self.roiGrid[layerID].__len__()):
               try:
@@ -1060,36 +1076,82 @@ class PE():
             pLine = pLine + ' '
           pLine = pLine + '\n'
 
-        cmap = plt.cm.get_cmap('RdYlBu')
+        if printEnable: print pLine
 
-        # scale point based on number of elements
-        # FIXME: this was empirically done
-        numPts = 0
-        for e in tmpRoiGrid:
-          numPts += e.__len__()
-        s =  10.0*(math.log((30000.0/numPts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
-        if s < 0.01:
-            s = 0.01
-        else:
-            s = tmpRoiGrid * s
-        
-        sc = plt.scatter(xGrid, yGrid, c=tmpRoiGrid, s=s, vmin=0, vmax=6, cmap=cmap)  # s=size
-        plt.gca().invert_yaxis()
-        plt.show(block=False)
+        if plotEnable: 
+
+            # Find number of points and scale point based on number of elements
+            # FIXME: this was empirically done
+            num_pts = 0
+            for e in tmpRoiGrid:
+              num_pts += e.__len__()
+            pt_scale =  10.0*(math.log((30000.0/num_pts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
+            if pt_scale < 0.01:
+                pt_scale = 0.01
+            else:
+                pt_scale = tmpRoiGrid * pt_scale
+            
+            cp_info = np.zeros(num_pts, dtype=[('position', int, 2   ),  \
+                                               ('size'    , int, 1   ),  \
+                                               ('color'   , float, 4 )])  
+
+            # scatter wants x first so put x in zero location
+            cp_info['position'][:, 1] =          np.concatenate(yGrid     )                
+            cp_info['position'][:, 0] =          np.concatenate(xGrid     )               
+            cp_info['size'    ]       = np.concatenate(pt_scale*tmpRoiGrid)
+            
+
+            yLim   = (coords[0][0]-1, coords[1][0]+1)
+            xLim   = (coords[0][1]-1, coords[1][1]+1)
+            xVals  = range(coords[0][0], coords[1][0]+1)
+            yVals  = range(coords[0][1], coords[1][1]+1)
+
+            fig = plt.figure(figsize=(7, 7))
+            ax = fig.add_axes([0.10, 0.10, 0.8, 0.8], frameon=False) # r,l,w,h
+            #ax = fig.add_axes([0, 0, 1, 1], frameon=False) # r,l,w,h
+            ax.set_xlim(xLim[0]-1, xLim[1]+1)  , ax.set_xticks(xVals)
+            ax.set_ylim(yLim[0]-1, yLim[1]+1)  , ax.set_yticks(yVals)
+            titleStr = 'Layer {0} PE {1},{2} ROI'.format(layerID, self.ID[0], self.ID[1]) 
+            plt.text(0.5, 1.08, titleStr,        \
+                  horizontalalignment='center',  \
+                  fontsize=14,                   \
+                  transform = ax.transAxes)
+            #ax.set_xlim(-1, xLim) # , ax.set_xticks([])
+            #ax.set_ylim(-1, yLim) # , ax.set_yticks([])
+              
+            cmap = plt.cm.get_cmap('RdYlBu')
+            scat = ax.scatter(cp_info['position'][::1, 0], cp_info['position'][::1, 1],   \
+                              s=cp_info['size'],                                          \
+                              vmin=0, vmax=6,                                             \
+                              cmap=cmap                                                   )
+            plt.gca().invert_yaxis()
+            ax.xaxis.set_tick_params(labeltop='on')
+            ax.yaxis.set_tick_params(labelright='on')
+            for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +  ax.get_xticklabels() + ax.get_yticklabels()):
+                item.set_fontsize(10)
+
+            plt.show(block=False)
+
+
             
     def displayROIgrid(self, layerID):
          coords = np.array([[0,0],[self.roiGrid[layerID][0].__len__()-1,self.roiGrid[layerID][0][0].__len__()-1]])
-         self.displayROIgridRegion(layerID, coords)
+
+         params = {'display' : True, 'coords' : coords, 'layer' : layerID, 'plot' : True, 'print' : False}
+
+         self.displayROIgridRegion(params)
+
 
     def getROIgridRegion(self, layerID, coords):
 
         yGrid, xGrid = np.mgrid[slice(coords[0][0], coords[1][0]+1), slice(coords[0][1], coords[1][1]+1)]
         tmpRoiGrid = np.zeros_like(xGrid, dtype=np.int)
 
-        #for y in range(self.roiGrid[layerID][0].__len__()):
-        for y in range(coords[0][0], coords[1][0]+1):
+        yRange = range(coords[0][0], coords[1][0]+1)
+        xRange = range(coords[0][1], coords[1][1]+1)
+        for y in yRange :
           #for x in range(self.roiGrid[layerID][0][0].__len__()):
-          for x in range(coords[0][1], coords[1][1]+1):
+          for x in xRange :
             # display the Y,X locations as a sized point to reflect how many features are set
             zCnt = 0
             for z in range(self.roiGrid[layerID].__len__()):
@@ -1100,7 +1162,7 @@ class PE():
                 raise
             tmpRoiGrid[y-coords[0][0]][x-coords[0][1]] = zCnt
 
-        return tmpRoiGrid
+        return [tmpRoiGrid, xGrid, yGrid]
 
     def getROIgrid(self, layerID):
          coords = np.array([[0,0],[self.roiGrid[layerID][0].__len__()-1,self.roiGrid[layerID][0][0].__len__()-1]])
@@ -1179,8 +1241,6 @@ class PE():
         coords = np.array([[0,0],[self.parentPEarray.parentNetwork.Layers[layerID].Y-1, self.parentPEarray.parentNetwork.Layers[layerID].X-1]])
         return self.displayCellsProcessedRegion(layerID, coords, noDisplay)
 
-
-
 ########################################################################################################################
 #----------------------------------------------------------------------------------------------------
 # PE ARRAY
@@ -1210,14 +1270,28 @@ class PEarray():
         return pLine
         
     #----------------------------------------------------------------------------------------------------
+    # 
+
+    #----------------------------------------------------------------------------------------------------
     def addCell(self, peId, layerId, cellId):
         self.pe[peId[0]][peId[1]].addCell(layerId, cellId)
+
+    #----------------------------------------------------------------------------------------------------
+    # Determine all PE ROIs
+    def findROIall(self, layerID):
+
+        for yPe in range(self.Y) :
+          for xPe in range(self.X) :
+            self.pe[yPe][xPe].findROI(layerID)
 
 
     #----------------------------------------------------------------------------------------------------
     # Display
     
-    def createProcessedCellsMovie(self, layerID):
+    #----------------------------------------------------------------------------------------------------
+    # Animations
+    
+    def createProcessedCellsAnimation(self, layerID):
         pass
         global lId
         global cp_info
@@ -1228,8 +1302,10 @@ class PEarray():
         c, x, y = self.pe[0][0].displayCellsProcessed(layerID=layerID,noDisplay=True)
         
         num_pts = c.__len__()
-        xLim = self.parentNetwork.Layers[lId].X
-        yLim = self.parentNetwork.Layers[lId].Y
+        xLim  = np.array([0, self.parentNetwork.Layers[lId].X+1])
+        yLim  = np.array([0, self.parentNetwork.Layers[lId].Y+1])
+        xVals = range(xLim.min(), xLim.max()+1)
+        yVals = range(yLim.min(), yLim.max()+1)
  
         cp_info = np.zeros(num_pts, dtype=[('position', int, 2   ),  \
                                            ('size'    , int, 1   ),  \
@@ -1243,12 +1319,15 @@ class PEarray():
         numframes = self.Y*self.X
         
         fig = plt.figure(figsize=(7, 7))
-        ax = fig.add_axes([0.05, 0.05, 0.9, 0.9], frameon=False) # r,l,w,h
+        ax = fig.add_axes([0.10, 0.10, 0.8, 0.8], frameon=False) # r,l,w,h
         #ax = fig.add_axes([0, 0, 1, 1], frameon=False) # r,l,w,h
-        ax.set_xlim(-1, xLim)  , ax.set_xticks(x)
-        ax.set_ylim(-1, yLim)  , ax.set_yticks(y)
-        #ax.set_xlim(-1, xLim) # , ax.set_xticks([])
-        #ax.set_ylim(-1, yLim) # , ax.set_yticks([])
+        ax.set_xlim(xLim[0]-1, xLim[1]+1)  , ax.set_xticks(xVals)
+        ax.set_ylim(yLim[0]-1, yLim[1]+1)  , ax.set_xticks(yVals)
+        titleStr = 'Layer {0} cells processed by PEs'.format(layerID) 
+        plt.text(0.5, 1.08, titleStr,        \
+              horizontalalignment='center',  \
+              fontsize=14,                   \
+              transform = ax.transAxes)
           
         cmap = plt.cm.get_cmap('RdYlBu')
         scat = ax.scatter(cp_info['position'][::1, 0], cp_info['position'][::1, 1],   \
@@ -1261,16 +1340,16 @@ class PEarray():
         for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +  ax.get_xticklabels() + ax.get_yticklabels()):
             item.set_fontsize(10)
         
-        ani = manimation.FuncAnimation(fig, self.update_plot,    \
+        ani = manimation.FuncAnimation(fig, self.update_plot_cellsProcessed,    \
                                       frames=xrange(numframes),  \
                                       interval = 500,            \
                                       repeat   = True,           \
                                       blit     = False           )  # causes an error if True
         #                             fargs=(layerID)         )
-        plt.show()
+        plt.show(block=False)
 
 
-    def update_plot(self, frame_number):
+    def update_plot_cellsProcessed(self, frame_number):
         xPe = np.remainder(frame_number,8)
         yPe = frame_number/8
         c, x, y = self.pe[yPe][xPe].displayCellsProcessed(layerID=lId,noDisplay=True)
@@ -1281,63 +1360,77 @@ class PEarray():
         scat.set_offsets(cp_info['position'])
 
 
-        """
+    #----------------------------------------------------------------------------------------------------
+    
+    def createROIAnimation(self, layerID):
+        pass
+        global lId
+        global cp_info
+        global pt_scale
+        global scat
+        
+        lId = layerID
+        rv = self.pe[0][0].getROIgrid(layerID=layerID)
+        c = concatenate(rv[0])
+        x = concatenate(rv[1])
+        y = concatenate(rv[2])
 
-        fig,scat,d = self.pe[0][0].displayCellsProcessed(layerID=layerID,noDisplay=False)
-
+        num_pts = c.__len__()
+        xLim  = (rv[1].min(), rv[1].max())
+        yLim  = (rv[2].min(), rv[2].max())
+        xVals = range(rv[1].min(), rv[1].max()+1)
+        yVals = range(rv[2].min(), rv[2].max()+1)
+ 
+        cp_info = np.zeros(num_pts, dtype=[('position', int, 2   ),  \
+                                           ('size'    , int, 1   ),  \
+                                           ('color'   , float, 4 )])  
+        # scatter wants x first so put x in zero location
+        cp_info['position'][:, 1] = y
+        cp_info['position'][:, 0] = x
+        pt_scale =  10.0*(math.log((30000.0/num_pts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
+        cp_info['size'    ]       = pt_scale*c
+        
         numframes = self.Y*self.X
-        data = np.empty(shape=(numframes, self.parentNetwork.Layers[layerID].Y * self.parentNetwork.Layers[layerID].X))
-
-        cnt=0
-        for yPe in range(self.Y):
-            for xPe in range(self.X):
-                pass
-                #rv = self.pe[yPe][xPe].displayCellsProcessed(layerID=layerID,noDisplay=False)
-                #if rv.__len__() == 3:
-                #  data[cnt] = np.concatenate(rv[2])
-                #else:
-                #  data[cnt] = np.concatenate(rv[0])
-                data[cnt] = np.concatenate(self.pe[yPe][xPe].displayCellsProcessed(layerID=layerID,noDisplay=True))
-                cnt += 1
-
-
-        #numpoints = 10
-        #color_data = np.random.random((numframes, numpoints))
-        #x, y, c = np.random.random((3, numpoints))
         
-        #fig = plt.figure()
-        #scat = plt.scatter(x, y, c=c, s=100)
+        fig = plt.figure(figsize=(7, 7))
+        ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], frameon=False) # r,l,w,h
+        ax.set_xlim(xLim[0]-1, xLim[1]+1)  , ax.set_xticks(xVals)
+        ax.set_ylim(yLim[0]-1, yLim[1]+1)  , ax.set_yticks(yVals)
+        titleStr = 'Layer {0} PE ROI'.format(layerID) 
+        plt.text(0.5, 1.08, titleStr,        \
+              horizontalalignment='center',  \
+              fontsize=14,                   \
+              transform = ax.transAxes)
+          
+        cmap = plt.cm.get_cmap('RdYlBu')
+        scat = ax.scatter(cp_info['position'][::1, 0], cp_info['position'][::1, 1],   \
+                          s=cp_info['size'],                                          \
+                          vmin=0, vmax=6,                                             \
+                          cmap=cmap                                                   )
+        plt.gca().invert_yaxis()
+        ax.xaxis.set_tick_params(labeltop='on')
+        ax.yaxis.set_tick_params(labelright='on')
+        for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +  ax.get_xticklabels() + ax.get_yticklabels()):
+            item.set_fontsize(10)
         
-        ani = manimation.FuncAnimation(fig, self.update_plot,    \
-                                      frames=xrange(numframes),  \
-                                      interval = 200,            \
-                                      repeat   = False,          \
-                                      blit     = False,          \
-                                      fargs=(data, scat))
-        
+        ani = manimation.FuncAnimation(fig, self.update_plot_roi, \
+                                      frames=xrange(numframes),   \
+                                      interval = 500,             \
+                                      repeat   = True,            \
+                                      blit     = False            )  # causes an error if True
+        #                             fargs=(layerID)         )
         plt.show(block=False)
-        """
 
-        """
-        FFMpegWriter = manimation.writers['ffmpeg']
-        metadata = dict(title='Movie Test', artist='Matplotlib', \
-                        comment='Movie support!')
-        writer = FFMpegWriter(fps=15, metadata=metadata)
-        rv = self.pe[0][0].displayCellsProcessed(layerID,False) 
-        with writer.saving(rv[0], "writer_test.mp4", self.Y*self.X):
-          for yPe in range(self.Y):
-              for xPe in range(self.X):
-                  pass
-                  a = self.pe[yPe][xPe].displayCellsProcessed(layerID,True)
-                  print type(a) 
-                  rv[1].set_array(a)
-                  writer.grab_frame()
-    # i will be passed contents of frame argument in FuncAnimation
-    def update_plot(self, i, data, scat):
-        print 'TEST'
-        scat.set_array(data[i])
-        return scat,
-        """
+    def update_plot_roi(self, frame_number):
+        xPe = np.remainder(frame_number,8)
+        yPe = frame_number/8
+        c, x, y = self.pe[yPe][xPe].getROIgrid(layerID=lId)
+        cp_info['position'][::1, 0] = concatenate(x)
+        cp_info['position'][::1, 1] = concatenate(y)
+        cp_info['size'    ]         = concatenate( pt_scale*c)
+        scat.set_sizes(cp_info['size'])
+        scat.set_offsets(cp_info['position'])
+
 
 
 ########################################################################################################################
@@ -1654,17 +1747,22 @@ def main():
     
 
     
-# In[129]:
+    # coding: utf-8
+    
+    # In[1]:
+    
+    
+    
+    # In[29]:
     
     try:
         reload(dc)
         print  'dc reloaded'
     except Exception:
         print 'dc not loaded yet'
-        
     
     
-    # In[147]:
+    # In[30]:
     
     WORDSIZE = 32
     import dnnConnectivityAndMemoryAllocation as dc
@@ -1689,109 +1787,48 @@ def main():
     
     network.addLayer('Input',          224, 224,    3                       ) #    3 
     network.addLayer('Convolutional',   55,  55,    4,    8,   8,    3,   4 ) #   96,
-    #network.addLayer('Input',           55,  55,    3,                      ) #   96,
+    #network.addLayer('Input',           55,  55,    4,                      ) #   96,
     network.addLayer('Convolutional',   27,  27,    8,    5,   5,    4,   2 ) #  256,
-    #network.addLayer('Convolutional',   13,  13,    4,    3,   3,    8,   2 ) #  384,
+    network.addLayer('Convolutional',   13,  13,    4,    3,   3,    8,   2 ) #  384,
     #network.addLayer('Convolutional',   13,  13,    2,    3,   3,    4,   1 ) #  384,
     #network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
     #network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    6,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    4,   1 ) # 1024,
     
+    
+    
+    # In[31]:
+    
     network.assignPEs('linearX')
     
     
-    
-    
-    
-    
-    # In[148]:
+    # In[32]:
     
     for l in range(1, network.numberOfLayers):
       network.Layers[l].generateConnections()
     
     
-    # In[149]:
+    # In[33]:
     
-    for layerID in range(0,network.numberOfLayers-1):
-      pass
-      #network.Layers[layerID].displayTargetPECounts()
-    
-    
-    # In[150]:
-    
-    numOfPEs = network.Layers[layerID].getTargetPECounts()
-    
-    
-    
-    # In[151]:
-    
-    opt = np.get_printoptions()
-    np.set_printoptions(threshold=np.inf)
-    #print numOfPEs
-    #print numOfPEs.shape
-    np.set_printoptions(threshold=1000)
-    
-    
-    # In[152]:
-    
-    #coords = np.array([[0,0],[10,10]])
-    #network.Layers[1].displayTargetPECountsRegion(coords)
-    
-    
-    # In[153]:
-    
-    pLine = ''
-    for layerID in range(1,network.numberOfLayers):
-      for peY in range(network.peY) :
-        for peX in range(network.peX) :
-          nv = network.peArray.pe[peY][peX].findROI(layerID)
-          pLine = pLine + '{0:12},{1:12}  |  '.format(nv[0], nv[1])
-          network.managerArray.manager[peY][peX].memCpyROI(layerID)
-        pLine = pLine + '\n'
-      pLine = pLine + '\n------------------------------------------------------------'
-    print pLine
-    print nv[0]
-    print nv[1]
-    
-      
-    
-    
-    # In[154]:
-    
+    peX = 0
+    peY = 0
     layerID = 1
-    allocationOptions = dc.MemoryAllocationOptions(0,1,0,2,0,2,0,1,'Y')
-    network.managerArray.manager[0][0].allocateMemory(mainMemory, layerID, allocationOptions)
-    for y in range(network.managerArray.manager[0][0].roiCells[layerID][0].__len__()):
-      for x in range(network.managerArray.manager[0][0].roiCells[layerID][0][0].__len__()):
-        for z in range(network.managerArray.manager[0][0].roiCells[layerID].__len__()):
-            pass
-            #print network.managerArray.manager[0][0].roiCells[layerID][z][y][x]
-    
-    
-    # In[155]:
-    
-    pLine = ''
-    for layerID in range(0,network.numberOfLayers):
-        for y in range(network.peY) :
-            for x in range(network.peX) :
-                #print network.managerArray.manager[y][x]
-                #print network.managerArray.manager[y][x].pe
-                pLine = pLine + '{0:5}'.format(str(network.managerArray.manager[y][x].pe.cellsProcessed[layerID].__len__()))
-                #for c in network.managerArray.manager[y][x].pe.cellsProcessed[layerID] : 
-                #    nv = c.findROI()
-                #    print c
-            pLine = pLine + '\n'
-        pLine = pLine + '\n\n'
-    #print pLine
-    
-    #network.peArray.pe[0][0].displayROIgrid(1) 
+    #print network.peArray.pe[peY][peX].roi[layerID]
+    for l in range(1, network.numberOfLayers):
+      network.peArray.pe[peY][peX].getROI(l)
+      network.peArray.pe[peY][peX].displayROIgrid(l)
+      plt.show()
 
-    #network.peArray.pe[0][0].displayCellsProcessed(1,False) 
-    network.peArray.createProcessedCellsMovie(1)
+    for l in range(1, network.numberOfLayers):
+        network.peArray.findROIall(l)  
+        network.peArray.createProcessedCellsAnimation(l)  
+        plt.show()
+        network.peArray.createROIAnimation(l)  
+        plt.show()
+
     
-
-
+    
                     
 if __name__ == "__main__":main()
     
