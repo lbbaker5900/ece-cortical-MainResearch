@@ -18,6 +18,7 @@ import numpy as np
 import math
 import sys
 import os
+import inspect
 import copy
 from copy import deepcopy
 from copy import copy as copy_copy
@@ -44,6 +45,15 @@ DEBUG = []
 
 ## Create __FILE__ and __LINE__ for prints
 ## citation:http://stackoverflow.com/questions/6810999/how-to-determine-file-function-and-line-number
+def __LINE__():
+    try:
+        raise Exception
+    except:
+        return sys.exc_info()[2].tb_frame.f_back.f_lineno
+
+def __FILE__():
+    return inspect.currentframe().f_code.co_filename
+
 class __LINE__(object):
     import sys
 
@@ -53,7 +63,7 @@ class __LINE__(object):
         except:
             return str(sys.exc_info()[2].tb_frame.f_back.f_lineno)
 
-__FILE__ = 'dnnConnectivityAndMemoryAllocation.py'
+#__FILE__ = 'dnnConnectivityAndMemoryAllocation.py'
 
 #lineNo = __LINE__()
 
@@ -115,6 +125,8 @@ MemoryAllocationOptions = namedtuple('MemoryAllocationOptions',\
                                       wordIncrement            \
                                       padWordRadix2           ')
 
+displayOptions = namedtuple('displayOptions',\
+                            'createFile')
 
 
 ########################################################################################################################
@@ -937,11 +949,12 @@ class PE():
 
         # Parse the source cells and find Y,X corners of ROI and fill the roiGrid
 
-        # roiGrid is the same size as the input/previous layer
+        # roiGrid is the same size as the input/previous layer with each entry set to '1' if that cell is in the ROI of this PE
         roiGrid         = np.zeros(shape=(self.parentPEarray.parentNetwork.Layers[layerID-1].Z, \
                                           self.parentPEarray.parentNetwork.Layers[layerID-1].Y, \
                                           self.parentPEarray.parentNetwork.Layers[layerID-1].X), dtype=np.int)
 
+        # each cell in a layer can be identified as the ith cell by counting starting at y=0, x=0 and z=0 and counting 
         absCellMin = np.inf
         absCellMax = 0
 
@@ -964,6 +977,12 @@ class PE():
         self.roi[layerID]     = np.array([[cellMin.Z, cellMin.Y, cellMin.X],[cellMax.Z, cellMax.Y, cellMax.X]])
         self.roiGrid[layerID] = roiGrid
 
+        # Right now, all ROIs should contain all features, so test that the last cell has a Z value that is the same as the previos layers Z value
+        # remember, layer dimensions are total, so max feature number will be Z-1
+        if (self.roi[layerID][1][0] != self.parentPEarray.parentNetwork.Layers[layerID-1].Z-1):
+          print '{0}:{1}:ERROR:roi does not include all features'.format(__FILE__(), __LINE__())
+          print '{0}:{1}:ERROR:ROI and previous layer info:'.format(__FILE__(), __LINE__(), self.roi[layerID][1], self.parentPEarray.parentNetwork.Layers[layerID-1])
+          raise
 
         """
         minx = np.inf
@@ -1001,6 +1020,8 @@ class PE():
 
     def getROI(self, layerID):
 
+        # self.roi[layer] is a numpy array showing start cell and end cell
+        # if self.roi[layer] is a list that means it hasnt been created yet as roi is initialized as an list of lists
         if isinstance(self.roi[layerID], list):
             return self.findROI(layerID)
         else:
@@ -1086,10 +1107,7 @@ class PE():
             for e in tmpRoiGrid:
               num_pts += e.__len__()
             pt_scale =  10.0*(math.log((30000.0/num_pts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
-            if pt_scale < 0.01:
-                pt_scale = 0.01
-            else:
-                pt_scale = tmpRoiGrid * pt_scale
+            if pt_scale < 1.1: pt_scale = 1.1
             
             cp_info = np.zeros(num_pts, dtype=[('position', int, 2   ),  \
                                                ('size'    , int, 1   ),  \
@@ -1291,7 +1309,7 @@ class PEarray():
     #----------------------------------------------------------------------------------------------------
     # Animations
     
-    def createProcessedCellsAnimation(self, layerID):
+    def createProcessedCellsAnimation(self, layerID, dispOptions):
         pass
         global lId
         global cp_info
@@ -1302,8 +1320,8 @@ class PEarray():
         c, x, y = self.pe[0][0].displayCellsProcessed(layerID=layerID,noDisplay=True)
         
         num_pts = c.__len__()
-        xLim  = np.array([0, self.parentNetwork.Layers[lId].X+1])
-        yLim  = np.array([0, self.parentNetwork.Layers[lId].Y+1])
+        xLim  = np.array([0, self.parentNetwork.Layers[lId].X-1])
+        yLim  = np.array([0, self.parentNetwork.Layers[lId].Y-1])
         xVals = range(xLim.min(), xLim.max()+1)
         yVals = range(yLim.min(), yLim.max()+1)
  
@@ -1314,6 +1332,7 @@ class PEarray():
         cp_info['position'][:, 1] = y
         cp_info['position'][:, 0] = x
         pt_scale =  10.0*(math.log((30000.0/num_pts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
+        if pt_scale < 1.01: pt_scale = 1.01
         cp_info['size'    ]       = pt_scale*c
         
         numframes = self.Y*self.X
@@ -1342,10 +1361,15 @@ class PEarray():
         
         ani = manimation.FuncAnimation(fig, self.update_plot_cellsProcessed,    \
                                       frames=xrange(numframes),  \
-                                      interval = 500,            \
-                                      repeat   = True,           \
+                                      interval = 1000,           \
+                                      repeat   = False,           \
                                       blit     = False           )  # causes an error if True
         #                             fargs=(layerID)         )
+        vidStr = 'Layer_{0}_cells_processedby_PEs.mp4'.format(layerID) 
+        #ani.save(vidStr,codec='mpeg4', fps=4)
+        if dispOptions.createFile:
+          ani.save(vidStr,codec='mpeg4') # , fps=4)
+        #ani.save(vidStr,codec='mpeg4',writer=manimation.FFMpegFileWriter(extra_args=['--verbose-debug'])) # , fps=4)
         plt.show(block=False)
 
 
@@ -1362,7 +1386,7 @@ class PEarray():
 
     #----------------------------------------------------------------------------------------------------
     
-    def createROIAnimation(self, layerID):
+    def createROIAnimation(self, layerID, dispOptions):
         pass
         global lId
         global cp_info
@@ -1388,6 +1412,7 @@ class PEarray():
         cp_info['position'][:, 1] = y
         cp_info['position'][:, 0] = x
         pt_scale =  10.0*(math.log((30000.0/num_pts),10))  # s=10 seemed right when there were 3000 point (e.g. 55x55 array)
+        if pt_scale < 10.0: pt_scale = 10.0
         cp_info['size'    ]       = pt_scale*c
         
         numframes = self.Y*self.X
@@ -1415,10 +1440,15 @@ class PEarray():
         
         ani = manimation.FuncAnimation(fig, self.update_plot_roi, \
                                       frames=xrange(numframes),   \
-                                      interval = 500,             \
-                                      repeat   = True,            \
+                                      interval = 1000,             \
+                                      repeat   = False,            \
                                       blit     = False            )  # causes an error if True
         #                             fargs=(layerID)         )
+        vidStr = 'Layer_{0}_PE_ROI.mp4'.format(layerID) 
+        #ani.save(vidStr,codec='mpeg4', fps=4)
+        if dispOptions.createFile:
+          ani.save(vidStr,codec='mpeg4') # , fps=4)
+        #ani.save(vidStr,codec='mpeg4',writer=manimation.FFMpegFileWriter(extra_args=['--verbose-debug'])) # , fps=4)
         plt.show(block=False)
 
     def update_plot_roi(self, frame_number):
@@ -1439,13 +1469,13 @@ class PEarray():
 
 class ManagerArray():
 
-    def __init__(self, parentNetwork, mgrY, mgrX, numberOfLayers):
+    def __init__(self, parentNetwork, mgrY, mgrX, numberOfLayers, memoryType):
         self.parentNetwork = parentNetwork
         self.manager = []
         for y in range(mgrY):
             mgrArrayX = []
             for x in range(mgrX):
-                mgrArrayX.append(Manager(self, numberOfLayers, np.array([y,x])))
+                mgrArrayX.append(Manager(self, numberOfLayers, np.array([y,x]), memoryType))
             self.manager.append(mgrArrayX)
 
     #----------------------------------------------------------------------------------------------------
@@ -1470,11 +1500,12 @@ class ManagerArray():
 
 class Manager():
 
-    def __init__(self, parentManagerArray, numberOfLayers, mgrId):
-        self.ID                 = mgrId
+    def __init__(self, parentManagerArray, numberOfLayers, mId, memoryType):
+        self.ID                 = mId
         self.parentManagerArray = parentManagerArray
         self.pe                 = self.parentManagerArray.parentNetwork.peArray.pe[self.ID[0]][self.ID[1]]
         self.roiCells           = []  # copy of ROI of previous layer cells
+        self.memory             = Memory(memoryType)
 
         for l in range(numberOfLayers):
           self.roiCells.append(None)
@@ -1500,7 +1531,10 @@ class Manager():
         # Create a copy of all the ROI cells as these will be copied to each manager associated with the PE
         # we also want them in the list in the order of processing
 
-        # what ROI does the PE need
+        # what ROI does the PE need?
+        # ROI's are stroed as a start cell and end cell. If the assignment method is linearX, then start and end
+        # are the top left and bottom right of a square ROI.
+        # If its a linearAll assignment, then the ROI are the start and end of a contiguous list of cells
         roi = self.pe.getROI(layerID)
         xLen = roi[1][2]-roi[0][2]+1  
         yLen = roi[1][1]-roi[0][1]+1
@@ -1536,7 +1570,7 @@ class Manager():
     #----------------------------------------------------------------------------------------------------
     # Memory assignment
 
-    def allocateMemory(self, memory, layerID, allocateOptions):  
+    def allocateMemory(self, layerID, allocateOptions):  
         # - after copying the ROI from thwe input array to the manager, they will be allocated a state memory location
         # We can create a DMA transfer from the ROI cell and the original cell
         initialChannel   = allocateOptions.initialChannel    # 0
@@ -1550,7 +1584,13 @@ class Manager():
         padWordRadix2    = allocateOptions.padWordRadix2     # 'Y'
 
         # if the number of features is not radix-2, do we pad features to align radix-2
-        numOfFeatures = self.roiCells[layerID].__len__()
+        try:
+            numOfFeatures = self.roiCells[layerID].__len__()
+        except:
+            print '{0}:{1}:ERROR:roi cell array doesnt yet exist, copy from main memory'.format(__FILE__(), __LINE__())
+            self.memCpyROI(layerID)
+            numOfFeatures = self.roiCells[layerID].__len__()
+
         if padWordRadix2 is 'Y' :
           numberOfAllocatedFeatures = 2**(math.ceil(math.log(numOfFeatures,2)))
 
@@ -1562,28 +1602,28 @@ class Manager():
         for y in range(self.roiCells[layerID][0].__len__()):
           for x in range(self.roiCells[layerID][0][0].__len__()):
             for z in range(self.roiCells[layerID].__len__()):
-              self.roiCells[layerID][z][y][x].memoryLocation.memory  = memory
+              self.roiCells[layerID][z][y][x].memoryLocation.memory  = self.memory
               self.roiCells[layerID][z][y][x].memoryLocation.channel = int(channel)
               self.roiCells[layerID][z][y][x].memoryLocation.bank    = int(bank)
               self.roiCells[layerID][z][y][x].memoryLocation.page    = int(page)
               self.roiCells[layerID][z][y][x].memoryLocation.word    = int(word)
               
               channel = channel + channelIncrement
-              if channel == (memory.configuration.numOfChannels):
+              if channel == (self.memory.configuration.numOfChannels):
                 channel = 0
                 word = word + wordIncrement
               if padWordRadix2 is 'Y' :
                 if word%numberOfAllocatedFeatures == numOfFeatures:
                     word = (int(word/numberOfAllocatedFeatures)+1) * numberOfAllocatedFeatures
-              if word == (memory.configuration.sizeOfPage/WORDSIZE):
+              if word == (self.memory.configuration.sizeOfPage/WORDSIZE):
                 word = 0
                 page = page + pageIncrement
               
-              if page == (memory.configuration.numOfPagesPerBank):
+              if page == (self.memory.configuration.numOfPagesPerBank):
                 page = 0
                 bank = bank + bankIncrement
               
-              if bank == (memory.configuration.numOfBanksPerChannel):
+              if bank == (self.memory.configuration.numOfBanksPerChannel):
                 bank = 0
               
 
@@ -1627,20 +1667,25 @@ class Network():
     def getLayer(self, l):
         return self.Layers[l]
 
-    def assignPEs(self, assignType):
+    def assignPEs(self, cellAssignType):
         #----------------------------------------------------------------------------------------------------
-        # create Manager and PE Array
-        # First build PE then associate a manager with each PE
+        # create PE Array
+        # First build PE then later associate a manager with each PE
 
         # a) PE's
         self.peArray = PEarray(self, self.peY, self.peX, self.numberOfLayers)
         # assign PE's to each cell of each layer
         for l in self.Layers:
-            l.assignPEs(self.peX,self.peY, assignType)
+            l.assignPEs(self.peX,self.peY, cellAssignType)
             l.calculateKernelOffset()
 
+    def assignManagers(self, memoryType):
+        #----------------------------------------------------------------------------------------------------
+        # create Manager and PE Array
+        # First build PE then associate a manager with each PE
+
         # b) Manager's
-        self.managerArray = ManagerArray(self, self.peY, self.peX, self.numberOfLayers)
+        self.managerArray = ManagerArray(self, self.peY, self.peX, self.numberOfLayers, memoryType)
 
     def updateSourceCellsTargetList(self):
         for l in self.Layers:
@@ -1745,9 +1790,8 @@ class Network():
 
 def main():
     
-
-    
-    # coding: utf-8
+# to run within python
+# if True:
     
     # In[1]:
     
@@ -1799,8 +1843,12 @@ def main():
     
     
     # In[31]:
-    
-    network.assignPEs('linearX')
+    # Create processing engines and assign each layers cell to the array of PEs
+    network.assignPEs('linearAll')
+
+    # Create Manager and assign array memory type
+    mgrMemoryConfig = dc.MemoryConfiguration(2,32,8,4096)
+    network.assignManagers(mgrMemoryConfig)
     
     
     # In[32]:
@@ -1815,20 +1863,30 @@ def main():
     peY = 0
     layerID = 1
     #print network.peArray.pe[peY][peX].roi[layerID]
-    for l in range(1, network.numberOfLayers):
-      network.peArray.pe[peY][peX].getROI(l)
-      network.peArray.pe[peY][peX].displayROIgrid(l)
-      plt.show()
+    #for l in range(1, network.numberOfLayers):
+    #  network.peArray.pe[peY][peX].getROI(l)
+    #  network.peArray.pe[peY][peX].displayROIgrid(l)
+    #  plt.show()
 
     for l in range(1, network.numberOfLayers):
         network.peArray.findROIall(l)  
-        network.peArray.createProcessedCellsAnimation(l)  
+        network.peArray.createProcessedCellsAnimation(l, displayOptions(False))  
         plt.show()
-        network.peArray.createROIAnimation(l)  
+        network.peArray.createROIAnimation(l, displayOptions(False))  
         plt.show()
 
+    peMemoryAllocationOptions = dc.MemoryAllocationOptions( initialChannel    =  0 , 
+                                                            channelIncrement  =  1 , 
+                                                            initialBank       =  0 , 
+                                                            bankIncrement     =  2 , 
+                                                            initialPage       =  0 , 
+                                                            pageIncrement     =  2 , 
+                                                            initialWord       =  0 , 
+                                                            wordIncrement     =  1 , 
+                                                            padWordRadix2     = 'Y')
     
-    
+    layerID = 1
+    network.managerArray.manager[0][0].allocateMemory(layerID, peMemoryAllocationOptions )
                     
 if __name__ == "__main__":main()
     
@@ -1841,6 +1899,13 @@ if __name__ == "__main__":main()
 ##              HELP
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
+"""
+import dnnConnectivityAndMemoryAllocation as dc
+"""
+"""
+print 'file = {0}, line = {1}'.format(__FILE__(), __LINE__())
+"""
+    
 """
 import numpy as np
 import math
@@ -1909,11 +1974,15 @@ ax.yaxis.set_tick_params(labelright='on')
 
 ani = manimation.FuncAnimation(fig, test_update_plot,    \
                               frames=xrange(numframes),  \
-                              interval = 500,            \
-                              repeat   = True,           \
+                              interval = 1000,            \
+                              repeat   = False,           \
                               blit     = False           )
 #                             fargs=(layerID)         )
-plt.show(block=False)
+writer=ani.FFMpegWriter(bitrate=500)
+vidStr = 'fooVideo.mp4'.format(layerID) 
+#ani.save(vidStr,codec='mpeg4', writer=writer, fps=4)
+ani.save(vidStr,codec='mpeg4') #, fps=4)
+plt.show(block=True)
 
 
 """
@@ -1952,7 +2021,7 @@ network.addLayer('Input',          224, 224,    3                       ) #    3
 network.addLayer('Convolutional',   55,  55,    4,    8,   8,    3,   4 ) #   96,
 network.addLayer('Convolutional',   27,  27,    8,    5,   5,    4,   2 ) #  256,
 
-network.assignPEs('linearAll')
+network.assignPEs('linearX')
 
 for l in range(1, network.numberOfLayers):
   network.Layers[l].generateConnections()
@@ -1996,7 +2065,7 @@ def update_plot(frame_number):
 
 ani = manimation.FuncAnimation(fig, update_plot,         \
                               frames=xrange(numframes),  \
-                              interval = 200,            \
+                              interval = 1000,            \
                               repeat   = True,           \
                               blit     = False           )
 plt.show()
@@ -2081,7 +2150,7 @@ def update(frame_number):
 
 # Construct the animation, using the update function as the animation
 # director.
-animation = FuncAnimation(fig, update, interval=10)
+animation = FuncAnimation(fig, update, interval=1000)
 plt.show()
 """
 
