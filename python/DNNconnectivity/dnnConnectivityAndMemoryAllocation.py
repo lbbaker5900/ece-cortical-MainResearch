@@ -1982,9 +1982,9 @@ def main():
         for mgrY in range(network.managerArray.Y):
             for mgrX in range(network.managerArray.X):
                 print '{0}:{1}:Mem cpy ROI and memory allocation for layer {2}, manager {3},{4}'.format(__FILE__(), __LINE__(), l, mgrY, mgrX)
-                rv = network.managerArray.manager[mgrY][mgrX].memCpyROI(layerID)
-                network.managerArray.manager[mgrY][mgrX].allocateMemory(layerID, peMemoryAllocationOptions )
-                network.managerArray.manager[mgrY][mgrX].createMemoryAllocationFile(layerID)
+                rv = network.managerArray.manager[mgrY][mgrX].memCpyROI(l)
+                network.managerArray.manager[mgrY][mgrX].allocateMemory(l, peMemoryAllocationOptions )
+                network.managerArray.manager[mgrY][mgrX].createMemoryAllocationFile(l)
                     
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
 
