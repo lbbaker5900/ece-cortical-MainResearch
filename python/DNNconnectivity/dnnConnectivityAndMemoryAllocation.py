@@ -237,17 +237,19 @@ class Cell():
         self.roiFromSrcCells = np.zeros([2,3], dtype=np.int)    # corners of ROI [[Z,Y,X],[Z,Y,X]] extracted from list of source cells
         self.roi             = np.zeros([2,3], dtype=np.int)    # corners of ROI [[Z,Y,X],[Z,Y,X]] generated when running assignPE in the layer
         # Keep ID locally
+        self.layerID         = parentLayer.layerID
+        self.parentLayer     = parentLayer
         self.Z               = z
         self.Y               = y
         self.X               = x
+        self.absID           = self.Y*self.parentLayer.X*self.parentLayer.Z + self.X*self.parentLayer.Z + self.Z  # use absolute ID mainly for sorting
         # Fanin and fanout of this cell
         self.sourceCells     = []
         self.targetCells     = []
         self.sourcePEs       = []
         self.targetPEs       = []
-        self.layerID         = parentLayer.layerID
-        self.parentLayer     = parentLayer
-        self.memoryLocation  = MemoryLocation(None,0,0,0,0)
+        # where is this copy of the cell stored e.g. original cell stored in main memory, copies stored in manager memory
+        self.memoryLocation  = MemoryLocation(None,0,0,0,0) # memory location has actual memory and location within memory
         self.kernel          = Kernel(0,0,0)
 
     #----------------------------------------------------------------------------------------------------
@@ -321,6 +323,34 @@ class Cell():
         pLine = pLine + '\nFields: {0}                                                    '.format(fields(self))
         return pLine
         
+
+    def printROIcells (self):
+        pLine = '\n'
+        pLine = pLine + '\nCell:{0},{1},{2} Source Cells and addresses                       '.format(self.Z, self.Y, self.X)
+        pLine = pLine + '\nProcessed by {0},{1}                                              '.format(self.PE.ID[0], self.PE.ID[1])
+        pLine = pLine + '\n source cell       Local memory                                    '.format(self.PE.ID[0], self.PE.ID[1])
+        pLine = pLine + '\n Z   Y   X   | Channel  Bank  Page  Word  '
+        pLine = pLine + '\n-------------------------------------------------------'
+        for sc in self.sourceCells:
+            for ct in sc.copiedTo:
+                # Remember, some cells will be copied to multiple managers, so find cell copied to this Manager/PE memory
+                # FIXME: assumption is that '==' compares pointers
+                # if the ROI cell is in the original input ROI and resides in the managers memory who is processing this cell
+                if (ct.absID == sc.absID) and (ct.memoryLocation.memory == self.PE.manager.memory):
+      
+                    pLine = pLine + '\n{0:^3} {1:^3} {2:^3}  | {3:^7}   {4:^4}  {5:^4}  {6:^4}   '.format(ct.Z, ct.Y, ct.X, ct.memoryLocation.channel, ct.memoryLocation.bank, ct.memoryLocation.page, ct.memoryLocation.word)
+        pLine = pLine + '\n-------------------------------------------------------'
+        return pLine
+
+    def createROIcellsFile(self):
+        outFile = 'manager_{0}_{1}_layer{2}_cell_{3}_{4}_{5}_ROIcells.txt'.format(self.PE.ID[0], self.PE.ID[1], self.layerID, self.Z, self.Y, self.X)
+        oFile = open(outFile, 'w')
+
+        pLine = self.printROIcells()
+        
+        oFile.write(pLine)
+        oFile.close()
+            
 
     #----------------------------------------------------------------------------------------------------
 
@@ -644,6 +674,20 @@ class Layer():
                     tmpTgtCells = set(self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetCells)
                     self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetCells = list(tmpTgtCells)
 
+        ##----------------------------------------------------------------------------------------------------
+        ## Sort
+        print 'Sort source cell and target cells'
+        for y in range(self.Y):
+            for x in range(self.X):
+                for f in range(self.Z):
+                    tmpSc = sorted(self.cells[f][y][x].sourceCells, key=operator.attrgetter('absID'))
+                    self.cells[f][y][x].sourceCells = tmpSc
+        for y in range(self.parentNetwork.Layers[self.layerID-1].Y):
+            for x in range(self.parentNetwork.Layers[self.layerID-1].X):
+                for f in range(self.parentNetwork.Layers[self.layerID-1].Z):
+                    tmpTc = sorted(self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetCells, key=operator.attrgetter('absID'))
+                    self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetCells = tmpTc
+
         print 'Connections complete from Layer {0} to {1}'.format(self.layerID-1, self.layerID)
                         
 
@@ -923,6 +967,8 @@ class PE():
           self.roiGrid.append([])
 
         self.parentPEarray = parentPEarray
+
+        self.manager       = []  # a manager will be assigned
 
     #----------------------------------------------------------------------------------------------------
     # print
@@ -1507,7 +1553,10 @@ class Manager():
     def __init__(self, parentManagerArray, numberOfLayers, mId, memoryType):
         self.ID                 = mId
         self.parentManagerArray = parentManagerArray
+        # add pointers between manager and PE
         self.pe                 = self.parentManagerArray.parentNetwork.peArray.pe[self.ID[0]][self.ID[1]]
+        self.parentManagerArray.parentNetwork.peArray.pe[self.ID[0]][self.ID[1]].manager = self
+
         self.roiCells           = []  # copy of ROI of previous layer cells, constructed during memCpyROI
                                      
         self.memory             = Memory(memoryType)
@@ -1697,14 +1746,23 @@ class Manager():
               
 
     #----------------------------------------------------------------------------------------------------
+    def printMemoryAllocation(self, layerID):
+        pLine = '\n'
+        pLine = pLine + '\nManager:{0},{1} Memory Contents                     '.format(self.ID[0], self.ID[1])
+        pLine = pLine + '\n       Location               Original Cell         '
+        pLine = pLine + '\n Channel  Bank  Page  Word  |   Z   Y   X           '
+        pLine = pLine + '\n-------------------------------------------------------'
+        for rc in self.roiCells[layerID]:
+            pLine = pLine + '\n {3:^7}  {4:^4}  {5:^4}  {6:^4}  |  {0:^3} {1:^3} {2:^3}  '.format(rc.Z, rc.Y, rc.X, rc.memoryLocation.channel, rc.memoryLocation.bank, rc.memoryLocation.page, rc.memoryLocation.word)
+        return pLine
+        
+
     def createMemoryAllocationFile(self, layerID):
-        outFile = 'manager_{0}_{1}_layer{0}_ROImemoryAllocation.txt'.format(self.ID[0], self.ID[1], layerID)
+        outFile = 'manager_{0}_{1}_layer{2}_ROImemoryAllocation.txt'.format(self.ID[0], self.ID[1], layerID)
         oFile = open(outFile, 'w')
 
-        pLine = ''
-        for rc in self.roiCells[layerID]:
-            pLine = pLine + '\n{0}'.format(rc.memoryLocation)
-        
+        pLine = self.printMemoryAllocation(layerID)
+
         oFile.write(pLine)
         oFile.close()
 
@@ -1957,13 +2015,13 @@ def main():
         print '{0}:{1}:Determine ROI for layer {2}:'.format(__FILE__(), __LINE__(), l)
         network.peArray.findROIall(l)  
 
-    """
+
     for l in range(1, network.numberOfLayers):
         network.peArray.createProcessedCellsAnimation(l, displayOptions(False))  
         plt.show()
         network.peArray.createROIAnimation(l, displayOptions(False))  
         plt.show()
-    """
+
     peMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['c', 'b', 'p', 'w'],
                                                             initialChannel    =  0                  , 
                                                             channelIncrement  =  1                  , 
@@ -1986,6 +2044,13 @@ def main():
                 network.managerArray.manager[mgrY][mgrX].allocateMemory(l, peMemoryAllocationOptions )
                 network.managerArray.manager[mgrY][mgrX].createMemoryAllocationFile(l)
                     
+    l = layerID
+    for z in range(network.Layers[l].Z) :
+      for y in range(int(network.Layers[l].Y*0.1)) :
+        for x in range(int(network.Layers[l].X*0.1)) :
+            print '{0}:{1}:Create ROI memory locations for layer {2}, cell {3},{4},{5}'.format(__FILE__(), __LINE__(), l, z, y, x)
+            network.Layers[l].cells[z][y][x].createROIcellsFile()
+
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
 
 if __name__ == "__main__":main()
