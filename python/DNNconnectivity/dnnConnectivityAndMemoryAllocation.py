@@ -20,7 +20,8 @@ import sys
 import os
 import inspect
 import copy
-from copy import deepcopy
+import time
+from copy import deepcopy as copy_deepcopy
 from copy import copy as copy_copy
 from collections import namedtuple
 import operator # for attrgetter
@@ -114,7 +115,7 @@ MemoryConfiguration = namedtuple('MemoryConfiguration',\
                                   numOfBanksPerChannel \
                                   numOfPagesPerBank    \
                                   sizeOfPage          ')
-
+"""
 MemoryAllocationOptions = namedtuple('MemoryAllocationOptions',\
                                      'order                    \
                                       initialChannel           \
@@ -126,10 +127,12 @@ MemoryAllocationOptions = namedtuple('MemoryAllocationOptions',\
                                       initialWord              \
                                       wordIncrement            \
                                       padWordRadix2           ')
-
+"""
 displayOptions = namedtuple('displayOptions',\
                             'createFile')
 
+memoryLocationAccessOptions = namedtuple('memoryLocationAccessOptions',\
+                                         'allowOverWrite')
 
 ########################################################################################################################
 ## KERNELS
@@ -180,9 +183,17 @@ class Memory():
     def __init__(self, memoryConfiguration):
         self.configuration           = memoryConfiguration
         self.Channels                = []
+        # Use a dictionary, dont create a real memory, its too big
+        self.store                   = dict()
+        self.bankPageTable           = dict()    # key is bank number, value is open page number
+        for bank in range(self.configuration.numOfBanksPerChannel):
+            self.bankPageTable[bank] = None
+            
+        """
         for ch in range(self.configuration.numOfChannels):
             newChannel = Channel(self.configuration.numOfBanksPerChannel, self.configuration.numOfPagesPerBank, self.configuration.sizeOfPage)
             self.Channels.append(newChannel)
+        """
 
     def __str__(self):
         pLine = ""
@@ -190,6 +201,16 @@ class Memory():
         pLine = pLine + '\nMethods: {0}                                                   '.format(methods(self))
         pLine = pLine + '\nFields: {0}                                                    '.format(fields(self))
         return pLine
+
+    def addEntry(self, memoryLocation, value, options):
+
+        # test if location being used
+        if (options.allowOverWrite == True) :
+            if (memoryLocation.channel, memoryLocation.bank, memoryLocation.page, memoryLocation.word) in self.store.keys() :
+               raise Exception('{0}:{1}:Writing to already allocated location :{2}'.format(__FILE__(), __LINE__(), memoryLocation)) 
+            
+        self.store[(memoryLocation.channel, memoryLocation.bank, memoryLocation.page, memoryLocation.word)] = value
+         
 
 ## Kernels are usually stored across muliple pages with each page containing 4 weights of 32 kernels
 ## e.g. page = {K0(0), K1(0), .... K31(0), K0(1), K1(1), .... K31(1), K0(2), K1(2), .... K31(2), K0(3), K1(3), .... K31(3)}
@@ -215,6 +236,90 @@ class MemoryLocation():
         #pLine = pLine + '\nMethods: {0}                             '.format(methods(self))
         #pLine = pLine + '\nFields: {0}                              '.format(fields(self))
         return pLine
+
+
+class MemoryAllocationOptions():
+
+    def __init__(self              ,
+                 order             ,
+                 channel           , 
+                 channelIncrement  , 
+                 bank              , 
+                 bankIncrement     , 
+                 page              , 
+                 pageIncrement     , 
+                 word              , 
+                 wordIncrement     , 
+                 padWordRadix2     ):
+        self.order                    =  order           
+        self.channel                  =  channel  
+        self.channelIncrement         =  channelIncrement
+        self.bank                     =  bank     
+        self.bankIncrement            =  bankIncrement   
+        self.page                     =  page     
+        self.pageIncrement            =  pageIncrement   
+        self.word                     =  word     
+        self.wordIncrement            =  wordIncrement   
+        self.padWordRadix2            =  padWordRadix2   
+
+    def __str__(self):
+        pLine = ""
+        pLine = pLine + 'order            :{0} '.format(self.order            )
+        pLine = pLine + 'channel          :{0} '.format(self.channel   )
+        pLine = pLine + 'channelIncrement :{0} '.format(self.channelIncrement )
+        pLine = pLine + 'bank             :{0} '.format(self.bank      )
+        pLine = pLine + 'bankIncrement    :{0} '.format(self.bankIncrement    )
+        pLine = pLine + 'page             :{0} '.format(self.page      )
+        pLine = pLine + 'pageIncrement    :{0} '.format(self.pageIncrement    )
+        pLine = pLine + 'word             :{0} '.format(self.word      )
+        pLine = pLine + 'wordIncrement    :{0} '.format(self.wordIncrement    )
+        pLine = pLine + 'padWordRadix2    :{0} '.format(self.padWordRadix2    )
+        #pLine = pLine + "\n"
+        #pLine = pLine + '\nMethods: {0}                             '.format(methods(self))
+        #pLine = pLine + '\nFields: {0}                              '.format(fields(self))
+        return pLine
+
+    def increment(self, memory, numOfFeatures):
+
+              # Ibncrements fields based on configuration of memory
+
+              if self.padWordRadix2  :
+                numberOfAllocatedFeatures = 2**(math.ceil(math.log(numOfFeatures,2)))
+
+              self.channel = self.channel + self.channelIncrement
+              if self.channel == (memory.configuration.numOfChannels):
+                self.channel = 0
+                self.word = self.word + self.wordIncrement
+
+              if self.padWordRadix2 :
+                if self.word%numberOfAllocatedFeatures == numOfFeatures:
+                    self.word = (int(self.word/numberOfAllocatedFeatures)+1) * numberOfAllocatedFeatures
+
+              if self.word == (memory.configuration.sizeOfPage/WORDSIZE):
+                self.word = 0
+                self.page = self.page + self.pageIncrement
+              
+              if self.page == (memory.configuration.numOfPagesPerBank):
+                self.page = 0
+                self.bank = self.bank + self.bankIncrement
+              
+              if self.bank == (memory.configuration.numOfBanksPerChannel):
+                self.bank = 0
+
+    def floorField(self, memory, numOfFeatures, floorField):
+        
+        if floorField == 'channel' :
+            while(self.channel != 0):
+                self.increment(memory, numOfFeatures)
+        elif floorField == 'bank' :
+            while(self.bank != 0):
+                self.increment(memory, numOfFeatures)
+        elif floorField == 'page' :
+            while(self.page != 0):
+                self.increment(memory, numOfFeatures)
+        elif floorField == 'word' :
+            while(self.word != 0):
+                self.increment(memory, numOfFeatures)
 
 
 
@@ -251,7 +356,7 @@ class Cell():
         # where is this copy of the cell stored e.g. original cell stored in main memory, copies stored in manager memory
         self.managerLocation = []  # where is this copy of the cell? original cell will have this field blank, copied cells
                                    # point to manager where copy is stored
-        self.memoryLocation  = MemoryLocation(None,0,0,0,0) # memory location has actual memory and location within memory
+        self.memoryLocation  = MemoryLocation(None,0,0,0,0) # memory location has a pointer to the actual memory and location within that memory
         self.kernel          = Kernel(0,0,0)
 
     #----------------------------------------------------------------------------------------------------
@@ -350,7 +455,19 @@ class Cell():
         return pLine
 
     def createROIcellsFile(self):
-        outFile = 'manager_{0}_{1}_layer{2}_cell_{3}_{4}_{5}_ROIcells.txt'.format(self.PE.ID[0], self.PE.ID[1], self.layerID, self.Z, self.Y, self.X)
+
+        timeStr = time.strftime("%Y%m%d")  # just today
+        dirStr = './outputFiles/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + timeStr + '/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + 'manager_{0}_{1}/'.format(self.PE.ID[0], self.PE.ID[1])
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        outFile = dirStr + 'manager_{0}_{1}_layer{2}_cell_{3}_{4}_{5}_ROIcells.txt'.format(self.PE.ID[0], self.PE.ID[1], self.layerID, self.Y, self.X, self.Z)
+
         oFile = open(outFile, 'w')
 
         pLine = self.printROIcells()
@@ -910,7 +1027,16 @@ class Layer():
 
     #----------------------------------------------------------------------------------------------------
     def createCellTargetPEFile(self):
-        outFile = 'layer'+ str(self.layerID) + '_cellTargetList.txt'
+
+        timeStr = time.strftime("%Y%m%d")  # just today
+        dirStr = './outputFiles/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + timeStr + '/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        outFile = dirStr + './outputFiles/' + 'layer'+ str(self.layerID) + '_cellTargetList.txt'
+
         oFile = open(outFile, 'w')
         pLine = ''
         pLine = pLine + '\n{0:^13} : {1:^20} : {2:<100}'.format('Cell', 'Number of', ' PEs')
@@ -934,7 +1060,14 @@ class Layer():
 
     #----------------------------------------------------------------------------------------------------
     def createSourceCellFile(self):
-        outFile = 'layer'+ str(self.layerID) + '_sourceCellList.txt'
+        timeStr = time.strftime("%Y%m%d")  # just today
+        dirStr = './outputFiles/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + timeStr + '/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        outFile = dirStr + 'layer'+ str(self.layerID) + '_sourceCellList.txt'
         oFile = open(outFile, 'w')
         pLine = ''
         pLine = pLine + '\n{0:^13} : {1:^20} : {2:<100}'.format('Cell', 'Number of', ' Cells')
@@ -1420,7 +1553,17 @@ class PEarray():
                                       repeat   = False,           \
                                       blit     = False           )  # causes an error if True
         #                             fargs=(layerID)         )
-        vidStr = 'Layer_{0}_cells_processedby_PEs.mp4'.format(layerID) 
+        timeStr = time.strftime("%Y%m%d")  # just today
+        dirStr = './outputFiles/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + timeStr + '/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + 'pe_array_/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        vidStr = dirStr + 'Layer_{0}_cells_processedby_PEs.mp4'.format(layerID) 
         #ani.save(vidStr,codec='mpeg4', fps=4)
         if dispOptions.createFile:
           ani.save(vidStr,codec='mpeg4') # , fps=4)
@@ -1499,7 +1642,17 @@ class PEarray():
                                       repeat   = False,            \
                                       blit     = False            )  # causes an error if True
         #                             fargs=(layerID)         )
-        vidStr = 'Layer_{0}_PE_ROI.mp4'.format(layerID) 
+        timeStr = time.strftime("%Y%m%d")  # just today
+        dirStr = './outputFiles/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + timeStr + '/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + 'pe_array_/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        vidStr = dirStr + 'Layer_{0}_PE_ROI.mp4'.format(layerID) 
         #ani.save(vidStr,codec='mpeg4', fps=4)
         if dispOptions.createFile:
           ani.save(vidStr,codec='mpeg4') # , fps=4)
@@ -1566,7 +1719,9 @@ class Manager():
 
         self.roiCells           = []  # copy of ROI of previous layer cells, constructed during memCpyROI
                                      
-        self.memory             = Memory(memoryType)
+        self.memory                    = Memory(memoryType)
+        self.memoryROIallocationOptions      = []
+        self.memoryKernelallocationOptions   = []
 
         for l in range(numberOfLayers):
           self.roiCells.append(None)
@@ -1696,19 +1851,23 @@ class Manager():
     #----------------------------------------------------------------------------------------------------
     # Memory assignment
 
-    def allocateMemory(self, layerID, allocateOptions):  
-        # - after copying the ROI from thwe input array to the manager, they will be allocated a state memory location
+    def allocateRoiMemory(self, layerID, allocateOptions):  
+        # - after copying the ROI from the input array to the manager, they will be allocated a state memory location
         # We can create a DMA transfer from the ROI cell and the original cell
-        order            = allocateOptions.order             # ['c', 'b', 'p', 'w']
-        initialChannel   = allocateOptions.initialChannel    # 0
-        channelIncrement = allocateOptions.channelIncrement  # 1
-        initialBank      = allocateOptions.initialBank       # 0
-        bankIncrement    = allocateOptions.bankIncrement     # 2
-        initialPage      = allocateOptions.initialPage       # 0
-        pageIncrement    = allocateOptions.pageIncrement     # 2
-        initialWord      = allocateOptions.initialWord       # 0
-        wordIncrement    = allocateOptions.wordIncrement     # 1
-        padWordRadix2    = allocateOptions.padWordRadix2     # 'Y'
+        # 
+        # Keep copy of starting and ending allocate options
+        # if the method is being given the memories existing allocationOptions, then just use existng
+        # if its a new option, then overwite
+        try :
+            if self.currentMemoryAllocationOptions != allocateOptions :
+                self.initialMemoryAllocationOptions    = copy_copy(allocateOptions)
+                self.currentMemoryAllocationOptions    = copy_copy(self.initialMemoryAllocationOptions)
+            else :
+                self.initialMemoryAllocationOptions    = copy_copy(self.currentMemoryAllocationOptions)
+        except:
+            # this must be the first time we are allocating memory
+            self.initialMemoryAllocationOptions    = copy_copy(allocateOptions)
+            self.currentMemoryAllocationOptions    = copy_copy(self.initialMemoryAllocationOptions)
 
         # if the number of features is not radix-2, do we pad features to align radix-2
         numOfFeatures = self.parentManagerArray.parentNetwork.Layers[layerID-1].Z
@@ -1718,41 +1877,26 @@ class Manager():
             print '{0}:{1}:WARNING:roi cell array doesnt yet exist, copy from main memory'.format(__FILE__(), __LINE__())
             self.memCpyROI(layerID)
 
-        if padWordRadix2 is 'Y' :
-          numberOfAllocatedFeatures = 2**(math.ceil(math.log(numOfFeatures,2)))
-
-        channel = initialChannel
-        bank    = initialBank
-        page    = initialPage
-        word    = initialWord
 
         for rc in self.roiCells[layerID]:
               rc.memoryLocation.memory  = self.memory
-              rc.memoryLocation.channel = int(channel)
-              rc.memoryLocation.bank    = int(bank)
-              rc.memoryLocation.page    = int(page)
-              rc.memoryLocation.word    = int(word)
+              rc.memoryLocation.channel = int(self.currentMemoryAllocationOptions.channel)
+              rc.memoryLocation.bank    = int(self.currentMemoryAllocationOptions.bank)
+              rc.memoryLocation.page    = int(self.currentMemoryAllocationOptions.page)
+              rc.memoryLocation.word    = int(self.currentMemoryAllocationOptions.word)
+              # add entry to memory
+              memLocnOption = memoryLocationAccessOptions(allowOverWrite=True)
+              rv = self.memory.addEntry(rc.memoryLocation, None, memLocnOption )
               
-              channel = channel + channelIncrement
-              if channel == (self.memory.configuration.numOfChannels):
-                channel = 0
-                word = word + wordIncrement
+              self.currentMemoryAllocationOptions.increment(self.memory, numOfFeatures)
+              
+        # Return a memory option object that uses the increment options from the input options object but
+        # sets the initial values from the last channel, bank, page and word used during this allocation
 
-              if padWordRadix2 is 'Y' :
-                if word%numberOfAllocatedFeatures == numOfFeatures:
-                    word = (int(word/numberOfAllocatedFeatures)+1) * numberOfAllocatedFeatures
+        # return options which is the next location that would have been used
+        return self.currentMemoryAllocationOptions
+        
 
-              if word == (self.memory.configuration.sizeOfPage/WORDSIZE):
-                word = 0
-                page = page + pageIncrement
-              
-              if page == (self.memory.configuration.numOfPagesPerBank):
-                page = 0
-                bank = bank + bankIncrement
-              
-              if bank == (self.memory.configuration.numOfBanksPerChannel):
-                bank = 0
-              
 
     #----------------------------------------------------------------------------------------------------
     def printMemoryAllocation(self, layerID):
@@ -1767,7 +1911,20 @@ class Manager():
         
 
     def createMemoryAllocationFile(self, layerID):
-        outFile = 'manager_{0}_{1}_layer{2}_ROImemoryAllocation.txt'.format(self.ID[0], self.ID[1], layerID)
+
+        #timeStr = time.strftime("%Y%m%d-%H%M%S")
+        timeStr = time.strftime("%Y%m%d")  # just today
+        dirStr = './outputFiles/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + timeStr + '/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + 'manager_{0}_{1}/'.format(self.ID[0], self.ID[1])
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        outFile = dirStr + 'manager_{0}_{1}_layer{2}_ROImemoryAllocation.txt'.format(self.ID[0], self.ID[1], layerID)
+
         oFile = open(outFile, 'w')
 
         pLine = self.printMemoryAllocation(layerID)
@@ -1954,7 +2111,7 @@ def main():
     
     
     # In[30]:
-    
+    CREATEFILES = True
     WORDSIZE = 32
     import dnnConnectivityAndMemoryAllocation as dc
     import numpy as np
@@ -1966,7 +2123,7 @@ def main():
     # Create DNN
     network = dc.Network()
     #                                    X    Y    Z    Kx   Ky   Kz   stride
-    #network.addLayer('Input',          224, 224,    3                      ) #    3 
+    #network.addLayer('Input',          224, 224,    3                       ) #    3 
     #network.addLayer('Convolutional',   55,  55,   96,   11,  11,    3,   4 ) #   96,
     #network.addLayer('Convolutional',   27,  27,  256,    5,   5,   96,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,  384,    3,   3,  256,   2 ) #  384,
@@ -1976,9 +2133,9 @@ def main():
     # network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
     # network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
     
-    #network.addLayer('Input',           55,  55,    4,                      ) #   96,
-    network.addLayer('Input',          224, 224,    3                       ) #    3 
-    network.addLayer('Convolutional',   55,  55,    4,    8,   8,    3,   4 ) #   96,
+    network.addLayer('Input',           55,  55,    4,                      ) #   96,
+    #network.addLayer('Input',          224, 224,    3                       ) #    3 
+    #network.addLayer('Convolutional',   55,  55,    4,    8,   8,    3,   4 ) #   96,
     network.addLayer('Convolutional',   27,  27,    8,    5,   5,    4,   2 ) #  256,
     network.addLayer('Convolutional',   13,  13,    4,    3,   3,    8,   2 ) #  384,
     #network.addLayer('Convolutional',   13,  13,    2,    3,   3,    4,   1 ) #  384,
@@ -1992,7 +2149,7 @@ def main():
     # In[31]:
     # Create processing engines and assign each layers cell to the array of PEs
     print '{0}:{1}:Assign PEs:'.format(__FILE__(), __LINE__())
-    network.assignPEs('linearAll')
+    network.assignPEs('linearX')
 
     # Create Manager and assign array memory type
     print '{0}:{1}:Assign Managers:'.format(__FILE__(), __LINE__())
@@ -2033,33 +2190,61 @@ def main():
     """
 
     peMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['c', 'b', 'p', 'w'],
-                                                            initialChannel    =  0                  , 
+                                                            channel           =  0                  , 
                                                             channelIncrement  =  1                  , 
-                                                            initialBank       =  0                  , 
+                                                            bank              =  0                  , 
                                                             bankIncrement     =  2                  , 
-                                                            initialPage       =  0                  , 
+                                                            page              =  0                  , 
                                                             pageIncrement     =  2                  , 
-                                                            initialWord       =  0                  , 
+                                                            word              =  0                  , 
                                                             wordIncrement     =  1                  , 
-                                                            padWordRadix2     = 'Y'                 )
-    
+                                                            padWordRadix2     = True                )
+
+    # create an array of options as a start point for each managers memory ROI allocation
+    managerMemoryOptions = []
+    for mgrY in range(network.managerArray.Y):
+        mgrOptionArrayX = []
+        for mgrX in range(network.managerArray.X):
+            mgrMemOptions = copy_copy(peMemoryAllocationOptions)
+            mgrOptionArrayX.append(mgrMemOptions)
+        managerMemoryOptions.append(mgrOptionArrayX)
+
+    # as we allocate memory for the ROI copied from main memory, the allocate memory routine will return the next memory location avaliable
+    # this will be the start point for the next memoryAllocation
+    ROIlastMemory = dict() # key will be (layer, mgrY, mgrX)
+    for mgrY in range(network.managerArray.Y):
+        for mgrX in range(network.managerArray.X):
+            #peMemOptions = new peMemoryAllocationOptions 
+            ROIlastMemory[(mgrY, mgrX)] = peMemoryAllocationOptions 
+
     layerID = 1
     mgrX = 1
     mgrY = 0
-    for l in range(1, network.numberOfLayers):
-        for mgrY in range(network.managerArray.Y):
-            for mgrX in range(network.managerArray.X):
-                print '{0}:{1}:Mem cpy ROI and memory allocation for layer {2}, manager {3},{4}'.format(__FILE__(), __LINE__(), l, mgrY, mgrX)
+    for mgrY in range(network.managerArray.Y):
+        for mgrX in range(network.managerArray.X):
+            print '{0}:{1}:Mem cpy ROI and memory allocations for manager {2},{3}'.format(__FILE__(), __LINE__(), mgrY, mgrX)
+            for l in range(1, network.numberOfLayers):
+                # Copy aggregate ROI from main memory to local manager memory
                 rv = network.managerArray.manager[mgrY][mgrX].memCpyROI(l)
-                network.managerArray.manager[mgrY][mgrX].allocateMemory(l, peMemoryAllocationOptions )
-                network.managerArray.manager[mgrY][mgrX].createMemoryAllocationFile(l)
+                ROIlastMemory[(mgrY, mgrX)] = network.managerArray.manager[mgrY][mgrX].allocateRoiMemory(l, ROIlastMemory[(mgrY, mgrX)])
+                if CREATEFILES :
+                    network.managerArray.manager[mgrY][mgrX].createMemoryAllocationFile(l)
+                # Assign kernel memory
+                #print '{0}:{1}:Assign Kernel memory for each cell for layer {2}, manager {3},{4}'.format(__FILE__(), __LINE__(), l, mgrY, mgrX)
+                
                     
     l = layerID
-    for z in range(network.Layers[l].Z) :
-      for y in   range(int(network.Layers[l].Y*0.1), int(network.Layers[l].Y*0.3)) :
-        for x in range(int(network.Layers[l].X*0.1), int(network.Layers[l].X*0.3)) :
-            print '{0}:{1}:Create ROI memory locations for layer {2}, cell {3},{4},{5}'.format(__FILE__(), __LINE__(), l, z, y, x)
-            network.Layers[l].cells[z][y][x].createROIcellsFile()
+    pYmin = 0  # .1
+    pYmax = 1  # .3
+    pXmin = 0  # .1
+    pXmax = 1  # .3
+    print '{0}:{1}:Create ROI memory locations for layer {2}'.format(__FILE__(), __LINE__(), l)
+    for y in   range(int(network.Layers[l].Y*pYmin), int(network.Layers[l].Y*pYmax)) :
+      for x in range(int(network.Layers[l].X*pXmin), int(network.Layers[l].X*pXmax)) :
+        for z in range(network.Layers[l].Z) :
+            if CREATEFILES :
+                #print '{0}:{1}:Create ROI memory locations for layer {2}, cell {3},{4},{5}'.format(__FILE__(), __LINE__(), l, z, y, x)
+                network.Layers[l].cells[z][y][x].createROIcellsFile()
 
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
 
