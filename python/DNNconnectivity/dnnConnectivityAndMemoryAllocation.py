@@ -41,6 +41,9 @@ from matplotlib.ticker import MaxNLocator
 ## Memory
 WORDSIZE = 32
 
+## PE
+NUMOFEXECLANES = 32
+
 
 
 DEBUG = []
@@ -334,7 +337,7 @@ class MemoryAllocationOptions():
 
 class Cell():
 
-    def __init__(self, parentLayer, z, y, x):
+    def __init__(self, parentLayer, cId) :
         # keep track of the {x,y} location of PE processing this cell
         self.PE              = []
         self.originalCell    = self                             # so copies of cell can communicate with original so we can keep track of copies
@@ -344,10 +347,10 @@ class Cell():
         # Keep ID locally
         self.layerID         = parentLayer.layerID
         self.parentLayer     = parentLayer
-        self.Z               = z
-        self.Y               = y
-        self.X               = x
-        self.absID           = self.Y*self.parentLayer.X*self.parentLayer.Z + self.X*self.parentLayer.Z + self.Z  # use absolute ID mainly for sorting
+        self.ID               = cId
+        #self.Y               = y
+        #self.X               = x
+        self.absID           = self.ID[1]*self.parentLayer.X*self.parentLayer.Z + self.ID[2]*self.parentLayer.Z + self.ID[0]  # use absolute ID mainly for sorting
         # Fanin and fanout of this cell
         self.sourceCells     = []
         self.targetCells     = []
@@ -421,7 +424,7 @@ class Cell():
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + '\nCell:{0},{1},{2}                                               '.format(self.Z, self.Y, self.X)
+        pLine = pLine + '\nCell:{0},{1},{2}                                               '.format(self.ID[0], self.ID[1], self.ID[2])
         pLine = pLine + '\nLayer:{0}                                                      '.format(self.layerID)
         pLine = pLine + '\nPE{{Y,X}} : {0},{1}                                            '.format(self.PE.ID[0], self.PE.ID[1])
         pLine = pLine + '\nMemory:{{Ch, Bank, Page, Word}}:{0},{1},{2},{3}                '.format(self.memoryLocation.channel, self.memoryLocation.bank, self.memoryLocation.page, self.memoryLocation.word)
@@ -434,7 +437,7 @@ class Cell():
     def printROIcells (self):
         pLine = '\n'
         pLine = pLine + '\nLayer : {0}                                                       '.format(self.layerID)
-        pLine = pLine + '\nCell:{0},{1},{2} Source Cells and I/O addresses                   '.format(self.Z, self.Y, self.X)
+        pLine = pLine + '\nCell:{0},{1},{2} Source Cells and I/O addresses                   '.format(self.ID[0], self.ID[1], self.ID[2])
         pLine = pLine + '\nProcessed by Manager/PE : {0},{1}                                 '.format(self.PE.ID[0], self.PE.ID[1])
         pLine = pLine + '\nResult copied to: Manager Channel  Bank  Page  Word  '
         for ct in self.copiedTo :
@@ -491,22 +494,26 @@ class Layer():
         self.type = type
         self.assignType = 'linearAll'
         #self.assignType = 'linearX'
+
+        # Dimensions of layer
         self.X = X
         self.Y = Y
         self.Z = Z
+
+        # Kernels dimensions of layer
         self.Kx = Kx
         self.Ky = Ky
         self.Kz = Kz
         self.stride = stride
-        self.cells = []
-        # create a 3-D grid of cells
 
+        # create a 3-D grid of cells ( index is {z,y,x} )
+        self.cells = []
         for z in range(Z):
           yCells = []
           for y in range(Y):
             xCells = []
             for x in range(X):
-                newCell = Cell(self, z, y, x)
+                newCell = Cell(self, np.array([z, y, x]))
                 xCells.append(newCell)
             yCells.append(xCells)
           self.cells.append(yCells)
@@ -813,6 +820,57 @@ class Layer():
                     self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetCells = tmpTc
 
         print 'Connections complete from Layer {0} to {1}'.format(self.layerID-1, self.layerID)
+                        
+
+    #----------------------------------------------------------------------------------------------------
+    def groupCells(self):
+
+        # start with cell 0 and form a group
+        # When the group is full, set the next cell as firstCell and create a new group
+        # Stop when we reach the last cell in the layer
+        finalCellAbsId = self.Z*self.Y*self.X
+        self.cellGroups = []
+
+
+        # we use cell 0,0,0 as first cell so start looking at 1,0,0
+        absCellId = 0
+        while absCellId < finalCellAbsId :
+            # Create the coords of the cell
+            y = absCellId/(self.X*self.Z)
+            yRem = absCellId%(self.X*self.Z)
+            x = yRem/self.Z
+            z = yRem%self.Z
+            firstCell = self.cells[z][y][x]
+            group = []
+            group.append(firstCell)
+            absCellId += 1
+            groupCount = 1 # already first cell is on group
+            groupComplete = False
+            while not groupComplete:
+                # Create the coords of the cell
+                y = absCellId/(self.X*self.Z)
+                yRem = absCellId%(self.X*self.Z)
+                x = yRem/self.Z
+                z = yRem%self.Z
+                c = self.cells[z][y][x]
+                # test if cell has same ROI as current group
+                if (firstCell.sourceCells == c.sourceCells):
+                    group.append(c)
+                    groupCount += 1
+                else:
+                    groupComplete = True
+                    absCellId -= 1  # we have to use this cell as the first cell of the next group
+
+                if groupCount == NUMOFEXECLANES:
+                    groupComplete = True
+                if absCellId == finalCellAbsId-1:
+                    groupComplete = True
+
+                absCellId += 1
+
+            self.cellGroups.append(group)
+                    
+                        
                         
 
     #----------------------------------------------------------------------------------------------------
@@ -1148,7 +1206,7 @@ class PE():
 
         for pc in self.cellsProcessed[layerID] :
           for sc in pc.sourceCells:
-            absCellNum = sc.Y*sc.parentLayer.X*sc.parentLayer.Z + sc.X*sc.parentLayer.Z + sc.Z
+            absCellNum = sc.ID[1]*sc.parentLayer.X*sc.parentLayer.Z + sc.ID[2]*sc.parentLayer.Z + sc.ID[0]
             if absCellNum < absCellMin :
                 absCellMin = absCellNum
                 cellMin = sc
@@ -1156,13 +1214,13 @@ class PE():
                 absCellMax = absCellNum
                 cellMax = sc
             try:
-                roiGrid[sc.Z][sc.Y][sc.X] = 1
+                roiGrid[sc.ID[0]][sc.ID[1]][sc.ID[2]] = 1
             except:
                 print sc
-                print sc.Z,sc.Y,sc.X
+                print sc.ID[0],sc.ID[1],sc.ID[0]
                 raise
 
-        self.roi[layerID]     = np.array([[cellMin.Z, cellMin.Y, cellMin.X],[cellMax.Z, cellMax.Y, cellMax.X]])
+        self.roi[layerID]     = np.array([[cellMin.ID[0], cellMin.ID[1], cellMin.ID[2]],[cellMax.ID[0], cellMax.ID[1], cellMax.ID[0]]])
         self.roiGrid[layerID] = roiGrid
 
         # Right now, all ROIs should contain all features, so test that the last cell has a Z value that is the same as the previos layers Z value
@@ -1830,7 +1888,7 @@ class Manager():
             copiedCell = copy_copy(sc)
             # Temporarily add the absolute value of the cell to allow sorting
             # FIXME: absID is now one of the cell fields
-            copiedCell.absID = sc.Y*roiLayerX*roiLayerZ + sc.X*roiLayerZ + sc.Z
+            copiedCell.absID = sc.ID[1]*roiLayerX*roiLayerZ + sc.ID[2]*roiLayerZ + sc.ID[0]
             # copied Cell will be in different manager and memory location and we only did a shallow copy
             copiedCell.managerLocation = self
             copiedCell.memoryLocation  = MemoryLocation(None,0,0,0,0) # just provide dummy memory for now
@@ -2111,7 +2169,7 @@ def main():
     
     
     # In[30]:
-    CREATEFILES = True
+    CREATEFILES = False
     WORDSIZE = 32
     import dnnConnectivityAndMemoryAllocation as dc
     import numpy as np
@@ -2127,15 +2185,15 @@ def main():
     #network.addLayer('Convolutional',   55,  55,   96,   11,  11,    3,   4 ) #   96,
     #network.addLayer('Convolutional',   27,  27,  256,    5,   5,   96,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,  384,    3,   3,  256,   2 ) #  384,
-    # network.addLayer('Convolutional',   13,  13,  384,    3,   3,  384,   1 ) #  384,
-    # network.addLayer('Fully Connected', 13,  13,  256,    3,   3,  384,   1 ) #  256,
-    # network.addLayer('Fully Connected',  1,   1, 4096,   13,  13,  256,   1 ) # 4096,
-    # network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
-    # network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
+    #network.addLayer('Convolutional',   13,  13,  384,    3,   3,  384,   1 ) #  384,
+    #network.addLayer('Fully Connected', 13,  13,  256,    3,   3,  384,   1 ) #  256,
+    #network.addLayer('Fully Connected',  1,   1, 4096,   13,  13,  256,   1 ) # 4096,
+    #network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
+    #network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
     
-    network.addLayer('Input',           55,  55,    4,                      ) #   96,
     #network.addLayer('Input',          224, 224,    3                       ) #    3 
     #network.addLayer('Convolutional',   55,  55,    4,    8,   8,    3,   4 ) #   96,
+    network.addLayer('Input',           55,  55,    4,                      ) #   96,
     network.addLayer('Convolutional',   27,  27,    8,    5,   5,    4,   2 ) #  256,
     network.addLayer('Convolutional',   13,  13,    4,    3,   3,    8,   2 ) #  384,
     #network.addLayer('Convolutional',   13,  13,    2,    3,   3,    4,   1 ) #  384,
@@ -2246,7 +2304,11 @@ def main():
                 #print '{0}:{1}:Create ROI memory locations for layer {2}, cell {3},{4},{5}'.format(__FILE__(), __LINE__(), l, z, y, x)
                 network.Layers[l].cells[z][y][x].createROIcellsFile()
 
+    for l in range(1, network.numberOfLayers):
+        network.Layers[l].groupCells()
+
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
+    
 
 if __name__ == "__main__":main()
     
