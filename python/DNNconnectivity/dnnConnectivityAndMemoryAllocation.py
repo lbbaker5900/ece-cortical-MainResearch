@@ -373,14 +373,14 @@ class Cell():
 
         for sc in self.sourceCells:
           print sc
-          absCellNum = sc.Y*sc.parentLayer.X*sc.parentLayer.Z + sc.X*sc.parentLayer.Z + sc.Z
+          absCellNum = sc.ID[1]*sc.parentLayer.X*sc.parentLayer.Z + sc.ID[2]*sc.parentLayer.Z + sc.ID[0]
           if absCellNum < absCellMin :
               absCellMin = absCellNum
               cellMin = sc
           if absCellNum > absCellMax :
               absCellMax = absCellNum
               cellMax = sc
-        self.roiFromSrcCells = np.array([[cellMin.Z, cellMin.Y, cellMin.X],[cellMax.Z, cellMax.Y, cellMax.X]])
+        self.roiFromSrcCells = np.array([[cellMin.ID[0], cellMin.ID[1], cellMin.ID[2]],[cellMax.ID[0], cellMax.ID[1], cellMax.ID[2]]])
 
         """
         minx = np.inf
@@ -401,12 +401,12 @@ class Cell():
 
         # examine cells at corners of ROI to find min and max Z
         for sc in self.sourceCells:
-            if (sc.Y == miny) and (sc.X == minx):
-                if sc.Z < minz:
-                    minz = sc.Z
+            if (sc.ID[1] == miny) and (sc.ID[2] == minx):
+                if sc.ID[0] < minz:
+                    minz = sc.ID[0]
             if (sc.Y == maxy) and (sc.X == maxx):
-                if sc.Z > maxz:
-                    maxz = sc.Z
+                if sc.ID[0] > maxz:
+                    maxz = sc.ID[0]
 
         self.roiFromSrcCells = np.array([[minz, miny, minx], [maxz, maxy, maxx]] )
         """
@@ -453,7 +453,7 @@ class Cell():
                 # if the ROI cell is in the original input ROI and resides in the managers memory who is processing this cell
                 if (ct.absID == sc.absID) and (ct.memoryLocation.memory == self.PE.manager.memory):
       
-                    pLine = pLine + '\n{0:^3} {1:^3} {2:^3}  | {3:^7}   {4:^4}  {5:^4}  {6:^4}   '.format(ct.Z, ct.Y, ct.X, ct.memoryLocation.channel, ct.memoryLocation.bank, ct.memoryLocation.page, ct.memoryLocation.word)
+                    pLine = pLine + '\n{0:^3} {1:^3} {2:^3}  | {3:^7}   {4:^4}  {5:^4}  {6:^4}   '.format(ct.ID[0], ct.ID[1], ct.ID[2], ct.memoryLocation.channel, ct.memoryLocation.bank, ct.memoryLocation.page, ct.memoryLocation.word)
         pLine = pLine + '\n-------------------------------------------------------'
         return pLine
 
@@ -469,7 +469,7 @@ class Cell():
         dirStr = dirStr + 'manager_{0}_{1}/'.format(self.PE.ID[0], self.PE.ID[1])
         if not os.path.exists(dirStr) :
             os.makedirs(dirStr)
-        outFile = dirStr + 'manager_{0}_{1}_layer{2}_cell_{3}_{4}_{5}_ROIcells.txt'.format(self.PE.ID[0], self.PE.ID[1], self.layerID, self.Y, self.X, self.Z)
+        outFile = dirStr + 'manager_{0}_{1}_layer{2}_cell_{3}_{4}_{5}_ROIcells.txt'.format(self.PE.ID[0], self.PE.ID[1], self.layerID, self.ID[1], self.ID[2], self.ID[0])
 
         oFile = open(outFile, 'w')
 
@@ -492,7 +492,7 @@ class Layer():
         self.parentNetwork = network
         self.layerID = layerID
         self.type = type
-        self.assignType = 'linearAll'
+        self.assignType = ''
         #self.assignType = 'linearX'
 
         # Dimensions of layer
@@ -1447,10 +1447,10 @@ class PE():
         tmpCellsProcessedForPlot = np.zeros_like(xGrid[0], dtype=np.int) # create Y,X array
 
         for pc in self.cellsProcessed[layerID] :
-          if (pc.Y >= coords[0][0]) and (pc.Y <= coords[1][0]) :
-            if (pc.X >= coords[0][1]) and (pc.X <= coords[1][1]) :
+          if (pc.ID[1] >= coords[0][0]) and (pc.ID[1] <= coords[1][0]) :
+            if (pc.ID[2] >= coords[0][1]) and (pc.ID[2] <= coords[1][1]) :
               pass
-              tmpCellsProcessed[pc.Z][pc.Y][pc.X] += 1
+              tmpCellsProcessed[pc.ID[0]][pc.ID[1]][pc.ID[2]] += 1
 
         pLine = '\n'
         for y in range(tmpCellsProcessed[0].__len__()) :
@@ -1964,7 +1964,7 @@ class Manager():
         pLine = pLine + '\n Channel  Bank  Page  Word  |   Z   Y   X           '
         pLine = pLine + '\n-------------------------------------------------------'
         for rc in self.roiCells[layerID]:
-            pLine = pLine + '\n {3:^7}  {4:^4}  {5:^4}  {6:^4}  |  {0:^3} {1:^3} {2:^3}  '.format(rc.Z, rc.Y, rc.X, rc.memoryLocation.channel, rc.memoryLocation.bank, rc.memoryLocation.page, rc.memoryLocation.word)
+            pLine = pLine + '\n {3:^7}  {4:^4}  {5:^4}  {6:^4}  |  {0:^3} {1:^3} {2:^3}  '.format(rc.ID[0], rc.ID[1], rc.ID[2], rc.memoryLocation.channel, rc.memoryLocation.bank, rc.memoryLocation.page, rc.memoryLocation.word)
         return pLine
         
 
@@ -2170,6 +2170,7 @@ def main():
     
     # In[30]:
     CREATEFILES = False
+    CREATEANIMATION = False
     WORDSIZE = 32
     import dnnConnectivityAndMemoryAllocation as dc
     import numpy as np
@@ -2239,13 +2240,12 @@ def main():
         print '{0}:{1}:Determine ROI for layer {2}:'.format(__FILE__(), __LINE__(), l)
         network.peArray.findROIall(l)  
 
-    """
-    for l in range(1, network.numberOfLayers):
-        network.peArray.createProcessedCellsAnimation(l, displayOptions(False))  
-        plt.show()
-        network.peArray.createROIAnimation(l, displayOptions(False))  
-        plt.show()
-    """
+    if CREATEANIMATION :
+        for l in range(1, network.numberOfLayers):
+            network.peArray.createProcessedCellsAnimation(l, displayOptions(False))  
+            plt.show()
+            network.peArray.createROIAnimation(l, displayOptions(False))  
+            plt.show()
 
     peMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['c', 'b', 'p', 'w'],
                                                             channel           =  0                  , 
