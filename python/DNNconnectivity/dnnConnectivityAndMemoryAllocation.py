@@ -147,15 +147,22 @@ class Kernel():
         self.parentCell = parentCell # parentCell
         self.dimensions = dimensions
         self.memoryLocations = []
-        for y in range(dimensions[1]):
+        for z in range(dimensions[0]):
           yMemLocns = []
-          for x in range(dimensions[2]):
+          for y in range(dimensions[1]):
             xMemLocns = []
-            for z in range(dimensions[0]):
+            for x in range(dimensions[2]):
                 newMemLocn = MemoryLocation(None,0,0,0,0) # memory location has a pointer to the actual memory and location within that memory
                 xMemLocns.append(newMemLocn)
             yMemLocns.append(xMemLocns)
           self.memoryLocations.append(yMemLocns)
+
+    def __str__(self):
+        pLine = ""
+        pLine = pLine + 'Kz:{0}:Ky:{1}:Kx:{2}    '.format(self.dimensions[0], self.dimensions[1], self.dimensions[2])
+        pLine = pLine + '\nMethods: {0}          '.format(methods(self))
+        pLine = pLine + '\nFields: {0}           '.format(fields(self))
+        return pLine
 
     
 
@@ -223,6 +230,10 @@ class Memory():
                raise Exception('{0}:{1}:Writing to already allocated location :{2}'.format(__FILE__(), __LINE__(), memoryLocation)) 
             
         self.store[(memoryLocation.channel, memoryLocation.bank, memoryLocation.page, memoryLocation.word)] = value
+         
+    def numberOfEntries(self):
+
+        return self.store.__len__()
          
 
 ## Kernels are usually stored across muliple pages with each page containing 4 weights of 32 kernels
@@ -296,47 +307,60 @@ class MemoryAllocationOptions():
 
               # Increments fields based on configuration of memory
 
+              # When incrementing word, if we are placing the features in radix-2 groups increment word numOfFeatures then
+              # move to the next radix-2 word
               if self.padWordRadix2  :
                 numberOfAllocatedFeatures = 2**(math.ceil(math.log(numOfFeatures,2)))
 
-              if self.order[0] == 'c' :
-                  self.channel = self.channel + self.channelIncrement
-                  if self.channel == (memory.configuration.numOfChannels):
-                      self.channel = 0
+              numOfItems = self.order.__len__()
+              incNext = True               # set if the current field is max and next field needs to be incremented
+              incNextIdx = 0              # keep track as an increment ripples thru all the fields
+              while (incNext) :
+
+                  # incrementing Channel  
+                  if self.order[incNextIdx] == 'c' and incNext :
+                      # channel
+                      self.channel = self.channel + self.channelIncrement
+                      if self.channel == (memory.configuration.numOfChannels):
+                          self.channel = 0
+                          incNext = True
+                          incNextIdx = (incNextIdx+1)%numOfItems
+                      else :
+                          incNext = False
+         
+                  # word
+                  if self.order[incNextIdx] == 'w' and incNext :
                       self.word = self.word + self.wordIncrement
-                  if self.padWordRadix2 :
-                    if self.word%numberOfAllocatedFeatures == numOfFeatures:
-                        self.word = (int(self.word/numberOfAllocatedFeatures)+1) * numberOfAllocatedFeatures
-              
-                  if self.word == (memory.configuration.sizeOfPage/WORDSIZE):
-                      self.word = 0
+                      if self.padWordRadix2 :
+                        if self.word%numberOfAllocatedFeatures == numOfFeatures:
+                            self.word = (int(self.word/numberOfAllocatedFeatures)+1) * numberOfAllocatedFeatures
+                      if self.word == (memory.configuration.sizeOfPage/WORDSIZE):
+                          self.word = 0
+                          incNext = True
+                          incNextIdx = (incNextIdx+1)%numOfItems
+                      else :
+                          incNext = False
+                      
+                  # page
+                  if self.order[incNextIdx] == 'p' and incNext :
                       self.page = self.page + self.pageIncrement
-                  
-                  if self.page == (memory.configuration.numOfPagesPerBank):
-                      self.page = 0
+                      if self.page == (memory.configuration.numOfPagesPerBank):
+                          self.page = 0
+                          incNext = True
+                          incNextIdx = (incNextIdx+1)%numOfItems
+                      else :
+                          incNext = False
+                      
+                  # bank
+                  if self.order[incNextIdx] == 'b' and incNext :
                       self.bank = self.bank + self.bankIncrement
-                  
-                  if self.bank == (memory.configuration.numOfBanksPerChannel):
-                      self.bank = 0
-
-              elif self.order[0] == 'w' :
-                  self.word = self.word + self.wordIncrement
-
-                  if self.word == (memory.configuration.sizeOfPage/WORDSIZE):
-                    self.word = 0
-                    self.channel = self.channel + self.channelIncrement
-
-                  if self.channel == (memory.configuration.numOfChannels):
-                      self.channel = 0
-                      self.page = self.page + self.pageIncrement
-
-                  if self.page == (memory.configuration.numOfPagesPerBank):
-                      self.page = 0
-                      self.bank = self.bank + self.bankIncrement
-                  
-                  if self.bank == (memory.configuration.numOfBanksPerChannel):
-                      self.bank = 0
-
+                      if self.bank == (memory.configuration.numOfBanksPerChannel):
+                          self.bank = 0
+                          incNext = True
+                          incNextIdx = (incNextIdx+1)%numOfItems
+                      else :
+                          incNext = False
+  
 
     def floorField(self, memory, numOfFeatures, floorField):
         
@@ -465,16 +489,16 @@ class Cell():
 
     def printROIcells (self):
         pLine = '\n'
-        pLine = pLine + '\nLayer : {0}                                                       '.format(self.layerID)
-        pLine = pLine + '\nCell:{0},{1},{2} Source Cells and I/O addresses                   '.format(self.ID[0], self.ID[1], self.ID[2])
-        pLine = pLine + '\nProcessed by Manager/PE : {0},{1}                                 '.format(self.PE.ID[0], self.PE.ID[1])
-        pLine = pLine + '\nResult copied to: Manager Channel  Bank  Page  Word  '
+        pLine = pLine + '\nLayer : {0}                                                                    '.format(self.layerID)
+        pLine = pLine + '\nCell:{0},{1},{2} Source Cells and addresses                                    '.format(self.ID[0], self.ID[1], self.ID[2])
+        pLine = pLine + '\nProcessed by Manager/PE : {0},{1}                                              '.format(self.PE.ID[0], self.PE.ID[1])
+        pLine = pLine + '\nResult copied to: Manager Channel  Bank  Page  Word                            '
         for ct in self.copiedTo :
             pLine = pLine + '\n                  {0:^3},{1:^3} {2:^7}   {3:^3}   {4:^3}   {5:^3}          '.format(ct.managerLocation.ID[0], ct.managerLocation.ID[1], ct.memoryLocation.channel, ct.memoryLocation.bank, ct.memoryLocation.page, ct.memoryLocation.word)
-        pLine = pLine + '\n'
-        pLine = pLine + '\n source cell       Local memory                                   '.format(self.PE.ID[0], self.PE.ID[1])
-        pLine = pLine + '\n Z   Y   X   | Channel  Bank  Page  Word  '
-        pLine = pLine + '\n-------------------------------------------------------'
+        pLine = pLine + '\n                                                                               '
+        pLine = pLine + '\n source cell       ROI Local memory                                            '.format(self.PE.ID[0], self.PE.ID[1])
+        pLine = pLine + '\n Z   Y   X   | Channel  Bank  Page  Word                                       '
+        pLine = pLine + '\n--------------------------------------------------------------                 '
         for sc in self.sourceCells:
             for ct in sc.copiedTo:
                 # Remember, some cells will be copied to multiple managers, so find cell copied to this Manager/PE memory
@@ -507,6 +531,25 @@ class Cell():
         oFile.write(pLine)
         oFile.close()
             
+    def printKernelMemory(self):
+        pLine = '\n'
+        pLine = pLine + '\nLayer : {0}                                                                    '.format(self.layerID)
+        pLine = pLine + '\nCell:{0},{1},{2} Kernel addresses                                              '.format(self.ID[0], self.ID[1], self.ID[2])
+        pLine = pLine + '\n                                                                               '
+        pLine = pLine + '\n    Kernel Local memory                                          '.format(self.PE.ID[0], self.PE.ID[1])
+        pLine = pLine + '\n Channel  Bank  Page  Word                                       '
+        pLine = pLine + '\n------------------------------------------------                 '
+        
+        for Kz in range(self.kernel.dimensions[0]) :
+            for Ky in range(self.kernel.dimensions[1]) :
+                for Kx in range(self.kernel.dimensions[2]) :
+                    pLine = pLine + '\n{0:^7}   {1:^4}  {2:^4}  {3:^4}   '.format(self.kernel.memoryLocations[Kz][Ky][Kx].channel, self.kernel.memoryLocations[Kz][Ky][Kx].bank, self.kernel.memoryLocations[Kz][Ky][Kx].page, self.kernel.memoryLocations[Kz][Ky][Kx].word)
+        pLine = pLine + '\n-------------------------------------------------------'
+        return pLine
+
+    def printAllMemory(self):
+        roiMemory    = self.printROIcells().split('\n')
+        kernelMemory = self.printKernelMemory().split('\n')
 
     #----------------------------------------------------------------------------------------------------
 
@@ -858,6 +901,7 @@ class Layer():
                         
 
     #----------------------------------------------------------------------------------------------------
+    """
     def groupCells(self):
 
         # Form groups with the same ROI.
@@ -907,7 +951,7 @@ class Layer():
                 absCellId += 1
 
             self.cellGroups.append(group)
-                    
+    """
                         
                         
 
@@ -1984,7 +2028,7 @@ class Manager():
               rc.memoryLocation.page    = int(self.currentMemoryAllocationOptions.page)
               rc.memoryLocation.word    = int(self.currentMemoryAllocationOptions.word)
               # add entry to memory
-              memLocnOption = memoryLocationAccessOptions(allowOverWrite=True)
+              memLocnOption = memoryLocationAccessOptions(allowOverWrite=False)
               rv = self.memory.addEntry(rc.memoryLocation, None, memLocnOption )
               
               self.currentMemoryAllocationOptions.increment(self.memory, numOfFeatures)
@@ -2055,26 +2099,30 @@ class Manager():
         # word(0,0), word(1,0) ... word(31,0), word(0,1) .. word(31,1)
         pass
         # Get kernel dimensions from first cell in the group
+        memLocnOption = memoryLocationAccessOptions(allowOverWrite=False)
         for g in self.cellGroups[layerID] :
             kernelDimension = g[0].kernel.dimensions
             #print kernelDimension
-            for Ky in range(kernelDimension[1]) :
-                for Kx in range(kernelDimension[2]) :
-                    for Kz in range(kernelDimension[0]) :
+            for Kz in range(kernelDimension[0]) :
+                for Ky in range(kernelDimension[1]) :
+                    for Kx in range(kernelDimension[2]) :
                         for c in g :
-                            c.kernel.memoryLocations[Ky][Kx][Kz].channel = allocateOptions.channel
-                            c.kernel.memoryLocations[Ky][Kx][Kz].bank    = allocateOptions.bank
-                            c.kernel.memoryLocations[Ky][Kx][Kz].page    = allocateOptions.page
-                            c.kernel.memoryLocations[Ky][Kx][Kz].word    = allocateOptions.word
+                            c.kernel.memoryLocations[Kz][Ky][Kx].channel = allocateOptions.channel
+                            c.kernel.memoryLocations[Kz][Ky][Kx].bank    = allocateOptions.bank
+                            c.kernel.memoryLocations[Kz][Ky][Kx].page    = allocateOptions.page
+                            c.kernel.memoryLocations[Kz][Ky][Kx].word    = allocateOptions.word
+                            rv = self.memory.addEntry(c.kernel.memoryLocations[Kz][Ky][Kx], None, memLocnOption )
                             allocateOptions.increment(self.memory, self.memory.configuration.sizeOfPage/WORDSIZE)
+                        # 
+                        #allocateOptions.increment(self.memory, self.memory.configuration.sizeOfPage/WORDSIZE)
 
         return allocateOptions
 
 
     #----------------------------------------------------------------------------------------------------
-    def printMemoryAllocation(self, layerID):
+    def printRoiMemoryAllocation(self, layerID):
         pLine = '\n'
-        pLine = pLine + '\nManager:{0},{1} Memory Contents                     '.format(self.ID[0], self.ID[1])
+        pLine = pLine + '\nManager:{0},{1} ROI Memory Contents                     '.format(self.ID[0], self.ID[1])
         pLine = pLine + '\n       Location               Original Cell         '
         pLine = pLine + '\n Channel  Bank  Page  Word  |   Z   Y   X           '
         pLine = pLine + '\n-------------------------------------------------------'
@@ -2083,7 +2131,7 @@ class Manager():
         return pLine
         
 
-    def createMemoryAllocationFile(self, layerID):
+    def createRoiMemoryAllocationFile(self, layerID):
 
         #timeStr = time.strftime("%Y%m%d-%H%M%S")
         timeStr = time.strftime("%Y%m%d")  # just today
@@ -2100,7 +2148,7 @@ class Manager():
 
         oFile = open(outFile, 'w')
 
-        pLine = self.printMemoryAllocation(layerID)
+        pLine = self.printRoiMemoryAllocation(layerID)
 
         oFile.write(pLine)
         oFile.close()
@@ -2403,7 +2451,7 @@ def main():
                 rv = network.managerArray.manager[mgrY][mgrX].memCpyROI(l)
                 ROIlastMemory[(mgrY, mgrX)] = network.managerArray.manager[mgrY][mgrX].allocateRoiMemory(l, ROIlastMemory[(mgrY, mgrX)])
                 if CREATEFILES :
-                    network.managerArray.manager[mgrY][mgrX].createMemoryAllocationFile(l)
+                    network.managerArray.manager[mgrY][mgrX].createRoiMemoryAllocationFile(l)
                 # Assign kernel memory
                 #print '{0}:{1}:Assign Kernel memory for each cell for layer {2}, manager {3},{4}'.format(__FILE__(), __LINE__(), l, mgrY, mgrX)
                 
@@ -2421,9 +2469,11 @@ def main():
                 #print '{0}:{1}:Create ROI memory locations for layer {2}, cell {3},{4},{5}'.format(__FILE__(), __LINE__(), l, z, y, x)
                 network.Layers[l].cells[z][y][x].createROIcellsFile()
 
+    """
     for l in range(1, network.numberOfLayers):
         network.Layers[l].groupCells()
-
+    """
+    """
     kernelMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['w', 'c', 'b', 'p'],
                                                                 channel           =  0                  , 
                                                                 channelIncrement  =  1                  , 
@@ -2434,6 +2484,10 @@ def main():
                                                                 word              =  0                  , 
                                                                 wordIncrement     =  1                  , 
                                                                 padWordRadix2     = False               )
+    """
+    kernelMemoryAllocationOptions = peMemoryAllocationOptions 
+    kernelMemoryAllocationOptions.order         = ['w', 'c', 'b', 'p']
+    kernelMemoryAllocationOptions.padWordRadix2 = False
 
     for l in range(1, network.numberOfLayers):
         for mgrY in range(network.managerArray.Y):
@@ -2441,9 +2495,14 @@ def main():
                 rv = network.managerArray.manager[mgrY][mgrX].groupCells(l)
                 rv = network.managerArray.manager[mgrY][mgrX].allocateGroupMemory(l, kernelMemoryAllocationOptions )
 
+    for y in range(1):
+      for x in range(4):
+        for z in range(3):
+          p = network.Layers[1].cells[z][y][x].printKernelMemory()
+          print p
+
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
     
-
 if __name__ == "__main__":main()
     
 
