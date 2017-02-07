@@ -142,10 +142,20 @@ memoryLocationAccessOptions = namedtuple('memoryLocationAccessOptions',\
 
 class Kernel():
 
-    def __init__(self, z, y, x):
-        self.x = x
-        self.y = y
-        self.z = z
+    def __init__(self, parentCell, dimensions):
+        # K is a numpy array with Kz,Ky,Kx
+        self.parentCell = parentCell # parentCell
+        self.dimensions = dimensions
+        self.memoryLocations = []
+        for y in range(dimensions[1]):
+          yMemLocns = []
+          for x in range(dimensions[2]):
+            xMemLocns = []
+            for z in range(dimensions[0]):
+                newMemLocn = MemoryLocation(None,0,0,0,0) # memory location has a pointer to the actual memory and location within that memory
+                xMemLocns.append(newMemLocn)
+            yMemLocns.append(xMemLocns)
+          self.memoryLocations.append(yMemLocns)
 
     
 
@@ -284,30 +294,49 @@ class MemoryAllocationOptions():
 
     def increment(self, memory, numOfFeatures):
 
-              # Ibncrements fields based on configuration of memory
+              # Increments fields based on configuration of memory
 
               if self.padWordRadix2  :
                 numberOfAllocatedFeatures = 2**(math.ceil(math.log(numOfFeatures,2)))
 
-              self.channel = self.channel + self.channelIncrement
-              if self.channel == (memory.configuration.numOfChannels):
-                self.channel = 0
-                self.word = self.word + self.wordIncrement
-
-              if self.padWordRadix2 :
-                if self.word%numberOfAllocatedFeatures == numOfFeatures:
-                    self.word = (int(self.word/numberOfAllocatedFeatures)+1) * numberOfAllocatedFeatures
-
-              if self.word == (memory.configuration.sizeOfPage/WORDSIZE):
-                self.word = 0
-                self.page = self.page + self.pageIncrement
+              if self.order[0] == 'c' :
+                  self.channel = self.channel + self.channelIncrement
+                  if self.channel == (memory.configuration.numOfChannels):
+                      self.channel = 0
+                      self.word = self.word + self.wordIncrement
+                  if self.padWordRadix2 :
+                    if self.word%numberOfAllocatedFeatures == numOfFeatures:
+                        self.word = (int(self.word/numberOfAllocatedFeatures)+1) * numberOfAllocatedFeatures
               
-              if self.page == (memory.configuration.numOfPagesPerBank):
-                self.page = 0
-                self.bank = self.bank + self.bankIncrement
-              
-              if self.bank == (memory.configuration.numOfBanksPerChannel):
-                self.bank = 0
+                  if self.word == (memory.configuration.sizeOfPage/WORDSIZE):
+                      self.word = 0
+                      self.page = self.page + self.pageIncrement
+                  
+                  if self.page == (memory.configuration.numOfPagesPerBank):
+                      self.page = 0
+                      self.bank = self.bank + self.bankIncrement
+                  
+                  if self.bank == (memory.configuration.numOfBanksPerChannel):
+                      self.bank = 0
+
+              elif self.order[0] == 'w' :
+                  self.word = self.word + self.wordIncrement
+
+                  if self.word == (memory.configuration.sizeOfPage/WORDSIZE):
+                    self.word = 0
+                    self.channel = self.channel + self.channelIncrement
+
+                  if self.channel == (memory.configuration.numOfChannels):
+                      self.channel = 0
+                      self.page = self.page + self.pageIncrement
+
+                  if self.page == (memory.configuration.numOfPagesPerBank):
+                      self.page = 0
+                      self.bank = self.bank + self.bankIncrement
+                  
+                  if self.bank == (memory.configuration.numOfBanksPerChannel):
+                      self.bank = 0
+
 
     def floorField(self, memory, numOfFeatures, floorField):
         
@@ -337,7 +366,7 @@ class MemoryAllocationOptions():
 
 class Cell():
 
-    def __init__(self, parentLayer, cId) :
+    def __init__(self, parentLayer, cId, kernelDimensions) :
         # keep track of the {x,y} location of PE processing this cell
         self.PE              = []
         self.originalCell    = self                             # so copies of cell can communicate with original so we can keep track of copies
@@ -345,7 +374,7 @@ class Cell():
         self.roiFromSrcCells = np.zeros([2,3], dtype=np.int)    # corners of ROI [[Z,Y,X],[Z,Y,X]] extracted from list of source cells
         self.roi             = np.zeros([2,3], dtype=np.int)    # corners of ROI [[Z,Y,X],[Z,Y,X]] generated when running assignPE in the layer
         # Keep ID locally
-        self.layerID         = parentLayer.layerID
+        self.layerID         = parentLayer.ID
         self.parentLayer     = parentLayer
         self.ID               = cId
         #self.Y               = y
@@ -360,7 +389,7 @@ class Cell():
         self.managerLocation = []  # where is this copy of the cell? original cell will have this field blank, copied cells
                                    # point to manager where copy is stored
         self.memoryLocation  = MemoryLocation(None,0,0,0,0) # memory location has a pointer to the actual memory and location within that memory
-        self.kernel          = Kernel(0,0,0)
+        self.kernel          = Kernel(self, kernelDimensions)
 
     #----------------------------------------------------------------------------------------------------
     # ROI
@@ -490,7 +519,7 @@ class Layer():
 
     def __init__(self, network, layerID, type, X, Y, Z, Kx=0, Ky=0, Kz=0, stride=0):
         self.parentNetwork = network
-        self.layerID = layerID
+        self.ID = layerID
         self.type = type
         self.assignType = ''
         #self.assignType = 'linearX'
@@ -513,7 +542,7 @@ class Layer():
           for y in range(Y):
             xCells = []
             for x in range(X):
-                newCell = Cell(self, np.array([z, y, x]))
+                newCell = Cell(self, cId=np.array([z, y, x]), kernelDimensions=np.array([Kz, Ky, Kx]))
                 xCells.append(newCell)
             yCells.append(xCells)
           self.cells.append(yCells)
@@ -523,7 +552,7 @@ class Layer():
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + '\nLayer {0}                    '.format(self.layerID)
+        pLine = pLine + '\nLayer {0}                    '.format(self.ID)
         pLine = pLine + '\n{{Z,Y,X}} : {0},{1},{2}      '.format(self.Z, self.Y, self.X)
         pLine = pLine + '\n{{Kz,Ky,Kx}} : {0},{1},{2}   '.format(self.Kz, self.Ky, self.Kx)
         pLine = pLine + '\nMethods: {0}                 '.format(methods(self))
@@ -533,7 +562,7 @@ class Layer():
 
 
     def getPreviousLayer(self):
-        return self.parentNetwork.getLayer(self.layerID-1)
+        return self.parentNetwork.getLayer(self.ID-1)
 
     #----------------------------------------------------------------------------------------------------
     # PE assignment
@@ -643,7 +672,7 @@ class Layer():
         foo = 0
         for y in range(peY):
             for x in range(peX):
-                  #print 'LEE:DEBUG:line 486', self.layerID,':', y, x, self.peArrayXYcellCount[y][x][0]
+                  #print 'LEE:DEBUG:line 486', self.ID,':', y, x, self.peArrayXYcellCount[y][x][0]
                   if (self.assignType == 'linearX') :
                       foo += self.peArrayXYcellCount[y][x][0]*self.peArrayXYcellCount[y][x][1]
                   else :
@@ -670,11 +699,11 @@ class Layer():
                                 # index is z,y,x
                                 try: # FIXME
                                     self.cells[f][y][x].PE = self.parentNetwork.peArray.pe[yPe][xPe]
-                                    self.parentNetwork.peArray.addCell(np.array([yPe,xPe]), self.layerID, np.array([f,y,x]))
-                                    #print 'LEE:DEBUG:AddCell', self.layerID,':', f ,y ,x
-                                    #print 'LEE:DEBUG:', self.layerID,':', yCell, xCell, ':', f ,y ,x, ':', xOffset, yOffset, ':', xPe, yPe, ':', self.peArrayXYcellCount[yPe][xPe], ':', self.Z, self.Y, self.X
+                                    self.parentNetwork.peArray.addCell(np.array([yPe,xPe]), self.ID, np.array([f,y,x]))
+                                    #print 'LEE:DEBUG:AddCell', self.ID,':', f ,y ,x
+                                    #print 'LEE:DEBUG:', self.rID,':', yCell, xCell, ':', f ,y ,x, ':', xOffset, yOffset, ':', xPe, yPe, ':', self.peArrayXYcellCount[yPe][xPe], ':', self.Z, self.Y, self.X
                                 except:
-                                    print 'LEE:ERROR:DEBUG:', self.layerID,':', yCell, xCell, f ,y ,x, xOffset, yOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
+                                    print 'LEE:ERROR:DEBUG:', self.ID,':', yCell, xCell, f ,y ,x, xOffset, yOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
                                     raise
                         xOffset += int(self.peArrayXYcellCount[yPe][xPe][1])
           
@@ -703,9 +732,9 @@ class Layer():
                     y = fa/self.X
                     try: # FIXME
                         self.cells[f][y][x].PE = self.parentNetwork.peArray.pe[yPe][xPe]
-                        self.parentNetwork.peArray.addCell(np.array([yPe,xPe]), self.layerID, np.array([f,y,x]))
+                        self.parentNetwork.peArray.addCell(np.array([yPe,xPe]), self.ID, np.array([f,y,x]))
                     except:
-                        print 'LEE:ERROR:DEBUG:', self.layerID,':', cell, pe, f ,y ,x, xOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
+                        print 'LEE:ERROR:DEBUG:', self.ID,':', cell, pe, f ,y ,x, xOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
                         raise
                 xOffset += int(self.peArrayXYcellCount[yPe][xPe][0])
 
@@ -715,18 +744,24 @@ class Layer():
             for x in range(self.X):
                 for f in range(self.Z):
                     if isinstance(self.cells[f][y][x].PE, list): # FIXME
-                        print 'LEE:DEBUG:line 550', self.layerID,':', f ,y ,x
+                        print 'LEE:DEBUG:line 550', self.ID,':', f ,y ,x
                         raise
 
+        # sort the cellsProcessed 
+        for yPe in range(peY):
+            for xPe in range(peX):
+                tmp = sorted(self.parentNetwork.peArray.pe[yPe][xPe].cellsProcessed[self.ID], key=operator.attrgetter('absID'))
+                self.parentNetwork.peArray.pe[yPe][xPe].cellsProcessed[self.ID] = tmp
+                        
     #----------------------------------------------------------------------------------------------------
       
     def generateConnections(self):
         # For each cell in this layer, identify the cells from the previous layer that feed this cell and add this cell's PE
         # to the target list
         for y in range(self.Y):
-            print 'Updating Layer {0} connections'.format(self.layerID) + ' for features in row :{0}'.format(y)
+            print 'Updating Layer {0} connections'.format(self.ID) + ' for features in row :{0}'.format(y)
             for x in range(self.X):
-                #print 'Updating Layer {0} connections'.format(self.layerID) + ' for features at row :{0},{1}'.format(y,x)
+                #print 'Updating Layer {0} connections'.format(self.ID) + ' for features at row :{0},{1}'.format(y,x)
                 for f in range(self.Z):
 
                     #print self.stride, self.Ky, self.Kx, self.kernelTopOffset, self.kernelLeftOffset
@@ -734,14 +769,14 @@ class Layer():
                     # Identify the row and columns of the source cells from layer n-1
                     # We are taking the kernel and moving it across the input
                     # Need to account for the 1st kernel and last kernel being outside the edge of the input
-                    tmpY = range(max(0, self.kernelTopOffset+y*self.stride), min(self.parentNetwork.Layers[self.layerID-1].Y, self.kernelTopOffset+y*self.stride+self.Ky))
-                    tmpX = range(max(0, self.kernelLeftOffset+x*self.stride), min(self.parentNetwork.Layers[self.layerID-1].X, self.kernelLeftOffset+x*self.stride+self.Kx))
+                    tmpY = range(max(0, self.kernelTopOffset+y*self.stride), min(self.parentNetwork.Layers[self.ID-1].Y, self.kernelTopOffset+y*self.stride+self.Ky))
+                    tmpX = range(max(0, self.kernelLeftOffset+x*self.stride), min(self.parentNetwork.Layers[self.ID-1].X, self.kernelLeftOffset+x*self.stride+self.Kx))
              
                     # tmpy,tmpX are the X,Y ROI of the cell (f,y,x)
                     # FIXME: this ROI should match the the findROI method which uses the list of sourceCells to construct the ROI
                     # create corners of ROI
                     self.cells[f][y][x].roi[0] = [                                            0, min(tmpY), min(tmpX)]
-                    self.cells[f][y][x].roi[1] = [self.parentNetwork.Layers[self.layerID-1].Z-1, max(tmpY), max(tmpX)]
+                    self.cells[f][y][x].roi[1] = [self.parentNetwork.Layers[self.ID-1].Z-1, max(tmpY), max(tmpX)]
 
                     # Cycle thru the source cells and 
                     #   a) add this cells PE to the list of target PE's of the source cell
@@ -752,16 +787,16 @@ class Layer():
                     tgtCell = self.cells[f][y][x]
                     for ySrcCell in tmpY:
                         for xSrcCell in tmpX:
-                            for fSrcCell in range(self.parentNetwork.Layers[self.layerID-1].Z) :
+                            for fSrcCell in range(self.parentNetwork.Layers[self.ID-1].Z) :
              
-                                srcPE   = self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].PE
-                                srcCell = self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell]
+                                srcPE   = self.parentNetwork.Layers[self.ID-1].cells[fSrcCell][ySrcCell][xSrcCell].PE
+                                srcCell = self.parentNetwork.Layers[self.ID-1].cells[fSrcCell][ySrcCell][xSrcCell]
 
                                 # a) Update source cells target PE list
-                                self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs.append(self.cells[f][y][x].PE)
+                                self.parentNetwork.Layers[self.ID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs.append(self.cells[f][y][x].PE)
              
                                 # b) Update source cells target cell list
-                                self.parentNetwork.Layers[self.layerID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells.append(tgtCell)
+                                self.parentNetwork.Layers[self.ID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetCells.append(tgtCell)
                              
                                 #srcCell = tuple([fSrcCell, ySrcCell, xSrcCell])
                              
@@ -775,11 +810,11 @@ class Layer():
                                 # d) Update this cells source cell list
                                 self.cells[f][y][x].sourceCells.append(srcCell)
                      
-                #print 'Completed layer {0} connections for features at : {1},{2}'.format(self.layerID, y, x)
+                #print 'Completed layer {0} connections for features at : {1},{2}'.format(self.ID, y, x)
 
         ##----------------------------------------------------------------------------------------------------
         ## remove duplicates
-        print 'Removing duplicates in source and target cell lists of Layers {0} and {1} respectively'.format(self.layerID, self.layerID-1)
+        print 'Removing duplicates in source and target cell lists of Layers {0} and {1} respectively'.format(self.ID, self.ID-1)
 
         for y in range(self.Y):
             for x in range(self.X):
@@ -795,15 +830,15 @@ class Layer():
                         raise
 
         
-        for y in range(self.parentNetwork.Layers[self.layerID-1].Y):
-            for x in range(self.parentNetwork.Layers[self.layerID-1].X):
-                for f in range(self.parentNetwork.Layers[self.layerID-1].Z):
-                    if self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetPEs.__len__() > 1: # if only for DEBUG
-                        tmpTgtPEs = set(self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetPEs)
-                        self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetPEs = list(tmpTgtPEs)
-                        #print '{0},{1},{2}:targetPe.len() = '.format(f, y, x) + str(self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetPEs.__len__())
-                    tmpTgtCells = set(self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetCells)
-                    self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetCells = list(tmpTgtCells)
+        for y in range(self.parentNetwork.Layers[self.ID-1].Y):
+            for x in range(self.parentNetwork.Layers[self.ID-1].X):
+                for f in range(self.parentNetwork.Layers[self.ID-1].Z):
+                    if self.parentNetwork.Layers[self.ID-1].cells[f][y][x].targetPEs.__len__() > 1: # if only for DEBUG
+                        tmpTgtPEs = set(self.parentNetwork.Layers[self.ID-1].cells[f][y][x].targetPEs)
+                        self.parentNetwork.Layers[self.ID-1].cells[f][y][x].targetPEs = list(tmpTgtPEs)
+                        #print '{0},{1},{2}:targetPe.len() = '.format(f, y, x) + str(self.parentNetwork.Layers[self.ID-1].cells[f][y][x].targetPEs.__len__())
+                    tmpTgtCells = set(self.parentNetwork.Layers[self.ID-1].cells[f][y][x].targetCells)
+                    self.parentNetwork.Layers[self.ID-1].cells[f][y][x].targetCells = list(tmpTgtCells)
 
         ##----------------------------------------------------------------------------------------------------
         ## Sort
@@ -813,18 +848,20 @@ class Layer():
                 for f in range(self.Z):
                     tmpSc = sorted(self.cells[f][y][x].sourceCells, key=operator.attrgetter('absID'))
                     self.cells[f][y][x].sourceCells = tmpSc
-        for y in range(self.parentNetwork.Layers[self.layerID-1].Y):
-            for x in range(self.parentNetwork.Layers[self.layerID-1].X):
-                for f in range(self.parentNetwork.Layers[self.layerID-1].Z):
-                    tmpTc = sorted(self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetCells, key=operator.attrgetter('absID'))
-                    self.parentNetwork.Layers[self.layerID-1].cells[f][y][x].targetCells = tmpTc
+        for y in range(self.parentNetwork.Layers[self.ID-1].Y):
+            for x in range(self.parentNetwork.Layers[self.ID-1].X):
+                for f in range(self.parentNetwork.Layers[self.ID-1].Z):
+                    tmpTc = sorted(self.parentNetwork.Layers[self.ID-1].cells[f][y][x].targetCells, key=operator.attrgetter('absID'))
+                    self.parentNetwork.Layers[self.ID-1].cells[f][y][x].targetCells = tmpTc
 
-        print 'Connections complete from Layer {0} to {1}'.format(self.layerID-1, self.layerID)
+        print 'Connections complete from Layer {0} to {1}'.format(self.ID-1, self.ID)
                         
 
     #----------------------------------------------------------------------------------------------------
     def groupCells(self):
 
+        # Form groups with the same ROI.
+        # The groups will be used to allocate kernel locations
         # start with cell 0 and form a group
         # When the group is full, set the next cell as firstCell and create a new group
         # Stop when we reach the last cell in the layer
@@ -858,6 +895,7 @@ class Layer():
                     group.append(c)
                     groupCount += 1
                 else:
+                    # different ROI
                     groupComplete = True
                     absCellId -= 1  # we have to use this cell as the first cell of the next group
 
@@ -876,13 +914,13 @@ class Layer():
     #----------------------------------------------------------------------------------------------------
     def calculateKernelOffset(self):
         # Determine Kernel overlap at edge of input array
-        if self.layerID != 0:
-            self.kernelLeftOffset = int(((self.parentNetwork.Layers[self.layerID-1].X) - ((self.X-1)*self.stride+self.Kx))/2)
-            self.kernelTopOffset  = int(((self.parentNetwork.Layers[self.layerID-1].Y) - ((self.Y-1)*self.stride+self.Ky))/2)
+        if self.ID != 0:
+            self.kernelLeftOffset = int(((self.parentNetwork.Layers[self.ID-1].X) - ((self.X-1)*self.stride+self.Kx))/2)
+            self.kernelTopOffset  = int(((self.parentNetwork.Layers[self.ID-1].Y) - ((self.Y-1)*self.stride+self.Ky))/2)
         else:
             self.kernelLeftOffset = 0
             self.kernelTopOffset  = 0
-        print 'Layer ', self.layerID, ' left Kernel offset is ', int(self.kernelLeftOffset),  ', top Kernel offset is ', int(self.kernelTopOffset) 
+        print 'Layer ', self.ID, ' left Kernel offset is ', int(self.kernelLeftOffset),  ', top Kernel offset is ', int(self.kernelTopOffset) 
 
     #----------------------------------------------------------------------------------------------------
     def getNumberOfMultiplies(self):
@@ -1019,7 +1057,7 @@ class Layer():
 
     #----------------------------------------------------------------------------------------------------
     def displayPeCellArrangement(self):
-        print 'Layer ', self.layerID, ' PE pixel assignments'
+        print 'Layer ', self.ID, ' PE pixel assignments'
         for y in range(peY):
             for x in range(peX):
                 print '{', y, ',', x, '} : ', self.peArrayXYcellCount[y][x]
@@ -1081,7 +1119,7 @@ class Layer():
 
     #----------------------------------------------------------------------------------------------------
     def displayNumberOfCells(self):
-        print 'Layer ', self.layerID, 'number of cells is ', self.X*self.Y*self.Z
+        print 'Layer ', self.ID, 'number of cells is ', self.X*self.Y*self.Z
 
     #----------------------------------------------------------------------------------------------------
     def createCellTargetPEFile(self):
@@ -1093,7 +1131,7 @@ class Layer():
         dirStr = dirStr + timeStr + '/'
         if not os.path.exists(dirStr) :
             os.makedirs(dirStr)
-        outFile = dirStr + './outputFiles/' + 'layer'+ str(self.layerID) + '_cellTargetList.txt'
+        outFile = dirStr + './outputFiles/' + 'layer'+ str(self.ID) + '_cellTargetList.txt'
 
         oFile = open(outFile, 'w')
         pLine = ''
@@ -1108,7 +1146,7 @@ class Layer():
                     cellCount+=1
                     if len(self.cells[f][y][x].targetPEs.keys()) > 1 :
                         hiLoadCellCount+=1
-                    pLine = pLine + '\n({1:3},{2:3},{3:3}}} : {4:^20} : {5:<100}  \n'.format(self.layerID, f, y, x, len(self.cells[f][y][x].targetPEs.keys()), self.cells[f][y][x].targetPEs.keys())
+                    pLine = pLine + '\n({1:3},{2:3},{3:3}}} : {4:^20} : {5:<100}  \n'.format(self.ID, f, y, x, len(self.cells[f][y][x].targetPEs.keys()), self.cells[f][y][x].targetPEs.keys())
         
         pLine = pLine + '\n\nMulti-PE target Cell counts : {0} : {1}'.format(hiLoadCellCount,cellCount)
         
@@ -1125,7 +1163,7 @@ class Layer():
         dirStr = dirStr + timeStr + '/'
         if not os.path.exists(dirStr) :
             os.makedirs(dirStr)
-        outFile = dirStr + 'layer'+ str(self.layerID) + '_sourceCellList.txt'
+        outFile = dirStr + 'layer'+ str(self.ID) + '_sourceCellList.txt'
         oFile = open(outFile, 'w')
         pLine = ''
         pLine = pLine + '\n{0:^13} : {1:^20} : {2:<100}'.format('Cell', 'Number of', ' Cells')
@@ -1134,7 +1172,7 @@ class Layer():
         for y in range(self.Y):
             for x in range(self.X):
                 for f in range(self.Z):
-                    pLine = pLine + '\n({1:3},{2:3},{3:3}) : {4:^20} : {5:<100}  \n'.format(self.layerID, f, y, x, len(self.cells[f][y][x].sourceCells.keys()), self.cells[f][y][x].sourceCells.keys())
+                    pLine = pLine + '\n({1:3},{2:3},{3:3}) : {4:^20} : {5:<100}  \n'.format(self.ID, f, y, x, len(self.cells[f][y][x].sourceCells.keys()), self.cells[f][y][x].sourceCells.keys())
         
         oFile.write(pLine)
         oFile.close()
@@ -1781,8 +1819,11 @@ class Manager():
         self.memoryROIallocationOptions      = []
         self.memoryKernelallocationOptions   = []
 
+        self.cellGroups = []  # groups of cells with same ROI
+
         for l in range(numberOfLayers):
           self.roiCells.append(None)
+          self.cellGroups.append([])
 
 
     #----------------------------------------------------------------------------------------------------
@@ -1954,6 +1995,80 @@ class Manager():
         # return options which is the next location that would have been used
         return self.currentMemoryAllocationOptions
         
+
+    #----------------------------------------------------------------------------------------------------
+    def groupCells(self, layerID):
+
+        # Form groups with the same ROI.
+        # The groups will be used to allocate kernel locations
+        # start with cell 0 and form a group
+        # When the group is full, set the next cell as firstCell and create a new group
+        # Stop when we reach the last cell in the layer
+
+
+        # we use cell 0,0,0 as first cell so start looking at 1,0,0
+        cCnt = 0
+        numOfCells = self.pe.cellsProcessed[layerID].__len__()
+        while cCnt < numOfCells :
+            # Create the coords of the cell
+            #print '{0}:{1}:new group at {2}'.format(__FILE__(), __LINE__(), cCnt)
+            firstCell = self.pe.cellsProcessed[layerID][cCnt]
+            group = []
+            group.append(firstCell)
+
+            groupCount = 1 # already first cell is on group
+            groupComplete = False
+            cCnt      += 1
+            # make sure the last cell in the list isnt in its own group
+            if cCnt == numOfCells:
+                groupComplete = True
+
+            while not groupComplete:
+                # Get next cell
+                c = self.pe.cellsProcessed[layerID][cCnt]
+                # test if cell has same ROI as current group
+                if (firstCell.sourceCells == c.sourceCells):
+                    group.append(c)
+                    groupCount += 1
+                else:
+                    # different ROI
+                    groupComplete = True
+                    # we have to use this cell as the first cell of the next group
+                    cCnt      -= 1 
+
+                if groupCount == NUMOFEXECLANES:
+                    groupComplete = True
+
+                cCnt      += 1
+
+                if cCnt == numOfCells:
+                    groupComplete = True
+
+            self.cellGroups[layerID].append(group)
+
+    def allocateGroupMemory(self, layerID, allocateOptions):  
+
+        # Take a group and assign each cells kernel to a lane in a page.
+        # Each page has enough words for two arguments and 32 lanes = 2048 bits
+        # The ROI will be fanned out from one page to all lanes and the kernel page will be read
+        # and each word sent to each lane with words arranged in the page as: Word(lane,kernelWord)
+        # word(0,0), word(1,0) ... word(31,0), word(0,1) .. word(31,1)
+        pass
+        # Get kernel dimensions from first cell in the group
+        for g in self.cellGroups[layerID] :
+            kernelDimension = g[0].kernel.dimensions
+            #print kernelDimension
+            for Ky in range(kernelDimension[1]) :
+                for Kx in range(kernelDimension[2]) :
+                    for Kz in range(kernelDimension[0]) :
+                        for c in g :
+                            c.kernel.memoryLocations[Ky][Kx][Kz].channel = allocateOptions.channel
+                            c.kernel.memoryLocations[Ky][Kx][Kz].bank    = allocateOptions.bank
+                            c.kernel.memoryLocations[Ky][Kx][Kz].page    = allocateOptions.page
+                            c.kernel.memoryLocations[Ky][Kx][Kz].word    = allocateOptions.word
+                            allocateOptions.increment(self.memory, self.memory.configuration.sizeOfPage/WORDSIZE)
+
+        return allocateOptions
 
 
     #----------------------------------------------------------------------------------------------------
@@ -2195,8 +2310,8 @@ def main():
     #network.addLayer('Input',          224, 224,    3                       ) #    3 
     #network.addLayer('Convolutional',   55,  55,    4,    8,   8,    3,   4 ) #   96,
     network.addLayer('Input',           55,  55,    4,                      ) #   96,
-    network.addLayer('Convolutional',   27,  27,    8,    5,   5,    4,   2 ) #  256,
-    network.addLayer('Convolutional',   13,  13,    4,    3,   3,    8,   2 ) #  384,
+    network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
+    network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
     #network.addLayer('Convolutional',   13,  13,    2,    3,   3,    4,   1 ) #  384,
     #network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
     #network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
@@ -2208,7 +2323,7 @@ def main():
     # In[31]:
     # Create processing engines and assign each layers cell to the array of PEs
     print '{0}:{1}:Assign PEs:'.format(__FILE__(), __LINE__())
-    network.assignPEs('linearX')
+    network.assignPEs('linearAll')
 
     # Create Manager and assign array memory type
     print '{0}:{1}:Assign Managers:'.format(__FILE__(), __LINE__())
@@ -2238,7 +2353,9 @@ def main():
 
     for l in range(1, network.numberOfLayers):
         print '{0}:{1}:Determine ROI for layer {2}:'.format(__FILE__(), __LINE__(), l)
-        network.peArray.findROIall(l)  
+        network.peArray.findROIall(l)
+        # Form groups with the same ROI.
+        # The groups will be used to allocate kernel locations  
 
     if CREATEANIMATION :
         for l in range(1, network.numberOfLayers):
@@ -2247,7 +2364,7 @@ def main():
             network.peArray.createROIAnimation(l, displayOptions(False))  
             plt.show()
 
-    peMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['c', 'b', 'p', 'w'],
+    peMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['c', 'w', 'b', 'p'],
                                                             channel           =  0                  , 
                                                             channelIncrement  =  1                  , 
                                                             bank              =  0                  , 
@@ -2306,6 +2423,23 @@ def main():
 
     for l in range(1, network.numberOfLayers):
         network.Layers[l].groupCells()
+
+    kernelMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['w', 'c', 'b', 'p'],
+                                                                channel           =  0                  , 
+                                                                channelIncrement  =  1                  , 
+                                                                bank              =  0                  , 
+                                                                bankIncrement     =  2                  , 
+                                                                page              =  0                  , 
+                                                                pageIncrement     =  2                  , 
+                                                                word              =  0                  , 
+                                                                wordIncrement     =  1                  , 
+                                                                padWordRadix2     = False               )
+
+    for l in range(1, network.numberOfLayers):
+        for mgrY in range(network.managerArray.Y):
+            for mgrX in range(network.managerArray.X):
+                rv = network.managerArray.manager[mgrY][mgrX].groupCells(l)
+                rv = network.managerArray.manager[mgrY][mgrX].allocateGroupMemory(l, kernelMemoryAllocationOptions )
 
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
     
