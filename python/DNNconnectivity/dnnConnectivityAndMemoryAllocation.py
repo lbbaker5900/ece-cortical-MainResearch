@@ -390,7 +390,7 @@ class MemoryAllocationOptions():
 
 class Cell():
 
-    def __init__(self, parentLayer, cId, kernelDimensions) :
+    def __init__(self, parentLayer, cId, kernelDimensions, dummy=False) :
         # keep track of the {x,y} location of PE processing this cell
         self.PE              = []
         self.originalCell    = self                             # so copies of cell can communicate with original so we can keep track of copies
@@ -414,6 +414,8 @@ class Cell():
                                    # point to manager where copy is stored
         self.memoryLocation  = MemoryLocation(None,0,0,0,0) # memory location has a pointer to the actual memory and location within that memory
         self.kernel          = Kernel(self, kernelDimensions)
+
+        self.dummy           = dummy
 
     #----------------------------------------------------------------------------------------------------
     # ROI
@@ -549,7 +551,35 @@ class Cell():
 
     def printAllMemory(self):
         roiMemory    = self.printROIcells().split('\n')
+        roiShort     = []
         kernelMemory = self.printKernelMemory().split('\n')
+        kernelShort  = []
+        displayStr     = [[],[]]
+
+        # remove just the data
+        startAdding = False
+        for str in roiMemory :
+            if '--' in str:
+                startAdding = True
+            if startAdding :
+              if not '--' in str:
+                displayStr[0].append(str)
+
+        startAdding = False
+        for str in kernelMemory :
+            if '--' in str:
+                startAdding = True
+            if startAdding :
+              if not '--' in str:
+                displayStr[1].append(str)
+
+        pLine = '\n'
+        pLine = pLine + '\n source cell       ROI Local memory              Kernel Memory                 '.format(self.PE.ID[0], self.PE.ID[1])
+        pLine = pLine + '\n Z   Y   X   | Channel  Bank  Page  Word     | Channel  Bank  Page  Word       '
+        pLine = pLine + '\n-------------------------------------------------------------------------      '
+        for idx in range(displayStr[0].__len__()):
+          pLine = pLine + '\n{0} | {1}'.format(displayStr[0][idx], displayStr[1][idx])
+        return pLine
 
     #----------------------------------------------------------------------------------------------------
 
@@ -568,9 +598,22 @@ class Layer():
         #self.assignType = 'linearX'
 
         # Dimensions of layer
-        self.X = X
-        self.Y = Y
-        self.Z = Z
+        # Keep the actual dimensions in origZ, origY, origX and put the padded dimensions in Z,Y,X
+     
+        self.origX = X
+        self.origY = Y
+        self.origZ = Z
+        # orig.range contains the index of real cells as we do not want to process dummy padded cells
+        self.origXrange = range(X)
+        self.origYrange = range(Y)
+        self.origZrange = range(Z)
+        self.X     = X
+        self.Y     = Y
+        self.Z     = Z
+
+
+        # Keep track of how much we have padded
+        self.padding = np.array([0,0,0])
 
         # Kernels dimensions of layer
         self.Kx = Kx
@@ -578,28 +621,76 @@ class Layer():
         self.Kz = Kz
         self.stride = stride
 
+        # Determine of the input image needs padding
+        kernelOffsets = self.calculateKernelOffset()
+        # we might need to pad input array
+        pad = np.array([0,0,0])
+        if kernelOffsets[1] < 0:
+          print '{0}:{1}:INFO:Layer {2}:Padding each edge of previous layers Y-dimension of input with {3} cells'.format(__FILE__(), __LINE__(), self.ID, abs(kernelOffsets[1]))
+          pad[1] = abs(kernelOffsets[1])
+        if kernelOffsets[2] < 0:
+          print '{0}:{1}:INFO:Layer {2}:Padding each edge of previous layers X-dimension of input with {3} cells'.format(__FILE__(), __LINE__(), self.ID, abs(kernelOffsets[2]))
+          pad[2] = abs(kernelOffsets[2])
+        if max(pad) > 0 :
+            self.parentNetwork.Layers[self.ID-1].padArray(pad)
+
         # create a 3-D grid of cells ( index is {z,y,x} )
+        # This may get padded based on the next layers kernel and stride
         self.cells = []
-        for z in range(Z):
+        for z in range(self.Z):
           yCells = []
-          for y in range(Y):
+          for y in range(self.Y):
             xCells = []
-            for x in range(X):
+            for x in range(self.X):
                 newCell = Cell(self, cId=np.array([z, y, x]), kernelDimensions=np.array([Kz, Ky, Kx]))
                 xCells.append(newCell)
             yCells.append(xCells)
           self.cells.append(yCells)
+
+    def padArray(self, pad):
+
+        # The next layer may add pad to this layers input
+        # we will pad both edges with the same pad value
+        self.padding = pad
+        xPad = pad[2]
+        yPad = pad[1]
+        zPad = pad[0]
+        self.Z = self.origZ + 2*zPad
+        self.Y = self.origY + 2*yPad
+        self.X = self.origX + 2*xPad
+        # orig.range contains the index of real cells as we do not want to process dummy padded cells, so ignore padded dummycells
+        self.origXrange = range(self.padding[2],self.X-self.padding[2])
+        self.origYrange = range(self.padding[1],self.Y-self.padding[1])
+        self.origZrange = range(self.padding[0],self.Z-self.padding[0])
+
+        self.cells = []
+        for z in range(self.Z):
+          yCells = []
+          for y in range(self.Y):
+            xCells = []
+            for x in range(self.X):
+                if x < xPad or y < yPad or z < zPad:
+                    newCell = Cell(self, cId=np.array([z, y, x]), kernelDimensions=np.array([self.Kz, self.Ky, self.Kx]), dummy=True)
+                elif x >= (self.X - xPad) or y >= (self.Y - yPad) or z >= (self.Z - zPad) :
+                    newCell = Cell(self, cId=np.array([z, y, x]), kernelDimensions=np.array([self.Kz, self.Ky, self.Kx]), dummy=True)
+                else :
+                    newCell = Cell(self, cId=np.array([z, y, x]), kernelDimensions=np.array([self.Kz, self.Ky, self.Kx]))
+                xCells.append(newCell)
+            yCells.append(xCells)
+          self.cells.append(yCells)
+
 
     #----------------------------------------------------------------------------------------------------
     # print
 
     def __str__(self):
         pLine = ""
-        pLine = pLine + '\nLayer {0}                    '.format(self.ID)
-        pLine = pLine + '\n{{Z,Y,X}} : {0},{1},{2}      '.format(self.Z, self.Y, self.X)
-        pLine = pLine + '\n{{Kz,Ky,Kx}} : {0},{1},{2}   '.format(self.Kz, self.Ky, self.Kx)
-        pLine = pLine + '\nMethods: {0}                 '.format(methods(self))
-        pLine = pLine + '\nFields: {0}                  '.format(fields(self))
+        pLine = pLine + '\nLayer {0}                           '.format(self.ID)
+        pLine = pLine + '\nPadded {{Z,Y,X}} : {0},{1},{2}      '.format(self.Z, self.Y, self.X)
+        pLine = pLine + '\nOriginal {{Z,Y,X}} : {0},{1},{2}    '.format(self.origZ, self.origY, self.origX)
+        pLine = pLine + '\n{{Kz,Ky,Kx}} : {0},{1},{2}          '.format(self.Kz, self.Ky, self.Kx)
+        pLine = pLine + '\nMethods: {0}                        '.format(methods(self))
+        pLine = pLine + '\nFields: {0}                         '.format(fields(self))
         return pLine
         
 
@@ -654,9 +745,11 @@ class Layer():
  
             # We know the remainder of X/peX is less than peX, so between 0 and 7
             # So now keep iterating by deleting n+1 initially from X to create Xp, we will reach a point where Xp is an integer multiple of l and 8-l multiples of n+1
+
+            # Only process the actual cells not the dummy cells used to pad
             
-            nx=int(np.floor(self.X*self.Z/peX)) # n is the integer part meaning peX-m PE's will be assigned n columns and m PE's will be assigned n+1 cols
-            mx=int(np.remainder(self.X*self.Z, peX))
+            nx=int(np.floor(self.origX*self.origZ/peX)) # n is the integer part meaning peX-m PE's will be assigned n columns and m PE's will be assigned n+1 cols
+            mx=int(np.remainder(self.origX*self.origZ, peX))
             lx=peX-mx         # lx PE's are assigned nx cells, peX-lx are assigned nx+1 cells
           
             for y in range(peY):
@@ -670,8 +763,8 @@ class Layer():
  
  
  
-            ny=int(np.floor(self.Y/peY)) # n is the integer part meaning peX-1 PE's will be assigned n columns and the peXth PE would be assigned X-(peX-1)*n cols
-            my=int(np.remainder(self.Y, peY))
+            ny=int(np.floor(self.origY/peY)) # n is the integer part meaning peX-1 PE's will be assigned n columns and the peXth PE would be assigned X-(peX-1)*n cols
+            my=int(np.remainder(self.origY, peY))
             ly=peY-my
           
             for y in range(peY):
@@ -687,10 +780,10 @@ class Layer():
             #     |-----------------------------------------------------------------------------------------|
             #            n         
             #     |-------------|-------------|-------------|-------------|-------------|-------------|
-            #                                                                                          m~1-7
+            #                                                                                          m~1-63
             #                                                                                         |-----|
-            n=np.floor(self.Y*self.X*self.Z/(peX*peY)) # n is the integer part meaning pe^2-m PE's will be assigned n columns and m PE's will be assigned n+1 cells
-            m=np.remainder(self.Y*self.X*self.Z, (peX*peY))
+            n=np.floor(self.origY*self.origX*self.origZ/(peX*peY)) # n is the integer part meaning pe^2-m PE's will be assigned n columns and m PE's will be assigned n+1 cells
+            m=np.remainder(self.origY*self.origX*self.origZ, (peX*peY))
             l=peY*peX-m         # l PE's are assigned n cells, pe**2-l are assigned n+1 cells
           
             for y in range(peY):
@@ -732,8 +825,8 @@ class Layer():
           
                         # Cycle thru cells assigned to each PE
                         # Here yCell is row and xCell is the cell from a list of X*Z cells
-                        for yCell in range(int(self.peArrayXYcellCount[yPe][xPe][0])):
-                            for xCell in range(int(self.peArrayXYcellCount[yPe][xPe][1])):
+                        for yCell in range(self.padding[1], int(self.peArrayXYcellCount[yPe][xPe][0]) ):
+                            for xCell in range(self.padding[2]*self.Z, int(self.peArrayXYcellCount[yPe][xPe][1]) ):
                                 # divide by number of features to find column x
                                 f=np.remainder(xOffset+xCell,self.Z)
                                 x=int((xOffset+xCell)/self.Z)
@@ -744,50 +837,66 @@ class Layer():
                                     self.cells[f][y][x].PE = self.parentNetwork.peArray.pe[yPe][xPe]
                                     self.parentNetwork.peArray.addCell(np.array([yPe,xPe]), self.ID, np.array([f,y,x]))
                                     #print 'LEE:DEBUG:AddCell', self.ID,':', f ,y ,x
-                                    #print 'LEE:DEBUG:', self.rID,':', yCell, xCell, ':', f ,y ,x, ':', xOffset, yOffset, ':', xPe, yPe, ':', self.peArrayXYcellCount[yPe][xPe], ':', self.Z, self.Y, self.X
+                                    #print 'LEE:DEBUG:', self.rID,':', yCell, xCell, ':', f ,y ,x, ':', xOffset, yOffset, ':', xPe, yPe, ':', self.peArrayXYcellCount[yPe][xPe], ':', self.origZ, self.origY, self.origX
                                 except:
-                                    print 'LEE:ERROR:DEBUG:', self.ID,':', yCell, xCell, f ,y ,x, xOffset, yOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
+                                    print '{0}:{1}:LEE:ERROR:DEBUG:'.format(__FILE__(), __LINE__()), self.ID,':', yCell, xCell, f ,y ,x, xOffset, yOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.origZ, self.origY, self.origX
                                     raise
                         xOffset += int(self.peArrayXYcellCount[yPe][xPe][1])
           
                 yOffset += int(self.peArrayXYcellCount[yPe][xPe][0])
 
         elif (self.assignType == 'linearAll') :
-            xOffset = 0 # keep track of the row and col cell number and construct z,y,x location based on number of features and cells per PE
-            yOffset = 0 
+            # Start by offsetting past the dummy padding cells
+            #xOffset = self.padding[2]*self.Z # keep track of the row and col cell number and construct z,y,x location based on number of features and cells per PE
+            #yOffset = self.padding[1]*self.X*self.Z 
+            offset = self.padding[1]*self.X*self.Z  + self.padding[2]*self.Z
             yPeCurr = 0
             for pe in range(peY*peX):
                 xPe = np.remainder(pe,peX)
                 yPe = pe/peX
 
+                # keep track of the column cell number and construct z,y,x location based on number of features and cells per PE
                 if yPe != yPeCurr :
-                    yOffset += xOffset
-                    xOffset = 0  # keep track of the column cell number and construct z,y,x location based on number of features and cells per PE
+                    #yOffset += xOffset
+                    # When we change rows, skip over the right and left padding dummy cells
+                    #xOffset = (self.padding[2]*self.Z)*2
                     yPeCurr = yPe
                 # We are processing absolute cells yOffset+xOffset+cell
+                # Remember not to include dummy padded cells
                 for cell in range(int(self.peArrayXYcellCount[yPe][xPe][0])):
-                    ca = (cell + xOffset + yOffset)
+                    #ca = (cell + xOffset + yOffset)
                     #print ca
+                    # Increment past dummy cells
+                    dummyCell = True
+                    while dummyCell :
+                        ca = (cell + offset)
+                        f = np.remainder(ca, self.Z)
+                        fa = ca/self.Z
+                        x = np.remainder(fa, self.X)
+                        y = fa/self.X
+                        # if cell is padding, jump past it
+                        if (y not in self.origYrange) or (x not in self.origXrange) :
+                            offset += 1
+                        else :
+                            print y,x,f
+                            dummyCell = False
 
-                    f = np.remainder(ca, self.Z)
-                    fa = ca/self.Z
-                    x = np.remainder(fa, self.X)
-                    y = fa/self.X
                     try: # FIXME
                         self.cells[f][y][x].PE = self.parentNetwork.peArray.pe[yPe][xPe]
                         self.parentNetwork.peArray.addCell(np.array([yPe,xPe]), self.ID, np.array([f,y,x]))
                     except:
-                        print 'LEE:ERROR:DEBUG:', self.ID,':', cell, pe, f ,y ,x, xOffset, xPe, yPe, self.peArrayXYcellCount[yPe][xPe], self.Z, self.Y, self.X
+                        print '{0}:{1}:LEE:ERROR:DEBUG:'.format(__FILE__(), __LINE__()), 'layer ', self.ID,':', cell, pe, ':', f ,y ,x, ':', xOffset, ':', xPe, yPe, ':', self.peArrayXYcellCount[yPe][xPe], ':', self.Z, self.Y, self.X
                         raise
-                xOffset += int(self.peArrayXYcellCount[yPe][xPe][0])
+                #xOffset += int(self.peArrayXYcellCount[yPe][xPe][0])
+                offset += int(self.peArrayXYcellCount[yPe][xPe][0])
 
         # FIXME
         # Check all cells have been assigned a PE
-        for y in range(self.Y):
-            for x in range(self.X):
-                for f in range(self.Z):
+        for y in self.origYrange :
+            for x in self.origXrange :
+                for f in self.origZrange :
                     if isinstance(self.cells[f][y][x].PE, list): # FIXME
-                        print 'LEE:DEBUG:line 550', self.ID,':', f ,y ,x
+                        print '{0}:{1}:LEE:ERROR:DEBUG:'.format(__FILE__(), __LINE__()), self.ID,':', f ,y ,x
                         raise
 
         # sort the cellsProcessed 
@@ -801,19 +910,24 @@ class Layer():
     def generateConnections(self):
         # For each cell in this layer, identify the cells from the previous layer that feed this cell and add this cell's PE
         # to the target list
-        for y in range(self.Y):
+
+        # Now this layer may be padded to accomodate the enxt layer, so only loop thru original layer cells. The extras are marked as dummy.
+        for y in self.origYrange :
             print 'Updating Layer {0} connections'.format(self.ID) + ' for features in row :{0}'.format(y)
-            for x in range(self.X):
+            for x in self.origXrange :
                 #print 'Updating Layer {0} connections'.format(self.ID) + ' for features at row :{0},{1}'.format(y,x)
-                for f in range(self.Z):
+                for f in self.origZrange :
 
                     #print self.stride, self.Ky, self.Kx, self.kernelTopOffset, self.kernelLeftOffset
              
                     # Identify the row and columns of the source cells from layer n-1
                     # We are taking the kernel and moving it across the input
                     # Need to account for the 1st kernel and last kernel being outside the edge of the input
-                    tmpY = range(max(0, self.kernelTopOffset+y*self.stride), min(self.parentNetwork.Layers[self.ID-1].Y, self.kernelTopOffset+y*self.stride+self.Ky))
-                    tmpX = range(max(0, self.kernelLeftOffset+x*self.stride), min(self.parentNetwork.Layers[self.ID-1].X, self.kernelLeftOffset+x*self.stride+self.Kx))
+                    # FIXME: we now pad so there is no kernel offset
+                    #tmpY = range(max(0, self.kernelTopOffset+y*self.stride), min(self.parentNetwork.Layers[self.ID-1].Y, self.kernelTopOffset+y*self.stride+self.Ky))
+                    #tmpX = range(max(0, self.kernelLeftOffset+x*self.stride), min(self.parentNetwork.Layers[self.ID-1].X, self.kernelLeftOffset+x*self.stride+self.Kx))
+                    tmpY = range((y-self.padding[1])*self.stride, (y-self.padding[1])*self.stride+self.Ky)
+                    tmpX = range((x-self.padding[2])*self.stride, (x-self.padding[2])*self.stride+self.Kx)
              
                     # tmpy,tmpX are the X,Y ROI of the cell (f,y,x)
                     # FIXME: this ROI should match the the findROI method which uses the list of sourceCells to construct the ROI
@@ -831,9 +945,13 @@ class Layer():
                     for ySrcCell in tmpY:
                         for xSrcCell in tmpX:
                             for fSrcCell in range(self.parentNetwork.Layers[self.ID-1].Z) :
-             
-                                srcPE   = self.parentNetwork.Layers[self.ID-1].cells[fSrcCell][ySrcCell][xSrcCell].PE
                                 srcCell = self.parentNetwork.Layers[self.ID-1].cells[fSrcCell][ySrcCell][xSrcCell]
+                                try:
+                                    srcPE   = srcCell.PE
+                                except:
+                                    print '{0}:{1}:LEE:ERROR:DEBUG:'.format(__FILE__(), __LINE__()), 'Layer {0}: {1},{2},{3}: {4},{5},{6}: {7},{8}'.format(self.ID, f, y, x, fSrcCell, ySrcCell, xSrcCell, tmpY, tmpX)
+                                    pass
+                                    raise
 
                                 # a) Update source cells target PE list
                                 self.parentNetwork.Layers[self.ID-1].cells[fSrcCell][ySrcCell][xSrcCell].targetPEs.append(self.cells[f][y][x].PE)
@@ -845,10 +963,12 @@ class Layer():
                              
                                 # c) Update this cells source PE list
                                 if isinstance(srcPE, list): # FIXME
-                                    #print __FILE__ + lineNo.__repr__() + 'DEBUG:ERROR: {0}, {1}, {2}'.format(f,y,x)
-                                    print 'Foo line 590: {0},{1},{2}'.format(fSrcCell, ySrcCell, xSrcCell)
-                                    raise
-                                self.cells[f][y][x].sourcePEs.append(srcPE)
+                                    # must be a dummy pad cell, but check to be sure
+                                    if not srcCell.dummy :
+                                        print '{0}:{1}:LEE:ERROR:DEBUG:'.format(__FILE__(), __LINE__()), 'Layer {0}: {1},{2},{3}: {4},{5},{6}: {7},{8}'.format(self.ID, f, y, x, fSrcCell, ySrcCell, xSrcCell, tmpY, tmpX)
+                                        raise
+                                else :
+                                    self.cells[f][y][x].sourcePEs.append(srcPE)
              
                                 # d) Update this cells source cell list
                                 self.cells[f][y][x].sourceCells.append(srcCell)
@@ -959,12 +1079,18 @@ class Layer():
     def calculateKernelOffset(self):
         # Determine Kernel overlap at edge of input array
         if self.ID != 0:
-            self.kernelLeftOffset = int(((self.parentNetwork.Layers[self.ID-1].X) - ((self.X-1)*self.stride+self.Kx))/2)
-            self.kernelTopOffset  = int(((self.parentNetwork.Layers[self.ID-1].Y) - ((self.Y-1)*self.stride+self.Ky))/2)
+            self.kernelXOffset = int(((self.parentNetwork.Layers[self.ID-1].X) - ((self.X-1)*self.stride+self.Kx))/2)
+            self.kernelYOffset  = int(((self.parentNetwork.Layers[self.ID-1].Y) - ((self.Y-1)*self.stride+self.Ky))/2)
         else:
-            self.kernelLeftOffset = 0
-            self.kernelTopOffset  = 0
-        print 'Layer ', self.ID, ' left Kernel offset is ', int(self.kernelLeftOffset),  ', top Kernel offset is ', int(self.kernelTopOffset) 
+            self.kernelXOffset = 0
+            self.kernelYOffset  = 0
+
+        self.kernelZOffset  = 0  # FIXME : assume no Z padding
+
+        return self.kernelZOffset, self.kernelYOffset,  self.kernelXOffset
+
+    def printKernelOffset(self):
+        return 'Layer ', self.ID, ' left Kernel offset is ', int(self.kernelXOffset),  ', top Kernel offset is ', int(self.kernelYOffset) 
 
     #----------------------------------------------------------------------------------------------------
     def getNumberOfMultiplies(self):
@@ -2355,16 +2481,14 @@ def main():
     #network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
     
-    #network.addLayer('Input',          224, 224,    3                       ) #    3 
-    #network.addLayer('Convolutional',   55,  55,    4,    8,   8,    3,   4 ) #   96,
-    network.addLayer('Input',           55,  55,    4,                      ) #   96,
-    network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
-    network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
-    #network.addLayer('Convolutional',   13,  13,    2,    3,   3,    4,   1 ) #  384,
-    #network.addLayer('Fully Connected', 13,  13,    6,    3,   3,    8,   1 ) #  256,
-    #network.addLayer('Fully Connected',  1,   1,    6,   13,  13,    6,   1 ) # 4096,
-    #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    6,   1 ) # 4096,
-    #network.addLayer('Fully Connected',  1,   1,    4,    1,   1,    4,   1 ) # 1024,
+    #network.addLayer('Input',           55,  55,    4,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
+    
+    network.addLayer('Input',           55,  55,    3,                      ) #   96,
+    network.addLayer('Convolutional',   27,  27,   32,    5,   5,    3,   2 ) #  256,
+    network.addLayer('Convolutional',   13,  13,   32,    3,   3,   32,   2 ) #  384,
+    network.addLayer('Convolutional',   13,  13,   32,    3,   3,   32,   1 ) #  384,
     
     
     
@@ -2492,14 +2616,22 @@ def main():
     for l in range(1, network.numberOfLayers):
         for mgrY in range(network.managerArray.Y):
             for mgrX in range(network.managerArray.X):
-                rv = network.managerArray.manager[mgrY][mgrX].groupCells(l)
-                rv = network.managerArray.manager[mgrY][mgrX].allocateGroupMemory(l, kernelMemoryAllocationOptions )
+                network.managerArray.manager[mgrY][mgrX].groupCells(l)
+                # Take last memory location from ROI assignment
+                kernelMemoryAllocationOptions = ROIlastMemory[(mgrY, mgrX)]
+                kernelMemoryAllocationOptions.order         = ['w', 'c', 'b', 'p']
+                kernelMemoryAllocationOptions.padWordRadix2 = False
+                kernelMemoryAllocationOptions.floorField(network.managerArray.manager[mgrY][mgrX].memory, 0, 'word')
+                ROIlastMemory[(mgrY, mgrX)] = network.managerArray.manager[mgrY][mgrX].allocateGroupMemory(l, kernelMemoryAllocationOptions)
 
+    """
     for y in range(1):
       for x in range(4):
         for z in range(3):
           p = network.Layers[1].cells[z][y][x].printKernelMemory()
           print p
+    """
+    print network.Layers[1].cells[0][0][0].printAllMemory()
 
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
     
