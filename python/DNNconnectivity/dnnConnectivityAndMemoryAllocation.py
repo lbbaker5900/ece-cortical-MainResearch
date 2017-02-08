@@ -362,18 +362,18 @@ class MemoryAllocationOptions():
                           incNext = False
   
 
-    def floorField(self, memory, numOfFeatures, floorField):
+    def ceilingField(self, memory, numOfFeatures, ceilingField):
         
-        if floorField == 'channel' :
+        if ceilingField == 'channel' :
             while(self.channel != 0):
                 self.increment(memory, numOfFeatures)
-        elif floorField == 'bank' :
+        elif ceilingField == 'bank' :
             while(self.bank != 0):
                 self.increment(memory, numOfFeatures)
-        elif floorField == 'page' :
+        elif ceilingField == 'page' :
             while(self.page != 0):
                 self.increment(memory, numOfFeatures)
-        elif floorField == 'word' :
+        elif ceilingField == 'word' :
             while(self.word != 0):
                 self.increment(memory, numOfFeatures)
 
@@ -507,8 +507,10 @@ class Cell():
                 # FIXME: assumption is that '==' compares pointers
                 # if the ROI cell is in the original input ROI and resides in the managers memory who is processing this cell
                 if (ct.absID == sc.absID) and (ct.memoryLocation.memory == self.PE.manager.memory):
-      
-                    pLine = pLine + '\n{0:^3} {1:^3} {2:^3}  | {3:^7}   {4:^4}  {5:^4}  {6:^4}   '.format(ct.ID[0], ct.ID[1], ct.ID[2], ct.memoryLocation.channel, ct.memoryLocation.bank, ct.memoryLocation.page, ct.memoryLocation.word)
+                    if ct.dummy  :
+                        pLine = pLine + '\n{0:^3} {1:^3} {2:^3} {7:1}  | {3:^7}   {4:^4}  {5:^4}  {6:^4}  '.format(ct.ID[0], ct.ID[1], ct.ID[2], ct.memoryLocation.channel, ct.memoryLocation.bank, ct.memoryLocation.page, ct.memoryLocation.word,'*')
+                    else :
+                        pLine = pLine + '\n{0:^3} {1:^3} {2:^3} {7:1}  | {3:^7}   {4:^4}  {5:^4}  {6:^4}  '.format(ct.ID[0], ct.ID[1], ct.ID[2], ct.memoryLocation.channel, ct.memoryLocation.bank, ct.memoryLocation.page, ct.memoryLocation.word,' ')
         pLine = pLine + '\n-------------------------------------------------------'
         return pLine
 
@@ -581,6 +583,26 @@ class Cell():
           pLine = pLine + '\n{0} | {1}'.format(displayStr[0][idx], displayStr[1][idx])
         return pLine
 
+    def createAllMemoryFile(self):
+
+        timeStr = time.strftime("%Y%m%d")  # just today
+        dirStr = './outputFiles/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + timeStr + '/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + 'manager_{0}_{1}/'.format(self.PE.ID[0], self.PE.ID[1])
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        outFile = dirStr + 'manager_{0}_{1}_layer{2}_cell_{3}_{4}_{5}_AllProcessedMemory.txt'.format(self.PE.ID[0], self.PE.ID[1], self.layerID, self.ID[1], self.ID[2], self.ID[0])
+
+        oFile = open(outFile, 'w')
+
+        pLine = self.printAllMemory()
+        
+        oFile.write(pLine)
+        oFile.close()
     #----------------------------------------------------------------------------------------------------
 
 
@@ -878,7 +900,7 @@ class Layer():
                         if (y not in self.origYrange) or (x not in self.origXrange) :
                             offset += 1
                         else :
-                            print y,x,f
+                            #print y,x,f
                             dummyCell = False
 
                     try: # FIXME
@@ -2280,6 +2302,84 @@ class Manager():
         oFile.close()
 
 
+    def printAllGroupMemory(self, layerID, group):
+  
+        # get the ROI of the first cell in the group (they are all the same) and print
+        # Then get the memory for all the cells kernels and concatenate in one file
+        
+        try:
+            firstCell = self.cellGroups[layerID][group][0]
+        except:
+            print '{0}:{1}:ERROR:No group {2}??'.format(__FILE__(), __LINE__(), group)
+            raise
+
+        roiMemory    = firstCell.printROIcells().split('\n')
+        roiShort     = []
+
+        # Create the displayStr array
+        displayStr     = [[]]  # first column is ROI address
+        for i in range(self.cellGroups[layerID][group].__len__()): 
+            displayStr.append([])     # add column for each cell in the group
+
+        # remove just the data
+        startAdding = False
+        for str in roiMemory :
+            if '--' in str:
+                startAdding = True
+            if startAdding :
+              if not '--' in str:
+                displayStr[0].append(str)
+
+        idx = 1
+        for gc in self.cellGroups[layerID][group]:
+            kernelMemory = gc.printKernelMemory().split('\n')
+            startAdding = False
+            for str in kernelMemory :
+                if '--' in str:
+                    startAdding = True
+                if startAdding :
+                  if not '--' in str:
+                    displayStr[idx].append(str)
+            idx += 1
+
+        pLine = '\n'
+        pLine = pLine + '\n source cell   |     ROI Local memory         '
+        for gc in self.cellGroups[layerID][group]:
+            pLine = pLine + '|   Kernel Memory {0:>3},{1:>3},{2:>3}   '.format(gc.ID[1], gc.ID[2], gc.ID[0])
+        pLine = pLine + '\n Z   Y   X     | Channel  Bank  Page  Word    '
+        for cell in range(1,idx) :
+            pLine = pLine + '| Channel  Bank  Page  Word     '
+        pLine = pLine + '\n-------------------------------------------'
+        for cell in range(1,idx) :
+            pLine = pLine + '--------------------------------------------'
+        for row in range(displayStr[0].__len__()):
+            pLine = pLine + '\n{0} | '.format(displayStr[0][row])
+            for col in range(1,idx) :
+                pLine = pLine + '{0} | '.format(displayStr[col][row])
+        return pLine
+
+    def createAllGroupMemoryFile(self, layerID, group):
+
+        timeStr = time.strftime("%Y%m%d")  # just today
+        dirStr = './outputFiles/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + timeStr + '/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + 'manager_{0}_{1}/'.format(self.ID[0], self.ID[1])
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        outFile = dirStr + 'manager_{0}_{1}_layer{2}_group_{3}_AllGroupMemory.txt'.format(self.ID[0], self.ID[1], layerID, group)
+
+        oFile = open(outFile, 'w')
+
+        pLine = self.printAllGroupMemory(layerID, group)
+        
+        oFile.write(pLine)
+        oFile.close()
+  
+
 ########################################################################################################################
 #----------------------------------------------------------------------------------------------------
 # NETWORK
@@ -2621,7 +2721,7 @@ def main():
                 kernelMemoryAllocationOptions = ROIlastMemory[(mgrY, mgrX)]
                 kernelMemoryAllocationOptions.order         = ['w', 'c', 'b', 'p']
                 kernelMemoryAllocationOptions.padWordRadix2 = False
-                kernelMemoryAllocationOptions.floorField(network.managerArray.manager[mgrY][mgrX].memory, 0, 'word')
+                kernelMemoryAllocationOptions.ceilingField(network.managerArray.manager[mgrY][mgrX].memory, 0, 'word')
                 ROIlastMemory[(mgrY, mgrX)] = network.managerArray.manager[mgrY][mgrX].allocateGroupMemory(l, kernelMemoryAllocationOptions)
 
     """
@@ -2631,7 +2731,12 @@ def main():
           p = network.Layers[1].cells[z][y][x].printKernelMemory()
           print p
     """
-    print network.Layers[1].cells[0][0][0].printAllMemory()
+    """
+    for z in range(32):
+        network.Layers[1].cells[z][0][0].createAllMemoryFile()
+    """
+    rv =  network.managerArray.manager[0][0].printAllGroupMemory(1,0)
+    network.managerArray.manager[0][0].createAllGroupMemoryFile(1,0)
 
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
     
