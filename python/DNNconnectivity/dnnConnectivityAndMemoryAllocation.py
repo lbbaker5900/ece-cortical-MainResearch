@@ -45,9 +45,6 @@ WORDSIZE = 32
 NUMOFEXECLANES = 32
 
 
-
-DEBUG = []
-
 ## Create __FILE__ and __LINE__ for prints
 ## citation:http://stackoverflow.com/questions/6810999/how-to-determine-file-function-and-line-number
 def __LINE__():
@@ -481,7 +478,10 @@ class Cell():
         pLine = ""
         pLine = pLine + '\nCell:{0},{1},{2}                                               '.format(self.ID[0], self.ID[1], self.ID[2])
         pLine = pLine + '\nLayer:{0}                                                      '.format(self.layerID)
-        pLine = pLine + '\nPE{{Y,X}} : {0},{1}                                            '.format(self.PE.ID[0], self.PE.ID[1])
+        if isinstance(self.PE, list) :  # check if cell is assigned. original cells do not get assigned to a PE only ones that have been copied
+            pLine = pLine + '\nPE{{Y,X}} : Not assigned (probably original cell)          '
+        else :
+            pLine = pLine + '\nPE{{Y,X}} : {0},{1}                                            '.format(self.PE.ID[0], self.PE.ID[1])
         pLine = pLine + '\nMemory:{{Ch, Bank, Page, Word}}:{0},{1},{2},{3}                '.format(self.memoryLocation.channel, self.memoryLocation.bank, self.memoryLocation.page, self.memoryLocation.word)
         pLine = pLine + '\nroi || roiFromSrcCells(findROI()) coords : {0} {1} || {2},{3}  '.format(self.roi[0], self.roi[1], self.roiFromSrcCells[0], self.roiFromSrcCells[1] )
         pLine = pLine + '\nMethods: {0}                                                   '.format(methods(self))
@@ -1380,8 +1380,9 @@ class PE():
     def __init__(self, parentPEarray, numberOfLayers, peId):
         self.ID = peId
 
-        self.processedRegion = []
+        #self.processedRegion = []
         self.roi             = []  # array([ {z,y,x}min, {z,y,x}max ])
+
         # Each element of roi grid will be the same size as the input with each bit indicating the cell is in the ROI
         self.roiGrid         = []
 
@@ -1390,7 +1391,7 @@ class PE():
         # cellsProcessed is a vector with each entry being a list of cells this PE processes at a particular layer
         for l in range(numberOfLayers):
           self.cellsProcessed.append([])
-          self.processedRegion.append([])
+          #self.processedRegion.append([])
           self.roi.append([])
           self.roiGrid.append([])
 
@@ -1456,8 +1457,8 @@ class PE():
         # Right now, all ROIs should contain all features, so test that the last cell has a Z value that is the same as the previos layers Z value
         # remember, layer dimensions are total, so max feature number will be Z-1
         if (self.roi[layerID][1][0] != self.parentPEarray.parentNetwork.Layers[layerID-1].Z-1):
-          print '{0}:{1}:ERROR:roi does not include all features'.format(__FILE__(), __LINE__())
-          print '{0}:{1}:ERROR:ROI and previous layer info:'.format(__FILE__(), __LINE__(), self.roi[layerID][1], self.parentPEarray.parentNetwork.Layers[layerID-1])
+          print '{0}:{1}:ERROR:roi does not include all features  '.format(__FILE__(), __LINE__())
+          print '{0}:{1}:ERROR:ROI and previous layer info:       '.format(__FILE__(), __LINE__(), self.roi[layerID][1], self.parentPEarray.parentNetwork.Layers[layerID-1])
           raise
 
         """
@@ -1503,7 +1504,7 @@ class PE():
         else:
             return self.roi[layerID]
 
-
+    """
     def findCellsProcessedRegion(self, layerID):
         minx = np.inf
         miny = np.inf
@@ -1521,6 +1522,7 @@ class PE():
         self.processedRegion[layerID] = np.array([miny, maxy, minx, maxx] )
         return self.processedRegion[layerID]
         #print minx, ",", maxx, ",", miny, ",", maxy
+    """
 
 
     #----------------------------------------------------------------------------------------------------
@@ -1663,7 +1665,7 @@ class PE():
          return self.getROIgridRegion(layerID, coords)
 
     #----------------------------------------------------------------------------------------------------
-    
+    """
     def displayCellsProcessedRegion(self, layerID, coords, noDisplay):
 
         # Return fig,plt,array if noDisplay is False
@@ -1734,6 +1736,7 @@ class PE():
     def displayCellsProcessed(self, layerID, noDisplay):
         coords = np.array([[0,0],[self.parentPEarray.parentNetwork.Layers[layerID].Y-1, self.parentPEarray.parentNetwork.Layers[layerID].X-1]])
         return self.displayCellsProcessedRegion(layerID, coords, noDisplay)
+    """
 
 ########################################################################################################################
 #----------------------------------------------------------------------------------------------------
@@ -2121,7 +2124,7 @@ class Manager():
             copiedCell = copy_copy(sc)
             # Temporarily add the absolute value of the cell to allow sorting
             # FIXME: absID is now one of the cell fields
-            copiedCell.absID = sc.ID[1]*roiLayerX*roiLayerZ + sc.ID[2]*roiLayerZ + sc.ID[0]
+            #copiedCell.absID = sc.ID[1]*roiLayerX*roiLayerZ + sc.ID[2]*roiLayerZ + sc.ID[0]
             # copied Cell will be in different manager and memory location and we only did a shallow copy
             copiedCell.managerLocation = self
             copiedCell.memoryLocation  = MemoryLocation(None,0,0,0,0) # just provide dummy memory for now
@@ -2428,7 +2431,7 @@ class Network():
         # assign PE's to each cell of each layer
         for l in self.Layers:
             l.assignPEs(self.peX,self.peY, cellAssignType)
-            l.calculateKernelOffset()
+            #l.calculateKernelOffset()
 
     def assignManagers(self, memoryType):
         #----------------------------------------------------------------------------------------------------
@@ -2544,11 +2547,6 @@ def main():
 # to run within python
 # if True:
     
-    # In[1]:
-    
-    
-    
-    # In[29]:
     
     try:
         reload(dc)
@@ -2556,22 +2554,54 @@ def main():
     except Exception:
         print 'dc not loaded yet'
     
-    
-    # In[30]:
-    CREATEFILES = False
+    ########################################################################################################################
+    ## Globals
+
+
+    CREATEFILES     = False
     CREATEANIMATION = False
-    WORDSIZE = 32
+    DEBUG           = False
+    RUNCHECKS       = True
+
+    ########################################################################################################################
+
     import dnnConnectivityAndMemoryAllocation as dc
     import numpy as np
     
-    # Create memory
+    #------------------------------------------------------------------------------------------------------------------------
+    # Create main system memory
+    # In practice, this holds the input image. Portions of the input image are transferred to each Manager/PE based on aggregating
+    # the ROI of each cell processed by the manager/PE 
     mainMemoryConfig = dc.MemoryConfiguration(numOfChannels=2,numOfBanksPerChannel=32,numOfPagesPerBank=128,sizeOfPage=4096)
     mainMemory = dc.Memory(mainMemoryConfig)
     
+    #------------------------------------------------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------------------------------------------------
     # Create DNN
+
+    #------------------------------------------------------------------------------------------------------------------------
+    # Create Network
+
+    # This only creates a network class with a few empty fields such as number of layers
+    # The number of PE's are defaulted to 8x8 (peY=8, peX=8). These can be changed by providing values in the arguments.
+    # No objects
     network = dc.Network()
+
+    #------------------------------------------------------------------------------------------------------------------------
+    # Create Layers
+
+    # We now add layers. For each layer added, create an array of cell objects.
+    # The dimensions of the Layers cells are stored in three sets of z,y,x fields
+    #   Z,Y,X                              : this is the dimension of the cell array after it has been padded to accomodate the dimensiosn and stride of the next layer
+    #   origZ,origY,origX                  : this is the original dimension of the cell array prior to padding
+    #   origZrange, origYrange, origXrange : a list of indexes of "real" cells within the padded array
+
+    # For alllayers except zero, the previous layer is checked to see if the kernels fit exactly into the previous layers array of cells.
+    # If it doesnt fit, it pads the previous layer by adding dummy cells.
+    # Each cell has a z,y,x ID and an absolute ID starting from 0,0,0.
+    # Each cell has a memory location which is initialized to null and a kernel with an array of null memory locations based on the dimensions of the kernel
     #                                    X    Y    Z    Kx   Ky   Kz   stride
-    #network.addLayer('Input',          224, 224,    3                       ) #    3 
+    #network.addLayer('Input',          224, 224,    3                       ) #    3 First layer does not have a kernel
     #network.addLayer('Convolutional',   55,  55,   96,   11,  11,    3,   4 ) #   96,
     #network.addLayer('Convolutional',   27,  27,  256,    5,   5,   96,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,  384,    3,   3,  256,   2 ) #  384,
@@ -2581,36 +2611,226 @@ def main():
     #network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
     
-    #network.addLayer('Input',           55,  55,    4,                      ) #   96,
-    #network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
-    #network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
+    network.addLayer('Input',           55,  55,    4,                      ) #   96,
+    network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
+    network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
+    network.addLayer('Convolutional',   13,  13,  8,    3,   3,   8,   1 ) #  384,
     
-    network.addLayer('Input',           55,  55,    3,                      ) #   96,
-    network.addLayer('Convolutional',   27,  27,   32,    5,   5,    3,   2 ) #  256,
-    network.addLayer('Convolutional',   13,  13,   32,    3,   3,   32,   2 ) #  384,
-    network.addLayer('Convolutional',   13,  13,   32,    3,   3,   32,   1 ) #  384,
+    #network.addLayer('Input',           55,  55,    3,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,   32,    5,   5,    3,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,   32,    3,   3,   32,   2 ) #  384,
+    #network.addLayer('Convolutional',   13,  13,   32,    3,   3,   32,   1 ) #  384,
     
     
     
-    # In[31]:
+    #------------------------------------------------------------------------------------------------------------------------
+    # Create PEs and assign cells for each layer
+
     # Create processing engines and assign each layers cell to the array of PEs
+    # Creates an array of PE objects based on peY and peX.
+    # For each layer, assigns a PE to process each cell in that layer. Each PE has a cellsProcessed list. When assigning, padded dummy cells are ignored.
     print '{0}:{1}:Assign PEs:'.format(__FILE__(), __LINE__())
     network.assignPEs('linearAll')
 
-    # Create Manager and assign array memory type
+
+    #------------------------------------------------------------------------------------------------------------------------
+    # Create Managers 
+
+    # Create Managers with memory and assign array memory type
+    # Will contain a roiCells list which is a list of cells that are used as input to the PE associated with the manager.
+    # Will contain a cellGroups list which is a list of cells processed by the associated PE that share a common ROI
+
     print '{0}:{1}:Assign Managers:'.format(__FILE__(), __LINE__())
     #mgrMemoryConfig = dc.MemoryConfiguration(numOfChannels=2,numOfBanksPerChannel=32,numOfPagesPerBank=4096,sizeOfPage=4096)
     mgrMemoryConfig = dc.MemoryConfiguration(numOfChannels=2,numOfBanksPerChannel=32,numOfPagesPerBank=128,sizeOfPage=4096)
     network.assignManagers(mgrMemoryConfig)
     
     
-    # In[32]:
-    
+    #------------------------------------------------------------------------------------------------------------------------
+    # Create connections
+
+    # parses each "real" cell in the layer and updates fields
+    #   all the cells that connect to the "real" cell have their targetPE and targetCells lists update
+    #   the "real" cells sourceCell and sourcePE lists are updated with the list of source cells and the PE's that contain the source cells state
+    #   any lists of cells are sorted by their absolute ID
+
     for l in range(1, network.numberOfLayers):
       print '{0}:{1}:Generate connections for layer {2}:'.format(__FILE__(), __LINE__(), l)
       network.Layers[l].generateConnections()
     
     
+
+    #------------------------------------------------------------------------------------------------------------------------
+    #  at this point the network contains all connection information
+    #------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+    #------------------------------------------------------------------------------------------------------------------------
+    # DMA main to local memory
+
+
+    #----------------------------------------------------------------
+    # 1) Make copies of the ROI cells 
+
+    # For each cell processed in a manager, make a copy of the cell and place in the managers roiCells[<layer>] list
+    # This simply makes copies of the cells, the actual memory locations are performed later by allocateRoiMemory
+
+    for mgrY in range(network.managerArray.Y):
+        for mgrX in range(network.managerArray.X):
+            print '{0}:{1}:Mem cpy ROI and memory allocations for manager {2},{3}'.format(__FILE__(), __LINE__(), mgrY, mgrX)
+            for l in range(1, network.numberOfLayers):
+
+                # Copy aggregate ROI from main memory to local manager memory
+                rv = network.managerArray.manager[mgrY][mgrX].memCpyROI(l)
+
+
+
+    #----------------------------------------------------------------
+    # 2) ROI cell Memory Assignment
+
+    # For each ROI in a manager, assign a memory location 
+    #    - parse the sorted roiCells list
+    #    - assignment is based on some memory allocation options 
+    #      e.g. typcally for ROI, we are placing each cell in consequitve words as these are broadcast to a list of grouped cells
+
+    # 2)a)
+    # Create an array of options as a start point for each managers memory ROI allocation
+
+    # as we allocate memory for a layer ROI copied from main memory, the allocate memory routine will return the next memory location avaliable
+    # this will be the start point for the next layers memoryAllocation
+    peMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['c', 'w', 'b', 'p'],
+                                                            channel           =  0                  , 
+                                                            channelIncrement  =  1                  , 
+                                                            bank              =  0                  , 
+                                                            bankIncrement     =  2                  , 
+                                                            page              =  0                  , 
+                                                            pageIncrement     =  2                  , 
+                                                            word              =  0                  , 
+                                                            wordIncrement     =  1                  , 
+                                                            padWordRadix2     = True                )
+
+    ROIlastMemory = dict() # key will be (layer, mgrY, mgrX)
+    for mgrY in range(network.managerArray.Y):
+        for mgrX in range(network.managerArray.X):
+            mgrMemOptions = copy_copy(peMemoryAllocationOptions)
+            ROIlastMemory[(mgrY, mgrX)] = mgrMemOptions 
+
+
+    # 2)b) Assign the managers list of roi cells to a memory location based on the parameters in ROIlastMemory[<mgrY>][<mgrX>]
+
+    for mgrY in range(network.managerArray.Y):
+        for mgrX in range(network.managerArray.X):
+            print '{0}:{1}:Mem cpy ROI and memory allocations for manager {2},{3}'.format(__FILE__(), __LINE__(), mgrY, mgrX)
+            for l in range(1, network.numberOfLayers):
+
+                # Copy aggregate ROI from main memory to local manager memory
+                #rv = network.managerArray.manager[mgrY][mgrX].memCpyROI(l)
+
+                ROIlastMemory[(mgrY, mgrX)] = network.managerArray.manager[mgrY][mgrX].allocateRoiMemory(l, ROIlastMemory[(mgrY, mgrX)])
+
+                    
+
+    #------------------------------------------------------------------------------------------------------------------------
+    # Kernel Manager memory assignments
+
+    # Use the memory configuration used during ROI memory assignment
+    #  - kernels are stored on a lane basis, so change the memory assignment to increment word by 32
+    #    and word increment first in order
+    #  - do not store on radix2 alignment
+    #  - First create groups of cells that share the same ROI.
+    #    Then store each kernel ofset in the page by the cell number in the group
+    # 
+
+    for l in range(1, network.numberOfLayers):
+        for mgrY in range(network.managerArray.Y):
+            for mgrX in range(network.managerArray.X):
+                network.managerArray.manager[mgrY][mgrX].groupCells(l)
+                # Take last memory location from ROI assignment
+                kernelMemoryAllocationOptions = ROIlastMemory[(mgrY, mgrX)]
+                kernelMemoryAllocationOptions.order         = ['w', 'c', 'b', 'p']
+                kernelMemoryAllocationOptions.padWordRadix2 = False
+                kernelMemoryAllocationOptions.ceilingField(network.managerArray.manager[mgrY][mgrX].memory, 0, 'word')
+                ROIlastMemory[(mgrY, mgrX)] = network.managerArray.manager[mgrY][mgrX].groupCells(l)
+                ROIlastMemory[(mgrY, mgrX)] = network.managerArray.manager[mgrY][mgrX].allocateGroupMemory(l, kernelMemoryAllocationOptions)
+
+
+
+
+    #------------------------------------------------------------------------------------------------------------------------
+    #  at this point the states of each cell in the layers are assigned in menmory along with each cells Kernel weights
+    #------------------------------------------------------------------------------------------------------------------------
+
+
+    #------------------------------------------------------------------------------------------------------------------------
+    # File Creation
+
+    if CREATEFILES :
+        layerID = 1
+        l = layerID
+                
+        for l in range(1, network.numberOfLayers):
+            for mgrY in range(network.managerArray.Y):
+                for mgrX in range(network.managerArray.X):
+                    for grp in range(network.managerArray.manager[mgrY][mgrX].cellGroups.__len__()):
+                        network.managerArray.manager[mgrY][mgrX].createAllGroupMemoryFile(l,grp)
+
+    if CREATEFILES and DEBUG:
+        # For a
+        pYmin = 0  # .1
+        pYmax = 1  # .3
+        pXmin = 0  # .1
+        pXmax = 1  # .3
+        print '{0}:{1}:Create memory locations for layer {2}'.format(__FILE__(), __LINE__(), l)
+        for y in   range(int(network.Layers[l].Y*pYmin), int(network.Layers[l].Y*pYmax)) :
+          for x in range(int(network.Layers[l].X*pXmin), int(network.Layers[l].X*pXmax)) :
+            for z in range(network.Layers[l].Z) :
+
+                #print '{0}:{1}:Create ROI memory locations for layer {2}, cell {3},{4},{5}'.format(__FILE__(), __LINE__(), l, z, y, x)
+                network.Layers[l].cells[z][y][x].createROIcellsFile()
+
+                # create a file that contains the memory location and the source cell ID of all the cells in the entire ROI of the manager/PE
+                # Uses the managers roiCells[<layer>] list
+                network.managerArray.manager[mgrY][mgrX].createRoiMemoryAllocationFile(l)
+
+
+    #------------------------------------------------------------------------------------------------------------------------
+    # Checks
+
+    # anything to make sure the code works
+    if RUNCHECKS :
+        # Make sure all cells are assigned to a group
+        # Create a list from all the groups then test if each original cell is in the group
+        # Also make sure dummy cells are NOT in a group
+        layerID = 1
+        l = layerID
+        for l in range(1, network.numberOfLayers):
+            print '{0}:{1}:INFO:Making sure no dummy cells in layer {2} are in a manager cell group'.format(__FILE__(), __LINE__(), l)
+            aggregateGroup = []
+            for mgrY in range(network.managerArray.Y):
+                for mgrX in range(network.managerArray.X):
+                    for grp in network.managerArray.manager[mgrY][mgrX].cellGroups[l]:
+                        aggregateGroup = aggregateGroup + grp
+            # Create a list of original cells
+            aggOrigCellList = []
+            for cc in aggregateGroup :
+                aggOrigCellList.append(cc)
+            layerCells = network.Layers[l].cells
+            for z in range(layerCells.__len__()):
+                for y in range(layerCells[0].__len__()):
+                    for c in layerCells[z][y] :
+                        cellInList = c in aggregateGroup
+                        if c.dummy and cellInList:
+                            print '{0}:{1}:ERROR:layer {2} dummy cell {3},{4},{5} in a cell group'.format(__FILE__(), __LINE__(), l, y,x,z)
+                        if (not c.dummy) and (not cellInList):
+                            print '{0}:{1}:ERROR:layer {2} real cell {3},{4},{5} not in a cell group'.format(__FILE__(), __LINE__(), l, y,x,z)
+
+
+    #------------------------------------------------------------------------------------------------------------------------
+    # Misc
+
+    """
     # In[33]:
     
     peX = 0
@@ -2622,6 +2842,8 @@ def main():
     #  network.peArray.pe[peY][peX].displayROIgrid(l)
     #  plt.show()
 
+    #------------------------------------------------------------------------------------------------------------------------
+    # 
 
     for l in range(1, network.numberOfLayers):
         print '{0}:{1}:Determine ROI for layer {2}:'.format(__FILE__(), __LINE__(), l)
@@ -2647,83 +2869,13 @@ def main():
                                                             wordIncrement     =  1                  , 
                                                             padWordRadix2     = True                )
 
-    # create an array of options as a start point for each managers memory ROI allocation
-    managerMemoryOptions = []
-    for mgrY in range(network.managerArray.Y):
-        mgrOptionArrayX = []
-        for mgrX in range(network.managerArray.X):
-            mgrMemOptions = copy_copy(peMemoryAllocationOptions)
-            mgrOptionArrayX.append(mgrMemOptions)
-        managerMemoryOptions.append(mgrOptionArrayX)
-
-    # as we allocate memory for the ROI copied from main memory, the allocate memory routine will return the next memory location avaliable
-    # this will be the start point for the next memoryAllocation
-    ROIlastMemory = dict() # key will be (layer, mgrY, mgrX)
-    for mgrY in range(network.managerArray.Y):
-        for mgrX in range(network.managerArray.X):
-            #peMemOptions = new peMemoryAllocationOptions 
-            ROIlastMemory[(mgrY, mgrX)] = peMemoryAllocationOptions 
-
-    layerID = 1
-    mgrX = 1
-    mgrY = 0
-    for mgrY in range(network.managerArray.Y):
-        for mgrX in range(network.managerArray.X):
-            print '{0}:{1}:Mem cpy ROI and memory allocations for manager {2},{3}'.format(__FILE__(), __LINE__(), mgrY, mgrX)
-            for l in range(1, network.numberOfLayers):
-                # Copy aggregate ROI from main memory to local manager memory
-                rv = network.managerArray.manager[mgrY][mgrX].memCpyROI(l)
-                ROIlastMemory[(mgrY, mgrX)] = network.managerArray.manager[mgrY][mgrX].allocateRoiMemory(l, ROIlastMemory[(mgrY, mgrX)])
-                if CREATEFILES :
-                    network.managerArray.manager[mgrY][mgrX].createRoiMemoryAllocationFile(l)
-                # Assign kernel memory
-                #print '{0}:{1}:Assign Kernel memory for each cell for layer {2}, manager {3},{4}'.format(__FILE__(), __LINE__(), l, mgrY, mgrX)
-                
-                    
-    l = layerID
-    pYmin = 0  # .1
-    pYmax = 1  # .3
-    pXmin = 0  # .1
-    pXmax = 1  # .3
-    print '{0}:{1}:Create ROI memory locations for layer {2}'.format(__FILE__(), __LINE__(), l)
-    for y in   range(int(network.Layers[l].Y*pYmin), int(network.Layers[l].Y*pYmax)) :
-      for x in range(int(network.Layers[l].X*pXmin), int(network.Layers[l].X*pXmax)) :
-        for z in range(network.Layers[l].Z) :
-            if CREATEFILES :
-                #print '{0}:{1}:Create ROI memory locations for layer {2}, cell {3},{4},{5}'.format(__FILE__(), __LINE__(), l, z, y, x)
-                network.Layers[l].cells[z][y][x].createROIcellsFile()
-
     """
-    for l in range(1, network.numberOfLayers):
-        network.Layers[l].groupCells()
-    """
-    """
-    kernelMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['w', 'c', 'b', 'p'],
-                                                                channel           =  0                  , 
-                                                                channelIncrement  =  1                  , 
-                                                                bank              =  0                  , 
-                                                                bankIncrement     =  2                  , 
-                                                                page              =  0                  , 
-                                                                pageIncrement     =  2                  , 
-                                                                word              =  0                  , 
-                                                                wordIncrement     =  1                  , 
-                                                                padWordRadix2     = False               )
+
     """
     kernelMemoryAllocationOptions = peMemoryAllocationOptions 
     kernelMemoryAllocationOptions.order         = ['w', 'c', 'b', 'p']
     kernelMemoryAllocationOptions.padWordRadix2 = False
-
-    for l in range(1, network.numberOfLayers):
-        for mgrY in range(network.managerArray.Y):
-            for mgrX in range(network.managerArray.X):
-                network.managerArray.manager[mgrY][mgrX].groupCells(l)
-                # Take last memory location from ROI assignment
-                kernelMemoryAllocationOptions = ROIlastMemory[(mgrY, mgrX)]
-                kernelMemoryAllocationOptions.order         = ['w', 'c', 'b', 'p']
-                kernelMemoryAllocationOptions.padWordRadix2 = False
-                kernelMemoryAllocationOptions.ceilingField(network.managerArray.manager[mgrY][mgrX].memory, 0, 'word')
-                ROIlastMemory[(mgrY, mgrX)] = network.managerArray.manager[mgrY][mgrX].allocateGroupMemory(l, kernelMemoryAllocationOptions)
-
+    """
     """
     for y in range(1):
       for x in range(4):
@@ -2735,10 +2887,15 @@ def main():
     for z in range(32):
         network.Layers[1].cells[z][0][0].createAllMemoryFile()
     """
-    rv =  network.managerArray.manager[0][0].printAllGroupMemory(1,0)
-    network.managerArray.manager[0][0].createAllGroupMemoryFile(1,0)
+
+    
 
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
+
+    #------------------------------------------------------------------------------------------------------------------------
+    # End main()
+    #------------------------------------------------------------------------------------------------------------------------
+
     
 if __name__ == "__main__":main()
     
@@ -3039,7 +3196,7 @@ pass
 if c_1_0_0_4 in pe_0_0.cellsProcessed[1]:
     print 'foo1'
 print pe_0_0.findROI(1)
-print pe_0_0.findCellsProcessedRegion(1)
+#print pe_0_0.findCellsProcessedRegion(1)
 
 c_0_0_0_16 = network.Layers[0].cells[0][0][16]
 tc_0_0_0_16 = c_0_0_0_16.targetCells
