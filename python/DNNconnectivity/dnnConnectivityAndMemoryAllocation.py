@@ -128,8 +128,11 @@ MemoryAllocationOptions = namedtuple('MemoryAllocationOptions',\
                                       wordIncrement            \
                                       padWordRadix2           ')
 """
-displayOptions = namedtuple('displayOptions',\
-                            'createFile')
+displayOptions = namedtuple('displayOptions', \
+                            'pplot            \
+                             pprint           \
+                             createFile    '  )
+displayOptions.__new__.__defaults__ = (False, False, False)
 
 memoryLocationAccessOptions = namedtuple('memoryLocationAccessOptions',\
                                          'allowOverWrite')
@@ -1553,8 +1556,8 @@ class PE():
             layerID = params['layer']
             coords  = params['coords']
         except:
-            print 'line 1051: ERROR'
-            raise
+            print '{0}:{1}:ERROR:PE {2},{3}: Bad parameters'.format(__FILE__(), __LINE__(), self.ID[0], self.ID[1])
+            return
 
         yGrid, xGrid = np.mgrid[slice(coords[0][0], coords[1][0]+1), slice(coords[0][1], coords[1][1]+1)]
         tmpRoiGrid = np.zeros_like(xGrid, dtype=np.int)
@@ -1630,6 +1633,11 @@ class PE():
 
             
     def displayROIgrid(self, layerID):
+
+         # Make sure self.roiGrid has been created
+         if isinstance(self.roiGrid[layerID], list) :
+             self.findROI(layerID)
+
          coords = np.array([[0,0],[self.roiGrid[layerID][0].__len__()-1,self.roiGrid[layerID][0][0].__len__()-1]])
 
          params = {'display' : True, 'coords' : coords, 'layer' : layerID, 'plot' : True, 'print' : False}
@@ -1660,15 +1668,19 @@ class PE():
         return [tmpRoiGrid, xGrid, yGrid]
 
     def getROIgrid(self, layerID):
+
+         # Make sure self.roiGrid has been created
+         if isinstance(self.roiGrid[layerID], list) :
+             self.findROI(layerID)
+
          coords = np.array([[0,0],[self.roiGrid[layerID][0].__len__()-1,self.roiGrid[layerID][0][0].__len__()-1]])
          return self.getROIgridRegion(layerID, coords)
 
     #----------------------------------------------------------------------------------------------------
-    """
-    def displayCellsProcessedRegion(self, layerID, coords, noDisplay):
+    def displayCellsProcessedRegion(self, layerID, coords, dispOptions):
 
-        # Return fig,plt,array if noDisplay is False
-        # Return array if noDisplay is True
+        # Return fig,plt,array if plot is True
+        # otherwise return the array
 
         zGrid, yGrid, xGrid = np.mgrid[slice(0, self.parentPEarray.parentNetwork.Layers[layerID].Z), \
                                        slice(coords[0][0], coords[1][0]+1),                          \
@@ -1699,11 +1711,14 @@ class PE():
             pLine = pLine + ' '
           pLine = pLine + '\n'
 
+        if dispOptions.pprint :
+            print pLine
+
         xG = np.concatenate(xGrid[0])
         yG = np.concatenate(yGrid[0])
         cP = np.concatenate(tmpCellsProcessedForPlot)
 
-        if noDisplay == False :
+        if dispOptions.pplot :
 
             #print pLine
             # Now plot
@@ -1726,16 +1741,15 @@ class PE():
             plt.gca().invert_yaxis()
             plt.show(block=False)
 
-        if noDisplay == True :
-            retVal = [cP, xG, yG]
+        if dispOptions.pplot:
+            retVal = [cP, xG, yG, fig, sc, ]
         else :
-            retVal = [fig, sc, cP, xG, yG]
+            retVal = [cP, xG, yG]
         return retVal
             
-    def displayCellsProcessed(self, layerID, noDisplay):
+    def displayCellsProcessed(self, layerID, dispOptions):
         coords = np.array([[0,0],[self.parentPEarray.parentNetwork.Layers[layerID].Y-1, self.parentPEarray.parentNetwork.Layers[layerID].X-1]])
-        return self.displayCellsProcessedRegion(layerID, coords, noDisplay)
-    """
+        return self.displayCellsProcessedRegion(layerID, coords, dispOptions)
 
 ########################################################################################################################
 #----------------------------------------------------------------------------------------------------
@@ -1795,7 +1809,11 @@ class PEarray():
         global scat
         
         lId = layerID
-        c, x, y = self.pe[0][0].displayCellsProcessed(layerID=layerID, noDisplay=True)
+        
+        rv = self.pe[0][0].displayCellsProcessed(layerID=layerID, dispOptions=displayOptions())  # displayOptions are default False
+        c = rv[0]
+        x = rv[1]
+        y = rv[2]
         
         num_pts = c.__len__()
         xLim  = np.array([0, self.parentNetwork.Layers[lId].X-1])
@@ -1864,7 +1882,10 @@ class PEarray():
     def update_plot_cellsProcessed(self, frame_number):
         xPe = np.remainder(frame_number,8)
         yPe = frame_number/8
-        c, x, y = self.pe[yPe][xPe].displayCellsProcessed(layerID=lId,noDisplay=True)
+        rv = self.pe[yPe][xPe].displayCellsProcessed(layerID=lId, dispOptions=displayOptions())
+        c = rv[0]
+        x = rv[1]
+        y = rv[2]
         cp_info['position'][::1, 0] = x
         cp_info['position'][::1, 1] = y
         cp_info['size'    ]       = pt_scale*c
@@ -1882,6 +1903,7 @@ class PEarray():
         global scat
         
         lId = layerID
+        # Get initial display from PE 0,0
         rv = self.pe[0][0].getROIgrid(layerID=layerID)
         c = concatenate(rv[0])
         x = concatenate(rv[1])
@@ -2564,7 +2586,7 @@ def main():
     CREATEFILES     = True
     CREATEANIMATION = False
     DEBUG           = False
-    RUNCHECKS       = True
+    RUNCHECKS       = False
 
     ########################################################################################################################
 
@@ -2617,7 +2639,8 @@ def main():
     #network.addLayer('Input',           55,  55,    4,                      ) #   96,
     #network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
-    #network.addLayer('Convolutional',   13,  13,  8,    3,   3,   8,   1 ) #  384,
+    #network.addLayer('Convolutional',   13,  13,  4,    3,   3,   8,   1 ) #  384,
+    #network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   1 ) #  384,
     
     network.addLayer('Input',           55,  55,    3,                      ) #   96,
     network.addLayer('Convolutional',   27,  27,  128,    5,   5,    3,   2 ) #  256,
@@ -2847,6 +2870,14 @@ def main():
     #------------------------------------------------------------------------------------------------------------------------
     # Misc
 
+    # Plots
+
+    if CREATEANIMATION :
+        for l in range(1, network.numberOfLayers):
+            network.peArray.createProcessedCellsAnimation(l, dc.displayOptions(pplot=True, pprint=False, createFile=False))  
+            plt.show()
+            network.peArray.createROIAnimation(l, dc.displayOptions(pplot=True, pprint=False, createFile=False)) 
+            plt.show()
     """
     # In[33]:
     
@@ -2870,9 +2901,9 @@ def main():
 
     if CREATEANIMATION :
         for l in range(1, network.numberOfLayers):
-            network.peArray.createProcessedCellsAnimation(l, displayOptions(False))  
+            network.peArray.createProcessedCellsAnimation(l, dc.displayOptions())
             plt.show()
-            network.peArray.createROIAnimation(l, displayOptions(False))  
+            network.peArray.createROIAnimation(l, dc.displayOptions())
             plt.show()
 
     peMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['c', 'w', 'b', 'p'],
