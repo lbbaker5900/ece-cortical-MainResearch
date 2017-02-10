@@ -1010,8 +1010,7 @@ class Layer():
                         tmpSrcCell = set(self.cells[f][y][x].sourceCells)
                         self.cells[f][y][x].sourceCells = list(tmpSrcCell)
                     except:
-                        #print __FILE__ + lineNo.__repr__() + 'ERROR: {0}, {1}, {2}'.format(f,y,x)
-                        print 'Foo line 613'
+                        print __FILE__ + lineNo.__repr__() + 'ERROR: {0}, {1}, {2}'.format(f,y,x)
                         raise
 
         
@@ -2200,46 +2199,50 @@ class Manager():
         # When the group is full, set the next cell as firstCell and create a new group
         # Stop when we reach the last cell in the layer
 
+        # Make sure we havent run it already
+        if self.cellGroups[layerID].__len__() == 0 :
 
-        # we use cell 0,0,0 as first cell so start looking at 1,0,0
-        cCnt = 0
-        numOfCells = self.pe.cellsProcessed[layerID].__len__()
-        while cCnt < numOfCells :
-            # Create the coords of the cell
-            #print '{0}:{1}:new group at {2}'.format(__FILE__(), __LINE__(), cCnt)
-            firstCell = self.pe.cellsProcessed[layerID][cCnt]
-            group = []
-            group.append(firstCell)
-
-            groupCount = 1 # already first cell is on group
-            groupComplete = False
-            cCnt      += 1
-            # make sure the last cell in the list isnt in its own group
-            if cCnt == numOfCells:
-                groupComplete = True
-
-            while not groupComplete:
-                # Get next cell
-                c = self.pe.cellsProcessed[layerID][cCnt]
-                # test if cell has same ROI as current group
-                if (firstCell.sourceCells == c.sourceCells):
-                    group.append(c)
-                    groupCount += 1
-                else:
-                    # different ROI
-                    groupComplete = True
-                    # we have to use this cell as the first cell of the next group
-                    cCnt      -= 1 
-
-                if groupCount == NUMOFEXECLANES:
-                    groupComplete = True
-
+            # we use cell 0,0,0 as first cell so start looking at 1,0,0
+            cCnt = 0
+            numOfCells = self.pe.cellsProcessed[layerID].__len__()
+            while cCnt < numOfCells :
+                # Create the coords of the cell
+                #print '{0}:{1}:new group at {2}'.format(__FILE__(), __LINE__(), cCnt)
+                firstCell = self.pe.cellsProcessed[layerID][cCnt]
+                group = []
+                group.append(firstCell)
+       
+                groupCount = 1 # already first cell is on group
+                groupComplete = False
                 cCnt      += 1
-
+                # make sure the last cell in the list isnt in its own group
                 if cCnt == numOfCells:
                     groupComplete = True
-
-            self.cellGroups[layerID].append(group)
+       
+                while not groupComplete:
+                    # Get next cell
+                    c = self.pe.cellsProcessed[layerID][cCnt]
+                    # test if cell has same ROI as current group
+                    if (firstCell.sourceCells == c.sourceCells):
+                        group.append(c)
+                        groupCount += 1
+                    else:
+                        # different ROI
+                        groupComplete = True
+                        # we have to use this cell as the first cell of the next group
+                        cCnt      -= 1 
+       
+                    if groupCount == NUMOFEXECLANES:
+                        groupComplete = True
+       
+                    cCnt      += 1
+       
+                    if cCnt == numOfCells:
+                        groupComplete = True
+       
+                self.cellGroups[layerID].append(group)
+        else:
+            print '{0}:{1}:Layer {2} cell grouping already run???'.format(__FILE__(), __LINE__(), layerID)
 
     def allocateGroupMemory(self, layerID, allocateOptions):  
 
@@ -2313,7 +2316,7 @@ class Manager():
         try:
             firstCell = self.cellGroups[layerID][group][0]
         except:
-            print '{0}:{1}:ERROR:No group {2}??'.format(__FILE__(), __LINE__(), group)
+            print '{0}:{1}:ERROR:Manager {2},{3}:Layer {4}:No group {5}??'.format(__FILE__(), __LINE__(), self.ID[0], self.ID[1], layerID, group)
             raise
 
         roiMemory    = firstCell.printROIcells().split('\n')
@@ -2558,7 +2561,7 @@ def main():
     ## Globals
 
 
-    CREATEFILES     = False
+    CREATEFILES     = True
     CREATEANIMATION = False
     DEBUG           = False
     RUNCHECKS       = True
@@ -2611,15 +2614,16 @@ def main():
     #network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
     
-    network.addLayer('Input',           55,  55,    4,                      ) #   96,
-    network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
-    network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
-    network.addLayer('Convolutional',   13,  13,  8,    3,   3,   8,   1 ) #  384,
+    #network.addLayer('Input',           55,  55,    4,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
+    #network.addLayer('Convolutional',   13,  13,  8,    3,   3,   8,   1 ) #  384,
     
-    #network.addLayer('Input',           55,  55,    3,                      ) #   96,
-    #network.addLayer('Convolutional',   27,  27,   32,    5,   5,    3,   2 ) #  256,
-    #network.addLayer('Convolutional',   13,  13,   32,    3,   3,   32,   2 ) #  384,
-    #network.addLayer('Convolutional',   13,  13,   32,    3,   3,   32,   1 ) #  384,
+    network.addLayer('Input',           55,  55,    3,                      ) #   96,
+    network.addLayer('Convolutional',   27,  27,  128,    5,   5,    3,   2 ) #  256,
+    network.addLayer('Convolutional',   13,  13,   64,    3,   3,  128,   2 ) #  384,
+    network.addLayer('Convolutional',   13,  13,   32,    3,   3,   64,   1 ) #  384,
+    network.addLayer('Convolutional',   13,  13,   64,    3,   3,   32,   1 ) #  384,
     
     
     
@@ -2746,11 +2750,11 @@ def main():
     for l in range(1, network.numberOfLayers):
         for mgrY in range(network.managerArray.Y):
             for mgrX in range(network.managerArray.X):
-                network.managerArray.manager[mgrY][mgrX].groupCells(l)
                 # Take last memory location from ROI assignment
                 kernelMemoryAllocationOptions = ROIlastMemory[(mgrY, mgrX)]
                 kernelMemoryAllocationOptions.order         = ['w', 'c', 'b', 'p']
                 kernelMemoryAllocationOptions.padWordRadix2 = False
+                # Start on a page boundary
                 kernelMemoryAllocationOptions.ceilingField(network.managerArray.manager[mgrY][mgrX].memory, 0, 'word')
                 ROIlastMemory[(mgrY, mgrX)] = network.managerArray.manager[mgrY][mgrX].groupCells(l)
                 ROIlastMemory[(mgrY, mgrX)] = network.managerArray.manager[mgrY][mgrX].allocateGroupMemory(l, kernelMemoryAllocationOptions)
@@ -2773,7 +2777,7 @@ def main():
         for l in range(1, network.numberOfLayers):
             for mgrY in range(network.managerArray.Y):
                 for mgrX in range(network.managerArray.X):
-                    for grp in range(network.managerArray.manager[mgrY][mgrX].cellGroups.__len__()):
+                    for grp in range(network.managerArray.manager[mgrY][mgrX].cellGroups[l].__len__()):
                         network.managerArray.manager[mgrY][mgrX].createAllGroupMemoryFile(l,grp)
 
     if CREATEFILES and DEBUG:
@@ -2806,25 +2810,38 @@ def main():
         layerID = 1
         l = layerID
         for l in range(1, network.numberOfLayers):
-            print '{0}:{1}:INFO:Making sure no dummy cells in layer {2} are in a manager cell group'.format(__FILE__(), __LINE__(), l)
+            print '{0}:{1}:INFO:Layer {2}:Making sure no dummy, duplicates or missing cells in the groups'.format(__FILE__(), __LINE__(), l)
+            #cntGroupCells = 0
             aggregateGroup = []
             for mgrY in range(network.managerArray.Y):
                 for mgrX in range(network.managerArray.X):
                     for grp in network.managerArray.manager[mgrY][mgrX].cellGroups[l]:
                         aggregateGroup = aggregateGroup + grp
+                        #cntGroupCells += grp.__len__()
+            #print cntGroupCells
             # Create a list of original cells
             aggOrigCellList = []
             for cc in aggregateGroup :
                 aggOrigCellList.append(cc)
             layerCells = network.Layers[l].cells
+            cellCount = 0
             for z in range(layerCells.__len__()):
                 for y in range(layerCells[0].__len__()):
                     for c in layerCells[z][y] :
+                        cellCount += 1
                         cellInList = c in aggregateGroup
                         if c.dummy and cellInList:
                             print '{0}:{1}:ERROR:layer {2} dummy cell {3},{4},{5} in a cell group'.format(__FILE__(), __LINE__(), l, y,x,z)
                         if (not c.dummy) and (not cellInList):
                             print '{0}:{1}:ERROR:layer {2} real cell {3},{4},{5} not in a cell group'.format(__FILE__(), __LINE__(), l, y,x,z)
+            # make sure there arent duplicates in the groups
+            #print cellCount
+            numCells = aggOrigCellList.__len__()
+            tmp = set(aggOrigCellList)
+            aggOrigCellList = list(tmp)
+            if (numCells != aggOrigCellList.__len__()) and (numCells !=  network.Layers[l].origZ*network.Layers[l].origY*network.Layers[l].origX)  :
+                 expectedCellCount = network.Layers[l].origZ*network.Layers[l].origY*network.Layers[l].origX
+                 print '{0}:{1}:ERROR:layer {2} : {3} duplicate cells in groups totalling {4} that should total {5} '.format(__FILE__(), __LINE__(), l, numCells-aggOrigCellList.__len__(), numCells, network.Layers[l].origZ*network.Layers[l].origY*network.Layers[l].origX)
 
 
     #------------------------------------------------------------------------------------------------------------------------
