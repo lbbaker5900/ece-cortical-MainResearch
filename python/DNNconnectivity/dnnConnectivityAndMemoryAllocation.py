@@ -538,6 +538,29 @@ class Cell():
         oFile.write(pLine)
         oFile.close()
             
+
+    def printCopiedToMemory(self):
+
+        pLine = '\n'
+        pLine = pLine + '\nLayer : {0}                                                      '.format(self.layerID)
+        pLine = pLine + '\nCell:{0},{1},{2} Copied To Location(s)                           '.format(self.ID[0], self.ID[1], self.ID[2])
+        pLine = pLine + '\n                                                                 '
+        pLine = pLine + '\n      Destination Local memory                                   '
+        pLine = pLine + '\n Manager : Channel  Bank  Page  Word                             '
+        pLine = pLine + '\n------------------------------------------------                 '
+        
+        if self.copiedTo.__len__() > 0 :
+            for ct in self.copiedTo :
+                pLine = pLine + '\n {0:>3},{1:>3} : {2:^7}   {3:^4}  {4:^4}  {5:^4}   '.format(ct.managerLocation.ID[0], ct.managerLocation.ID[1], ct.memoryLocation.channel, ct.memoryLocation.bank, ct.memoryLocation.page, ct.memoryLocation.word)
+        else:
+            if isinstance(self.managerLocation, list) :
+                print '{0}:{1}:WARNING:CopiedTo list empty: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
+            else:
+                print '{0}:{1}:ERROR:CopiedTo list empty, not an original cell: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
+        pLine = pLine + '\n-------------------------------------------------------'
+        return pLine
+            
+
     def printKernelMemory(self):
         pLine = '\n'
         pLine = pLine + '\nLayer : {0}                                                                    '.format(self.layerID)
@@ -556,7 +579,6 @@ class Cell():
 
     def printAllMemory(self):
         roiMemory    = self.printROIcells().split('\n')
-        roiShort     = []
         kernelMemory = self.printKernelMemory().split('\n')
         kernelShort  = []
         displayStr     = [[],[]]
@@ -936,7 +958,8 @@ class Layer():
         # For each cell in this layer, identify the cells from the previous layer that feed this cell and add this cell's PE
         # to the target list
 
-        # Now this layer may be padded to accomodate the enxt layer, so only loop thru original layer cells. The extras are marked as dummy.
+        # Now this layer may be padded to accomodate the next layer, so only loop thru original layer cells. The extras are marked as dummy.
+        # The padded dummy cells only exist as an ROI input (e.g. activations are not calculated)
         for y in self.origYrange :
             print 'Updating Layer {0} connections'.format(self.ID) + ' for features in row :{0}'.format(y)
             for x in self.origXrange :
@@ -2332,6 +2355,43 @@ class Manager():
 
     def printAllGroupMemory(self, layerID, group):
   
+        # Create an array with a column showing the ROI address and additional columns for each cell in the group
+        # and its kernel addresses
+        # Also include where the result of the cell activation needs to be written
+
+        # Create the fromMemoryStr array containing destination Manager/PE and local address within that manager
+        fromMemoryStr     = [[]]  # first column is ROI address
+        for i in range(self.cellGroups[layerID][group].__len__()): 
+            fromMemoryStr.append([])     # add column for each cell in the group
+
+        # Create the toMemoryStr array
+        # make it the same dimensions as the fromMemoryStr but the ROI column will remain blank
+        toMemoryStr     = [[]]  # first column is a dummy
+        for i in range(self.cellGroups[layerID][group].__len__()): 
+            # add column for each cell in the group to contain the destination address once the cell activation is complete
+            toMemoryStr.append([])     
+                         
+        # Find the cell with the maximum number of destination PE's (should be the same as group most likely contains same {y,x} but different features)
+        numOfCopiedToPeMax = 0
+        for gc in self.cellGroups[layerID][group]:
+            numOfCopiedToPe = gc.originalCell.copiedTo.__len__()
+            if numOfCopiedToPeMax < numOfCopiedToPe :
+                numOfCopiedToPeMax = numOfCopiedToPe 
+
+        # Populate the toMemoryStr array
+        idx = 1
+        for gc in self.cellGroups[layerID][group] :
+            copiedToMemory = gc.originalCell.printCopiedToMemory().split('\n')
+            startAdding = False
+            for str in copiedToMemory :
+                if '--' in str:
+                    startAdding = True
+                if startAdding :
+                  if not '--' in str:
+                    toMemoryStr[idx].append(str)
+            idx += 1
+
+
         # get the ROI of the first cell in the group (they are all the same) and print
         # Then get the memory for all the cells kernels and concatenate in one file
         
@@ -2342,12 +2402,6 @@ class Manager():
             raise
 
         roiMemory    = firstCell.printROIcells().split('\n')
-        roiShort     = []
-
-        # Create the displayStr array
-        displayStr     = [[]]  # first column is ROI address
-        for i in range(self.cellGroups[layerID][group].__len__()): 
-            displayStr.append([])     # add column for each cell in the group
 
         # remove just the data
         startAdding = False
@@ -2356,7 +2410,7 @@ class Manager():
                 startAdding = True
             if startAdding :
               if not '--' in str:
-                displayStr[0].append(str)
+                fromMemoryStr[0].append(str)
 
         idx = 1
         for gc in self.cellGroups[layerID][group]:
@@ -2367,23 +2421,46 @@ class Manager():
                     startAdding = True
                 if startAdding :
                   if not '--' in str:
-                    displayStr[idx].append(str)
+                    fromMemoryStr[idx].append(str)
             idx += 1
 
-        pLine = '\n'
+        pLine = '\n                                              '
+        for gc in self.cellGroups[layerID][group]:
+            pLine = pLine + '|    Target Cell {{z,y,x}} {0:>3},{1:>3},{2:>3}      '.format(gc.ID[0], gc.ID[1], gc.ID[2])
+        pLine = pLine + '|'
+        pLine = pLine + '\n                                              |'
+        for col in range(1,idx) :
+            pLine = pLine + '                                         |'
+        pLine = pLine + '\n                                              '
+        for gc in self.cellGroups[layerID][group]:
+            pLine = pLine + '|           Destination(s)                '
+        pLine = pLine + '|'
+        pLine = pLine + '\n                                              |'
+        for cell in range(1,idx) :
+            pLine = pLine + '  Manager  Channel  Bank  Page  Word     |'
+        for row in range(numOfCopiedToPeMax) :
+            pLine = pLine + '\n                                              |'
+            for col in range(1,idx) :
+                pLine = pLine + '{0} |'.format(toMemoryStr[col][row])
+        pLine = pLine + '\n                                              |'
+        for col in range(1,idx) :
+            pLine = pLine + '                                         |'
+
         pLine = pLine + '\n source cell   |     ROI Local memory         '
         for gc in self.cellGroups[layerID][group]:
-            pLine = pLine + '|   Kernel Memory {0:>3},{1:>3},{2:>3}   '.format(gc.ID[1], gc.ID[2], gc.ID[0])
+            pLine = pLine + '|                 Kernel Memory           '.format(gc.ID[1], gc.ID[2], gc.ID[0])
+        pLine = pLine + '|'
         pLine = pLine + '\n Z   Y   X     | Channel  Bank  Page  Word    '
         for cell in range(1,idx) :
-            pLine = pLine + '| Channel  Bank  Page  Word     '
+            pLine = pLine + '|           Channel  Bank  Page  Word     '
+        pLine = pLine + '|'
         pLine = pLine + '\n-------------------------------------------'
         for cell in range(1,idx) :
             pLine = pLine + '--------------------------------------------'
-        for row in range(displayStr[0].__len__()):
-            pLine = pLine + '\n{0} | '.format(displayStr[0][row])
+        for row in range(fromMemoryStr[0].__len__()):
+            pLine = pLine + '\n{0} | '.format(fromMemoryStr[0][row])
             for col in range(1,idx) :
-                pLine = pLine + '{0} | '.format(displayStr[col][row])
+                pLine = pLine + '          {0} | '.format(fromMemoryStr[col][row])
         return pLine
 
     def createAllGroupMemoryFile(self, layerID, group):
@@ -2647,7 +2724,7 @@ def main():
     network.addLayer('Convolutional',   13,  13,   64,    3,   3,  128,   2 ) #  384,
     network.addLayer('Convolutional',   13,  13,   32,    3,   3,   64,   1 ) #  384,
     network.addLayer('Convolutional',   13,  13,   64,    3,   3,   32,   1 ) #  384,
-    
+    #
     
     
     #------------------------------------------------------------------------------------------------------------------------
@@ -2706,7 +2783,7 @@ def main():
 
     for mgrY in range(network.managerArray.Y):
         for mgrX in range(network.managerArray.X):
-            print '{0}:{1}:Mem cpy ROI and memory allocations for manager {2},{3}'.format(__FILE__(), __LINE__(), mgrY, mgrX)
+            print '{0}:{1}:Mem cpy ROI for manager {2},{3}'.format(__FILE__(), __LINE__(), mgrY, mgrX)
             for l in range(1, network.numberOfLayers):
 
                 # Copy aggregate ROI from main memory to local manager memory
@@ -2736,7 +2813,7 @@ def main():
                                                             pageIncrement     =  2                  , 
                                                             word              =  0                  , 
                                                             wordIncrement     =  1                  , 
-                                                            padWordRadix2     = True                )
+                                                            padWordRadix2     = False                )
 
     ROIlastMemory = dict() # key will be (layer, mgrY, mgrX)
     for mgrY in range(network.managerArray.Y):
@@ -2749,7 +2826,7 @@ def main():
 
     for mgrY in range(network.managerArray.Y):
         for mgrX in range(network.managerArray.X):
-            print '{0}:{1}:Mem cpy ROI and memory allocations for manager {2},{3}'.format(__FILE__(), __LINE__(), mgrY, mgrX)
+            print '{0}:{1}:ROI memory allocations for manager {2},{3}'.format(__FILE__(), __LINE__(), mgrY, mgrX)
             for l in range(1, network.numberOfLayers):
 
                 # Copy aggregate ROI from main memory to local manager memory
@@ -2770,9 +2847,10 @@ def main():
     #    Then store each kernel ofset in the page by the cell number in the group
     # 
 
-    for l in range(1, network.numberOfLayers):
-        for mgrY in range(network.managerArray.Y):
-            for mgrX in range(network.managerArray.X):
+    for mgrY in range(network.managerArray.Y):
+        for mgrX in range(network.managerArray.X):
+            print '{0}:{1}:Kernel memory allocations for manager {2},{3}'.format(__FILE__(), __LINE__(), mgrY, mgrX)
+            for l in range(1, network.numberOfLayers):
                 # Take last memory location from ROI assignment
                 kernelMemoryAllocationOptions = ROIlastMemory[(mgrY, mgrX)]
                 kernelMemoryAllocationOptions.order         = ['w', 'c', 'b', 'p']
@@ -2794,9 +2872,7 @@ def main():
     # File Creation
 
     if CREATEFILES :
-        layerID = 1
-        l = layerID
-                
+        # Note:Last array hasnt been copied beccause there is no next layer ROI, so expected WARNINGS
         for l in range(1, network.numberOfLayers):
             for mgrY in range(network.managerArray.Y):
                 for mgrX in range(network.managerArray.X):
@@ -2827,6 +2903,7 @@ def main():
 
     # anything to make sure the code works
     if RUNCHECKS :
+        print '{0}:{1}:INFO:RUNCHECKS'.format(__FILE__(), __LINE__(), l)
         # Make sure all cells are assigned to a group
         # Create a list from all the groups then test if each original cell is in the group
         # Also make sure dummy cells are NOT in a group
@@ -2878,64 +2955,6 @@ def main():
             plt.show()
             network.peArray.createROIAnimation(l, dc.displayOptions(pplot=True, pprint=False, createFile=False)) 
             plt.show()
-    """
-    # In[33]:
-    
-    peX = 0
-    peY = 0
-    layerID = 1
-    #print network.peArray.pe[peY][peX].roi[layerID]
-    #for l in range(1, network.numberOfLayers):
-    #  network.peArray.pe[peY][peX].getROI(l)
-    #  network.peArray.pe[peY][peX].displayROIgrid(l)
-    #  plt.show()
-
-    #------------------------------------------------------------------------------------------------------------------------
-    # 
-
-    for l in range(1, network.numberOfLayers):
-        print '{0}:{1}:Determine ROI for layer {2}:'.format(__FILE__(), __LINE__(), l)
-        network.peArray.findROIall(l)
-        # Form groups with the same ROI.
-        # The groups will be used to allocate kernel locations  
-
-    if CREATEANIMATION :
-        for l in range(1, network.numberOfLayers):
-            network.peArray.createProcessedCellsAnimation(l, dc.displayOptions())
-            plt.show()
-            network.peArray.createROIAnimation(l, dc.displayOptions())
-            plt.show()
-
-    peMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['c', 'w', 'b', 'p'],
-                                                            channel           =  0                  , 
-                                                            channelIncrement  =  1                  , 
-                                                            bank              =  0                  , 
-                                                            bankIncrement     =  2                  , 
-                                                            page              =  0                  , 
-                                                            pageIncrement     =  2                  , 
-                                                            word              =  0                  , 
-                                                            wordIncrement     =  1                  , 
-                                                            padWordRadix2     = True                )
-
-    """
-
-    """
-    kernelMemoryAllocationOptions = peMemoryAllocationOptions 
-    kernelMemoryAllocationOptions.order         = ['w', 'c', 'b', 'p']
-    kernelMemoryAllocationOptions.padWordRadix2 = False
-    """
-    """
-    for y in range(1):
-      for x in range(4):
-        for z in range(3):
-          p = network.Layers[1].cells[z][y][x].printKernelMemory()
-          print p
-    """
-    """
-    for z in range(32):
-        network.Layers[1].cells[z][0][0].createAllMemoryFile()
-    """
-
     
 
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
@@ -2948,6 +2967,71 @@ def main():
 if __name__ == "__main__":main()
     
 
+"""
+for y in range(8):
+  for x in range(8):
+    for lcg in network.managerArray.manager[y][x].cellGroups:
+      for cg in lcg:
+        print cg.__len__()
+"""
+
+"""
+# In[33]:
+
+peX = 0
+peY = 0
+layerID = 1
+#print network.peArray.pe[peY][peX].roi[layerID]
+#for l in range(1, network.numberOfLayers):
+#  network.peArray.pe[peY][peX].getROI(l)
+#  network.peArray.pe[peY][peX].displayROIgrid(l)
+#  plt.show()
+
+#------------------------------------------------------------------------------------------------------------------------
+# 
+
+for l in range(1, network.numberOfLayers):
+    print '{0}:{1}:Determine ROI for layer {2}:'.format(__FILE__(), __LINE__(), l)
+    network.peArray.findROIall(l)
+    # Form groups with the same ROI.
+    # The groups will be used to allocate kernel locations  
+
+if CREATEANIMATION :
+    for l in range(1, network.numberOfLayers):
+        network.peArray.createProcessedCellsAnimation(l, dc.displayOptions())
+        plt.show()
+        network.peArray.createROIAnimation(l, dc.displayOptions())
+        plt.show()
+
+peMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['c', 'w', 'b', 'p'],
+                                                        channel           =  0                  , 
+                                                        channelIncrement  =  1                  , 
+                                                        bank              =  0                  , 
+                                                        bankIncrement     =  2                  , 
+                                                        page              =  0                  , 
+                                                        pageIncrement     =  2                  , 
+                                                        word              =  0                  , 
+                                                        wordIncrement     =  1                  , 
+                                                        padWordRadix2     = True                )
+
+"""
+
+"""
+kernelMemoryAllocationOptions = peMemoryAllocationOptions 
+kernelMemoryAllocationOptions.order         = ['w', 'c', 'b', 'p']
+kernelMemoryAllocationOptions.padWordRadix2 = False
+"""
+"""
+for y in range(1):
+  for x in range(4):
+    for z in range(3):
+      p = network.Layers[1].cells[z][y][x].printKernelMemory()
+      print p
+"""
+"""
+for z in range(32):
+    network.Layers[1].cells[z][0][0].createAllMemoryFile()
+"""
 
 
 
