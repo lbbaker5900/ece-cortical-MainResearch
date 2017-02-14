@@ -164,6 +164,17 @@ class Kernel():
         pLine = pLine + '\nFields: {0}           '.format(fields(self))
         return pLine
 
+    def getLinearAddresses(self):
+        # A vector of the memory locations
+        addresses = []
+        for y in range(self.dimensions[1]):
+          for x in range(self.dimensions[2]):
+            for z in range(self.dimensions[0]):
+                addresses.append(self.memoryLocations[z][y][x])
+ 
+        return addresses
+        
+
     
 
 ########################################################################################################################
@@ -227,7 +238,7 @@ class Memory():
         # test if location being used
         if (options.allowOverWrite == True) :
             if (memoryLocation.channel, memoryLocation.bank, memoryLocation.page, memoryLocation.word) in self.store.keys() :
-               raise Exception('{0}:{1}:Writing to already allocated location :{2}'.format(__FILE__(), __LINE__(), memoryLocation)) 
+                raise Exception('{0}:{1}:Writing to already allocated location :{2}'.format(__FILE__(), __LINE__(), memoryLocation)) 
             
         self.store[(memoryLocation.channel, memoryLocation.bank, memoryLocation.page, memoryLocation.word)] = value
          
@@ -260,6 +271,48 @@ class MemoryLocation():
         #pLine = pLine + '\nMethods: {0}                             '.format(methods(self))
         #pLine = pLine + '\nFields: {0}                              '.format(fields(self))
         return pLine
+
+    def convertToMemoryAllocationOption(self):
+        
+        memoryAllocationOptions = MemoryAllocationOptions( order             = ['c', 'w', 'b', 'p'],
+                                                           channel           =  self.channel       , 
+                                                           channelIncrement  =  1                  , 
+                                                           bank              =  self.bank          , 
+                                                           bankIncrement     =  2                  , 
+                                                           page              =  self.page          , 
+                                                           pageIncrement     =  1                  , 
+                                                           word              =  self.word          , 
+                                                           wordIncrement     =  1                  , 
+                                                           padWordRadix2     = False                )
+        return memoryAllocationOptions
+        
+
+    def compareMemory(self, memory):
+        # 
+        cmp = True
+        if memory != self.memory:
+            cmp = False
+        return cmp
+
+
+    def compareAddress(self, address):
+        # if address is numpy, it only contains c,b,p,w
+        cmp = True
+        if 'numpy' not in str(type(address)):
+           raise Exception('{0}:{1}:Address not a numpy array'.format(__FILE__(), __LINE__())) 
+        else:
+            try:
+                if address[0] != self.channel:
+                    cmp = False
+                if address[1] != self.bank:
+                    cmp = False
+                if address[2] != self.page:
+                    cmp = False
+                if address[3] != self.word:
+                    cmp = False
+            except:
+               raise Exception('{0}:{1}:Something wrong with address format'.format(__FILE__(), __LINE__())) 
+        return cmp
 
 
 class MemoryAllocationOptions():
@@ -378,6 +431,41 @@ class MemoryAllocationOptions():
                 self.increment(memory, numOfFeatures)
 
 
+    def compareAddress(self, memLocation):
+        # if address is numpy, it only contains c,b,p,w
+        cmp = True
+        if 'bound method MemoryLocation' not in str(memLocation.__str__) :
+           raise Exception('{0}:{1}:memLocation not a memoryLocation object'.format(__FILE__(), __LINE__())) 
+        else:
+            if memLocation.channel != self.channel:
+                cmp = False
+            if memLocation.bank != self.bank:
+                cmp = False
+            if memLocation.page != self.page:
+                cmp = False
+            if memLocation.word != self.word:
+                cmp = False
+        return cmp
+
+    def delta(self, memLocation):
+
+        # difference between addresses
+        # Return delta and new memoryOption
+        cmp = True
+        if 'bound method MemoryLocation' not in str(memLocation.__str__) :
+           print memLocation
+           print memLocation.__str__()
+           raise Exception('{0}:{1}:memLocation not a memoryLocation object'.format(__FILE__(), __LINE__())) 
+        else:
+            delta = 0
+            mo = copy_copy(self)
+            theSame = mo.compareAddress(memLocation)
+            while not theSame :
+                mo.increment(memLocation.memory, 0)  # set numOfFeatures = 0 as we dont count assuming radix2 jumps
+                theSame = mo.compareAddress(memLocation)
+                delta += 1
+
+        return [delta, mo]
 
 ########################################################################################################################
 ########################################################################################################################
@@ -475,6 +563,38 @@ class Cell():
             return self.roiFromSrcCells
 
     #----------------------------------------------------------------------------------------------------
+    # get
+
+    def getROIcells (self):
+
+        # return a lsit of cell pointers
+        # parse the list of source cells and find the cell copied to the PE/manager that processes this cell
+        roiCells = []
+        for sc in self.sourceCells:
+            for ct in sc.copiedTo:
+                # Remember, some cells will be copied to multiple managers, so find cell copied to this Manager/PE memory
+                # FIXME: assumption is that '==' compares pointers
+                # if the ROI cell is in the original input ROI and resides in the managers memory who is processing this cell
+                if (ct.absID == sc.absID) and (ct.memoryLocation.memory == self.PE.manager.memory):
+                    roiCells.append(ct)
+        return roiCells
+
+
+    def getCopiedToLocation(self):
+
+        # return list of lists containing manager ID and memory channel, bank, page and word
+        rv = []
+        if self.copiedTo.__len__() > 0 :
+            for ct in self.copiedTo :
+                rv.append([ct.managerLocation.ID, ct.memoryLocation.channel, ct.memoryLocation.bank, ct.memoryLocation.page, ct.memoryLocation.word])
+        else:
+            if isinstance(self.managerLocation, list) :
+                print '{0}:{1}:WARNING:CopiedTo list empty: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
+            else:
+                print '{0}:{1}:ERROR:CopiedTo list empty, not an original cell: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
+
+        return rv
+    #----------------------------------------------------------------------------------------------------
     # print
 
     def __str__(self):
@@ -482,7 +602,10 @@ class Cell():
         pLine = pLine + '\nCell:{0},{1},{2}                                               '.format(self.ID[0], self.ID[1], self.ID[2])
         pLine = pLine + '\nLayer:{0}                                                      '.format(self.layerID)
         if isinstance(self.PE, list) :  # check if cell is assigned. original cells do not get assigned to a PE only ones that have been copied
-            pLine = pLine + '\nPE{{Y,X}} : Not assigned (probably original cell)          '
+            if self.dummy:
+                pLine = pLine + '\nPE{{Y,X}} : Not assigned (dummy)          '
+            else:
+                pLine = pLine + '\nPE{{Y,X}} : Not assigned (maybe an original cell??)          '
         else :
             pLine = pLine + '\nPE{{Y,X}} : {0},{1}                                            '.format(self.PE.ID[0], self.PE.ID[1])
         pLine = pLine + '\nMemory:{{Ch, Bank, Page, Word}}:{0},{1},{2},{3}                '.format(self.memoryLocation.channel, self.memoryLocation.bank, self.memoryLocation.page, self.memoryLocation.word)
@@ -553,10 +676,12 @@ class Cell():
             for ct in self.copiedTo :
                 pLine = pLine + '\n {0:>3},{1:>3} : {2:^7}   {3:^4}  {4:^4}  {5:^4}   '.format(ct.managerLocation.ID[0], ct.managerLocation.ID[1], ct.memoryLocation.channel, ct.memoryLocation.bank, ct.memoryLocation.page, ct.memoryLocation.word)
         else:
-            if isinstance(self.managerLocation, list) :
-                print '{0}:{1}:WARNING:CopiedTo list empty: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
-            else:
-                print '{0}:{1}:ERROR:CopiedTo list empty, not an original cell: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
+            # if this is the last layer, the copiedTo field will be empty because there isnt an ROI from the next layer
+            if (self.layerID < self.parentLayer.parentNetwork.numberOfLayers-1) :
+                if isinstance(self.managerLocation, list) :
+                    print '{0}:{1}:WARNING:CopiedTo list empty: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
+                else:
+                    print '{0}:{1}:ERROR:CopiedTo list empty, not an original cell: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
         pLine = pLine + '\n-------------------------------------------------------'
         return pLine
             
@@ -2055,10 +2180,10 @@ class Manager():
         self.roiCells           = []  # copy of ROI of previous layer cells, constructed during memCpyROI
                                      
         self.memory                    = Memory(memoryType)
-        self.memoryROIallocationOptions      = []
-        self.memoryKernelallocationOptions   = []
+        self.memoryROIallocationOptions      = []  # how memory was assigned to ROI
+        self.memoryKernelAllocationOptions   = []  # how memory was assigned to group kernels
 
-        self.cellGroups = []  # groups of cells with same ROI
+        self.cellGroups                  = []  # groups of cells with same ROI
 
         for l in range(numberOfLayers):
           self.roiCells.append(None)
@@ -2076,6 +2201,94 @@ class Manager():
         return pLine
         
     #----------------------------------------------------------------------------------------------------
+
+    #----------------------------------------------------------------------------------------------------
+    # WU related
+    # 
+    # FIXME: WIP
+    def createWUs(self, layerID):  
+        
+        # We need to Describe the common ROI and the address of the kernels
+        # The ROI isnt consequitve in memory so descibe with a starting address and a list of consequtive words and jumps to the next word
+        # The kernels are consequitve in memory and we need to just describe ??? FIXME - WIP
+
+        wuRois = []
+        wuKernels = []
+        gId = 0
+        for g in self.cellGroups[layerID] : 
+            # First get the common ROI for the group
+            wuRoi = {'StartAddress': None, 'Consequtive': [], 'Jump': [], 'Order' : []}
+            # The ROI for all cells in a group are the same, so just use the first cell
+            #for c in g[0]:
+            roi = g[0].getROIcells()
+            # Create a memory option type from first cells memory location
+            memoryOption          = roi[0].memoryLocation.convertToMemoryAllocationOption()
+            memoryOption.order    = self.memoryROIallocationOptions.order
+            wuRoi['Order']        = memoryOption.order
+            wuRoi['StartAddress'] = roi[0].memoryLocation
+            cnt = 0  # count how many consequtive memory locations
+            # use the memoryOption increment method and compare with address of next cell
+            #memoryOption.increment(roi[0].memoryLocation.memory, 0)
+            for rc in roi:
+                if rc.memoryLocation.compareAddress(np.array([memoryOption.channel, memoryOption.bank, memoryOption.page, memoryOption.word])):
+                    cnt += 1
+                    memoryOption.increment(rc.memoryLocation.memory, 0)
+                else:
+                    wuRoi['Consequtive'].append(cnt)
+                    rv = memoryOption.delta(rc.memoryLocation)  # returns [delta, <new memOption>]
+                    wuRoi['Jump'].append(rv[0])
+                    memoryOption = rv[1]
+                    cnt = 1
+                    memoryOption.increment(rc.memoryLocation.memory, 0)
+            if cnt > 0 :
+                wuRoi['Consequtive'].append(cnt)
+            wuRois.append(wuRoi)
+
+            # Get the kernel memory for each cell as a vector
+            kernelAddresses = []
+            numberOfCellsInGroup = g.__len__()
+            for c in g:
+                kernelAddresses.append(c.kernel.getLinearAddresses())
+
+            # RUNCHECK : make sure all kernels sizes are the same
+            entriesdInKernel = kernelAddresses[0].__len__()
+            for cNum in range(1,numberOfCellsInGroup) :
+                if entriesdInKernel != kernelAddresses[cNum].__len__() :
+                    raise Exception('{0}:{1}:Manager {2},{3}:Kernel sizes are different in group {4}'.format(__FILE__(), __LINE__(), ID[0], ID[1], gId)) 
+
+            # Start incrementing thru memory and make sure there are no discontinuities
+            wuKernel = {'StartAddress': None, 'Consequtive': [], 'Jump': [], 'Order' : [], 'NumberOfCells' : None}
+            memoryOption              = kernelAddresses[0][0].convertToMemoryAllocationOption()
+            memoryOption.order        = self.memoryKernelAllocationOptions.order # use order from original group kernel assignment
+            wuKernel['Order']         = memoryOption.order
+            wuKernel['StartAddress']  = kernelAddresses[0][0]
+            wuKernel['NumberOfCells'] = numberOfCellsInGroup
+            cnt = 0  # count how many consequtive memory locations
+            #memoryOption.increment(kernelAddresses[0][0].memory, 0)
+            for kIdx in range(kernelAddresses[0].__len__()) :
+                for cNum in range(numberOfCellsInGroup) :
+                    if kernelAddresses[cNum][kIdx].compareAddress(np.array([memoryOption.channel, memoryOption.bank, memoryOption.page, memoryOption.word])):
+                        cnt += 1
+                        memoryOption.increment(kernelAddresses[cNum][kIdx].memory, 0)
+                    else:
+                        wuKernel['Consequtive'].append(cnt)
+                        rv = memoryOption.delta(kernelAddresses[cNum][kIdx])  # returns [delta, <new memOption>]
+                        wuKernel['Jump'].append(rv[0])
+                        memoryOption = rv[1]
+                        cnt = 1
+                        memoryOption.increment(kernelAddresses[cNum][kIdx].memory, 0)
+            if cnt > 0 :
+                wuKernel['Consequtive'].append(cnt)
+            wuKernels.append(wuKernel)
+
+
+            gId += 1
+            
+
+
+        return [wuRois, wuKernels]
+                        
+
     #----------------------------------------------------------------------------------------------------
     # Mem Copy
     # copy ROI from roi in associated PE
@@ -2196,6 +2409,7 @@ class Manager():
         # Keep copy of starting and ending allocate options
         # if the method is being given the memories existing allocationOptions, then just use existng
         # if its a new option, then overwite
+        self.memoryROIallocationOptions      = copy_copy(allocateOptions)  # we will need to order of allocation for WU creation
         try :
             if self.currentMemoryAllocationOptions != allocateOptions :
                 self.initialMemoryAllocationOptions    = copy_copy(allocateOptions)
@@ -2296,16 +2510,18 @@ class Manager():
         # The ROI will be fanned out from one page to all lanes and the kernel page will be read
         # and each word sent to each lane with words arranged in the page as: Word(lane,kernelWord)
         # word(0,0), word(1,0) ... word(31,0), word(0,1) .. word(31,1)
+        self.memoryKernelAllocationOptions = copy_copy(allocateOptions)  # how memory was assigned to group kernels
         pass
         # Get kernel dimensions from first cell in the group
         memLocnOption = memoryLocationAccessOptions(allowOverWrite=False)
         for g in self.cellGroups[layerID] :
             kernelDimension = g[0].kernel.dimensions
             #print kernelDimension
-            for Kz in range(kernelDimension[0]) :
-                for Ky in range(kernelDimension[1]) :
-                    for Kx in range(kernelDimension[2]) :
+            for Ky in range(kernelDimension[1]) :
+                for Kx in range(kernelDimension[2]) :
+                    for Kz in range(kernelDimension[0]) :
                         for c in g :
+                            c.kernel.memoryLocations[Kz][Ky][Kx].memory  = self.memory
                             c.kernel.memoryLocations[Kz][Ky][Kx].channel = allocateOptions.channel
                             c.kernel.memoryLocations[Kz][Ky][Kx].bank    = allocateOptions.bank
                             c.kernel.memoryLocations[Kz][Ky][Kx].page    = allocateOptions.page
@@ -2810,7 +3026,7 @@ def main():
                                                             bank              =  0                  , 
                                                             bankIncrement     =  2                  , 
                                                             page              =  0                  , 
-                                                            pageIncrement     =  2                  , 
+                                                            pageIncrement     =  1                  , 
                                                             word              =  0                  , 
                                                             wordIncrement     =  1                  , 
                                                             padWordRadix2     = False                )
@@ -3009,7 +3225,7 @@ peMemoryAllocationOptions = dc.MemoryAllocationOptions( order             = ['c'
                                                         bank              =  0                  , 
                                                         bankIncrement     =  2                  , 
                                                         page              =  0                  , 
-                                                        pageIncrement     =  2                  , 
+                                                        pageIncrement     =  1                  , 
                                                         word              =  0                  , 
                                                         wordIncrement     =  1                  , 
                                                         padWordRadix2     = True                )
