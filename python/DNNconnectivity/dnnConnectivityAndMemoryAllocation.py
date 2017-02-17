@@ -21,6 +21,7 @@ import os
 import inspect
 import copy
 import time
+import pickle   # for saving variables
 from copy import deepcopy as copy_deepcopy
 from copy import copy as copy_copy
 from collections import namedtuple
@@ -79,7 +80,8 @@ def fields(cls):
     return vars(cls).keys()
 
 
-
+def toHexPad(val, pad):
+  return str(hex(val).split('x')[1]).zfill(pad)
 ########################################################################################################################
 
 
@@ -498,8 +500,8 @@ class Cell():
         self.sourcePEs       = []
         self.targetPEs       = []
         # where is this copy of the cell stored e.g. original cell stored in main memory, copies stored in manager memory
-        self.managerLocation = []  # where is this copy of the cell? original cell will have this field blank, copied cells
-                                   # point to manager where copy is stored
+        self.managerLocation = []                           # where is this copy of the cell? original cell will have this field blank, copied cells
+                                                            # point to manager where copy is stored
         self.memoryLocation  = MemoryLocation(None,0,0,0,0) # memory location has a pointer to the actual memory and location within that memory
         self.kernel          = Kernel(self, kernelDimensions)
 
@@ -695,9 +697,9 @@ class Cell():
         pLine = pLine + '\n Channel  Bank  Page  Word                                       '
         pLine = pLine + '\n------------------------------------------------                 '
         
-        for Kz in range(self.kernel.dimensions[0]) :
-            for Ky in range(self.kernel.dimensions[1]) :
-                for Kx in range(self.kernel.dimensions[2]) :
+        for Ky in range(self.kernel.dimensions[1]) :
+            for Kx in range(self.kernel.dimensions[2]) :
+                for Kz in range(self.kernel.dimensions[0]) :
                     pLine = pLine + '\n{0:^7}   {1:^4}  {2:^4}  {3:^4}   '.format(self.kernel.memoryLocations[Kz][Ky][Kx].channel, self.kernel.memoryLocations[Kz][Ky][Kx].bank, self.kernel.memoryLocations[Kz][Ky][Kx].page, self.kernel.memoryLocations[Kz][Ky][Kx].word)
         pLine = pLine + '\n-------------------------------------------------------'
         return pLine
@@ -2179,9 +2181,12 @@ class Manager():
 
         self.roiCells           = []  # copy of ROI of previous layer cells, constructed during memCpyROI
                                      
-        self.memory                    = Memory(memoryType)
-        self.memoryROIallocationOptions      = []  # how memory was assigned to ROI
-        self.memoryKernelAllocationOptions   = []  # how memory was assigned to group kernels
+        self.memory                          = Memory(memoryType)
+        self.memoryROIallocationOptions      = []      # For layer n, how memory was assigned to ROI
+        self.memoryKernelAllocationOptions   = []      # For layer n, how memory was assigned to group kernels
+        for l in range(numberOfLayers):
+            self.memoryROIallocationOptions.append(None)        # For layer n, how memory was assigned to ROI
+            self.memoryKernelAllocationOptions.append(None)     # For layer n, how memory was assigned to group kernels
 
         self.cellGroups                  = []  # groups of cells with same ROI
 
@@ -2205,17 +2210,29 @@ class Manager():
     #----------------------------------------------------------------------------------------------------
     # WU related
     # 
-    # FIXME: WIP
     def createWUs(self, layerID):  
         
-        # We need to Describe the common ROI and the address of the kernels
-        # The ROI isnt consequitve in memory so descibe with a starting address and a list of consequtive words and jumps to the next word
+        # We need to describe the common ROI,  the address of the kernels and the destination manager(s) and address.
+        # The ROI isnt consequitve in memory so describe with a starting address and a list of consequtive words and jumps to the next word
         # The kernels are consequitve in memory and we need to just describe ??? FIXME - WIP
 
-        wuRois = []
-        wuKernels = []
-        gId = 0
+        # The common technique for determining if a group of addresses are continuous if to create a dummpy memory location based on where the first cell is stored, 
+        # and then increment that dummpy location and compare against the address of the next cell.
+        # If the address is continuous, then count number of continuous. 
+        # If its not continuous, then log the number of contigous, log the "jump" to the next location and restart count.
+
+        wuRois         = []
+        wuKernels      = []
+        wuDestinations = []
+        gId            = 0
+
+        # For each group in the Manager
         for g in self.cellGroups[layerID] : 
+
+            numberOfCellsInGroup = g.__len__()
+
+            #------------------------------------------------------------
+            # a)
             # First get the common ROI for the group
             wuRoi = {'StartAddress': None, 'Consequtive': [], 'Jump': [], 'Order' : []}
             # The ROI for all cells in a group are the same, so just use the first cell
@@ -2223,7 +2240,7 @@ class Manager():
             roi = g[0].getROIcells()
             # Create a memory option type from first cells memory location
             memoryOption          = roi[0].memoryLocation.convertToMemoryAllocationOption()
-            memoryOption.order    = self.memoryROIallocationOptions.order
+            memoryOption.order    = self.memoryROIallocationOptions[layerID].order
             wuRoi['Order']        = memoryOption.order
             wuRoi['StartAddress'] = roi[0].memoryLocation
             cnt = 0  # count how many consequtive memory locations
@@ -2244,9 +2261,13 @@ class Manager():
                 wuRoi['Consequtive'].append(cnt)
             wuRois.append(wuRoi)
 
+            #------------------------------------------------------------
+            # b)
+            # Describe the kernel(s) as a starting address based on the first cell in the group and then a group of tuples showing number of 
+            # consequtive locations and jumps to next location
+
             # Get the kernel memory for each cell as a vector
             kernelAddresses = []
-            numberOfCellsInGroup = g.__len__()
             for c in g:
                 kernelAddresses.append(c.kernel.getLinearAddresses())
 
@@ -2259,7 +2280,7 @@ class Manager():
             # Start incrementing thru memory and make sure there are no discontinuities
             wuKernel = {'StartAddress': None, 'Consequtive': [], 'Jump': [], 'Order' : [], 'NumberOfCells' : None}
             memoryOption              = kernelAddresses[0][0].convertToMemoryAllocationOption()
-            memoryOption.order        = self.memoryKernelAllocationOptions.order # use order from original group kernel assignment
+            memoryOption.order        = self.memoryKernelAllocationOptions[layerID].order # use order from original group kernel assignment
             wuKernel['Order']         = memoryOption.order
             wuKernel['StartAddress']  = kernelAddresses[0][0]
             wuKernel['NumberOfCells'] = numberOfCellsInGroup
@@ -2280,14 +2301,132 @@ class Manager():
             if cnt > 0 :
                 wuKernel['Consequtive'].append(cnt)
             wuKernels.append(wuKernel)
+      
 
+            #------------------------------------------------------------
+            # c)
+            # Describe the destination(s) as a ManagerID, starting address and consequitve/jump tuples. Output a warning if there are any jumps
+
+            # RUNCHECK
+            # Make sure all copiedTo lists are the same length and contain the same managers
+            numOfCopiedTo = g[0].copiedTo.__len__()
+            for c in g[1:] :
+                if c.copiedTo.__len__() != numOfCopiedTo :
+                    raise Exception('{0}:{1}:Layer {2}:First cell {3},{4},{5} in group {6} has a different number of copiedTo lists than {7},{8},{9}'.format(__FILE__(), __LINE__(), layerID, g[0].ID[0], g[0].ID[1], g[0].ID[2], gId, c.ID[0], c.ID[1], c.ID[2] )) 
+            
+            for i in range(numOfCopiedTo) :
+                mgr = g[0].copiedTo[i].managerLocation
+                cCnt = 0
+                for c in g[1:] :
+                    try:
+                        if mgr != c.copiedTo[i].managerLocation :
+                            raise Exception('{0}:{1}:Manager {2},{3}:Layer {4}:Group {5}: First cell {6},{7},{8} has a different manager than cell {9},{10},{11}'.format(__FILE__(), __LINE__(), self.ID[0], self.ID[1], layerID, gId, g[0].ID[0], g[0].ID[1], g[0].ID[2], c.ID[0], c.ID[1], c.ID[2] )) 
+                    except:
+                            raise Exception('{0}:{1}:Manager {2},{3}:Layer {4}:Group {5}: Access issue with cell {6},{7},{8} copied to index {9}'.format(__FILE__(), __LINE__(), self.ID[0], self.ID[1], layerID, gId, c.ID[0], c.ID[1], c.ID[2], i))
+                    cCnt += 1
+
+            # Make sure that a common destination manager is storing each cell state in contiguous memory
+            # For each destination manager, make sure each cell in the group is writing to consequtive locations and create an output WU
+            # So create a dummpy memory location based on where the first cell is stored, and then increment that dummpy location and compare against the address of the next cell.
+            # If the address is continuous, then count number of cintoinuos. 
+            # If its not continuous, then log the "jump" to the next location.
+            wuDestination = []
+            for ctIdx in range(numOfCopiedTo) :
+                wuPerMgrDestination = {'Manager': None, 'StartAddress': None, 'Consequtive': [], 'Jump': [], 'Order' : [], 'NumberOfCells' : None}
+                memoryOption         = g[0].copiedTo[ctIdx].memoryLocation.convertToMemoryAllocationOption()
+                # We need to know how the next layer stores its input
+                memoryOption.order   = self.memoryROIallocationOptions[layerID+1].order # use order from original group kernel assignment
+                wuPerMgrDestination['Manager']       = g[0].copiedTo[ctIdx].managerLocation
+                wuPerMgrDestination['StartAddress']  = g[0].copiedTo[ctIdx].memoryLocation
+                wuPerMgrDestination['NumberOfCells'] = numberOfCellsInGroup
+                cnt = 0  # count how many consequtive memory locations
+                for cIdx in range(numberOfCellsInGroup) :
+                    if g[cIdx].copiedTo[ctIdx].memoryLocation.compareAddress(np.array([memoryOption.channel, memoryOption.bank, memoryOption.page, memoryOption.word])):
+                        cnt += 1
+                        memoryOption.increment(g[cIdx].copiedTo[ctIdx].memoryLocation.memory, 0)
+                    else:
+                        wuPerMgrDestination['Consequtive'].append(cnt)
+                        rv = memoryOption.delta(g[cIdx].copiedTo[ctIdx].memoryLocation)  # returns [delta, <new memOption>]
+                        wuPerMgrDestination['Jump'].append(rv[0])
+                        memoryOption = rv[1]
+                        cnt = 1
+                        memoryOption.increment(g[cIdx].copiedTo[ctIdx].memoryLocation.memory, 0)
+                if cnt > 0 :
+                    wuPerMgrDestination['Consequtive'].append(cnt)
+                wuDestination.append(wuPerMgrDestination)
+
+            wuDestinations.append(wuDestination)
 
             gId += 1
             
-
-
-        return [wuRois, wuKernels]
+        return [wuRois, wuKernels, wuDestinations]
                         
+    # print WU's
+    # 
+    def printWUs(self, layerID):  
+
+        [roiWu, kerWu, destWu] = self.createWUs(layerID)
+        """
+        pLine = pLine + '\n                                                                    Work Units                                                                                        '
+        pLine = pLine + '\n                    ROI                            |                 Kernel                                        |                     Destination                                 '
+        pLine = pLine + '\n StartAddess Order Type(Ser/Par) {{Cons,Jump}}     |  NumOfCells StartAddress Order {{Cons,Jump}}  Type(Ser/Par)   | numOfDestinations  Manager   StartAddress Order {{Cons,Jump}}   '
+        """
+        WUs = []
+
+        for n in range(roiWu.__len__()) :
+            roi = roiWu[n]
+            ker = kerWu[n]
+            dest = destWu[n]
+            roiRowStr = ''
+            roiRowStr = roiRowStr + '{0:>4} {1:>4} {2:>4} {3:>4} '.format(toHexPad(roi['StartAddress'].channel, 4), toHexPad(roi['StartAddress'].bank, 4), toHexPad(roi['StartAddress'].page, 4),  toHexPad(roi['StartAddress'].word, 4))
+            roiRowStr = roiRowStr + '{0:>4} '.format(''.join(roi['Order']))
+            for c in range(len(roi['Consequtive'])) :
+                roiRowStr = roiRowStr + '1 {0:>5} '.format(toHexPad(roi['Consequtive'][c],5))
+                try :
+                    roiRowStr = roiRowStr + '1 {0:>3} '.format(toHexPad(roi['Jump'][c], 3))
+                except:
+                    pass
+            roiRowStr = roiRowStr + '0 '
+            pass
+            kerRowStr = ''
+            kerRowStr = kerRowStr + '{0:>2} '.format(toHexPad(ker['NumberOfCells'],2))
+            kerRowStr = kerRowStr + '{0:>4} {1:>4} {2:>4} {3:>4} '.format(toHexPad(ker['StartAddress'].channel, 4), toHexPad(ker['StartAddress'].bank, 4), toHexPad(ker['StartAddress'].page, 4),  toHexPad(ker['StartAddress'].word, 4))
+            kerRowStr = kerRowStr + '{0:>4} '.format(''.join(ker['Order']))
+            for c in range(len(ker['Consequtive'])) :
+                kerRowStr = kerRowStr + '1 {0:>5} '.format(toHexPad(ker['Consequtive'][c],5))
+                try :
+                    kerRowStr = kerRowStr + '1 {0:>3} '.format(toHexPad(ker['Jump'][c], 3))
+                except:
+                    pass
+            kerRowStr = kerRowStr + '0 '
+            pass
+            dRowStr = ''
+            #dRowStr = dRowStr + '{0:>2} '.format(toHexPad(dest.__len__(), 2))
+            for d in dest :
+                dRowStr = dRowStr + '1 {0:>2} {1:>2} '.format(toHexPad(int(d['Manager'].ID[0]), 2), toHexPad(int(d['Manager'].ID[0]), 2))
+                dRowStr = dRowStr + '{0:>4} {1:>4} {2:>4} {3:>4} '.format(toHexPad(d['StartAddress'].channel, 4), toHexPad(d['StartAddress'].bank, 4), toHexPad(d['StartAddress'].page, 4),  toHexPad(d['StartAddress'].word, 4))
+                #dRowStr = dRowStr + '{0:>4} '.format(''.join(d['Order']))
+                for c in range(len(d['Consequtive'])) :
+                    dRowStr = dRowStr + '1 {0:>5} '.format(toHexPad(d['Consequtive'][c],5))
+                    try :
+                        dRowStr = dRowStr + '1 {0:>3} '.format(toHexPad(d['Jump'][c], 3))
+                    except:
+                        pass
+                dRowStr = dRowStr + '0 '
+            WUs.append(roiRowStr + '| ' + kerRowStr + '| ' + dRowStr)
+
+        return WUs
+
+      
+
+    # save WU's
+    # 
+    def createWUfiles(self, layerID):  
+  
+        pass
+
+
+    #----------------------------------------------------------------------------------------------------
 
     #----------------------------------------------------------------------------------------------------
     # Mem Copy
@@ -2409,7 +2548,7 @@ class Manager():
         # Keep copy of starting and ending allocate options
         # if the method is being given the memories existing allocationOptions, then just use existng
         # if its a new option, then overwite
-        self.memoryROIallocationOptions      = copy_copy(allocateOptions)  # we will need to order of allocation for WU creation
+        self.memoryROIallocationOptions[layerID]       = copy_copy(allocateOptions)  # we will need to order of allocation for WU creation
         try :
             if self.currentMemoryAllocationOptions != allocateOptions :
                 self.initialMemoryAllocationOptions    = copy_copy(allocateOptions)
@@ -2510,7 +2649,7 @@ class Manager():
         # The ROI will be fanned out from one page to all lanes and the kernel page will be read
         # and each word sent to each lane with words arranged in the page as: Word(lane,kernelWord)
         # word(0,0), word(1,0) ... word(31,0), word(0,1) .. word(31,1)
-        self.memoryKernelAllocationOptions = copy_copy(allocateOptions)  # how memory was assigned to group kernels
+        self.memoryKernelAllocationOptions[layerID] = copy_copy(allocateOptions)  # how memory was assigned to group kernels
         pass
         # Get kernel dimensions from first cell in the group
         memLocnOption = memoryLocationAccessOptions(allowOverWrite=False)
