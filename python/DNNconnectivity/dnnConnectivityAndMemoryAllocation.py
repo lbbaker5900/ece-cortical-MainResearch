@@ -503,6 +503,8 @@ class Cell():
         self.managerLocation = []                           # where is this copy of the cell? original cell will have this field blank, copied cells
                                                             # point to manager where copy is stored
         self.memoryLocation  = MemoryLocation(None,0,0,0,0) # memory location has a pointer to the actual memory and location within that memory
+        self.stOpOperation   = 'MAC'                        # default to MAC
+        self.simdOperation   = 'ReLu'                       # default to ReLu
         self.kernel          = Kernel(self, kernelDimensions)
 
         self.dummy           = dummy
@@ -1489,7 +1491,10 @@ class Layer():
         dirStr = dirStr + timeStr + '/'
         if not os.path.exists(dirStr) :
             os.makedirs(dirStr)
-        outFile = dirStr + './outputFiles/' + 'layer'+ str(self.ID) + '_cellTargetList.txt'
+        dirStr = dirStr + 'Layer_{0}/'.format(self.ID)
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        outFile = dirStr + 'layer{0}'.format(self.ID)  + '_cellTargetList.txt'
 
         oFile = open(outFile, 'w')
         pLine = ''
@@ -1514,6 +1519,7 @@ class Layer():
 
     #----------------------------------------------------------------------------------------------------
     def createSourceCellFile(self):
+
         timeStr = time.strftime("%Y%m%d")  # just today
         dirStr = './outputFiles/'
         if not os.path.exists(dirStr) :
@@ -1521,7 +1527,11 @@ class Layer():
         dirStr = dirStr + timeStr + '/'
         if not os.path.exists(dirStr) :
             os.makedirs(dirStr)
-        outFile = dirStr + 'layer'+ str(self.ID) + '_sourceCellList.txt'
+        dirStr = dirStr + 'Layer_{0}/'.format(self.ID)
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        outFile = dirStr + 'layer{0}'.format(self.ID)   + '_sourceCellList.txt'
+
         oFile = open(outFile, 'w')
         pLine = ''
         pLine = pLine + '\n{0:^13} : {1:^20} : {2:<100}'.format('Cell', 'Number of', ' Cells')
@@ -2235,6 +2245,7 @@ class Manager():
         # If the address is continuous, then count number of continuous. 
         # If its not continuous, then log the number of contigous, log the "jump" to the next location and restart count.
 
+        wuOps          = []
         wuRois         = []
         wuKernels      = []
         wuDestinations = []
@@ -2247,7 +2258,16 @@ class Manager():
 
             #------------------------------------------------------------
             # a)
-            # First get the common ROI for the group
+            # Get the common operation(s) for the group
+            wuOp = {'SIMD Operation': None, 'stOp Operation': None}
+            wuOp['SIMD Operation'] = g[0].simdOperation
+            wuOp['stOp Operation'] = g[0].stOpOperation
+            wuOps.append(wuOp)
+
+
+            #------------------------------------------------------------
+            # b)
+            # Get the common ROI for the group
             wuRoi = {'StartAddress': None, 'Consequtive': [], 'Jump': [], 'Order' : []}
             # The ROI for all cells in a group are the same, so just use the first cell
             #for c in g[0]:
@@ -2277,7 +2297,7 @@ class Manager():
             wuRois.append(wuRoi)
 
             #------------------------------------------------------------
-            # b)
+            # c)
             # Describe the kernel(s) as a starting address based on the first cell in the group and then a group of tuples showing number of 
             # consequtive locations and jumps to next location
 
@@ -2319,7 +2339,7 @@ class Manager():
       
 
             #------------------------------------------------------------
-            # c)
+            # d)
             # Describe the destination(s) as a ManagerID, starting address and consequitve/jump tuples. Output a warning if there are any jumps
 
             #--------------------
@@ -2377,24 +2397,30 @@ class Manager():
 
             gId += 1
             
-        return [wuRois, wuKernels, wuDestinations]
+        return [wuOps, wuRois, wuKernels, wuDestinations]
                         
     # print WU's
     # 
     def printWUs(self, layerID):  
 
-        [roiWu, kerWu, destWu] = self.createWUs(layerID)
+        [opWu, roiWu, kerWu, destWu] = self.createWUs(layerID)
         WUs = []
-        pLine = '# Three descriptors in each WU, ROI descriptor, Kernel descriptor and Destination descriptor. Note: descriptors separated by "|"'
-        pLine = pLine + '\n# ROI            : ' + '{0:^15}'.format('')               + '{0:^20}'.format('"ROI SA"') + '{0:^15}'.format('"Increment order"') + '{0:^15}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ') 
-        pLine = pLine + '\n# Kernel         : ' + '{0:^15}'.format('"Num of cells"') + '{0:^20}'.format('"KER SA"') + '{0:^15}'.format('"Increment order"') + '{0:^15}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ') 
-        pLine = pLine + '\n# Destination(s) : ' + '{0:^15}'.format('"Dest Manager"') + '{0:^20}'.format('"MGR DA"') + '{0:^15}'.format('"Increment order"') + '{0:^15}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ') 
+        pLine = '# Four descriptors in each WU, Operation descriptor, ROI descriptor, Kernel descriptor and Destination descriptor. Note: descriptors separated by "|"'
+        pLine = pLine + '\n# Operation      : ' + '{0:^15}'.format('')               + '{0:^20}'.format('"StOp Operation"')     + '{0:^20}'.format('"SIMD Operation"')
+        pLine = pLine + '\n# ROI            : ' + '{0:^15}'.format('')               + '{0:^20}'.format('"ROI SA"')             + '{0:^15}'.format('"Increment order"') + '{0:^15}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ') 
+        pLine = pLine + '\n# Kernel         : ' + '{0:^15}'.format('"Num of cells"') + '{0:^20}'.format('"KER SA"')             + '{0:^15}'.format('"Increment order"') + '{0:^15}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ') 
+        pLine = pLine + '\n# Destination(s) : ' + '{0:^15}'.format('"Dest Manager"') + '{0:^20}'.format('"MGR DA"')             + '{0:^15}'.format('"Increment order"') + '{0:^15}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ') 
         pLine = pLine + '\n# Address format = "channel, bank, page, word"'
         WUs.append(pLine)
         for n in range(roiWu.__len__()) :
+            op  = opWu[n]
             roi = roiWu[n]
             ker = kerWu[n]
             dest = destWu[n]
+
+            opRowStr = ''
+            opRowStr = opRowStr + '{0:>6} {1:>6} '.format(op['stOp Operation'], op['SIMD Operation']) 
+
             roiRowStr = ''
             roiRowStr = roiRowStr + '{0:>4} {1:>4} {2:>4} {3:>4} '.format(toHexPad(roi['StartAddress'].channel, 4), toHexPad(roi['StartAddress'].bank, 4), toHexPad(roi['StartAddress'].page, 4),  toHexPad(roi['StartAddress'].word, 4))
             roiRowStr = roiRowStr + '{0:>4} '.format(''.join(roi['Order']))
@@ -2431,7 +2457,7 @@ class Manager():
                     except:
                         pass
                 dRowStr = dRowStr + '0 '
-            WUs.append(roiRowStr + '| ' + kerRowStr + '| ' + dRowStr)
+            WUs.append(opRowStr + '| ' + roiRowStr + '| ' + kerRowStr + '| ' + dRowStr)
 
         return WUs
 
@@ -2660,7 +2686,8 @@ class Manager():
                     # Get next cell
                     c = self.pe.cellsProcessed[layerID][cCnt]
                     # test if cell has same ROI as current group
-                    if (firstCell.sourceCells == c.sourceCells):
+                    # FIXME: will assume for now that the kernel operation needs to be the same across the group
+                    if ((firstCell.sourceCells == c.sourceCells) and (firstCell.stOpOperation == c.stOpOperation)) :
                         group.append(c)
                         groupCount += 1
                     else:
