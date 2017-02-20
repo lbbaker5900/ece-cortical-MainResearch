@@ -2253,7 +2253,8 @@ class Manager():
                 else:
                     wuRoi['Consequtive'].append(cnt)
                     rv = memoryOption.delta(rc.memoryLocation)  # returns [delta, <new memOption>]
-                    wuRoi['Jump'].append(rv[0])
+                    jump = rv[0] # a jump of '0' would be the next location
+                    wuRoi['Jump'].append(jump)
                     memoryOption = rv[1]
                     cnt = 1
                     memoryOption.increment(rc.memoryLocation.memory, 0)
@@ -2307,6 +2308,7 @@ class Manager():
             # c)
             # Describe the destination(s) as a ManagerID, starting address and consequitve/jump tuples. Output a warning if there are any jumps
 
+            #--------------------
             # RUNCHECK
             # Make sure all copiedTo lists are the same length and contain the same managers
             numOfCopiedTo = g[0].copiedTo.__len__()
@@ -2325,6 +2327,7 @@ class Manager():
                             raise Exception('{0}:{1}:Manager {2},{3}:Layer {4}:Group {5}: Access issue with cell {6},{7},{8} copied to index {9}'.format(__FILE__(), __LINE__(), self.ID[0], self.ID[1], layerID, gId, c.ID[0], c.ID[1], c.ID[2], i))
                     cCnt += 1
 
+            #--------------------
             # Make sure that a common destination manager is storing each cell state in contiguous memory
             # For each destination manager, make sure each cell in the group is writing to consequtive locations and create an output WU
             # So create a dummpy memory location based on where the first cell is stored, and then increment that dummpy location and compare against the address of the next cell.
@@ -2366,13 +2369,13 @@ class Manager():
     def printWUs(self, layerID):  
 
         [roiWu, kerWu, destWu] = self.createWUs(layerID)
-        """
-        pLine = pLine + '\n                                                                    Work Units                                                                                        '
-        pLine = pLine + '\n                    ROI                            |                 Kernel                                        |                     Destination                                 '
-        pLine = pLine + '\n StartAddess Order Type(Ser/Par) {{Cons,Jump}}     |  NumOfCells StartAddress Order {{Cons,Jump}}  Type(Ser/Par)   | numOfDestinations  Manager   StartAddress Order {{Cons,Jump}}   '
-        """
         WUs = []
-
+        pLine = '# Three descriptors in each WU, ROI descriptor, Kernel descriptor and Destination descriptor. Note: descriptors separated by "|"'
+        pLine = pLine + '\n# ROI            : ' + '{0:^15}'.format('')               + '{0:^20}'.format('"ROI SA"') + '{0:^15}'.format('"Increment order"') + '{0:^15}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ') 
+        pLine = pLine + '\n# Kernel         : ' + '{0:^15}'.format('"Num of cells"') + '{0:^20}'.format('"KER SA"') + '{0:^15}'.format('"Increment order"') + '{0:^15}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ') 
+        pLine = pLine + '\n# Destination(s) : ' + '{0:^15}'.format('"Dest Manager"') + '{0:^20}'.format('"MGR DA"') + '{0:^15}'.format('"Increment order"') + '{0:^15}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ') 
+        pLine = pLine + '\n# Address format = "channel, bank, page, word"'
+        WUs.append(pLine)
         for n in range(roiWu.__len__()) :
             roi = roiWu[n]
             ker = kerWu[n]
@@ -2381,7 +2384,7 @@ class Manager():
             roiRowStr = roiRowStr + '{0:>4} {1:>4} {2:>4} {3:>4} '.format(toHexPad(roi['StartAddress'].channel, 4), toHexPad(roi['StartAddress'].bank, 4), toHexPad(roi['StartAddress'].page, 4),  toHexPad(roi['StartAddress'].word, 4))
             roiRowStr = roiRowStr + '{0:>4} '.format(''.join(roi['Order']))
             for c in range(len(roi['Consequtive'])) :
-                roiRowStr = roiRowStr + '1 {0:>5} '.format(toHexPad(roi['Consequtive'][c],5))
+                roiRowStr = roiRowStr + '{0:>5} '.format(toHexPad(roi['Consequtive'][c],5))
                 try :
                     roiRowStr = roiRowStr + '1 {0:>3} '.format(toHexPad(roi['Jump'][c], 3))
                 except:
@@ -2393,7 +2396,7 @@ class Manager():
             kerRowStr = kerRowStr + '{0:>4} {1:>4} {2:>4} {3:>4} '.format(toHexPad(ker['StartAddress'].channel, 4), toHexPad(ker['StartAddress'].bank, 4), toHexPad(ker['StartAddress'].page, 4),  toHexPad(ker['StartAddress'].word, 4))
             kerRowStr = kerRowStr + '{0:>4} '.format(''.join(ker['Order']))
             for c in range(len(ker['Consequtive'])) :
-                kerRowStr = kerRowStr + '1 {0:>5} '.format(toHexPad(ker['Consequtive'][c],5))
+                kerRowStr = kerRowStr + '{0:>5} '.format(toHexPad(ker['Consequtive'][c],5))
                 try :
                     kerRowStr = kerRowStr + '1 {0:>3} '.format(toHexPad(ker['Jump'][c], 3))
                 except:
@@ -2403,11 +2406,11 @@ class Manager():
             dRowStr = ''
             #dRowStr = dRowStr + '{0:>2} '.format(toHexPad(dest.__len__(), 2))
             for d in dest :
-                dRowStr = dRowStr + '1 {0:>2} {1:>2} '.format(toHexPad(int(d['Manager'].ID[0]), 2), toHexPad(int(d['Manager'].ID[0]), 2))
+                dRowStr = dRowStr + '{0:>2} {1:>2} '.format(toHexPad(int(d['Manager'].ID[0]), 2), toHexPad(int(d['Manager'].ID[1]), 2))
                 dRowStr = dRowStr + '{0:>4} {1:>4} {2:>4} {3:>4} '.format(toHexPad(d['StartAddress'].channel, 4), toHexPad(d['StartAddress'].bank, 4), toHexPad(d['StartAddress'].page, 4),  toHexPad(d['StartAddress'].word, 4))
                 #dRowStr = dRowStr + '{0:>4} '.format(''.join(d['Order']))
                 for c in range(len(d['Consequtive'])) :
-                    dRowStr = dRowStr + '1 {0:>5} '.format(toHexPad(d['Consequtive'][c],5))
+                    dRowStr = dRowStr + '{0:>5} '.format(toHexPad(d['Consequtive'][c],5))
                     try :
                         dRowStr = dRowStr + '1 {0:>3} '.format(toHexPad(d['Jump'][c], 3))
                     except:
@@ -2423,6 +2426,27 @@ class Manager():
     # 
     def createWUfiles(self, layerID):  
   
+        timeStr = time.strftime("%Y%m%d")  # just today
+        dirStr = './outputFiles/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + timeStr + '/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + 'manager_{0}_{1}/'.format(self.ID[0], self.ID[1])
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        outFile = dirStr + 'manager_{0}_{1}_layer{2}_WUs'.format(self.ID[0], self.ID[1], layerID)
+
+        oFile = open(outFile, 'w')
+
+        wus = self.printWUs(layerID)
+        pLine = ''
+        for wu in wus :
+            pLine = pLine + wu + '\n'
+        
+        oFile.write(pLine)
+        oFile.close()
         pass
 
 
@@ -3078,7 +3102,7 @@ def main():
     network.addLayer('Convolutional',   27,  27,  128,    5,   5,    3,   2 ) #  256,
     network.addLayer('Convolutional',   13,  13,   64,    3,   3,  128,   2 ) #  384,
     network.addLayer('Convolutional',   13,  13,   32,    3,   3,   64,   1 ) #  384,
-    network.addLayer('Convolutional',   13,  13,   64,    3,   3,   32,   1 ) #  384,
+    #network.addLayer('Convolutional',   13,  13,   64,    3,   3,   32,   1 ) #  384,
     #
     
     
@@ -3311,6 +3335,13 @@ def main():
             network.peArray.createROIAnimation(l, dc.displayOptions(pplot=True, pprint=False, createFile=False)) 
             plt.show()
     
+    print '{0}:{1}:INFO:Create Work Unit files'.format(__FILE__(), __LINE__(), l)
+    # Do layer 1 only for now
+    for l in [1] :
+        for mgrY in range(network.managerArray.Y):
+            for mgrX in range(network.managerArray.X):
+                print '{0}:{1}:INFO:Create Work Unit files for manager {2},{3} layer {4}'.format(__FILE__(), __LINE__(), mgrY, mgrX, l)
+                network.managerArray.manager[mgrY][mgrX].createWUfiles(l)
 
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
 
