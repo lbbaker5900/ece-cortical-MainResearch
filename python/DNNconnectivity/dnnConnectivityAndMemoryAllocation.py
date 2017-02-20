@@ -596,6 +596,20 @@ class Cell():
                 print '{0}:{1}:ERROR:CopiedTo list empty, not an original cell: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
 
         return rv
+
+    def getGroupID(self):
+        # Find in which manager and group this cell is processed
+        # Return point to manager and index of group in cellGroups
+        mgr = self.PE.manager
+        for i in range(mgr.cellGroups[self.layerID].__len__()):
+            if self in mgr.cellGroups[self.layerID][i] :
+                grpId = i
+        if 'grpId' not in locals() :
+            print '{0}:{1}:LEE:ERROR:DEBUG:'.format(__FILE__(), __LINE__()), 'Cell not found in any group '
+            raise
+        
+        return [mgr, grpId]
+
     #----------------------------------------------------------------------------------------------------
     # print
 
@@ -2338,7 +2352,8 @@ class Manager():
                 wuPerMgrDestination = {'Manager': None, 'StartAddress': None, 'Consequtive': [], 'Jump': [], 'Order' : [], 'NumberOfCells' : None}
                 memoryOption         = g[0].copiedTo[ctIdx].memoryLocation.convertToMemoryAllocationOption()
                 # We need to know how the next layer stores its input
-                memoryOption.order   = self.memoryROIallocationOptions[layerID+1].order # use order from original group kernel assignment
+                memoryOption.order                   = self.memoryROIallocationOptions[layerID+1].order # use order from original group ROI assignment
+                wuPerMgrDestination['Order']         = memoryOption.order
                 wuPerMgrDestination['Manager']       = g[0].copiedTo[ctIdx].managerLocation
                 wuPerMgrDestination['StartAddress']  = g[0].copiedTo[ctIdx].memoryLocation
                 wuPerMgrDestination['NumberOfCells'] = numberOfCellsInGroup
@@ -2408,7 +2423,7 @@ class Manager():
             for d in dest :
                 dRowStr = dRowStr + '{0:>2} {1:>2} '.format(toHexPad(int(d['Manager'].ID[0]), 2), toHexPad(int(d['Manager'].ID[1]), 2))
                 dRowStr = dRowStr + '{0:>4} {1:>4} {2:>4} {3:>4} '.format(toHexPad(d['StartAddress'].channel, 4), toHexPad(d['StartAddress'].bank, 4), toHexPad(d['StartAddress'].page, 4),  toHexPad(d['StartAddress'].word, 4))
-                #dRowStr = dRowStr + '{0:>4} '.format(''.join(d['Order']))
+                dRowStr = dRowStr + '{0:>4} '.format(''.join(d['Order']))
                 for c in range(len(d['Consequtive'])) :
                     dRowStr = dRowStr + '{0:>5} '.format(toHexPad(d['Consequtive'][c],5))
                     try :
