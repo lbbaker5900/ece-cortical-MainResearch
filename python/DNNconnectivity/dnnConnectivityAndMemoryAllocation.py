@@ -27,25 +27,8 @@ from copy import copy as copy_copy
 from collections import namedtuple
 import operator # for attrgetter
 from rcdtype import *
-# Plotting
-# 
-import matplotlib.pyplot as plt
-import matplotlib.animation as manimation
-from pylab import *
-from matplotlib.colors import BoundaryNorm
-from matplotlib.ticker import MaxNLocator
-#from mpl_toolkits.mplot3d import Axes3D
 
 ########################################################################################################################
-## Globals
-
-## Memory
-WORDSIZE = 32
-
-## PE
-NUMOFEXECLANES = 32
-
-
 ## Create __FILE__ and __LINE__ for prints
 ## citation:http://stackoverflow.com/questions/6810999/how-to-determine-file-function-and-line-number
 def __LINE__():
@@ -69,6 +52,32 @@ class __LINE__(object):
 #__FILE__ = 'dnnConnectivityAndMemoryAllocation.py'
 
 #lineNo = __LINE__()
+########################################################################################################################
+
+# Plotting
+# 
+# Check matplotlib version in case I run on ncsu linux machines that dont support animation
+import matplotlib as mpl
+if (int(mpl.__version__.split('.')[0]) > 1) or  ((int(mpl.__version__.split('.')[0]) == 1) and (int(mpl.__version__.split('.')[1]) >= 4)) :
+    del mpl
+    import matplotlib.pyplot as plt
+    import matplotlib.animation as manimation
+    from pylab import *
+    from matplotlib.colors import BoundaryNorm
+    from matplotlib.ticker import MaxNLocator
+    #from mpl_toolkits.mplot3d import Axes3D
+else :
+    print '{0}:{1}:WARNING:Matplotlib not loaded, version doesnt support all features required'.format(__FILE__(), __LINE__())
+
+########################################################################################################################
+## Globals
+
+## Memory
+WORDSIZE = 32
+
+## PE
+NUMOFEXECLANES = 32
+
 
 ## Extract class methods and fields for prints
 ## citation:http://stackoverflow.com/questions/1911281/how-do-i-get-list-of-methods-in-a-python-class
@@ -150,10 +159,10 @@ DescriptorDelin = namedtuple('DescriptorDelin',   \
                                       SOD_EOD     ')
 DescriptorDelin.__new__.__defaults__ = (0, 1, 0, 2, 3)
 descDelin = DescriptorDelin()
-w = int(ceil(math.log(len(descDelin)-1,16)))
+w = int(math.ceil(math.log(len(descDelin)-1,16)))
 DescriptorDelin.__new__.__defaults__ = (w, 1, 0, 2, 3)
 descDelin = DescriptorDelin()
-#descDelin  = DescriptorDelin._make([int(ceil(math.log(len(DescriptorDelin._fields)-1,16)))] + range(len(DescriptorDelin._fields)-1))
+#descDelin  = DescriptorDelin._make([int(math.ceil(math.log(len(DescriptorDelin._fields)-1,16)))] + range(len(DescriptorDelin._fields)-1))
 
 DescriptorType = namedtuple('DescriptorType',   \
                                      'WIDTH      \
@@ -161,7 +170,7 @@ DescriptorType = namedtuple('DescriptorType',   \
                                       OP         \
                                       MR         \
                                       MW         ')
-descType  = DescriptorType._make([int(ceil(math.log(len(DescriptorType._fields)-1,16)))] + range(len(DescriptorType._fields)-1))
+descType  = DescriptorType._make([int(math.ceil(math.log(len(DescriptorType._fields)-1,16)))] + range(len(DescriptorType._fields)-1))
 
 OptionType = namedtuple('OptionType',   \
                                      'WIDTH          \
@@ -173,19 +182,19 @@ OptionType = namedtuple('OptionType',   \
                                       stOp           \
                                       simdOp         \
                                       MEMORY        ')
-optionType  = OptionType._make([int(ceil(math.log(len(OptionType._fields)-1,16)))] + range(len(OptionType._fields)-1))
+optionType  = OptionType._make([int(math.ceil(math.log(len(OptionType._fields)-1,16)))] + range(len(OptionType._fields)-1))
 
 StOpValues = namedtuple('StOpValues',   \
                                      'WIDTH          \
                                       NOP            \
                                       FPMAC          ')
-stOpValues  = StOpValues._make([int(ceil(math.log(len(StOpValues._fields)-1,16)))] + range(len(StOpValues._fields)-1))
+stOpValues  = StOpValues._make([int(math.ceil(math.log(len(StOpValues._fields)-1,16)))] + range(len(StOpValues._fields)-1))
 
 SIMDValues = namedtuple('SIMDValues',   \
                                      'WIDTH          \
                                       NOP            \
                                       ReLu          ')
-simdValues  = SIMDValues._make([int(ceil(math.log(len(SIMDValues._fields)-1,16)))] + range(len(SIMDValues._fields)-1))
+simdValues  = SIMDValues._make([int(math.ceil(math.log(len(SIMDValues._fields)-1,16)))] + range(len(SIMDValues._fields)-1))
 
 TGTValues = namedtuple('TGTValues',   \
                                      'WIDTH          \
@@ -193,7 +202,7 @@ TGTValues = namedtuple('TGTValues',   \
                                       STACK_DN_ARG1  \
                                       STACK_UP       \
                                       NOP            ')
-tgtValues  = TGTValues._make([int(ceil(math.log(len(TGTValues._fields)-1,16)))] + range(len(TGTValues._fields)-1))
+tgtValues  = TGTValues._make([int(math.ceil(math.log(len(TGTValues._fields)-1,16)))] + range(len(TGTValues._fields)-1))
 srcValues  = tgtValues
 
 TXFERValues = namedtuple('TXFERValues',              \
@@ -201,14 +210,14 @@ TXFERValues = namedtuple('TXFERValues',              \
                                       BCAST          \
                                       VECTOR         \
                                       NOP            ')
-txferValues  = TXFERValues._make([int(ceil(math.log(len(TXFERValues._fields)-1,16)))] + range(len(TXFERValues._fields)-1))
+txferValues  = TXFERValues._make([int(math.ceil(math.log(len(TXFERValues._fields)-1,16)))] + range(len(TXFERValues._fields)-1))
 
 OrderValues = namedtuple('OrderValues',              \
                                      'WIDTH          \
                                       cwbp           \
                                       wcbp           \
                                       NOP            ')
-orderValues  = OrderValues._make([int(ceil(math.log(len(OrderValues._fields)-1,16)))] + range(len(OrderValues._fields)-1))
+orderValues  = OrderValues._make([int(math.ceil(math.log(len(OrderValues._fields)-1,16)))] + range(len(OrderValues._fields)-1))
 
 ########################################################################################################################
 ## KERNELS
@@ -437,7 +446,7 @@ class MemoryAllocationOptions():
               # When incrementing word, if we are placing the features in radix-2 groups increment word numOfFeatures then
               # move to the next radix-2 word
               if self.padWordRadix2  :
-                numberOfAllocatedFeatures = 2**(math.ceil(math.log(numOfFeatures,2)))
+                numberOfAllocatedFeatures = 2**(math.math.ceil(math.log(numOfFeatures,2)))
 
               numOfItems = self.order.__len__()
               incNext = True               # set if the current field is max and next field needs to be incremented
@@ -2478,6 +2487,7 @@ class Manager():
 
         [opWu, roiWu, kerWu, destWu] = self.createWUs(layerID)
         WUs = []
+        # Create a header for the WU file
         pLine = '# Each WU will have four descriptors, an operation descriptor, an arg0 or ROI descriptor, an arg1 or Kernel descriptor and a destination descriptor. Note: within a WU descriptors separated by "|"'
         pLine = '# The descriptors will take the following format delineated with SOD/EOD (start-of-desc/end-of-desc):'
         pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Operations"')   + '"OptionType" : {0:^16}, '.format('"stOp"')   + '"Option" : {0:^14}, '.format('"FPMAC"')      + '"OptionType" : {0:^16}, '.format('"SIMD"')     + '"Option" : {0:^10}, '.format('"ReLu"')   + '"OptionType" : {0:^16}, '.format('"Null"') 
@@ -2490,6 +2500,10 @@ class Manager():
         pLine = pLine + '\n# In the case of the Memory write, there may be more than one optionType=storage if the result has to be written to multiple managers'
         pLine = pLine + '\n# Address format = "Mgr, Local/Global, channel, bank, page, word"'
         WUs.append(pLine)
+
+        separatorStr = '****  '
+
+        # Create WU's and add to file
         for n in range(roiWu.__len__()) :
             op  = opWu[n]
             roi = roiWu[n]
@@ -2523,11 +2537,11 @@ class Manager():
             roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_LANES     , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(ker['NumberOfCells']    , 2                ), txferValues.WIDTH )
             #  - memory option
             roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType         .MEMORY  , optionType.WIDTH                                                                      ), optionType.WIDTH                                                                     )   
-            roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(self.absID                  , int(ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
-            roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(roi['StartAddress'].channel , int(ceil(math.log(roi['StartAddress'].memory.configuration.numOfChannels       ,16))) ), int(ceil(math.log(roi['StartAddress'].memory.configuration.numOfChannels       ,16))))
-            roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(roi['StartAddress'].bank    , int(ceil(math.log(roi['StartAddress'].memory.configuration.numOfBanksPerChannel,16))) ), int(ceil(math.log(roi['StartAddress'].memory.configuration.numOfBanksPerChannel,16))))
-            roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(roi['StartAddress'].page    , int(ceil(math.log(roi['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))) ), int(ceil(math.log(roi['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))))
-            roiRowStr = roiRowStr + '{0:>{1}} ' .format(toHexPad(roi['StartAddress'].word    , int(ceil(math.log(roi['StartAddress'].memory.configuration.sizeOfPage/32       ,16))) ), int(ceil(math.log(roi['StartAddress'].memory.configuration.sizeOfPage/32       ,16))))
+            roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
+            roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(roi['StartAddress'].channel , int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfChannels       ,16))) ), int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfChannels       ,16))))
+            roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(roi['StartAddress'].bank    , int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfBanksPerChannel,16))) ), int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfBanksPerChannel,16))))
+            roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(roi['StartAddress'].page    , int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))) ), int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))))
+            roiRowStr = roiRowStr + '{0:>{1}} ' .format(toHexPad(roi['StartAddress'].word    , int(math.ceil(math.log(roi['StartAddress'].memory.configuration.sizeOfPage/32       ,16))) ), int(math.ceil(math.log(roi['StartAddress'].memory.configuration.sizeOfPage/32       ,16))))
             #toHexPad(roi['StartAddress'].bank, 4), toHexPad(roi['StartAddress'].page, 4),  toHexPad(roi['StartAddress'].word, 4))
             roiRowStr = roiRowStr + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  roi['Order'])), orderValues.WIDTH)
             #roiRowStr = roiRowStr + '{0:>4} '.format(''.join(roi['Order']))
@@ -2557,11 +2571,11 @@ class Manager():
 
             #  - memory option
             kerRowStr = kerRowStr + '{0:^{1}}: '.format(toHexPad(optionType         .MEMORY  , optionType.WIDTH                                                                      ), optionType.WIDTH                                                                     )   
-            kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(self.absID                  , int(ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
-            kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(ker['StartAddress'].channel , int(ceil(math.log(ker['StartAddress'].memory.configuration.numOfChannels       ,16))) ), int(ceil(math.log(ker['StartAddress'].memory.configuration.numOfChannels       ,16))))
-            kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(ker['StartAddress'].bank    , int(ceil(math.log(ker['StartAddress'].memory.configuration.numOfBanksPerChannel,16))) ), int(ceil(math.log(ker['StartAddress'].memory.configuration.numOfBanksPerChannel,16))))
-            kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(ker['StartAddress'].page    , int(ceil(math.log(ker['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))) ), int(ceil(math.log(ker['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))))
-            kerRowStr = kerRowStr + '{0:>{1}} ' .format(toHexPad(ker['StartAddress'].word    , int(ceil(math.log(ker['StartAddress'].memory.configuration.sizeOfPage/32       ,16))) ), int(ceil(math.log(ker['StartAddress'].memory.configuration.sizeOfPage/32       ,16))))
+            kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
+            kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(ker['StartAddress'].channel , int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfChannels       ,16))) ), int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfChannels       ,16))))
+            kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(ker['StartAddress'].bank    , int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfBanksPerChannel,16))) ), int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfBanksPerChannel,16))))
+            kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(ker['StartAddress'].page    , int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))) ), int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))))
+            kerRowStr = kerRowStr + '{0:>{1}} ' .format(toHexPad(ker['StartAddress'].word    , int(math.ceil(math.log(ker['StartAddress'].memory.configuration.sizeOfPage/32       ,16))) ), int(math.ceil(math.log(ker['StartAddress'].memory.configuration.sizeOfPage/32       ,16))))
 
             #kerRowStr = kerRowStr + '{0:>4} {1:>4} {2:>4} {3:>4} '.format(toHexPad(ker['StartAddress'].channel, 4), toHexPad(ker['StartAddress'].bank, 4), toHexPad(ker['StartAddress'].page, 4),  toHexPad(ker['StartAddress'].word, 4))
             #kerRowStr = kerRowStr + '{0:>8} '.format('Vector')
@@ -2596,11 +2610,11 @@ class Manager():
             for d in dest :
                 dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType         .MEMORY  , optionType.WIDTH                                                                      ), optionType.WIDTH                                                                     )   
                 #dRowStr = dRowStr + '{0:>2} {1:>2} '.format(toHexPad(int(d['Manager'].ID[0]), 2), toHexPad(int(d['Manager'].ID[1]), 2))
-                dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['Manager'].absID        , int(ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X  ,16))) ), int(ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X   ,16))))
-                dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['StartAddress'].channel , int(ceil(math.log(  d['StartAddress'].memory.configuration.numOfChannels                 ,16))) ), int(ceil(math.log(  d['StartAddress'].memory.configuration.numOfChannels                  ,16))))
-                dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['StartAddress'].bank    , int(ceil(math.log(  d['StartAddress'].memory.configuration.numOfBanksPerChannel          ,16))) ), int(ceil(math.log(  d['StartAddress'].memory.configuration.numOfBanksPerChannel           ,16))))
-                dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['StartAddress'].page    , int(ceil(math.log(  d['StartAddress'].memory.configuration.numOfPagesPerBank             ,16))) ), int(ceil(math.log(  d['StartAddress'].memory.configuration.numOfPagesPerBank              ,16))))
-                dRowStr =   dRowStr + '{0:>{1}} ' .format(toHexPad(  d['StartAddress'].word    , int(ceil(math.log(  d['StartAddress'].memory.configuration.sizeOfPage/32                 ,16))) ), int(ceil(math.log(  d['StartAddress'].memory.configuration.sizeOfPage/32                  ,16))))
+                dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['Manager'].absID        , int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X  ,16))) ), int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X   ,16))))
+                dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['StartAddress'].channel , int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfChannels                 ,16))) ), int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfChannels                  ,16))))
+                dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['StartAddress'].bank    , int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfBanksPerChannel          ,16))) ), int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfBanksPerChannel           ,16))))
+                dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['StartAddress'].page    , int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfPagesPerBank             ,16))) ), int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfPagesPerBank              ,16))))
+                dRowStr =   dRowStr + '{0:>{1}} ' .format(toHexPad(  d['StartAddress'].word    , int(math.ceil(math.log(  d['StartAddress'].memory.configuration.sizeOfPage/32                 ,16))) ), int(math.ceil(math.log(  d['StartAddress'].memory.configuration.sizeOfPage/32                  ,16))))
                 dRowStr =   dRowStr + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  d['Order'])), orderValues.WIDTH)
                 #dRowStr =   dRowStr + '{0:>4} '.format(toHexPad(orderValues.''.join(d['Order']), orderValues.WIDTH))
                 for c in range(len(d['Consequtive'])) :
@@ -2614,7 +2628,7 @@ class Manager():
             dRowStr =   dRowStr + '{0:^{1}}, '    .format(toHexPad(optionType.NOP   , optionType.WIDTH ), optionType.WIDTH )   
             dRowStr =   dRowStr + '{0:^{1}}  '    .format(toHexPad(descDelin.EOD    , descDelin .WIDTH ), descDelin .WIDTH ) 
 
-            WUs.append(opDescRowStr + '|||| ' + roiRowStr + '|||| ' + kerRowStr + '|||| ' + dRowStr)
+            WUs.append(opDescRowStr + separatorStr + roiRowStr + separatorStr + kerRowStr + separatorStr + dRowStr)
 
         return WUs
 
