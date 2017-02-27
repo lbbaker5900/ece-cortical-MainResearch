@@ -184,10 +184,15 @@ OptionType = namedtuple('OptionType',   \
                                       MEMORY        ')
 optionType  = OptionType._make([int(math.ceil(math.log(len(OptionType._fields)-1,16)))] + range(len(OptionType._fields)-1))
 
-StOpValues = namedtuple('StOpValues',   \
-                                     'WIDTH          \
-                                      NOP            \
-                                      FPMAC          ')
+# Note: For now, with these stOp commands, we will map an option value to the larger regFile streamingOp command, address, number of operands etc. 
+# as required by the streamingOp_cntl module in the verilog code
+StOpValues = namedtuple('StOpValues',                                                   \
+                                     'WIDTH                                             \
+                                      NOP                                               \
+                                      STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM \
+                                      STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM   \
+                                      STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM \
+                                      ')
 stOpValues  = StOpValues._make([int(math.ceil(math.log(len(StOpValues._fields)-1,16)))] + range(len(StOpValues._fields)-1))
 
 SIMDValues = namedtuple('SIMDValues',   \
@@ -2490,10 +2495,10 @@ class Manager():
         # Create a header for the WU file
         pLine = '# Each WU will have four descriptors, an operation descriptor, an arg0 or ROI descriptor, an arg1 or Kernel descriptor and a destination descriptor. Note: within a WU descriptors separated by "|"'
         pLine = '# The descriptors will take the following format delineated with SOD/EOD (start-of-desc/end-of-desc):'
-        pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Operations"')   + '"OptionType" : {0:^16}, '.format('"stOp"')   + '"Option" : {0:^14}, '.format('"FPMAC"')      + '"OptionType" : {0:^16}, '.format('"SIMD"')     + '"Option" : {0:^10}, '.format('"ReLu"')   + '"OptionType" : {0:^16}, '.format('"Null"') 
-        pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Memory Read"')  + '"OptionType" : {0:^16}, '.format('"target"') + '"Option" : {0:^14}, '.format('"Stack Arg0"') + '"OptionType" : {0:^16}, '.format('"Transfer"') + '"Option" : {0:^10}, '.format('"BCast"')  + '"OptionType" : {0:^16}, '.format('"numLanes"') + '"Option" : {0:^10}, '.format('"N"') + '"OptionType" : {0:^16}, '.format('"storage"') + '"Option" : {0:^100}, '.format('{0:^24}'.format('"Address (ROI)"')        + '{0:^15}'.format('"Increment order"') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ')) + '"OptionType" : {0:^16}, '.format('"Null"') + "EOD"
-        pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Memory Read"')  + '"OptionType" : {0:^16}, '.format('"target"') + '"Option" : {0:^14}, '.format('"Stack Arg1"') + '"OptionType" : {0:^16}, '.format('"Transfer"') + '"Option" : {0:^10}, '.format('"Vector"') + '"OptionType" : {0:^16}, '.format('"numLanes"') + '"Option" : {0:^10}, '.format('"N"') + '"OptionType" : {0:^16}, '.format('"storage"') + '"Option" : {0:^100}, '.format('{0:^24}'.format('"Address (Kernel)"')     + '{0:^15}'.format('"Increment order"') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ')) + '"OptionType" : {0:^16}, '.format('"Null"') + "EOD"
-        pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Memory Write"') + '"OptionType" : {0:^16}, '.format('"source"') + '"Option" : {0:^14}, '.format('"Stack"')      + '"OptionType" : {0:^16}, '.format('"Transfer"') + '"Option" : {0:^10}, '.format('"Vector"') + '"OptionType" : {0:^16}, '.format('"numLanes"') + '"Option" : {0:^10}, '.format('"N"') + '"OptionType" : {0:^16}, '.format('"storage"') + '"Option" : {0:^100}, '.format('{0:^24}'.format('"Address (next Layer)"') + '{0:^15}'.format('"Increment order"') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ')) + '"OptionType" : {0:^16}, '.format('"Null"') + "EOD"
+        pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Operations"')   + '"OptionType" : {0:^16}, '.format('"stOp"')   + '"Option" : {0:^14}, '.format('"STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM"')      + '"OptionType" : {0:^16}, '.format('"SIMD"')     + '"Option" : {0:^10}, '.format('"ReLu"')   + '"OptionType" : {0:^16}, '.format('"Null"') 
+        pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Memory Read"')  + '"OptionType" : {0:^16}, '.format('"target"') + '"Option" : {0:^14}, '.format('"Stack Arg0"')                                             + '"OptionType" : {0:^16}, '.format('"Transfer"') + '"Option" : {0:^10}, '.format('"BCast"')  + '"OptionType" : {0:^16}, '.format('"numLanes"') + '"Option" : {0:^10}, '.format('"N"') + '"OptionType" : {0:^16}, '.format('"storage"') + '"Option" : {0:^100}, '.format('{0:^24}'.format('"Address (ROI)"')        + '{0:^15}'.format('"Increment order"') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ')) + '"OptionType" : {0:^16}, '.format('"Null"') + "EOD"
+        pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Memory Read"')  + '"OptionType" : {0:^16}, '.format('"target"') + '"Option" : {0:^14}, '.format('"Stack Arg1"')                                             + '"OptionType" : {0:^16}, '.format('"Transfer"') + '"Option" : {0:^10}, '.format('"Vector"') + '"OptionType" : {0:^16}, '.format('"numLanes"') + '"Option" : {0:^10}, '.format('"N"') + '"OptionType" : {0:^16}, '.format('"storage"') + '"Option" : {0:^100}, '.format('{0:^24}'.format('"Address (Kernel)"')     + '{0:^15}'.format('"Increment order"') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ')) + '"OptionType" : {0:^16}, '.format('"Null"') + "EOD"
+        pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Memory Write"') + '"OptionType" : {0:^16}, '.format('"source"') + '"Option" : {0:^14}, '.format('"Stack"')                                                  + '"OptionType" : {0:^16}, '.format('"Transfer"') + '"Option" : {0:^10}, '.format('"Vector"') + '"OptionType" : {0:^16}, '.format('"numLanes"') + '"Option" : {0:^10}, '.format('"N"') + '"OptionType" : {0:^16}, '.format('"storage"') + '"Option" : {0:^100}, '.format('{0:^24}'.format('"Address (next Layer)"') + '{0:^15}'.format('"Increment order"') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ')) + '"OptionType" : {0:^16}, '.format('"Null"') + "EOD"
         pLine = pLine + '\n'
         pLine = pLine + '\n# The storage option takes the following form : ' + '{0:^24}'.format('"Address"') + '{0:^15}'.format('"Increment order"') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"invalid"') 
 
@@ -2518,8 +2523,8 @@ class Manager():
             opDescRowStr = opDescRowStr + '{0:^{1}}, '.format(toHexPad(descDelin.SOD         , descDelin .WIDTH ), descDelin .WIDTH ) 
             opDescRowStr = opDescRowStr + '{0:^{1}}, '.format(toHexPad(descType.OP           , descType  .WIDTH ), descType  .WIDTH )         
             # option tuples                                                                  
-            opDescRowStr = opDescRowStr + '{0:^{1}}: '.format(toHexPad(optionType.stOp       , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(stOpValues.FPMAC, stOpValues.WIDTH), stOpValues.WIDTH )
-            opDescRowStr = opDescRowStr + '{0:^{1}}: '.format(toHexPad(optionType.simdOp     , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(simdValues.ReLu , simdValues.WIDTH), simdValues.WIDTH )
+            opDescRowStr = opDescRowStr + '{0:^{1}}: '.format(toHexPad(optionType.stOp       , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(stOpValues.STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM, stOpValues.WIDTH), stOpValues.WIDTH )
+            opDescRowStr = opDescRowStr + '{0:^{1}}: '.format(toHexPad(optionType.simdOp     , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(simdValues.ReLu                                             , simdValues.WIDTH), simdValues.WIDTH )
             opDescRowStr = opDescRowStr + '{0:^{1}}, '.format(toHexPad(optionType.NOP        , optionType.WIDTH ), optionType.WIDTH )   
             opDescRowStr = opDescRowStr + '{0:^{1}}  '.format(toHexPad(descDelin.EOD         , descDelin .WIDTH ), descDelin .WIDTH ) 
             #opDescRowStr = opDescRowStr + '{0:>6} {1:>6} '.format(op['stOp Operation'], op['SIMD Operation']) 
