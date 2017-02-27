@@ -22,8 +22,6 @@
 module top;
 
 
-    wire [`PE_CHIPLET_ADDR_BITS_RANGE      ] foo1;
-    wire [`PE_CHIPLET_LANE_ADDR_BITS_RANGE ] foo2;
 
     // system clock and reset
     logic reset_poweron       ;

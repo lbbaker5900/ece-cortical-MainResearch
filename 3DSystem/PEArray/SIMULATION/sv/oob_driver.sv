@@ -102,6 +102,9 @@ class oob_driver;
                     // a forever loop will need an @clk
 
                     //----------------------------------------------------------------------
+                    // FIXME: Load the local PE configuration memory
+
+                    //----------------------------------------------------------------------
                     // If we have all the oob_packets, drive the STD busA
 
                     if ( (receivedManagerOobPacket == 1) && (receivedGeneratorOobPackets == 1) )

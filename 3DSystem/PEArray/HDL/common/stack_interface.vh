@@ -27,6 +27,13 @@
 `define STACK_DOWN_OOB_INTF_TYPE_LSB            0
 `define STACK_DOWN_OOB_INTF_TYPE_RANGE          `STACK_DOWN_OOB_INTF_TYPE_MSB : `STACK_DOWN_OOB_INTF_TYPE_LSB
 
+// For now assume OOB commands do not use lane buses to carry PE configuration data
+`define STACK_DOWN_OOB_INTF_DATA_SIZE           32
+`define STACK_DOWN_OOB_INTF_DATA_WIDTH          `STACK_DOWN_OOB_INTF_DATA_SIZE
+`define STACK_DOWN_OOB_INTF_DATA_MSB            `STACK_DOWN_OOB_INTF_DATA_WIDTH-1
+`define STACK_DOWN_OOB_INTF_DATA_LSB            0
+`define STACK_DOWN_OOB_INTF_DATA_RANGE          `STACK_DOWN_OOB_INTF_DATA_MSB : `STACK_DOWN_OOB_INTF_DATA_LSB
+
 //---------------------------------------------------------------------------------------------------------------------
 // Stack Downstream interface
 

@@ -1,0 +1,243 @@
+/*********************************************************************************************
+
+    File name   : pe_cntl.v
+    Author      : Lee Baker
+    Affiliation : North Carolina State University, Raleigh, NC
+    Date        : Feb 2017
+    email       : lbbaker@ncsu.edu
+
+    Description : This module converts OOB information to local control
+                  The oob_data is organized as {option, data} tuples and the data hold 2 tuples per cycle
+
+*********************************************************************************************/
+    
+`timescale 1ns/10ps
+`include "common.vh"
+`include "pe_array.vh"
+`include "pe.vh"
+`include "stack_interface.vh"
+`include "pe_cntl.vh"
+`include "noc_cntl.vh"
+`include "mem_acc_cont.vh"
+`include "streamingOps_cntl.vh"
+`include "streamingOps.vh"
+`include "dma_cont.vh"
+
+module pe_cntl (
+
+            //-------------------------------
+            // Stack Bus interface
+            //
+            // OOB Downstream carries PE configuration 
+            sti__cntl__oob_cntl                           ,
+            sti__cntl__oob_valid                          ,
+            cntl__sti__oob_ready                          ,
+            sti__cntl__oob_type                           ,
+            sti__cntl__oob_data                           ,
+            
+            
+            //-------------------------------
+            // Configuration output
+            //
+
+
+
+            //-------------------------------
+            // General
+            //
+            clk              ,
+            reset_poweron    
+ 
+    );
+
+  //----------------------------------------------------------------------------------------------------
+  // General
+
+  input                                           clk                            ;
+  input                                           reset_poweron                  ;
+
+
+  //----------------------------------------------------------------------------------------------------
+  // Stack down OOB
+
+  input [`COMMON_STD_INTF_CNTL_RANGE     ]        sti__cntl__oob_cntl            ;
+  input                                           sti__cntl__oob_valid           ;
+  output                                          cntl__sti__oob_ready           ;
+  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]        sti__cntl__oob_type            ;
+  input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]        sti__cntl__oob_data            ;
+                                                
+
+
+  //----------------------------------------------------------------------------------------------------
+  // Configuration output
+
+  wire   [`STREAMING_OP_CNTL_OPERATION_RANGE ]    stOp_operation             ;  
+
+  wire   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    sourceAddress0             ;  
+  wire   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    destinationAddress0        ;  
+  wire   [`PE_DATA_TYPES_RANGE               ]    src_data_type0             ;
+  wire   [`PE_DATA_TYPES_RANGE               ]    dest_data_type0            ;
+
+  wire   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    sourceAddress1             ;  
+  wire   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    destinationAddress1        ;  
+  wire   [`PE_DATA_TYPES_RANGE               ]    src_data_type1             ;
+  wire   [`PE_DATA_TYPES_RANGE               ]    dest_data_type1            ;
+
+  wire   [`PE_MAX_NUM_OF_TYPES_RANGE         ]    numberOfOperands           ;
+
+
+
+  //----------------------------------------------------------------------------------------------------
+  // Registers
+
+  reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    stOp_optionPtr             ; 
+  reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    simd_optionPtr             ; 
+
+  //----------------------------------------------------------------------------------------------------
+  // StreamingOp configuration memory
+  //
+  //  - stOp fields are accessed by a pointer provided in the OOB {option,value} tuple
+  //
+  
+  pe_cntl_stOp_rom pe_cntl_stOp_rom (  
+                                     .optionPtr             ( stOp_optionPtr       ),
+                                                                                  
+                                     .stOp_operation        ( stOp_operation       ),
+                                                                                  
+                                     .sourceAddress0        ( sourceAddress0       ),
+                                     .destinationAddress0   ( destinationAddress0  ),
+                                     .src_data_type0        ( src_data_type0       ),
+                                     .dest_data_type0       ( dest_data_type0      ),
+                                                                                  
+                                     .sourceAddress1        ( sourceAddress1       ),
+                                     .destinationAddress1   ( destinationAddress1  ),
+                                     .src_data_type1        ( src_data_type1       ),
+                                     .dest_data_type1       ( dest_data_type1      ),
+                                                                                  
+                                     .numberOfOperands      ( numberOfOperands     ),
+                                
+                                     .clk
+                                  );
+
+  //----------------------------------------------------------------------------------------------------
+  // Assignments
+  //
+  always @(posedge clk)
+    begin
+      stOp_optionPtr <=  ( reset_poweron                                                                                         ) ?  'd0                         :
+                         ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
+                         ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
+                                                                                                                                     stOp_optionPtr                                       ;
+    end
+
+endmodule
+
+
+module pe_cntl_stOp_rom (  
+                           optionPtr                   ,
+
+                           stOp_operation              ,
+                                                 
+                           sourceAddress0              ,
+                           destinationAddress0         ,
+                           src_data_type0              ,
+                           dest_data_type0             ,
+                                                 
+                           sourceAddress1              ,
+                           destinationAddress1         ,
+                           src_data_type1              ,
+                           dest_data_type1             ,
+                                                 
+                           numberOfOperands            ,
+
+                           clk
+                        );
+
+    input  clk             ;
+
+    input  [`PE_CNTL_OOB_OPTION_RANGE          ]    optionPtr                  ; 
+    
+    output [`STREAMING_OP_CNTL_OPERATION_RANGE ]    stOp_operation             ;  
+
+    output [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    sourceAddress0             ;  
+    output [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    destinationAddress0        ;  
+    output [`PE_DATA_TYPES_RANGE               ]    src_data_type0             ;
+    output [`PE_DATA_TYPES_RANGE               ]    dest_data_type0            ;
+
+    output [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    sourceAddress1             ;  
+    output [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    destinationAddress1        ;  
+    output [`PE_DATA_TYPES_RANGE               ]    src_data_type1             ;
+    output [`PE_DATA_TYPES_RANGE               ]    dest_data_type1            ;
+
+    output [`PE_MAX_NUM_OF_TYPES_RANGE         ]    numberOfOperands           ;
+
+    
+    reg [`STREAMING_OP_CNTL_OPERATION_RANGE ]    stOp_cntl_memory_stOp_operation          [`PE_CNTL_STOP_OPTION_MEMORY_RANGE ]      ;  
+
+    reg [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    stOp_cntl_memory_sourceAddress0          [`PE_CNTL_STOP_OPTION_MEMORY_RANGE ]      ;  
+    reg [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    stOp_cntl_memory_destinationAddress0     [`PE_CNTL_STOP_OPTION_MEMORY_RANGE ]      ;  
+    reg [`PE_DATA_TYPES_RANGE               ]    stOp_cntl_memory_src_data_type0          [`PE_CNTL_STOP_OPTION_MEMORY_RANGE ]      ;
+    reg [`PE_DATA_TYPES_RANGE               ]    stOp_cntl_memory_dest_data_type0         [`PE_CNTL_STOP_OPTION_MEMORY_RANGE ]      ;
+
+    reg [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    stOp_cntl_memory_sourceAddress1          [`PE_CNTL_STOP_OPTION_MEMORY_RANGE ]      ;  
+    reg [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    stOp_cntl_memory_destinationAddress1     [`PE_CNTL_STOP_OPTION_MEMORY_RANGE ]      ;  
+    reg [`PE_DATA_TYPES_RANGE               ]    stOp_cntl_memory_src_data_type1          [`PE_CNTL_STOP_OPTION_MEMORY_RANGE ]      ;
+    reg [`PE_DATA_TYPES_RANGE               ]    stOp_cntl_memory_dest_data_type1         [`PE_CNTL_STOP_OPTION_MEMORY_RANGE ]      ;
+
+    reg [`PE_MAX_NUM_OF_TYPES_RANGE         ]    stOp_cntl_memory_numberOfOperands        [`PE_CNTL_STOP_OPTION_MEMORY_RANGE ]      ;
+    
+    /*
+    // The memory is updated using the testbench, so everytime we see an option, reload the memory
+    always @(optionPtr) 
+      begin
+        $readmemh("./stOp_cntl_memory_stOp_operation.txt"     ,   stOp_cntl_memory_stOp_operation      );
+
+        $readmemh("./stOp_cntl_memory_sourceAddress0.txt"     ,   stOp_cntl_memory_sourceAddress0      );
+        $readmemh("./stOp_cntl_memory_destinationAddress0.txt",   stOp_cntl_memory_destinationAddress0 );
+        $readmemh("./stOp_cntl_memory_src_data_type0.txt"     ,   stOp_cntl_memory_src_data_type0      );
+        $readmemh("./stOp_cntl_memory_dest_data_type0.txt"    ,   stOp_cntl_memory_dest_data_type0     );
+
+        $readmemh("./stOp_cntl_memory_sourceAddress1.txt"     ,   stOp_cntl_memory_sourceAddress1      );
+        $readmemh("./stOp_cntl_memory_destinationAddress1.txt",   stOp_cntl_memory_destinationAddress1 );
+        $readmemh("./stOp_cntl_memory_src_data_type1.txt"     ,   stOp_cntl_memory_src_data_type1      );
+        $readmemh("./stOp_cntl_memory_dest_data_type1.txt"    ,   stOp_cntl_memory_dest_data_type1     );
+
+        $readmemh("./stOp_cntl_memory_numberOfOperands.txt"   ,   stOp_cntl_memory_numberOfOperands    );
+      end
+    */
+    
+    
+    // 
+    reg    [`STREAMING_OP_CNTL_OPERATION_RANGE ]    stOp_operation             ;  
+
+    reg    [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    sourceAddress0             ;  
+    reg    [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    destinationAddress0        ;  
+    reg    [`PE_DATA_TYPES_RANGE               ]    src_data_type0             ;
+    reg    [`PE_DATA_TYPES_RANGE               ]    dest_data_type0            ;
+
+    reg    [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    sourceAddress1             ;  
+    reg    [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    destinationAddress1        ;  
+    reg    [`PE_DATA_TYPES_RANGE               ]    src_data_type1             ;
+    reg    [`PE_DATA_TYPES_RANGE               ]    dest_data_type1            ;
+
+    reg    [`PE_MAX_NUM_OF_TYPES_RANGE         ]    numberOfOperands           ;
+
+    always @(*) 
+      begin 
+        #0.3  stOp_operation       =  stOp_cntl_memory_stOp_operation       [optionPtr] ;
+
+        #0.3  sourceAddress0       =  stOp_cntl_memory_sourceAddress0       [optionPtr] ;
+        #0.3  destinationAddress0  =  stOp_cntl_memory_destinationAddress0  [optionPtr] ;
+        #0.3  src_data_type0       =  stOp_cntl_memory_src_data_type0       [optionPtr] ;
+        #0.3  dest_data_type0      =  stOp_cntl_memory_dest_data_type0      [optionPtr] ;
+
+        #0.3  sourceAddress1       =  stOp_cntl_memory_sourceAddress1       [optionPtr] ;
+        #0.3  destinationAddress1  =  stOp_cntl_memory_destinationAddress1  [optionPtr] ;
+        #0.3  src_data_type1       =  stOp_cntl_memory_src_data_type1       [optionPtr] ;
+        #0.3  dest_data_type1      =  stOp_cntl_memory_dest_data_type1      [optionPtr] ;
+
+        #0.3  numberOfOperands     =  stOp_cntl_memory_numberOfOperands     [optionPtr] ;
+      end
+
+endmodule
+

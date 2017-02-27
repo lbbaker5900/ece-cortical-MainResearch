@@ -74,13 +74,14 @@ if __name__ == "__main__":
     pLine = pLine + '\n            std__pe{0}__oob_valid                          ,'.format(pe) 
     pLine = pLine + '\n            pe{0}__std__oob_ready                          ,'.format(pe) 
     pLine = pLine + '\n            std__pe{0}__oob_type                           ,'.format(pe) 
+    pLine = pLine + '\n            std__pe{0}__oob_data                           ,'.format(pe) 
     #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n            pe{1}__std__lane{0}_strm{2}_ready       ,'.format(lane,pe,strm)
         pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_cntl        ,'.format(lane,pe,strm) 
         pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_data        ,'.format(lane,pe,strm) 
-        pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_data_mask   ,'.format(lane,pe,strm) 
+        #pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_data_mask   ,'.format(lane,pe,strm) 
         pLine = pLine + '\n            std__pe{1}__lane{0}_strm{2}_data_valid  ,'.format(lane,pe,strm) 
         pLine = pLine + '\n'
 
@@ -103,13 +104,14 @@ if __name__ == "__main__":
     pLine = pLine + '\n  input                                         std__pe{0}__oob_valid           ;'.format(pe) 
     pLine = pLine + '\n  output                                        pe{0}__std__oob_ready           ;'.format(pe) 
     pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
+    pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe{0}__oob_data            ;'.format(pe) 
     #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n  output                                       pe{1}__std__lane{0}_strm{2}_ready       ;'.format(lane,pe,strm)
         pLine = pLine + '\n  input [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe{1}__lane{0}_strm{2}_cntl        ;'.format(lane,pe,strm) 
         pLine = pLine + '\n  input [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data        ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  input [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data_mask   ;'.format(lane,pe,strm) 
+        #pLine = pLine + '\n  input [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data_mask   ;'.format(lane,pe,strm) 
         pLine = pLine + '\n  input                                        std__pe{1}__lane{0}_strm{2}_data_valid  ;'.format(lane,pe,strm) 
         pLine = pLine + '\n'
 
@@ -132,13 +134,14 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire                                        std__pe{0}__oob_valid           ;'.format(pe) 
     pLine = pLine + '\n  wire                                        pe{0}__std__oob_ready           ;'.format(pe) 
     pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
+    pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe{0}__oob_data            ;'.format(pe) 
     #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n  wire                                        pe{1}__std__lane{0}_strm{2}_ready       ;'.format(lane,pe,strm)
         pLine = pLine + '\n  wire [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe{1}__lane{0}_strm{2}_cntl        ;'.format(lane,pe,strm) 
         pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data        ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data_mask   ;'.format(lane,pe,strm) 
+        #pLine = pLine + '\n  wire [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data_mask   ;'.format(lane,pe,strm) 
         pLine = pLine + '\n  wire                                        std__pe{1}__lane{0}_strm{2}_data_valid  ;'.format(lane,pe,strm) 
         pLine = pLine + '\n'
      
@@ -161,6 +164,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n        .std__pe{0}__oob_valid          ( SysOob2PeArray[{0}].cb_test.std__pe__oob_valid         ), '.format(pe) 
     pLine = pLine + '\n        .pe{0}__std__oob_ready          ( SysOob2PeArray[{0}].cb_test.pe__std__oob_ready         ), '.format(pe) 
     pLine = pLine + '\n        .std__pe{0}__oob_type           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_type          ), '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_data           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_data          ), '.format(pe) 
     # 
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n        // PE {1}, Lane {0}                 '.format(lane,pe)
@@ -169,7 +173,7 @@ if __name__ == "__main__":
         pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_cntl          ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_cntl       ),      '.format(pe,lane,strm)
         pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data          ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data       ),      '.format(pe,lane,strm)
         pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_valid    ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid ),      '.format(pe,lane,strm)
-        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_mask     ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_mask  ),      '.format(pe,lane,strm)
+        #pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_mask     ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_mask  ),      '.format(pe,lane,strm)
         pLine = pLine + '\n        '
                                              
   f.write(pLine)
@@ -777,7 +781,7 @@ if __name__ == "__main__":
         pLine = pLine + '\n  wire                                        pe{1}__std__lane{0}_strm{2}_ready       ;'.format(lane,pe,strm)
         pLine = pLine + '\n  reg  [`DMA_CONT_STRM_CNTL_RANGE     ]       std__pe{1}__lane{0}_strm{2}_cntl        ;'.format(lane,pe,strm) 
         pLine = pLine + '\n  reg  [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data        ;'.format(lane,pe,strm) 
-        pLine = pLine + '\n  reg  [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data_mask   ;'.format(lane,pe,strm) 
+        #pLine = pLine + '\n  reg  [`STREAMING_OP_DATA_WIDTH_RANGE]       std__pe{1}__lane{0}_strm{2}_data_mask   ;'.format(lane,pe,strm) 
         pLine = pLine + '\n  reg                                         std__pe{1}__lane{0}_strm{2}_data_valid  ;'.format(lane,pe,strm) 
         pLine = pLine + '\n'
      
@@ -793,7 +797,7 @@ if __name__ == "__main__":
         pLine = pLine + '\n    // Lane {0}                 '.format(lane,pe, strm)
         pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_cntl        = \'d1         ;'.format(lane,pe,strm)
         pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_data        = \'h5555_AAAA ;'.format(lane,pe,strm)
-        pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_data_mask   = \'hFFFF_FFFF ;'.format(lane,pe,strm)
+        #pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_data_mask   = \'hFFFF_FFFF ;'.format(lane,pe,strm)
         pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_data_valid  = \'d0         ;'.format(lane,pe,strm)
 
   f.write(pLine)
@@ -808,7 +812,7 @@ if __name__ == "__main__":
         pLine = pLine + '\n    // Lane {0}                 '.format(lane,pe)
         pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_cntl        = \'d0         ;'.format(lane,pe,strm)
         pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_data        = \'h1234_5678 ;'.format(lane,pe,strm)
-        pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_data_mask   = \'hFFFF_FFFF ;'.format(lane,pe,strm)
+        #pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_data_mask   = \'hFFFF_FFFF ;'.format(lane,pe,strm)
         pLine = pLine + '\n    std__pe{1}__lane{0}_strm{2}_data_valid  = \'d0         ;'.format(lane,pe,strm)
 
   f.write(pLine)
@@ -856,7 +860,7 @@ if __name__ == "__main__":
         pLine = pLine + '\n                                                                 (str{1} == (numOfExtWords-1))                    ? \'b10 :    '.format(lane,strm,pe)
         pLine = pLine + '\n                                                                                                                    \'b00 ;    '.format(lane,strm,pe)
         pLine = pLine + '\n                std__pe{2}__lane{0}_strm{1}_data        = pe{2}_lane{0}_strm{1}[str{1}];                                          '.format(lane,strm,pe)
-        pLine = pLine + '\n                std__pe{2}__lane{0}_strm{1}_data_mask   = \'hFFFF_FFFF ;                                            '.format(lane,strm,pe)
+        #pLine = pLine + '\n                std__pe{2}__lane{0}_strm{1}_data_mask   = \'hFFFF_FFFF ;                                            '.format(lane,strm,pe)
         pLine = pLine + '\n                std__pe{2}__lane{0}_strm{1}_data_valid  = \'d1 ;                                                    '.format(lane,strm,pe)
         pLine = pLine + '\n                while (~pe{2}__std__lane{0}_strm{1}_ready)                                                          '.format(lane,strm,pe)
         pLine = pLine + '\n                  begin                                                                                           '.format(lane,strm,pe)
@@ -893,7 +897,7 @@ if __name__ == "__main__":
       pLine = pLine + '\n'        
       pLine = pLine + '\n add wave -noupdate -expand -group ExtToStOpLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/std__pe__lane{0}_strm{1}_cntl      }}'.format(lane,strm) 
       pLine = pLine + '\n add wave -noupdate -expand -group ExtToStOpLane{0} -position insertpoint -radix float32      {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/std__pe__lane{0}_strm{1}_data      }}'.format(lane,strm) 
-      pLine = pLine + '\n add wave -noupdate -expand -group ExtToStOpLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/std__pe__lane{0}_strm{1}_data_mask }}'.format(lane,strm) 
+      #pLine = pLine + '\n add wave -noupdate -expand -group ExtToStOpLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/std__pe__lane{0}_strm{1}_data_mask }}'.format(lane,strm) 
       pLine = pLine + '\n add wave -noupdate -expand -group ExtToStOpLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/std__pe__lane{0}_strm{1}_data_valid}}'.format(lane,strm)
       pLine = pLine + '\n add wave -noupdate -expand -group ExtToStOpLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/pe__std__lane{0}_strm{1}_ready}}'.format(lane,strm)
       pLine = pLine + '\n'        

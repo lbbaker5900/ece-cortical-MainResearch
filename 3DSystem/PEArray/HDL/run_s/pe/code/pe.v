@@ -98,6 +98,11 @@ module pe (
   `include "stack_interface_to_stOp_downstream_instance_wires.vh"
 
   //---------------------------------------
+  // Stack Interface Downstream to PE control
+  //
+  `include "stack_interface_to_pe_cntl_downstream_instance_wires.vh"
+
+  //---------------------------------------
   // SIMD
   // 
   `include "pe_simd_instance_wires.vh"
@@ -112,6 +117,11 @@ module pe (
                         // Downstream Stack bus
                         //
                         `include "pe_stack_bus_downstream_instance_ports.vh"
+
+                        //---------------------------------------
+                        // Downstream Stack OOB to PE control
+                        //
+                        `include "stack_interface_to_pe_cntl_downstream_instance_ports.vh"
 
                         //---------------------------------------
                         // Downstream Stack to Streaming Op

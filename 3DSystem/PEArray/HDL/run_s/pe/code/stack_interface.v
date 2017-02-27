@@ -32,6 +32,11 @@ module stack_interface (
             `include "pe_stack_bus_downstream_ports.vh"
 
             //-------------------------------
+            // Stack Bus to PE control
+            //
+            `include "stack_interface_to_pe_cntl_downstream_ports.vh"
+
+            //-------------------------------
             // Stack Bus to Streaming Ops
             //
             `include "stack_interface_to_stOp_downstream_ports.vh"
@@ -59,6 +64,11 @@ module stack_interface (
   //
   `include "stack_interface_to_stOp_downstream_port_declarations.vh"
 
+  //---------------------------------------
+  // interface to PE control - downstream
+  //
+  `include "stack_interface_to_pe_cntl_downstream_port_declarations.vh"
+
 
   //-------------------------------------------------------------------------------------------------
   // Regs and Wires
@@ -73,11 +83,26 @@ module stack_interface (
   //
   `include "stack_interface_to_stOp_downstream_instance_wires.vh"
 
+  //---------------------------------------
+  // interface to PE control - downstream
+  //
+  `include "stack_interface_to_pe_cntl_downstream_instance_wires.vh"
+
 
   //-------------------------------------------------------------------------------------------------
   // Assignments
   
   `include "stack_interface_to_stOp_downstream_connections.vh"
+
+  // OOB carries PE configuration
+  assign  sti__cntl__oob_cntl      =  std__pe__oob_cntl    ;
+  assign  sti__cntl__oob_valid     =  std__pe__oob_valid   ;
+  assign  pe__std__oob_ready       =  cntl__sti__oob_ready ;
+  assign  sti__cntl__oob_type      =  std__pe__oob_type    ;
+  assign  sti__cntl__oob_data      =  std__pe__oob_data    ;
+
+
+  //-------------------------------------------------------------------------------------------------
 
 endmodule
 

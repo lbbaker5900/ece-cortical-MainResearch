@@ -36,6 +36,7 @@ interface std_pe_oob_ifc(
     // Stack Bus - downstream Out-of-band
     // FIXME - right now type is a per lane signal??
     stack_down_oob_type                         std__pe__oob_type        ;  // Control or Data, Vector or scalar
+    stack_down_oob_data                         std__pe__oob_data        ;  // e.g. {option type, option data}
 
     logic                                       std__pe__oob_valid        ;
     logic [`COMMON_STD_INTF_CNTL_RANGE  ]       std__pe__oob_cntl         ;
@@ -54,6 +55,7 @@ interface std_pe_oob_ifc(
         output       std__pe__oob_cntl         ;
         input        pe__std__oob_ready        ;
         output       std__pe__oob_type         ;
+        output       std__pe__oob_data         ;
     
         output       sys__pe__allSynchronized  ;
         input        pe__sys__thisSynchronized ;
@@ -71,6 +73,7 @@ interface std_pe_oob_ifc(
         input        std__pe__oob_cntl         ;
         output       pe__std__oob_ready        ;
         input        std__pe__oob_type         ;
+        input        std__pe__oob_data         ;
     
         input        sys__pe__allSynchronized  ;
         output       pe__sys__thisSynchronized ;
