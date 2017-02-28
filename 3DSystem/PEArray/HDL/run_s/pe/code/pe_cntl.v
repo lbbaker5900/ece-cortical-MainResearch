@@ -28,6 +28,8 @@ module pe_cntl (
             //-------------------------------
             // Stack Bus interface
             //
+            sys__pe__peId                                 ,
+            
             // OOB Downstream carries PE configuration 
             sti__cntl__oob_cntl                           ,
             sti__cntl__oob_valid                          ,
@@ -35,12 +37,10 @@ module pe_cntl (
             sti__cntl__oob_type                           ,
             sti__cntl__oob_data                           ,
             
-            
             //-------------------------------
             // Configuration output
             //
-
-
+            `include "pe_simd_ports.vh"
 
             //-------------------------------
             // General
@@ -53,9 +53,10 @@ module pe_cntl (
   //----------------------------------------------------------------------------------------------------
   // General
 
-  input                                           clk                            ;
-  input                                           reset_poweron                  ;
+  input                                           clk                          ;
+  input                                           reset_poweron                ;
 
+  input [`PE_PE_ID_RANGE                 ]        sys__pe__peId                ;
 
   //----------------------------------------------------------------------------------------------------
   // Stack down OOB
@@ -67,6 +68,10 @@ module pe_cntl (
   input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]        sti__cntl__oob_data            ;
                                                 
 
+  //----------------------------------------------------------------------------------------------------
+  // Outputs to controller
+
+  `include "pe_cntl_simd_port_declarations.vh"
 
   //----------------------------------------------------------------------------------------------------
   // Configuration output
@@ -88,10 +93,40 @@ module pe_cntl (
 
 
   //----------------------------------------------------------------------------------------------------
-  // Registers
+  // Registers/Wires
 
   reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    stOp_optionPtr             ; 
   reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    simd_optionPtr             ; 
+
+  `include "pe_simd_instance_wires.vh"
+
+  //----------------------------------------------------------------------------------------------------
+  // Connections from control memory to all simd lane control
+  //
+  genvar pe, lane;
+  generate
+      for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
+          begin
+              wire  [`PE_CHIPLET_LANE_ADDR_BITS_RANGE ]     lane_from_genvar;
+              assign lane_from_genvar                     = lane                  ;
+
+              // From the manager, we use a common address for all lanes, so index into the lane memory
+              assign simd__cntl__lane_r130[lane]          = {sourceAddress0     [`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  sourceAddress0     [`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign simd__cntl__lane_r134[lane]          = {destinationAddress0[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  destinationAddress0[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign simd__cntl__lane_r132[lane][19:16]   = src_data_type0        ;  // type (bit, nibble, byte, word)
+
+              assign simd__cntl__lane_r131[lane]          = {sourceAddress1     [`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  sourceAddress1     [`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign simd__cntl__lane_r135[lane]          = {destinationAddress1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  destinationAddress1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign simd__cntl__lane_r133[lane][19:16]   = src_data_type1        ;  // type (bit, nibble, byte, word)
+
+              assign simd__cntl__lane_r133[lane][15: 0]   = numberOfOperands      ;
+              assign simd__cntl__lane_r132[lane][15: 0]   = numberOfOperands      ;  // num of types - for dma
+
+              assign simd__cntl__rs0[0]                   = 1'b1                  ;
+              assign simd__cntl__rs0[31:1]                = stOp_operation        ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
+              assign simd__cntl__rs1                      = {32{1'b1}}            ;
+          end
+  endgenerate
 
   //----------------------------------------------------------------------------------------------------
   // StreamingOp configuration memory
@@ -100,6 +135,7 @@ module pe_cntl (
   //
   
   pe_cntl_stOp_rom pe_cntl_stOp_rom (  
+                                     .valid                 ( sti__cntl__oob_valid ),  // used by readmem. If we are receiving a WU, update control memory
                                      .optionPtr             ( stOp_optionPtr       ),
                                                                                   
                                      .stOp_operation        ( stOp_operation       ),
@@ -116,24 +152,30 @@ module pe_cntl (
                                                                                   
                                      .numberOfOperands      ( numberOfOperands     ),
                                 
+                                     .sys__pe__peId         ( sys__pe__peId        ),
                                      .clk
                                   );
 
   //----------------------------------------------------------------------------------------------------
   // Assignments
   //
+  // examine {option, value} tuples and set local fields
   always @(posedge clk)
     begin
+      // pointer to stOp operation control memory
       stOp_optionPtr <=  ( reset_poweron                                                                                         ) ?  'd0                         :
                          ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
                          ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
                                                                                                                                      stOp_optionPtr                                       ;
     end
 
+  assign cntl__sti__oob_ready           = 1'b1 ;
+
 endmodule
 
 
 module pe_cntl_stOp_rom (  
+                           valid                       ,
                            optionPtr                   ,
 
                            stOp_operation              ,
@@ -150,10 +192,14 @@ module pe_cntl_stOp_rom (
                                                  
                            numberOfOperands            ,
 
+                           sys__pe__peId               ,
+
                            clk
                         );
 
-    input  clk             ;
+    input                                           clk                        ;
+    input                                           valid                      ;
+    input  [`PE_PE_ID_RANGE                    ]    sys__pe__peId              ;
 
     input  [`PE_CNTL_OOB_OPTION_RANGE          ]    optionPtr                  ; 
     
@@ -186,25 +232,23 @@ module pe_cntl_stOp_rom (
 
     reg [`PE_MAX_NUM_OF_TYPES_RANGE         ]    stOp_cntl_memory_numberOfOperands        [`PE_CNTL_STOP_OPTION_MEMORY_RANGE ]      ;
     
-    /*
     // The memory is updated using the testbench, so everytime we see an option, reload the memory
-    always @(optionPtr) 
+    always @(posedge valid) 
       begin
-        $readmemh("./stOp_cntl_memory_stOp_operation.txt"     ,   stOp_cntl_memory_stOp_operation      );
+        $readmemh($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_stOp_operation.dat"      , sys__pe__peId) ,   stOp_cntl_memory_stOp_operation      );
 
-        $readmemh("./stOp_cntl_memory_sourceAddress0.txt"     ,   stOp_cntl_memory_sourceAddress0      );
-        $readmemh("./stOp_cntl_memory_destinationAddress0.txt",   stOp_cntl_memory_destinationAddress0 );
-        $readmemh("./stOp_cntl_memory_src_data_type0.txt"     ,   stOp_cntl_memory_src_data_type0      );
-        $readmemh("./stOp_cntl_memory_dest_data_type0.txt"    ,   stOp_cntl_memory_dest_data_type0     );
+        $readmemh($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_sourceAddress0.dat"      , sys__pe__peId) ,   stOp_cntl_memory_sourceAddress0      );
+        $readmemh($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_destinationAddress0.dat" , sys__pe__peId) ,   stOp_cntl_memory_destinationAddress0 );
+        $readmemh($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_src_data_type0.dat"      , sys__pe__peId) ,   stOp_cntl_memory_src_data_type0      );
+        $readmemh($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_dest_data_type0.dat"     , sys__pe__peId) ,   stOp_cntl_memory_dest_data_type0     );
 
-        $readmemh("./stOp_cntl_memory_sourceAddress1.txt"     ,   stOp_cntl_memory_sourceAddress1      );
-        $readmemh("./stOp_cntl_memory_destinationAddress1.txt",   stOp_cntl_memory_destinationAddress1 );
-        $readmemh("./stOp_cntl_memory_src_data_type1.txt"     ,   stOp_cntl_memory_src_data_type1      );
-        $readmemh("./stOp_cntl_memory_dest_data_type1.txt"    ,   stOp_cntl_memory_dest_data_type1     );
+        $readmemh($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_sourceAddress1.dat"      , sys__pe__peId) ,   stOp_cntl_memory_sourceAddress1      );
+        $readmemh($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_destinationAddress1.dat" , sys__pe__peId) ,   stOp_cntl_memory_destinationAddress1 );
+        $readmemh($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_src_data_type1.dat"      , sys__pe__peId) ,   stOp_cntl_memory_src_data_type1      );
+        $readmemh($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_dest_data_type1.dat"     , sys__pe__peId) ,   stOp_cntl_memory_dest_data_type1     );
 
-        $readmemh("./stOp_cntl_memory_numberOfOperands.txt"   ,   stOp_cntl_memory_numberOfOperands    );
+        $readmemh($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_numberOfOperands.dat"    , sys__pe__peId) ,   stOp_cntl_memory_numberOfOperands    );
       end
-    */
     
     
     // 

@@ -57,6 +57,8 @@ class regFile_driver;
 
         //sys_operation=new();
 
+
+        //----------------------------------------------------------------------------------------------------
         forever 
             begin
                 if ( gen2rfP.num() != 0 )
@@ -97,19 +99,29 @@ class regFile_driver;
                         //----------------------------------------------------------------------------------------------------
                         // Set register inputs to streamingOps_cntl
 
+
+                        //------------------------------------------
                         // Now address is constrained in the base_operation to be within a PE and lane portion of local memory
+                        //
+                        
                         vP_vrf.cb_out.r130          <= oob_packet_new.sourceAddress[0]                     ;
-                        vP_vrf.cb_out.r131          <= oob_packet_new.sourceAddress[1]                     ;
-                        vP_vrf.cb_out.r132[19:16]   <= oob_packet_new.src_data_type [0]     ;  // type (bit, nibble, byte, word)
-                        vP_vrf.cb_out.r132[15: 0]   <= oob_packet_new.numberOfOperands                     ;  // num of types - for dma
-                        vP_vrf.cb_out.r133[19:16]   <= oob_packet_new.src_data_type [1]     ;  // type (bit, nibble, byte, word)
-                        vP_vrf.cb_out.r133[15: 0]   <= oob_packet_new.numberOfOperands                     ;
                         vP_vrf.cb_out.r134          <= oob_packet_new.destinationAddress[0]                ;
+                        vP_vrf.cb_out.r132[19:16]   <= oob_packet_new.src_data_type [0]     ;  // type (bit, nibble, byte, word)
+
+                        vP_vrf.cb_out.r131          <= oob_packet_new.sourceAddress[1]                     ;
                         vP_vrf.cb_out.r135          <= oob_packet_new.destinationAddress[1]                ;
+                        vP_vrf.cb_out.r133[19:16]   <= oob_packet_new.src_data_type [1]     ;  // type (bit, nibble, byte, word)
+
+                        vP_vrf.cb_out.r133[15: 0]   <= oob_packet_new.numberOfOperands                     ;
+                        vP_vrf.cb_out.r132[15: 0]   <= oob_packet_new.numberOfOperands                     ;  // num of types - for dma
+
                         vP_srf.cb_out.rs0[0]        <= 1'b1                                               ;
                         // drive packed struct directly onto regFile register input for streamingOps_cntl
                         vP_srf.cb_out.rs0[31:1]     <= oob_packet_new.stOp_operation                       ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
                         vP_srf.cb_out.rs1           <= {32{1'b1}};
+                        
+
+                        
 
                         // struct contents debug
                         //$display("@%0t LEE:regFile driver: struct size = %d ", $time, $bits(oob_packet_new.stOp_operation));

@@ -2803,6 +2803,7 @@ if __name__ == "__main__":
 
   f.write(pLine)
   f.close()
+
   f = open('../HDL/common/pe_simd_port_declarations.vh', 'w')
   pLine = ""
 
@@ -2823,6 +2824,7 @@ if __name__ == "__main__":
  
   f.write(pLine)  
   f.close()
+
   f = open('../HDL/common/pe_simd_instance_ports.vh', 'w')
   pLine = ""
 
@@ -2842,6 +2844,27 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
 
   f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/pe_cntl_simd_port_declarations.vh', 'w')
+  pLine = ""
+
+  pLine = pLine + '\n  // Common (Scalar) Register(s)                '
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0   ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1   ;'.format(lane)
+  pLine = pLine + '\n'
+  pLine = pLine + '\n  // Lane Register(s)                '
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n'  
+ 
+  f.write(pLine)  
   f.close()
 
 

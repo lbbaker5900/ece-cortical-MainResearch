@@ -167,12 +167,16 @@ class manager;
                 // send this to all the lane generators for this PE and wait for acknowledge
                         
                 $display("@%0t:%s:%0d:LEE: Manager {%0d} sending operation {%0d} to generators and waiting for ack", $time, `__FILE__, `__LINE__, Id, operationNum);
+                // include has mgr2gen and mgr2gen_ack
                 `include "TB_manager_send_operation_to_generators.vh"
                 wait fork;
+                // this should have waited till generator, driver and mem_checker are done 
 
                 // wait till OOB packet is complete before startng next operation
                 //@mgr2oob_ack ;
                 //wait(mgr2oob_ack.triggered) ;
+                //
+                
                 $display("@%0t:%s:%0d:LEE: Manager {%0d} operation {%0d} acked by generators", $time, `__FILE__, `__LINE__, Id, operationNum);
 
                 operationNum++                                ;

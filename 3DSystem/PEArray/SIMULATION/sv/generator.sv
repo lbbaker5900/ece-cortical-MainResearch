@@ -161,7 +161,7 @@ class generator;
 
 
                         // randomize again to create operand values
-                        assert(sys_operation_gen.randomize()) ;  // A previous randomize in the manager will have set the number of operands, so everything will be randomized except numberOfOperands
+                        assert(sys_operation_gen.randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
 
                        
                         

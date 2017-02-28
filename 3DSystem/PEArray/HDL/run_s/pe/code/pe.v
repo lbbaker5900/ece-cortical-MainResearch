@@ -134,6 +134,33 @@ module pe (
   );
 
 
+  //-------------------------------------------------------------------------------------------------
+  // PE Control
+  // 
+  pe_cntl pe_cntl (
+
+            //-------------------------------
+            // Stack Bus interface
+            //
+            .sys__pe__peId                        ( sys__pe__peId                     ),
+            // OOB Downstream carries PE configuration 
+            .sti__cntl__oob_cntl                  ( sti__cntl__oob_cntl               ),      
+            .sti__cntl__oob_valid                 ( sti__cntl__oob_valid              ),      
+            .cntl__sti__oob_ready                 ( cntl__sti__oob_ready              ),      
+            .sti__cntl__oob_type                  ( sti__cntl__oob_type               ),      
+            .sti__cntl__oob_data                  ( sti__cntl__oob_data               ),      
+            
+            //-------------------------------
+            // Configuration output
+            //
+            //`include "pe_simd_instance_ports.vh"
+
+            //-------------------------------
+            // General
+            //
+            .clk                                  ( clk                               ),
+            .reset_poweron                        ( reset_poweron                     )
+  );
 
 
   //-------------------------------------------------------------------------------------------------
