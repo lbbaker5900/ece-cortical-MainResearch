@@ -41,6 +41,7 @@ module pe_cntl (
             // Configuration output
             //
             `include "pe_simd_ports.vh"
+            stOp_complete                                 ,
 
             //-------------------------------
             // General
@@ -67,6 +68,7 @@ module pe_cntl (
   input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]        sti__cntl__oob_type            ;
   input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]        sti__cntl__oob_data            ;
                                                 
+  input                                           stOp_complete                  ;  // dont allow another OOB command until we are complete
 
   //----------------------------------------------------------------------------------------------------
   // Outputs to controller
@@ -97,6 +99,9 @@ module pe_cntl (
 
   reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    stOp_optionPtr             ; 
   reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    simd_optionPtr             ; 
+  reg                                             command_valid              ;  // when a command has been received
+  reg                                             stOp_complete_d1           ;  // we will create a pulse off the rising edge
+  wire                                            stOp_completed             ;  // a pulse indicating a command has been run and completed
 
   `include "pe_simd_instance_wires.vh"
 
@@ -163,13 +168,19 @@ module pe_cntl (
   always @(posedge clk)
     begin
       // pointer to stOp operation control memory
-      stOp_optionPtr <=  ( reset_poweron                                                                                         ) ?  'd0                         :
-                         ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
-                         ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
-                                                                                                                                     stOp_optionPtr                                       ;
+      stOp_optionPtr    <=  ( reset_poweron                                                                                         ) ?  'd0                         :
+                            ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
+                            ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
+                                                                                                                                        stOp_optionPtr                                       ;
+      command_valid     <=  ( reset_poweron                 ) ? 1'd0            :
+                            ( sti__cntl__oob_valid          ) ? 1'b1            :
+                            ( stOp_completed                ) ? 1'b0            :
+                                                                command_valid   ;
+      stOp_complete_d1  <=  stOp_complete   ;
     end
 
-  assign cntl__sti__oob_ready           = 1'b1 ;
+  assign cntl__sti__oob_ready           = ~command_valid  ;
+  assign stOp_completed                 = ~stOp_complete & stOp_complete_d1;
 
 endmodule
 

@@ -103,6 +103,7 @@ class regFile_driver;
                         //------------------------------------------
                         // Now address is constrained in the base_operation to be within a PE and lane portion of local memory
                         //
+                        // Note: ** when disabling rf_driver, also remove reset task from env.run
                         
                         vP_vrf.cb_out.r130          <= oob_packet_new.sourceAddress[0]                     ;
                         vP_vrf.cb_out.r134          <= oob_packet_new.destinationAddress[0]                ;
@@ -160,6 +161,25 @@ class regFile_driver;
                     end
  
             end
+    endtask
+
+    task reset (); 
+
+        vP_vrf.cb_out.r130          <= 32'd0       ;
+        vP_vrf.cb_out.r134          <= 32'd0       ;
+        vP_vrf.cb_out.r132[19:16]   <= 32'd0       ;
+
+        vP_vrf.cb_out.r131          <= 32'd0       ;
+        vP_vrf.cb_out.r135          <= 32'd0       ;
+        vP_vrf.cb_out.r133[19:16]   <= 4'd0        ;
+
+        vP_vrf.cb_out.r133[15: 0]   <= 16'd0       ;
+        vP_vrf.cb_out.r132[15: 0]   <= 16'd0       ;
+
+        vP_srf.cb_out.rs0[0]        <= 1'b0        ;
+        vP_srf.cb_out.rs0[31:1]     <= 31'd0       ;
+        vP_srf.cb_out.rs1           <= {32{1'b0}}  ;
+                        
     endtask
 
 

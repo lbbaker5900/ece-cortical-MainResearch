@@ -104,6 +104,8 @@ class oob_driver;
         string  fileNameStr ;
         integer fileNameInt ;
 
+        bit oob_sent        ;
+
         forever
             begin
                 if (( mgr2oob.num() != 0 ) && (receivedManagerOobPacket == 0) )
@@ -121,16 +123,16 @@ class oob_driver;
                 // a forever loop will need an @clk
 
                 //----------------------------------------------------------------------
-                // FIXME: Load the local PE configuration memory
-
-                //----------------------------------------------------------------------
                 // If we have all the oob_packets, drive the STD busA
 
                 if ( (receivedManagerOobPacket == 1) && (receivedGeneratorOobPackets == 1) )
                     begin
                         mgr2oob.get(oob_packet_mgr)  ;  //Removing the instruction from manager mailbox
 
-                        //--------------------------------------------------------------------------------------------
+                        //--------------------------------------------------------------------------------------------------------
+                        // Load the local PE configuration memory
+
+                        //------------------------------------------------------------------------------
                         // Create readmemh files for stOp control memory in pe_cntl before we send WU
                         //
                         /*
@@ -185,35 +187,51 @@ class oob_driver;
                         //--------------------------------------------------------------------------------------------
 
                         //--------------------------------------------------------------------------------------------
-                        $display("@%0t:%s:%0d: INFO:{%0d}: Driving WU via OOB with contents of OOB packet from manager : {%0d,%0d}", $time, `__FILE__, `__LINE__, Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1]);
+                        $display("@%0t:%s:%0d: INFO:{%0d}: Driving WU via OOB with contents of OOB packet from manager : {%0d,%0d}", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1]);
                         oob_packet_mgr.displayPacket();
 
-                        vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 1  ;  // FIXME: temporary drive OOB to non-X
-                        vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;  
-                        vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
-                        vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
-                        vSysOob2PeArray.cb_test.std__pe__oob_data         <= STD_PACKET_OOB_DATA_PE_OP_CMD  ;
-
-                        for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
-                            begin
-                                gen2oob.get(oob_packet_gen)  ;  // Removing the instruction from manager mailbox
-                                gen2oob.put(oob_packet_gen)  ;  // we need each packet later
-                                //$display("@%0t:%s:%0d: DEBUG:{%0d}: Driving OOB Lane with contents of OOB packet from generator : {%0d,%0d}", $time, `__FILE__, `__LINE__, Id, oob_packet_gen.Id[0], oob_packet_gen.Id[1]);
-                                //oob_packet_mgr.displayPacket();
-                                tmp_vSysLane2PeArray = vSysLane2PeArray[oob_packet_gen.Id[1]];
-
-                                tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 1  ;
-                                tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_cntl        <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;         //Passing the instruction to the system interface
-                                tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data        <= 32'hdead_beef  ;
-                                tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
-                                tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 1  ;
-                                tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_cntl        <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;         //Passing the instruction to the system interface
-                                tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data        <= 32'hbabe_cafe  ;
-                                tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
-
-                            end
+                        oob_sent = 0 ;
+                        while (~oob_sent)
+                          begin
+                            @(vSysOob2PeArray.cb_test);
+                            if (vSysOob2PeArray.pe__std__oob_ready) 
+                              begin
+                              vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 1  ;
+                              oob_sent = 1;
+                              end
+                            else
+                              begin
+                                if (this.Id == 63) 
+                                // cb_dut or cb_test dont work for inputs/observed signals
+                                //$display("@%0t:%s:%0d: INFO:{%0d}: Not ready for OOB from manager : {%0d,%0d}. rdy = %d", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1], vSysOob2PeArray.pe__std__oob_ready );
+                                vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;
+                              end
+                            vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;  
+                            vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
+                            vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
+                            vSysOob2PeArray.cb_test.std__pe__oob_data         <= STD_PACKET_OOB_DATA_PE_OP_CMD  ;
+                            for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+                              begin
+                                  gen2oob.get(oob_packet_gen)  ;  // Removing the instruction from manager mailbox
+                                  gen2oob.put(oob_packet_gen)  ;  // we need each packet later
+                                  //$display("@%0t:%s:%0d: DEBUG:{%0d}: Driving OOB Lane with contents of OOB packet from generator : {%0d,%0d}", $time, `__FILE__, `__LINE__, this.Id, oob_packet_gen.Id[0], oob_packet_gen.Id[1]);
+                                  //oob_packet_mgr.displayPacket();
+                                  /*
+                                  tmp_vSysLane2PeArray = vSysLane2PeArray[oob_packet_gen.Id[1]];
+                        
+                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 1  ;
+                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_cntl        <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;         //Passing the instruction to the system interface
+                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data        <= 32'hdead_beef  ;
+                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
+                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 1  ;
+                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_cntl        <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;         //Passing the instruction to the system interface
+                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data        <= 32'hbabe_cafe  ;
+                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
+                                  */
+                        
+                              end
+                          end
       
-
                         // Now quiesce the STD bus by deasserting valid
                         @(vSysOob2PeArray.cb_test);
 
@@ -244,7 +262,7 @@ class oob_driver;
                                 -> gen2oob_ack[i];
                             end
                         receivedGeneratorOobPackets   = 0                     ;
-                        $display("@%0t:%s:%0d:INFO: {%0d} Completed driving OOB", $time, `__FILE__, `__LINE__, Id );
+                        $display("@%0t:%s:%0d:INFO: {%0d} Completed driving OOB", $time, `__FILE__, `__LINE__, this.Id );
                     end
                 else
                     //----------------------------------------------------------------------

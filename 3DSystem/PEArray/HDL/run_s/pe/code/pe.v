@@ -154,6 +154,7 @@ module pe (
             // Configuration output
             //
             //`include "pe_simd_instance_ports.vh"
+            .stOp_complete                        ( pe__sys__complete                 ),
 
             //-------------------------------
             // General

@@ -3105,7 +3105,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n            // General control and status                  ,'.format(pe) 
-    pLine = pLine + '\n            sys__pe{0}__peId                               ,'.format(pe) 
+    pLine = pLine + '\n            //sys__pe{0}__peId                               ,'.format(pe) 
     pLine = pLine + '\n            sys__pe{0}__allSynchronized                    ,'.format(pe) 
     pLine = pLine + '\n            pe{0}__sys__thisSynchronized                   ,'.format(pe) 
     pLine = pLine + '\n            pe{0}__sys__ready                              ,'.format(pe) 
@@ -3136,7 +3136,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // General control and status                                                  '.format(pe) 
-    pLine = pLine + '\n  input [`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
+    pLine = pLine + '\n  //input [`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
     pLine = pLine + '\n  input                                         sys__pe{0}__allSynchronized     ;'.format(pe) 
     pLine = pLine + '\n  output                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
     pLine = pLine + '\n  output                                        pe{0}__sys__ready               ;'.format(pe) 
@@ -3166,7 +3166,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // General control and status                                                '.format(pe) 
-    pLine = pLine + '\n  wire[`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
+    pLine = pLine + '\n  //wire[`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
     pLine = pLine + '\n  wire                                        sys__pe{0}__allSynchronized     ;'.format(pe) 
     pLine = pLine + '\n  wire                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
     pLine = pLine + '\n  wire                                        pe{0}__sys__ready               ;'.format(pe) 
@@ -3196,7 +3196,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n               // General control and status                                                       '.format(pe,lane,strm) 
-    pLine = pLine + '\n               .sys__pe{0}__peId                      ( sys__pe{0}__peId                   ),      '.format(pe,lane,strm)
+    pLine = pLine + '\n               //.sys__pe{0}__peId                      ( sys__pe{0}__peId                   ),      '.format(pe,lane,strm)
     pLine = pLine + '\n               .sys__pe{0}__allSynchronized           ( sys__pe{0}__allSynchronized        ),      '.format(pe,lane,strm)
     pLine = pLine + '\n               .pe{0}__sys__thisSynchronized          ( pe{0}__sys__thisSynchronized       ),      '.format(pe,lane,strm)
     pLine = pLine + '\n               .pe{0}__sys__ready                     ( pe{0}__sys__ready                  ),      '.format(pe,lane,strm)
