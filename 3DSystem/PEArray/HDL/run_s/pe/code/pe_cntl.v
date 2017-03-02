@@ -102,8 +102,10 @@ module pe_cntl (
   reg                                             command_valid              ;  // when a command has been received
   reg                                             stOp_complete_d1           ;  // we will create a pulse off the rising edge
   wire                                            stOp_completed             ;  // a pulse indicating a command has been run and completed
+  wire                                            stOp_complete_deasserted   ;  // we deassert rs0[0] and wait for complete to deassert before starting next command
+  reg                                             sti__cntl__oob_valid_d1    ;  // we will create a pulse off the rising edge
 
-  `include "pe_simd_instance_wires.vh"
+  `include "pe_cntl_simd_instance_wires.vh"
 
   //----------------------------------------------------------------------------------------------------
   // Connections from control memory to all simd lane control
@@ -116,23 +118,40 @@ module pe_cntl (
               assign lane_from_genvar                     = lane                  ;
 
               // From the manager, we use a common address for all lanes, so index into the lane memory
-              assign simd__cntl__lane_r130[lane]          = {sourceAddress0     [`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  sourceAddress0     [`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign simd__cntl__lane_r134[lane]          = {destinationAddress0[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  destinationAddress0[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign simd__cntl__lane_r132[lane][19:16]   = src_data_type0        ;  // type (bit, nibble, byte, word)
-
-              assign simd__cntl__lane_r131[lane]          = {sourceAddress1     [`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  sourceAddress1     [`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign simd__cntl__lane_r135[lane]          = {destinationAddress1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  destinationAddress1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign simd__cntl__lane_r133[lane][19:16]   = src_data_type1        ;  // type (bit, nibble, byte, word)
-
-              assign simd__cntl__lane_r133[lane][15: 0]   = numberOfOperands      ;
-              assign simd__cntl__lane_r132[lane][15: 0]   = numberOfOperands      ;  // num of types - for dma
-
-              assign simd__cntl__rs0[0]                   = 1'b1                  ;
-              assign simd__cntl__rs0[31:1]                = stOp_operation        ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
-              assign simd__cntl__rs1                      = {32{1'b1}}            ;
+              assign simd__cntl__lane_r130[lane]          = {simd__cntl__lane_r130_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  simd__cntl__lane_r130_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign simd__cntl__lane_r134[lane]          = {simd__cntl__lane_r134_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  simd__cntl__lane_r134_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign simd__cntl__lane_r132[lane][19:16]   = simd__cntl__lane_r132_e1[19:16]   ;  // type (bit, nibble, byte, word)
+                                                                                              
+              assign simd__cntl__lane_r131[lane]          = {simd__cntl__lane_r131_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  simd__cntl__lane_r131_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign simd__cntl__lane_r135[lane]          = {simd__cntl__lane_r135_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  simd__cntl__lane_r135_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign simd__cntl__lane_r133[lane][19:16]   = simd__cntl__lane_r133_e1[19:16]   ;  // type (bit, nibble, byte, word)
+                                                                                              
+              assign simd__cntl__lane_r133[lane][15: 0]   = simd__cntl__lane_r133_e1[15: 0]   ;
+              assign simd__cntl__lane_r132[lane][15: 0]   = simd__cntl__lane_r132_e1[15: 0]   ;  // num of types - for dma
+                                                                                              
+              assign simd__cntl__rs0[0]                   = simd__cntl__rs0_e1[0]             ;
+              assign simd__cntl__rs0[31:1]                = simd__cntl__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
+              assign simd__cntl__rs1                      = simd__cntl__rs1_e1                ;
           end
   endgenerate
 
+  always @(posedge clk)
+    begin
+      simd__cntl__lane_r130_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? sourceAddress0                                      : simd__cntl__lane_r130_e1          ;
+      simd__cntl__lane_r134_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? destinationAddress0                                 : simd__cntl__lane_r134_e1          ;
+      simd__cntl__lane_r132_e1[19:16]   <= (reset_poweron ) ? 4'd0                    : ( sti__cntl__oob_valid_d1 ) ? src_data_type0                                      : simd__cntl__lane_r132_e1[19:16]   ;  // type (bit, nibble, byte, word)
+                                                                                                                                                                                                            
+      simd__cntl__lane_r131_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? sourceAddress1                                      : simd__cntl__lane_r131_e1          ;
+      simd__cntl__lane_r135_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? destinationAddress1                                 : simd__cntl__lane_r135_e1          ;
+      simd__cntl__lane_r133_e1[19:16]   <= (reset_poweron ) ? 4'd0                    : ( sti__cntl__oob_valid_d1 ) ? src_data_type1                                      : simd__cntl__lane_r133_e1[19:16]   ;  // type (bit, nibble, byte, word)
+                                                                                                                                                                                                            
+      simd__cntl__lane_r133_e1[15: 0]   <= (reset_poweron ) ? 16'd0                   : ( sti__cntl__oob_valid_d1 ) ? numberOfOperands                                    : simd__cntl__lane_r133_e1[15: 0]   ;
+      simd__cntl__lane_r132_e1[15: 0]   <= (reset_poweron ) ? 16'd0                   : ( sti__cntl__oob_valid_d1 ) ? numberOfOperands                                    : simd__cntl__lane_r132_e1[15: 0]   ;  // num of types - for dma
+                                                                                                                                                                                                            
+      simd__cntl__rs0_e1[0]             <= (reset_poweron ) ? 1'b0                    : ( sti__cntl__oob_valid_d1 ) ? 1'b1                  : ( stOp_completed ) ? 1'b0   : simd__cntl__rs0_e1[0]             ;
+      simd__cntl__rs0_e1[31:1]          <= (reset_poweron ) ? 31'd0                   : ( sti__cntl__oob_valid_d1 ) ? stOp_operation                                      : simd__cntl__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
+      simd__cntl__rs1_e1                <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? {32{1'b1}}                                          : simd__cntl__rs1_e1                ;
+    end
   //----------------------------------------------------------------------------------------------------
   // StreamingOp configuration memory
   //
@@ -168,19 +187,21 @@ module pe_cntl (
   always @(posedge clk)
     begin
       // pointer to stOp operation control memory
-      stOp_optionPtr    <=  ( reset_poweron                                                                                         ) ?  'd0                         :
-                            ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
-                            ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
-                                                                                                                                        stOp_optionPtr                                       ;
-      command_valid     <=  ( reset_poweron                 ) ? 1'd0            :
-                            ( sti__cntl__oob_valid          ) ? 1'b1            :
-                            ( stOp_completed                ) ? 1'b0            :
-                                                                command_valid   ;
-      stOp_complete_d1  <=  stOp_complete   ;
+      stOp_optionPtr           <=  ( reset_poweron                                                                                         ) ?  'd0                         :
+                                   ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
+                                   ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
+                                                                                                                                               stOp_optionPtr                                       ;
+      command_valid            <=  ( reset_poweron                 ) ? 1'd0            :
+                                   ( sti__cntl__oob_valid          ) ? 1'b1            :
+                                   ( stOp_complete_deasserted      ) ? 1'b0            :  // the stOp_cntl is readt once it deasserts complete after we deassert rs[0] (enable)
+                                                                       command_valid   ;
+      stOp_complete_d1         <=  stOp_complete               ;
+      sti__cntl__oob_valid_d1  <=  sti__cntl__oob_valid        ;
     end
 
-  assign cntl__sti__oob_ready           = ~command_valid  ;
-  assign stOp_completed                 = ~stOp_complete & stOp_complete_d1;
+  assign cntl__sti__oob_ready           = ~command_valid                   ;  // we are ready when there isnt a valid command:w
+  assign stOp_completed                 = stOp_complete & ~stOp_complete_d1;
+  assign stOp_complete_deasserted       = ~stOp_complete & stOp_complete_d1;
 
 endmodule
 

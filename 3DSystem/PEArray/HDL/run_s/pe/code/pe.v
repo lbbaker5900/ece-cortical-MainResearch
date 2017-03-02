@@ -152,7 +152,7 @@ module pe (
             
             //-------------------------------
             // Configuration output
-            //
+            //   - comment out when PE configured by regFile driver
             //`include "pe_simd_instance_ports.vh"
             .stOp_complete                        ( pe__sys__complete                 ),
 
