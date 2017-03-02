@@ -10,6 +10,8 @@
 *********************************************************************************************/
 
 `timescale 1ns/10ps
+
+`include "TB_common.vh"
 `include "common.vh"
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
@@ -114,6 +116,7 @@ module top;
     // Forces
     //
     // connect regFile interfaces to SIMD regFile to streaming Ops controller interface
+    `ifdef TB_ENABLE_REGFILE_DRIVER
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
@@ -134,6 +137,7 @@ module top;
                    end
            end
     endgenerate
+    `endif
 
     // connect Load/Store interface between SIMD and memory Controller
     generate

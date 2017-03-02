@@ -205,6 +205,9 @@ class oob_driver;
                                 // cb_dut or cb_test dont work for inputs/observed signals
                                 //$display("@%0t:%s:%0d: INFO:{%0d}: Not ready for OOB from manager : {%0d,%0d}. rdy = %d", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1], vSysOob2PeArray.pe__std__oob_ready );
                                 vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;
+                                // FIXME: we should change {opt,val} tuple to create a new control memory location and point to it each time we send a new command
+                                // 
+                                //
                               end
                             vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;  
                             vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;

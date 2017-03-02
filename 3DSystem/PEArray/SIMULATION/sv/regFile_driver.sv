@@ -9,6 +9,7 @@
                   FIXME : not required once we get the SIMD path working
 *********************************************************************************************/
 
+`include "TB_common.vh"
 `include "common.vh"
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
@@ -69,7 +70,7 @@ class regFile_driver;
                         //----------------------------------------------------------------------------------------------------
                         // Info/Debug
                         $display("@%0t:%s:%0d: INFO: Received Optype from generator : {%0d,%0d} : 0b%0b", $time, `__FILE__, `__LINE__, Id[0], Id[1], oob_packet_new.stOp_operation);
-/*
+                        /*
                         case (sys_operation.OpType)
                             `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM :
                                 $display("@%0t INFO:%s:%0d:: Received {STD,STD -> MEM} FP MAC operation from generator: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
@@ -79,7 +80,7 @@ class regFile_driver;
                                 $display("@%0t INFO:%s:%0d:: Received {MEM,STD -> MEM} FP MAC operation from generator: {%0d,%0d} with expected result of %f, %f <> %f : written to address : 0x%6h (0b%24b)", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, sys_operation.destinationAddress[0], sys_operation.destinationAddress[0] );
                         endcase
 
-*/
+                        */
 
                         //----------------------------------------------------------------------------------------------------
                         // If enabled, ensure all memory accesses are local and within block allocated to lane
@@ -105,6 +106,9 @@ class regFile_driver;
                         //
                         // Note: ** when disabling rf_driver, also remove reset task from env.run
                         
+                        `ifdef TB_ENABLE_REGFILE_DRIVER
+                        $display("@%0t:%s:%0d: INFO:{%0d}: Driving WU via RegFile driver with contents of OOB packet from generator : {%0d,%0d}", $time, `__FILE__, `__LINE__, this.Id[0], oob_packet_new.Id[0], oob_packet_new.Id[1]);
+                        oob_packet_new.displayPacket();
                         vP_vrf.cb_out.r130          <= oob_packet_new.sourceAddress[0]                     ;
                         vP_vrf.cb_out.r134          <= oob_packet_new.destinationAddress[0]                ;
                         vP_vrf.cb_out.r132[19:16]   <= oob_packet_new.src_data_type [0]     ;  // type (bit, nibble, byte, word)
@@ -120,7 +124,7 @@ class regFile_driver;
                         // drive packed struct directly onto regFile register input for streamingOps_cntl
                         vP_srf.cb_out.rs0[31:1]     <= oob_packet_new.stOp_operation                       ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
                         vP_srf.cb_out.rs1           <= {32{1'b1}};
-                        
+                        `endif
 
                         
 
@@ -147,13 +151,17 @@ class regFile_driver;
                         -> gen2rfP_ack;
                         $display ("@%0t:%s:%0d:INFO: Operation driven for {%02d,%02d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
  
+                        
+                        `ifdef TB_ENABLE_REGFILE_DRIVER
                         //----------------------------------------------------------------------------------------------------
                         // Wait for  streamingOps_cntl to be complete the deassert enable ( rs0[0]=0 )
                         wait(vP_srf.cb_out.complete);
                         $display ("@%0t:%s:%0d:INFO: streamingOps_cntl complete for {%02d,%02d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
                         vP_srf.cb_out.rs0[0]        <= 1'b0                                               ;
                         wait(~vP_srf.cb_out.complete);
-      
+                        `endif
+
+
                     end
                 else
                     begin

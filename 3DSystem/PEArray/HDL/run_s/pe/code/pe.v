@@ -13,6 +13,15 @@
 *********************************************************************************************/
     
 `timescale 1ns/10ps
+
+//--------------------------------------------------
+// test related defines
+`ifdef TESTING
+`include "TB_common.vh"
+`endif
+
+//--------------------------------------------------
+// RTL related defines
 `include "common.vh"
 `include "pe_array.vh"
 `include "pe.vh"
@@ -153,7 +162,9 @@ module pe (
             //-------------------------------
             // Configuration output
             //   - comment out when PE configured by regFile driver
-            //`include "pe_simd_instance_ports.vh"
+            `ifndef TB_ENABLE_REGFILE_DRIVER
+            `include "pe_simd_instance_ports.vh"
+            `endif
             .stOp_complete                        ( pe__sys__complete                 ),
 
             //-------------------------------
