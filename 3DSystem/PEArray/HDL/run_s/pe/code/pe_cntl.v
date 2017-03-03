@@ -6,8 +6,12 @@
     Date        : Feb 2017
     email       : lbbaker@ncsu.edu
 
-    Description : This module converts OOB information to local control
+    Description : This module converts OOB information and/or lane control data to local control for simd and stOp.
                   The oob_data is organized as {option, data} tuples and the data hold 2 tuples per cycle
+
+                  For simd and stOp configuration, the OOB packet from the manager indexes memories in this module to control the stOp and simd.
+                  The assumtion is the configurations for the operations can be stored locally and have been preloaded and we simply send a pointer to the operation in this local memory.
+                  Note: we currently assume we only need PE specific data and things like number of operands and addresses are common.
 
 *********************************************************************************************/
     
@@ -110,6 +114,8 @@ module pe_cntl (
   //----------------------------------------------------------------------------------------------------
   // Connections from control memory to all simd lane control
   //
+  // Originally the control for the stOp was going to come from the simd registers, so we have maintain the register naming for the stOp although these should probably change.
+  //
   genvar pe, lane;
   generate
       for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
@@ -206,6 +212,16 @@ module pe_cntl (
 endmodule
 
 
+//----------------------------------------------------------------------------------------------------
+// PE control memory
+//
+// Contains the configuration for the SIMD and streamingOp. The OOB packet from the
+// manager indexes this memories to control the stOp and simd.
+//
+// The OOB packet from the manager contains PE specific information in the form of a pointer into these memories The pointer is extracted from the
+// {option, value} tuples in the oob data.
+// Note: we currently assume we only need PE specific data and things like number of operands and addresses are common.
+// 
 module pe_cntl_stOp_rom (  
                            valid                       ,
                            optionPtr                   ,

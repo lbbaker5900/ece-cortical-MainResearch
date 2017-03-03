@@ -175,6 +175,9 @@ class oob_driver;
 
                 if ( (receivedManagerOobPacket == 1) && (receivedGeneratorOobPackets == 1) )
                     begin
+                        // The OOB packet from the manager contains PE specific information. Additional lane specific information
+                        // comes from the generator. Note: we currently assume we only need PE specific data and things like number of operands and addresses are common.
+                        // Note: The PE control will adjust the source and destination addresses to index into the lane area of the local memory
                         mgr2oob.get(oob_packet_mgr)  ;  //Removing the instruction from manager mailbox
 
                         //--------------------------------------------------------------------------------------------------------
@@ -243,6 +246,8 @@ class oob_driver;
                         while (~oob_sent)
                           begin
                             @(vSysOob2PeArray.cb_test);
+
+                            // Check if the PE can accept a new operation
                             if (vSysOob2PeArray.pe__std__oob_ready) 
                               begin
                               vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 1  ;
@@ -250,20 +255,22 @@ class oob_driver;
                               end
                             else
                               begin
-                                if (this.Id == 63) 
                                 // cb_dut or cb_test dont work for inputs/observed signals
                                 //$display("@%0t:%s:%0d: INFO:{%0d}: Not ready for OOB from manager : {%0d,%0d}. rdy = %d", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1], vSysOob2PeArray.pe__std__oob_ready );
                                 vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;
-                                // FIXME: we should change {opt,val} tuple to create a new control memory location and point to it each time we send a new command
-                                // 
-                                //
                               end
+                            // drive but these are conditioned on valid
                             vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;  
                             vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
                             vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
                             vSysOob2PeArray.cb_test.std__pe__oob_data         <= {{oob_value[1], oob_option[1]},{oob_value[0], oob_option[0]}};
+
+                            // right now all PE configuration is passed to the PE over the OOB using {option, value} tuples
+                            // So we assume the source and destination addresses are the same but offset into the lane memory
+                            // If we need to handle cases where we need lane specific address, number of operands etc. we will pass that data over the lane interface
                             for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                               begin
+                                  // The oob_packet from the generator contains lane specific information that might need to get driven down the lane bus
                                   gen2oob.get(oob_packet_gen)  ;  // Removing the instruction from manager mailbox
                                   gen2oob.put(oob_packet_gen)  ;  // we need each packet later
                                   //$display("@%0t:%s:%0d: DEBUG:{%0d}: Driving OOB Lane with contents of OOB packet from generator : {%0d,%0d}", $time, `__FILE__, `__LINE__, this.Id, oob_packet_gen.Id[0], oob_packet_gen.Id[1]);
@@ -292,6 +299,7 @@ class oob_driver;
                         vSysOob2PeArray.cb_test.std__pe__oob_data         <= STD_PACKET_OOB_DATA_NA  ;
                         for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                             begin
+                                // right now we dont drive the lane interface in the oob_driver so just remove the oob_packet from the generator
                                 gen2oob.get(oob_packet_gen)  ;  //Removing the instruction from manager mailbox
                                 //fork
                                     tmp_vSysLane2PeArray = vSysLane2PeArray[oob_packet_gen.Id[1]];
