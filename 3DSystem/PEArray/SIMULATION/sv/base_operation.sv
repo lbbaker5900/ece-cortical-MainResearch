@@ -199,9 +199,9 @@ package operation;
             if (hasBeenRandomized == 1) {
                 OpType == currentOpType ;
             } else {
-                (tId == 0) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM  }};
-                (tId == 1) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM    }};
-                (tId >= 2) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM  }};
+                (tId%3 == 0) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM  }};
+                (tId%3 == 1) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM    }};
+                (tId%3 >= 2) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM  }};
             }
         }
 

@@ -62,7 +62,7 @@ class manager;
 
     //-------------------------------------------------------------------------
     // HOW MANY?
-    integer num_operations = 3;  // fp mac:{std,std}->mem, copy:std->mem, fp mac:{std,mem}->mem
+    integer num_operations = 6;  // fp mac:{std,std}->mem, copy:std->mem, fp mac:{std,mem}->mem
 
 
     integer operationNum   = 0;  // used to set operation ID
