@@ -104,7 +104,55 @@ class oob_driver;
         string  fileNameStr ;
         integer fileNameInt ;
 
-        bit oob_sent        ;
+        bit      oob_sent            ;
+        integer  operationNumber = 0 ; // use this to create location in control file and send this as ptr
+        reg  [`STACK_DOWN_OOB_INTF_OPTION_SIZE-1:0 ]    oob_option [`STACK_DOWN_OOB_INTF_TUPLES_PER_CYCLE ] ;
+        reg  [`STACK_DOWN_OOB_INTF_VALUE_SIZE-1:0  ]    oob_value  [`STACK_DOWN_OOB_INTF_TUPLES_PER_CYCLE ] ;
+        stack_down_oob_option  tmp_oob_option  ;
+
+        //------------------------------------------------------------------------------
+        // Initially create readmemh files for stOp control memory in pe_cntl before we send WU
+        //   - we only need one file for the PE as the memory is shared across all lanes
+        //
+        /*
+        fileNameStr = $sformatf("%0d", this.Id[0]);
+        fileNameStr = {"./inputFiles/pe", string'(this.Id[0]), "_stOp_cntl_memory_stOp_operation.dat"};
+        fileNameStr = {"./inputFiles/pe", $sformatf("%0d",this.Id[0]), "_stOp_cntl_memory_stOp_operation.dat"};
+        fileNameInt       =   $fopen(fileNameStr  , "w+"    );  // w+ ~ truncate or 
+        $fclose(fileNameInt);
+        */
+
+        // Here we initially create the file, later we'll open for append
+        
+        stOp_cntl_memory_stOp_operation_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_stOp_operation.dat"     , this.Id), "w"    );
+        
+        stOp_cntl_memory_sourceAddress0_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_sourceAddress0.dat"     , this.Id), "w"    );
+        stOp_cntl_memory_destinationAddress0_File  =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_destinationAddress0.dat", this.Id), "w"    );
+        stOp_cntl_memory_src_data_type0_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_src_data_type0.dat"     , this.Id), "w"    );
+        stOp_cntl_memory_dest_data_type0_File      =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_dest_data_type0.dat"    , this.Id), "w"    );
+                                             
+        stOp_cntl_memory_sourceAddress1_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_sourceAddress1.dat"     , this.Id), "w"    );
+        stOp_cntl_memory_destinationAddress1_File  =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_destinationAddress1.dat", this.Id), "w"    );
+        stOp_cntl_memory_src_data_type1_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_src_data_type1.dat"     , this.Id), "w"    );
+        stOp_cntl_memory_dest_data_type1_File      =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_dest_data_type1.dat"    , this.Id), "w"    );
+                                             
+        stOp_cntl_memory_numberOfOperands_File     =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_numberOfOperands.dat"   , this.Id), "w"    );
+        
+        // close
+        $fclose(stOp_cntl_memory_stOp_operation_File       );
+                                                           
+        $fclose(stOp_cntl_memory_sourceAddress0_File       );
+        $fclose(stOp_cntl_memory_destinationAddress0_File  );
+        $fclose(stOp_cntl_memory_src_data_type0_File       );
+                                                           
+        $fclose(stOp_cntl_memory_sourceAddress1_File       );
+        $fclose(stOp_cntl_memory_destinationAddress1_File  );
+        $fclose(stOp_cntl_memory_src_data_type1_File       );
+                                                           
+        $fclose(stOp_cntl_memory_numberOfOperands_File     );
+
+        //------------------------------------------------------------------------------
+        // We can send two option,value tuples per OOB cycle
 
         forever
             begin
@@ -133,42 +181,35 @@ class oob_driver;
                         // Load the local PE configuration memory
 
                         //------------------------------------------------------------------------------
-                        // Create readmemh files for stOp control memory in pe_cntl before we send WU
-                        //
-                        /*
-                        fileNameStr = $sformatf("%0d", this.Id[0]);
-                        fileNameStr = {"./inputFiles/pe", string'(this.Id[0]), "_stOp_cntl_memory_stOp_operation.dat"};
-                        fileNameStr = {"./inputFiles/pe", $sformatf("%0d",this.Id[0]), "_stOp_cntl_memory_stOp_operation.dat"};
-                        fileNameInt       =   $fopen(fileNameStr  , "w"    );
-                        $fclose(fileNameInt);
-                        */
-                        // We only need one file for the PE as the memory is shared across all lanes
-                        stOp_cntl_memory_stOp_operation_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_stOp_operation.dat"     , this.Id), "w"    );
+                        // Update readmemh files for stOp control memory in pe_cntl before we send WU
+                        //   - each new command gets appended to the control
+                        //   memory
+                        stOp_cntl_memory_stOp_operation_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_stOp_operation.dat"     , this.Id), "a"    );
                         
-                        stOp_cntl_memory_sourceAddress0_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_sourceAddress0.dat"     , this.Id), "w"    );
-                        stOp_cntl_memory_destinationAddress0_File  =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_destinationAddress0.dat", this.Id), "w"    );
-                        stOp_cntl_memory_src_data_type0_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_src_data_type0.dat"     , this.Id), "w"    );
-                        stOp_cntl_memory_dest_data_type0_File      =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_dest_data_type0.dat"    , this.Id), "w"    );
+                        stOp_cntl_memory_sourceAddress0_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_sourceAddress0.dat"     , this.Id), "a"    );
+                        stOp_cntl_memory_destinationAddress0_File  =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_destinationAddress0.dat", this.Id), "a"    );
+                        stOp_cntl_memory_src_data_type0_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_src_data_type0.dat"     , this.Id), "a"    );
+                        stOp_cntl_memory_dest_data_type0_File      =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_dest_data_type0.dat"    , this.Id), "a"    );
                                                              
-                        stOp_cntl_memory_sourceAddress1_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_sourceAddress1.dat"     , this.Id), "w"    );
-                        stOp_cntl_memory_destinationAddress1_File  =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_destinationAddress1.dat", this.Id), "w"    );
-                        stOp_cntl_memory_src_data_type1_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_src_data_type1.dat"     , this.Id), "w"    );
-                        stOp_cntl_memory_dest_data_type1_File      =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_dest_data_type1.dat"    , this.Id), "w"    );
+                        stOp_cntl_memory_sourceAddress1_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_sourceAddress1.dat"     , this.Id), "a"    );
+                        stOp_cntl_memory_destinationAddress1_File  =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_destinationAddress1.dat", this.Id), "a"    );
+                        stOp_cntl_memory_src_data_type1_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_src_data_type1.dat"     , this.Id), "a"    );
+                        stOp_cntl_memory_dest_data_type1_File      =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_dest_data_type1.dat"    , this.Id), "a"    );
                                                              
-                        stOp_cntl_memory_numberOfOperands_File     =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_numberOfOperands.dat"   , this.Id), "w"    );
+                        stOp_cntl_memory_numberOfOperands_File     =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_numberOfOperands.dat"   , this.Id), "a"    );
                         
                         // Write to only location 0x1 as this pointer address is hard-coded in stack_interface_typedef.vh
-                        $fwrite(stOp_cntl_memory_stOp_operation_File       , "@0001 %h\n", oob_packet_mgr.stOp_operation          );
-                                                                                          
-                        $fwrite(stOp_cntl_memory_sourceAddress0_File       , "@0001 %h\n", oob_packet_mgr.sourceAddress     [0]   );
-                        $fwrite(stOp_cntl_memory_destinationAddress0_File  , "@0001 %h\n", oob_packet_mgr.destinationAddress[0]   );
-                        $fwrite(stOp_cntl_memory_src_data_type0_File       , "@0001 %h\n", oob_packet_mgr.src_data_type     [0]   );
-                                                                                          
-                        $fwrite(stOp_cntl_memory_sourceAddress1_File       , "@0001 %h\n", oob_packet_mgr.sourceAddress     [1]   );
-                        $fwrite(stOp_cntl_memory_destinationAddress1_File  , "@0001 %h\n", oob_packet_mgr.destinationAddress[1]   );
-                        $fwrite(stOp_cntl_memory_src_data_type1_File       , "@0001 %h\n", oob_packet_mgr.src_data_type     [1]   );
-                                                                                          
-                        $fwrite(stOp_cntl_memory_numberOfOperands_File     , "@0001 %h\n", oob_packet_mgr.numberOfOperands        );
+                        $fwrite(stOp_cntl_memory_stOp_operation_File       , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.stOp_operation          ));
+                                                                                                                                                              
+                        $fwrite(stOp_cntl_memory_sourceAddress0_File       , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.sourceAddress     [0]   ));
+                        $fwrite(stOp_cntl_memory_destinationAddress0_File  , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.destinationAddress[0]   ));
+                        $fwrite(stOp_cntl_memory_src_data_type0_File       , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.src_data_type     [0]   ));
+                                                                                                                                                              
+                        $fwrite(stOp_cntl_memory_sourceAddress1_File       , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.sourceAddress     [1]   ));
+                        $fwrite(stOp_cntl_memory_destinationAddress1_File  , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.destinationAddress[1]   ));
+                        $fwrite(stOp_cntl_memory_src_data_type1_File       , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.src_data_type     [1]   ));
+                                                                                                                                                              
+                        $fwrite(stOp_cntl_memory_numberOfOperands_File     , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.numberOfOperands        ));
                         
                         // close
                         $fclose(stOp_cntl_memory_stOp_operation_File       );
@@ -189,6 +230,14 @@ class oob_driver;
                         //--------------------------------------------------------------------------------------------
                         $display("@%0t:%s:%0d: INFO:{%0d}: Driving WU via OOB with contents of OOB packet from manager : {%0d,%0d}", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1]);
                         oob_packet_mgr.displayPacket();
+
+                        // set operation and pointer
+                        tmp_oob_option = STD_PACKET_OOB_DATA_STOP_CMD            ;
+                        oob_option [0] = tmp_oob_option  ;
+                        oob_value  [0] = operationNumber ;
+                        tmp_oob_option = STD_PACKET_OOB_DATA_SIMD_RELU_CMD            ;
+                        oob_option [1] = tmp_oob_option  ;
+                        oob_value  [1] = operationNumber ;
 
                         oob_sent = 0 ;
                         while (~oob_sent)
@@ -212,7 +261,7 @@ class oob_driver;
                             vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;  
                             vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
                             vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
-                            vSysOob2PeArray.cb_test.std__pe__oob_data         <= STD_PACKET_OOB_DATA_PE_OP_CMD  ;
+                            vSysOob2PeArray.cb_test.std__pe__oob_data         <= {{oob_value[1], oob_option[1]},{oob_value[0], oob_option[0]}};
                             for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                               begin
                                   gen2oob.get(oob_packet_gen)  ;  // Removing the instruction from manager mailbox
@@ -251,7 +300,6 @@ class oob_driver;
                                 //join_none
                             end
 
-
                         //----------------------------------------------------------------------
                         // Ack manager and generators
 
@@ -265,6 +313,7 @@ class oob_driver;
                                 -> gen2oob_ack[i];
                             end
                         receivedGeneratorOobPackets   = 0                     ;
+                        operationNumber += 1 ;
                         $display("@%0t:%s:%0d:INFO: {%0d} Completed driving OOB", $time, `__FILE__, `__LINE__, this.Id );
                     end
                 else

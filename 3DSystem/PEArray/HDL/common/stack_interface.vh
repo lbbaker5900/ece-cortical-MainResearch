@@ -34,6 +34,11 @@
 `define STACK_DOWN_OOB_INTF_DATA_LSB            0
 `define STACK_DOWN_OOB_INTF_DATA_RANGE          `STACK_DOWN_OOB_INTF_DATA_MSB : `STACK_DOWN_OOB_INTF_DATA_LSB
 
+`define STACK_DOWN_OOB_INTF_OPTION_SIZE         8
+`define STACK_DOWN_OOB_INTF_VALUE_SIZE          8
+
+`define STACK_DOWN_OOB_INTF_TUPLES_PER_CYCLE  `STACK_DOWN_OOB_INTF_DATA_SIZE/((`STACK_DOWN_OOB_INTF_OPTION_SIZE + `STACK_DOWN_OOB_INTF_VALUE_SIZE)*2)
+
 //---------------------------------------------------------------------------------------------------------------------
 // Stack Downstream interface
 
