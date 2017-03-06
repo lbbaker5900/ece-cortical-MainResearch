@@ -318,11 +318,11 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 start address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r134 [{1}] = 32\'h'.format(pe,lane) + hex(lane).split('x')[1] + '010;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r134 [{1}] = 32\'h'.format(pe,lane) + hex(lane).split('x')[1] + '010;'
 
       pLine = pLine + '\n            // Stream 1 start address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r135 [{1}] = 32\'h'.format(pe,lane) + hex(lane).split('x')[1] + '800;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r135 [{1}] = 32\'h'.format(pe,lane) + hex(lane).split('x')[1] + '800;'
 
   pLine = pLine + '\n'
   pLine = pLine + '\n            // ##################################################'
@@ -331,13 +331,13 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132[{1}][19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132[{1}][15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r132[{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r132[{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133[{1}][19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133[{1}][15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r133[{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r133[{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
 
   pLine = pLine + '\n'
@@ -348,11 +348,11 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   pLine = pLine + '\n            // Enable'
   for pe in range (0, numOfPe):
-      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs0[0]           = 1\'b1;'.format(pe)
+      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__rs0[0]           = 1\'b1;'.format(pe)
   pLine = pLine + '\n'
   pLine = pLine + '\n            // Operation'
   for pe in range (0, numOfPe):
-      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs0[31:1] = `STREAMING_OP_CNTL_OPERATION_NOP_FROM_TWO_EXT_TO_MEM ;'.format(pe)
+      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__rs0[31:1] = `STREAMING_OP_CNTL_OPERATION_NOP_FROM_TWO_EXT_TO_MEM ;'.format(pe)
   pLine = pLine + '\n'
   pLine = pLine + '\n            repeat(50) @(negedge clk);'
 
@@ -449,11 +449,11 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Destination address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r134 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r134 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
 
       pLine = pLine + '\n            // Stream 1 Destination address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r135 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r135 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
   pLine = pLine + '\n            // ##################################################'
@@ -462,13 +462,13 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r132 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r132 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r133 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r133 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
 
   pLine = pLine + '\n'
@@ -485,11 +485,11 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   pLine = pLine + '\n            // Enable'
   for pe in range (0, numOfPe):
-      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs0[0]           = 1\'b1;'.format(pe)
+      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__rs0[0]           = 1\'b1;'.format(pe)
   pLine = pLine + '\n'
   pLine = pLine + '\n            // Operation'
   for pe in range (0, numOfPe):
-      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs0[31:1] = `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;'.format(pe)
+      pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__rs0[31:1] = `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;'.format(pe)
   pLine = pLine + '\n'
   pLine = pLine + '\n            repeat(50) @(negedge clk);'
 
@@ -541,11 +541,11 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Source address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r130 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r130 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
                                                                                                                                                                       
       pLine = pLine + '\n            // Stream 1 Source address'                                                                                                      
       for lane in range (0, numOfExecLanes):                                                                                                                               
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r131 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r131 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
   pLine = pLine + '\n'
@@ -555,11 +555,11 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Destination address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r134 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r134 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
                                                                                                                                                                       
       pLine = pLine + '\n            // Stream 1 Destination address'                                                                                                 
       for lane in range (0, numOfExecLanes):                                                                                                                               
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r135 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r135 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
   pLine = pLine + '\n            // ##################################################'
@@ -568,13 +568,13 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r132 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r132 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r133 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r133 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
 
   pLine = pLine + '\n'
@@ -643,11 +643,11 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Stream 0 Destination address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r134 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r134 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_0000_1000_0000;'
 
       pLine = pLine + '\n            // Stream 1 Destination address'
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r135 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r135 [{1}] = 32\'b'.format(pe,lane) + '{0:0>6}'.format(bin(pe).split('b')[1]) + "_" + '{0:0>5}'.format(bin(lane).split('b')[1]) + '__0_1000_0000_0000;'
 
   pLine = pLine + '\n'
   pLine = pLine + '\n            // ##################################################'
@@ -656,13 +656,13 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
       pLine = pLine + '\n            // Set data type and size of stream0 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r132 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r132 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r132 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
       pLine = pLine + '\n            // Set data type and size of stream1 (in types)'.format(pe)
       for lane in range (0, numOfExecLanes):
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][19:16] = 4\'d4;'.format(pe,lane)
-          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r133 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r133 [{1}][19:16] = 4\'d4;'.format(pe,lane)
+          pLine = pLine + '\n            force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r133 [{1}][15:0]  = numOfTypes;'.format(pe,lane)
 
 
   pLine = pLine + '\n'
@@ -857,13 +857,13 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
-    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs0        = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane)
-    #pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs1        = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane)
-    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs1        = 32\'b1111_1111_1111_1111_1111_1111_1111_1111; '.format(pe,lane)
-    #pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__cntl__rs1        = 32\'b0000_0000_0000_0000_0000_0000_0000_1011; '.format(pe,lane)
+    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__scntl__rs0        = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane)
+    #pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__scntl__rs1        = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane)
+    pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__scntl__rs1        = 32\'b1111_1111_1111_1111_1111_1111_1111_1111; '.format(pe,lane)
+    #pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__scntl__rs1        = 32\'b0000_0000_0000_0000_0000_0000_0000_1011; '.format(pe,lane)
     for lane in range (0, numOfExecLanes):
       for reg in range (128, 135+1):
-         pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__cntl__lane_r{2} [{1}] = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane,reg)
+         pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.simd__scntl__lane_r{2} [{1}] = 32\'b0000_0000_0000_0000_0000_0000_0000_0000; '.format(pe,lane,reg)
       
     pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__request        = 1\'b0 ; '.format(pe,lane)
     pLine = pLine + '\n    force pe_array_inst.pe_inst[{0}].pe.ldst__memc__released       = 1\'b1 ; '.format(pe,lane)
@@ -921,14 +921,14 @@ if __name__ == "__main__":
       #pLine = pLine + '\n'        
       #pLine = pLine + '\n add wave -noupdate -expand -group XXXX -position insertpoint -radix hexadecimal  {'.format(lane,strm)
       pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/cntl__sdp__lane{0}_strm{1}_write_enable}}'.format(lane,strm)
-      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__cntl__lane{0}_strm{1}_write_ready}}'.format(lane,strm)
-      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__cntl__lane{0}_strm{1}_write_complete}}'.format(lane,strm)
+      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__scntl__lane{0}_strm{1}_write_ready}}'.format(lane,strm)
+      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__scntl__lane{0}_strm{1}_write_complete}}'.format(lane,strm)
       pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/cntl__sdp__lane{0}_strm{1}_read_enable}}'.format(lane,strm)
-      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__cntl__lane{0}_strm{1}_read_ready}}'.format(lane,strm)
-      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__cntl__lane{0}_strm{1}_read_complete}}'.format(lane,strm)
+      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__scntl__lane{0}_strm{1}_read_ready}}'.format(lane,strm)
+      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__scntl__lane{0}_strm{1}_read_complete}}'.format(lane,strm)
       pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/cntl__sdp__lane{0}_strm{1}_stOp_enable}}'.format(lane,strm)
-      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__cntl__lane{0}_strm{1}_stOp_ready}}'.format(lane,strm)
-      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__cntl__lane{0}_strm{1}_stOp_complete}}'.format(lane,strm)
+      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__scntl__lane{0}_strm{1}_stOp_ready}}'.format(lane,strm)
+      pLine = pLine + '\n add wave -noupdate -expand -group StreamControlLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/streamingOps_cntl/sdp__scntl__lane{0}_strm{1}_stOp_complete}}'.format(lane,strm)
       pLine = pLine + '\n'        
       pLine = pLine + '\n add wave -noupdate -expand -group ExtToStOpLane{0} -position insertpoint -radix hexadecimal  {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/std__pe__lane{0}_strm{1}_cntl      }}'.format(lane,strm) 
       pLine = pLine + '\n add wave -noupdate -expand -group ExtToStOpLane{0} -position insertpoint -radix float32      {{sim:/test_fixture/pe_array_inst/pe_inst[0]/pe/std__pe__lane{0}_strm{1}_data      }}'.format(lane,strm) 
@@ -975,39 +975,39 @@ if __name__ == "__main__":
     pLine = pLine + '\n add wave -noupdate -expand -group NocToStOpLane{0} -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/stOp_lane[{0}]/streamingOps_datapath/streamingOps/noc__stOp__strm_id}}        '.format(lane,strm)
     pLine = pLine + '\n add wave -noupdate -expand -group NocToStOpLane{0} -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/stOp_lane[{0}]/streamingOps_datapath/streamingOps/noc__stOp__strm_ready}}     '.format(lane,strm)
     pLine = pLine + '\n'        
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__cp_cntl}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__cp_laneId}}'.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__cp_strmId}}'.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__cp_type}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__cp_data}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__cp_valid}} '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__cp_ready}} '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__cp_cntl}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__cp_laneId}}'.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__cp_strmId}}'.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__cp_type}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__cp_data}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__cp_valid}} '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__cp_ready}} '.format(lane,strm)
   pLine = pLine + '\n'        
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__cp_cntl}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__cp_laneId}}'.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__cp_peId}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__cp_strmId}}'.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__cp_type}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__cp_data}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__cp_valid}} '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__cp_ready}} '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__cp_cntl}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__cp_laneId}}'.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__cp_peId}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__cp_strmId}}'.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__cp_type}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__cp_data}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__cp_valid}} '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlControl -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__cp_ready}} '.format(lane,strm)
   pLine = pLine + '\n'        
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__dp_cntl}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__dp_laneId}}'.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__dp_peId}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__dp_strmId}}'.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__dp_type}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix float32      {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__dp_data}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__dp_valid}} '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__dp_ready}} '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__dp_cntl}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__dp_laneId}}'.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__dp_peId}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__dp_strmId}}'.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__dp_type}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix float32      {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__dp_data}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__dp_valid}} '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group CntlToNocData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__dp_ready}} '.format(lane,strm)
                                                                                                                                                                    
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__dp_cntl}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__dp_laneId}}'.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__dp_strmId}}'.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__dp_type}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix float32      {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__dp_data}}  '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__cntl__dp_valid}} '.format(lane,strm)
-  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/cntl__noc__dp_ready}} '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__dp_cntl}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__dp_laneId}}'.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__dp_strmId}}'.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__dp_type}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix float32      {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__dp_data}}  '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/noc__scntl__dp_valid}} '.format(lane,strm)
+  pLine = pLine + '\n add wave -noupdate -expand -group NocToCntlData -position insertpoint -radix hexadecimal  {{/test_fixture/pe_array_inst/pe_inst[0]/pe/noc_cntl/scntl__noc__dp_ready}} '.format(lane,strm)
   pLine = pLine + '\n'
 
   f.write(pLine)
