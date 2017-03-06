@@ -339,46 +339,46 @@ if __name__ == "__main__":
   f = open('../HDL/common/noc_cntl_noc_local_inq_control_assignments.vh', 'w')
   pLine = ""
 
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__cp_cntl       ; '
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__cp_type       ; '
-  pLine = pLine + '\n  reg  [`NOC_CONT_INTERNAL_DATA_RANGE           ] noc__cntl__cp_data       ; '
-  pLine = pLine + '\n  reg  [`PE_PE_ID_RANGE                         ] noc__cntl__cp_peId       ; '
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__cp_laneId     ; '
-  pLine = pLine + '\n  reg                                             noc__cntl__cp_strmId     ; '
-  pLine = pLine + '\n  reg                                             noc__cntl__cp_valid      ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__cp_cntl       ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__cp_type       ; '
+  pLine = pLine + '\n  reg  [`NOC_CONT_INTERNAL_DATA_RANGE           ] noc__scntl__cp_data       ; '
+  pLine = pLine + '\n  reg  [`PE_PE_ID_RANGE                         ] noc__scntl__cp_peId       ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__cp_laneId     ; '
+  pLine = pLine + '\n  reg                                             noc__scntl__cp_strmId     ; '
+  pLine = pLine + '\n  reg                                             noc__scntl__cp_valid      ; '
   pLine = pLine + '\n'
 
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__dp_cntl       ; '
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; '
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; '
-  pLine = pLine + '\n  reg                                             noc__cntl__dp_strmId     ; '
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data       ; '
-  pLine = pLine + '\n  reg                                             noc__cntl__dp_valid      ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__dp_cntl       ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__dp_type       ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__dp_laneId     ; '
+  pLine = pLine + '\n  reg                                             noc__scntl__dp_strmId     ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__scntl__dp_data       ; '
+  pLine = pLine + '\n  reg                                             noc__scntl__dp_valid      ; '
   pLine = pLine + '\n'
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__cp_cntl_p1       ; '
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__cp_type_p1       ; '
-  pLine = pLine + '\n  reg  [`NOC_CONT_INTERNAL_DATA_RANGE           ] noc__cntl__cp_data_p1       ; '
-  pLine = pLine + '\n  reg                                             noc__cntl__cp_valid_p1      ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__cp_cntl_p1       ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__cp_type_p1       ; '
+  pLine = pLine + '\n  reg  [`NOC_CONT_INTERNAL_DATA_RANGE           ] noc__scntl__cp_data_p1       ; '
+  pLine = pLine + '\n  reg                                             noc__scntl__cp_valid_p1      ; '
   pLine = pLine + '\n'
 
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__dp_cntl_p1       ; '
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type_p1       ; '
-  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data_p1       ; '
-  pLine = pLine + '\n  reg                                             noc__cntl__dp_valid_p1      ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__dp_cntl_p1       ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__dp_type_p1       ; '
+  pLine = pLine + '\n  reg  [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__scntl__dp_data_p1       ; '
+  pLine = pLine + '\n  reg                                             noc__scntl__dp_valid_p1      ; '
   pLine = pLine + '\n'
 
   pLine = pLine + '\n  always @(posedge clk)'
   pLine = pLine + '\n    begin'
   pLine = pLine + '\n      '
-  pLine = pLine + '\n      noc__cntl__cp_cntl        <= (reset_poweron ) ? \'d0 :   noc__cntl__cp_cntl_p1   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__cp_type        <= (reset_poweron ) ? \'d0 :   noc__cntl__cp_type_p1   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__cp_data        <= (reset_poweron ) ? \'d0 :   noc__cntl__cp_data_p1   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__cp_valid       <= (reset_poweron ) ? \'d0 :   noc__cntl__cp_valid_p1  ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__cp_cntl        <= (reset_poweron ) ? \'d0 :   noc__scntl__cp_cntl_p1   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__cp_type        <= (reset_poweron ) ? \'d0 :   noc__scntl__cp_type_p1   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__cp_data        <= (reset_poweron ) ? \'d0 :   noc__scntl__cp_data_p1   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__cp_valid       <= (reset_poweron ) ? \'d0 :   noc__scntl__cp_valid_p1  ; '.format(port)
   pLine = pLine + '\n'                                                                    
-  pLine = pLine + '\n      noc__cntl__dp_cntl        <= (reset_poweron ) ? \'d0 :   noc__cntl__dp_cntl_p1   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__dp_type        <= (reset_poweron ) ? \'d0 :   noc__cntl__dp_type_p1   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__dp_data        <= (reset_poweron ) ? \'d0 :   noc__cntl__dp_data_p1   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__dp_valid       <= (reset_poweron ) ? \'d0 :   noc__cntl__dp_valid_p1  ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__dp_cntl        <= (reset_poweron ) ? \'d0 :   noc__scntl__dp_cntl_p1   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__dp_type        <= (reset_poweron ) ? \'d0 :   noc__scntl__dp_type_p1   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__dp_data        <= (reset_poweron ) ? \'d0 :   noc__scntl__dp_data_p1   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__dp_valid       <= (reset_poweron ) ? \'d0 :   noc__scntl__dp_valid_p1  ; '.format(port)
   pLine = pLine + '\n      '
   pLine = pLine + '\n      case(nc_local_inq_cntl_state)'
   pLine = pLine + '\n'
@@ -386,15 +386,15 @@ if __name__ == "__main__":
     # READ
     pLine = pLine + '\n        `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{0}:'.format(port)
     pLine = pLine + '\n          begin'
-    pLine = pLine + '\n            noc__cntl__cp_peId        <= (reset_poweron ) ? \'d0 : Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_SOURCE_PE_RANGE       ]                                   ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_peId        <= (reset_poweron ) ? \'d0 : Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_SOURCE_PE_RANGE       ]                                   ; '.format(port)
     pLine = pLine + '\n          end'
     pLine = pLine + '\n        `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}:'.format(port)
     pLine = pLine + '\n          begin'
     pLine = pLine + '\n            local_inq_type_fromNoc    <= (reset_poweron ) ? \'d0 : local_inq_type_fromNoc_p1 ;   '
-    pLine = pLine + '\n            noc__cntl__cp_laneId      <= (reset_poweron ) ? \'d0 : Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_LANE_ID_RANGE ]                                   ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__cp_strmId      <= (reset_poweron ) ? \'d0 : Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_STRM_ID_RANGE ]                                   ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__dp_laneId      <= (reset_poweron ) ? \'d0 : Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_LANE_ID_RANGE ]                                   ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__dp_strmId      <= (reset_poweron ) ? \'d0 : Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_STRM_ID_RANGE ]                                   ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_laneId      <= (reset_poweron ) ? \'d0 : Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_LANE_ID_RANGE ]                                   ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_strmId      <= (reset_poweron ) ? \'d0 : Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_STRM_ID_RANGE ]                                   ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__dp_laneId      <= (reset_poweron ) ? \'d0 : Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_LANE_ID_RANGE ]                                   ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__dp_strmId      <= (reset_poweron ) ? \'d0 : Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_STRM_ID_RANGE ]                                   ; '.format(port)
     pLine = pLine + '\n          end'
   pLine = pLine + '\n        default:'
   pLine = pLine + '\n          begin'
@@ -414,7 +414,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  // Ack and ready back to source ports'
     pLine = pLine + '\n  always @(posedge clk)'
     pLine = pLine + '\n    local_port{0}_OutqAck   <= port{0}_localInqReq ;  // feed request directly back to ack'.format(port)
-    pLine = pLine + '\n  assign local_port{0}_OutqReady = ((port{0}_localInqPriority == `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_CP) ? cntl__noc__cp_ready : cntl__noc__dp_ready ) &  // we will transfer the packet directly to the cntl block'.format(port)
+    pLine = pLine + '\n  assign local_port{0}_OutqReady = ((port{0}_localInqPriority == `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_CP) ? scntl__noc__cp_ready : scntl__noc__dp_ready ) &  // we will transfer the packet directly to the cntl block'.format(port)
     pLine = pLine + '\n                                   ((nc_local_inq_cntl_state == `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{0}     ) | // only assert ready to source if currently selected for transfer'.format(port)
     pLine = pLine + '\n                                    (nc_local_inq_cntl_state == `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}         ) | '.format(port)
     pLine = pLine + '\n                                    (nc_local_inq_cntl_state == `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}) );'.format(port)
@@ -423,15 +423,15 @@ if __name__ == "__main__":
   pLine = pLine + '\n  // Remember, the transferred packet includes the NoC header so the local contrller needs to drop the first transaction'
   pLine = pLine + '\n  always @(*)'
   pLine = pLine + '\n    begin'
-  pLine = pLine + '\n      noc__cntl__cp_cntl_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__cp_type_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__cp_data_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__cp_valid_p1                                                       = \'d0   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__cp_cntl_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__cp_type_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__cp_data_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__cp_valid_p1                                                       = \'d0   ; '.format(port)
   pLine = pLine + '\n'     
-  pLine = pLine + '\n      noc__cntl__dp_cntl_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__dp_type_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__dp_data_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n      noc__cntl__dp_valid_p1                                                       = \'d0   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__dp_cntl_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__dp_type_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__dp_data_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n      noc__scntl__dp_valid_p1                                                       = \'d0   ; '.format(port)
   pLine = pLine + '\n      '
   pLine = pLine + '\n      local_inq_type_fromNoc_p1                                                       = \'d0   ; '.format(port)
   pLine = pLine + '\n      '
@@ -443,53 +443,53 @@ if __name__ == "__main__":
     pLine = pLine + '\n          begin'
     pLine = pLine + '\n            local_inq_type_fromNoc_p1                                                       = Port_from_NoC[{0}].type_fromNoc   ; '.format(port)
     pLine = pLine + '\n      '
-    pLine = pLine + '\n            noc__cntl__cp_cntl_p1                                                        = (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) ? `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP             : '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_cntl_p1                                                        = (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) ? `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP             : '.format(port)
     pLine = pLine + '\n                                                                                                                                                                     `NOC_CONT_NOC_PROTOCOL_CNTL_SOP                 ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__cp_type_p1                                                        = Port_from_NoC[{0}].type_fromNoc                                                                                        ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_ADDRESS_RANGE ]                                   ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_STAGGER_RANGE ]                                   ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__cp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_CP)                                       ? \'d0                           :'.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_type_p1                                                        = Port_from_NoC[{0}].type_fromNoc                                                                                        ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_ADDRESS_RANGE ]                                   ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_STAGGER_RANGE ]                                   ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_CP)                                       ? \'d0                           :'.format(port)
     pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
     pLine = pLine + '\n                                                                                                                                                                                                             Port_from_NoC[{0}].fromNoc_valid ; '.format(port)
     pLine = pLine + '\n'           
-    pLine = pLine + '\n            noc__cntl__dp_cntl_p1                                                        = (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) ? `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP             : '.format(port)
+    pLine = pLine + '\n            noc__scntl__dp_cntl_p1                                                        = (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) ? `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP             : '.format(port)
     pLine = pLine + '\n                                                                                                                                                                     `NOC_CONT_NOC_PROTOCOL_CNTL_SOP                 ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__dp_type_p1                                                        = Port_from_NoC[{0}].type_fromNoc                                                                                        ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__dp_data_p1                                                        = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXT_DATA_TO_INT_DATA_RANGE ]                                   ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__dp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_DP)                                       ? \'d0                           :'.format(port)
+    pLine = pLine + '\n            noc__scntl__dp_type_p1                                                        = Port_from_NoC[{0}].type_fromNoc                                                                                        ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__dp_data_p1                                                        = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXT_DATA_TO_INT_DATA_RANGE ]                                   ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__dp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_DP)                                       ? \'d0                           :'.format(port)
     pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
     pLine = pLine + '\n                                                                                                                                                                                                             Port_from_NoC[{0}].fromNoc_valid ; '.format(port)
     pLine = pLine + '\n          end'
     pLine = pLine + '\n        `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}:'.format(port)
     pLine = pLine + '\n          begin'
-    pLine = pLine + '\n            noc__cntl__cp_cntl_p1                                                        = Port_from_NoC[{0}].cntl_fromNoc                                    ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_3RD_CYCLE_PAYLOAD_TYPE_RANGE ]                                   ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_3RD_CYCLE_NUM_OF_WORDS_RANGE ]                                   ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__cp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_CP)                                       ? \'d0                           :'.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_cntl_p1                                                        = Port_from_NoC[{0}].cntl_fromNoc                                    ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_3RD_CYCLE_PAYLOAD_TYPE_RANGE ]                                   ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_3RD_CYCLE_NUM_OF_WORDS_RANGE ]                                   ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_CP)                                       ? \'d0                           :'.format(port)
     pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
     pLine = pLine + '\n                                                                                                                                                                                                             Port_from_NoC[{0}].fromNoc_valid ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__cp_type_p1                                                        = local_inq_type_fromNoc     ;  // maintain type value through packet transfer '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_type_p1                                                        = local_inq_type_fromNoc     ;  // maintain type value through packet transfer '.format(port)
     pLine = pLine + '\n'           
-    pLine = pLine + '\n            noc__cntl__dp_cntl_p1                                                        = Port_from_NoC[{0}].cntl_fromNoc                                    ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__dp_data_p1                                                        = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXT_DATA_TO_INT_DATA_RANGE ]                                   ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__dp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_DP)                                       ? \'d0                           :'.format(port)
+    pLine = pLine + '\n            noc__scntl__dp_cntl_p1                                                        = Port_from_NoC[{0}].cntl_fromNoc                                    ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__dp_data_p1                                                        = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXT_DATA_TO_INT_DATA_RANGE ]                                   ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__dp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_DP)                                       ? \'d0                           :'.format(port)
     pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
     pLine = pLine + '\n                                                                                                                                                                                                             Port_from_NoC[{0}].fromNoc_valid ; '.format(port)
-    pLine = pLine + '\n            noc__cntl__dp_type_p1                                                        = local_inq_type_fromNoc     ;  // maintain type value through packet transfer '.format(port)
+    pLine = pLine + '\n            noc__scntl__dp_type_p1                                                        = local_inq_type_fromNoc     ;  // maintain type value through packet transfer '.format(port)
     pLine = pLine + '\n          end'
   pLine = pLine + '\n        default:'
   pLine = pLine + '\n          begin'
   pLine = pLine + '\n            local_inq_type_fromNoc_p1                                                       = \'d0   ; '.format(port)
   pLine = pLine + '\n'
-  pLine = pLine + '\n            noc__cntl__cp_cntl_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n            noc__cntl__cp_type_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n            noc__cntl__cp_data_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n            noc__cntl__cp_valid_p1                                                       = \'d0   ; '.format(port)
+  pLine = pLine + '\n            noc__scntl__cp_cntl_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n            noc__scntl__cp_type_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n            noc__scntl__cp_data_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n            noc__scntl__cp_valid_p1                                                       = \'d0   ; '.format(port)
   pLine = pLine + '\n'           
-  pLine = pLine + '\n            noc__cntl__dp_cntl_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n            noc__cntl__dp_type_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n            noc__cntl__dp_data_p1                                                        = \'d0   ; '.format(port)
-  pLine = pLine + '\n            noc__cntl__dp_valid_p1                                                       = \'d0   ; '.format(port)
+  pLine = pLine + '\n            noc__scntl__dp_cntl_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n            noc__scntl__dp_type_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n            noc__scntl__dp_data_p1                                                        = \'d0   ; '.format(port)
+  pLine = pLine + '\n            noc__scntl__dp_valid_p1                                                       = \'d0   ; '.format(port)
   pLine = pLine + '\n          end'
   pLine = pLine + '\n'
   pLine = pLine + '\n      endcase'
@@ -1553,31 +1553,31 @@ if __name__ == "__main__":
   pLine = ""
 
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  wire   [`STREAMING_OP_CNTL_OPERATION_RANGE ] cntl__sdp__lane{0}_stOp_operation ;'.format(lane)
+    pLine = pLine + '\n  wire   [`STREAMING_OP_CNTL_OPERATION_RANGE ] scntl__sdp__lane{0}_stOp_operation ;'.format(lane)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  wire   [`STREAMING_OP_CNTL_OPERATION_RANGE ] cntl__sdp__lane{0}_dma_operation ;'.format(lane)
+    pLine = pLine + '\n  wire   [`STREAMING_OP_CNTL_OPERATION_RANGE ] scntl__sdp__lane{0}_dma_operation ;'.format(lane)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
-      pLine = pLine + '\n  wire                                                  cntl__sdp__lane{0}_strm{1}_read_enable         ;'.format(lane,strm)
-      pLine = pLine + '\n  wire                                                  cntl__sdp__lane{0}_strm{1}_write_enable        ;'.format(lane,strm)
-      pLine = pLine + '\n  wire                                                  sdp__cntl__lane{0}_strm{1}_read_ready          ;  // from dma'.format(lane,strm)
-      pLine = pLine + '\n  wire                                                  sdp__cntl__lane{0}_strm{1}_write_ready         ;'.format(lane,strm)
-      pLine = pLine + '\n  wire                                                  sdp__cntl__lane{0}_strm{1}_read_complete       ;  // from dma'.format(lane,strm)
-      pLine = pLine + '\n  wire                                                  sdp__cntl__lane{0}_strm{1}_write_complete      ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE            ]     cntl__sdp__lane{0}_strm{1}_read_start_address  ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE            ]     cntl__sdp__lane{0}_strm{1}_write_start_address ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`DMA_CONT_DATA_TYPES_RANGE              ]     cntl__sdp__lane{0}_type{1}                     ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE        ]     cntl__sdp__lane{0}_num_of_types{1}             ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  scntl__sdp__lane{0}_strm{1}_read_enable         ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  scntl__sdp__lane{0}_strm{1}_write_enable        ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  sdp__scntl__lane{0}_strm{1}_read_ready          ;  // from dma'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  sdp__scntl__lane{0}_strm{1}_write_ready         ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  sdp__scntl__lane{0}_strm{1}_read_complete       ;  // from dma'.format(lane,strm)
+      pLine = pLine + '\n  wire                                                  sdp__scntl__lane{0}_strm{1}_write_complete      ;'.format(lane,strm)
+      pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE            ]     scntl__sdp__lane{0}_strm{1}_read_start_address  ;'.format(lane,strm)
+      pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE            ]     scntl__sdp__lane{0}_strm{1}_write_start_address ;'.format(lane,strm)
+      pLine = pLine + '\n  wire   [`DMA_CONT_DATA_TYPES_RANGE              ]     scntl__sdp__lane{0}_type{1}                     ;'.format(lane,strm)
+      pLine = pLine + '\n  wire   [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE        ]     scntl__sdp__lane{0}_num_of_types{1}             ;'.format(lane,strm)
       if strm == 0:
-         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
-         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
       else:
-         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
-         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
 
   pLine = pLine + '\n'
 
@@ -1648,14 +1648,14 @@ if __name__ == "__main__":
   pLine = ""
 
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  assign stOp_lane[{0}].cntl__stOp__operation    = cntl__sdp__lane{0}_stOp_operation   ;'.format(lane)
+    pLine = pLine + '\n  assign stOp_lane[{0}].scntl__stOp__operation    = scntl__sdp__lane{0}_stOp_operation   ;'.format(lane)
     for strm in range (0, 2):
-      pLine = pLine + '\n  assign stOp_lane[{0}].cntl__stOp__strm{1}_source       = cntl__sdp__lane{0}_strm{1}_stOp_source      ;'.format(lane,strm)
-      pLine = pLine + '\n  assign stOp_lane[{0}].cntl__stOp__strm{1}_destination  = cntl__sdp__lane{0}_strm{1}_stOp_destination ;'.format(lane,strm)
+      pLine = pLine + '\n  assign stOp_lane[{0}].scntl__stOp__strm{1}_source       = scntl__sdp__lane{0}_strm{1}_stOp_source      ;'.format(lane,strm)
+      pLine = pLine + '\n  assign stOp_lane[{0}].scntl__stOp__strm{1}_destination  = scntl__sdp__lane{0}_strm{1}_stOp_destination ;'.format(lane,strm)
     for strm in range (0, 2):
-      pLine = pLine + '\n  assign stOp_lane[{0}].cntl__stOp__strm{1}_enable       = cntl__sdp__lane{0}_strm{1}_stOp_enable      ;'.format(lane,strm)
-      pLine = pLine + '\n  assign sdp__cntl__lane{0}_strm{1}_stOp_ready           = stOp_lane[{0}].stOp__cntl__strm{1}_ready    ;'.format(lane,strm)
-      pLine = pLine + '\n  assign sdp__cntl__lane{0}_strm{1}_stOp_complete        = stOp_lane[{0}].stOp__cntl__strm{1}_complete ;'.format(lane,strm)
+      pLine = pLine + '\n  assign stOp_lane[{0}].scntl__stOp__strm{1}_enable       = scntl__sdp__lane{0}_strm{1}_stOp_enable      ;'.format(lane,strm)
+      pLine = pLine + '\n  assign sdp__scntl__lane{0}_strm{1}_stOp_ready           = stOp_lane[{0}].stOp__scntl__strm{1}_ready    ;'.format(lane,strm)
+      pLine = pLine + '\n  assign sdp__scntl__lane{0}_strm{1}_stOp_complete        = stOp_lane[{0}].stOp__scntl__strm{1}_complete ;'.format(lane,strm)
   pLine = pLine + '\n'
 
   f.write(pLine)
@@ -1665,21 +1665,21 @@ if __name__ == "__main__":
   pLine = ""
 
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  assign stOp_lane[{0}].cntl__dma__operation    = cntl__sdp__lane{0}_dma_operation ;'.format(lane)
+    pLine = pLine + '\n  assign stOp_lane[{0}].scntl__dma__operation    = scntl__sdp__lane{0}_dma_operation ;'.format(lane)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
-      pLine = pLine + '\n  assign stOp_lane[{0}].cntl__dma__strm{1}_read_enable         = cntl__sdp__lane{0}_strm{1}_read_enable            ;'.format(lane,strm)
-      pLine = pLine + '\n  assign stOp_lane[{0}].cntl__dma__strm{1}_write_enable        = cntl__sdp__lane{0}_strm{1}_write_enable           ;'.format(lane,strm)
-      pLine = pLine + '\n  assign sdp__cntl__lane{0}_strm{1}_read_ready                 = stOp_lane[{0}].dma__cntl__strm{1}_read_ready      ;'.format(lane,strm)
-      pLine = pLine + '\n  assign sdp__cntl__lane{0}_strm{1}_write_ready                = stOp_lane[{0}].dma__cntl__strm{1}_write_ready     ;'.format(lane,strm)
-      pLine = pLine + '\n  assign sdp__cntl__lane{0}_strm{1}_read_complete              = stOp_lane[{0}].dma__cntl__strm{1}_read_complete   ;'.format(lane,strm)
-      pLine = pLine + '\n  assign sdp__cntl__lane{0}_strm{1}_write_complete             = stOp_lane[{0}].dma__cntl__strm{1}_write_complete  ;'.format(lane,strm)
-      pLine = pLine + '\n  assign stOp_lane[{0}].cntl__dma__strm{1}_read_start_address  = cntl__sdp__lane{0}_strm{1}_read_start_address     ;'.format(lane,strm)
-      pLine = pLine + '\n  assign stOp_lane[{0}].cntl__dma__strm{1}_write_start_address = cntl__sdp__lane{0}_strm{1}_write_start_address    ;'.format(lane,strm)
-      pLine = pLine + '\n  assign stOp_lane[{0}].cntl__dma__type{1}                     = cntl__sdp__lane{0}_type{1}                        ;'.format(lane,strm)
-      pLine = pLine + '\n  assign stOp_lane[{0}].cntl__dma__num_of_types{1}             = cntl__sdp__lane{0}_num_of_types{1}                ;'.format(lane,strm)
+      pLine = pLine + '\n  assign stOp_lane[{0}].scntl__dma__strm{1}_read_enable         = scntl__sdp__lane{0}_strm{1}_read_enable            ;'.format(lane,strm)
+      pLine = pLine + '\n  assign stOp_lane[{0}].scntl__dma__strm{1}_write_enable        = scntl__sdp__lane{0}_strm{1}_write_enable           ;'.format(lane,strm)
+      pLine = pLine + '\n  assign sdp__scntl__lane{0}_strm{1}_read_ready                 = stOp_lane[{0}].dma__scntl__strm{1}_read_ready      ;'.format(lane,strm)
+      pLine = pLine + '\n  assign sdp__scntl__lane{0}_strm{1}_write_ready                = stOp_lane[{0}].dma__scntl__strm{1}_write_ready     ;'.format(lane,strm)
+      pLine = pLine + '\n  assign sdp__scntl__lane{0}_strm{1}_read_complete              = stOp_lane[{0}].dma__scntl__strm{1}_read_complete   ;'.format(lane,strm)
+      pLine = pLine + '\n  assign sdp__scntl__lane{0}_strm{1}_write_complete             = stOp_lane[{0}].dma__scntl__strm{1}_write_complete  ;'.format(lane,strm)
+      pLine = pLine + '\n  assign stOp_lane[{0}].scntl__dma__strm{1}_read_start_address  = scntl__sdp__lane{0}_strm{1}_read_start_address     ;'.format(lane,strm)
+      pLine = pLine + '\n  assign stOp_lane[{0}].scntl__dma__strm{1}_write_start_address = scntl__sdp__lane{0}_strm{1}_write_start_address    ;'.format(lane,strm)
+      pLine = pLine + '\n  assign stOp_lane[{0}].scntl__dma__type{1}                     = scntl__sdp__lane{0}_type{1}                        ;'.format(lane,strm)
+      pLine = pLine + '\n  assign stOp_lane[{0}].scntl__dma__num_of_types{1}             = scntl__sdp__lane{0}_num_of_types{1}                ;'.format(lane,strm)
   pLine = pLine + '\n'
 
   f.write(pLine)
@@ -1748,30 +1748,30 @@ if __name__ == "__main__":
   pLine = ""
 
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n      cntl__sdp__lane{0}_stOp_operation, '.format(lane)
+    pLine = pLine + '\n      scntl__sdp__lane{0}_stOp_operation, '.format(lane)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n      cntl__sdp__lane{0}_dma_operation, '.format(lane)
+    pLine = pLine + '\n      scntl__sdp__lane{0}_dma_operation, '.format(lane)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
-      pLine = pLine + '\n      cntl__sdp__lane{0}_strm{1}_read_enable          ,  // enable the stream read mode       '.format(lane,strm)  
-      pLine = pLine + '\n      cntl__sdp__lane{0}_strm{1}_write_enable         ,  // enable the stream write mode      '.format(lane,strm)  
-      pLine = pLine + '\n      sdp__cntl__lane{0}_strm{1}_read_ready           ,  // stream read mode ready            '.format(lane,strm)  
-      pLine = pLine + '\n      sdp__cntl__lane{0}_strm{1}_write_ready          ,  // stream write mode ready           '.format(lane,strm)  
-      pLine = pLine + '\n      sdp__cntl__lane{0}_strm{1}_read_complete        ,  // stream read mode complete         '.format(lane,strm)  
-      pLine = pLine + '\n      sdp__cntl__lane{0}_strm{1}_write_complete       ,  // stream write mode complete        '.format(lane,strm)  
-      pLine = pLine + '\n      cntl__sdp__lane{0}_strm{1}_read_start_address   ,  // streaming op arg{1}               '.format(lane,strm)  
-      pLine = pLine + '\n      cntl__sdp__lane{0}_strm{1}_write_start_address  ,  // streaming op result start address '.format(lane,strm)
-      pLine = pLine + '\n      cntl__sdp__lane{0}_type{1}                      ,                                       '.format(lane,strm)
-      pLine = pLine + '\n      cntl__sdp__lane{0}_num_of_types{1}              ,                                       '.format(lane,strm)
-      pLine = pLine + '\n      cntl__sdp__lane{0}_strm{1}_stOp_source          ,                                       '.format(lane,strm)
-      pLine = pLine + '\n      cntl__sdp__lane{0}_strm{1}_stOp_destination     ,                                       '.format(lane,strm)
-      pLine = pLine + '\n      cntl__sdp__lane{0}_strm{1}_stOp_enable          ,                                       '.format(lane,strm)
-      pLine = pLine + '\n      sdp__cntl__lane{0}_strm{1}_stOp_ready           ,                                       '.format(lane,strm)
-      pLine = pLine + '\n      sdp__cntl__lane{0}_strm{1}_stOp_complete        ,                                       '.format(lane,strm)
+      pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_read_enable          ,  // enable the stream read mode       '.format(lane,strm)  
+      pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_write_enable         ,  // enable the stream write mode      '.format(lane,strm)  
+      pLine = pLine + '\n      sdp__scntl__lane{0}_strm{1}_read_ready           ,  // stream read mode ready            '.format(lane,strm)  
+      pLine = pLine + '\n      sdp__scntl__lane{0}_strm{1}_write_ready          ,  // stream write mode ready           '.format(lane,strm)  
+      pLine = pLine + '\n      sdp__scntl__lane{0}_strm{1}_read_complete        ,  // stream read mode complete         '.format(lane,strm)  
+      pLine = pLine + '\n      sdp__scntl__lane{0}_strm{1}_write_complete       ,  // stream write mode complete        '.format(lane,strm)  
+      pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_read_start_address   ,  // streaming op arg{1}               '.format(lane,strm)  
+      pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_write_start_address  ,  // streaming op result start address '.format(lane,strm)
+      pLine = pLine + '\n      scntl__sdp__lane{0}_type{1}                      ,                                       '.format(lane,strm)
+      pLine = pLine + '\n      scntl__sdp__lane{0}_num_of_types{1}              ,                                       '.format(lane,strm)
+      pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_stOp_source          ,                                       '.format(lane,strm)
+      pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_stOp_destination     ,                                       '.format(lane,strm)
+      pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_stOp_enable          ,                                       '.format(lane,strm)
+      pLine = pLine + '\n      sdp__scntl__lane{0}_strm{1}_stOp_ready           ,                                       '.format(lane,strm)
+      pLine = pLine + '\n      sdp__scntl__lane{0}_strm{1}_stOp_complete        ,                                       '.format(lane,strm)
   pLine = pLine + '\n'
 
   f.write(pLine)
@@ -1781,34 +1781,34 @@ if __name__ == "__main__":
   pLine = ""
 
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_RANGE ]    cntl__sdp__lane{0}_stOp_operation ; '.format(lane)
+    pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_RANGE ]    scntl__sdp__lane{0}_stOp_operation ; '.format(lane)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_RANGE ]    cntl__sdp__lane{0}_dma_operation ; '.format(lane)
+    pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_RANGE ]    scntl__sdp__lane{0}_dma_operation ; '.format(lane)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
-      pLine = pLine + '\n   output                                       cntl__sdp__lane{0}_strm{1}_read_enable          ;                                       '.format(lane,strm)  
-      pLine = pLine + '\n   output                                       cntl__sdp__lane{0}_strm{1}_write_enable         ;                                       '.format(lane,strm)  
-      pLine = pLine + '\n   input                                        sdp__cntl__lane{0}_strm{1}_read_ready           ;                                       '.format(lane,strm)  
-      pLine = pLine + '\n   input                                        sdp__cntl__lane{0}_strm{1}_write_ready          ;                                       '.format(lane,strm)  
-      pLine = pLine + '\n   input                                        sdp__cntl__lane{0}_strm{1}_read_complete        ;                                       '.format(lane,strm)  
-      pLine = pLine + '\n   input                                        sdp__cntl__lane{0}_strm{1}_write_complete       ;                                       '.format(lane,strm)  
-      pLine = pLine + '\n   output [`DMA_CONT_STRM_ADDRESS_RANGE]        cntl__sdp__lane{0}_strm{1}_read_start_address   ;  // streaming op arg{1}               '.format(lane,strm)  
-      pLine = pLine + '\n   output [`DMA_CONT_STRM_ADDRESS_RANGE]        cntl__sdp__lane{0}_strm{1}_write_start_address  ;  // streaming op result start address '.format(lane,strm)
-      pLine = pLine + '\n   output [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]   cntl__sdp__lane{0}_num_of_types{1}              ;                                       '.format(lane,strm)
-      pLine = pLine + '\n   output [`DMA_CONT_DATA_TYPES_RANGE ]         cntl__sdp__lane{0}_type{1}                      ;                                       '.format(lane,strm)
-      pLine = pLine + '\n   output                                       cntl__sdp__lane{0}_strm{1}_stOp_enable          ;                                       '.format(lane,strm)  
-      pLine = pLine + '\n   input                                        sdp__cntl__lane{0}_strm{1}_stOp_ready           ;                                       '.format(lane,strm)  
-      pLine = pLine + '\n   input                                        sdp__cntl__lane{0}_strm{1}_stOp_complete        ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   output                                       scntl__sdp__lane{0}_strm{1}_read_enable          ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   output                                       scntl__sdp__lane{0}_strm{1}_write_enable         ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   input                                        sdp__scntl__lane{0}_strm{1}_read_ready           ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   input                                        sdp__scntl__lane{0}_strm{1}_write_ready          ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   input                                        sdp__scntl__lane{0}_strm{1}_read_complete        ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   input                                        sdp__scntl__lane{0}_strm{1}_write_complete       ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   output [`DMA_CONT_STRM_ADDRESS_RANGE]        scntl__sdp__lane{0}_strm{1}_read_start_address   ;  // streaming op arg{1}               '.format(lane,strm)  
+      pLine = pLine + '\n   output [`DMA_CONT_STRM_ADDRESS_RANGE]        scntl__sdp__lane{0}_strm{1}_write_start_address  ;  // streaming op result start address '.format(lane,strm)
+      pLine = pLine + '\n   output [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]   scntl__sdp__lane{0}_num_of_types{1}              ;                                       '.format(lane,strm)
+      pLine = pLine + '\n   output [`DMA_CONT_DATA_TYPES_RANGE ]         scntl__sdp__lane{0}_type{1}                      ;                                       '.format(lane,strm)
+      pLine = pLine + '\n   output                                       scntl__sdp__lane{0}_strm{1}_stOp_enable          ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   input                                        sdp__scntl__lane{0}_strm{1}_stOp_ready           ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n   input                                        sdp__scntl__lane{0}_strm{1}_stOp_complete        ;                                       '.format(lane,strm)  
       if strm == 0:
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
       else:
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
 
   f.write(pLine)
   f.close()
@@ -1818,27 +1818,27 @@ if __name__ == "__main__":
 
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
-      pLine = pLine + '\n  wire                                         cntl__sdp__lane{0}_strm{1}_read_enable         ;'.format(lane,strm)
-      pLine = pLine + '\n  wire                                         cntl__sdp__lane{0}_strm{1}_write_enable        ;'.format(lane,strm)
-      pLine = pLine + '\n  wire                                         sdp__cntl__lane{0}_strm{1}_read_ready          ;  // from dma'.format(lane,strm)
-      pLine = pLine + '\n  wire                                         sdp__cntl__lane{0}_strm{1}_write_ready         ;'.format(lane,strm)
-      pLine = pLine + '\n  wire                                         sdp__cntl__lane{0}_strm{1}_read_complete       ;  // from dma'.format(lane,strm)
-      pLine = pLine + '\n  wire                                         sdp__cntl__lane{0}_strm{1}_write_complete      ;'.format(lane,strm)
-      pLine = pLine + '\n  reg    [`DMA_CONT_STRM_ADDRESS_RANGE       ] cntl__sdp__lane{0}_strm{1}_read_start_address  ;  // register because may be assigned from external DMA request'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE       ] cntl__sdp__lane{0}_strm{1}_write_start_address ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`DMA_CONT_DATA_TYPES_RANGE         ] cntl__sdp__lane{0}_type{1}                     ;'.format(lane,strm)
-      pLine = pLine + '\n  wire   [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ] cntl__sdp__lane{0}_num_of_types{1}             ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                         scntl__sdp__lane{0}_strm{1}_read_enable         ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                         scntl__sdp__lane{0}_strm{1}_write_enable        ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                         sdp__scntl__lane{0}_strm{1}_read_ready          ;  // from dma'.format(lane,strm)
+      pLine = pLine + '\n  wire                                         sdp__scntl__lane{0}_strm{1}_write_ready         ;'.format(lane,strm)
+      pLine = pLine + '\n  wire                                         sdp__scntl__lane{0}_strm{1}_read_complete       ;  // from dma'.format(lane,strm)
+      pLine = pLine + '\n  wire                                         sdp__scntl__lane{0}_strm{1}_write_complete      ;'.format(lane,strm)
+      pLine = pLine + '\n  reg    [`DMA_CONT_STRM_ADDRESS_RANGE       ] scntl__sdp__lane{0}_strm{1}_read_start_address  ;  // register because may be assigned from external DMA request'.format(lane,strm)
+      pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE       ] scntl__sdp__lane{0}_strm{1}_write_start_address ;'.format(lane,strm)
+      pLine = pLine + '\n  wire   [`DMA_CONT_DATA_TYPES_RANGE         ] scntl__sdp__lane{0}_type{1}                     ;'.format(lane,strm)
+      pLine = pLine + '\n  wire   [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ] scntl__sdp__lane{0}_num_of_types{1}             ;'.format(lane,strm)
       pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE       ] lane{0}_strm{1}_read_start_address             ;'.format(lane,strm)
       pLine = pLine + '\n  wire   [`DMA_CONT_STRM_ADDRESS_RANGE       ] lane{0}_strm{1}_write_start_address            ;'.format(lane,strm)
       pLine = pLine + '\n  wire   [`DMA_CONT_DATA_TYPES_RANGE         ] lane{0}_type{1}                                ;'.format(lane,strm)
       pLine = pLine + '\n  wire   [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ] lane{0}_num_of_types{1}                        ;'.format(lane,strm)
       pLine = pLine + '\n  wire   [`PE_MAX_STAGGER_RANGE              ] lane{0}_stagger{1}                             ;'.format(lane,strm)
       if strm == 0:
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
       else:
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  cntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  cntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
@@ -1890,35 +1890,35 @@ if __name__ == "__main__":
 
   for lane in range (0, numOfExecLanes):
     offset = lane + 16
-    pLine = pLine + '\n  assign cntl__sdp__lane{0}_stOp_operation = rs0[31:1]                                      ; '.format(lane)
+    pLine = pLine + '\n  assign scntl__sdp__lane{0}_stOp_operation = rs0[31:1]                                      ; '.format(lane)
     for strm in range (0, 2):
-      pLine = pLine + '\n  assign cntl__sdp__lane{0}_strm{1}_stOp_enable    = strm_control[{0}].strm{1}_stOp_enable     ; '.format(lane,strm)
-      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_stOp_ready      = sdp__cntl__lane{0}_strm{1}_stOp_ready     ; '.format(lane,strm)
-      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_stOp_complete   = sdp__cntl__lane{0}_strm{1}_stOp_complete  ; '.format(lane,strm)
+      pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_stOp_enable    = strm_control[{0}].strm{1}_stOp_enable     ; '.format(lane,strm)
+      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_stOp_ready      = sdp__scntl__lane{0}_strm{1}_stOp_ready     ; '.format(lane,strm)
+      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_stOp_complete   = sdp__scntl__lane{0}_strm{1}_stOp_complete  ; '.format(lane,strm)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
       pLine = pLine + '\n  // Connect lane operation information to stream fsm '
-      pLine = pLine + '\n  assign cntl__sdp__lane{0}_strm{1}_read_enable         = strm_control[{0}].strm{1}_read_enable         ;  // FIXME'.format(lane,strm)
-      pLine = pLine + '\n  assign cntl__sdp__lane{0}_strm{1}_write_enable        = strm_control[{0}].strm{1}_write_enable        ;  // FIXME'.format(lane,strm)
-      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_read_ready           = sdp__cntl__lane{0}_strm{1}_read_ready         ;  // FIXME'.format(lane,strm)
-      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_write_ready          = sdp__cntl__lane{0}_strm{1}_write_ready        ;  // FIXME'.format(lane,strm)
-      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_read_complete        = sdp__cntl__lane{0}_strm{1}_read_complete      ;  // FIXME'.format(lane,strm)
-      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_write_complete       = sdp__cntl__lane{0}_strm{1}_write_complete     ;  // FIXME'.format(lane,strm)
+      pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_read_enable         = strm_control[{0}].strm{1}_read_enable         ;  // FIXME'.format(lane,strm)
+      pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_write_enable        = strm_control[{0}].strm{1}_write_enable        ;  // FIXME'.format(lane,strm)
+      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_read_ready           = sdp__scntl__lane{0}_strm{1}_read_ready         ;  // FIXME'.format(lane,strm)
+      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_write_ready          = sdp__scntl__lane{0}_strm{1}_write_ready        ;  // FIXME'.format(lane,strm)
+      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_read_complete        = sdp__scntl__lane{0}_strm{1}_read_complete      ;  // FIXME'.format(lane,strm)
+      pLine = pLine + '\n  assign strm_control[{0}].strm{1}_write_complete       = sdp__scntl__lane{0}_strm{1}_write_complete     ;  // FIXME'.format(lane,strm)
     pLine = pLine + '\n  always @(*)'
     pLine = pLine + '\n    begin'
-    pLine = pLine + '\n      cntl__sdp__lane{0}_strm0_read_start_address  = (strm_control[{0}].strm0_assignedToExternalDma) ? strm_control[{0}].strm0_ExternalDma_read_start_address  :'.format(lane,strm)
+    pLine = pLine + '\n      scntl__sdp__lane{0}_strm0_read_start_address  = (strm_control[{0}].strm0_assignedToExternalDma) ? strm_control[{0}].strm0_ExternalDma_read_start_address  :'.format(lane,strm)
     pLine = pLine + '\n                                                                                                       lane{0}_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;'.format(lane,strm)
-    pLine = pLine + '\n      cntl__sdp__lane{0}_strm1_read_start_address  = (strm_control[{0}].strm1_assignedToExternalDma) ? strm_control[{0}].strm1_ExternalDma_read_start_address  :'.format(lane,strm)
+    pLine = pLine + '\n      scntl__sdp__lane{0}_strm1_read_start_address  = (strm_control[{0}].strm1_assignedToExternalDma) ? strm_control[{0}].strm1_ExternalDma_read_start_address  :'.format(lane,strm)
     pLine = pLine + '\n                                                                                                       lane{0}_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;'.format(lane,strm)
     pLine = pLine + '\n    end'
-    pLine = pLine + '\n  assign cntl__sdp__lane{0}_strm0_write_start_address = lane{0}_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
-    pLine = pLine + '\n  assign cntl__sdp__lane{0}_strm1_write_start_address = lane{0}_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
-    pLine = pLine + '\n  assign cntl__sdp__lane{0}_type0                     = lane{0}_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane,strm)
-    pLine = pLine + '\n  assign cntl__sdp__lane{0}_type1                     = lane{0}_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane,strm)
-    pLine = pLine + '\n  assign cntl__sdp__lane{0}_num_of_types0             = lane{0}_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane,strm)
-    pLine = pLine + '\n  assign cntl__sdp__lane{0}_num_of_types1             = lane{0}_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane,strm)
+    pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm0_write_start_address = lane{0}_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
+    pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm1_write_start_address = lane{0}_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
+    pLine = pLine + '\n  assign scntl__sdp__lane{0}_type0                     = lane{0}_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane,strm)
+    pLine = pLine + '\n  assign scntl__sdp__lane{0}_type1                     = lane{0}_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane,strm)
+    pLine = pLine + '\n  assign scntl__sdp__lane{0}_num_of_types0             = lane{0}_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane,strm)
+    pLine = pLine + '\n  assign scntl__sdp__lane{0}_num_of_types1             = lane{0}_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane,strm)
     pLine = pLine + '\n  assign lane{0}_strm0_read_start_address             = lane{0}_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
     pLine = pLine + '\n  assign lane{0}_strm1_read_start_address             = lane{0}_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
     pLine = pLine + '\n  assign lane{0}_strm0_write_start_address            = lane{0}_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
@@ -1964,8 +1964,8 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
-      pLine = pLine + '\n  assign cntl__sdp__lane{0}_strm{1}_stOp_source      = strm_control[{0}].strm{1}_stOp_src  ;'.format(lane,strm)
-      pLine = pLine + '\n  assign cntl__sdp__lane{0}_strm{1}_stOp_destination = strm_control[{0}].strm{1}_stOp_dest ;'.format(lane,strm)
+      pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_stOp_source      = strm_control[{0}].strm{1}_stOp_src  ;'.format(lane,strm)
+      pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_stOp_destination = strm_control[{0}].strm{1}_stOp_dest ;'.format(lane,strm)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
@@ -2029,25 +2029,25 @@ if __name__ == "__main__":
     pLine = pLine + '\n'
     pLine = pLine + '            // Pass local DMA request to NoC \n'
     pLine = pLine + '\n          if (cntl_to_noc_1st_cycle)  '
-    pLine = pLine + '\n            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;'.format(lane)
+    pLine = pLine + '\n            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;'.format(lane)
     pLine = pLine + '\n          else  '
-    pLine = pLine + '\n            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;'.format(lane)
-    pLine = pLine + '\n          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;'.format(lane)
+    pLine = pLine + '\n            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;'.format(lane)
+    pLine = pLine + '\n          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;'.format(lane)
     pLine = pLine + '\n          if (cntl_to_noc_1st_cycle)  '
     pLine = pLine + '\n            begin  '
-    pLine = pLine + '\n              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[{0}].NocLocalDmaRequestStrm) ? lane{0}_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane{0}_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; '.format(lane)
-    pLine = pLine + '\n              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[{0}].NocLocalDmaRequestStrm) ? lane{0}_stagger1                 : lane{0}_stagger0                 ; '.format(lane)
-    pLine = pLine + '\n              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = \'d0                                                                                                             ; '.format(lane)
+    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[{0}].NocLocalDmaRequestStrm) ? lane{0}_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane{0}_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; '.format(lane)
+    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[{0}].NocLocalDmaRequestStrm) ? lane{0}_stagger1                 : lane{0}_stagger0                 ; '.format(lane)
+    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = \'d0                                                                                                             ; '.format(lane)
     pLine = pLine + '\n            end  '
     pLine = pLine + '\n          else  '
     pLine = pLine + '\n            begin  '
     # FIXME: proper numBytes and stagger
-    pLine = pLine + '\n              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[{0}].NocLocalDmaRequestStrm) ? strm_control[{0}].strm1_word_count : strm_control[{0}].strm0_word_count ; '.format(lane)
-    pLine = pLine + '\n              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[{0}].NocLocalDmaRequestStrm) ? lane{0}_type1                      : lane{0}_type0                      ; '.format(lane)
-    pLine = pLine + '\n              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = \'d0                                                                                                              ; '.format(lane)
+    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[{0}].NocLocalDmaRequestStrm) ? strm_control[{0}].strm1_word_count : strm_control[{0}].strm0_word_count ; '.format(lane)
+    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[{0}].NocLocalDmaRequestStrm) ? lane{0}_type1                      : lane{0}_type0                      ; '.format(lane)
+    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = \'d0                                                                                                              ; '.format(lane)
     pLine = pLine + '\n            end  '
-    pLine = pLine + '\n          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;'.format(lane)
-    pLine = pLine + '\n          cntl__noc__cp_strmId_p1                                                        = strm_control[{0}].NocLocalDmaRequestStrm;'.format(lane)
+    pLine = pLine + '\n          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;'.format(lane)
+    pLine = pLine + '\n          scntl__noc__cp_strmId_p1                                                        = strm_control[{0}].NocLocalDmaRequestStrm;'.format(lane)
     pLine = pLine + '\n        end'
   pLine = pLine + '\n      endcase'
   pLine = pLine + '\n    end'
@@ -2120,30 +2120,30 @@ if __name__ == "__main__":
   pLine = ""
 
   for lane in range (0,  numOfExecLanes):
-    pLine = pLine + '\n      .cntl__sdp__lane{0}_stOp_operation         ( cntl__sdp__lane{0}_stOp_operation       ), '.format(lane)
+    pLine = pLine + '\n      .scntl__sdp__lane{0}_stOp_operation         ( scntl__sdp__lane{0}_stOp_operation       ), '.format(lane)
   pLine = pLine + '\n'                                                                                          
                                                                                                                 
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n      .cntl__sdp__lane{0}_dma_operation          ( cntl__sdp__lane{0}_dma_operation        ), '.format(lane)
+    pLine = pLine + '\n      .scntl__sdp__lane{0}_dma_operation          ( scntl__sdp__lane{0}_dma_operation        ), '.format(lane)
   pLine = pLine + '\n'                                                                                          
                                                                                                                 
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
-      pLine = pLine + '\n      .cntl__sdp__lane{0}_strm{1}_read_enable           ( cntl__sdp__lane{0}_strm{1}_read_enable         ), '.format(lane,strm)
-      pLine = pLine + '\n      .cntl__sdp__lane{0}_strm{1}_write_enable          ( cntl__sdp__lane{0}_strm{1}_write_enable        ), '.format(lane,strm)
-      pLine = pLine + '\n      .sdp__cntl__lane{0}_strm{1}_read_ready            ( sdp__cntl__lane{0}_strm{1}_read_ready          ), '.format(lane,strm)
-      pLine = pLine + '\n      .sdp__cntl__lane{0}_strm{1}_write_ready           ( sdp__cntl__lane{0}_strm{1}_write_ready         ), '.format(lane,strm)
-      pLine = pLine + '\n      .sdp__cntl__lane{0}_strm{1}_read_complete         ( sdp__cntl__lane{0}_strm{1}_read_complete       ), '.format(lane,strm)
-      pLine = pLine + '\n      .sdp__cntl__lane{0}_strm{1}_write_complete        ( sdp__cntl__lane{0}_strm{1}_write_complete      ), '.format(lane,strm)
-      pLine = pLine + '\n      .cntl__sdp__lane{0}_strm{1}_read_start_address    ( cntl__sdp__lane{0}_strm{1}_read_start_address  ), '.format(lane,strm)
-      pLine = pLine + '\n      .cntl__sdp__lane{0}_strm{1}_write_start_address   ( cntl__sdp__lane{0}_strm{1}_write_start_address ), '.format(lane,strm)
-      pLine = pLine + '\n      .cntl__sdp__lane{0}_type{1}                       ( cntl__sdp__lane{0}_type{1}                     ), '.format(lane,strm)
-      pLine = pLine + '\n      .cntl__sdp__lane{0}_num_of_types{1}               ( cntl__sdp__lane{0}_num_of_types{1}             ), '.format(lane,strm)
-      pLine = pLine + '\n      .cntl__sdp__lane{0}_strm{1}_stOp_source           ( cntl__sdp__lane{0}_strm{1}_stOp_source         ), '.format(lane,strm)
-      pLine = pLine + '\n      .cntl__sdp__lane{0}_strm{1}_stOp_destination      ( cntl__sdp__lane{0}_strm{1}_stOp_destination    ), '.format(lane,strm)
-      pLine = pLine + '\n      .cntl__sdp__lane{0}_strm{1}_stOp_enable           ( cntl__sdp__lane{0}_strm{1}_stOp_enable         ), '.format(lane,strm)
-      pLine = pLine + '\n      .sdp__cntl__lane{0}_strm{1}_stOp_ready            ( sdp__cntl__lane{0}_strm{1}_stOp_ready          ), '.format(lane,strm)
-      pLine = pLine + '\n      .sdp__cntl__lane{0}_strm{1}_stOp_complete         ( sdp__cntl__lane{0}_strm{1}_stOp_complete       ), '.format(lane,strm)
+      pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_read_enable           ( scntl__sdp__lane{0}_strm{1}_read_enable         ), '.format(lane,strm)
+      pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_write_enable          ( scntl__sdp__lane{0}_strm{1}_write_enable        ), '.format(lane,strm)
+      pLine = pLine + '\n      .sdp__scntl__lane{0}_strm{1}_read_ready            ( sdp__scntl__lane{0}_strm{1}_read_ready          ), '.format(lane,strm)
+      pLine = pLine + '\n      .sdp__scntl__lane{0}_strm{1}_write_ready           ( sdp__scntl__lane{0}_strm{1}_write_ready         ), '.format(lane,strm)
+      pLine = pLine + '\n      .sdp__scntl__lane{0}_strm{1}_read_complete         ( sdp__scntl__lane{0}_strm{1}_read_complete       ), '.format(lane,strm)
+      pLine = pLine + '\n      .sdp__scntl__lane{0}_strm{1}_write_complete        ( sdp__scntl__lane{0}_strm{1}_write_complete      ), '.format(lane,strm)
+      pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_read_start_address    ( scntl__sdp__lane{0}_strm{1}_read_start_address  ), '.format(lane,strm)
+      pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_write_start_address   ( scntl__sdp__lane{0}_strm{1}_write_start_address ), '.format(lane,strm)
+      pLine = pLine + '\n      .scntl__sdp__lane{0}_type{1}                       ( scntl__sdp__lane{0}_type{1}                     ), '.format(lane,strm)
+      pLine = pLine + '\n      .scntl__sdp__lane{0}_num_of_types{1}               ( scntl__sdp__lane{0}_num_of_types{1}             ), '.format(lane,strm)
+      pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_stOp_source           ( scntl__sdp__lane{0}_strm{1}_stOp_source         ), '.format(lane,strm)
+      pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_stOp_destination      ( scntl__sdp__lane{0}_strm{1}_stOp_destination    ), '.format(lane,strm)
+      pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_stOp_enable           ( scntl__sdp__lane{0}_strm{1}_stOp_enable         ), '.format(lane,strm)
+      pLine = pLine + '\n      .sdp__scntl__lane{0}_strm{1}_stOp_ready            ( sdp__scntl__lane{0}_strm{1}_stOp_ready          ), '.format(lane,strm)
+      pLine = pLine + '\n      .sdp__scntl__lane{0}_strm{1}_stOp_complete         ( sdp__scntl__lane{0}_strm{1}_stOp_complete       ), '.format(lane,strm)
   pLine = pLine + '\n'
 
   f.write(pLine)
@@ -2159,40 +2159,40 @@ if __name__ == "__main__":
   pLine = ""
 
   pLine = pLine + '\n      // Aggregate Control-path (cp) to NoC '.format(lane)
-  pLine = pLine + '\n      noc__cntl__cp_ready      , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__cp_cntl       , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__cp_type       , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__cp_data       , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__cp_laneId     , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__cp_strmId     , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__cp_valid      , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__cp_ready      , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__cp_cntl       , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__cp_type       , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__cp_data       , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__cp_laneId     , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__cp_strmId     , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__cp_valid      , '.format(lane)
   pLine = pLine + '\n      // Aggregate Datapath (cp) from NoC '.format(lane)
-  pLine = pLine + '\n      cntl__noc__cp_ready      , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__cp_cntl       , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__cp_type       , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__cp_data       , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__cp_peId       , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__cp_laneId     , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__cp_strmId     , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__cp_valid      , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__cp_ready      , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__cp_cntl       , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__cp_type       , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__cp_data       , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__cp_peId       , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__cp_laneId     , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__cp_strmId     , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__cp_valid      , '.format(lane)
   pLine = pLine + '\n'
   pLine = pLine + '\n      // Aggregate Datapath (dp) to NoC '.format(lane)
-  pLine = pLine + '\n      noc__cntl__dp_ready      , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__dp_cntl       , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__dp_type       , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__dp_peId       , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__dp_laneId     , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__dp_strmId     , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__dp_data       , '.format(lane)
-  pLine = pLine + '\n      cntl__noc__dp_valid      , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__dp_ready      , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__dp_cntl       , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__dp_type       , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__dp_peId       , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__dp_laneId     , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__dp_strmId     , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__dp_data       , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__dp_valid      , '.format(lane)
   pLine = pLine + '\n      // Aggregate Datapath (dp) from NoC '.format(lane)
-  pLine = pLine + '\n      cntl__noc__dp_ready      , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__dp_cntl       , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__dp_type       , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__dp_laneId     , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__dp_strmId     , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__dp_data       , '.format(lane)
-  pLine = pLine + '\n      noc__cntl__dp_valid      , '.format(lane)
+  pLine = pLine + '\n      scntl__noc__dp_ready      , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__dp_cntl       , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__dp_type       , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__dp_laneId     , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__dp_strmId     , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__dp_data       , '.format(lane)
+  pLine = pLine + '\n      noc__scntl__dp_valid      , '.format(lane)
   pLine = pLine + '\n'
   pLine = pLine + '\n      // Only one lane from each DMA can feed NoC'.format(lane)
   for lane in range (0, numOfExecLanes):
@@ -2218,40 +2218,40 @@ if __name__ == "__main__":
   pLine = ""
 
   pLine = pLine + '\n   // Aggregate Control-path (cp) to NoC '.format(lane)
-  pLine = pLine + '\n   input                                             noc__cntl__cp_ready      ; '.format(lane)
-  pLine = pLine + '\n   output [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] cntl__noc__cp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   output [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__cp_type       ; '.format(lane)
-  pLine = pLine + '\n   output [`PE_NOC_INTERNAL_DATA_RANGE             ] cntl__noc__cp_data       ; '.format(lane)
-  pLine = pLine + '\n   output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__cp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   output                                            cntl__noc__cp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   output                                            cntl__noc__cp_valid      ; '.format(lane)
+  pLine = pLine + '\n   input                                             noc__scntl__cp_ready      ; '.format(lane)
+  pLine = pLine + '\n   output [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] scntl__noc__cp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   output [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__cp_type       ; '.format(lane)
+  pLine = pLine + '\n   output [`PE_NOC_INTERNAL_DATA_RANGE             ] scntl__noc__cp_data       ; '.format(lane)
+  pLine = pLine + '\n   output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__cp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   output                                            scntl__noc__cp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   output                                            scntl__noc__cp_valid      ; '.format(lane)
   pLine = pLine + '\n   // Aggregate Data-path (cp) from NoC '.format(lane)
-  pLine = pLine + '\n   output                                            cntl__noc__cp_ready      ; '.format(lane)
-  pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__cp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__cp_type       ; '.format(lane)
-  pLine = pLine + '\n   input  [`PE_NOC_INTERNAL_DATA_RANGE             ] noc__cntl__cp_data       ; '.format(lane)
-  pLine = pLine + '\n   input  [`PE_PE_ID_RANGE                         ] noc__cntl__cp_peId       ; '.format(lane)
-  pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__cp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   input                                             noc__cntl__cp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   input                                             noc__cntl__cp_valid      ; '.format(lane)
+  pLine = pLine + '\n   output                                            scntl__noc__cp_ready      ; '.format(lane)
+  pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__cp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__cp_type       ; '.format(lane)
+  pLine = pLine + '\n   input  [`PE_NOC_INTERNAL_DATA_RANGE             ] noc__scntl__cp_data       ; '.format(lane)
+  pLine = pLine + '\n   input  [`PE_PE_ID_RANGE                         ] noc__scntl__cp_peId       ; '.format(lane)
+  pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__cp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   input                                             noc__scntl__cp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   input                                             noc__scntl__cp_valid      ; '.format(lane)
   pLine = pLine + '\n'
   pLine = pLine + '\n   // Aggregate Data-path (dp) to NoC '.format(lane)
-  pLine = pLine + '\n   input                                             noc__cntl__dp_ready      ; '.format(lane)
-  pLine = pLine + '\n   output[`STREAMING_OP_CNTL_STRM_CNTL_RANGE       ] cntl__noc__dp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   output [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__dp_type       ; '.format(lane)
-  pLine = pLine + '\n   output [`PE_PE_ID_RANGE                         ] cntl__noc__dp_peId       ; '.format(lane)
-  pLine = pLine + '\n   output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__dp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   output                                            cntl__noc__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   output[`STREAMING_OP_CNTL_DATA_RANGE            ] cntl__noc__dp_data       ; '.format(lane)
-  pLine = pLine + '\n   output                                            cntl__noc__dp_valid      ; '.format(lane)
+  pLine = pLine + '\n   input                                             noc__scntl__dp_ready      ; '.format(lane)
+  pLine = pLine + '\n   output[`STREAMING_OP_CNTL_STRM_CNTL_RANGE       ] scntl__noc__dp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   output [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__dp_type       ; '.format(lane)
+  pLine = pLine + '\n   output [`PE_PE_ID_RANGE                         ] scntl__noc__dp_peId       ; '.format(lane)
+  pLine = pLine + '\n   output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__dp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   output                                            scntl__noc__dp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   output[`STREAMING_OP_CNTL_DATA_RANGE            ] scntl__noc__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   output                                            scntl__noc__dp_valid      ; '.format(lane)
   pLine = pLine + '\n   // Aggregate Data-path (dp) from NoC '.format(lane)
-  pLine = pLine + '\n   output                                            cntl__noc__dp_ready      ; '.format(lane)
-  pLine = pLine + '\n   input [`STREAMING_OP_CNTL_STRM_CNTL_RANGE       ] noc__cntl__dp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; '.format(lane)
-  pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   input                                             noc__cntl__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   input [`STREAMING_OP_CNTL_DATA_RANGE            ] noc__cntl__dp_data       ; '.format(lane)
-  pLine = pLine + '\n   input                                             noc__cntl__dp_valid      ; '.format(lane)
+  pLine = pLine + '\n   output                                            scntl__noc__dp_ready      ; '.format(lane)
+  pLine = pLine + '\n   input [`STREAMING_OP_CNTL_STRM_CNTL_RANGE       ] noc__scntl__dp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__dp_type       ; '.format(lane)
+  pLine = pLine + '\n   input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__dp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   input                                             noc__scntl__dp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   input [`STREAMING_OP_CNTL_DATA_RANGE            ] noc__scntl__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   input                                             noc__scntl__dp_valid      ; '.format(lane)
   pLine = pLine + '\n'
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n   // lane{0} from NoC '.format(lane)
@@ -2275,53 +2275,53 @@ if __name__ == "__main__":
   pLine = ""
 
   pLine = pLine + '\n   // Aggregate Control-Path (cp) to NoC '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__cp_ready      ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] cntl__noc__cp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__cp_type       ; '.format(lane)
-  pLine = pLine + '\n   reg  [`PE_NOC_INTERNAL_DATA_RANGE             ] cntl__noc__cp_data       ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__cp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   reg                                             cntl__noc__cp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   reg                                             cntl__noc__cp_valid      ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__cp_ready      ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] scntl__noc__cp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__cp_type       ; '.format(lane)
+  pLine = pLine + '\n   reg  [`PE_NOC_INTERNAL_DATA_RANGE             ] scntl__noc__cp_data       ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__cp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   reg                                             scntl__noc__cp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   reg                                             scntl__noc__cp_valid      ; '.format(lane)
   # We have a big mux at the output so add a register stage
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] cntl__noc__cp_cntl_p1    ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__cp_type_p1    ; '.format(lane)
-  pLine = pLine + '\n   reg  [`PE_NOC_INTERNAL_DATA_RANGE             ] cntl__noc__cp_data_p1    ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__cp_laneId_p1  ; '.format(lane)
-  pLine = pLine + '\n   reg                                             cntl__noc__cp_strmId_p1  ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] scntl__noc__cp_cntl_p1    ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__cp_type_p1    ; '.format(lane)
+  pLine = pLine + '\n   reg  [`PE_NOC_INTERNAL_DATA_RANGE             ] scntl__noc__cp_data_p1    ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__cp_laneId_p1  ; '.format(lane)
+  pLine = pLine + '\n   reg                                             scntl__noc__cp_strmId_p1  ; '.format(lane)
   pLine = pLine + '\n   // Aggregate Control-Path (cp) from NoC '.format(lane)
-  pLine = pLine + '\n   reg                                             cntl__noc__cp_ready      ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__cp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__cp_type       ; '.format(lane)
-  pLine = pLine + '\n   wire [`PE_NOC_INTERNAL_DATA_RANGE             ] noc__cntl__cp_data       ; '.format(lane)
-  pLine = pLine + '\n   wire [`PE_PE_ID_RANGE                         ] noc__cntl__cp_peId       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__cp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__cp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__cp_valid      ; '.format(lane)
+  pLine = pLine + '\n   reg                                             scntl__noc__cp_ready      ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__cp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__cp_type       ; '.format(lane)
+  pLine = pLine + '\n   wire [`PE_NOC_INTERNAL_DATA_RANGE             ] noc__scntl__cp_data       ; '.format(lane)
+  pLine = pLine + '\n   wire [`PE_PE_ID_RANGE                         ] noc__scntl__cp_peId       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__cp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__cp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__cp_valid      ; '.format(lane)
   pLine = pLine + '\n'
   pLine = pLine + '\n   // Aggregate Data-Path (dp) to NoC '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__dp_ready      ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] cntl__noc__dp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__dp_type       ; '.format(lane)
-  pLine = pLine + '\n   reg  [`PE_PE_ID_RANGE                         ] cntl__noc__dp_peId       ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__dp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   reg                                             cntl__noc__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_DATA_RANGE           ] cntl__noc__dp_data       ; '.format(lane)
-  pLine = pLine + '\n   reg                                             cntl__noc__dp_valid      ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__dp_ready      ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] scntl__noc__dp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__dp_type       ; '.format(lane)
+  pLine = pLine + '\n   reg  [`PE_PE_ID_RANGE                         ] scntl__noc__dp_peId       ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__dp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   reg                                             scntl__noc__dp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_DATA_RANGE           ] scntl__noc__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   reg                                             scntl__noc__dp_valid      ; '.format(lane)
   # We have a big mux at the output so add a register stage
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] cntl__noc__dp_cntl_p1    ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__dp_type_p1    ; '.format(lane)
-  pLine = pLine + '\n   reg  [`PE_PE_ID_RANGE                         ] cntl__noc__dp_peId_p1    ; '.format(lane)
-  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__dp_laneId_p1  ; '.format(lane)
-  pLine = pLine + '\n   reg                                             cntl__noc__dp_strmId_p1  ; '.format(lane)
-  pLine = pLine + '\n   reg  [`PE_NOC_INTERNAL_DATA_RANGE             ] cntl__noc__dp_data_p1    ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] scntl__noc__dp_cntl_p1    ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__dp_type_p1    ; '.format(lane)
+  pLine = pLine + '\n   reg  [`PE_PE_ID_RANGE                         ] scntl__noc__dp_peId_p1    ; '.format(lane)
+  pLine = pLine + '\n   reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__dp_laneId_p1  ; '.format(lane)
+  pLine = pLine + '\n   reg                                             scntl__noc__dp_strmId_p1  ; '.format(lane)
+  pLine = pLine + '\n   reg  [`PE_NOC_INTERNAL_DATA_RANGE             ] scntl__noc__dp_data_p1    ; '.format(lane)
   pLine = pLine + '\n   // Aggregate Data-Path (dp) from NoC '.format(lane)
-  pLine = pLine + '\n   reg                                             cntl__noc__dp_ready      ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__dp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data       ; '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__dp_valid      ; '.format(lane)
+  pLine = pLine + '\n   reg                                             scntl__noc__dp_ready      ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__dp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__dp_type       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__dp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__dp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__scntl__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__dp_valid      ; '.format(lane)
   pLine = pLine + '\n'
 
   f.write(pLine)
@@ -2353,40 +2353,40 @@ if __name__ == "__main__":
   pLine = ""
 
   pLine = pLine + '\n       // Aggregate Control-Path (cp) to NoC '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__cp_ready          ( noc__cntl__cp_ready         ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__cp_cntl           ( cntl__noc__cp_cntl          ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__cp_type           ( cntl__noc__cp_type          ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__cp_data           ( cntl__noc__cp_data          ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__cp_laneId         ( cntl__noc__cp_laneId        ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__cp_strmId         ( cntl__noc__cp_strmId        ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__cp_valid          ( cntl__noc__cp_valid         ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__cp_ready          ( noc__scntl__cp_ready         ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__cp_cntl           ( scntl__noc__cp_cntl          ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__cp_type           ( scntl__noc__cp_type          ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__cp_data           ( scntl__noc__cp_data          ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__cp_laneId         ( scntl__noc__cp_laneId        ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__cp_strmId         ( scntl__noc__cp_strmId        ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__cp_valid          ( scntl__noc__cp_valid         ), '.format(lane)
   pLine = pLine + '\n       // Aggregate Data-Path (cp) from NoC '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__cp_ready          ( cntl__noc__cp_ready         ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__cp_cntl           ( noc__cntl__cp_cntl          ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__cp_type           ( noc__cntl__cp_type          ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__cp_data           ( noc__cntl__cp_data          ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__cp_peId           ( noc__cntl__cp_peId          ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__cp_laneId         ( noc__cntl__cp_laneId        ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__cp_strmId         ( noc__cntl__cp_strmId        ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__cp_valid          ( noc__cntl__cp_valid         ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__cp_ready          ( scntl__noc__cp_ready         ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__cp_cntl           ( noc__scntl__cp_cntl          ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__cp_type           ( noc__scntl__cp_type          ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__cp_data           ( noc__scntl__cp_data          ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__cp_peId           ( noc__scntl__cp_peId          ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__cp_laneId         ( noc__scntl__cp_laneId        ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__cp_strmId         ( noc__scntl__cp_strmId        ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__cp_valid          ( noc__scntl__cp_valid         ), '.format(lane)
   pLine = pLine + '\n'
   pLine = pLine + '\n       // Aggregate Data-Path (dp) to NoC '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__dp_ready          ( noc__cntl__dp_ready         ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__dp_cntl           ( cntl__noc__dp_cntl          ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__dp_type           ( cntl__noc__dp_type          ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__dp_peId           ( cntl__noc__dp_peId          ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__dp_laneId         ( cntl__noc__dp_laneId        ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__dp_strmId         ( cntl__noc__dp_strmId        ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__dp_data           ( cntl__noc__dp_data          ), '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__dp_valid          ( cntl__noc__dp_valid         ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__dp_ready          ( noc__scntl__dp_ready         ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__dp_cntl           ( scntl__noc__dp_cntl          ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__dp_type           ( scntl__noc__dp_type          ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__dp_peId           ( scntl__noc__dp_peId          ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__dp_laneId         ( scntl__noc__dp_laneId        ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__dp_strmId         ( scntl__noc__dp_strmId        ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__dp_data           ( scntl__noc__dp_data          ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__dp_valid          ( scntl__noc__dp_valid         ), '.format(lane)
   pLine = pLine + '\n       // Aggregate Data-Path (dp) from NoC '.format(lane)
-  pLine = pLine + '\n      .cntl__noc__dp_ready          ( cntl__noc__dp_ready         ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__dp_cntl           ( noc__cntl__dp_cntl          ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__dp_type           ( noc__cntl__dp_type          ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__dp_laneId         ( noc__cntl__dp_laneId        ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__dp_strmId         ( noc__cntl__dp_strmId        ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__dp_data           ( noc__cntl__dp_data          ), '.format(lane)
-  pLine = pLine + '\n      .noc__cntl__dp_valid          ( noc__cntl__dp_valid         ), '.format(lane)
+  pLine = pLine + '\n      .scntl__noc__dp_ready          ( scntl__noc__dp_ready         ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__dp_cntl           ( noc__scntl__dp_cntl          ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__dp_type           ( noc__scntl__dp_type          ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__dp_laneId         ( noc__scntl__dp_laneId        ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__dp_strmId         ( noc__scntl__dp_strmId        ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__dp_data           ( noc__scntl__dp_data          ), '.format(lane)
+  pLine = pLine + '\n      .noc__scntl__dp_valid          ( noc__scntl__dp_valid         ), '.format(lane)
   pLine = pLine + '\n'
 
   f.write(pLine)
@@ -2418,40 +2418,40 @@ if __name__ == "__main__":
   pLine = ""
 
   pLine = pLine + '\n   // Aggregate Control-Path (cp) to NoC '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__cp_ready      ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] cntl__noc__cp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__cp_type       ; '.format(lane)
-  pLine = pLine + '\n   wire [`PE_NOC_INTERNAL_DATA_RANGE             ] cntl__noc__cp_data       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__cp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   wire                                            cntl__noc__cp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   wire                                            cntl__noc__cp_valid      ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__cp_ready      ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] scntl__noc__cp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__cp_type       ; '.format(lane)
+  pLine = pLine + '\n   wire [`PE_NOC_INTERNAL_DATA_RANGE             ] scntl__noc__cp_data       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__cp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   wire                                            scntl__noc__cp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   wire                                            scntl__noc__cp_valid      ; '.format(lane)
   pLine = pLine + '\n   // Aggregate Data-Path (cp) from NoC '.format(lane)
-  pLine = pLine + '\n   wire                                            cntl__noc__cp_ready      ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__cp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__cp_type       ; '.format(lane)
-  pLine = pLine + '\n   wire [`PE_NOC_INTERNAL_DATA_RANGE             ] noc__cntl__cp_data       ; '.format(lane)
-  pLine = pLine + '\n   wire [`PE_PE_ID_RANGE                         ] noc__cntl__cp_peId       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__cp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__cp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__cp_valid      ; '.format(lane)
+  pLine = pLine + '\n   wire                                            scntl__noc__cp_ready      ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__cp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__cp_type       ; '.format(lane)
+  pLine = pLine + '\n   wire [`PE_NOC_INTERNAL_DATA_RANGE             ] noc__scntl__cp_data       ; '.format(lane)
+  pLine = pLine + '\n   wire [`PE_PE_ID_RANGE                         ] noc__scntl__cp_peId       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__cp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__cp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__cp_valid      ; '.format(lane)
   pLine = pLine + '\n'
   pLine = pLine + '\n   // Aggregate Data-Path (dp) to NoC '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__dp_ready      ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] cntl__noc__dp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__dp_type       ; '.format(lane)
-  pLine = pLine + '\n   wire [`PE_PE_ID_RANGE                         ] cntl__noc__dp_peId       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__dp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   wire                                            cntl__noc__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] cntl__noc__dp_data       ; '.format(lane)
-  pLine = pLine + '\n   wire                                            cntl__noc__dp_valid      ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__dp_ready      ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] scntl__noc__dp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__dp_type       ; '.format(lane)
+  pLine = pLine + '\n   wire [`PE_PE_ID_RANGE                         ] scntl__noc__dp_peId       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__dp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   wire                                            scntl__noc__dp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] scntl__noc__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   wire                                            scntl__noc__dp_valid      ; '.format(lane)
   pLine = pLine + '\n   // Aggregate Data-Path (dp) from NoC '.format(lane)
-  pLine = pLine + '\n   wire                                            cntl__noc__dp_ready      ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__dp_cntl       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__dp_strmId     ; '.format(lane)
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data       ; '.format(lane)
-  pLine = pLine + '\n   wire                                            noc__cntl__dp_valid      ; '.format(lane)
+  pLine = pLine + '\n   wire                                            scntl__noc__dp_ready      ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__dp_cntl       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__dp_type       ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__dp_laneId     ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__dp_strmId     ; '.format(lane)
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__scntl__dp_data       ; '.format(lane)
+  pLine = pLine + '\n   wire                                            noc__scntl__dp_valid      ; '.format(lane)
   pLine = pLine + '\n'
 
   f.write(pLine)
@@ -2617,12 +2617,12 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n        \'d{0}:'.format(lane)
     pLine = pLine + '\n        begin'
-    pLine = pLine + '\n          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; '.format(lane)
-    pLine = pLine + '\n          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; '.format(lane)
-    pLine = pLine + '\n          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; '.format(lane)
-    pLine = pLine + '\n          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; '.format(lane)
-    pLine = pLine + '\n          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; '.format(lane)
-    pLine = pLine + '\n          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; '.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; '.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; '.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; '.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; '.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; '.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; '.format(lane)
     pLine = pLine + '\n        end'
   pLine = pLine + '\n      endcase'
   pLine = pLine + '\n    end'
@@ -2657,16 +2657,16 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n        \'d{0}:'.format(lane)
     pLine = pLine + '\n        begin'
-    pLine = pLine + '\n          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane{0}_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC'.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane{0}_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC'.format(lane)
     pLine = pLine + '\n                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane{0}_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC'.format(lane)
     pLine = pLine + '\n                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane{0}_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : '.format(lane)
     pLine = pLine + '\n                                                                                                                lane{0}_fromStOp_strm_fifo_read_cntl                                        ; '.format(lane)
-    pLine = pLine + '\n          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; '.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; '.format(lane)
     pLine = pLine + '\n          // We need to use the info from the requesting PE that was captured in the stream controller'
-    pLine = pLine + '\n          cntl__noc__dp_peId_p1   = (lane{0}_fromStOp_strm_id) ? strm_control[{0}].strm1_ExternalDmaPeId   : strm_control[{0}].strm0_ExternalDmaPeId   ; // requesting PE          '.format(lane)
-    pLine = pLine + '\n          cntl__noc__dp_laneId_p1 = (lane{0}_fromStOp_strm_id) ? strm_control[{0}].strm1_ExternalDmaLaneId : strm_control[{0}].strm0_ExternalDmaLaneId ; // lane in requesting PE  '.format(lane)
-    pLine = pLine + '\n          cntl__noc__dp_strmId_p1 = (lane{0}_fromStOp_strm_id) ? strm_control[{0}].strm1_ExternalDmaStrmId : strm_control[{0}].strm0_ExternalDmaStrmId ; // stream in requesting PE'.format(lane)
-    pLine = pLine + '\n          cntl__noc__dp_data_p1   = lane{0}_fromStOp_strm_fifo_read_data ; '.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_peId_p1   = (lane{0}_fromStOp_strm_id) ? strm_control[{0}].strm1_ExternalDmaPeId   : strm_control[{0}].strm0_ExternalDmaPeId   ; // requesting PE          '.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_laneId_p1 = (lane{0}_fromStOp_strm_id) ? strm_control[{0}].strm1_ExternalDmaLaneId : strm_control[{0}].strm0_ExternalDmaLaneId ; // lane in requesting PE  '.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_strmId_p1 = (lane{0}_fromStOp_strm_id) ? strm_control[{0}].strm1_ExternalDmaStrmId : strm_control[{0}].strm0_ExternalDmaStrmId ; // stream in requesting PE'.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_data_p1   = lane{0}_fromStOp_strm_fifo_read_data ; '.format(lane)
     pLine = pLine + '\n        end'
   pLine = pLine + '\n      endcase'
   pLine = pLine + '\n    end'
@@ -2879,18 +2879,18 @@ if __name__ == "__main__":
   pLine = ""
 
   pLine = pLine + '\n  // Common (Scalar) Register(s)                '
-  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0   ;'.format(lane)
-  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1   ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs0   ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs1   ;'.format(lane)
   pLine = pLine + '\n'
   pLine = pLine + '\n  // Lane Register(s)                '
-  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
   pLine = pLine + '\n'  
  
   f.write(pLine)  
@@ -2921,20 +2921,20 @@ if __name__ == "__main__":
   pLine = ""
 
   pLine = pLine + '\n  // Common (Scalar) Register(s)                '
-  pLine = pLine + '\n  assign   simd__cntl__rs0  = cntl__simd__rs0 ;'.format(lane)
-  pLine = pLine + '\n  assign   simd__cntl__rs1  = cntl__simd__rs1 ;'.format(lane)
+  pLine = pLine + '\n  assign   simd__scntl__rs0  = cntl__simd__rs0 ;'.format(lane)
+  pLine = pLine + '\n  assign   simd__scntl__rs1  = cntl__simd__rs1 ;'.format(lane)
   pLine = pLine + '\n'
   pLine = pLine + '\n  // Lane Register(s)                '
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n// Lane {0}                 '.format(lane)
-    pLine = pLine + '\n  assign  simd__cntl__lane_r128  [{0}]   =   cntl__simd__lane_r128  [{0}]  ;'.format(lane)
-    pLine = pLine + '\n  assign  simd__cntl__lane_r129  [{0}]   =   cntl__simd__lane_r129  [{0}]  ;'.format(lane)
-    pLine = pLine + '\n  assign  simd__cntl__lane_r130  [{0}]   =   cntl__simd__lane_r130  [{0}]  ;'.format(lane)
-    pLine = pLine + '\n  assign  simd__cntl__lane_r131  [{0}]   =   cntl__simd__lane_r131  [{0}]  ;'.format(lane)
-    pLine = pLine + '\n  assign  simd__cntl__lane_r132  [{0}]   =   cntl__simd__lane_r132  [{0}]  ;'.format(lane)
-    pLine = pLine + '\n  assign  simd__cntl__lane_r133  [{0}]   =   cntl__simd__lane_r133  [{0}]  ;'.format(lane)
-    pLine = pLine + '\n  assign  simd__cntl__lane_r134  [{0}]   =   cntl__simd__lane_r134  [{0}]  ;'.format(lane)
-    pLine = pLine + '\n  assign  simd__cntl__lane_r135  [{0}]   =   cntl__simd__lane_r135  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__scntl__lane_r128  [{0}]   =   cntl__simd__lane_r128  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__scntl__lane_r129  [{0}]   =   cntl__simd__lane_r129  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__scntl__lane_r130  [{0}]   =   cntl__simd__lane_r130  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__scntl__lane_r131  [{0}]   =   cntl__simd__lane_r131  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__scntl__lane_r132  [{0}]   =   cntl__simd__lane_r132  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__scntl__lane_r133  [{0}]   =   cntl__simd__lane_r133  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__scntl__lane_r134  [{0}]   =   cntl__simd__lane_r134  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__scntl__lane_r135  [{0}]   =   cntl__simd__lane_r135  [{0}]  ;'.format(lane)
     pLine = pLine + '\n'  
   pLine = pLine + '\n'  
  
@@ -2948,18 +2948,18 @@ if __name__ == "__main__":
   pLine = ""
 
   pLine = pLine + '\n    // Common (Scalar) Register(s)                '
-  pLine = pLine + '\n            simd__cntl__rs0                  ,'.format(lane)
-  pLine = pLine + '\n            simd__cntl__rs1                  ,'.format(lane)
+  pLine = pLine + '\n            simd__scntl__rs0                  ,'.format(lane)
+  pLine = pLine + '\n            simd__scntl__rs1                  ,'.format(lane)
   pLine = pLine + '\n'
   pLine = pLine + '\n    // Lane Registers                 '.format(lane)
-  pLine = pLine + '\n            simd__cntl__lane_r128                  ,'.format(lane)
-  pLine = pLine + '\n            simd__cntl__lane_r129                  ,'.format(lane)
-  pLine = pLine + '\n            simd__cntl__lane_r130                  ,'.format(lane)
-  pLine = pLine + '\n            simd__cntl__lane_r131                  ,'.format(lane)
-  pLine = pLine + '\n            simd__cntl__lane_r132                  ,'.format(lane)
-  pLine = pLine + '\n            simd__cntl__lane_r133                  ,'.format(lane)
-  pLine = pLine + '\n            simd__cntl__lane_r134                  ,'.format(lane)
-  pLine = pLine + '\n            simd__cntl__lane_r135                  ,'.format(lane)
+  pLine = pLine + '\n            simd__scntl__lane_r128                  ,'.format(lane)
+  pLine = pLine + '\n            simd__scntl__lane_r129                  ,'.format(lane)
+  pLine = pLine + '\n            simd__scntl__lane_r130                  ,'.format(lane)
+  pLine = pLine + '\n            simd__scntl__lane_r131                  ,'.format(lane)
+  pLine = pLine + '\n            simd__scntl__lane_r132                  ,'.format(lane)
+  pLine = pLine + '\n            simd__scntl__lane_r133                  ,'.format(lane)
+  pLine = pLine + '\n            simd__scntl__lane_r134                  ,'.format(lane)
+  pLine = pLine + '\n            simd__scntl__lane_r135                  ,'.format(lane)
   pLine = pLine + '\n'
 
   f.write(pLine)
@@ -2969,18 +2969,18 @@ if __name__ == "__main__":
   pLine = ""
 
   pLine = pLine + '\n  // Common (Scalar) Register(s)                '
-  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0   ;'.format(lane)
-  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1   ;'.format(lane)
+  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs0   ;'.format(lane)
+  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs1   ;'.format(lane)
   pLine = pLine + '\n'
   pLine = pLine + '\n  // Lane Register(s)                '
-  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
   pLine = pLine + '\n'  
  
   f.write(pLine)  
@@ -2990,18 +2990,18 @@ if __name__ == "__main__":
   pLine = ""
 
   pLine = pLine + '\n            // Common (Scalar) Register(s)                '
-  pLine = pLine + '\n            .simd__cntl__rs0         ( simd__cntl__rs0        ),'.format(lane)
-  pLine = pLine + '\n            .simd__cntl__rs1         ( simd__cntl__rs1        ),'.format(lane)
+  pLine = pLine + '\n            .simd__scntl__rs0         ( simd__scntl__rs0        ),'.format(lane)
+  pLine = pLine + '\n            .simd__scntl__rs1         ( simd__scntl__rs1        ),'.format(lane)
   pLine = pLine + '\n'
   pLine = pLine + '\n            // Lane {0}             '.format(lane)
-  pLine = pLine + '\n            .simd__cntl__lane_r128   ( simd__cntl__lane_r128  ),'.format(lane)
-  pLine = pLine + '\n            .simd__cntl__lane_r129   ( simd__cntl__lane_r129  ),'.format(lane)
-  pLine = pLine + '\n            .simd__cntl__lane_r130   ( simd__cntl__lane_r130  ),'.format(lane)
-  pLine = pLine + '\n            .simd__cntl__lane_r131   ( simd__cntl__lane_r131  ),'.format(lane)
-  pLine = pLine + '\n            .simd__cntl__lane_r132   ( simd__cntl__lane_r132  ),'.format(lane)
-  pLine = pLine + '\n            .simd__cntl__lane_r133   ( simd__cntl__lane_r133  ),'.format(lane)
-  pLine = pLine + '\n            .simd__cntl__lane_r134   ( simd__cntl__lane_r134  ),'.format(lane)
-  pLine = pLine + '\n            .simd__cntl__lane_r135   ( simd__cntl__lane_r135  ),'.format(lane)
+  pLine = pLine + '\n            .simd__scntl__lane_r128   ( simd__scntl__lane_r128  ),'.format(lane)
+  pLine = pLine + '\n            .simd__scntl__lane_r129   ( simd__scntl__lane_r129  ),'.format(lane)
+  pLine = pLine + '\n            .simd__scntl__lane_r130   ( simd__scntl__lane_r130  ),'.format(lane)
+  pLine = pLine + '\n            .simd__scntl__lane_r131   ( simd__scntl__lane_r131  ),'.format(lane)
+  pLine = pLine + '\n            .simd__scntl__lane_r132   ( simd__scntl__lane_r132  ),'.format(lane)
+  pLine = pLine + '\n            .simd__scntl__lane_r133   ( simd__scntl__lane_r133  ),'.format(lane)
+  pLine = pLine + '\n            .simd__scntl__lane_r134   ( simd__scntl__lane_r134  ),'.format(lane)
+  pLine = pLine + '\n            .simd__scntl__lane_r135   ( simd__scntl__lane_r135  ),'.format(lane)
   pLine = pLine + '\n'
 
   f.write(pLine)
@@ -3014,17 +3014,17 @@ if __name__ == "__main__":
   f = open('../HDL/common/pe_simd_instance_wires.vh', 'w')
   pLine = ""
   # always create 16 sets of wires for the testbench
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0  ;'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1  ;'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs0  ;'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs1  ;'.format(lane)
   pLine = pLine + '\n'
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
   pLine = pLine + '\n'
 
 
@@ -3034,17 +3034,17 @@ if __name__ == "__main__":
   f = open('../HDL/common/streamingOps_cntl_simd_wires.vh', 'w')
   pLine = ""
   # always create 16 sets of wires for the testbench
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0  ;'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1  ;'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs0  ;'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs1  ;'.format(lane)
   pLine = pLine + '\n'
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
   pLine = pLine + '\n'
 
   pLine = ""
@@ -3070,34 +3070,34 @@ if __name__ == "__main__":
   f = open('../HDL/common/streamingOps_cntl_simd_assignments.vh', 'w')
   pLine = ""
   # always create 16 sets of wires for the testbench
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0  ;'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1  ;'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs0  ;'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs1  ;'.format(lane)
   pLine = pLine + '\n'
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
   pLine = pLine + '\n'
 
   pLine = ""
   # always create 16 sets of wires for the testbench
-  pLine = pLine + '\n  assign   rs0  = simd__cntl__rs0 ;'.format(lane)
-  pLine = pLine + '\n  assign   rs1  = simd__cntl__rs1 ;'.format(lane)
+  pLine = pLine + '\n  assign   rs0  = simd__scntl__rs0 ;'.format(lane)
+  pLine = pLine + '\n  assign   rs1  = simd__scntl__rs1 ;'.format(lane)
   pLine = pLine + '\n'
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n// Lane {0}                 '.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r128  =  simd__cntl__lane_r128 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r129  =  simd__cntl__lane_r129 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r130  =  simd__cntl__lane_r130 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r131  =  simd__cntl__lane_r131 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r132  =  simd__cntl__lane_r132 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r133  =  simd__cntl__lane_r133 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r134  =  simd__cntl__lane_r134 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r135  =  simd__cntl__lane_r135 [{0}] ;'.format(lane)
+    pLine = pLine + '\n  assign   lane{0}_r128  =  simd__scntl__lane_r128 [{0}] ;'.format(lane)
+    pLine = pLine + '\n  assign   lane{0}_r129  =  simd__scntl__lane_r129 [{0}] ;'.format(lane)
+    pLine = pLine + '\n  assign   lane{0}_r130  =  simd__scntl__lane_r130 [{0}] ;'.format(lane)
+    pLine = pLine + '\n  assign   lane{0}_r131  =  simd__scntl__lane_r131 [{0}] ;'.format(lane)
+    pLine = pLine + '\n  assign   lane{0}_r132  =  simd__scntl__lane_r132 [{0}] ;'.format(lane)
+    pLine = pLine + '\n  assign   lane{0}_r133  =  simd__scntl__lane_r133 [{0}] ;'.format(lane)
+    pLine = pLine + '\n  assign   lane{0}_r134  =  simd__scntl__lane_r134 [{0}] ;'.format(lane)
+    pLine = pLine + '\n  assign   lane{0}_r135  =  simd__scntl__lane_r135 [{0}] ;'.format(lane)
     pLine = pLine + '\n'
 
   f.write(pLine)

@@ -1,39 +1,39 @@
 
    // Aggregate Control-path (cp) to NoC 
-   input                                             noc__cntl__cp_ready      ; 
-   output [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] cntl__noc__cp_cntl       ; 
-   output [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__cp_type       ; 
-   output [`PE_NOC_INTERNAL_DATA_RANGE             ] cntl__noc__cp_data       ; 
-   output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__cp_laneId     ; 
-   output                                            cntl__noc__cp_strmId     ; 
-   output                                            cntl__noc__cp_valid      ; 
+   input                                             noc__scntl__cp_ready      ; 
+   output [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] scntl__noc__cp_cntl       ; 
+   output [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__cp_type       ; 
+   output [`PE_NOC_INTERNAL_DATA_RANGE             ] scntl__noc__cp_data       ; 
+   output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__cp_laneId     ; 
+   output                                            scntl__noc__cp_strmId     ; 
+   output                                            scntl__noc__cp_valid      ; 
    // Aggregate Data-path (cp) from NoC 
-   output                                            cntl__noc__cp_ready      ; 
-   input  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__cp_cntl       ; 
-   input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__cp_type       ; 
-   input  [`PE_NOC_INTERNAL_DATA_RANGE             ] noc__cntl__cp_data       ; 
-   input  [`PE_PE_ID_RANGE                         ] noc__cntl__cp_peId       ; 
-   input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__cp_laneId     ; 
-   input                                             noc__cntl__cp_strmId     ; 
-   input                                             noc__cntl__cp_valid      ; 
+   output                                            scntl__noc__cp_ready      ; 
+   input  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__cp_cntl       ; 
+   input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__cp_type       ; 
+   input  [`PE_NOC_INTERNAL_DATA_RANGE             ] noc__scntl__cp_data       ; 
+   input  [`PE_PE_ID_RANGE                         ] noc__scntl__cp_peId       ; 
+   input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__cp_laneId     ; 
+   input                                             noc__scntl__cp_strmId     ; 
+   input                                             noc__scntl__cp_valid      ; 
 
    // Aggregate Data-path (dp) to NoC 
-   input                                             noc__cntl__dp_ready      ; 
-   output[`STREAMING_OP_CNTL_STRM_CNTL_RANGE       ] cntl__noc__dp_cntl       ; 
-   output [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__dp_type       ; 
-   output [`PE_PE_ID_RANGE                         ] cntl__noc__dp_peId       ; 
-   output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__dp_laneId     ; 
-   output                                            cntl__noc__dp_strmId     ; 
-   output[`STREAMING_OP_CNTL_DATA_RANGE            ] cntl__noc__dp_data       ; 
-   output                                            cntl__noc__dp_valid      ; 
+   input                                             noc__scntl__dp_ready      ; 
+   output[`STREAMING_OP_CNTL_STRM_CNTL_RANGE       ] scntl__noc__dp_cntl       ; 
+   output [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__dp_type       ; 
+   output [`PE_PE_ID_RANGE                         ] scntl__noc__dp_peId       ; 
+   output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__dp_laneId     ; 
+   output                                            scntl__noc__dp_strmId     ; 
+   output[`STREAMING_OP_CNTL_DATA_RANGE            ] scntl__noc__dp_data       ; 
+   output                                            scntl__noc__dp_valid      ; 
    // Aggregate Data-path (dp) from NoC 
-   output                                            cntl__noc__dp_ready      ; 
-   input [`STREAMING_OP_CNTL_STRM_CNTL_RANGE       ] noc__cntl__dp_cntl       ; 
-   input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; 
-   input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; 
-   input                                             noc__cntl__dp_strmId     ; 
-   input [`STREAMING_OP_CNTL_DATA_RANGE            ] noc__cntl__dp_data       ; 
-   input                                             noc__cntl__dp_valid      ; 
+   output                                            scntl__noc__dp_ready      ; 
+   input [`STREAMING_OP_CNTL_STRM_CNTL_RANGE       ] noc__scntl__dp_cntl       ; 
+   input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__dp_type       ; 
+   input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__dp_laneId     ; 
+   input                                             noc__scntl__dp_strmId     ; 
+   input [`STREAMING_OP_CNTL_DATA_RANGE            ] noc__scntl__dp_data       ; 
+   input                                             noc__scntl__dp_valid      ; 
 
    // lane0 from NoC 
    input                                            sdp__cntl__lane0_strm_ready      ; 

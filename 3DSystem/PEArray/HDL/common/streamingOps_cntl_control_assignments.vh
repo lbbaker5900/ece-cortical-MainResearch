@@ -67,258 +67,258 @@
   assign cntl__sdp__lane30_dma_operation = rs0[31:1]                                      ; 
   assign cntl__sdp__lane31_dma_operation = rs0[31:1]                                      ; 
 
-  assign cntl__sdp__lane0_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane0_strm0_stOp_enable    = strm_control[0].strm0_stOp_enable     ; 
-  assign strm_control[0].strm0_stOp_ready      = sdp__cntl__lane0_strm0_stOp_ready     ; 
-  assign strm_control[0].strm0_stOp_complete   = sdp__cntl__lane0_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane0_strm1_stOp_enable    = strm_control[0].strm1_stOp_enable     ; 
-  assign strm_control[0].strm1_stOp_ready      = sdp__cntl__lane0_strm1_stOp_ready     ; 
-  assign strm_control[0].strm1_stOp_complete   = sdp__cntl__lane0_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane1_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane1_strm0_stOp_enable    = strm_control[1].strm0_stOp_enable     ; 
-  assign strm_control[1].strm0_stOp_ready      = sdp__cntl__lane1_strm0_stOp_ready     ; 
-  assign strm_control[1].strm0_stOp_complete   = sdp__cntl__lane1_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane1_strm1_stOp_enable    = strm_control[1].strm1_stOp_enable     ; 
-  assign strm_control[1].strm1_stOp_ready      = sdp__cntl__lane1_strm1_stOp_ready     ; 
-  assign strm_control[1].strm1_stOp_complete   = sdp__cntl__lane1_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane2_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane2_strm0_stOp_enable    = strm_control[2].strm0_stOp_enable     ; 
-  assign strm_control[2].strm0_stOp_ready      = sdp__cntl__lane2_strm0_stOp_ready     ; 
-  assign strm_control[2].strm0_stOp_complete   = sdp__cntl__lane2_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane2_strm1_stOp_enable    = strm_control[2].strm1_stOp_enable     ; 
-  assign strm_control[2].strm1_stOp_ready      = sdp__cntl__lane2_strm1_stOp_ready     ; 
-  assign strm_control[2].strm1_stOp_complete   = sdp__cntl__lane2_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane3_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane3_strm0_stOp_enable    = strm_control[3].strm0_stOp_enable     ; 
-  assign strm_control[3].strm0_stOp_ready      = sdp__cntl__lane3_strm0_stOp_ready     ; 
-  assign strm_control[3].strm0_stOp_complete   = sdp__cntl__lane3_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane3_strm1_stOp_enable    = strm_control[3].strm1_stOp_enable     ; 
-  assign strm_control[3].strm1_stOp_ready      = sdp__cntl__lane3_strm1_stOp_ready     ; 
-  assign strm_control[3].strm1_stOp_complete   = sdp__cntl__lane3_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane4_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane4_strm0_stOp_enable    = strm_control[4].strm0_stOp_enable     ; 
-  assign strm_control[4].strm0_stOp_ready      = sdp__cntl__lane4_strm0_stOp_ready     ; 
-  assign strm_control[4].strm0_stOp_complete   = sdp__cntl__lane4_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane4_strm1_stOp_enable    = strm_control[4].strm1_stOp_enable     ; 
-  assign strm_control[4].strm1_stOp_ready      = sdp__cntl__lane4_strm1_stOp_ready     ; 
-  assign strm_control[4].strm1_stOp_complete   = sdp__cntl__lane4_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane5_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane5_strm0_stOp_enable    = strm_control[5].strm0_stOp_enable     ; 
-  assign strm_control[5].strm0_stOp_ready      = sdp__cntl__lane5_strm0_stOp_ready     ; 
-  assign strm_control[5].strm0_stOp_complete   = sdp__cntl__lane5_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane5_strm1_stOp_enable    = strm_control[5].strm1_stOp_enable     ; 
-  assign strm_control[5].strm1_stOp_ready      = sdp__cntl__lane5_strm1_stOp_ready     ; 
-  assign strm_control[5].strm1_stOp_complete   = sdp__cntl__lane5_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane6_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane6_strm0_stOp_enable    = strm_control[6].strm0_stOp_enable     ; 
-  assign strm_control[6].strm0_stOp_ready      = sdp__cntl__lane6_strm0_stOp_ready     ; 
-  assign strm_control[6].strm0_stOp_complete   = sdp__cntl__lane6_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane6_strm1_stOp_enable    = strm_control[6].strm1_stOp_enable     ; 
-  assign strm_control[6].strm1_stOp_ready      = sdp__cntl__lane6_strm1_stOp_ready     ; 
-  assign strm_control[6].strm1_stOp_complete   = sdp__cntl__lane6_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane7_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane7_strm0_stOp_enable    = strm_control[7].strm0_stOp_enable     ; 
-  assign strm_control[7].strm0_stOp_ready      = sdp__cntl__lane7_strm0_stOp_ready     ; 
-  assign strm_control[7].strm0_stOp_complete   = sdp__cntl__lane7_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane7_strm1_stOp_enable    = strm_control[7].strm1_stOp_enable     ; 
-  assign strm_control[7].strm1_stOp_ready      = sdp__cntl__lane7_strm1_stOp_ready     ; 
-  assign strm_control[7].strm1_stOp_complete   = sdp__cntl__lane7_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane8_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane8_strm0_stOp_enable    = strm_control[8].strm0_stOp_enable     ; 
-  assign strm_control[8].strm0_stOp_ready      = sdp__cntl__lane8_strm0_stOp_ready     ; 
-  assign strm_control[8].strm0_stOp_complete   = sdp__cntl__lane8_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane8_strm1_stOp_enable    = strm_control[8].strm1_stOp_enable     ; 
-  assign strm_control[8].strm1_stOp_ready      = sdp__cntl__lane8_strm1_stOp_ready     ; 
-  assign strm_control[8].strm1_stOp_complete   = sdp__cntl__lane8_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane9_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane9_strm0_stOp_enable    = strm_control[9].strm0_stOp_enable     ; 
-  assign strm_control[9].strm0_stOp_ready      = sdp__cntl__lane9_strm0_stOp_ready     ; 
-  assign strm_control[9].strm0_stOp_complete   = sdp__cntl__lane9_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane9_strm1_stOp_enable    = strm_control[9].strm1_stOp_enable     ; 
-  assign strm_control[9].strm1_stOp_ready      = sdp__cntl__lane9_strm1_stOp_ready     ; 
-  assign strm_control[9].strm1_stOp_complete   = sdp__cntl__lane9_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane10_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane10_strm0_stOp_enable    = strm_control[10].strm0_stOp_enable     ; 
-  assign strm_control[10].strm0_stOp_ready      = sdp__cntl__lane10_strm0_stOp_ready     ; 
-  assign strm_control[10].strm0_stOp_complete   = sdp__cntl__lane10_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane10_strm1_stOp_enable    = strm_control[10].strm1_stOp_enable     ; 
-  assign strm_control[10].strm1_stOp_ready      = sdp__cntl__lane10_strm1_stOp_ready     ; 
-  assign strm_control[10].strm1_stOp_complete   = sdp__cntl__lane10_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane11_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane11_strm0_stOp_enable    = strm_control[11].strm0_stOp_enable     ; 
-  assign strm_control[11].strm0_stOp_ready      = sdp__cntl__lane11_strm0_stOp_ready     ; 
-  assign strm_control[11].strm0_stOp_complete   = sdp__cntl__lane11_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane11_strm1_stOp_enable    = strm_control[11].strm1_stOp_enable     ; 
-  assign strm_control[11].strm1_stOp_ready      = sdp__cntl__lane11_strm1_stOp_ready     ; 
-  assign strm_control[11].strm1_stOp_complete   = sdp__cntl__lane11_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane12_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane12_strm0_stOp_enable    = strm_control[12].strm0_stOp_enable     ; 
-  assign strm_control[12].strm0_stOp_ready      = sdp__cntl__lane12_strm0_stOp_ready     ; 
-  assign strm_control[12].strm0_stOp_complete   = sdp__cntl__lane12_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane12_strm1_stOp_enable    = strm_control[12].strm1_stOp_enable     ; 
-  assign strm_control[12].strm1_stOp_ready      = sdp__cntl__lane12_strm1_stOp_ready     ; 
-  assign strm_control[12].strm1_stOp_complete   = sdp__cntl__lane12_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane13_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane13_strm0_stOp_enable    = strm_control[13].strm0_stOp_enable     ; 
-  assign strm_control[13].strm0_stOp_ready      = sdp__cntl__lane13_strm0_stOp_ready     ; 
-  assign strm_control[13].strm0_stOp_complete   = sdp__cntl__lane13_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane13_strm1_stOp_enable    = strm_control[13].strm1_stOp_enable     ; 
-  assign strm_control[13].strm1_stOp_ready      = sdp__cntl__lane13_strm1_stOp_ready     ; 
-  assign strm_control[13].strm1_stOp_complete   = sdp__cntl__lane13_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane14_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane14_strm0_stOp_enable    = strm_control[14].strm0_stOp_enable     ; 
-  assign strm_control[14].strm0_stOp_ready      = sdp__cntl__lane14_strm0_stOp_ready     ; 
-  assign strm_control[14].strm0_stOp_complete   = sdp__cntl__lane14_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane14_strm1_stOp_enable    = strm_control[14].strm1_stOp_enable     ; 
-  assign strm_control[14].strm1_stOp_ready      = sdp__cntl__lane14_strm1_stOp_ready     ; 
-  assign strm_control[14].strm1_stOp_complete   = sdp__cntl__lane14_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane15_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane15_strm0_stOp_enable    = strm_control[15].strm0_stOp_enable     ; 
-  assign strm_control[15].strm0_stOp_ready      = sdp__cntl__lane15_strm0_stOp_ready     ; 
-  assign strm_control[15].strm0_stOp_complete   = sdp__cntl__lane15_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane15_strm1_stOp_enable    = strm_control[15].strm1_stOp_enable     ; 
-  assign strm_control[15].strm1_stOp_ready      = sdp__cntl__lane15_strm1_stOp_ready     ; 
-  assign strm_control[15].strm1_stOp_complete   = sdp__cntl__lane15_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane16_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane16_strm0_stOp_enable    = strm_control[16].strm0_stOp_enable     ; 
-  assign strm_control[16].strm0_stOp_ready      = sdp__cntl__lane16_strm0_stOp_ready     ; 
-  assign strm_control[16].strm0_stOp_complete   = sdp__cntl__lane16_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane16_strm1_stOp_enable    = strm_control[16].strm1_stOp_enable     ; 
-  assign strm_control[16].strm1_stOp_ready      = sdp__cntl__lane16_strm1_stOp_ready     ; 
-  assign strm_control[16].strm1_stOp_complete   = sdp__cntl__lane16_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane17_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane17_strm0_stOp_enable    = strm_control[17].strm0_stOp_enable     ; 
-  assign strm_control[17].strm0_stOp_ready      = sdp__cntl__lane17_strm0_stOp_ready     ; 
-  assign strm_control[17].strm0_stOp_complete   = sdp__cntl__lane17_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane17_strm1_stOp_enable    = strm_control[17].strm1_stOp_enable     ; 
-  assign strm_control[17].strm1_stOp_ready      = sdp__cntl__lane17_strm1_stOp_ready     ; 
-  assign strm_control[17].strm1_stOp_complete   = sdp__cntl__lane17_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane18_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane18_strm0_stOp_enable    = strm_control[18].strm0_stOp_enable     ; 
-  assign strm_control[18].strm0_stOp_ready      = sdp__cntl__lane18_strm0_stOp_ready     ; 
-  assign strm_control[18].strm0_stOp_complete   = sdp__cntl__lane18_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane18_strm1_stOp_enable    = strm_control[18].strm1_stOp_enable     ; 
-  assign strm_control[18].strm1_stOp_ready      = sdp__cntl__lane18_strm1_stOp_ready     ; 
-  assign strm_control[18].strm1_stOp_complete   = sdp__cntl__lane18_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane19_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane19_strm0_stOp_enable    = strm_control[19].strm0_stOp_enable     ; 
-  assign strm_control[19].strm0_stOp_ready      = sdp__cntl__lane19_strm0_stOp_ready     ; 
-  assign strm_control[19].strm0_stOp_complete   = sdp__cntl__lane19_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane19_strm1_stOp_enable    = strm_control[19].strm1_stOp_enable     ; 
-  assign strm_control[19].strm1_stOp_ready      = sdp__cntl__lane19_strm1_stOp_ready     ; 
-  assign strm_control[19].strm1_stOp_complete   = sdp__cntl__lane19_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane20_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane20_strm0_stOp_enable    = strm_control[20].strm0_stOp_enable     ; 
-  assign strm_control[20].strm0_stOp_ready      = sdp__cntl__lane20_strm0_stOp_ready     ; 
-  assign strm_control[20].strm0_stOp_complete   = sdp__cntl__lane20_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane20_strm1_stOp_enable    = strm_control[20].strm1_stOp_enable     ; 
-  assign strm_control[20].strm1_stOp_ready      = sdp__cntl__lane20_strm1_stOp_ready     ; 
-  assign strm_control[20].strm1_stOp_complete   = sdp__cntl__lane20_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane21_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane21_strm0_stOp_enable    = strm_control[21].strm0_stOp_enable     ; 
-  assign strm_control[21].strm0_stOp_ready      = sdp__cntl__lane21_strm0_stOp_ready     ; 
-  assign strm_control[21].strm0_stOp_complete   = sdp__cntl__lane21_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane21_strm1_stOp_enable    = strm_control[21].strm1_stOp_enable     ; 
-  assign strm_control[21].strm1_stOp_ready      = sdp__cntl__lane21_strm1_stOp_ready     ; 
-  assign strm_control[21].strm1_stOp_complete   = sdp__cntl__lane21_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane22_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane22_strm0_stOp_enable    = strm_control[22].strm0_stOp_enable     ; 
-  assign strm_control[22].strm0_stOp_ready      = sdp__cntl__lane22_strm0_stOp_ready     ; 
-  assign strm_control[22].strm0_stOp_complete   = sdp__cntl__lane22_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane22_strm1_stOp_enable    = strm_control[22].strm1_stOp_enable     ; 
-  assign strm_control[22].strm1_stOp_ready      = sdp__cntl__lane22_strm1_stOp_ready     ; 
-  assign strm_control[22].strm1_stOp_complete   = sdp__cntl__lane22_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane23_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane23_strm0_stOp_enable    = strm_control[23].strm0_stOp_enable     ; 
-  assign strm_control[23].strm0_stOp_ready      = sdp__cntl__lane23_strm0_stOp_ready     ; 
-  assign strm_control[23].strm0_stOp_complete   = sdp__cntl__lane23_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane23_strm1_stOp_enable    = strm_control[23].strm1_stOp_enable     ; 
-  assign strm_control[23].strm1_stOp_ready      = sdp__cntl__lane23_strm1_stOp_ready     ; 
-  assign strm_control[23].strm1_stOp_complete   = sdp__cntl__lane23_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane24_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane24_strm0_stOp_enable    = strm_control[24].strm0_stOp_enable     ; 
-  assign strm_control[24].strm0_stOp_ready      = sdp__cntl__lane24_strm0_stOp_ready     ; 
-  assign strm_control[24].strm0_stOp_complete   = sdp__cntl__lane24_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane24_strm1_stOp_enable    = strm_control[24].strm1_stOp_enable     ; 
-  assign strm_control[24].strm1_stOp_ready      = sdp__cntl__lane24_strm1_stOp_ready     ; 
-  assign strm_control[24].strm1_stOp_complete   = sdp__cntl__lane24_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane25_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane25_strm0_stOp_enable    = strm_control[25].strm0_stOp_enable     ; 
-  assign strm_control[25].strm0_stOp_ready      = sdp__cntl__lane25_strm0_stOp_ready     ; 
-  assign strm_control[25].strm0_stOp_complete   = sdp__cntl__lane25_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane25_strm1_stOp_enable    = strm_control[25].strm1_stOp_enable     ; 
-  assign strm_control[25].strm1_stOp_ready      = sdp__cntl__lane25_strm1_stOp_ready     ; 
-  assign strm_control[25].strm1_stOp_complete   = sdp__cntl__lane25_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane26_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane26_strm0_stOp_enable    = strm_control[26].strm0_stOp_enable     ; 
-  assign strm_control[26].strm0_stOp_ready      = sdp__cntl__lane26_strm0_stOp_ready     ; 
-  assign strm_control[26].strm0_stOp_complete   = sdp__cntl__lane26_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane26_strm1_stOp_enable    = strm_control[26].strm1_stOp_enable     ; 
-  assign strm_control[26].strm1_stOp_ready      = sdp__cntl__lane26_strm1_stOp_ready     ; 
-  assign strm_control[26].strm1_stOp_complete   = sdp__cntl__lane26_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane27_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane27_strm0_stOp_enable    = strm_control[27].strm0_stOp_enable     ; 
-  assign strm_control[27].strm0_stOp_ready      = sdp__cntl__lane27_strm0_stOp_ready     ; 
-  assign strm_control[27].strm0_stOp_complete   = sdp__cntl__lane27_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane27_strm1_stOp_enable    = strm_control[27].strm1_stOp_enable     ; 
-  assign strm_control[27].strm1_stOp_ready      = sdp__cntl__lane27_strm1_stOp_ready     ; 
-  assign strm_control[27].strm1_stOp_complete   = sdp__cntl__lane27_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane28_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane28_strm0_stOp_enable    = strm_control[28].strm0_stOp_enable     ; 
-  assign strm_control[28].strm0_stOp_ready      = sdp__cntl__lane28_strm0_stOp_ready     ; 
-  assign strm_control[28].strm0_stOp_complete   = sdp__cntl__lane28_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane28_strm1_stOp_enable    = strm_control[28].strm1_stOp_enable     ; 
-  assign strm_control[28].strm1_stOp_ready      = sdp__cntl__lane28_strm1_stOp_ready     ; 
-  assign strm_control[28].strm1_stOp_complete   = sdp__cntl__lane28_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane29_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane29_strm0_stOp_enable    = strm_control[29].strm0_stOp_enable     ; 
-  assign strm_control[29].strm0_stOp_ready      = sdp__cntl__lane29_strm0_stOp_ready     ; 
-  assign strm_control[29].strm0_stOp_complete   = sdp__cntl__lane29_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane29_strm1_stOp_enable    = strm_control[29].strm1_stOp_enable     ; 
-  assign strm_control[29].strm1_stOp_ready      = sdp__cntl__lane29_strm1_stOp_ready     ; 
-  assign strm_control[29].strm1_stOp_complete   = sdp__cntl__lane29_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane30_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane30_strm0_stOp_enable    = strm_control[30].strm0_stOp_enable     ; 
-  assign strm_control[30].strm0_stOp_ready      = sdp__cntl__lane30_strm0_stOp_ready     ; 
-  assign strm_control[30].strm0_stOp_complete   = sdp__cntl__lane30_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane30_strm1_stOp_enable    = strm_control[30].strm1_stOp_enable     ; 
-  assign strm_control[30].strm1_stOp_ready      = sdp__cntl__lane30_strm1_stOp_ready     ; 
-  assign strm_control[30].strm1_stOp_complete   = sdp__cntl__lane30_strm1_stOp_complete  ; 
-  assign cntl__sdp__lane31_stOp_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane31_strm0_stOp_enable    = strm_control[31].strm0_stOp_enable     ; 
-  assign strm_control[31].strm0_stOp_ready      = sdp__cntl__lane31_strm0_stOp_ready     ; 
-  assign strm_control[31].strm0_stOp_complete   = sdp__cntl__lane31_strm0_stOp_complete  ; 
-  assign cntl__sdp__lane31_strm1_stOp_enable    = strm_control[31].strm1_stOp_enable     ; 
-  assign strm_control[31].strm1_stOp_ready      = sdp__cntl__lane31_strm1_stOp_ready     ; 
-  assign strm_control[31].strm1_stOp_complete   = sdp__cntl__lane31_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane0_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane0_strm0_stOp_enable    = strm_control[0].strm0_stOp_enable     ; 
+  assign strm_control[0].strm0_stOp_ready      = sdp__scntl__lane0_strm0_stOp_ready     ; 
+  assign strm_control[0].strm0_stOp_complete   = sdp__scntl__lane0_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane0_strm1_stOp_enable    = strm_control[0].strm1_stOp_enable     ; 
+  assign strm_control[0].strm1_stOp_ready      = sdp__scntl__lane0_strm1_stOp_ready     ; 
+  assign strm_control[0].strm1_stOp_complete   = sdp__scntl__lane0_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane1_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane1_strm0_stOp_enable    = strm_control[1].strm0_stOp_enable     ; 
+  assign strm_control[1].strm0_stOp_ready      = sdp__scntl__lane1_strm0_stOp_ready     ; 
+  assign strm_control[1].strm0_stOp_complete   = sdp__scntl__lane1_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane1_strm1_stOp_enable    = strm_control[1].strm1_stOp_enable     ; 
+  assign strm_control[1].strm1_stOp_ready      = sdp__scntl__lane1_strm1_stOp_ready     ; 
+  assign strm_control[1].strm1_stOp_complete   = sdp__scntl__lane1_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane2_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane2_strm0_stOp_enable    = strm_control[2].strm0_stOp_enable     ; 
+  assign strm_control[2].strm0_stOp_ready      = sdp__scntl__lane2_strm0_stOp_ready     ; 
+  assign strm_control[2].strm0_stOp_complete   = sdp__scntl__lane2_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane2_strm1_stOp_enable    = strm_control[2].strm1_stOp_enable     ; 
+  assign strm_control[2].strm1_stOp_ready      = sdp__scntl__lane2_strm1_stOp_ready     ; 
+  assign strm_control[2].strm1_stOp_complete   = sdp__scntl__lane2_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane3_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane3_strm0_stOp_enable    = strm_control[3].strm0_stOp_enable     ; 
+  assign strm_control[3].strm0_stOp_ready      = sdp__scntl__lane3_strm0_stOp_ready     ; 
+  assign strm_control[3].strm0_stOp_complete   = sdp__scntl__lane3_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane3_strm1_stOp_enable    = strm_control[3].strm1_stOp_enable     ; 
+  assign strm_control[3].strm1_stOp_ready      = sdp__scntl__lane3_strm1_stOp_ready     ; 
+  assign strm_control[3].strm1_stOp_complete   = sdp__scntl__lane3_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane4_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane4_strm0_stOp_enable    = strm_control[4].strm0_stOp_enable     ; 
+  assign strm_control[4].strm0_stOp_ready      = sdp__scntl__lane4_strm0_stOp_ready     ; 
+  assign strm_control[4].strm0_stOp_complete   = sdp__scntl__lane4_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane4_strm1_stOp_enable    = strm_control[4].strm1_stOp_enable     ; 
+  assign strm_control[4].strm1_stOp_ready      = sdp__scntl__lane4_strm1_stOp_ready     ; 
+  assign strm_control[4].strm1_stOp_complete   = sdp__scntl__lane4_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane5_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane5_strm0_stOp_enable    = strm_control[5].strm0_stOp_enable     ; 
+  assign strm_control[5].strm0_stOp_ready      = sdp__scntl__lane5_strm0_stOp_ready     ; 
+  assign strm_control[5].strm0_stOp_complete   = sdp__scntl__lane5_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane5_strm1_stOp_enable    = strm_control[5].strm1_stOp_enable     ; 
+  assign strm_control[5].strm1_stOp_ready      = sdp__scntl__lane5_strm1_stOp_ready     ; 
+  assign strm_control[5].strm1_stOp_complete   = sdp__scntl__lane5_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane6_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane6_strm0_stOp_enable    = strm_control[6].strm0_stOp_enable     ; 
+  assign strm_control[6].strm0_stOp_ready      = sdp__scntl__lane6_strm0_stOp_ready     ; 
+  assign strm_control[6].strm0_stOp_complete   = sdp__scntl__lane6_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane6_strm1_stOp_enable    = strm_control[6].strm1_stOp_enable     ; 
+  assign strm_control[6].strm1_stOp_ready      = sdp__scntl__lane6_strm1_stOp_ready     ; 
+  assign strm_control[6].strm1_stOp_complete   = sdp__scntl__lane6_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane7_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane7_strm0_stOp_enable    = strm_control[7].strm0_stOp_enable     ; 
+  assign strm_control[7].strm0_stOp_ready      = sdp__scntl__lane7_strm0_stOp_ready     ; 
+  assign strm_control[7].strm0_stOp_complete   = sdp__scntl__lane7_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane7_strm1_stOp_enable    = strm_control[7].strm1_stOp_enable     ; 
+  assign strm_control[7].strm1_stOp_ready      = sdp__scntl__lane7_strm1_stOp_ready     ; 
+  assign strm_control[7].strm1_stOp_complete   = sdp__scntl__lane7_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane8_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane8_strm0_stOp_enable    = strm_control[8].strm0_stOp_enable     ; 
+  assign strm_control[8].strm0_stOp_ready      = sdp__scntl__lane8_strm0_stOp_ready     ; 
+  assign strm_control[8].strm0_stOp_complete   = sdp__scntl__lane8_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane8_strm1_stOp_enable    = strm_control[8].strm1_stOp_enable     ; 
+  assign strm_control[8].strm1_stOp_ready      = sdp__scntl__lane8_strm1_stOp_ready     ; 
+  assign strm_control[8].strm1_stOp_complete   = sdp__scntl__lane8_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane9_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane9_strm0_stOp_enable    = strm_control[9].strm0_stOp_enable     ; 
+  assign strm_control[9].strm0_stOp_ready      = sdp__scntl__lane9_strm0_stOp_ready     ; 
+  assign strm_control[9].strm0_stOp_complete   = sdp__scntl__lane9_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane9_strm1_stOp_enable    = strm_control[9].strm1_stOp_enable     ; 
+  assign strm_control[9].strm1_stOp_ready      = sdp__scntl__lane9_strm1_stOp_ready     ; 
+  assign strm_control[9].strm1_stOp_complete   = sdp__scntl__lane9_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane10_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane10_strm0_stOp_enable    = strm_control[10].strm0_stOp_enable     ; 
+  assign strm_control[10].strm0_stOp_ready      = sdp__scntl__lane10_strm0_stOp_ready     ; 
+  assign strm_control[10].strm0_stOp_complete   = sdp__scntl__lane10_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane10_strm1_stOp_enable    = strm_control[10].strm1_stOp_enable     ; 
+  assign strm_control[10].strm1_stOp_ready      = sdp__scntl__lane10_strm1_stOp_ready     ; 
+  assign strm_control[10].strm1_stOp_complete   = sdp__scntl__lane10_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane11_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane11_strm0_stOp_enable    = strm_control[11].strm0_stOp_enable     ; 
+  assign strm_control[11].strm0_stOp_ready      = sdp__scntl__lane11_strm0_stOp_ready     ; 
+  assign strm_control[11].strm0_stOp_complete   = sdp__scntl__lane11_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane11_strm1_stOp_enable    = strm_control[11].strm1_stOp_enable     ; 
+  assign strm_control[11].strm1_stOp_ready      = sdp__scntl__lane11_strm1_stOp_ready     ; 
+  assign strm_control[11].strm1_stOp_complete   = sdp__scntl__lane11_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane12_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane12_strm0_stOp_enable    = strm_control[12].strm0_stOp_enable     ; 
+  assign strm_control[12].strm0_stOp_ready      = sdp__scntl__lane12_strm0_stOp_ready     ; 
+  assign strm_control[12].strm0_stOp_complete   = sdp__scntl__lane12_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane12_strm1_stOp_enable    = strm_control[12].strm1_stOp_enable     ; 
+  assign strm_control[12].strm1_stOp_ready      = sdp__scntl__lane12_strm1_stOp_ready     ; 
+  assign strm_control[12].strm1_stOp_complete   = sdp__scntl__lane12_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane13_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane13_strm0_stOp_enable    = strm_control[13].strm0_stOp_enable     ; 
+  assign strm_control[13].strm0_stOp_ready      = sdp__scntl__lane13_strm0_stOp_ready     ; 
+  assign strm_control[13].strm0_stOp_complete   = sdp__scntl__lane13_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane13_strm1_stOp_enable    = strm_control[13].strm1_stOp_enable     ; 
+  assign strm_control[13].strm1_stOp_ready      = sdp__scntl__lane13_strm1_stOp_ready     ; 
+  assign strm_control[13].strm1_stOp_complete   = sdp__scntl__lane13_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane14_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane14_strm0_stOp_enable    = strm_control[14].strm0_stOp_enable     ; 
+  assign strm_control[14].strm0_stOp_ready      = sdp__scntl__lane14_strm0_stOp_ready     ; 
+  assign strm_control[14].strm0_stOp_complete   = sdp__scntl__lane14_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane14_strm1_stOp_enable    = strm_control[14].strm1_stOp_enable     ; 
+  assign strm_control[14].strm1_stOp_ready      = sdp__scntl__lane14_strm1_stOp_ready     ; 
+  assign strm_control[14].strm1_stOp_complete   = sdp__scntl__lane14_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane15_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane15_strm0_stOp_enable    = strm_control[15].strm0_stOp_enable     ; 
+  assign strm_control[15].strm0_stOp_ready      = sdp__scntl__lane15_strm0_stOp_ready     ; 
+  assign strm_control[15].strm0_stOp_complete   = sdp__scntl__lane15_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane15_strm1_stOp_enable    = strm_control[15].strm1_stOp_enable     ; 
+  assign strm_control[15].strm1_stOp_ready      = sdp__scntl__lane15_strm1_stOp_ready     ; 
+  assign strm_control[15].strm1_stOp_complete   = sdp__scntl__lane15_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane16_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane16_strm0_stOp_enable    = strm_control[16].strm0_stOp_enable     ; 
+  assign strm_control[16].strm0_stOp_ready      = sdp__scntl__lane16_strm0_stOp_ready     ; 
+  assign strm_control[16].strm0_stOp_complete   = sdp__scntl__lane16_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane16_strm1_stOp_enable    = strm_control[16].strm1_stOp_enable     ; 
+  assign strm_control[16].strm1_stOp_ready      = sdp__scntl__lane16_strm1_stOp_ready     ; 
+  assign strm_control[16].strm1_stOp_complete   = sdp__scntl__lane16_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane17_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane17_strm0_stOp_enable    = strm_control[17].strm0_stOp_enable     ; 
+  assign strm_control[17].strm0_stOp_ready      = sdp__scntl__lane17_strm0_stOp_ready     ; 
+  assign strm_control[17].strm0_stOp_complete   = sdp__scntl__lane17_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane17_strm1_stOp_enable    = strm_control[17].strm1_stOp_enable     ; 
+  assign strm_control[17].strm1_stOp_ready      = sdp__scntl__lane17_strm1_stOp_ready     ; 
+  assign strm_control[17].strm1_stOp_complete   = sdp__scntl__lane17_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane18_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane18_strm0_stOp_enable    = strm_control[18].strm0_stOp_enable     ; 
+  assign strm_control[18].strm0_stOp_ready      = sdp__scntl__lane18_strm0_stOp_ready     ; 
+  assign strm_control[18].strm0_stOp_complete   = sdp__scntl__lane18_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane18_strm1_stOp_enable    = strm_control[18].strm1_stOp_enable     ; 
+  assign strm_control[18].strm1_stOp_ready      = sdp__scntl__lane18_strm1_stOp_ready     ; 
+  assign strm_control[18].strm1_stOp_complete   = sdp__scntl__lane18_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane19_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane19_strm0_stOp_enable    = strm_control[19].strm0_stOp_enable     ; 
+  assign strm_control[19].strm0_stOp_ready      = sdp__scntl__lane19_strm0_stOp_ready     ; 
+  assign strm_control[19].strm0_stOp_complete   = sdp__scntl__lane19_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane19_strm1_stOp_enable    = strm_control[19].strm1_stOp_enable     ; 
+  assign strm_control[19].strm1_stOp_ready      = sdp__scntl__lane19_strm1_stOp_ready     ; 
+  assign strm_control[19].strm1_stOp_complete   = sdp__scntl__lane19_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane20_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane20_strm0_stOp_enable    = strm_control[20].strm0_stOp_enable     ; 
+  assign strm_control[20].strm0_stOp_ready      = sdp__scntl__lane20_strm0_stOp_ready     ; 
+  assign strm_control[20].strm0_stOp_complete   = sdp__scntl__lane20_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane20_strm1_stOp_enable    = strm_control[20].strm1_stOp_enable     ; 
+  assign strm_control[20].strm1_stOp_ready      = sdp__scntl__lane20_strm1_stOp_ready     ; 
+  assign strm_control[20].strm1_stOp_complete   = sdp__scntl__lane20_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane21_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane21_strm0_stOp_enable    = strm_control[21].strm0_stOp_enable     ; 
+  assign strm_control[21].strm0_stOp_ready      = sdp__scntl__lane21_strm0_stOp_ready     ; 
+  assign strm_control[21].strm0_stOp_complete   = sdp__scntl__lane21_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane21_strm1_stOp_enable    = strm_control[21].strm1_stOp_enable     ; 
+  assign strm_control[21].strm1_stOp_ready      = sdp__scntl__lane21_strm1_stOp_ready     ; 
+  assign strm_control[21].strm1_stOp_complete   = sdp__scntl__lane21_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane22_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane22_strm0_stOp_enable    = strm_control[22].strm0_stOp_enable     ; 
+  assign strm_control[22].strm0_stOp_ready      = sdp__scntl__lane22_strm0_stOp_ready     ; 
+  assign strm_control[22].strm0_stOp_complete   = sdp__scntl__lane22_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane22_strm1_stOp_enable    = strm_control[22].strm1_stOp_enable     ; 
+  assign strm_control[22].strm1_stOp_ready      = sdp__scntl__lane22_strm1_stOp_ready     ; 
+  assign strm_control[22].strm1_stOp_complete   = sdp__scntl__lane22_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane23_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane23_strm0_stOp_enable    = strm_control[23].strm0_stOp_enable     ; 
+  assign strm_control[23].strm0_stOp_ready      = sdp__scntl__lane23_strm0_stOp_ready     ; 
+  assign strm_control[23].strm0_stOp_complete   = sdp__scntl__lane23_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane23_strm1_stOp_enable    = strm_control[23].strm1_stOp_enable     ; 
+  assign strm_control[23].strm1_stOp_ready      = sdp__scntl__lane23_strm1_stOp_ready     ; 
+  assign strm_control[23].strm1_stOp_complete   = sdp__scntl__lane23_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane24_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane24_strm0_stOp_enable    = strm_control[24].strm0_stOp_enable     ; 
+  assign strm_control[24].strm0_stOp_ready      = sdp__scntl__lane24_strm0_stOp_ready     ; 
+  assign strm_control[24].strm0_stOp_complete   = sdp__scntl__lane24_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane24_strm1_stOp_enable    = strm_control[24].strm1_stOp_enable     ; 
+  assign strm_control[24].strm1_stOp_ready      = sdp__scntl__lane24_strm1_stOp_ready     ; 
+  assign strm_control[24].strm1_stOp_complete   = sdp__scntl__lane24_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane25_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane25_strm0_stOp_enable    = strm_control[25].strm0_stOp_enable     ; 
+  assign strm_control[25].strm0_stOp_ready      = sdp__scntl__lane25_strm0_stOp_ready     ; 
+  assign strm_control[25].strm0_stOp_complete   = sdp__scntl__lane25_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane25_strm1_stOp_enable    = strm_control[25].strm1_stOp_enable     ; 
+  assign strm_control[25].strm1_stOp_ready      = sdp__scntl__lane25_strm1_stOp_ready     ; 
+  assign strm_control[25].strm1_stOp_complete   = sdp__scntl__lane25_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane26_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane26_strm0_stOp_enable    = strm_control[26].strm0_stOp_enable     ; 
+  assign strm_control[26].strm0_stOp_ready      = sdp__scntl__lane26_strm0_stOp_ready     ; 
+  assign strm_control[26].strm0_stOp_complete   = sdp__scntl__lane26_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane26_strm1_stOp_enable    = strm_control[26].strm1_stOp_enable     ; 
+  assign strm_control[26].strm1_stOp_ready      = sdp__scntl__lane26_strm1_stOp_ready     ; 
+  assign strm_control[26].strm1_stOp_complete   = sdp__scntl__lane26_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane27_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane27_strm0_stOp_enable    = strm_control[27].strm0_stOp_enable     ; 
+  assign strm_control[27].strm0_stOp_ready      = sdp__scntl__lane27_strm0_stOp_ready     ; 
+  assign strm_control[27].strm0_stOp_complete   = sdp__scntl__lane27_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane27_strm1_stOp_enable    = strm_control[27].strm1_stOp_enable     ; 
+  assign strm_control[27].strm1_stOp_ready      = sdp__scntl__lane27_strm1_stOp_ready     ; 
+  assign strm_control[27].strm1_stOp_complete   = sdp__scntl__lane27_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane28_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane28_strm0_stOp_enable    = strm_control[28].strm0_stOp_enable     ; 
+  assign strm_control[28].strm0_stOp_ready      = sdp__scntl__lane28_strm0_stOp_ready     ; 
+  assign strm_control[28].strm0_stOp_complete   = sdp__scntl__lane28_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane28_strm1_stOp_enable    = strm_control[28].strm1_stOp_enable     ; 
+  assign strm_control[28].strm1_stOp_ready      = sdp__scntl__lane28_strm1_stOp_ready     ; 
+  assign strm_control[28].strm1_stOp_complete   = sdp__scntl__lane28_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane29_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane29_strm0_stOp_enable    = strm_control[29].strm0_stOp_enable     ; 
+  assign strm_control[29].strm0_stOp_ready      = sdp__scntl__lane29_strm0_stOp_ready     ; 
+  assign strm_control[29].strm0_stOp_complete   = sdp__scntl__lane29_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane29_strm1_stOp_enable    = strm_control[29].strm1_stOp_enable     ; 
+  assign strm_control[29].strm1_stOp_ready      = sdp__scntl__lane29_strm1_stOp_ready     ; 
+  assign strm_control[29].strm1_stOp_complete   = sdp__scntl__lane29_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane30_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane30_strm0_stOp_enable    = strm_control[30].strm0_stOp_enable     ; 
+  assign strm_control[30].strm0_stOp_ready      = sdp__scntl__lane30_strm0_stOp_ready     ; 
+  assign strm_control[30].strm0_stOp_complete   = sdp__scntl__lane30_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane30_strm1_stOp_enable    = strm_control[30].strm1_stOp_enable     ; 
+  assign strm_control[30].strm1_stOp_ready      = sdp__scntl__lane30_strm1_stOp_ready     ; 
+  assign strm_control[30].strm1_stOp_complete   = sdp__scntl__lane30_strm1_stOp_complete  ; 
+  assign scntl__sdp__lane31_stOp_operation = rs0[31:1]                                      ; 
+  assign scntl__sdp__lane31_strm0_stOp_enable    = strm_control[31].strm0_stOp_enable     ; 
+  assign strm_control[31].strm0_stOp_ready      = sdp__scntl__lane31_strm0_stOp_ready     ; 
+  assign strm_control[31].strm0_stOp_complete   = sdp__scntl__lane31_strm0_stOp_complete  ; 
+  assign scntl__sdp__lane31_strm1_stOp_enable    = strm_control[31].strm1_stOp_enable     ; 
+  assign strm_control[31].strm1_stOp_ready      = sdp__scntl__lane31_strm1_stOp_ready     ; 
+  assign strm_control[31].strm1_stOp_complete   = sdp__scntl__lane31_strm1_stOp_complete  ; 
 
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane0_strm0_read_enable         = strm_control[0].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane0_strm0_write_enable        = strm_control[0].strm0_write_enable        ;  // FIXME
-  assign strm_control[0].strm0_read_ready           = sdp__cntl__lane0_strm0_read_ready         ;  // FIXME
-  assign strm_control[0].strm0_write_ready          = sdp__cntl__lane0_strm0_write_ready        ;  // FIXME
-  assign strm_control[0].strm0_read_complete        = sdp__cntl__lane0_strm0_read_complete      ;  // FIXME
-  assign strm_control[0].strm0_write_complete       = sdp__cntl__lane0_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane0_strm0_read_enable         = strm_control[0].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane0_strm0_write_enable        = strm_control[0].strm0_write_enable        ;  // FIXME
+  assign strm_control[0].strm0_read_ready           = sdp__scntl__lane0_strm0_read_ready         ;  // FIXME
+  assign strm_control[0].strm0_write_ready          = sdp__scntl__lane0_strm0_write_ready        ;  // FIXME
+  assign strm_control[0].strm0_read_complete        = sdp__scntl__lane0_strm0_read_complete      ;  // FIXME
+  assign strm_control[0].strm0_write_complete       = sdp__scntl__lane0_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane0_strm1_read_enable         = strm_control[0].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane0_strm1_write_enable        = strm_control[0].strm1_write_enable        ;  // FIXME
-  assign strm_control[0].strm1_read_ready           = sdp__cntl__lane0_strm1_read_ready         ;  // FIXME
-  assign strm_control[0].strm1_write_ready          = sdp__cntl__lane0_strm1_write_ready        ;  // FIXME
-  assign strm_control[0].strm1_read_complete        = sdp__cntl__lane0_strm1_read_complete      ;  // FIXME
-  assign strm_control[0].strm1_write_complete       = sdp__cntl__lane0_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane0_strm1_read_enable         = strm_control[0].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane0_strm1_write_enable        = strm_control[0].strm1_write_enable        ;  // FIXME
+  assign strm_control[0].strm1_read_ready           = sdp__scntl__lane0_strm1_read_ready         ;  // FIXME
+  assign strm_control[0].strm1_write_ready          = sdp__scntl__lane0_strm1_write_ready        ;  // FIXME
+  assign strm_control[0].strm1_read_complete        = sdp__scntl__lane0_strm1_read_complete      ;  // FIXME
+  assign strm_control[0].strm1_write_complete       = sdp__scntl__lane0_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane0_strm0_read_start_address  = (strm_control[0].strm0_assignedToExternalDma) ? strm_control[0].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane0_strm0_read_start_address  = (strm_control[0].strm0_assignedToExternalDma) ? strm_control[0].strm0_ExternalDma_read_start_address  :
                                                                                                        lane0_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane0_strm1_read_start_address  = (strm_control[0].strm1_assignedToExternalDma) ? strm_control[0].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane0_strm1_read_start_address  = (strm_control[0].strm1_assignedToExternalDma) ? strm_control[0].strm1_ExternalDma_read_start_address  :
                                                                                                        lane0_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane0_strm0_write_start_address = lane0_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane0_strm1_write_start_address = lane0_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane0_type0                     = lane0_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane0_type1                     = lane0_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane0_num_of_types0             = lane0_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane0_num_of_types1             = lane0_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane0_strm0_write_start_address = lane0_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane0_strm1_write_start_address = lane0_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane0_type0                     = lane0_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane0_type1                     = lane0_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane0_num_of_types0             = lane0_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane0_num_of_types1             = lane0_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane0_strm0_read_start_address             = lane0_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane0_strm1_read_start_address             = lane0_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane0_strm0_write_start_address            = lane0_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -330,32 +330,32 @@
   assign lane0_stagger0                             = lane0_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane0_stagger1                             = lane0_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane1_strm0_read_enable         = strm_control[1].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane1_strm0_write_enable        = strm_control[1].strm0_write_enable        ;  // FIXME
-  assign strm_control[1].strm0_read_ready           = sdp__cntl__lane1_strm0_read_ready         ;  // FIXME
-  assign strm_control[1].strm0_write_ready          = sdp__cntl__lane1_strm0_write_ready        ;  // FIXME
-  assign strm_control[1].strm0_read_complete        = sdp__cntl__lane1_strm0_read_complete      ;  // FIXME
-  assign strm_control[1].strm0_write_complete       = sdp__cntl__lane1_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane1_strm0_read_enable         = strm_control[1].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane1_strm0_write_enable        = strm_control[1].strm0_write_enable        ;  // FIXME
+  assign strm_control[1].strm0_read_ready           = sdp__scntl__lane1_strm0_read_ready         ;  // FIXME
+  assign strm_control[1].strm0_write_ready          = sdp__scntl__lane1_strm0_write_ready        ;  // FIXME
+  assign strm_control[1].strm0_read_complete        = sdp__scntl__lane1_strm0_read_complete      ;  // FIXME
+  assign strm_control[1].strm0_write_complete       = sdp__scntl__lane1_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane1_strm1_read_enable         = strm_control[1].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane1_strm1_write_enable        = strm_control[1].strm1_write_enable        ;  // FIXME
-  assign strm_control[1].strm1_read_ready           = sdp__cntl__lane1_strm1_read_ready         ;  // FIXME
-  assign strm_control[1].strm1_write_ready          = sdp__cntl__lane1_strm1_write_ready        ;  // FIXME
-  assign strm_control[1].strm1_read_complete        = sdp__cntl__lane1_strm1_read_complete      ;  // FIXME
-  assign strm_control[1].strm1_write_complete       = sdp__cntl__lane1_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane1_strm1_read_enable         = strm_control[1].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane1_strm1_write_enable        = strm_control[1].strm1_write_enable        ;  // FIXME
+  assign strm_control[1].strm1_read_ready           = sdp__scntl__lane1_strm1_read_ready         ;  // FIXME
+  assign strm_control[1].strm1_write_ready          = sdp__scntl__lane1_strm1_write_ready        ;  // FIXME
+  assign strm_control[1].strm1_read_complete        = sdp__scntl__lane1_strm1_read_complete      ;  // FIXME
+  assign strm_control[1].strm1_write_complete       = sdp__scntl__lane1_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane1_strm0_read_start_address  = (strm_control[1].strm0_assignedToExternalDma) ? strm_control[1].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane1_strm0_read_start_address  = (strm_control[1].strm0_assignedToExternalDma) ? strm_control[1].strm0_ExternalDma_read_start_address  :
                                                                                                        lane1_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane1_strm1_read_start_address  = (strm_control[1].strm1_assignedToExternalDma) ? strm_control[1].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane1_strm1_read_start_address  = (strm_control[1].strm1_assignedToExternalDma) ? strm_control[1].strm1_ExternalDma_read_start_address  :
                                                                                                        lane1_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane1_strm0_write_start_address = lane1_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane1_strm1_write_start_address = lane1_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane1_type0                     = lane1_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane1_type1                     = lane1_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane1_num_of_types0             = lane1_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane1_num_of_types1             = lane1_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane1_strm0_write_start_address = lane1_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane1_strm1_write_start_address = lane1_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane1_type0                     = lane1_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane1_type1                     = lane1_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane1_num_of_types0             = lane1_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane1_num_of_types1             = lane1_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane1_strm0_read_start_address             = lane1_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane1_strm1_read_start_address             = lane1_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane1_strm0_write_start_address            = lane1_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -367,32 +367,32 @@
   assign lane1_stagger0                             = lane1_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane1_stagger1                             = lane1_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane2_strm0_read_enable         = strm_control[2].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane2_strm0_write_enable        = strm_control[2].strm0_write_enable        ;  // FIXME
-  assign strm_control[2].strm0_read_ready           = sdp__cntl__lane2_strm0_read_ready         ;  // FIXME
-  assign strm_control[2].strm0_write_ready          = sdp__cntl__lane2_strm0_write_ready        ;  // FIXME
-  assign strm_control[2].strm0_read_complete        = sdp__cntl__lane2_strm0_read_complete      ;  // FIXME
-  assign strm_control[2].strm0_write_complete       = sdp__cntl__lane2_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane2_strm0_read_enable         = strm_control[2].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane2_strm0_write_enable        = strm_control[2].strm0_write_enable        ;  // FIXME
+  assign strm_control[2].strm0_read_ready           = sdp__scntl__lane2_strm0_read_ready         ;  // FIXME
+  assign strm_control[2].strm0_write_ready          = sdp__scntl__lane2_strm0_write_ready        ;  // FIXME
+  assign strm_control[2].strm0_read_complete        = sdp__scntl__lane2_strm0_read_complete      ;  // FIXME
+  assign strm_control[2].strm0_write_complete       = sdp__scntl__lane2_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane2_strm1_read_enable         = strm_control[2].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane2_strm1_write_enable        = strm_control[2].strm1_write_enable        ;  // FIXME
-  assign strm_control[2].strm1_read_ready           = sdp__cntl__lane2_strm1_read_ready         ;  // FIXME
-  assign strm_control[2].strm1_write_ready          = sdp__cntl__lane2_strm1_write_ready        ;  // FIXME
-  assign strm_control[2].strm1_read_complete        = sdp__cntl__lane2_strm1_read_complete      ;  // FIXME
-  assign strm_control[2].strm1_write_complete       = sdp__cntl__lane2_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane2_strm1_read_enable         = strm_control[2].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane2_strm1_write_enable        = strm_control[2].strm1_write_enable        ;  // FIXME
+  assign strm_control[2].strm1_read_ready           = sdp__scntl__lane2_strm1_read_ready         ;  // FIXME
+  assign strm_control[2].strm1_write_ready          = sdp__scntl__lane2_strm1_write_ready        ;  // FIXME
+  assign strm_control[2].strm1_read_complete        = sdp__scntl__lane2_strm1_read_complete      ;  // FIXME
+  assign strm_control[2].strm1_write_complete       = sdp__scntl__lane2_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane2_strm0_read_start_address  = (strm_control[2].strm0_assignedToExternalDma) ? strm_control[2].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane2_strm0_read_start_address  = (strm_control[2].strm0_assignedToExternalDma) ? strm_control[2].strm0_ExternalDma_read_start_address  :
                                                                                                        lane2_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane2_strm1_read_start_address  = (strm_control[2].strm1_assignedToExternalDma) ? strm_control[2].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane2_strm1_read_start_address  = (strm_control[2].strm1_assignedToExternalDma) ? strm_control[2].strm1_ExternalDma_read_start_address  :
                                                                                                        lane2_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane2_strm0_write_start_address = lane2_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane2_strm1_write_start_address = lane2_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane2_type0                     = lane2_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane2_type1                     = lane2_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane2_num_of_types0             = lane2_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane2_num_of_types1             = lane2_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane2_strm0_write_start_address = lane2_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane2_strm1_write_start_address = lane2_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane2_type0                     = lane2_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane2_type1                     = lane2_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane2_num_of_types0             = lane2_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane2_num_of_types1             = lane2_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane2_strm0_read_start_address             = lane2_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane2_strm1_read_start_address             = lane2_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane2_strm0_write_start_address            = lane2_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -404,32 +404,32 @@
   assign lane2_stagger0                             = lane2_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane2_stagger1                             = lane2_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane3_strm0_read_enable         = strm_control[3].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane3_strm0_write_enable        = strm_control[3].strm0_write_enable        ;  // FIXME
-  assign strm_control[3].strm0_read_ready           = sdp__cntl__lane3_strm0_read_ready         ;  // FIXME
-  assign strm_control[3].strm0_write_ready          = sdp__cntl__lane3_strm0_write_ready        ;  // FIXME
-  assign strm_control[3].strm0_read_complete        = sdp__cntl__lane3_strm0_read_complete      ;  // FIXME
-  assign strm_control[3].strm0_write_complete       = sdp__cntl__lane3_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane3_strm0_read_enable         = strm_control[3].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane3_strm0_write_enable        = strm_control[3].strm0_write_enable        ;  // FIXME
+  assign strm_control[3].strm0_read_ready           = sdp__scntl__lane3_strm0_read_ready         ;  // FIXME
+  assign strm_control[3].strm0_write_ready          = sdp__scntl__lane3_strm0_write_ready        ;  // FIXME
+  assign strm_control[3].strm0_read_complete        = sdp__scntl__lane3_strm0_read_complete      ;  // FIXME
+  assign strm_control[3].strm0_write_complete       = sdp__scntl__lane3_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane3_strm1_read_enable         = strm_control[3].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane3_strm1_write_enable        = strm_control[3].strm1_write_enable        ;  // FIXME
-  assign strm_control[3].strm1_read_ready           = sdp__cntl__lane3_strm1_read_ready         ;  // FIXME
-  assign strm_control[3].strm1_write_ready          = sdp__cntl__lane3_strm1_write_ready        ;  // FIXME
-  assign strm_control[3].strm1_read_complete        = sdp__cntl__lane3_strm1_read_complete      ;  // FIXME
-  assign strm_control[3].strm1_write_complete       = sdp__cntl__lane3_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane3_strm1_read_enable         = strm_control[3].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane3_strm1_write_enable        = strm_control[3].strm1_write_enable        ;  // FIXME
+  assign strm_control[3].strm1_read_ready           = sdp__scntl__lane3_strm1_read_ready         ;  // FIXME
+  assign strm_control[3].strm1_write_ready          = sdp__scntl__lane3_strm1_write_ready        ;  // FIXME
+  assign strm_control[3].strm1_read_complete        = sdp__scntl__lane3_strm1_read_complete      ;  // FIXME
+  assign strm_control[3].strm1_write_complete       = sdp__scntl__lane3_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane3_strm0_read_start_address  = (strm_control[3].strm0_assignedToExternalDma) ? strm_control[3].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane3_strm0_read_start_address  = (strm_control[3].strm0_assignedToExternalDma) ? strm_control[3].strm0_ExternalDma_read_start_address  :
                                                                                                        lane3_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane3_strm1_read_start_address  = (strm_control[3].strm1_assignedToExternalDma) ? strm_control[3].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane3_strm1_read_start_address  = (strm_control[3].strm1_assignedToExternalDma) ? strm_control[3].strm1_ExternalDma_read_start_address  :
                                                                                                        lane3_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane3_strm0_write_start_address = lane3_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane3_strm1_write_start_address = lane3_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane3_type0                     = lane3_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane3_type1                     = lane3_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane3_num_of_types0             = lane3_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane3_num_of_types1             = lane3_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane3_strm0_write_start_address = lane3_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane3_strm1_write_start_address = lane3_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane3_type0                     = lane3_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane3_type1                     = lane3_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane3_num_of_types0             = lane3_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane3_num_of_types1             = lane3_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane3_strm0_read_start_address             = lane3_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane3_strm1_read_start_address             = lane3_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane3_strm0_write_start_address            = lane3_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -441,32 +441,32 @@
   assign lane3_stagger0                             = lane3_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane3_stagger1                             = lane3_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane4_strm0_read_enable         = strm_control[4].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane4_strm0_write_enable        = strm_control[4].strm0_write_enable        ;  // FIXME
-  assign strm_control[4].strm0_read_ready           = sdp__cntl__lane4_strm0_read_ready         ;  // FIXME
-  assign strm_control[4].strm0_write_ready          = sdp__cntl__lane4_strm0_write_ready        ;  // FIXME
-  assign strm_control[4].strm0_read_complete        = sdp__cntl__lane4_strm0_read_complete      ;  // FIXME
-  assign strm_control[4].strm0_write_complete       = sdp__cntl__lane4_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane4_strm0_read_enable         = strm_control[4].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane4_strm0_write_enable        = strm_control[4].strm0_write_enable        ;  // FIXME
+  assign strm_control[4].strm0_read_ready           = sdp__scntl__lane4_strm0_read_ready         ;  // FIXME
+  assign strm_control[4].strm0_write_ready          = sdp__scntl__lane4_strm0_write_ready        ;  // FIXME
+  assign strm_control[4].strm0_read_complete        = sdp__scntl__lane4_strm0_read_complete      ;  // FIXME
+  assign strm_control[4].strm0_write_complete       = sdp__scntl__lane4_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane4_strm1_read_enable         = strm_control[4].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane4_strm1_write_enable        = strm_control[4].strm1_write_enable        ;  // FIXME
-  assign strm_control[4].strm1_read_ready           = sdp__cntl__lane4_strm1_read_ready         ;  // FIXME
-  assign strm_control[4].strm1_write_ready          = sdp__cntl__lane4_strm1_write_ready        ;  // FIXME
-  assign strm_control[4].strm1_read_complete        = sdp__cntl__lane4_strm1_read_complete      ;  // FIXME
-  assign strm_control[4].strm1_write_complete       = sdp__cntl__lane4_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane4_strm1_read_enable         = strm_control[4].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane4_strm1_write_enable        = strm_control[4].strm1_write_enable        ;  // FIXME
+  assign strm_control[4].strm1_read_ready           = sdp__scntl__lane4_strm1_read_ready         ;  // FIXME
+  assign strm_control[4].strm1_write_ready          = sdp__scntl__lane4_strm1_write_ready        ;  // FIXME
+  assign strm_control[4].strm1_read_complete        = sdp__scntl__lane4_strm1_read_complete      ;  // FIXME
+  assign strm_control[4].strm1_write_complete       = sdp__scntl__lane4_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane4_strm0_read_start_address  = (strm_control[4].strm0_assignedToExternalDma) ? strm_control[4].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane4_strm0_read_start_address  = (strm_control[4].strm0_assignedToExternalDma) ? strm_control[4].strm0_ExternalDma_read_start_address  :
                                                                                                        lane4_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane4_strm1_read_start_address  = (strm_control[4].strm1_assignedToExternalDma) ? strm_control[4].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane4_strm1_read_start_address  = (strm_control[4].strm1_assignedToExternalDma) ? strm_control[4].strm1_ExternalDma_read_start_address  :
                                                                                                        lane4_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane4_strm0_write_start_address = lane4_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane4_strm1_write_start_address = lane4_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane4_type0                     = lane4_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane4_type1                     = lane4_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane4_num_of_types0             = lane4_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane4_num_of_types1             = lane4_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane4_strm0_write_start_address = lane4_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane4_strm1_write_start_address = lane4_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane4_type0                     = lane4_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane4_type1                     = lane4_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane4_num_of_types0             = lane4_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane4_num_of_types1             = lane4_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane4_strm0_read_start_address             = lane4_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane4_strm1_read_start_address             = lane4_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane4_strm0_write_start_address            = lane4_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -478,32 +478,32 @@
   assign lane4_stagger0                             = lane4_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane4_stagger1                             = lane4_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane5_strm0_read_enable         = strm_control[5].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane5_strm0_write_enable        = strm_control[5].strm0_write_enable        ;  // FIXME
-  assign strm_control[5].strm0_read_ready           = sdp__cntl__lane5_strm0_read_ready         ;  // FIXME
-  assign strm_control[5].strm0_write_ready          = sdp__cntl__lane5_strm0_write_ready        ;  // FIXME
-  assign strm_control[5].strm0_read_complete        = sdp__cntl__lane5_strm0_read_complete      ;  // FIXME
-  assign strm_control[5].strm0_write_complete       = sdp__cntl__lane5_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane5_strm0_read_enable         = strm_control[5].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane5_strm0_write_enable        = strm_control[5].strm0_write_enable        ;  // FIXME
+  assign strm_control[5].strm0_read_ready           = sdp__scntl__lane5_strm0_read_ready         ;  // FIXME
+  assign strm_control[5].strm0_write_ready          = sdp__scntl__lane5_strm0_write_ready        ;  // FIXME
+  assign strm_control[5].strm0_read_complete        = sdp__scntl__lane5_strm0_read_complete      ;  // FIXME
+  assign strm_control[5].strm0_write_complete       = sdp__scntl__lane5_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane5_strm1_read_enable         = strm_control[5].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane5_strm1_write_enable        = strm_control[5].strm1_write_enable        ;  // FIXME
-  assign strm_control[5].strm1_read_ready           = sdp__cntl__lane5_strm1_read_ready         ;  // FIXME
-  assign strm_control[5].strm1_write_ready          = sdp__cntl__lane5_strm1_write_ready        ;  // FIXME
-  assign strm_control[5].strm1_read_complete        = sdp__cntl__lane5_strm1_read_complete      ;  // FIXME
-  assign strm_control[5].strm1_write_complete       = sdp__cntl__lane5_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane5_strm1_read_enable         = strm_control[5].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane5_strm1_write_enable        = strm_control[5].strm1_write_enable        ;  // FIXME
+  assign strm_control[5].strm1_read_ready           = sdp__scntl__lane5_strm1_read_ready         ;  // FIXME
+  assign strm_control[5].strm1_write_ready          = sdp__scntl__lane5_strm1_write_ready        ;  // FIXME
+  assign strm_control[5].strm1_read_complete        = sdp__scntl__lane5_strm1_read_complete      ;  // FIXME
+  assign strm_control[5].strm1_write_complete       = sdp__scntl__lane5_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane5_strm0_read_start_address  = (strm_control[5].strm0_assignedToExternalDma) ? strm_control[5].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane5_strm0_read_start_address  = (strm_control[5].strm0_assignedToExternalDma) ? strm_control[5].strm0_ExternalDma_read_start_address  :
                                                                                                        lane5_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane5_strm1_read_start_address  = (strm_control[5].strm1_assignedToExternalDma) ? strm_control[5].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane5_strm1_read_start_address  = (strm_control[5].strm1_assignedToExternalDma) ? strm_control[5].strm1_ExternalDma_read_start_address  :
                                                                                                        lane5_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane5_strm0_write_start_address = lane5_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane5_strm1_write_start_address = lane5_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane5_type0                     = lane5_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane5_type1                     = lane5_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane5_num_of_types0             = lane5_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane5_num_of_types1             = lane5_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane5_strm0_write_start_address = lane5_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane5_strm1_write_start_address = lane5_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane5_type0                     = lane5_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane5_type1                     = lane5_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane5_num_of_types0             = lane5_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane5_num_of_types1             = lane5_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane5_strm0_read_start_address             = lane5_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane5_strm1_read_start_address             = lane5_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane5_strm0_write_start_address            = lane5_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -515,32 +515,32 @@
   assign lane5_stagger0                             = lane5_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane5_stagger1                             = lane5_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane6_strm0_read_enable         = strm_control[6].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane6_strm0_write_enable        = strm_control[6].strm0_write_enable        ;  // FIXME
-  assign strm_control[6].strm0_read_ready           = sdp__cntl__lane6_strm0_read_ready         ;  // FIXME
-  assign strm_control[6].strm0_write_ready          = sdp__cntl__lane6_strm0_write_ready        ;  // FIXME
-  assign strm_control[6].strm0_read_complete        = sdp__cntl__lane6_strm0_read_complete      ;  // FIXME
-  assign strm_control[6].strm0_write_complete       = sdp__cntl__lane6_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane6_strm0_read_enable         = strm_control[6].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane6_strm0_write_enable        = strm_control[6].strm0_write_enable        ;  // FIXME
+  assign strm_control[6].strm0_read_ready           = sdp__scntl__lane6_strm0_read_ready         ;  // FIXME
+  assign strm_control[6].strm0_write_ready          = sdp__scntl__lane6_strm0_write_ready        ;  // FIXME
+  assign strm_control[6].strm0_read_complete        = sdp__scntl__lane6_strm0_read_complete      ;  // FIXME
+  assign strm_control[6].strm0_write_complete       = sdp__scntl__lane6_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane6_strm1_read_enable         = strm_control[6].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane6_strm1_write_enable        = strm_control[6].strm1_write_enable        ;  // FIXME
-  assign strm_control[6].strm1_read_ready           = sdp__cntl__lane6_strm1_read_ready         ;  // FIXME
-  assign strm_control[6].strm1_write_ready          = sdp__cntl__lane6_strm1_write_ready        ;  // FIXME
-  assign strm_control[6].strm1_read_complete        = sdp__cntl__lane6_strm1_read_complete      ;  // FIXME
-  assign strm_control[6].strm1_write_complete       = sdp__cntl__lane6_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane6_strm1_read_enable         = strm_control[6].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane6_strm1_write_enable        = strm_control[6].strm1_write_enable        ;  // FIXME
+  assign strm_control[6].strm1_read_ready           = sdp__scntl__lane6_strm1_read_ready         ;  // FIXME
+  assign strm_control[6].strm1_write_ready          = sdp__scntl__lane6_strm1_write_ready        ;  // FIXME
+  assign strm_control[6].strm1_read_complete        = sdp__scntl__lane6_strm1_read_complete      ;  // FIXME
+  assign strm_control[6].strm1_write_complete       = sdp__scntl__lane6_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane6_strm0_read_start_address  = (strm_control[6].strm0_assignedToExternalDma) ? strm_control[6].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane6_strm0_read_start_address  = (strm_control[6].strm0_assignedToExternalDma) ? strm_control[6].strm0_ExternalDma_read_start_address  :
                                                                                                        lane6_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane6_strm1_read_start_address  = (strm_control[6].strm1_assignedToExternalDma) ? strm_control[6].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane6_strm1_read_start_address  = (strm_control[6].strm1_assignedToExternalDma) ? strm_control[6].strm1_ExternalDma_read_start_address  :
                                                                                                        lane6_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane6_strm0_write_start_address = lane6_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane6_strm1_write_start_address = lane6_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane6_type0                     = lane6_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane6_type1                     = lane6_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane6_num_of_types0             = lane6_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane6_num_of_types1             = lane6_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane6_strm0_write_start_address = lane6_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane6_strm1_write_start_address = lane6_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane6_type0                     = lane6_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane6_type1                     = lane6_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane6_num_of_types0             = lane6_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane6_num_of_types1             = lane6_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane6_strm0_read_start_address             = lane6_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane6_strm1_read_start_address             = lane6_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane6_strm0_write_start_address            = lane6_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -552,32 +552,32 @@
   assign lane6_stagger0                             = lane6_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane6_stagger1                             = lane6_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane7_strm0_read_enable         = strm_control[7].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane7_strm0_write_enable        = strm_control[7].strm0_write_enable        ;  // FIXME
-  assign strm_control[7].strm0_read_ready           = sdp__cntl__lane7_strm0_read_ready         ;  // FIXME
-  assign strm_control[7].strm0_write_ready          = sdp__cntl__lane7_strm0_write_ready        ;  // FIXME
-  assign strm_control[7].strm0_read_complete        = sdp__cntl__lane7_strm0_read_complete      ;  // FIXME
-  assign strm_control[7].strm0_write_complete       = sdp__cntl__lane7_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane7_strm0_read_enable         = strm_control[7].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane7_strm0_write_enable        = strm_control[7].strm0_write_enable        ;  // FIXME
+  assign strm_control[7].strm0_read_ready           = sdp__scntl__lane7_strm0_read_ready         ;  // FIXME
+  assign strm_control[7].strm0_write_ready          = sdp__scntl__lane7_strm0_write_ready        ;  // FIXME
+  assign strm_control[7].strm0_read_complete        = sdp__scntl__lane7_strm0_read_complete      ;  // FIXME
+  assign strm_control[7].strm0_write_complete       = sdp__scntl__lane7_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane7_strm1_read_enable         = strm_control[7].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane7_strm1_write_enable        = strm_control[7].strm1_write_enable        ;  // FIXME
-  assign strm_control[7].strm1_read_ready           = sdp__cntl__lane7_strm1_read_ready         ;  // FIXME
-  assign strm_control[7].strm1_write_ready          = sdp__cntl__lane7_strm1_write_ready        ;  // FIXME
-  assign strm_control[7].strm1_read_complete        = sdp__cntl__lane7_strm1_read_complete      ;  // FIXME
-  assign strm_control[7].strm1_write_complete       = sdp__cntl__lane7_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane7_strm1_read_enable         = strm_control[7].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane7_strm1_write_enable        = strm_control[7].strm1_write_enable        ;  // FIXME
+  assign strm_control[7].strm1_read_ready           = sdp__scntl__lane7_strm1_read_ready         ;  // FIXME
+  assign strm_control[7].strm1_write_ready          = sdp__scntl__lane7_strm1_write_ready        ;  // FIXME
+  assign strm_control[7].strm1_read_complete        = sdp__scntl__lane7_strm1_read_complete      ;  // FIXME
+  assign strm_control[7].strm1_write_complete       = sdp__scntl__lane7_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane7_strm0_read_start_address  = (strm_control[7].strm0_assignedToExternalDma) ? strm_control[7].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane7_strm0_read_start_address  = (strm_control[7].strm0_assignedToExternalDma) ? strm_control[7].strm0_ExternalDma_read_start_address  :
                                                                                                        lane7_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane7_strm1_read_start_address  = (strm_control[7].strm1_assignedToExternalDma) ? strm_control[7].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane7_strm1_read_start_address  = (strm_control[7].strm1_assignedToExternalDma) ? strm_control[7].strm1_ExternalDma_read_start_address  :
                                                                                                        lane7_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane7_strm0_write_start_address = lane7_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane7_strm1_write_start_address = lane7_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane7_type0                     = lane7_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane7_type1                     = lane7_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane7_num_of_types0             = lane7_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane7_num_of_types1             = lane7_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane7_strm0_write_start_address = lane7_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane7_strm1_write_start_address = lane7_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane7_type0                     = lane7_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane7_type1                     = lane7_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane7_num_of_types0             = lane7_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane7_num_of_types1             = lane7_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane7_strm0_read_start_address             = lane7_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane7_strm1_read_start_address             = lane7_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane7_strm0_write_start_address            = lane7_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -589,32 +589,32 @@
   assign lane7_stagger0                             = lane7_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane7_stagger1                             = lane7_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane8_strm0_read_enable         = strm_control[8].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane8_strm0_write_enable        = strm_control[8].strm0_write_enable        ;  // FIXME
-  assign strm_control[8].strm0_read_ready           = sdp__cntl__lane8_strm0_read_ready         ;  // FIXME
-  assign strm_control[8].strm0_write_ready          = sdp__cntl__lane8_strm0_write_ready        ;  // FIXME
-  assign strm_control[8].strm0_read_complete        = sdp__cntl__lane8_strm0_read_complete      ;  // FIXME
-  assign strm_control[8].strm0_write_complete       = sdp__cntl__lane8_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane8_strm0_read_enable         = strm_control[8].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane8_strm0_write_enable        = strm_control[8].strm0_write_enable        ;  // FIXME
+  assign strm_control[8].strm0_read_ready           = sdp__scntl__lane8_strm0_read_ready         ;  // FIXME
+  assign strm_control[8].strm0_write_ready          = sdp__scntl__lane8_strm0_write_ready        ;  // FIXME
+  assign strm_control[8].strm0_read_complete        = sdp__scntl__lane8_strm0_read_complete      ;  // FIXME
+  assign strm_control[8].strm0_write_complete       = sdp__scntl__lane8_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane8_strm1_read_enable         = strm_control[8].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane8_strm1_write_enable        = strm_control[8].strm1_write_enable        ;  // FIXME
-  assign strm_control[8].strm1_read_ready           = sdp__cntl__lane8_strm1_read_ready         ;  // FIXME
-  assign strm_control[8].strm1_write_ready          = sdp__cntl__lane8_strm1_write_ready        ;  // FIXME
-  assign strm_control[8].strm1_read_complete        = sdp__cntl__lane8_strm1_read_complete      ;  // FIXME
-  assign strm_control[8].strm1_write_complete       = sdp__cntl__lane8_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane8_strm1_read_enable         = strm_control[8].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane8_strm1_write_enable        = strm_control[8].strm1_write_enable        ;  // FIXME
+  assign strm_control[8].strm1_read_ready           = sdp__scntl__lane8_strm1_read_ready         ;  // FIXME
+  assign strm_control[8].strm1_write_ready          = sdp__scntl__lane8_strm1_write_ready        ;  // FIXME
+  assign strm_control[8].strm1_read_complete        = sdp__scntl__lane8_strm1_read_complete      ;  // FIXME
+  assign strm_control[8].strm1_write_complete       = sdp__scntl__lane8_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane8_strm0_read_start_address  = (strm_control[8].strm0_assignedToExternalDma) ? strm_control[8].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane8_strm0_read_start_address  = (strm_control[8].strm0_assignedToExternalDma) ? strm_control[8].strm0_ExternalDma_read_start_address  :
                                                                                                        lane8_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane8_strm1_read_start_address  = (strm_control[8].strm1_assignedToExternalDma) ? strm_control[8].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane8_strm1_read_start_address  = (strm_control[8].strm1_assignedToExternalDma) ? strm_control[8].strm1_ExternalDma_read_start_address  :
                                                                                                        lane8_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane8_strm0_write_start_address = lane8_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane8_strm1_write_start_address = lane8_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane8_type0                     = lane8_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane8_type1                     = lane8_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane8_num_of_types0             = lane8_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane8_num_of_types1             = lane8_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane8_strm0_write_start_address = lane8_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane8_strm1_write_start_address = lane8_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane8_type0                     = lane8_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane8_type1                     = lane8_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane8_num_of_types0             = lane8_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane8_num_of_types1             = lane8_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane8_strm0_read_start_address             = lane8_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane8_strm1_read_start_address             = lane8_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane8_strm0_write_start_address            = lane8_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -626,32 +626,32 @@
   assign lane8_stagger0                             = lane8_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane8_stagger1                             = lane8_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane9_strm0_read_enable         = strm_control[9].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane9_strm0_write_enable        = strm_control[9].strm0_write_enable        ;  // FIXME
-  assign strm_control[9].strm0_read_ready           = sdp__cntl__lane9_strm0_read_ready         ;  // FIXME
-  assign strm_control[9].strm0_write_ready          = sdp__cntl__lane9_strm0_write_ready        ;  // FIXME
-  assign strm_control[9].strm0_read_complete        = sdp__cntl__lane9_strm0_read_complete      ;  // FIXME
-  assign strm_control[9].strm0_write_complete       = sdp__cntl__lane9_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane9_strm0_read_enable         = strm_control[9].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane9_strm0_write_enable        = strm_control[9].strm0_write_enable        ;  // FIXME
+  assign strm_control[9].strm0_read_ready           = sdp__scntl__lane9_strm0_read_ready         ;  // FIXME
+  assign strm_control[9].strm0_write_ready          = sdp__scntl__lane9_strm0_write_ready        ;  // FIXME
+  assign strm_control[9].strm0_read_complete        = sdp__scntl__lane9_strm0_read_complete      ;  // FIXME
+  assign strm_control[9].strm0_write_complete       = sdp__scntl__lane9_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane9_strm1_read_enable         = strm_control[9].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane9_strm1_write_enable        = strm_control[9].strm1_write_enable        ;  // FIXME
-  assign strm_control[9].strm1_read_ready           = sdp__cntl__lane9_strm1_read_ready         ;  // FIXME
-  assign strm_control[9].strm1_write_ready          = sdp__cntl__lane9_strm1_write_ready        ;  // FIXME
-  assign strm_control[9].strm1_read_complete        = sdp__cntl__lane9_strm1_read_complete      ;  // FIXME
-  assign strm_control[9].strm1_write_complete       = sdp__cntl__lane9_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane9_strm1_read_enable         = strm_control[9].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane9_strm1_write_enable        = strm_control[9].strm1_write_enable        ;  // FIXME
+  assign strm_control[9].strm1_read_ready           = sdp__scntl__lane9_strm1_read_ready         ;  // FIXME
+  assign strm_control[9].strm1_write_ready          = sdp__scntl__lane9_strm1_write_ready        ;  // FIXME
+  assign strm_control[9].strm1_read_complete        = sdp__scntl__lane9_strm1_read_complete      ;  // FIXME
+  assign strm_control[9].strm1_write_complete       = sdp__scntl__lane9_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane9_strm0_read_start_address  = (strm_control[9].strm0_assignedToExternalDma) ? strm_control[9].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane9_strm0_read_start_address  = (strm_control[9].strm0_assignedToExternalDma) ? strm_control[9].strm0_ExternalDma_read_start_address  :
                                                                                                        lane9_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane9_strm1_read_start_address  = (strm_control[9].strm1_assignedToExternalDma) ? strm_control[9].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane9_strm1_read_start_address  = (strm_control[9].strm1_assignedToExternalDma) ? strm_control[9].strm1_ExternalDma_read_start_address  :
                                                                                                        lane9_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane9_strm0_write_start_address = lane9_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane9_strm1_write_start_address = lane9_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane9_type0                     = lane9_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane9_type1                     = lane9_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane9_num_of_types0             = lane9_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane9_num_of_types1             = lane9_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane9_strm0_write_start_address = lane9_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane9_strm1_write_start_address = lane9_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane9_type0                     = lane9_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane9_type1                     = lane9_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane9_num_of_types0             = lane9_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane9_num_of_types1             = lane9_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane9_strm0_read_start_address             = lane9_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane9_strm1_read_start_address             = lane9_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane9_strm0_write_start_address            = lane9_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -663,32 +663,32 @@
   assign lane9_stagger0                             = lane9_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane9_stagger1                             = lane9_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane10_strm0_read_enable         = strm_control[10].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane10_strm0_write_enable        = strm_control[10].strm0_write_enable        ;  // FIXME
-  assign strm_control[10].strm0_read_ready           = sdp__cntl__lane10_strm0_read_ready         ;  // FIXME
-  assign strm_control[10].strm0_write_ready          = sdp__cntl__lane10_strm0_write_ready        ;  // FIXME
-  assign strm_control[10].strm0_read_complete        = sdp__cntl__lane10_strm0_read_complete      ;  // FIXME
-  assign strm_control[10].strm0_write_complete       = sdp__cntl__lane10_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane10_strm0_read_enable         = strm_control[10].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane10_strm0_write_enable        = strm_control[10].strm0_write_enable        ;  // FIXME
+  assign strm_control[10].strm0_read_ready           = sdp__scntl__lane10_strm0_read_ready         ;  // FIXME
+  assign strm_control[10].strm0_write_ready          = sdp__scntl__lane10_strm0_write_ready        ;  // FIXME
+  assign strm_control[10].strm0_read_complete        = sdp__scntl__lane10_strm0_read_complete      ;  // FIXME
+  assign strm_control[10].strm0_write_complete       = sdp__scntl__lane10_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane10_strm1_read_enable         = strm_control[10].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane10_strm1_write_enable        = strm_control[10].strm1_write_enable        ;  // FIXME
-  assign strm_control[10].strm1_read_ready           = sdp__cntl__lane10_strm1_read_ready         ;  // FIXME
-  assign strm_control[10].strm1_write_ready          = sdp__cntl__lane10_strm1_write_ready        ;  // FIXME
-  assign strm_control[10].strm1_read_complete        = sdp__cntl__lane10_strm1_read_complete      ;  // FIXME
-  assign strm_control[10].strm1_write_complete       = sdp__cntl__lane10_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane10_strm1_read_enable         = strm_control[10].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane10_strm1_write_enable        = strm_control[10].strm1_write_enable        ;  // FIXME
+  assign strm_control[10].strm1_read_ready           = sdp__scntl__lane10_strm1_read_ready         ;  // FIXME
+  assign strm_control[10].strm1_write_ready          = sdp__scntl__lane10_strm1_write_ready        ;  // FIXME
+  assign strm_control[10].strm1_read_complete        = sdp__scntl__lane10_strm1_read_complete      ;  // FIXME
+  assign strm_control[10].strm1_write_complete       = sdp__scntl__lane10_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane10_strm0_read_start_address  = (strm_control[10].strm0_assignedToExternalDma) ? strm_control[10].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane10_strm0_read_start_address  = (strm_control[10].strm0_assignedToExternalDma) ? strm_control[10].strm0_ExternalDma_read_start_address  :
                                                                                                        lane10_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane10_strm1_read_start_address  = (strm_control[10].strm1_assignedToExternalDma) ? strm_control[10].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane10_strm1_read_start_address  = (strm_control[10].strm1_assignedToExternalDma) ? strm_control[10].strm1_ExternalDma_read_start_address  :
                                                                                                        lane10_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane10_strm0_write_start_address = lane10_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane10_strm1_write_start_address = lane10_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane10_type0                     = lane10_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane10_type1                     = lane10_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane10_num_of_types0             = lane10_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane10_num_of_types1             = lane10_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane10_strm0_write_start_address = lane10_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane10_strm1_write_start_address = lane10_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane10_type0                     = lane10_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane10_type1                     = lane10_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane10_num_of_types0             = lane10_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane10_num_of_types1             = lane10_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane10_strm0_read_start_address             = lane10_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane10_strm1_read_start_address             = lane10_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane10_strm0_write_start_address            = lane10_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -700,32 +700,32 @@
   assign lane10_stagger0                             = lane10_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane10_stagger1                             = lane10_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane11_strm0_read_enable         = strm_control[11].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane11_strm0_write_enable        = strm_control[11].strm0_write_enable        ;  // FIXME
-  assign strm_control[11].strm0_read_ready           = sdp__cntl__lane11_strm0_read_ready         ;  // FIXME
-  assign strm_control[11].strm0_write_ready          = sdp__cntl__lane11_strm0_write_ready        ;  // FIXME
-  assign strm_control[11].strm0_read_complete        = sdp__cntl__lane11_strm0_read_complete      ;  // FIXME
-  assign strm_control[11].strm0_write_complete       = sdp__cntl__lane11_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane11_strm0_read_enable         = strm_control[11].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane11_strm0_write_enable        = strm_control[11].strm0_write_enable        ;  // FIXME
+  assign strm_control[11].strm0_read_ready           = sdp__scntl__lane11_strm0_read_ready         ;  // FIXME
+  assign strm_control[11].strm0_write_ready          = sdp__scntl__lane11_strm0_write_ready        ;  // FIXME
+  assign strm_control[11].strm0_read_complete        = sdp__scntl__lane11_strm0_read_complete      ;  // FIXME
+  assign strm_control[11].strm0_write_complete       = sdp__scntl__lane11_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane11_strm1_read_enable         = strm_control[11].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane11_strm1_write_enable        = strm_control[11].strm1_write_enable        ;  // FIXME
-  assign strm_control[11].strm1_read_ready           = sdp__cntl__lane11_strm1_read_ready         ;  // FIXME
-  assign strm_control[11].strm1_write_ready          = sdp__cntl__lane11_strm1_write_ready        ;  // FIXME
-  assign strm_control[11].strm1_read_complete        = sdp__cntl__lane11_strm1_read_complete      ;  // FIXME
-  assign strm_control[11].strm1_write_complete       = sdp__cntl__lane11_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane11_strm1_read_enable         = strm_control[11].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane11_strm1_write_enable        = strm_control[11].strm1_write_enable        ;  // FIXME
+  assign strm_control[11].strm1_read_ready           = sdp__scntl__lane11_strm1_read_ready         ;  // FIXME
+  assign strm_control[11].strm1_write_ready          = sdp__scntl__lane11_strm1_write_ready        ;  // FIXME
+  assign strm_control[11].strm1_read_complete        = sdp__scntl__lane11_strm1_read_complete      ;  // FIXME
+  assign strm_control[11].strm1_write_complete       = sdp__scntl__lane11_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane11_strm0_read_start_address  = (strm_control[11].strm0_assignedToExternalDma) ? strm_control[11].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane11_strm0_read_start_address  = (strm_control[11].strm0_assignedToExternalDma) ? strm_control[11].strm0_ExternalDma_read_start_address  :
                                                                                                        lane11_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane11_strm1_read_start_address  = (strm_control[11].strm1_assignedToExternalDma) ? strm_control[11].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane11_strm1_read_start_address  = (strm_control[11].strm1_assignedToExternalDma) ? strm_control[11].strm1_ExternalDma_read_start_address  :
                                                                                                        lane11_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane11_strm0_write_start_address = lane11_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane11_strm1_write_start_address = lane11_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane11_type0                     = lane11_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane11_type1                     = lane11_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane11_num_of_types0             = lane11_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane11_num_of_types1             = lane11_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane11_strm0_write_start_address = lane11_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane11_strm1_write_start_address = lane11_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane11_type0                     = lane11_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane11_type1                     = lane11_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane11_num_of_types0             = lane11_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane11_num_of_types1             = lane11_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane11_strm0_read_start_address             = lane11_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane11_strm1_read_start_address             = lane11_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane11_strm0_write_start_address            = lane11_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -737,32 +737,32 @@
   assign lane11_stagger0                             = lane11_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane11_stagger1                             = lane11_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane12_strm0_read_enable         = strm_control[12].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane12_strm0_write_enable        = strm_control[12].strm0_write_enable        ;  // FIXME
-  assign strm_control[12].strm0_read_ready           = sdp__cntl__lane12_strm0_read_ready         ;  // FIXME
-  assign strm_control[12].strm0_write_ready          = sdp__cntl__lane12_strm0_write_ready        ;  // FIXME
-  assign strm_control[12].strm0_read_complete        = sdp__cntl__lane12_strm0_read_complete      ;  // FIXME
-  assign strm_control[12].strm0_write_complete       = sdp__cntl__lane12_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane12_strm0_read_enable         = strm_control[12].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane12_strm0_write_enable        = strm_control[12].strm0_write_enable        ;  // FIXME
+  assign strm_control[12].strm0_read_ready           = sdp__scntl__lane12_strm0_read_ready         ;  // FIXME
+  assign strm_control[12].strm0_write_ready          = sdp__scntl__lane12_strm0_write_ready        ;  // FIXME
+  assign strm_control[12].strm0_read_complete        = sdp__scntl__lane12_strm0_read_complete      ;  // FIXME
+  assign strm_control[12].strm0_write_complete       = sdp__scntl__lane12_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane12_strm1_read_enable         = strm_control[12].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane12_strm1_write_enable        = strm_control[12].strm1_write_enable        ;  // FIXME
-  assign strm_control[12].strm1_read_ready           = sdp__cntl__lane12_strm1_read_ready         ;  // FIXME
-  assign strm_control[12].strm1_write_ready          = sdp__cntl__lane12_strm1_write_ready        ;  // FIXME
-  assign strm_control[12].strm1_read_complete        = sdp__cntl__lane12_strm1_read_complete      ;  // FIXME
-  assign strm_control[12].strm1_write_complete       = sdp__cntl__lane12_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane12_strm1_read_enable         = strm_control[12].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane12_strm1_write_enable        = strm_control[12].strm1_write_enable        ;  // FIXME
+  assign strm_control[12].strm1_read_ready           = sdp__scntl__lane12_strm1_read_ready         ;  // FIXME
+  assign strm_control[12].strm1_write_ready          = sdp__scntl__lane12_strm1_write_ready        ;  // FIXME
+  assign strm_control[12].strm1_read_complete        = sdp__scntl__lane12_strm1_read_complete      ;  // FIXME
+  assign strm_control[12].strm1_write_complete       = sdp__scntl__lane12_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane12_strm0_read_start_address  = (strm_control[12].strm0_assignedToExternalDma) ? strm_control[12].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane12_strm0_read_start_address  = (strm_control[12].strm0_assignedToExternalDma) ? strm_control[12].strm0_ExternalDma_read_start_address  :
                                                                                                        lane12_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane12_strm1_read_start_address  = (strm_control[12].strm1_assignedToExternalDma) ? strm_control[12].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane12_strm1_read_start_address  = (strm_control[12].strm1_assignedToExternalDma) ? strm_control[12].strm1_ExternalDma_read_start_address  :
                                                                                                        lane12_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane12_strm0_write_start_address = lane12_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane12_strm1_write_start_address = lane12_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane12_type0                     = lane12_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane12_type1                     = lane12_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane12_num_of_types0             = lane12_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane12_num_of_types1             = lane12_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane12_strm0_write_start_address = lane12_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane12_strm1_write_start_address = lane12_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane12_type0                     = lane12_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane12_type1                     = lane12_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane12_num_of_types0             = lane12_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane12_num_of_types1             = lane12_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane12_strm0_read_start_address             = lane12_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane12_strm1_read_start_address             = lane12_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane12_strm0_write_start_address            = lane12_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -774,32 +774,32 @@
   assign lane12_stagger0                             = lane12_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane12_stagger1                             = lane12_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane13_strm0_read_enable         = strm_control[13].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane13_strm0_write_enable        = strm_control[13].strm0_write_enable        ;  // FIXME
-  assign strm_control[13].strm0_read_ready           = sdp__cntl__lane13_strm0_read_ready         ;  // FIXME
-  assign strm_control[13].strm0_write_ready          = sdp__cntl__lane13_strm0_write_ready        ;  // FIXME
-  assign strm_control[13].strm0_read_complete        = sdp__cntl__lane13_strm0_read_complete      ;  // FIXME
-  assign strm_control[13].strm0_write_complete       = sdp__cntl__lane13_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane13_strm0_read_enable         = strm_control[13].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane13_strm0_write_enable        = strm_control[13].strm0_write_enable        ;  // FIXME
+  assign strm_control[13].strm0_read_ready           = sdp__scntl__lane13_strm0_read_ready         ;  // FIXME
+  assign strm_control[13].strm0_write_ready          = sdp__scntl__lane13_strm0_write_ready        ;  // FIXME
+  assign strm_control[13].strm0_read_complete        = sdp__scntl__lane13_strm0_read_complete      ;  // FIXME
+  assign strm_control[13].strm0_write_complete       = sdp__scntl__lane13_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane13_strm1_read_enable         = strm_control[13].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane13_strm1_write_enable        = strm_control[13].strm1_write_enable        ;  // FIXME
-  assign strm_control[13].strm1_read_ready           = sdp__cntl__lane13_strm1_read_ready         ;  // FIXME
-  assign strm_control[13].strm1_write_ready          = sdp__cntl__lane13_strm1_write_ready        ;  // FIXME
-  assign strm_control[13].strm1_read_complete        = sdp__cntl__lane13_strm1_read_complete      ;  // FIXME
-  assign strm_control[13].strm1_write_complete       = sdp__cntl__lane13_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane13_strm1_read_enable         = strm_control[13].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane13_strm1_write_enable        = strm_control[13].strm1_write_enable        ;  // FIXME
+  assign strm_control[13].strm1_read_ready           = sdp__scntl__lane13_strm1_read_ready         ;  // FIXME
+  assign strm_control[13].strm1_write_ready          = sdp__scntl__lane13_strm1_write_ready        ;  // FIXME
+  assign strm_control[13].strm1_read_complete        = sdp__scntl__lane13_strm1_read_complete      ;  // FIXME
+  assign strm_control[13].strm1_write_complete       = sdp__scntl__lane13_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane13_strm0_read_start_address  = (strm_control[13].strm0_assignedToExternalDma) ? strm_control[13].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane13_strm0_read_start_address  = (strm_control[13].strm0_assignedToExternalDma) ? strm_control[13].strm0_ExternalDma_read_start_address  :
                                                                                                        lane13_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane13_strm1_read_start_address  = (strm_control[13].strm1_assignedToExternalDma) ? strm_control[13].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane13_strm1_read_start_address  = (strm_control[13].strm1_assignedToExternalDma) ? strm_control[13].strm1_ExternalDma_read_start_address  :
                                                                                                        lane13_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane13_strm0_write_start_address = lane13_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane13_strm1_write_start_address = lane13_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane13_type0                     = lane13_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane13_type1                     = lane13_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane13_num_of_types0             = lane13_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane13_num_of_types1             = lane13_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane13_strm0_write_start_address = lane13_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane13_strm1_write_start_address = lane13_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane13_type0                     = lane13_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane13_type1                     = lane13_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane13_num_of_types0             = lane13_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane13_num_of_types1             = lane13_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane13_strm0_read_start_address             = lane13_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane13_strm1_read_start_address             = lane13_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane13_strm0_write_start_address            = lane13_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -811,32 +811,32 @@
   assign lane13_stagger0                             = lane13_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane13_stagger1                             = lane13_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane14_strm0_read_enable         = strm_control[14].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane14_strm0_write_enable        = strm_control[14].strm0_write_enable        ;  // FIXME
-  assign strm_control[14].strm0_read_ready           = sdp__cntl__lane14_strm0_read_ready         ;  // FIXME
-  assign strm_control[14].strm0_write_ready          = sdp__cntl__lane14_strm0_write_ready        ;  // FIXME
-  assign strm_control[14].strm0_read_complete        = sdp__cntl__lane14_strm0_read_complete      ;  // FIXME
-  assign strm_control[14].strm0_write_complete       = sdp__cntl__lane14_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane14_strm0_read_enable         = strm_control[14].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane14_strm0_write_enable        = strm_control[14].strm0_write_enable        ;  // FIXME
+  assign strm_control[14].strm0_read_ready           = sdp__scntl__lane14_strm0_read_ready         ;  // FIXME
+  assign strm_control[14].strm0_write_ready          = sdp__scntl__lane14_strm0_write_ready        ;  // FIXME
+  assign strm_control[14].strm0_read_complete        = sdp__scntl__lane14_strm0_read_complete      ;  // FIXME
+  assign strm_control[14].strm0_write_complete       = sdp__scntl__lane14_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane14_strm1_read_enable         = strm_control[14].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane14_strm1_write_enable        = strm_control[14].strm1_write_enable        ;  // FIXME
-  assign strm_control[14].strm1_read_ready           = sdp__cntl__lane14_strm1_read_ready         ;  // FIXME
-  assign strm_control[14].strm1_write_ready          = sdp__cntl__lane14_strm1_write_ready        ;  // FIXME
-  assign strm_control[14].strm1_read_complete        = sdp__cntl__lane14_strm1_read_complete      ;  // FIXME
-  assign strm_control[14].strm1_write_complete       = sdp__cntl__lane14_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane14_strm1_read_enable         = strm_control[14].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane14_strm1_write_enable        = strm_control[14].strm1_write_enable        ;  // FIXME
+  assign strm_control[14].strm1_read_ready           = sdp__scntl__lane14_strm1_read_ready         ;  // FIXME
+  assign strm_control[14].strm1_write_ready          = sdp__scntl__lane14_strm1_write_ready        ;  // FIXME
+  assign strm_control[14].strm1_read_complete        = sdp__scntl__lane14_strm1_read_complete      ;  // FIXME
+  assign strm_control[14].strm1_write_complete       = sdp__scntl__lane14_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane14_strm0_read_start_address  = (strm_control[14].strm0_assignedToExternalDma) ? strm_control[14].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane14_strm0_read_start_address  = (strm_control[14].strm0_assignedToExternalDma) ? strm_control[14].strm0_ExternalDma_read_start_address  :
                                                                                                        lane14_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane14_strm1_read_start_address  = (strm_control[14].strm1_assignedToExternalDma) ? strm_control[14].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane14_strm1_read_start_address  = (strm_control[14].strm1_assignedToExternalDma) ? strm_control[14].strm1_ExternalDma_read_start_address  :
                                                                                                        lane14_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane14_strm0_write_start_address = lane14_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane14_strm1_write_start_address = lane14_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane14_type0                     = lane14_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane14_type1                     = lane14_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane14_num_of_types0             = lane14_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane14_num_of_types1             = lane14_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane14_strm0_write_start_address = lane14_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane14_strm1_write_start_address = lane14_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane14_type0                     = lane14_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane14_type1                     = lane14_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane14_num_of_types0             = lane14_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane14_num_of_types1             = lane14_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane14_strm0_read_start_address             = lane14_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane14_strm1_read_start_address             = lane14_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane14_strm0_write_start_address            = lane14_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -848,32 +848,32 @@
   assign lane14_stagger0                             = lane14_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane14_stagger1                             = lane14_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane15_strm0_read_enable         = strm_control[15].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane15_strm0_write_enable        = strm_control[15].strm0_write_enable        ;  // FIXME
-  assign strm_control[15].strm0_read_ready           = sdp__cntl__lane15_strm0_read_ready         ;  // FIXME
-  assign strm_control[15].strm0_write_ready          = sdp__cntl__lane15_strm0_write_ready        ;  // FIXME
-  assign strm_control[15].strm0_read_complete        = sdp__cntl__lane15_strm0_read_complete      ;  // FIXME
-  assign strm_control[15].strm0_write_complete       = sdp__cntl__lane15_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane15_strm0_read_enable         = strm_control[15].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane15_strm0_write_enable        = strm_control[15].strm0_write_enable        ;  // FIXME
+  assign strm_control[15].strm0_read_ready           = sdp__scntl__lane15_strm0_read_ready         ;  // FIXME
+  assign strm_control[15].strm0_write_ready          = sdp__scntl__lane15_strm0_write_ready        ;  // FIXME
+  assign strm_control[15].strm0_read_complete        = sdp__scntl__lane15_strm0_read_complete      ;  // FIXME
+  assign strm_control[15].strm0_write_complete       = sdp__scntl__lane15_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane15_strm1_read_enable         = strm_control[15].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane15_strm1_write_enable        = strm_control[15].strm1_write_enable        ;  // FIXME
-  assign strm_control[15].strm1_read_ready           = sdp__cntl__lane15_strm1_read_ready         ;  // FIXME
-  assign strm_control[15].strm1_write_ready          = sdp__cntl__lane15_strm1_write_ready        ;  // FIXME
-  assign strm_control[15].strm1_read_complete        = sdp__cntl__lane15_strm1_read_complete      ;  // FIXME
-  assign strm_control[15].strm1_write_complete       = sdp__cntl__lane15_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane15_strm1_read_enable         = strm_control[15].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane15_strm1_write_enable        = strm_control[15].strm1_write_enable        ;  // FIXME
+  assign strm_control[15].strm1_read_ready           = sdp__scntl__lane15_strm1_read_ready         ;  // FIXME
+  assign strm_control[15].strm1_write_ready          = sdp__scntl__lane15_strm1_write_ready        ;  // FIXME
+  assign strm_control[15].strm1_read_complete        = sdp__scntl__lane15_strm1_read_complete      ;  // FIXME
+  assign strm_control[15].strm1_write_complete       = sdp__scntl__lane15_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane15_strm0_read_start_address  = (strm_control[15].strm0_assignedToExternalDma) ? strm_control[15].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane15_strm0_read_start_address  = (strm_control[15].strm0_assignedToExternalDma) ? strm_control[15].strm0_ExternalDma_read_start_address  :
                                                                                                        lane15_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane15_strm1_read_start_address  = (strm_control[15].strm1_assignedToExternalDma) ? strm_control[15].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane15_strm1_read_start_address  = (strm_control[15].strm1_assignedToExternalDma) ? strm_control[15].strm1_ExternalDma_read_start_address  :
                                                                                                        lane15_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane15_strm0_write_start_address = lane15_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane15_strm1_write_start_address = lane15_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane15_type0                     = lane15_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane15_type1                     = lane15_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane15_num_of_types0             = lane15_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane15_num_of_types1             = lane15_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane15_strm0_write_start_address = lane15_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane15_strm1_write_start_address = lane15_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane15_type0                     = lane15_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane15_type1                     = lane15_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane15_num_of_types0             = lane15_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane15_num_of_types1             = lane15_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane15_strm0_read_start_address             = lane15_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane15_strm1_read_start_address             = lane15_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane15_strm0_write_start_address            = lane15_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -885,32 +885,32 @@
   assign lane15_stagger0                             = lane15_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane15_stagger1                             = lane15_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane16_strm0_read_enable         = strm_control[16].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane16_strm0_write_enable        = strm_control[16].strm0_write_enable        ;  // FIXME
-  assign strm_control[16].strm0_read_ready           = sdp__cntl__lane16_strm0_read_ready         ;  // FIXME
-  assign strm_control[16].strm0_write_ready          = sdp__cntl__lane16_strm0_write_ready        ;  // FIXME
-  assign strm_control[16].strm0_read_complete        = sdp__cntl__lane16_strm0_read_complete      ;  // FIXME
-  assign strm_control[16].strm0_write_complete       = sdp__cntl__lane16_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane16_strm0_read_enable         = strm_control[16].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane16_strm0_write_enable        = strm_control[16].strm0_write_enable        ;  // FIXME
+  assign strm_control[16].strm0_read_ready           = sdp__scntl__lane16_strm0_read_ready         ;  // FIXME
+  assign strm_control[16].strm0_write_ready          = sdp__scntl__lane16_strm0_write_ready        ;  // FIXME
+  assign strm_control[16].strm0_read_complete        = sdp__scntl__lane16_strm0_read_complete      ;  // FIXME
+  assign strm_control[16].strm0_write_complete       = sdp__scntl__lane16_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane16_strm1_read_enable         = strm_control[16].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane16_strm1_write_enable        = strm_control[16].strm1_write_enable        ;  // FIXME
-  assign strm_control[16].strm1_read_ready           = sdp__cntl__lane16_strm1_read_ready         ;  // FIXME
-  assign strm_control[16].strm1_write_ready          = sdp__cntl__lane16_strm1_write_ready        ;  // FIXME
-  assign strm_control[16].strm1_read_complete        = sdp__cntl__lane16_strm1_read_complete      ;  // FIXME
-  assign strm_control[16].strm1_write_complete       = sdp__cntl__lane16_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane16_strm1_read_enable         = strm_control[16].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane16_strm1_write_enable        = strm_control[16].strm1_write_enable        ;  // FIXME
+  assign strm_control[16].strm1_read_ready           = sdp__scntl__lane16_strm1_read_ready         ;  // FIXME
+  assign strm_control[16].strm1_write_ready          = sdp__scntl__lane16_strm1_write_ready        ;  // FIXME
+  assign strm_control[16].strm1_read_complete        = sdp__scntl__lane16_strm1_read_complete      ;  // FIXME
+  assign strm_control[16].strm1_write_complete       = sdp__scntl__lane16_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane16_strm0_read_start_address  = (strm_control[16].strm0_assignedToExternalDma) ? strm_control[16].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane16_strm0_read_start_address  = (strm_control[16].strm0_assignedToExternalDma) ? strm_control[16].strm0_ExternalDma_read_start_address  :
                                                                                                        lane16_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane16_strm1_read_start_address  = (strm_control[16].strm1_assignedToExternalDma) ? strm_control[16].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane16_strm1_read_start_address  = (strm_control[16].strm1_assignedToExternalDma) ? strm_control[16].strm1_ExternalDma_read_start_address  :
                                                                                                        lane16_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane16_strm0_write_start_address = lane16_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane16_strm1_write_start_address = lane16_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane16_type0                     = lane16_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane16_type1                     = lane16_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane16_num_of_types0             = lane16_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane16_num_of_types1             = lane16_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane16_strm0_write_start_address = lane16_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane16_strm1_write_start_address = lane16_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane16_type0                     = lane16_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane16_type1                     = lane16_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane16_num_of_types0             = lane16_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane16_num_of_types1             = lane16_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane16_strm0_read_start_address             = lane16_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane16_strm1_read_start_address             = lane16_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane16_strm0_write_start_address            = lane16_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -922,32 +922,32 @@
   assign lane16_stagger0                             = lane16_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane16_stagger1                             = lane16_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane17_strm0_read_enable         = strm_control[17].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane17_strm0_write_enable        = strm_control[17].strm0_write_enable        ;  // FIXME
-  assign strm_control[17].strm0_read_ready           = sdp__cntl__lane17_strm0_read_ready         ;  // FIXME
-  assign strm_control[17].strm0_write_ready          = sdp__cntl__lane17_strm0_write_ready        ;  // FIXME
-  assign strm_control[17].strm0_read_complete        = sdp__cntl__lane17_strm0_read_complete      ;  // FIXME
-  assign strm_control[17].strm0_write_complete       = sdp__cntl__lane17_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane17_strm0_read_enable         = strm_control[17].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane17_strm0_write_enable        = strm_control[17].strm0_write_enable        ;  // FIXME
+  assign strm_control[17].strm0_read_ready           = sdp__scntl__lane17_strm0_read_ready         ;  // FIXME
+  assign strm_control[17].strm0_write_ready          = sdp__scntl__lane17_strm0_write_ready        ;  // FIXME
+  assign strm_control[17].strm0_read_complete        = sdp__scntl__lane17_strm0_read_complete      ;  // FIXME
+  assign strm_control[17].strm0_write_complete       = sdp__scntl__lane17_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane17_strm1_read_enable         = strm_control[17].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane17_strm1_write_enable        = strm_control[17].strm1_write_enable        ;  // FIXME
-  assign strm_control[17].strm1_read_ready           = sdp__cntl__lane17_strm1_read_ready         ;  // FIXME
-  assign strm_control[17].strm1_write_ready          = sdp__cntl__lane17_strm1_write_ready        ;  // FIXME
-  assign strm_control[17].strm1_read_complete        = sdp__cntl__lane17_strm1_read_complete      ;  // FIXME
-  assign strm_control[17].strm1_write_complete       = sdp__cntl__lane17_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane17_strm1_read_enable         = strm_control[17].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane17_strm1_write_enable        = strm_control[17].strm1_write_enable        ;  // FIXME
+  assign strm_control[17].strm1_read_ready           = sdp__scntl__lane17_strm1_read_ready         ;  // FIXME
+  assign strm_control[17].strm1_write_ready          = sdp__scntl__lane17_strm1_write_ready        ;  // FIXME
+  assign strm_control[17].strm1_read_complete        = sdp__scntl__lane17_strm1_read_complete      ;  // FIXME
+  assign strm_control[17].strm1_write_complete       = sdp__scntl__lane17_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane17_strm0_read_start_address  = (strm_control[17].strm0_assignedToExternalDma) ? strm_control[17].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane17_strm0_read_start_address  = (strm_control[17].strm0_assignedToExternalDma) ? strm_control[17].strm0_ExternalDma_read_start_address  :
                                                                                                        lane17_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane17_strm1_read_start_address  = (strm_control[17].strm1_assignedToExternalDma) ? strm_control[17].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane17_strm1_read_start_address  = (strm_control[17].strm1_assignedToExternalDma) ? strm_control[17].strm1_ExternalDma_read_start_address  :
                                                                                                        lane17_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane17_strm0_write_start_address = lane17_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane17_strm1_write_start_address = lane17_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane17_type0                     = lane17_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane17_type1                     = lane17_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane17_num_of_types0             = lane17_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane17_num_of_types1             = lane17_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane17_strm0_write_start_address = lane17_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane17_strm1_write_start_address = lane17_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane17_type0                     = lane17_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane17_type1                     = lane17_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane17_num_of_types0             = lane17_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane17_num_of_types1             = lane17_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane17_strm0_read_start_address             = lane17_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane17_strm1_read_start_address             = lane17_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane17_strm0_write_start_address            = lane17_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -959,32 +959,32 @@
   assign lane17_stagger0                             = lane17_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane17_stagger1                             = lane17_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane18_strm0_read_enable         = strm_control[18].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane18_strm0_write_enable        = strm_control[18].strm0_write_enable        ;  // FIXME
-  assign strm_control[18].strm0_read_ready           = sdp__cntl__lane18_strm0_read_ready         ;  // FIXME
-  assign strm_control[18].strm0_write_ready          = sdp__cntl__lane18_strm0_write_ready        ;  // FIXME
-  assign strm_control[18].strm0_read_complete        = sdp__cntl__lane18_strm0_read_complete      ;  // FIXME
-  assign strm_control[18].strm0_write_complete       = sdp__cntl__lane18_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane18_strm0_read_enable         = strm_control[18].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane18_strm0_write_enable        = strm_control[18].strm0_write_enable        ;  // FIXME
+  assign strm_control[18].strm0_read_ready           = sdp__scntl__lane18_strm0_read_ready         ;  // FIXME
+  assign strm_control[18].strm0_write_ready          = sdp__scntl__lane18_strm0_write_ready        ;  // FIXME
+  assign strm_control[18].strm0_read_complete        = sdp__scntl__lane18_strm0_read_complete      ;  // FIXME
+  assign strm_control[18].strm0_write_complete       = sdp__scntl__lane18_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane18_strm1_read_enable         = strm_control[18].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane18_strm1_write_enable        = strm_control[18].strm1_write_enable        ;  // FIXME
-  assign strm_control[18].strm1_read_ready           = sdp__cntl__lane18_strm1_read_ready         ;  // FIXME
-  assign strm_control[18].strm1_write_ready          = sdp__cntl__lane18_strm1_write_ready        ;  // FIXME
-  assign strm_control[18].strm1_read_complete        = sdp__cntl__lane18_strm1_read_complete      ;  // FIXME
-  assign strm_control[18].strm1_write_complete       = sdp__cntl__lane18_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane18_strm1_read_enable         = strm_control[18].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane18_strm1_write_enable        = strm_control[18].strm1_write_enable        ;  // FIXME
+  assign strm_control[18].strm1_read_ready           = sdp__scntl__lane18_strm1_read_ready         ;  // FIXME
+  assign strm_control[18].strm1_write_ready          = sdp__scntl__lane18_strm1_write_ready        ;  // FIXME
+  assign strm_control[18].strm1_read_complete        = sdp__scntl__lane18_strm1_read_complete      ;  // FIXME
+  assign strm_control[18].strm1_write_complete       = sdp__scntl__lane18_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane18_strm0_read_start_address  = (strm_control[18].strm0_assignedToExternalDma) ? strm_control[18].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane18_strm0_read_start_address  = (strm_control[18].strm0_assignedToExternalDma) ? strm_control[18].strm0_ExternalDma_read_start_address  :
                                                                                                        lane18_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane18_strm1_read_start_address  = (strm_control[18].strm1_assignedToExternalDma) ? strm_control[18].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane18_strm1_read_start_address  = (strm_control[18].strm1_assignedToExternalDma) ? strm_control[18].strm1_ExternalDma_read_start_address  :
                                                                                                        lane18_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane18_strm0_write_start_address = lane18_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane18_strm1_write_start_address = lane18_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane18_type0                     = lane18_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane18_type1                     = lane18_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane18_num_of_types0             = lane18_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane18_num_of_types1             = lane18_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane18_strm0_write_start_address = lane18_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane18_strm1_write_start_address = lane18_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane18_type0                     = lane18_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane18_type1                     = lane18_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane18_num_of_types0             = lane18_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane18_num_of_types1             = lane18_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane18_strm0_read_start_address             = lane18_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane18_strm1_read_start_address             = lane18_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane18_strm0_write_start_address            = lane18_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -996,32 +996,32 @@
   assign lane18_stagger0                             = lane18_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane18_stagger1                             = lane18_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane19_strm0_read_enable         = strm_control[19].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane19_strm0_write_enable        = strm_control[19].strm0_write_enable        ;  // FIXME
-  assign strm_control[19].strm0_read_ready           = sdp__cntl__lane19_strm0_read_ready         ;  // FIXME
-  assign strm_control[19].strm0_write_ready          = sdp__cntl__lane19_strm0_write_ready        ;  // FIXME
-  assign strm_control[19].strm0_read_complete        = sdp__cntl__lane19_strm0_read_complete      ;  // FIXME
-  assign strm_control[19].strm0_write_complete       = sdp__cntl__lane19_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane19_strm0_read_enable         = strm_control[19].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane19_strm0_write_enable        = strm_control[19].strm0_write_enable        ;  // FIXME
+  assign strm_control[19].strm0_read_ready           = sdp__scntl__lane19_strm0_read_ready         ;  // FIXME
+  assign strm_control[19].strm0_write_ready          = sdp__scntl__lane19_strm0_write_ready        ;  // FIXME
+  assign strm_control[19].strm0_read_complete        = sdp__scntl__lane19_strm0_read_complete      ;  // FIXME
+  assign strm_control[19].strm0_write_complete       = sdp__scntl__lane19_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane19_strm1_read_enable         = strm_control[19].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane19_strm1_write_enable        = strm_control[19].strm1_write_enable        ;  // FIXME
-  assign strm_control[19].strm1_read_ready           = sdp__cntl__lane19_strm1_read_ready         ;  // FIXME
-  assign strm_control[19].strm1_write_ready          = sdp__cntl__lane19_strm1_write_ready        ;  // FIXME
-  assign strm_control[19].strm1_read_complete        = sdp__cntl__lane19_strm1_read_complete      ;  // FIXME
-  assign strm_control[19].strm1_write_complete       = sdp__cntl__lane19_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane19_strm1_read_enable         = strm_control[19].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane19_strm1_write_enable        = strm_control[19].strm1_write_enable        ;  // FIXME
+  assign strm_control[19].strm1_read_ready           = sdp__scntl__lane19_strm1_read_ready         ;  // FIXME
+  assign strm_control[19].strm1_write_ready          = sdp__scntl__lane19_strm1_write_ready        ;  // FIXME
+  assign strm_control[19].strm1_read_complete        = sdp__scntl__lane19_strm1_read_complete      ;  // FIXME
+  assign strm_control[19].strm1_write_complete       = sdp__scntl__lane19_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane19_strm0_read_start_address  = (strm_control[19].strm0_assignedToExternalDma) ? strm_control[19].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane19_strm0_read_start_address  = (strm_control[19].strm0_assignedToExternalDma) ? strm_control[19].strm0_ExternalDma_read_start_address  :
                                                                                                        lane19_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane19_strm1_read_start_address  = (strm_control[19].strm1_assignedToExternalDma) ? strm_control[19].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane19_strm1_read_start_address  = (strm_control[19].strm1_assignedToExternalDma) ? strm_control[19].strm1_ExternalDma_read_start_address  :
                                                                                                        lane19_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane19_strm0_write_start_address = lane19_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane19_strm1_write_start_address = lane19_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane19_type0                     = lane19_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane19_type1                     = lane19_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane19_num_of_types0             = lane19_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane19_num_of_types1             = lane19_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane19_strm0_write_start_address = lane19_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane19_strm1_write_start_address = lane19_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane19_type0                     = lane19_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane19_type1                     = lane19_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane19_num_of_types0             = lane19_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane19_num_of_types1             = lane19_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane19_strm0_read_start_address             = lane19_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane19_strm1_read_start_address             = lane19_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane19_strm0_write_start_address            = lane19_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1033,32 +1033,32 @@
   assign lane19_stagger0                             = lane19_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane19_stagger1                             = lane19_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane20_strm0_read_enable         = strm_control[20].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane20_strm0_write_enable        = strm_control[20].strm0_write_enable        ;  // FIXME
-  assign strm_control[20].strm0_read_ready           = sdp__cntl__lane20_strm0_read_ready         ;  // FIXME
-  assign strm_control[20].strm0_write_ready          = sdp__cntl__lane20_strm0_write_ready        ;  // FIXME
-  assign strm_control[20].strm0_read_complete        = sdp__cntl__lane20_strm0_read_complete      ;  // FIXME
-  assign strm_control[20].strm0_write_complete       = sdp__cntl__lane20_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane20_strm0_read_enable         = strm_control[20].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane20_strm0_write_enable        = strm_control[20].strm0_write_enable        ;  // FIXME
+  assign strm_control[20].strm0_read_ready           = sdp__scntl__lane20_strm0_read_ready         ;  // FIXME
+  assign strm_control[20].strm0_write_ready          = sdp__scntl__lane20_strm0_write_ready        ;  // FIXME
+  assign strm_control[20].strm0_read_complete        = sdp__scntl__lane20_strm0_read_complete      ;  // FIXME
+  assign strm_control[20].strm0_write_complete       = sdp__scntl__lane20_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane20_strm1_read_enable         = strm_control[20].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane20_strm1_write_enable        = strm_control[20].strm1_write_enable        ;  // FIXME
-  assign strm_control[20].strm1_read_ready           = sdp__cntl__lane20_strm1_read_ready         ;  // FIXME
-  assign strm_control[20].strm1_write_ready          = sdp__cntl__lane20_strm1_write_ready        ;  // FIXME
-  assign strm_control[20].strm1_read_complete        = sdp__cntl__lane20_strm1_read_complete      ;  // FIXME
-  assign strm_control[20].strm1_write_complete       = sdp__cntl__lane20_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane20_strm1_read_enable         = strm_control[20].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane20_strm1_write_enable        = strm_control[20].strm1_write_enable        ;  // FIXME
+  assign strm_control[20].strm1_read_ready           = sdp__scntl__lane20_strm1_read_ready         ;  // FIXME
+  assign strm_control[20].strm1_write_ready          = sdp__scntl__lane20_strm1_write_ready        ;  // FIXME
+  assign strm_control[20].strm1_read_complete        = sdp__scntl__lane20_strm1_read_complete      ;  // FIXME
+  assign strm_control[20].strm1_write_complete       = sdp__scntl__lane20_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane20_strm0_read_start_address  = (strm_control[20].strm0_assignedToExternalDma) ? strm_control[20].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane20_strm0_read_start_address  = (strm_control[20].strm0_assignedToExternalDma) ? strm_control[20].strm0_ExternalDma_read_start_address  :
                                                                                                        lane20_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane20_strm1_read_start_address  = (strm_control[20].strm1_assignedToExternalDma) ? strm_control[20].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane20_strm1_read_start_address  = (strm_control[20].strm1_assignedToExternalDma) ? strm_control[20].strm1_ExternalDma_read_start_address  :
                                                                                                        lane20_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane20_strm0_write_start_address = lane20_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane20_strm1_write_start_address = lane20_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane20_type0                     = lane20_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane20_type1                     = lane20_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane20_num_of_types0             = lane20_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane20_num_of_types1             = lane20_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane20_strm0_write_start_address = lane20_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane20_strm1_write_start_address = lane20_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane20_type0                     = lane20_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane20_type1                     = lane20_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane20_num_of_types0             = lane20_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane20_num_of_types1             = lane20_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane20_strm0_read_start_address             = lane20_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane20_strm1_read_start_address             = lane20_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane20_strm0_write_start_address            = lane20_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1070,32 +1070,32 @@
   assign lane20_stagger0                             = lane20_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane20_stagger1                             = lane20_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane21_strm0_read_enable         = strm_control[21].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane21_strm0_write_enable        = strm_control[21].strm0_write_enable        ;  // FIXME
-  assign strm_control[21].strm0_read_ready           = sdp__cntl__lane21_strm0_read_ready         ;  // FIXME
-  assign strm_control[21].strm0_write_ready          = sdp__cntl__lane21_strm0_write_ready        ;  // FIXME
-  assign strm_control[21].strm0_read_complete        = sdp__cntl__lane21_strm0_read_complete      ;  // FIXME
-  assign strm_control[21].strm0_write_complete       = sdp__cntl__lane21_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane21_strm0_read_enable         = strm_control[21].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane21_strm0_write_enable        = strm_control[21].strm0_write_enable        ;  // FIXME
+  assign strm_control[21].strm0_read_ready           = sdp__scntl__lane21_strm0_read_ready         ;  // FIXME
+  assign strm_control[21].strm0_write_ready          = sdp__scntl__lane21_strm0_write_ready        ;  // FIXME
+  assign strm_control[21].strm0_read_complete        = sdp__scntl__lane21_strm0_read_complete      ;  // FIXME
+  assign strm_control[21].strm0_write_complete       = sdp__scntl__lane21_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane21_strm1_read_enable         = strm_control[21].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane21_strm1_write_enable        = strm_control[21].strm1_write_enable        ;  // FIXME
-  assign strm_control[21].strm1_read_ready           = sdp__cntl__lane21_strm1_read_ready         ;  // FIXME
-  assign strm_control[21].strm1_write_ready          = sdp__cntl__lane21_strm1_write_ready        ;  // FIXME
-  assign strm_control[21].strm1_read_complete        = sdp__cntl__lane21_strm1_read_complete      ;  // FIXME
-  assign strm_control[21].strm1_write_complete       = sdp__cntl__lane21_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane21_strm1_read_enable         = strm_control[21].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane21_strm1_write_enable        = strm_control[21].strm1_write_enable        ;  // FIXME
+  assign strm_control[21].strm1_read_ready           = sdp__scntl__lane21_strm1_read_ready         ;  // FIXME
+  assign strm_control[21].strm1_write_ready          = sdp__scntl__lane21_strm1_write_ready        ;  // FIXME
+  assign strm_control[21].strm1_read_complete        = sdp__scntl__lane21_strm1_read_complete      ;  // FIXME
+  assign strm_control[21].strm1_write_complete       = sdp__scntl__lane21_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane21_strm0_read_start_address  = (strm_control[21].strm0_assignedToExternalDma) ? strm_control[21].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane21_strm0_read_start_address  = (strm_control[21].strm0_assignedToExternalDma) ? strm_control[21].strm0_ExternalDma_read_start_address  :
                                                                                                        lane21_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane21_strm1_read_start_address  = (strm_control[21].strm1_assignedToExternalDma) ? strm_control[21].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane21_strm1_read_start_address  = (strm_control[21].strm1_assignedToExternalDma) ? strm_control[21].strm1_ExternalDma_read_start_address  :
                                                                                                        lane21_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane21_strm0_write_start_address = lane21_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane21_strm1_write_start_address = lane21_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane21_type0                     = lane21_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane21_type1                     = lane21_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane21_num_of_types0             = lane21_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane21_num_of_types1             = lane21_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane21_strm0_write_start_address = lane21_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane21_strm1_write_start_address = lane21_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane21_type0                     = lane21_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane21_type1                     = lane21_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane21_num_of_types0             = lane21_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane21_num_of_types1             = lane21_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane21_strm0_read_start_address             = lane21_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane21_strm1_read_start_address             = lane21_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane21_strm0_write_start_address            = lane21_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1107,32 +1107,32 @@
   assign lane21_stagger0                             = lane21_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane21_stagger1                             = lane21_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane22_strm0_read_enable         = strm_control[22].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane22_strm0_write_enable        = strm_control[22].strm0_write_enable        ;  // FIXME
-  assign strm_control[22].strm0_read_ready           = sdp__cntl__lane22_strm0_read_ready         ;  // FIXME
-  assign strm_control[22].strm0_write_ready          = sdp__cntl__lane22_strm0_write_ready        ;  // FIXME
-  assign strm_control[22].strm0_read_complete        = sdp__cntl__lane22_strm0_read_complete      ;  // FIXME
-  assign strm_control[22].strm0_write_complete       = sdp__cntl__lane22_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane22_strm0_read_enable         = strm_control[22].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane22_strm0_write_enable        = strm_control[22].strm0_write_enable        ;  // FIXME
+  assign strm_control[22].strm0_read_ready           = sdp__scntl__lane22_strm0_read_ready         ;  // FIXME
+  assign strm_control[22].strm0_write_ready          = sdp__scntl__lane22_strm0_write_ready        ;  // FIXME
+  assign strm_control[22].strm0_read_complete        = sdp__scntl__lane22_strm0_read_complete      ;  // FIXME
+  assign strm_control[22].strm0_write_complete       = sdp__scntl__lane22_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane22_strm1_read_enable         = strm_control[22].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane22_strm1_write_enable        = strm_control[22].strm1_write_enable        ;  // FIXME
-  assign strm_control[22].strm1_read_ready           = sdp__cntl__lane22_strm1_read_ready         ;  // FIXME
-  assign strm_control[22].strm1_write_ready          = sdp__cntl__lane22_strm1_write_ready        ;  // FIXME
-  assign strm_control[22].strm1_read_complete        = sdp__cntl__lane22_strm1_read_complete      ;  // FIXME
-  assign strm_control[22].strm1_write_complete       = sdp__cntl__lane22_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane22_strm1_read_enable         = strm_control[22].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane22_strm1_write_enable        = strm_control[22].strm1_write_enable        ;  // FIXME
+  assign strm_control[22].strm1_read_ready           = sdp__scntl__lane22_strm1_read_ready         ;  // FIXME
+  assign strm_control[22].strm1_write_ready          = sdp__scntl__lane22_strm1_write_ready        ;  // FIXME
+  assign strm_control[22].strm1_read_complete        = sdp__scntl__lane22_strm1_read_complete      ;  // FIXME
+  assign strm_control[22].strm1_write_complete       = sdp__scntl__lane22_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane22_strm0_read_start_address  = (strm_control[22].strm0_assignedToExternalDma) ? strm_control[22].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane22_strm0_read_start_address  = (strm_control[22].strm0_assignedToExternalDma) ? strm_control[22].strm0_ExternalDma_read_start_address  :
                                                                                                        lane22_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane22_strm1_read_start_address  = (strm_control[22].strm1_assignedToExternalDma) ? strm_control[22].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane22_strm1_read_start_address  = (strm_control[22].strm1_assignedToExternalDma) ? strm_control[22].strm1_ExternalDma_read_start_address  :
                                                                                                        lane22_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane22_strm0_write_start_address = lane22_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane22_strm1_write_start_address = lane22_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane22_type0                     = lane22_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane22_type1                     = lane22_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane22_num_of_types0             = lane22_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane22_num_of_types1             = lane22_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane22_strm0_write_start_address = lane22_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane22_strm1_write_start_address = lane22_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane22_type0                     = lane22_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane22_type1                     = lane22_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane22_num_of_types0             = lane22_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane22_num_of_types1             = lane22_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane22_strm0_read_start_address             = lane22_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane22_strm1_read_start_address             = lane22_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane22_strm0_write_start_address            = lane22_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1144,32 +1144,32 @@
   assign lane22_stagger0                             = lane22_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane22_stagger1                             = lane22_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane23_strm0_read_enable         = strm_control[23].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane23_strm0_write_enable        = strm_control[23].strm0_write_enable        ;  // FIXME
-  assign strm_control[23].strm0_read_ready           = sdp__cntl__lane23_strm0_read_ready         ;  // FIXME
-  assign strm_control[23].strm0_write_ready          = sdp__cntl__lane23_strm0_write_ready        ;  // FIXME
-  assign strm_control[23].strm0_read_complete        = sdp__cntl__lane23_strm0_read_complete      ;  // FIXME
-  assign strm_control[23].strm0_write_complete       = sdp__cntl__lane23_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane23_strm0_read_enable         = strm_control[23].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane23_strm0_write_enable        = strm_control[23].strm0_write_enable        ;  // FIXME
+  assign strm_control[23].strm0_read_ready           = sdp__scntl__lane23_strm0_read_ready         ;  // FIXME
+  assign strm_control[23].strm0_write_ready          = sdp__scntl__lane23_strm0_write_ready        ;  // FIXME
+  assign strm_control[23].strm0_read_complete        = sdp__scntl__lane23_strm0_read_complete      ;  // FIXME
+  assign strm_control[23].strm0_write_complete       = sdp__scntl__lane23_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane23_strm1_read_enable         = strm_control[23].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane23_strm1_write_enable        = strm_control[23].strm1_write_enable        ;  // FIXME
-  assign strm_control[23].strm1_read_ready           = sdp__cntl__lane23_strm1_read_ready         ;  // FIXME
-  assign strm_control[23].strm1_write_ready          = sdp__cntl__lane23_strm1_write_ready        ;  // FIXME
-  assign strm_control[23].strm1_read_complete        = sdp__cntl__lane23_strm1_read_complete      ;  // FIXME
-  assign strm_control[23].strm1_write_complete       = sdp__cntl__lane23_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane23_strm1_read_enable         = strm_control[23].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane23_strm1_write_enable        = strm_control[23].strm1_write_enable        ;  // FIXME
+  assign strm_control[23].strm1_read_ready           = sdp__scntl__lane23_strm1_read_ready         ;  // FIXME
+  assign strm_control[23].strm1_write_ready          = sdp__scntl__lane23_strm1_write_ready        ;  // FIXME
+  assign strm_control[23].strm1_read_complete        = sdp__scntl__lane23_strm1_read_complete      ;  // FIXME
+  assign strm_control[23].strm1_write_complete       = sdp__scntl__lane23_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane23_strm0_read_start_address  = (strm_control[23].strm0_assignedToExternalDma) ? strm_control[23].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane23_strm0_read_start_address  = (strm_control[23].strm0_assignedToExternalDma) ? strm_control[23].strm0_ExternalDma_read_start_address  :
                                                                                                        lane23_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane23_strm1_read_start_address  = (strm_control[23].strm1_assignedToExternalDma) ? strm_control[23].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane23_strm1_read_start_address  = (strm_control[23].strm1_assignedToExternalDma) ? strm_control[23].strm1_ExternalDma_read_start_address  :
                                                                                                        lane23_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane23_strm0_write_start_address = lane23_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane23_strm1_write_start_address = lane23_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane23_type0                     = lane23_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane23_type1                     = lane23_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane23_num_of_types0             = lane23_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane23_num_of_types1             = lane23_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane23_strm0_write_start_address = lane23_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane23_strm1_write_start_address = lane23_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane23_type0                     = lane23_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane23_type1                     = lane23_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane23_num_of_types0             = lane23_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane23_num_of_types1             = lane23_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane23_strm0_read_start_address             = lane23_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane23_strm1_read_start_address             = lane23_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane23_strm0_write_start_address            = lane23_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1181,32 +1181,32 @@
   assign lane23_stagger0                             = lane23_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane23_stagger1                             = lane23_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane24_strm0_read_enable         = strm_control[24].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane24_strm0_write_enable        = strm_control[24].strm0_write_enable        ;  // FIXME
-  assign strm_control[24].strm0_read_ready           = sdp__cntl__lane24_strm0_read_ready         ;  // FIXME
-  assign strm_control[24].strm0_write_ready          = sdp__cntl__lane24_strm0_write_ready        ;  // FIXME
-  assign strm_control[24].strm0_read_complete        = sdp__cntl__lane24_strm0_read_complete      ;  // FIXME
-  assign strm_control[24].strm0_write_complete       = sdp__cntl__lane24_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane24_strm0_read_enable         = strm_control[24].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane24_strm0_write_enable        = strm_control[24].strm0_write_enable        ;  // FIXME
+  assign strm_control[24].strm0_read_ready           = sdp__scntl__lane24_strm0_read_ready         ;  // FIXME
+  assign strm_control[24].strm0_write_ready          = sdp__scntl__lane24_strm0_write_ready        ;  // FIXME
+  assign strm_control[24].strm0_read_complete        = sdp__scntl__lane24_strm0_read_complete      ;  // FIXME
+  assign strm_control[24].strm0_write_complete       = sdp__scntl__lane24_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane24_strm1_read_enable         = strm_control[24].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane24_strm1_write_enable        = strm_control[24].strm1_write_enable        ;  // FIXME
-  assign strm_control[24].strm1_read_ready           = sdp__cntl__lane24_strm1_read_ready         ;  // FIXME
-  assign strm_control[24].strm1_write_ready          = sdp__cntl__lane24_strm1_write_ready        ;  // FIXME
-  assign strm_control[24].strm1_read_complete        = sdp__cntl__lane24_strm1_read_complete      ;  // FIXME
-  assign strm_control[24].strm1_write_complete       = sdp__cntl__lane24_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane24_strm1_read_enable         = strm_control[24].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane24_strm1_write_enable        = strm_control[24].strm1_write_enable        ;  // FIXME
+  assign strm_control[24].strm1_read_ready           = sdp__scntl__lane24_strm1_read_ready         ;  // FIXME
+  assign strm_control[24].strm1_write_ready          = sdp__scntl__lane24_strm1_write_ready        ;  // FIXME
+  assign strm_control[24].strm1_read_complete        = sdp__scntl__lane24_strm1_read_complete      ;  // FIXME
+  assign strm_control[24].strm1_write_complete       = sdp__scntl__lane24_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane24_strm0_read_start_address  = (strm_control[24].strm0_assignedToExternalDma) ? strm_control[24].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane24_strm0_read_start_address  = (strm_control[24].strm0_assignedToExternalDma) ? strm_control[24].strm0_ExternalDma_read_start_address  :
                                                                                                        lane24_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane24_strm1_read_start_address  = (strm_control[24].strm1_assignedToExternalDma) ? strm_control[24].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane24_strm1_read_start_address  = (strm_control[24].strm1_assignedToExternalDma) ? strm_control[24].strm1_ExternalDma_read_start_address  :
                                                                                                        lane24_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane24_strm0_write_start_address = lane24_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane24_strm1_write_start_address = lane24_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane24_type0                     = lane24_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane24_type1                     = lane24_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane24_num_of_types0             = lane24_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane24_num_of_types1             = lane24_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane24_strm0_write_start_address = lane24_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane24_strm1_write_start_address = lane24_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane24_type0                     = lane24_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane24_type1                     = lane24_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane24_num_of_types0             = lane24_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane24_num_of_types1             = lane24_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane24_strm0_read_start_address             = lane24_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane24_strm1_read_start_address             = lane24_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane24_strm0_write_start_address            = lane24_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1218,32 +1218,32 @@
   assign lane24_stagger0                             = lane24_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane24_stagger1                             = lane24_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane25_strm0_read_enable         = strm_control[25].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane25_strm0_write_enable        = strm_control[25].strm0_write_enable        ;  // FIXME
-  assign strm_control[25].strm0_read_ready           = sdp__cntl__lane25_strm0_read_ready         ;  // FIXME
-  assign strm_control[25].strm0_write_ready          = sdp__cntl__lane25_strm0_write_ready        ;  // FIXME
-  assign strm_control[25].strm0_read_complete        = sdp__cntl__lane25_strm0_read_complete      ;  // FIXME
-  assign strm_control[25].strm0_write_complete       = sdp__cntl__lane25_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane25_strm0_read_enable         = strm_control[25].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane25_strm0_write_enable        = strm_control[25].strm0_write_enable        ;  // FIXME
+  assign strm_control[25].strm0_read_ready           = sdp__scntl__lane25_strm0_read_ready         ;  // FIXME
+  assign strm_control[25].strm0_write_ready          = sdp__scntl__lane25_strm0_write_ready        ;  // FIXME
+  assign strm_control[25].strm0_read_complete        = sdp__scntl__lane25_strm0_read_complete      ;  // FIXME
+  assign strm_control[25].strm0_write_complete       = sdp__scntl__lane25_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane25_strm1_read_enable         = strm_control[25].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane25_strm1_write_enable        = strm_control[25].strm1_write_enable        ;  // FIXME
-  assign strm_control[25].strm1_read_ready           = sdp__cntl__lane25_strm1_read_ready         ;  // FIXME
-  assign strm_control[25].strm1_write_ready          = sdp__cntl__lane25_strm1_write_ready        ;  // FIXME
-  assign strm_control[25].strm1_read_complete        = sdp__cntl__lane25_strm1_read_complete      ;  // FIXME
-  assign strm_control[25].strm1_write_complete       = sdp__cntl__lane25_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane25_strm1_read_enable         = strm_control[25].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane25_strm1_write_enable        = strm_control[25].strm1_write_enable        ;  // FIXME
+  assign strm_control[25].strm1_read_ready           = sdp__scntl__lane25_strm1_read_ready         ;  // FIXME
+  assign strm_control[25].strm1_write_ready          = sdp__scntl__lane25_strm1_write_ready        ;  // FIXME
+  assign strm_control[25].strm1_read_complete        = sdp__scntl__lane25_strm1_read_complete      ;  // FIXME
+  assign strm_control[25].strm1_write_complete       = sdp__scntl__lane25_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane25_strm0_read_start_address  = (strm_control[25].strm0_assignedToExternalDma) ? strm_control[25].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane25_strm0_read_start_address  = (strm_control[25].strm0_assignedToExternalDma) ? strm_control[25].strm0_ExternalDma_read_start_address  :
                                                                                                        lane25_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane25_strm1_read_start_address  = (strm_control[25].strm1_assignedToExternalDma) ? strm_control[25].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane25_strm1_read_start_address  = (strm_control[25].strm1_assignedToExternalDma) ? strm_control[25].strm1_ExternalDma_read_start_address  :
                                                                                                        lane25_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane25_strm0_write_start_address = lane25_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane25_strm1_write_start_address = lane25_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane25_type0                     = lane25_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane25_type1                     = lane25_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane25_num_of_types0             = lane25_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane25_num_of_types1             = lane25_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane25_strm0_write_start_address = lane25_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane25_strm1_write_start_address = lane25_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane25_type0                     = lane25_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane25_type1                     = lane25_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane25_num_of_types0             = lane25_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane25_num_of_types1             = lane25_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane25_strm0_read_start_address             = lane25_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane25_strm1_read_start_address             = lane25_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane25_strm0_write_start_address            = lane25_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1255,32 +1255,32 @@
   assign lane25_stagger0                             = lane25_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane25_stagger1                             = lane25_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane26_strm0_read_enable         = strm_control[26].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane26_strm0_write_enable        = strm_control[26].strm0_write_enable        ;  // FIXME
-  assign strm_control[26].strm0_read_ready           = sdp__cntl__lane26_strm0_read_ready         ;  // FIXME
-  assign strm_control[26].strm0_write_ready          = sdp__cntl__lane26_strm0_write_ready        ;  // FIXME
-  assign strm_control[26].strm0_read_complete        = sdp__cntl__lane26_strm0_read_complete      ;  // FIXME
-  assign strm_control[26].strm0_write_complete       = sdp__cntl__lane26_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane26_strm0_read_enable         = strm_control[26].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane26_strm0_write_enable        = strm_control[26].strm0_write_enable        ;  // FIXME
+  assign strm_control[26].strm0_read_ready           = sdp__scntl__lane26_strm0_read_ready         ;  // FIXME
+  assign strm_control[26].strm0_write_ready          = sdp__scntl__lane26_strm0_write_ready        ;  // FIXME
+  assign strm_control[26].strm0_read_complete        = sdp__scntl__lane26_strm0_read_complete      ;  // FIXME
+  assign strm_control[26].strm0_write_complete       = sdp__scntl__lane26_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane26_strm1_read_enable         = strm_control[26].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane26_strm1_write_enable        = strm_control[26].strm1_write_enable        ;  // FIXME
-  assign strm_control[26].strm1_read_ready           = sdp__cntl__lane26_strm1_read_ready         ;  // FIXME
-  assign strm_control[26].strm1_write_ready          = sdp__cntl__lane26_strm1_write_ready        ;  // FIXME
-  assign strm_control[26].strm1_read_complete        = sdp__cntl__lane26_strm1_read_complete      ;  // FIXME
-  assign strm_control[26].strm1_write_complete       = sdp__cntl__lane26_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane26_strm1_read_enable         = strm_control[26].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane26_strm1_write_enable        = strm_control[26].strm1_write_enable        ;  // FIXME
+  assign strm_control[26].strm1_read_ready           = sdp__scntl__lane26_strm1_read_ready         ;  // FIXME
+  assign strm_control[26].strm1_write_ready          = sdp__scntl__lane26_strm1_write_ready        ;  // FIXME
+  assign strm_control[26].strm1_read_complete        = sdp__scntl__lane26_strm1_read_complete      ;  // FIXME
+  assign strm_control[26].strm1_write_complete       = sdp__scntl__lane26_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane26_strm0_read_start_address  = (strm_control[26].strm0_assignedToExternalDma) ? strm_control[26].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane26_strm0_read_start_address  = (strm_control[26].strm0_assignedToExternalDma) ? strm_control[26].strm0_ExternalDma_read_start_address  :
                                                                                                        lane26_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane26_strm1_read_start_address  = (strm_control[26].strm1_assignedToExternalDma) ? strm_control[26].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane26_strm1_read_start_address  = (strm_control[26].strm1_assignedToExternalDma) ? strm_control[26].strm1_ExternalDma_read_start_address  :
                                                                                                        lane26_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane26_strm0_write_start_address = lane26_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane26_strm1_write_start_address = lane26_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane26_type0                     = lane26_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane26_type1                     = lane26_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane26_num_of_types0             = lane26_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane26_num_of_types1             = lane26_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane26_strm0_write_start_address = lane26_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane26_strm1_write_start_address = lane26_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane26_type0                     = lane26_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane26_type1                     = lane26_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane26_num_of_types0             = lane26_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane26_num_of_types1             = lane26_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane26_strm0_read_start_address             = lane26_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane26_strm1_read_start_address             = lane26_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane26_strm0_write_start_address            = lane26_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1292,32 +1292,32 @@
   assign lane26_stagger0                             = lane26_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane26_stagger1                             = lane26_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane27_strm0_read_enable         = strm_control[27].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane27_strm0_write_enable        = strm_control[27].strm0_write_enable        ;  // FIXME
-  assign strm_control[27].strm0_read_ready           = sdp__cntl__lane27_strm0_read_ready         ;  // FIXME
-  assign strm_control[27].strm0_write_ready          = sdp__cntl__lane27_strm0_write_ready        ;  // FIXME
-  assign strm_control[27].strm0_read_complete        = sdp__cntl__lane27_strm0_read_complete      ;  // FIXME
-  assign strm_control[27].strm0_write_complete       = sdp__cntl__lane27_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane27_strm0_read_enable         = strm_control[27].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane27_strm0_write_enable        = strm_control[27].strm0_write_enable        ;  // FIXME
+  assign strm_control[27].strm0_read_ready           = sdp__scntl__lane27_strm0_read_ready         ;  // FIXME
+  assign strm_control[27].strm0_write_ready          = sdp__scntl__lane27_strm0_write_ready        ;  // FIXME
+  assign strm_control[27].strm0_read_complete        = sdp__scntl__lane27_strm0_read_complete      ;  // FIXME
+  assign strm_control[27].strm0_write_complete       = sdp__scntl__lane27_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane27_strm1_read_enable         = strm_control[27].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane27_strm1_write_enable        = strm_control[27].strm1_write_enable        ;  // FIXME
-  assign strm_control[27].strm1_read_ready           = sdp__cntl__lane27_strm1_read_ready         ;  // FIXME
-  assign strm_control[27].strm1_write_ready          = sdp__cntl__lane27_strm1_write_ready        ;  // FIXME
-  assign strm_control[27].strm1_read_complete        = sdp__cntl__lane27_strm1_read_complete      ;  // FIXME
-  assign strm_control[27].strm1_write_complete       = sdp__cntl__lane27_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane27_strm1_read_enable         = strm_control[27].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane27_strm1_write_enable        = strm_control[27].strm1_write_enable        ;  // FIXME
+  assign strm_control[27].strm1_read_ready           = sdp__scntl__lane27_strm1_read_ready         ;  // FIXME
+  assign strm_control[27].strm1_write_ready          = sdp__scntl__lane27_strm1_write_ready        ;  // FIXME
+  assign strm_control[27].strm1_read_complete        = sdp__scntl__lane27_strm1_read_complete      ;  // FIXME
+  assign strm_control[27].strm1_write_complete       = sdp__scntl__lane27_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane27_strm0_read_start_address  = (strm_control[27].strm0_assignedToExternalDma) ? strm_control[27].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane27_strm0_read_start_address  = (strm_control[27].strm0_assignedToExternalDma) ? strm_control[27].strm0_ExternalDma_read_start_address  :
                                                                                                        lane27_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane27_strm1_read_start_address  = (strm_control[27].strm1_assignedToExternalDma) ? strm_control[27].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane27_strm1_read_start_address  = (strm_control[27].strm1_assignedToExternalDma) ? strm_control[27].strm1_ExternalDma_read_start_address  :
                                                                                                        lane27_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane27_strm0_write_start_address = lane27_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane27_strm1_write_start_address = lane27_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane27_type0                     = lane27_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane27_type1                     = lane27_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane27_num_of_types0             = lane27_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane27_num_of_types1             = lane27_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane27_strm0_write_start_address = lane27_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane27_strm1_write_start_address = lane27_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane27_type0                     = lane27_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane27_type1                     = lane27_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane27_num_of_types0             = lane27_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane27_num_of_types1             = lane27_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane27_strm0_read_start_address             = lane27_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane27_strm1_read_start_address             = lane27_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane27_strm0_write_start_address            = lane27_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1329,32 +1329,32 @@
   assign lane27_stagger0                             = lane27_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane27_stagger1                             = lane27_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane28_strm0_read_enable         = strm_control[28].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane28_strm0_write_enable        = strm_control[28].strm0_write_enable        ;  // FIXME
-  assign strm_control[28].strm0_read_ready           = sdp__cntl__lane28_strm0_read_ready         ;  // FIXME
-  assign strm_control[28].strm0_write_ready          = sdp__cntl__lane28_strm0_write_ready        ;  // FIXME
-  assign strm_control[28].strm0_read_complete        = sdp__cntl__lane28_strm0_read_complete      ;  // FIXME
-  assign strm_control[28].strm0_write_complete       = sdp__cntl__lane28_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane28_strm0_read_enable         = strm_control[28].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane28_strm0_write_enable        = strm_control[28].strm0_write_enable        ;  // FIXME
+  assign strm_control[28].strm0_read_ready           = sdp__scntl__lane28_strm0_read_ready         ;  // FIXME
+  assign strm_control[28].strm0_write_ready          = sdp__scntl__lane28_strm0_write_ready        ;  // FIXME
+  assign strm_control[28].strm0_read_complete        = sdp__scntl__lane28_strm0_read_complete      ;  // FIXME
+  assign strm_control[28].strm0_write_complete       = sdp__scntl__lane28_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane28_strm1_read_enable         = strm_control[28].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane28_strm1_write_enable        = strm_control[28].strm1_write_enable        ;  // FIXME
-  assign strm_control[28].strm1_read_ready           = sdp__cntl__lane28_strm1_read_ready         ;  // FIXME
-  assign strm_control[28].strm1_write_ready          = sdp__cntl__lane28_strm1_write_ready        ;  // FIXME
-  assign strm_control[28].strm1_read_complete        = sdp__cntl__lane28_strm1_read_complete      ;  // FIXME
-  assign strm_control[28].strm1_write_complete       = sdp__cntl__lane28_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane28_strm1_read_enable         = strm_control[28].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane28_strm1_write_enable        = strm_control[28].strm1_write_enable        ;  // FIXME
+  assign strm_control[28].strm1_read_ready           = sdp__scntl__lane28_strm1_read_ready         ;  // FIXME
+  assign strm_control[28].strm1_write_ready          = sdp__scntl__lane28_strm1_write_ready        ;  // FIXME
+  assign strm_control[28].strm1_read_complete        = sdp__scntl__lane28_strm1_read_complete      ;  // FIXME
+  assign strm_control[28].strm1_write_complete       = sdp__scntl__lane28_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane28_strm0_read_start_address  = (strm_control[28].strm0_assignedToExternalDma) ? strm_control[28].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane28_strm0_read_start_address  = (strm_control[28].strm0_assignedToExternalDma) ? strm_control[28].strm0_ExternalDma_read_start_address  :
                                                                                                        lane28_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane28_strm1_read_start_address  = (strm_control[28].strm1_assignedToExternalDma) ? strm_control[28].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane28_strm1_read_start_address  = (strm_control[28].strm1_assignedToExternalDma) ? strm_control[28].strm1_ExternalDma_read_start_address  :
                                                                                                        lane28_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane28_strm0_write_start_address = lane28_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane28_strm1_write_start_address = lane28_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane28_type0                     = lane28_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane28_type1                     = lane28_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane28_num_of_types0             = lane28_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane28_num_of_types1             = lane28_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane28_strm0_write_start_address = lane28_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane28_strm1_write_start_address = lane28_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane28_type0                     = lane28_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane28_type1                     = lane28_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane28_num_of_types0             = lane28_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane28_num_of_types1             = lane28_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane28_strm0_read_start_address             = lane28_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane28_strm1_read_start_address             = lane28_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane28_strm0_write_start_address            = lane28_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1366,32 +1366,32 @@
   assign lane28_stagger0                             = lane28_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane28_stagger1                             = lane28_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane29_strm0_read_enable         = strm_control[29].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane29_strm0_write_enable        = strm_control[29].strm0_write_enable        ;  // FIXME
-  assign strm_control[29].strm0_read_ready           = sdp__cntl__lane29_strm0_read_ready         ;  // FIXME
-  assign strm_control[29].strm0_write_ready          = sdp__cntl__lane29_strm0_write_ready        ;  // FIXME
-  assign strm_control[29].strm0_read_complete        = sdp__cntl__lane29_strm0_read_complete      ;  // FIXME
-  assign strm_control[29].strm0_write_complete       = sdp__cntl__lane29_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane29_strm0_read_enable         = strm_control[29].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane29_strm0_write_enable        = strm_control[29].strm0_write_enable        ;  // FIXME
+  assign strm_control[29].strm0_read_ready           = sdp__scntl__lane29_strm0_read_ready         ;  // FIXME
+  assign strm_control[29].strm0_write_ready          = sdp__scntl__lane29_strm0_write_ready        ;  // FIXME
+  assign strm_control[29].strm0_read_complete        = sdp__scntl__lane29_strm0_read_complete      ;  // FIXME
+  assign strm_control[29].strm0_write_complete       = sdp__scntl__lane29_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane29_strm1_read_enable         = strm_control[29].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane29_strm1_write_enable        = strm_control[29].strm1_write_enable        ;  // FIXME
-  assign strm_control[29].strm1_read_ready           = sdp__cntl__lane29_strm1_read_ready         ;  // FIXME
-  assign strm_control[29].strm1_write_ready          = sdp__cntl__lane29_strm1_write_ready        ;  // FIXME
-  assign strm_control[29].strm1_read_complete        = sdp__cntl__lane29_strm1_read_complete      ;  // FIXME
-  assign strm_control[29].strm1_write_complete       = sdp__cntl__lane29_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane29_strm1_read_enable         = strm_control[29].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane29_strm1_write_enable        = strm_control[29].strm1_write_enable        ;  // FIXME
+  assign strm_control[29].strm1_read_ready           = sdp__scntl__lane29_strm1_read_ready         ;  // FIXME
+  assign strm_control[29].strm1_write_ready          = sdp__scntl__lane29_strm1_write_ready        ;  // FIXME
+  assign strm_control[29].strm1_read_complete        = sdp__scntl__lane29_strm1_read_complete      ;  // FIXME
+  assign strm_control[29].strm1_write_complete       = sdp__scntl__lane29_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane29_strm0_read_start_address  = (strm_control[29].strm0_assignedToExternalDma) ? strm_control[29].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane29_strm0_read_start_address  = (strm_control[29].strm0_assignedToExternalDma) ? strm_control[29].strm0_ExternalDma_read_start_address  :
                                                                                                        lane29_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane29_strm1_read_start_address  = (strm_control[29].strm1_assignedToExternalDma) ? strm_control[29].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane29_strm1_read_start_address  = (strm_control[29].strm1_assignedToExternalDma) ? strm_control[29].strm1_ExternalDma_read_start_address  :
                                                                                                        lane29_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane29_strm0_write_start_address = lane29_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane29_strm1_write_start_address = lane29_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane29_type0                     = lane29_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane29_type1                     = lane29_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane29_num_of_types0             = lane29_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane29_num_of_types1             = lane29_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane29_strm0_write_start_address = lane29_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane29_strm1_write_start_address = lane29_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane29_type0                     = lane29_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane29_type1                     = lane29_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane29_num_of_types0             = lane29_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane29_num_of_types1             = lane29_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane29_strm0_read_start_address             = lane29_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane29_strm1_read_start_address             = lane29_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane29_strm0_write_start_address            = lane29_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1403,32 +1403,32 @@
   assign lane29_stagger0                             = lane29_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane29_stagger1                             = lane29_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane30_strm0_read_enable         = strm_control[30].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane30_strm0_write_enable        = strm_control[30].strm0_write_enable        ;  // FIXME
-  assign strm_control[30].strm0_read_ready           = sdp__cntl__lane30_strm0_read_ready         ;  // FIXME
-  assign strm_control[30].strm0_write_ready          = sdp__cntl__lane30_strm0_write_ready        ;  // FIXME
-  assign strm_control[30].strm0_read_complete        = sdp__cntl__lane30_strm0_read_complete      ;  // FIXME
-  assign strm_control[30].strm0_write_complete       = sdp__cntl__lane30_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane30_strm0_read_enable         = strm_control[30].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane30_strm0_write_enable        = strm_control[30].strm0_write_enable        ;  // FIXME
+  assign strm_control[30].strm0_read_ready           = sdp__scntl__lane30_strm0_read_ready         ;  // FIXME
+  assign strm_control[30].strm0_write_ready          = sdp__scntl__lane30_strm0_write_ready        ;  // FIXME
+  assign strm_control[30].strm0_read_complete        = sdp__scntl__lane30_strm0_read_complete      ;  // FIXME
+  assign strm_control[30].strm0_write_complete       = sdp__scntl__lane30_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane30_strm1_read_enable         = strm_control[30].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane30_strm1_write_enable        = strm_control[30].strm1_write_enable        ;  // FIXME
-  assign strm_control[30].strm1_read_ready           = sdp__cntl__lane30_strm1_read_ready         ;  // FIXME
-  assign strm_control[30].strm1_write_ready          = sdp__cntl__lane30_strm1_write_ready        ;  // FIXME
-  assign strm_control[30].strm1_read_complete        = sdp__cntl__lane30_strm1_read_complete      ;  // FIXME
-  assign strm_control[30].strm1_write_complete       = sdp__cntl__lane30_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane30_strm1_read_enable         = strm_control[30].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane30_strm1_write_enable        = strm_control[30].strm1_write_enable        ;  // FIXME
+  assign strm_control[30].strm1_read_ready           = sdp__scntl__lane30_strm1_read_ready         ;  // FIXME
+  assign strm_control[30].strm1_write_ready          = sdp__scntl__lane30_strm1_write_ready        ;  // FIXME
+  assign strm_control[30].strm1_read_complete        = sdp__scntl__lane30_strm1_read_complete      ;  // FIXME
+  assign strm_control[30].strm1_write_complete       = sdp__scntl__lane30_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane30_strm0_read_start_address  = (strm_control[30].strm0_assignedToExternalDma) ? strm_control[30].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane30_strm0_read_start_address  = (strm_control[30].strm0_assignedToExternalDma) ? strm_control[30].strm0_ExternalDma_read_start_address  :
                                                                                                        lane30_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane30_strm1_read_start_address  = (strm_control[30].strm1_assignedToExternalDma) ? strm_control[30].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane30_strm1_read_start_address  = (strm_control[30].strm1_assignedToExternalDma) ? strm_control[30].strm1_ExternalDma_read_start_address  :
                                                                                                        lane30_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane30_strm0_write_start_address = lane30_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane30_strm1_write_start_address = lane30_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane30_type0                     = lane30_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane30_type1                     = lane30_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane30_num_of_types0             = lane30_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane30_num_of_types1             = lane30_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane30_strm0_write_start_address = lane30_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane30_strm1_write_start_address = lane30_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane30_type0                     = lane30_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane30_type1                     = lane30_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane30_num_of_types0             = lane30_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane30_num_of_types1             = lane30_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane30_strm0_read_start_address             = lane30_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane30_strm1_read_start_address             = lane30_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane30_strm0_write_start_address            = lane30_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1440,32 +1440,32 @@
   assign lane30_stagger0                             = lane30_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   assign lane30_stagger1                             = lane30_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane31_strm0_read_enable         = strm_control[31].strm0_read_enable         ;  // FIXME
-  assign cntl__sdp__lane31_strm0_write_enable        = strm_control[31].strm0_write_enable        ;  // FIXME
-  assign strm_control[31].strm0_read_ready           = sdp__cntl__lane31_strm0_read_ready         ;  // FIXME
-  assign strm_control[31].strm0_write_ready          = sdp__cntl__lane31_strm0_write_ready        ;  // FIXME
-  assign strm_control[31].strm0_read_complete        = sdp__cntl__lane31_strm0_read_complete      ;  // FIXME
-  assign strm_control[31].strm0_write_complete       = sdp__cntl__lane31_strm0_write_complete     ;  // FIXME
+  assign scntl__sdp__lane31_strm0_read_enable         = strm_control[31].strm0_read_enable         ;  // FIXME
+  assign scntl__sdp__lane31_strm0_write_enable        = strm_control[31].strm0_write_enable        ;  // FIXME
+  assign strm_control[31].strm0_read_ready           = sdp__scntl__lane31_strm0_read_ready         ;  // FIXME
+  assign strm_control[31].strm0_write_ready          = sdp__scntl__lane31_strm0_write_ready        ;  // FIXME
+  assign strm_control[31].strm0_read_complete        = sdp__scntl__lane31_strm0_read_complete      ;  // FIXME
+  assign strm_control[31].strm0_write_complete       = sdp__scntl__lane31_strm0_write_complete     ;  // FIXME
   // Connect lane operation information to stream fsm 
-  assign cntl__sdp__lane31_strm1_read_enable         = strm_control[31].strm1_read_enable         ;  // FIXME
-  assign cntl__sdp__lane31_strm1_write_enable        = strm_control[31].strm1_write_enable        ;  // FIXME
-  assign strm_control[31].strm1_read_ready           = sdp__cntl__lane31_strm1_read_ready         ;  // FIXME
-  assign strm_control[31].strm1_write_ready          = sdp__cntl__lane31_strm1_write_ready        ;  // FIXME
-  assign strm_control[31].strm1_read_complete        = sdp__cntl__lane31_strm1_read_complete      ;  // FIXME
-  assign strm_control[31].strm1_write_complete       = sdp__cntl__lane31_strm1_write_complete     ;  // FIXME
+  assign scntl__sdp__lane31_strm1_read_enable         = strm_control[31].strm1_read_enable         ;  // FIXME
+  assign scntl__sdp__lane31_strm1_write_enable        = strm_control[31].strm1_write_enable        ;  // FIXME
+  assign strm_control[31].strm1_read_ready           = sdp__scntl__lane31_strm1_read_ready         ;  // FIXME
+  assign strm_control[31].strm1_write_ready          = sdp__scntl__lane31_strm1_write_ready        ;  // FIXME
+  assign strm_control[31].strm1_read_complete        = sdp__scntl__lane31_strm1_read_complete      ;  // FIXME
+  assign strm_control[31].strm1_write_complete       = sdp__scntl__lane31_strm1_write_complete     ;  // FIXME
   always @(*)
     begin
-      cntl__sdp__lane31_strm0_read_start_address  = (strm_control[31].strm0_assignedToExternalDma) ? strm_control[31].strm0_ExternalDma_read_start_address  :
+      scntl__sdp__lane31_strm0_read_start_address  = (strm_control[31].strm0_assignedToExternalDma) ? strm_control[31].strm0_ExternalDma_read_start_address  :
                                                                                                        lane31_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
-      cntl__sdp__lane31_strm1_read_start_address  = (strm_control[31].strm1_assignedToExternalDma) ? strm_control[31].strm1_ExternalDma_read_start_address  :
+      scntl__sdp__lane31_strm1_read_start_address  = (strm_control[31].strm1_assignedToExternalDma) ? strm_control[31].strm1_ExternalDma_read_start_address  :
                                                                                                        lane31_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;
     end
-  assign cntl__sdp__lane31_strm0_write_start_address = lane31_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane31_strm1_write_start_address = lane31_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
-  assign cntl__sdp__lane31_type0                     = lane31_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane31_type1                     = lane31_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
-  assign cntl__sdp__lane31_num_of_types0             = lane31_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
-  assign cntl__sdp__lane31_num_of_types1             = lane31_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane31_strm0_write_start_address = lane31_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane31_strm1_write_start_address = lane31_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
+  assign scntl__sdp__lane31_type0                     = lane31_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane31_type1                     = lane31_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;
+  assign scntl__sdp__lane31_num_of_types0             = lane31_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
+  assign scntl__sdp__lane31_num_of_types1             = lane31_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;
   assign lane31_strm0_read_start_address             = lane31_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane31_strm1_read_start_address             = lane31_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
   assign lane31_strm0_write_start_address            = lane31_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;
@@ -1994,134 +1994,134 @@
   assign strm_control[31].strm1_read_peId  =  lane31_strm1_read_start_peId  ; 
   assign strm_control[31].strm1_write_peId =  lane31_strm1_write_start_peId ; 
 
-  assign cntl__sdp__lane0_strm0_stOp_source      = strm_control[0].strm0_stOp_src  ;
-  assign cntl__sdp__lane0_strm0_stOp_destination = strm_control[0].strm0_stOp_dest ;
-  assign cntl__sdp__lane0_strm1_stOp_source      = strm_control[0].strm1_stOp_src  ;
-  assign cntl__sdp__lane0_strm1_stOp_destination = strm_control[0].strm1_stOp_dest ;
-  assign cntl__sdp__lane1_strm0_stOp_source      = strm_control[1].strm0_stOp_src  ;
-  assign cntl__sdp__lane1_strm0_stOp_destination = strm_control[1].strm0_stOp_dest ;
-  assign cntl__sdp__lane1_strm1_stOp_source      = strm_control[1].strm1_stOp_src  ;
-  assign cntl__sdp__lane1_strm1_stOp_destination = strm_control[1].strm1_stOp_dest ;
-  assign cntl__sdp__lane2_strm0_stOp_source      = strm_control[2].strm0_stOp_src  ;
-  assign cntl__sdp__lane2_strm0_stOp_destination = strm_control[2].strm0_stOp_dest ;
-  assign cntl__sdp__lane2_strm1_stOp_source      = strm_control[2].strm1_stOp_src  ;
-  assign cntl__sdp__lane2_strm1_stOp_destination = strm_control[2].strm1_stOp_dest ;
-  assign cntl__sdp__lane3_strm0_stOp_source      = strm_control[3].strm0_stOp_src  ;
-  assign cntl__sdp__lane3_strm0_stOp_destination = strm_control[3].strm0_stOp_dest ;
-  assign cntl__sdp__lane3_strm1_stOp_source      = strm_control[3].strm1_stOp_src  ;
-  assign cntl__sdp__lane3_strm1_stOp_destination = strm_control[3].strm1_stOp_dest ;
-  assign cntl__sdp__lane4_strm0_stOp_source      = strm_control[4].strm0_stOp_src  ;
-  assign cntl__sdp__lane4_strm0_stOp_destination = strm_control[4].strm0_stOp_dest ;
-  assign cntl__sdp__lane4_strm1_stOp_source      = strm_control[4].strm1_stOp_src  ;
-  assign cntl__sdp__lane4_strm1_stOp_destination = strm_control[4].strm1_stOp_dest ;
-  assign cntl__sdp__lane5_strm0_stOp_source      = strm_control[5].strm0_stOp_src  ;
-  assign cntl__sdp__lane5_strm0_stOp_destination = strm_control[5].strm0_stOp_dest ;
-  assign cntl__sdp__lane5_strm1_stOp_source      = strm_control[5].strm1_stOp_src  ;
-  assign cntl__sdp__lane5_strm1_stOp_destination = strm_control[5].strm1_stOp_dest ;
-  assign cntl__sdp__lane6_strm0_stOp_source      = strm_control[6].strm0_stOp_src  ;
-  assign cntl__sdp__lane6_strm0_stOp_destination = strm_control[6].strm0_stOp_dest ;
-  assign cntl__sdp__lane6_strm1_stOp_source      = strm_control[6].strm1_stOp_src  ;
-  assign cntl__sdp__lane6_strm1_stOp_destination = strm_control[6].strm1_stOp_dest ;
-  assign cntl__sdp__lane7_strm0_stOp_source      = strm_control[7].strm0_stOp_src  ;
-  assign cntl__sdp__lane7_strm0_stOp_destination = strm_control[7].strm0_stOp_dest ;
-  assign cntl__sdp__lane7_strm1_stOp_source      = strm_control[7].strm1_stOp_src  ;
-  assign cntl__sdp__lane7_strm1_stOp_destination = strm_control[7].strm1_stOp_dest ;
-  assign cntl__sdp__lane8_strm0_stOp_source      = strm_control[8].strm0_stOp_src  ;
-  assign cntl__sdp__lane8_strm0_stOp_destination = strm_control[8].strm0_stOp_dest ;
-  assign cntl__sdp__lane8_strm1_stOp_source      = strm_control[8].strm1_stOp_src  ;
-  assign cntl__sdp__lane8_strm1_stOp_destination = strm_control[8].strm1_stOp_dest ;
-  assign cntl__sdp__lane9_strm0_stOp_source      = strm_control[9].strm0_stOp_src  ;
-  assign cntl__sdp__lane9_strm0_stOp_destination = strm_control[9].strm0_stOp_dest ;
-  assign cntl__sdp__lane9_strm1_stOp_source      = strm_control[9].strm1_stOp_src  ;
-  assign cntl__sdp__lane9_strm1_stOp_destination = strm_control[9].strm1_stOp_dest ;
-  assign cntl__sdp__lane10_strm0_stOp_source      = strm_control[10].strm0_stOp_src  ;
-  assign cntl__sdp__lane10_strm0_stOp_destination = strm_control[10].strm0_stOp_dest ;
-  assign cntl__sdp__lane10_strm1_stOp_source      = strm_control[10].strm1_stOp_src  ;
-  assign cntl__sdp__lane10_strm1_stOp_destination = strm_control[10].strm1_stOp_dest ;
-  assign cntl__sdp__lane11_strm0_stOp_source      = strm_control[11].strm0_stOp_src  ;
-  assign cntl__sdp__lane11_strm0_stOp_destination = strm_control[11].strm0_stOp_dest ;
-  assign cntl__sdp__lane11_strm1_stOp_source      = strm_control[11].strm1_stOp_src  ;
-  assign cntl__sdp__lane11_strm1_stOp_destination = strm_control[11].strm1_stOp_dest ;
-  assign cntl__sdp__lane12_strm0_stOp_source      = strm_control[12].strm0_stOp_src  ;
-  assign cntl__sdp__lane12_strm0_stOp_destination = strm_control[12].strm0_stOp_dest ;
-  assign cntl__sdp__lane12_strm1_stOp_source      = strm_control[12].strm1_stOp_src  ;
-  assign cntl__sdp__lane12_strm1_stOp_destination = strm_control[12].strm1_stOp_dest ;
-  assign cntl__sdp__lane13_strm0_stOp_source      = strm_control[13].strm0_stOp_src  ;
-  assign cntl__sdp__lane13_strm0_stOp_destination = strm_control[13].strm0_stOp_dest ;
-  assign cntl__sdp__lane13_strm1_stOp_source      = strm_control[13].strm1_stOp_src  ;
-  assign cntl__sdp__lane13_strm1_stOp_destination = strm_control[13].strm1_stOp_dest ;
-  assign cntl__sdp__lane14_strm0_stOp_source      = strm_control[14].strm0_stOp_src  ;
-  assign cntl__sdp__lane14_strm0_stOp_destination = strm_control[14].strm0_stOp_dest ;
-  assign cntl__sdp__lane14_strm1_stOp_source      = strm_control[14].strm1_stOp_src  ;
-  assign cntl__sdp__lane14_strm1_stOp_destination = strm_control[14].strm1_stOp_dest ;
-  assign cntl__sdp__lane15_strm0_stOp_source      = strm_control[15].strm0_stOp_src  ;
-  assign cntl__sdp__lane15_strm0_stOp_destination = strm_control[15].strm0_stOp_dest ;
-  assign cntl__sdp__lane15_strm1_stOp_source      = strm_control[15].strm1_stOp_src  ;
-  assign cntl__sdp__lane15_strm1_stOp_destination = strm_control[15].strm1_stOp_dest ;
-  assign cntl__sdp__lane16_strm0_stOp_source      = strm_control[16].strm0_stOp_src  ;
-  assign cntl__sdp__lane16_strm0_stOp_destination = strm_control[16].strm0_stOp_dest ;
-  assign cntl__sdp__lane16_strm1_stOp_source      = strm_control[16].strm1_stOp_src  ;
-  assign cntl__sdp__lane16_strm1_stOp_destination = strm_control[16].strm1_stOp_dest ;
-  assign cntl__sdp__lane17_strm0_stOp_source      = strm_control[17].strm0_stOp_src  ;
-  assign cntl__sdp__lane17_strm0_stOp_destination = strm_control[17].strm0_stOp_dest ;
-  assign cntl__sdp__lane17_strm1_stOp_source      = strm_control[17].strm1_stOp_src  ;
-  assign cntl__sdp__lane17_strm1_stOp_destination = strm_control[17].strm1_stOp_dest ;
-  assign cntl__sdp__lane18_strm0_stOp_source      = strm_control[18].strm0_stOp_src  ;
-  assign cntl__sdp__lane18_strm0_stOp_destination = strm_control[18].strm0_stOp_dest ;
-  assign cntl__sdp__lane18_strm1_stOp_source      = strm_control[18].strm1_stOp_src  ;
-  assign cntl__sdp__lane18_strm1_stOp_destination = strm_control[18].strm1_stOp_dest ;
-  assign cntl__sdp__lane19_strm0_stOp_source      = strm_control[19].strm0_stOp_src  ;
-  assign cntl__sdp__lane19_strm0_stOp_destination = strm_control[19].strm0_stOp_dest ;
-  assign cntl__sdp__lane19_strm1_stOp_source      = strm_control[19].strm1_stOp_src  ;
-  assign cntl__sdp__lane19_strm1_stOp_destination = strm_control[19].strm1_stOp_dest ;
-  assign cntl__sdp__lane20_strm0_stOp_source      = strm_control[20].strm0_stOp_src  ;
-  assign cntl__sdp__lane20_strm0_stOp_destination = strm_control[20].strm0_stOp_dest ;
-  assign cntl__sdp__lane20_strm1_stOp_source      = strm_control[20].strm1_stOp_src  ;
-  assign cntl__sdp__lane20_strm1_stOp_destination = strm_control[20].strm1_stOp_dest ;
-  assign cntl__sdp__lane21_strm0_stOp_source      = strm_control[21].strm0_stOp_src  ;
-  assign cntl__sdp__lane21_strm0_stOp_destination = strm_control[21].strm0_stOp_dest ;
-  assign cntl__sdp__lane21_strm1_stOp_source      = strm_control[21].strm1_stOp_src  ;
-  assign cntl__sdp__lane21_strm1_stOp_destination = strm_control[21].strm1_stOp_dest ;
-  assign cntl__sdp__lane22_strm0_stOp_source      = strm_control[22].strm0_stOp_src  ;
-  assign cntl__sdp__lane22_strm0_stOp_destination = strm_control[22].strm0_stOp_dest ;
-  assign cntl__sdp__lane22_strm1_stOp_source      = strm_control[22].strm1_stOp_src  ;
-  assign cntl__sdp__lane22_strm1_stOp_destination = strm_control[22].strm1_stOp_dest ;
-  assign cntl__sdp__lane23_strm0_stOp_source      = strm_control[23].strm0_stOp_src  ;
-  assign cntl__sdp__lane23_strm0_stOp_destination = strm_control[23].strm0_stOp_dest ;
-  assign cntl__sdp__lane23_strm1_stOp_source      = strm_control[23].strm1_stOp_src  ;
-  assign cntl__sdp__lane23_strm1_stOp_destination = strm_control[23].strm1_stOp_dest ;
-  assign cntl__sdp__lane24_strm0_stOp_source      = strm_control[24].strm0_stOp_src  ;
-  assign cntl__sdp__lane24_strm0_stOp_destination = strm_control[24].strm0_stOp_dest ;
-  assign cntl__sdp__lane24_strm1_stOp_source      = strm_control[24].strm1_stOp_src  ;
-  assign cntl__sdp__lane24_strm1_stOp_destination = strm_control[24].strm1_stOp_dest ;
-  assign cntl__sdp__lane25_strm0_stOp_source      = strm_control[25].strm0_stOp_src  ;
-  assign cntl__sdp__lane25_strm0_stOp_destination = strm_control[25].strm0_stOp_dest ;
-  assign cntl__sdp__lane25_strm1_stOp_source      = strm_control[25].strm1_stOp_src  ;
-  assign cntl__sdp__lane25_strm1_stOp_destination = strm_control[25].strm1_stOp_dest ;
-  assign cntl__sdp__lane26_strm0_stOp_source      = strm_control[26].strm0_stOp_src  ;
-  assign cntl__sdp__lane26_strm0_stOp_destination = strm_control[26].strm0_stOp_dest ;
-  assign cntl__sdp__lane26_strm1_stOp_source      = strm_control[26].strm1_stOp_src  ;
-  assign cntl__sdp__lane26_strm1_stOp_destination = strm_control[26].strm1_stOp_dest ;
-  assign cntl__sdp__lane27_strm0_stOp_source      = strm_control[27].strm0_stOp_src  ;
-  assign cntl__sdp__lane27_strm0_stOp_destination = strm_control[27].strm0_stOp_dest ;
-  assign cntl__sdp__lane27_strm1_stOp_source      = strm_control[27].strm1_stOp_src  ;
-  assign cntl__sdp__lane27_strm1_stOp_destination = strm_control[27].strm1_stOp_dest ;
-  assign cntl__sdp__lane28_strm0_stOp_source      = strm_control[28].strm0_stOp_src  ;
-  assign cntl__sdp__lane28_strm0_stOp_destination = strm_control[28].strm0_stOp_dest ;
-  assign cntl__sdp__lane28_strm1_stOp_source      = strm_control[28].strm1_stOp_src  ;
-  assign cntl__sdp__lane28_strm1_stOp_destination = strm_control[28].strm1_stOp_dest ;
-  assign cntl__sdp__lane29_strm0_stOp_source      = strm_control[29].strm0_stOp_src  ;
-  assign cntl__sdp__lane29_strm0_stOp_destination = strm_control[29].strm0_stOp_dest ;
-  assign cntl__sdp__lane29_strm1_stOp_source      = strm_control[29].strm1_stOp_src  ;
-  assign cntl__sdp__lane29_strm1_stOp_destination = strm_control[29].strm1_stOp_dest ;
-  assign cntl__sdp__lane30_strm0_stOp_source      = strm_control[30].strm0_stOp_src  ;
-  assign cntl__sdp__lane30_strm0_stOp_destination = strm_control[30].strm0_stOp_dest ;
-  assign cntl__sdp__lane30_strm1_stOp_source      = strm_control[30].strm1_stOp_src  ;
-  assign cntl__sdp__lane30_strm1_stOp_destination = strm_control[30].strm1_stOp_dest ;
-  assign cntl__sdp__lane31_strm0_stOp_source      = strm_control[31].strm0_stOp_src  ;
-  assign cntl__sdp__lane31_strm0_stOp_destination = strm_control[31].strm0_stOp_dest ;
-  assign cntl__sdp__lane31_strm1_stOp_source      = strm_control[31].strm1_stOp_src  ;
-  assign cntl__sdp__lane31_strm1_stOp_destination = strm_control[31].strm1_stOp_dest ;
+  assign scntl__sdp__lane0_strm0_stOp_source      = strm_control[0].strm0_stOp_src  ;
+  assign scntl__sdp__lane0_strm0_stOp_destination = strm_control[0].strm0_stOp_dest ;
+  assign scntl__sdp__lane0_strm1_stOp_source      = strm_control[0].strm1_stOp_src  ;
+  assign scntl__sdp__lane0_strm1_stOp_destination = strm_control[0].strm1_stOp_dest ;
+  assign scntl__sdp__lane1_strm0_stOp_source      = strm_control[1].strm0_stOp_src  ;
+  assign scntl__sdp__lane1_strm0_stOp_destination = strm_control[1].strm0_stOp_dest ;
+  assign scntl__sdp__lane1_strm1_stOp_source      = strm_control[1].strm1_stOp_src  ;
+  assign scntl__sdp__lane1_strm1_stOp_destination = strm_control[1].strm1_stOp_dest ;
+  assign scntl__sdp__lane2_strm0_stOp_source      = strm_control[2].strm0_stOp_src  ;
+  assign scntl__sdp__lane2_strm0_stOp_destination = strm_control[2].strm0_stOp_dest ;
+  assign scntl__sdp__lane2_strm1_stOp_source      = strm_control[2].strm1_stOp_src  ;
+  assign scntl__sdp__lane2_strm1_stOp_destination = strm_control[2].strm1_stOp_dest ;
+  assign scntl__sdp__lane3_strm0_stOp_source      = strm_control[3].strm0_stOp_src  ;
+  assign scntl__sdp__lane3_strm0_stOp_destination = strm_control[3].strm0_stOp_dest ;
+  assign scntl__sdp__lane3_strm1_stOp_source      = strm_control[3].strm1_stOp_src  ;
+  assign scntl__sdp__lane3_strm1_stOp_destination = strm_control[3].strm1_stOp_dest ;
+  assign scntl__sdp__lane4_strm0_stOp_source      = strm_control[4].strm0_stOp_src  ;
+  assign scntl__sdp__lane4_strm0_stOp_destination = strm_control[4].strm0_stOp_dest ;
+  assign scntl__sdp__lane4_strm1_stOp_source      = strm_control[4].strm1_stOp_src  ;
+  assign scntl__sdp__lane4_strm1_stOp_destination = strm_control[4].strm1_stOp_dest ;
+  assign scntl__sdp__lane5_strm0_stOp_source      = strm_control[5].strm0_stOp_src  ;
+  assign scntl__sdp__lane5_strm0_stOp_destination = strm_control[5].strm0_stOp_dest ;
+  assign scntl__sdp__lane5_strm1_stOp_source      = strm_control[5].strm1_stOp_src  ;
+  assign scntl__sdp__lane5_strm1_stOp_destination = strm_control[5].strm1_stOp_dest ;
+  assign scntl__sdp__lane6_strm0_stOp_source      = strm_control[6].strm0_stOp_src  ;
+  assign scntl__sdp__lane6_strm0_stOp_destination = strm_control[6].strm0_stOp_dest ;
+  assign scntl__sdp__lane6_strm1_stOp_source      = strm_control[6].strm1_stOp_src  ;
+  assign scntl__sdp__lane6_strm1_stOp_destination = strm_control[6].strm1_stOp_dest ;
+  assign scntl__sdp__lane7_strm0_stOp_source      = strm_control[7].strm0_stOp_src  ;
+  assign scntl__sdp__lane7_strm0_stOp_destination = strm_control[7].strm0_stOp_dest ;
+  assign scntl__sdp__lane7_strm1_stOp_source      = strm_control[7].strm1_stOp_src  ;
+  assign scntl__sdp__lane7_strm1_stOp_destination = strm_control[7].strm1_stOp_dest ;
+  assign scntl__sdp__lane8_strm0_stOp_source      = strm_control[8].strm0_stOp_src  ;
+  assign scntl__sdp__lane8_strm0_stOp_destination = strm_control[8].strm0_stOp_dest ;
+  assign scntl__sdp__lane8_strm1_stOp_source      = strm_control[8].strm1_stOp_src  ;
+  assign scntl__sdp__lane8_strm1_stOp_destination = strm_control[8].strm1_stOp_dest ;
+  assign scntl__sdp__lane9_strm0_stOp_source      = strm_control[9].strm0_stOp_src  ;
+  assign scntl__sdp__lane9_strm0_stOp_destination = strm_control[9].strm0_stOp_dest ;
+  assign scntl__sdp__lane9_strm1_stOp_source      = strm_control[9].strm1_stOp_src  ;
+  assign scntl__sdp__lane9_strm1_stOp_destination = strm_control[9].strm1_stOp_dest ;
+  assign scntl__sdp__lane10_strm0_stOp_source      = strm_control[10].strm0_stOp_src  ;
+  assign scntl__sdp__lane10_strm0_stOp_destination = strm_control[10].strm0_stOp_dest ;
+  assign scntl__sdp__lane10_strm1_stOp_source      = strm_control[10].strm1_stOp_src  ;
+  assign scntl__sdp__lane10_strm1_stOp_destination = strm_control[10].strm1_stOp_dest ;
+  assign scntl__sdp__lane11_strm0_stOp_source      = strm_control[11].strm0_stOp_src  ;
+  assign scntl__sdp__lane11_strm0_stOp_destination = strm_control[11].strm0_stOp_dest ;
+  assign scntl__sdp__lane11_strm1_stOp_source      = strm_control[11].strm1_stOp_src  ;
+  assign scntl__sdp__lane11_strm1_stOp_destination = strm_control[11].strm1_stOp_dest ;
+  assign scntl__sdp__lane12_strm0_stOp_source      = strm_control[12].strm0_stOp_src  ;
+  assign scntl__sdp__lane12_strm0_stOp_destination = strm_control[12].strm0_stOp_dest ;
+  assign scntl__sdp__lane12_strm1_stOp_source      = strm_control[12].strm1_stOp_src  ;
+  assign scntl__sdp__lane12_strm1_stOp_destination = strm_control[12].strm1_stOp_dest ;
+  assign scntl__sdp__lane13_strm0_stOp_source      = strm_control[13].strm0_stOp_src  ;
+  assign scntl__sdp__lane13_strm0_stOp_destination = strm_control[13].strm0_stOp_dest ;
+  assign scntl__sdp__lane13_strm1_stOp_source      = strm_control[13].strm1_stOp_src  ;
+  assign scntl__sdp__lane13_strm1_stOp_destination = strm_control[13].strm1_stOp_dest ;
+  assign scntl__sdp__lane14_strm0_stOp_source      = strm_control[14].strm0_stOp_src  ;
+  assign scntl__sdp__lane14_strm0_stOp_destination = strm_control[14].strm0_stOp_dest ;
+  assign scntl__sdp__lane14_strm1_stOp_source      = strm_control[14].strm1_stOp_src  ;
+  assign scntl__sdp__lane14_strm1_stOp_destination = strm_control[14].strm1_stOp_dest ;
+  assign scntl__sdp__lane15_strm0_stOp_source      = strm_control[15].strm0_stOp_src  ;
+  assign scntl__sdp__lane15_strm0_stOp_destination = strm_control[15].strm0_stOp_dest ;
+  assign scntl__sdp__lane15_strm1_stOp_source      = strm_control[15].strm1_stOp_src  ;
+  assign scntl__sdp__lane15_strm1_stOp_destination = strm_control[15].strm1_stOp_dest ;
+  assign scntl__sdp__lane16_strm0_stOp_source      = strm_control[16].strm0_stOp_src  ;
+  assign scntl__sdp__lane16_strm0_stOp_destination = strm_control[16].strm0_stOp_dest ;
+  assign scntl__sdp__lane16_strm1_stOp_source      = strm_control[16].strm1_stOp_src  ;
+  assign scntl__sdp__lane16_strm1_stOp_destination = strm_control[16].strm1_stOp_dest ;
+  assign scntl__sdp__lane17_strm0_stOp_source      = strm_control[17].strm0_stOp_src  ;
+  assign scntl__sdp__lane17_strm0_stOp_destination = strm_control[17].strm0_stOp_dest ;
+  assign scntl__sdp__lane17_strm1_stOp_source      = strm_control[17].strm1_stOp_src  ;
+  assign scntl__sdp__lane17_strm1_stOp_destination = strm_control[17].strm1_stOp_dest ;
+  assign scntl__sdp__lane18_strm0_stOp_source      = strm_control[18].strm0_stOp_src  ;
+  assign scntl__sdp__lane18_strm0_stOp_destination = strm_control[18].strm0_stOp_dest ;
+  assign scntl__sdp__lane18_strm1_stOp_source      = strm_control[18].strm1_stOp_src  ;
+  assign scntl__sdp__lane18_strm1_stOp_destination = strm_control[18].strm1_stOp_dest ;
+  assign scntl__sdp__lane19_strm0_stOp_source      = strm_control[19].strm0_stOp_src  ;
+  assign scntl__sdp__lane19_strm0_stOp_destination = strm_control[19].strm0_stOp_dest ;
+  assign scntl__sdp__lane19_strm1_stOp_source      = strm_control[19].strm1_stOp_src  ;
+  assign scntl__sdp__lane19_strm1_stOp_destination = strm_control[19].strm1_stOp_dest ;
+  assign scntl__sdp__lane20_strm0_stOp_source      = strm_control[20].strm0_stOp_src  ;
+  assign scntl__sdp__lane20_strm0_stOp_destination = strm_control[20].strm0_stOp_dest ;
+  assign scntl__sdp__lane20_strm1_stOp_source      = strm_control[20].strm1_stOp_src  ;
+  assign scntl__sdp__lane20_strm1_stOp_destination = strm_control[20].strm1_stOp_dest ;
+  assign scntl__sdp__lane21_strm0_stOp_source      = strm_control[21].strm0_stOp_src  ;
+  assign scntl__sdp__lane21_strm0_stOp_destination = strm_control[21].strm0_stOp_dest ;
+  assign scntl__sdp__lane21_strm1_stOp_source      = strm_control[21].strm1_stOp_src  ;
+  assign scntl__sdp__lane21_strm1_stOp_destination = strm_control[21].strm1_stOp_dest ;
+  assign scntl__sdp__lane22_strm0_stOp_source      = strm_control[22].strm0_stOp_src  ;
+  assign scntl__sdp__lane22_strm0_stOp_destination = strm_control[22].strm0_stOp_dest ;
+  assign scntl__sdp__lane22_strm1_stOp_source      = strm_control[22].strm1_stOp_src  ;
+  assign scntl__sdp__lane22_strm1_stOp_destination = strm_control[22].strm1_stOp_dest ;
+  assign scntl__sdp__lane23_strm0_stOp_source      = strm_control[23].strm0_stOp_src  ;
+  assign scntl__sdp__lane23_strm0_stOp_destination = strm_control[23].strm0_stOp_dest ;
+  assign scntl__sdp__lane23_strm1_stOp_source      = strm_control[23].strm1_stOp_src  ;
+  assign scntl__sdp__lane23_strm1_stOp_destination = strm_control[23].strm1_stOp_dest ;
+  assign scntl__sdp__lane24_strm0_stOp_source      = strm_control[24].strm0_stOp_src  ;
+  assign scntl__sdp__lane24_strm0_stOp_destination = strm_control[24].strm0_stOp_dest ;
+  assign scntl__sdp__lane24_strm1_stOp_source      = strm_control[24].strm1_stOp_src  ;
+  assign scntl__sdp__lane24_strm1_stOp_destination = strm_control[24].strm1_stOp_dest ;
+  assign scntl__sdp__lane25_strm0_stOp_source      = strm_control[25].strm0_stOp_src  ;
+  assign scntl__sdp__lane25_strm0_stOp_destination = strm_control[25].strm0_stOp_dest ;
+  assign scntl__sdp__lane25_strm1_stOp_source      = strm_control[25].strm1_stOp_src  ;
+  assign scntl__sdp__lane25_strm1_stOp_destination = strm_control[25].strm1_stOp_dest ;
+  assign scntl__sdp__lane26_strm0_stOp_source      = strm_control[26].strm0_stOp_src  ;
+  assign scntl__sdp__lane26_strm0_stOp_destination = strm_control[26].strm0_stOp_dest ;
+  assign scntl__sdp__lane26_strm1_stOp_source      = strm_control[26].strm1_stOp_src  ;
+  assign scntl__sdp__lane26_strm1_stOp_destination = strm_control[26].strm1_stOp_dest ;
+  assign scntl__sdp__lane27_strm0_stOp_source      = strm_control[27].strm0_stOp_src  ;
+  assign scntl__sdp__lane27_strm0_stOp_destination = strm_control[27].strm0_stOp_dest ;
+  assign scntl__sdp__lane27_strm1_stOp_source      = strm_control[27].strm1_stOp_src  ;
+  assign scntl__sdp__lane27_strm1_stOp_destination = strm_control[27].strm1_stOp_dest ;
+  assign scntl__sdp__lane28_strm0_stOp_source      = strm_control[28].strm0_stOp_src  ;
+  assign scntl__sdp__lane28_strm0_stOp_destination = strm_control[28].strm0_stOp_dest ;
+  assign scntl__sdp__lane28_strm1_stOp_source      = strm_control[28].strm1_stOp_src  ;
+  assign scntl__sdp__lane28_strm1_stOp_destination = strm_control[28].strm1_stOp_dest ;
+  assign scntl__sdp__lane29_strm0_stOp_source      = strm_control[29].strm0_stOp_src  ;
+  assign scntl__sdp__lane29_strm0_stOp_destination = strm_control[29].strm0_stOp_dest ;
+  assign scntl__sdp__lane29_strm1_stOp_source      = strm_control[29].strm1_stOp_src  ;
+  assign scntl__sdp__lane29_strm1_stOp_destination = strm_control[29].strm1_stOp_dest ;
+  assign scntl__sdp__lane30_strm0_stOp_source      = strm_control[30].strm0_stOp_src  ;
+  assign scntl__sdp__lane30_strm0_stOp_destination = strm_control[30].strm0_stOp_dest ;
+  assign scntl__sdp__lane30_strm1_stOp_source      = strm_control[30].strm1_stOp_src  ;
+  assign scntl__sdp__lane30_strm1_stOp_destination = strm_control[30].strm1_stOp_dest ;
+  assign scntl__sdp__lane31_strm0_stOp_source      = strm_control[31].strm0_stOp_src  ;
+  assign scntl__sdp__lane31_strm0_stOp_destination = strm_control[31].strm0_stOp_dest ;
+  assign scntl__sdp__lane31_strm1_stOp_source      = strm_control[31].strm1_stOp_src  ;
+  assign scntl__sdp__lane31_strm1_stOp_destination = strm_control[31].strm1_stOp_dest ;
 
   assign NoC_Request_Vector[0]       = strm_control[0].NocLocalDmaRequest     ;
   assign NoC_Request_Strm_Vector[0]  = strm_control[0].NocLocalDmaRequestStrm ;
@@ -2444,24 +2444,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[0].NocLocalDmaRequestStrm) ? lane0_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane0_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[0].NocLocalDmaRequestStrm) ? lane0_stagger1                 : lane0_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[0].NocLocalDmaRequestStrm) ? lane0_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane0_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[0].NocLocalDmaRequestStrm) ? lane0_stagger1                 : lane0_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[0].NocLocalDmaRequestStrm) ? strm_control[0].strm1_word_count : strm_control[0].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[0].NocLocalDmaRequestStrm) ? lane0_type1                      : lane0_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[0].NocLocalDmaRequestStrm) ? strm_control[0].strm1_word_count : strm_control[0].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[0].NocLocalDmaRequestStrm) ? lane0_type1                      : lane0_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[0].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[0].NocLocalDmaRequestStrm;
         end
         'd1:
         begin
@@ -2470,24 +2470,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[1].NocLocalDmaRequestStrm) ? lane1_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane1_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[1].NocLocalDmaRequestStrm) ? lane1_stagger1                 : lane1_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[1].NocLocalDmaRequestStrm) ? lane1_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane1_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[1].NocLocalDmaRequestStrm) ? lane1_stagger1                 : lane1_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[1].NocLocalDmaRequestStrm) ? strm_control[1].strm1_word_count : strm_control[1].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[1].NocLocalDmaRequestStrm) ? lane1_type1                      : lane1_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[1].NocLocalDmaRequestStrm) ? strm_control[1].strm1_word_count : strm_control[1].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[1].NocLocalDmaRequestStrm) ? lane1_type1                      : lane1_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[1].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[1].NocLocalDmaRequestStrm;
         end
         'd2:
         begin
@@ -2496,24 +2496,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[2].NocLocalDmaRequestStrm) ? lane2_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane2_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[2].NocLocalDmaRequestStrm) ? lane2_stagger1                 : lane2_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[2].NocLocalDmaRequestStrm) ? lane2_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane2_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[2].NocLocalDmaRequestStrm) ? lane2_stagger1                 : lane2_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[2].NocLocalDmaRequestStrm) ? strm_control[2].strm1_word_count : strm_control[2].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[2].NocLocalDmaRequestStrm) ? lane2_type1                      : lane2_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[2].NocLocalDmaRequestStrm) ? strm_control[2].strm1_word_count : strm_control[2].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[2].NocLocalDmaRequestStrm) ? lane2_type1                      : lane2_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[2].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[2].NocLocalDmaRequestStrm;
         end
         'd3:
         begin
@@ -2522,24 +2522,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[3].NocLocalDmaRequestStrm) ? lane3_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane3_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[3].NocLocalDmaRequestStrm) ? lane3_stagger1                 : lane3_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[3].NocLocalDmaRequestStrm) ? lane3_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane3_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[3].NocLocalDmaRequestStrm) ? lane3_stagger1                 : lane3_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[3].NocLocalDmaRequestStrm) ? strm_control[3].strm1_word_count : strm_control[3].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[3].NocLocalDmaRequestStrm) ? lane3_type1                      : lane3_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[3].NocLocalDmaRequestStrm) ? strm_control[3].strm1_word_count : strm_control[3].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[3].NocLocalDmaRequestStrm) ? lane3_type1                      : lane3_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[3].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[3].NocLocalDmaRequestStrm;
         end
         'd4:
         begin
@@ -2548,24 +2548,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[4].NocLocalDmaRequestStrm) ? lane4_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane4_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[4].NocLocalDmaRequestStrm) ? lane4_stagger1                 : lane4_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[4].NocLocalDmaRequestStrm) ? lane4_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane4_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[4].NocLocalDmaRequestStrm) ? lane4_stagger1                 : lane4_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[4].NocLocalDmaRequestStrm) ? strm_control[4].strm1_word_count : strm_control[4].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[4].NocLocalDmaRequestStrm) ? lane4_type1                      : lane4_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[4].NocLocalDmaRequestStrm) ? strm_control[4].strm1_word_count : strm_control[4].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[4].NocLocalDmaRequestStrm) ? lane4_type1                      : lane4_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[4].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[4].NocLocalDmaRequestStrm;
         end
         'd5:
         begin
@@ -2574,24 +2574,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[5].NocLocalDmaRequestStrm) ? lane5_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane5_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[5].NocLocalDmaRequestStrm) ? lane5_stagger1                 : lane5_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[5].NocLocalDmaRequestStrm) ? lane5_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane5_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[5].NocLocalDmaRequestStrm) ? lane5_stagger1                 : lane5_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[5].NocLocalDmaRequestStrm) ? strm_control[5].strm1_word_count : strm_control[5].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[5].NocLocalDmaRequestStrm) ? lane5_type1                      : lane5_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[5].NocLocalDmaRequestStrm) ? strm_control[5].strm1_word_count : strm_control[5].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[5].NocLocalDmaRequestStrm) ? lane5_type1                      : lane5_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[5].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[5].NocLocalDmaRequestStrm;
         end
         'd6:
         begin
@@ -2600,24 +2600,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[6].NocLocalDmaRequestStrm) ? lane6_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane6_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[6].NocLocalDmaRequestStrm) ? lane6_stagger1                 : lane6_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[6].NocLocalDmaRequestStrm) ? lane6_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane6_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[6].NocLocalDmaRequestStrm) ? lane6_stagger1                 : lane6_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[6].NocLocalDmaRequestStrm) ? strm_control[6].strm1_word_count : strm_control[6].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[6].NocLocalDmaRequestStrm) ? lane6_type1                      : lane6_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[6].NocLocalDmaRequestStrm) ? strm_control[6].strm1_word_count : strm_control[6].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[6].NocLocalDmaRequestStrm) ? lane6_type1                      : lane6_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[6].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[6].NocLocalDmaRequestStrm;
         end
         'd7:
         begin
@@ -2626,24 +2626,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[7].NocLocalDmaRequestStrm) ? lane7_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane7_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[7].NocLocalDmaRequestStrm) ? lane7_stagger1                 : lane7_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[7].NocLocalDmaRequestStrm) ? lane7_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane7_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[7].NocLocalDmaRequestStrm) ? lane7_stagger1                 : lane7_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[7].NocLocalDmaRequestStrm) ? strm_control[7].strm1_word_count : strm_control[7].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[7].NocLocalDmaRequestStrm) ? lane7_type1                      : lane7_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[7].NocLocalDmaRequestStrm) ? strm_control[7].strm1_word_count : strm_control[7].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[7].NocLocalDmaRequestStrm) ? lane7_type1                      : lane7_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[7].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[7].NocLocalDmaRequestStrm;
         end
         'd8:
         begin
@@ -2652,24 +2652,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[8].NocLocalDmaRequestStrm) ? lane8_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane8_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[8].NocLocalDmaRequestStrm) ? lane8_stagger1                 : lane8_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[8].NocLocalDmaRequestStrm) ? lane8_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane8_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[8].NocLocalDmaRequestStrm) ? lane8_stagger1                 : lane8_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[8].NocLocalDmaRequestStrm) ? strm_control[8].strm1_word_count : strm_control[8].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[8].NocLocalDmaRequestStrm) ? lane8_type1                      : lane8_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[8].NocLocalDmaRequestStrm) ? strm_control[8].strm1_word_count : strm_control[8].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[8].NocLocalDmaRequestStrm) ? lane8_type1                      : lane8_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[8].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[8].NocLocalDmaRequestStrm;
         end
         'd9:
         begin
@@ -2678,24 +2678,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[9].NocLocalDmaRequestStrm) ? lane9_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane9_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[9].NocLocalDmaRequestStrm) ? lane9_stagger1                 : lane9_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[9].NocLocalDmaRequestStrm) ? lane9_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane9_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[9].NocLocalDmaRequestStrm) ? lane9_stagger1                 : lane9_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[9].NocLocalDmaRequestStrm) ? strm_control[9].strm1_word_count : strm_control[9].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[9].NocLocalDmaRequestStrm) ? lane9_type1                      : lane9_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[9].NocLocalDmaRequestStrm) ? strm_control[9].strm1_word_count : strm_control[9].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[9].NocLocalDmaRequestStrm) ? lane9_type1                      : lane9_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[9].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[9].NocLocalDmaRequestStrm;
         end
         'd10:
         begin
@@ -2704,24 +2704,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[10].NocLocalDmaRequestStrm) ? lane10_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane10_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[10].NocLocalDmaRequestStrm) ? lane10_stagger1                 : lane10_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[10].NocLocalDmaRequestStrm) ? lane10_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane10_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[10].NocLocalDmaRequestStrm) ? lane10_stagger1                 : lane10_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[10].NocLocalDmaRequestStrm) ? strm_control[10].strm1_word_count : strm_control[10].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[10].NocLocalDmaRequestStrm) ? lane10_type1                      : lane10_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[10].NocLocalDmaRequestStrm) ? strm_control[10].strm1_word_count : strm_control[10].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[10].NocLocalDmaRequestStrm) ? lane10_type1                      : lane10_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[10].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[10].NocLocalDmaRequestStrm;
         end
         'd11:
         begin
@@ -2730,24 +2730,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[11].NocLocalDmaRequestStrm) ? lane11_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane11_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[11].NocLocalDmaRequestStrm) ? lane11_stagger1                 : lane11_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[11].NocLocalDmaRequestStrm) ? lane11_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane11_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[11].NocLocalDmaRequestStrm) ? lane11_stagger1                 : lane11_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[11].NocLocalDmaRequestStrm) ? strm_control[11].strm1_word_count : strm_control[11].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[11].NocLocalDmaRequestStrm) ? lane11_type1                      : lane11_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[11].NocLocalDmaRequestStrm) ? strm_control[11].strm1_word_count : strm_control[11].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[11].NocLocalDmaRequestStrm) ? lane11_type1                      : lane11_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[11].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[11].NocLocalDmaRequestStrm;
         end
         'd12:
         begin
@@ -2756,24 +2756,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[12].NocLocalDmaRequestStrm) ? lane12_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane12_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[12].NocLocalDmaRequestStrm) ? lane12_stagger1                 : lane12_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[12].NocLocalDmaRequestStrm) ? lane12_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane12_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[12].NocLocalDmaRequestStrm) ? lane12_stagger1                 : lane12_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[12].NocLocalDmaRequestStrm) ? strm_control[12].strm1_word_count : strm_control[12].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[12].NocLocalDmaRequestStrm) ? lane12_type1                      : lane12_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[12].NocLocalDmaRequestStrm) ? strm_control[12].strm1_word_count : strm_control[12].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[12].NocLocalDmaRequestStrm) ? lane12_type1                      : lane12_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[12].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[12].NocLocalDmaRequestStrm;
         end
         'd13:
         begin
@@ -2782,24 +2782,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[13].NocLocalDmaRequestStrm) ? lane13_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane13_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[13].NocLocalDmaRequestStrm) ? lane13_stagger1                 : lane13_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[13].NocLocalDmaRequestStrm) ? lane13_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane13_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[13].NocLocalDmaRequestStrm) ? lane13_stagger1                 : lane13_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[13].NocLocalDmaRequestStrm) ? strm_control[13].strm1_word_count : strm_control[13].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[13].NocLocalDmaRequestStrm) ? lane13_type1                      : lane13_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[13].NocLocalDmaRequestStrm) ? strm_control[13].strm1_word_count : strm_control[13].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[13].NocLocalDmaRequestStrm) ? lane13_type1                      : lane13_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[13].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[13].NocLocalDmaRequestStrm;
         end
         'd14:
         begin
@@ -2808,24 +2808,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[14].NocLocalDmaRequestStrm) ? lane14_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane14_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[14].NocLocalDmaRequestStrm) ? lane14_stagger1                 : lane14_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[14].NocLocalDmaRequestStrm) ? lane14_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane14_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[14].NocLocalDmaRequestStrm) ? lane14_stagger1                 : lane14_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[14].NocLocalDmaRequestStrm) ? strm_control[14].strm1_word_count : strm_control[14].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[14].NocLocalDmaRequestStrm) ? lane14_type1                      : lane14_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[14].NocLocalDmaRequestStrm) ? strm_control[14].strm1_word_count : strm_control[14].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[14].NocLocalDmaRequestStrm) ? lane14_type1                      : lane14_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[14].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[14].NocLocalDmaRequestStrm;
         end
         'd15:
         begin
@@ -2834,24 +2834,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[15].NocLocalDmaRequestStrm) ? lane15_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane15_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[15].NocLocalDmaRequestStrm) ? lane15_stagger1                 : lane15_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[15].NocLocalDmaRequestStrm) ? lane15_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane15_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[15].NocLocalDmaRequestStrm) ? lane15_stagger1                 : lane15_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[15].NocLocalDmaRequestStrm) ? strm_control[15].strm1_word_count : strm_control[15].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[15].NocLocalDmaRequestStrm) ? lane15_type1                      : lane15_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[15].NocLocalDmaRequestStrm) ? strm_control[15].strm1_word_count : strm_control[15].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[15].NocLocalDmaRequestStrm) ? lane15_type1                      : lane15_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[15].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[15].NocLocalDmaRequestStrm;
         end
         'd16:
         begin
@@ -2860,24 +2860,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[16].NocLocalDmaRequestStrm) ? lane16_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane16_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[16].NocLocalDmaRequestStrm) ? lane16_stagger1                 : lane16_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[16].NocLocalDmaRequestStrm) ? lane16_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane16_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[16].NocLocalDmaRequestStrm) ? lane16_stagger1                 : lane16_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[16].NocLocalDmaRequestStrm) ? strm_control[16].strm1_word_count : strm_control[16].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[16].NocLocalDmaRequestStrm) ? lane16_type1                      : lane16_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[16].NocLocalDmaRequestStrm) ? strm_control[16].strm1_word_count : strm_control[16].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[16].NocLocalDmaRequestStrm) ? lane16_type1                      : lane16_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[16].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[16].NocLocalDmaRequestStrm;
         end
         'd17:
         begin
@@ -2886,24 +2886,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[17].NocLocalDmaRequestStrm) ? lane17_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane17_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[17].NocLocalDmaRequestStrm) ? lane17_stagger1                 : lane17_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[17].NocLocalDmaRequestStrm) ? lane17_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane17_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[17].NocLocalDmaRequestStrm) ? lane17_stagger1                 : lane17_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[17].NocLocalDmaRequestStrm) ? strm_control[17].strm1_word_count : strm_control[17].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[17].NocLocalDmaRequestStrm) ? lane17_type1                      : lane17_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[17].NocLocalDmaRequestStrm) ? strm_control[17].strm1_word_count : strm_control[17].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[17].NocLocalDmaRequestStrm) ? lane17_type1                      : lane17_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[17].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[17].NocLocalDmaRequestStrm;
         end
         'd18:
         begin
@@ -2912,24 +2912,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[18].NocLocalDmaRequestStrm) ? lane18_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane18_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[18].NocLocalDmaRequestStrm) ? lane18_stagger1                 : lane18_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[18].NocLocalDmaRequestStrm) ? lane18_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane18_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[18].NocLocalDmaRequestStrm) ? lane18_stagger1                 : lane18_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[18].NocLocalDmaRequestStrm) ? strm_control[18].strm1_word_count : strm_control[18].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[18].NocLocalDmaRequestStrm) ? lane18_type1                      : lane18_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[18].NocLocalDmaRequestStrm) ? strm_control[18].strm1_word_count : strm_control[18].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[18].NocLocalDmaRequestStrm) ? lane18_type1                      : lane18_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[18].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[18].NocLocalDmaRequestStrm;
         end
         'd19:
         begin
@@ -2938,24 +2938,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[19].NocLocalDmaRequestStrm) ? lane19_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane19_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[19].NocLocalDmaRequestStrm) ? lane19_stagger1                 : lane19_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[19].NocLocalDmaRequestStrm) ? lane19_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane19_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[19].NocLocalDmaRequestStrm) ? lane19_stagger1                 : lane19_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[19].NocLocalDmaRequestStrm) ? strm_control[19].strm1_word_count : strm_control[19].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[19].NocLocalDmaRequestStrm) ? lane19_type1                      : lane19_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[19].NocLocalDmaRequestStrm) ? strm_control[19].strm1_word_count : strm_control[19].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[19].NocLocalDmaRequestStrm) ? lane19_type1                      : lane19_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[19].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[19].NocLocalDmaRequestStrm;
         end
         'd20:
         begin
@@ -2964,24 +2964,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[20].NocLocalDmaRequestStrm) ? lane20_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane20_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[20].NocLocalDmaRequestStrm) ? lane20_stagger1                 : lane20_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[20].NocLocalDmaRequestStrm) ? lane20_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane20_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[20].NocLocalDmaRequestStrm) ? lane20_stagger1                 : lane20_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[20].NocLocalDmaRequestStrm) ? strm_control[20].strm1_word_count : strm_control[20].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[20].NocLocalDmaRequestStrm) ? lane20_type1                      : lane20_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[20].NocLocalDmaRequestStrm) ? strm_control[20].strm1_word_count : strm_control[20].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[20].NocLocalDmaRequestStrm) ? lane20_type1                      : lane20_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[20].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[20].NocLocalDmaRequestStrm;
         end
         'd21:
         begin
@@ -2990,24 +2990,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[21].NocLocalDmaRequestStrm) ? lane21_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane21_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[21].NocLocalDmaRequestStrm) ? lane21_stagger1                 : lane21_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[21].NocLocalDmaRequestStrm) ? lane21_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane21_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[21].NocLocalDmaRequestStrm) ? lane21_stagger1                 : lane21_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[21].NocLocalDmaRequestStrm) ? strm_control[21].strm1_word_count : strm_control[21].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[21].NocLocalDmaRequestStrm) ? lane21_type1                      : lane21_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[21].NocLocalDmaRequestStrm) ? strm_control[21].strm1_word_count : strm_control[21].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[21].NocLocalDmaRequestStrm) ? lane21_type1                      : lane21_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[21].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[21].NocLocalDmaRequestStrm;
         end
         'd22:
         begin
@@ -3016,24 +3016,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[22].NocLocalDmaRequestStrm) ? lane22_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane22_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[22].NocLocalDmaRequestStrm) ? lane22_stagger1                 : lane22_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[22].NocLocalDmaRequestStrm) ? lane22_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane22_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[22].NocLocalDmaRequestStrm) ? lane22_stagger1                 : lane22_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[22].NocLocalDmaRequestStrm) ? strm_control[22].strm1_word_count : strm_control[22].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[22].NocLocalDmaRequestStrm) ? lane22_type1                      : lane22_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[22].NocLocalDmaRequestStrm) ? strm_control[22].strm1_word_count : strm_control[22].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[22].NocLocalDmaRequestStrm) ? lane22_type1                      : lane22_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[22].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[22].NocLocalDmaRequestStrm;
         end
         'd23:
         begin
@@ -3042,24 +3042,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[23].NocLocalDmaRequestStrm) ? lane23_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane23_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[23].NocLocalDmaRequestStrm) ? lane23_stagger1                 : lane23_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[23].NocLocalDmaRequestStrm) ? lane23_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane23_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[23].NocLocalDmaRequestStrm) ? lane23_stagger1                 : lane23_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[23].NocLocalDmaRequestStrm) ? strm_control[23].strm1_word_count : strm_control[23].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[23].NocLocalDmaRequestStrm) ? lane23_type1                      : lane23_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[23].NocLocalDmaRequestStrm) ? strm_control[23].strm1_word_count : strm_control[23].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[23].NocLocalDmaRequestStrm) ? lane23_type1                      : lane23_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[23].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[23].NocLocalDmaRequestStrm;
         end
         'd24:
         begin
@@ -3068,24 +3068,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[24].NocLocalDmaRequestStrm) ? lane24_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane24_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[24].NocLocalDmaRequestStrm) ? lane24_stagger1                 : lane24_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[24].NocLocalDmaRequestStrm) ? lane24_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane24_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[24].NocLocalDmaRequestStrm) ? lane24_stagger1                 : lane24_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[24].NocLocalDmaRequestStrm) ? strm_control[24].strm1_word_count : strm_control[24].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[24].NocLocalDmaRequestStrm) ? lane24_type1                      : lane24_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[24].NocLocalDmaRequestStrm) ? strm_control[24].strm1_word_count : strm_control[24].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[24].NocLocalDmaRequestStrm) ? lane24_type1                      : lane24_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[24].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[24].NocLocalDmaRequestStrm;
         end
         'd25:
         begin
@@ -3094,24 +3094,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[25].NocLocalDmaRequestStrm) ? lane25_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane25_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[25].NocLocalDmaRequestStrm) ? lane25_stagger1                 : lane25_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[25].NocLocalDmaRequestStrm) ? lane25_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane25_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[25].NocLocalDmaRequestStrm) ? lane25_stagger1                 : lane25_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[25].NocLocalDmaRequestStrm) ? strm_control[25].strm1_word_count : strm_control[25].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[25].NocLocalDmaRequestStrm) ? lane25_type1                      : lane25_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[25].NocLocalDmaRequestStrm) ? strm_control[25].strm1_word_count : strm_control[25].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[25].NocLocalDmaRequestStrm) ? lane25_type1                      : lane25_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[25].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[25].NocLocalDmaRequestStrm;
         end
         'd26:
         begin
@@ -3120,24 +3120,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[26].NocLocalDmaRequestStrm) ? lane26_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane26_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[26].NocLocalDmaRequestStrm) ? lane26_stagger1                 : lane26_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[26].NocLocalDmaRequestStrm) ? lane26_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane26_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[26].NocLocalDmaRequestStrm) ? lane26_stagger1                 : lane26_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[26].NocLocalDmaRequestStrm) ? strm_control[26].strm1_word_count : strm_control[26].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[26].NocLocalDmaRequestStrm) ? lane26_type1                      : lane26_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[26].NocLocalDmaRequestStrm) ? strm_control[26].strm1_word_count : strm_control[26].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[26].NocLocalDmaRequestStrm) ? lane26_type1                      : lane26_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[26].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[26].NocLocalDmaRequestStrm;
         end
         'd27:
         begin
@@ -3146,24 +3146,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[27].NocLocalDmaRequestStrm) ? lane27_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane27_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[27].NocLocalDmaRequestStrm) ? lane27_stagger1                 : lane27_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[27].NocLocalDmaRequestStrm) ? lane27_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane27_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[27].NocLocalDmaRequestStrm) ? lane27_stagger1                 : lane27_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[27].NocLocalDmaRequestStrm) ? strm_control[27].strm1_word_count : strm_control[27].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[27].NocLocalDmaRequestStrm) ? lane27_type1                      : lane27_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[27].NocLocalDmaRequestStrm) ? strm_control[27].strm1_word_count : strm_control[27].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[27].NocLocalDmaRequestStrm) ? lane27_type1                      : lane27_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[27].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[27].NocLocalDmaRequestStrm;
         end
         'd28:
         begin
@@ -3172,24 +3172,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[28].NocLocalDmaRequestStrm) ? lane28_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane28_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[28].NocLocalDmaRequestStrm) ? lane28_stagger1                 : lane28_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[28].NocLocalDmaRequestStrm) ? lane28_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane28_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[28].NocLocalDmaRequestStrm) ? lane28_stagger1                 : lane28_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[28].NocLocalDmaRequestStrm) ? strm_control[28].strm1_word_count : strm_control[28].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[28].NocLocalDmaRequestStrm) ? lane28_type1                      : lane28_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[28].NocLocalDmaRequestStrm) ? strm_control[28].strm1_word_count : strm_control[28].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[28].NocLocalDmaRequestStrm) ? lane28_type1                      : lane28_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[28].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[28].NocLocalDmaRequestStrm;
         end
         'd29:
         begin
@@ -3198,24 +3198,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[29].NocLocalDmaRequestStrm) ? lane29_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane29_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[29].NocLocalDmaRequestStrm) ? lane29_stagger1                 : lane29_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[29].NocLocalDmaRequestStrm) ? lane29_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane29_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[29].NocLocalDmaRequestStrm) ? lane29_stagger1                 : lane29_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[29].NocLocalDmaRequestStrm) ? strm_control[29].strm1_word_count : strm_control[29].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[29].NocLocalDmaRequestStrm) ? lane29_type1                      : lane29_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[29].NocLocalDmaRequestStrm) ? strm_control[29].strm1_word_count : strm_control[29].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[29].NocLocalDmaRequestStrm) ? lane29_type1                      : lane29_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[29].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[29].NocLocalDmaRequestStrm;
         end
         'd30:
         begin
@@ -3224,24 +3224,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[30].NocLocalDmaRequestStrm) ? lane30_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane30_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[30].NocLocalDmaRequestStrm) ? lane30_stagger1                 : lane30_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[30].NocLocalDmaRequestStrm) ? lane30_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane30_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[30].NocLocalDmaRequestStrm) ? lane30_stagger1                 : lane30_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[30].NocLocalDmaRequestStrm) ? strm_control[30].strm1_word_count : strm_control[30].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[30].NocLocalDmaRequestStrm) ? lane30_type1                      : lane30_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[30].NocLocalDmaRequestStrm) ? strm_control[30].strm1_word_count : strm_control[30].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[30].NocLocalDmaRequestStrm) ? lane30_type1                      : lane30_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[30].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[30].NocLocalDmaRequestStrm;
         end
         'd31:
         begin
@@ -3250,24 +3250,24 @@
             // Pass local DMA request to NoC 
 
           if (cntl_to_noc_1st_cycle)  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;
           else  
-            cntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
-          cntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
+            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;
+          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;
           if (cntl_to_noc_1st_cycle)  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[31].NocLocalDmaRequestStrm) ? lane31_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane31_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[31].NocLocalDmaRequestStrm) ? lane31_stagger1                 : lane31_stagger0                 ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[31].NocLocalDmaRequestStrm) ? lane31_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane31_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[31].NocLocalDmaRequestStrm) ? lane31_stagger1                 : lane31_stagger0                 ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = 'd0                                                                                                             ; 
             end  
           else  
             begin  
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[31].NocLocalDmaRequestStrm) ? strm_control[31].strm1_word_count : strm_control[31].strm0_word_count ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[31].NocLocalDmaRequestStrm) ? lane31_type1                      : lane31_type0                      ; 
-              cntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[31].NocLocalDmaRequestStrm) ? strm_control[31].strm1_word_count : strm_control[31].strm0_word_count ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[31].NocLocalDmaRequestStrm) ? lane31_type1                      : lane31_type0                      ; 
+              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = 'd0                                                                                                              ; 
             end  
-          cntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
-          cntl__noc__cp_strmId_p1                                                        = strm_control[31].NocLocalDmaRequestStrm;
+          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;
+          scntl__noc__cp_strmId_p1                                                        = strm_control[31].NocLocalDmaRequestStrm;
         end
       endcase
     end

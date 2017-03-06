@@ -28,40 +28,40 @@
 module noc_cntl (
 
                   // Aggregate Control-path (cp) to NoC 
-                  noc__cntl__cp_ready      , 
-                  cntl__noc__cp_cntl       , 
-                  cntl__noc__cp_type       , 
-                  cntl__noc__cp_data       , 
-                  cntl__noc__cp_laneId     , 
-                  cntl__noc__cp_strmId     , 
-                  cntl__noc__cp_valid      , 
+                  noc__scntl__cp_ready      , 
+                  scntl__noc__cp_cntl       , 
+                  scntl__noc__cp_type       , 
+                  scntl__noc__cp_data       , 
+                  scntl__noc__cp_laneId     , 
+                  scntl__noc__cp_strmId     , 
+                  scntl__noc__cp_valid      , 
                   // Aggregate datapath (cp) from NoC 
-                  cntl__noc__cp_ready      , 
-                  noc__cntl__cp_cntl       , 
-                  noc__cntl__cp_type       , 
-                  noc__cntl__cp_data       , 
-                  noc__cntl__cp_peId       , 
-                  noc__cntl__cp_laneId     , 
-                  noc__cntl__cp_strmId     , 
-                  noc__cntl__cp_valid      , 
+                  scntl__noc__cp_ready      , 
+                  noc__scntl__cp_cntl       , 
+                  noc__scntl__cp_type       , 
+                  noc__scntl__cp_data       , 
+                  noc__scntl__cp_peId       , 
+                  noc__scntl__cp_laneId     , 
+                  noc__scntl__cp_strmId     , 
+                  noc__scntl__cp_valid      , 
                 
                   // Aggregate Datapath (dp) to NoC 
-                  noc__cntl__dp_ready      , 
-                  cntl__noc__dp_cntl       , 
-                  cntl__noc__dp_type       , 
-                  cntl__noc__dp_peId       , 
-                  cntl__noc__dp_laneId     , 
-                  cntl__noc__dp_strmId     , 
-                  cntl__noc__dp_data       , 
-                  cntl__noc__dp_valid      , 
+                  noc__scntl__dp_ready      , 
+                  scntl__noc__dp_cntl       , 
+                  scntl__noc__dp_type       , 
+                  scntl__noc__dp_peId       , 
+                  scntl__noc__dp_laneId     , 
+                  scntl__noc__dp_strmId     , 
+                  scntl__noc__dp_data       , 
+                  scntl__noc__dp_valid      , 
                   // Aggregate datapath (dp) from NoC 
-                  cntl__noc__dp_ready      , 
-                  noc__cntl__dp_cntl       , 
-                  noc__cntl__dp_type       , 
-                  noc__cntl__dp_laneId     , 
-                  noc__cntl__dp_strmId     , 
-                  noc__cntl__dp_data       , 
-                  noc__cntl__dp_valid      , 
+                  scntl__noc__dp_ready      , 
+                  noc__scntl__dp_cntl       , 
+                  noc__scntl__dp_type       , 
+                  noc__scntl__dp_laneId     , 
+                  noc__scntl__dp_strmId     , 
+                  noc__scntl__dp_data       , 
+                  noc__scntl__dp_valid      , 
 
                   // NoC Ports
                  `include "noc_cntl_noc_ports.vh"
@@ -84,40 +84,40 @@ module noc_cntl (
   // the first data packet type of DMA_DATA_SOD and add SOD to the first transaction. The cntl then transfers while setting
   // cntl=data until the last packet type of DMA_DATA_EOD and adds cntl=EOD to the last transaction.
   //
-  output                                            noc__cntl__cp_ready      ; 
-  input  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] cntl__noc__cp_cntl       ; 
-  input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__cp_type       ; 
-  input  [`NOC_CONT_INTERNAL_DATA_RANGE           ] cntl__noc__cp_data       ; 
-  input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__cp_laneId     ; 
-  input                                             cntl__noc__cp_strmId     ; 
-  input                                             cntl__noc__cp_valid      ; 
+  output                                            noc__scntl__cp_ready      ; 
+  input  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] scntl__noc__cp_cntl       ; 
+  input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__cp_type       ; 
+  input  [`NOC_CONT_INTERNAL_DATA_RANGE           ] scntl__noc__cp_data       ; 
+  input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__cp_laneId     ; 
+  input                                             scntl__noc__cp_strmId     ; 
+  input                                             scntl__noc__cp_valid      ; 
   // Aggregate Data-path (cp) from NoC 
-  input                                             cntl__noc__cp_ready      ; 
-  output [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__cp_cntl       ; 
-  output [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__cp_type       ; 
-  output [`NOC_CONT_INTERNAL_DATA_RANGE           ] noc__cntl__cp_data       ; 
-  output [`PE_PE_ID_RANGE                         ] noc__cntl__cp_peId       ; 
-  output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__cp_laneId     ; 
-  output                                            noc__cntl__cp_strmId     ; 
-  output                                            noc__cntl__cp_valid      ; 
+  input                                             scntl__noc__cp_ready      ; 
+  output [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__cp_cntl       ; 
+  output [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__cp_type       ; 
+  output [`NOC_CONT_INTERNAL_DATA_RANGE           ] noc__scntl__cp_data       ; 
+  output [`PE_PE_ID_RANGE                         ] noc__scntl__cp_peId       ; 
+  output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__cp_laneId     ; 
+  output                                            noc__scntl__cp_strmId     ; 
+  output                                            noc__scntl__cp_valid      ; 
 
   // Aggregate Data-path (dp) to NoC 
-  output                                            noc__cntl__dp_ready      ; 
-  input  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] cntl__noc__dp_cntl       ; 
-  input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] cntl__noc__dp_type       ; 
-  input  [`PE_PE_ID_RANGE                         ] cntl__noc__dp_peId       ; 
-  input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] cntl__noc__dp_laneId     ; 
-  input                                             cntl__noc__dp_strmId     ; 
-  input  [`STREAMING_OP_CNTL_DATA_RANGE           ] cntl__noc__dp_data       ; 
-  input                                             cntl__noc__dp_valid      ; 
+  output                                            noc__scntl__dp_ready      ; 
+  input  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] scntl__noc__dp_cntl       ; 
+  input  [`STREAMING_OP_CNTL_TYPE_RANGE           ] scntl__noc__dp_type       ; 
+  input  [`PE_PE_ID_RANGE                         ] scntl__noc__dp_peId       ; 
+  input  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] scntl__noc__dp_laneId     ; 
+  input                                             scntl__noc__dp_strmId     ; 
+  input  [`STREAMING_OP_CNTL_DATA_RANGE           ] scntl__noc__dp_data       ; 
+  input                                             scntl__noc__dp_valid      ; 
   // Aggregate Data-path (dp) from NoC 
-  input                                             cntl__noc__dp_ready      ; 
-  output [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__cntl__dp_cntl       ; 
-  output [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__cntl__dp_type       ; 
-  output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__cntl__dp_laneId     ; 
-  output                                            noc__cntl__dp_strmId     ; 
-  output [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__cntl__dp_data       ; 
-  output                                            noc__cntl__dp_valid      ; 
+  input                                             scntl__noc__dp_ready      ; 
+  output [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ] noc__scntl__dp_cntl       ; 
+  output [`STREAMING_OP_CNTL_TYPE_RANGE           ] noc__scntl__dp_type       ; 
+  output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__scntl__dp_laneId     ; 
+  output                                            noc__scntl__dp_strmId     ; 
+  output [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__scntl__dp_data       ; 
+  output                                            noc__scntl__dp_valid      ; 
 
   `include "noc_cntl_noc_ports_declaration.vh"
 
@@ -126,8 +126,8 @@ module noc_cntl (
   // Wires and Register
   //
 
-  reg                                               noc__cntl__cp_ready      ; 
-  reg                                               noc__cntl__dp_ready      ; 
+  reg                                               noc__scntl__cp_ready      ; 
+  reg                                               noc__scntl__dp_ready      ; 
 
   `include "noc_cntl_noc_ports_wires.vh"
   `include "noc_cntl_noc_wires.vh"
@@ -153,14 +153,14 @@ module noc_cntl (
   endgenerate
 
   assign to_NoC_control_fifo[0].clear      = 1'b0                  ;
-  assign to_NoC_control_fifo[0].cntl       = cntl__noc__cp_cntl    ;
-  assign to_NoC_control_fifo[0].type       = cntl__noc__cp_type    ;
-  assign to_NoC_control_fifo[0].laneId     = cntl__noc__cp_laneId  ;
-  assign to_NoC_control_fifo[0].strmId     = cntl__noc__cp_strmId  ;
-  assign to_NoC_control_fifo[0].data       = cntl__noc__cp_data    ;
-  assign to_NoC_control_fifo[0].fifo_write = cntl__noc__cp_valid   ;
+  assign to_NoC_control_fifo[0].cntl       = scntl__noc__cp_cntl    ;
+  assign to_NoC_control_fifo[0].type       = scntl__noc__cp_type    ;
+  assign to_NoC_control_fifo[0].laneId     = scntl__noc__cp_laneId  ;
+  assign to_NoC_control_fifo[0].strmId     = scntl__noc__cp_strmId  ;
+  assign to_NoC_control_fifo[0].data       = scntl__noc__cp_data    ;
+  assign to_NoC_control_fifo[0].fifo_write = scntl__noc__cp_valid   ;
   always @(posedge clk)
-    noc__cntl__cp_ready  <= ~to_NoC_control_fifo[0].fifo_almost_full ;
+    noc__scntl__cp_ready  <= ~to_NoC_control_fifo[0].fifo_almost_full ;
 
   //------------------------------------------------------------
   // Data to NoC FIFO
@@ -173,45 +173,45 @@ module noc_cntl (
   endgenerate
 
   assign to_NoC_data_fifo[0].clear        = 1'b0                     ; 
-  assign to_NoC_data_fifo[0].cntl         = cntl__noc__dp_cntl       ; 
-  assign to_NoC_data_fifo[0].type         = cntl__noc__dp_type       ; 
-  assign to_NoC_data_fifo[0].peId         = cntl__noc__dp_peId       ; 
-  assign to_NoC_data_fifo[0].laneId       = cntl__noc__dp_laneId     ; 
-  assign to_NoC_data_fifo[0].strmId       = cntl__noc__dp_strmId     ; 
-  assign to_NoC_data_fifo[0].data         = cntl__noc__dp_data       ; 
-  assign to_NoC_data_fifo[0].fifo_write   = cntl__noc__dp_valid      ;
+  assign to_NoC_data_fifo[0].cntl         = scntl__noc__dp_cntl       ; 
+  assign to_NoC_data_fifo[0].type         = scntl__noc__dp_type       ; 
+  assign to_NoC_data_fifo[0].peId         = scntl__noc__dp_peId       ; 
+  assign to_NoC_data_fifo[0].laneId       = scntl__noc__dp_laneId     ; 
+  assign to_NoC_data_fifo[0].strmId       = scntl__noc__dp_strmId     ; 
+  assign to_NoC_data_fifo[0].data         = scntl__noc__dp_data       ; 
+  assign to_NoC_data_fifo[0].fifo_write   = scntl__noc__dp_valid      ;
   always @(posedge clk)
-    noc__cntl__dp_ready                   <= ~to_NoC_data_fifo[0].fifo_almost_full ;
+    noc__scntl__dp_ready                   <= ~to_NoC_data_fifo[0].fifo_almost_full ;
 
-  assign to_NoC_data_fifo[0].fifo_write   =   cntl__noc__dp_valid    ; 
+  assign to_NoC_data_fifo[0].fifo_write   =   scntl__noc__dp_valid    ; 
 
   //------------------------------------------------------------
   // FIXME - Debug - Loop requests back 
   //
   //
 `ifdef DEBUG_NOC_LOOPBACK
-  reg noc__cntl__cp_valid_d1 ;
+  reg noc__scntl__cp_valid_d1 ;
   always @(posedge clk)
-    noc__cntl__cp_valid_d1  <=  to_NoC_control_fifo[0].fifo_read            ; 
+    noc__scntl__cp_valid_d1  <=  to_NoC_control_fifo[0].fifo_read            ; 
 
-  assign to_NoC_control_fifo[0].fifo_read  = cntl__noc__cp_ready & ~to_NoC_control_fifo[0].fifo_empty    ;
-  assign  noc__cntl__cp_cntl   =  to_NoC_control_fifo[0].fifo_read_cntl       ; 
-  assign  noc__cntl__cp_type   =  to_NoC_control_fifo[0].fifo_read_type       ; 
-  assign  noc__cntl__cp_data   =  to_NoC_control_fifo[0].fifo_read_data       ; 
-  assign  noc__cntl__cp_peId   =  peId                                        ; 
-  assign  noc__cntl__cp_laneId =  to_NoC_control_fifo[0].fifo_read_laneId     ; 
-  assign  noc__cntl__cp_strmId =  to_NoC_control_fifo[0].fifo_read_strmId     ; 
-  assign  noc__cntl__cp_valid  =  noc__cntl__cp_valid_d1                      ; 
+  assign to_NoC_control_fifo[0].fifo_read  = scntl__noc__cp_ready & ~to_NoC_control_fifo[0].fifo_empty    ;
+  assign  noc__scntl__cp_cntl   =  to_NoC_control_fifo[0].fifo_read_cntl       ; 
+  assign  noc__scntl__cp_type   =  to_NoC_control_fifo[0].fifo_read_type       ; 
+  assign  noc__scntl__cp_data   =  to_NoC_control_fifo[0].fifo_read_data       ; 
+  assign  noc__scntl__cp_peId   =  peId                                        ; 
+  assign  noc__scntl__cp_laneId =  to_NoC_control_fifo[0].fifo_read_laneId     ; 
+  assign  noc__scntl__cp_strmId =  to_NoC_control_fifo[0].fifo_read_strmId     ; 
+  assign  noc__scntl__cp_valid  =  noc__scntl__cp_valid_d1                      ; 
 
 
   // FIXME - Debug - Loop Data back 
-  assign to_NoC_data_fifo[0].fifo_read =  cntl__noc__dp_ready & ~to_NoC_data_fifo[0].fifo_empty  ; 
-  assign  noc__cntl__dp_cntl           =  to_NoC_data_fifo[0].fifo_read_cntl   ; 
-  assign  noc__cntl__dp_type           =  to_NoC_data_fifo[0].fifo_read_type   ; 
-  assign  noc__cntl__dp_laneId         =  to_NoC_data_fifo[0].fifo_read_laneId ;
-  assign  noc__cntl__dp_strmId         =  to_NoC_data_fifo[0].fifo_read_strmId ; 
-  assign  noc__cntl__dp_data           =  to_NoC_data_fifo[0].fifo_read_data   ;
-  assign  noc__cntl__dp_valid          =  to_NoC_data_fifo[0].fifo_read_data_valid        ; 
+  assign to_NoC_data_fifo[0].fifo_read =  scntl__noc__dp_ready & ~to_NoC_data_fifo[0].fifo_empty  ; 
+  assign  noc__scntl__dp_cntl           =  to_NoC_data_fifo[0].fifo_read_cntl   ; 
+  assign  noc__scntl__dp_type           =  to_NoC_data_fifo[0].fifo_read_type   ; 
+  assign  noc__scntl__dp_laneId         =  to_NoC_data_fifo[0].fifo_read_laneId ;
+  assign  noc__scntl__dp_strmId         =  to_NoC_data_fifo[0].fifo_read_strmId ; 
+  assign  noc__scntl__dp_data           =  to_NoC_data_fifo[0].fifo_read_data   ;
+  assign  noc__scntl__dp_valid          =  to_NoC_data_fifo[0].fifo_read_data_valid        ; 
 
 `else
 
@@ -221,20 +221,20 @@ module noc_cntl (
   // DEBUG : loop back until we have completed debug
   // Read controlled by Local outq controller
   /*
-  assign  noc__cntl__cp_cntl   =  to_NoC_control_fifo[0].fifo_read_cntl       ; 
-  assign  noc__cntl__cp_type   =  to_NoC_control_fifo[0].fifo_read_type       ; 
-  assign  noc__cntl__cp_data   =  to_NoC_control_fifo[0].fifo_read_data       ; 
-  assign  noc__cntl__cp_peId   =  peId                                        ; 
-  assign  noc__cntl__cp_laneId =  to_NoC_control_fifo[0].fifo_read_laneId     ; 
-  assign  noc__cntl__cp_strmId =  to_NoC_control_fifo[0].fifo_read_strmId     ; 
-  assign  noc__cntl__cp_valid  =  to_NoC_control_fifo[0].fifo_read_data_valid ; 
+  assign  noc__scntl__cp_cntl   =  to_NoC_control_fifo[0].fifo_read_cntl       ; 
+  assign  noc__scntl__cp_type   =  to_NoC_control_fifo[0].fifo_read_type       ; 
+  assign  noc__scntl__cp_data   =  to_NoC_control_fifo[0].fifo_read_data       ; 
+  assign  noc__scntl__cp_peId   =  peId                                        ; 
+  assign  noc__scntl__cp_laneId =  to_NoC_control_fifo[0].fifo_read_laneId     ; 
+  assign  noc__scntl__cp_strmId =  to_NoC_control_fifo[0].fifo_read_strmId     ; 
+  assign  noc__scntl__cp_valid  =  to_NoC_control_fifo[0].fifo_read_data_valid ; 
 
-  assign  noc__cntl__dp_cntl    =  to_NoC_data_fifo[0].fifo_read_cntl          ; 
-  assign  noc__cntl__dp_type    =  to_NoC_data_fifo[0].fifo_read_type          ; 
-  assign  noc__cntl__dp_laneId  =  to_NoC_data_fifo[0].fifo_read_laneId        ;
-  assign  noc__cntl__dp_strmId  =  to_NoC_data_fifo[0].fifo_read_strmId        ; 
-  assign  noc__cntl__dp_data    =  to_NoC_data_fifo[0].fifo_read_data          ;
-  assign  noc__cntl__dp_valid   =  to_NoC_data_fifo[0].fifo_read_data_valid    ; 
+  assign  noc__scntl__dp_cntl    =  to_NoC_data_fifo[0].fifo_read_cntl          ; 
+  assign  noc__scntl__dp_type    =  to_NoC_data_fifo[0].fifo_read_type          ; 
+  assign  noc__scntl__dp_laneId  =  to_NoC_data_fifo[0].fifo_read_laneId        ;
+  assign  noc__scntl__dp_strmId  =  to_NoC_data_fifo[0].fifo_read_strmId        ; 
+  assign  noc__scntl__dp_data    =  to_NoC_data_fifo[0].fifo_read_data          ;
+  assign  noc__scntl__dp_valid   =  to_NoC_data_fifo[0].fifo_read_data_valid    ; 
 */
 
   //--------------------------------------------------------------------------------------------

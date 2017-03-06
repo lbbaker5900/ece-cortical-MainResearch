@@ -47,9 +47,9 @@ module mem_acc_cont (
 
             //-------------------------------
             // Controller Interface
-            cntl__memc__request                 ,
-            memc__cntl__granted                 ,
-            cntl__memc__released                ,
+            scntl__memc__request                 ,
+            memc__scntl__granted                 ,
+            scntl__memc__released                ,
 
             // DMA Interface
             `include "mem_acc_cont_dma_ports.vh"
@@ -79,9 +79,9 @@ module mem_acc_cont (
    
                                                                      
   // interface to COntroller
-  input                                         cntl__memc__request          ;  // all exec lane cntl ports need to access together
-  output                                        memc__cntl__granted          ;
-  input                                         cntl__memc__released         ;
+  input                                         scntl__memc__request          ;  // all exec lane cntl ports need to access together
+  output                                        memc__scntl__granted          ;
+  input                                         scntl__memc__released         ;
 
   `ifdef SYNTHESIS
   // if synthesis, bring sram ports to top
@@ -112,12 +112,12 @@ module mem_acc_cont (
   // Wires and Register
   //
 
-  wire cntl__memc__request   ;
+  wire scntl__memc__request   ;
   wire cntl_request          ;
   reg  cntl_granted          ;
   wire cntl_granted_next     ;
-  wire memc__cntl__granted   ;
-  wire cntl__memc__released  ;
+  wire memc__scntl__granted   ;
+  wire scntl__memc__released  ;
   wire cntl_released         ;
 
   wire ldst__memc__request  ;
@@ -147,11 +147,11 @@ module mem_acc_cont (
   reg  [`MEM_ACC_CONT_ARBITER_STATE_RANGE] mem_acc_arbiter_state;          // state flop
   reg  [`MEM_ACC_CONT_ARBITER_STATE_RANGE] mem_acc_arbiter_state_next;
 
-  assign cntl_request         = cntl__memc__request   ;
+  assign cntl_request         = scntl__memc__request   ;
   assign ldst_request        = ldst__memc__request  ;
-  assign memc__cntl__granted  = cntl_granted          ;
+  assign memc__scntl__granted  = cntl_granted          ;
   assign memc__ldst__granted = ldst_granted         ;
-  assign cntl_released        = cntl__memc__released  ;
+  assign cntl_released        = scntl__memc__released  ;
   assign ldst_released       = ldst__memc__released ;
 
   // State register 

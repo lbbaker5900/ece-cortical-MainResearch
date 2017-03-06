@@ -70,9 +70,9 @@ module streamingOps_cntl (
                           
                           //--------------------------------------------------------
                           // Memory Access Interface
-                          cntl__memc__request      ,
-                          memc__cntl__granted      ,
-                          cntl__memc__released     ,
+                          scntl__memc__request      ,
+                          memc__scntl__granted      ,
+                          scntl__memc__released     ,
 
                           // streaming op and dma function interface
                           `include "streamingOps_cntl_control_ports.vh"
@@ -133,9 +133,9 @@ module streamingOps_cntl (
   input  ext_complete      ;
   
   // interface to memory controller
-  output       cntl__memc__request          ;
-  input        memc__cntl__granted          ;
-  output       cntl__memc__released         ;
+  output       scntl__memc__request          ;
+  input        memc__scntl__granted          ;
+  output       scntl__memc__released         ;
 
 
   //-------------------------------------------------------------------------------------------------
@@ -150,9 +150,9 @@ module streamingOps_cntl (
   `include "streamingOps_cntl_simd_wires.vh"
   `include "streamingOps_cntl_simd_assignments.vh"  // convert from multidimensional array
 
-  wire cntl__memc__request  ;
-  wire memc__cntl__granted  ;
-  wire cntl__memc__released ;
+  wire scntl__memc__request  ;
+  wire memc__scntl__granted  ;
+  wire scntl__memc__released ;
   wire mem_granted          ;
   reg  mem_request          ;
   wire mem_request_next     ;
@@ -224,7 +224,7 @@ module streamingOps_cntl (
                                                                      2'd0  ;
 */
 
-  assign mem_granted = memc__cntl__granted ;
+  assign mem_granted = memc__scntl__granted ;
 
 
   reg [`STREAMING_OP_CNTL_FROMNOC_CONT_STATE_RANGE] so_fromNoc_cntl_state;          // state flop
@@ -322,8 +322,8 @@ module streamingOps_cntl (
   //-------------------------------------------------------------------------------------------------
   // output equations
 
-  assign cntl__memc__request  = mem_request          ;
-  assign cntl__memc__released = mem_released         ;
+  assign scntl__memc__request  = mem_request          ;
+  assign scntl__memc__released = mem_released         ;
 
   assign mem_request_next  =  ((so_cntl_state == `STREAMING_OP_CNTL_WAIT                ) & enable ) ||
                                (so_cntl_state == `STREAMING_OP_CNTL_MEM_REQ             )            ||
@@ -811,15 +811,15 @@ module streamingOps_cntl (
                                                        `STREAMING_OP_CNTL_TONOC_CONT_WAIT        ;
 
         `STREAMING_OP_CNTL_TONOC_CONT_REQ:
-          so_toNoc_cntl_state_next = ( ~noc__cntl__cp_ready ) ? `STREAMING_OP_CNTL_TONOC_CONT_REQ            :  // to NoC is a FIFO interface, so will only not be ready if almost full
+          so_toNoc_cntl_state_next = ( ~noc__scntl__cp_ready ) ? `STREAMING_OP_CNTL_TONOC_CONT_REQ            :  // to NoC is a FIFO interface, so will only not be ready if almost full
                                                                 `STREAMING_OP_CNTL_TONOC_CONT_SEND_1ST_CYCLE ;
 
         `STREAMING_OP_CNTL_TONOC_CONT_SEND_1ST_CYCLE:
-          so_toNoc_cntl_state_next = ( ~noc__cntl__cp_ready ) ? `STREAMING_OP_CNTL_TONOC_CONT_SEND_1ST_CYCLE :  // to NoC is a FIFO interface, so will only not be ready if almost full
+          so_toNoc_cntl_state_next = ( ~noc__scntl__cp_ready ) ? `STREAMING_OP_CNTL_TONOC_CONT_SEND_1ST_CYCLE :  // to NoC is a FIFO interface, so will only not be ready if almost full
                                                                 `STREAMING_OP_CNTL_TONOC_CONT_SEND_2ND_CYCLE ;
 
         `STREAMING_OP_CNTL_TONOC_CONT_SEND_2ND_CYCLE:
-          so_toNoc_cntl_state_next = ( ~noc__cntl__cp_ready ) ? `STREAMING_OP_CNTL_TONOC_CONT_SEND_2ND_CYCLE :  // wait for request to deassert
+          so_toNoc_cntl_state_next = ( ~noc__scntl__cp_ready ) ? `STREAMING_OP_CNTL_TONOC_CONT_SEND_2ND_CYCLE :  // wait for request to deassert
                                                                 `STREAMING_OP_CNTL_TONOC_CONT_COMPLETE       ;
 
         `STREAMING_OP_CNTL_TONOC_CONT_COMPLETE:
@@ -837,11 +837,11 @@ module streamingOps_cntl (
     //
     always @(posedge clk)
       begin
-        cntl__noc__cp_cntl       <= ( reset_poweron     ) ? 'd0 : cntl__noc__cp_cntl_p1    ;
-        cntl__noc__cp_type       <= ( reset_poweron     ) ? 'd0 : cntl__noc__cp_type_p1    ;
-        cntl__noc__cp_data       <= ( reset_poweron     ) ? 'd0 : cntl__noc__cp_data_p1    ;
-        cntl__noc__cp_laneId     <= ( reset_poweron     ) ? 'd0 : cntl__noc__cp_laneId_p1  ;
-        cntl__noc__cp_strmId     <= ( reset_poweron     ) ? 'd0 : cntl__noc__cp_strmId_p1  ;
+        scntl__noc__cp_cntl       <= ( reset_poweron     ) ? 'd0 : scntl__noc__cp_cntl_p1    ;
+        scntl__noc__cp_type       <= ( reset_poweron     ) ? 'd0 : scntl__noc__cp_type_p1    ;
+        scntl__noc__cp_data       <= ( reset_poweron     ) ? 'd0 : scntl__noc__cp_data_p1    ;
+        scntl__noc__cp_laneId     <= ( reset_poweron     ) ? 'd0 : scntl__noc__cp_laneId_p1  ;
+        scntl__noc__cp_strmId     <= ( reset_poweron     ) ? 'd0 : scntl__noc__cp_strmId_p1  ;
       end
    
     // 
@@ -857,10 +857,10 @@ module streamingOps_cntl (
         NocControlLocalRequestWait  <= ( reset_poweron     ) ? 1'b1                                                            : 
                                                          ~(so_toNoc_cntl_state_next == `STREAMING_OP_CNTL_TONOC_CONT_WAIT) ;
 
-//        cntl__noc__cp_valid    <= (so_toNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_CONT_REQ           ) & (so_toNoc_cntl_state_next == `STREAMING_OP_CNTL_TONOC_CONT_SEND_1ST_CYCLE) | 
+//        scntl__noc__cp_valid    <= (so_toNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_CONT_REQ           ) & (so_toNoc_cntl_state_next == `STREAMING_OP_CNTL_TONOC_CONT_SEND_1ST_CYCLE) | 
 //                                  (so_toNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_CONT_SEND_1ST_CYCLE) & (so_toNoc_cntl_state_next == `STREAMING_OP_CNTL_TONOC_CONT_SEND_2ND_CYCLE) ; 
-        cntl__noc__cp_valid    <= (noc__cntl__cp_ready & (so_toNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_CONT_SEND_1ST_CYCLE)) |
-                                  (noc__cntl__cp_ready & (so_toNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_CONT_SEND_2ND_CYCLE)) ;
+        scntl__noc__cp_valid    <= (noc__scntl__cp_ready & (so_toNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_CONT_SEND_1ST_CYCLE)) |
+                                  (noc__scntl__cp_ready & (so_toNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_CONT_SEND_2ND_CYCLE)) ;
 
       end
 
@@ -983,21 +983,21 @@ module streamingOps_cntl (
     begin
       case (so_DataToNoc_cntl_state)
         `STREAMING_OP_CNTL_TONOC_DATA_WAIT: 
-          so_DataToNoc_cntl_state_next = ( toNocDmaPacketAvailable && noc__cntl__dp_ready )  ? `STREAMING_OP_CNTL_TONOC_DATA_ENABLE_READ :
+          so_DataToNoc_cntl_state_next = ( toNocDmaPacketAvailable && noc__scntl__dp_ready )  ? `STREAMING_OP_CNTL_TONOC_DATA_ENABLE_READ :
                                                                                                `STREAMING_OP_CNTL_TONOC_DATA_WAIT        ;
         // Data now stable at output of FIFO, check type
         `STREAMING_OP_CNTL_TONOC_DATA_ENABLE_READ: 
-          so_DataToNoc_cntl_state_next = ( ~noc__cntl__dp_ready )  ? `STREAMING_OP_CNTL_TONOC_DATA_ENABLE_READ :
+          so_DataToNoc_cntl_state_next = ( ~noc__scntl__dp_ready )  ? `STREAMING_OP_CNTL_TONOC_DATA_ENABLE_READ :
                                                                      `STREAMING_OP_CNTL_TONOC_DATA_TX_PKT      ;  // FIXME : are all transfers DMA?
 
         `STREAMING_OP_CNTL_TONOC_DATA_TX_PKT:
-          so_DataToNoc_cntl_state_next = ( ~noc__cntl__dp_ready ) ? `STREAMING_OP_CNTL_TONOC_DATA_TX_PKT         :  // to NoC is a FIFO interface, so will only not be ready if almost full
+          so_DataToNoc_cntl_state_next = ( ~noc__scntl__dp_ready ) ? `STREAMING_OP_CNTL_TONOC_DATA_TX_PKT         :  // to NoC is a FIFO interface, so will only not be ready if almost full
                                          (( toNocDataTransactionCount == (`NOC_CONT_INTERNAL_DMA_WORDS_PER_PKT) ) || 
                                           ((toNoc_dp_fifo_cntl == `DMA_CONT_STRM_CNTL_EOP) || (toNoc_dp_fifo_cntl == `DMA_CONT_STRM_CNTL_SOP_EOP))) ? `STREAMING_OP_CNTL_TONOC_DATA_COMPLETE          :  // wait until we have tramsmitted a full-size packet or EOP
                                                                     `STREAMING_OP_CNTL_TONOC_DATA_SEND_1ST_CYCLE ;
 
         `STREAMING_OP_CNTL_TONOC_DATA_SEND_1ST_CYCLE:
-          so_DataToNoc_cntl_state_next = ( ~noc__cntl__dp_ready ) ? `STREAMING_OP_CNTL_TONOC_DATA_SEND_1ST_CYCLE    :  // to NoC is a FIFO interface, so will only not be ready if almost full
+          so_DataToNoc_cntl_state_next = ( ~noc__scntl__dp_ready ) ? `STREAMING_OP_CNTL_TONOC_DATA_SEND_1ST_CYCLE    :  // to NoC is a FIFO interface, so will only not be ready if almost full
                                          (( toNocDataTransactionCount == (`NOC_CONT_INTERNAL_DMA_WORDS_PER_PKT) ) || 
                                           ((toNoc_dp_fifo_cntl == `DMA_CONT_STRM_CNTL_EOP) || (toNoc_dp_fifo_cntl == `DMA_CONT_STRM_CNTL_SOP_EOP))) ? `STREAMING_OP_CNTL_TONOC_DATA_COMPLETE          :  // wait until we have tramsmitted a full-size packet or EOP
                                                                     `STREAMING_OP_CNTL_TONOC_DATA_SEND_OTHER_CYCLES ;
@@ -1005,7 +1005,7 @@ module streamingOps_cntl (
         `STREAMING_OP_CNTL_TONOC_DATA_SEND_OTHER_CYCLES:
           so_DataToNoc_cntl_state_next = (( toNocDataTransactionCount == (`NOC_CONT_INTERNAL_DMA_WORDS_PER_PKT) ) ||                                                                                     // always transfer last transaction even if the noc isnt ready
                                           ((toNoc_dp_fifo_cntl == `DMA_CONT_STRM_CNTL_EOP) || (toNoc_dp_fifo_cntl == `DMA_CONT_STRM_CNTL_SOP_EOP))) ? `STREAMING_OP_CNTL_TONOC_DATA_COMPLETE          :  // wait until we have tramsmitted a full-size packet or EOP
-                                         ( ~noc__cntl__dp_ready                                                                                   ) ? `STREAMING_OP_CNTL_TONOC_DATA_SEND_OTHER_CYCLES :  // to NoC is a FIFO interface, so will only not be ready if almost full
+                                         ( ~noc__scntl__dp_ready                                                                                   ) ? `STREAMING_OP_CNTL_TONOC_DATA_SEND_OTHER_CYCLES :  // to NoC is a FIFO interface, so will only not be ready if almost full
                                                                                                                                                       `STREAMING_OP_CNTL_TONOC_DATA_SEND_OTHER_CYCLES ;
 
         `STREAMING_OP_CNTL_TONOC_DATA_COMPLETE:
@@ -1032,7 +1032,7 @@ module streamingOps_cntl (
                                        ( incToNocDataTransactionCount ) ? toNocDataTransactionCount + 'd1 : 
                                                                           toNocDataTransactionCount       ;
 
-        cntl__noc__dp_valid           <= toNoc_dp_fifo_data_valid   ;
+        scntl__noc__dp_valid           <= toNoc_dp_fifo_data_valid   ;
 
         // if we are starting a new dma packet, we have an EOP in the fifo and there are less than a dma data packets worth of data, 
         // this will be the last packet in the dma transfer
@@ -1055,10 +1055,10 @@ module streamingOps_cntl (
     assign incToNocDataTransactionCount   = toNoc_dp_fifo_read ;
 
     assign toNoc_dp_fifo_read   = (so_DataToNoc_cntl_state_next != `STREAMING_OP_CNTL_TONOC_DATA_COMPLETE                            ) &   // if we are going to the complete state, we have a packets worth of data
-                                  (((noc__cntl__dp_ready) & (so_DataToNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_DATA_ENABLE_READ      )) | 
-                                   ((noc__cntl__dp_ready) & (so_DataToNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_DATA_TX_PKT           )) | 
-                                   ((noc__cntl__dp_ready) & (so_DataToNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_DATA_SEND_1ST_CYCLE   )) | 
-                                   ((noc__cntl__dp_ready) & (so_DataToNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_DATA_SEND_OTHER_CYCLES))) ; 
+                                  (((noc__scntl__dp_ready) & (so_DataToNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_DATA_ENABLE_READ      )) | 
+                                   ((noc__scntl__dp_ready) & (so_DataToNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_DATA_TX_PKT           )) | 
+                                   ((noc__scntl__dp_ready) & (so_DataToNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_DATA_SEND_1ST_CYCLE   )) | 
+                                   ((noc__scntl__dp_ready) & (so_DataToNoc_cntl_state == `STREAMING_OP_CNTL_TONOC_DATA_SEND_OTHER_CYCLES))) ; 
 
     // For first packet in a dma transfer, set type to DMA_DATA_SOD, for the last packet, set type to DMA_DATA_EOD
     assign toNoc_dp_type        = (toNoc_dp_last_packet                             ) ?  `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD : 
@@ -1292,15 +1292,15 @@ module streamingOps_cntl (
       end
   endgenerate
 
-  assign from_NoC_control_fifo[0].cntl       = noc__cntl__cp_cntl        ;
-  assign from_NoC_control_fifo[0].typee      = noc__cntl__cp_type        ;  // type cannot be used in SV
-  assign from_NoC_control_fifo[0].data       = noc__cntl__cp_data        ;
-  assign from_NoC_control_fifo[0].peId       = noc__cntl__cp_peId        ;
-  assign from_NoC_control_fifo[0].laneId     = noc__cntl__cp_laneId      ;
-  assign from_NoC_control_fifo[0].strmId     = noc__cntl__cp_strmId      ;
-  assign from_NoC_control_fifo[0].fifo_write = noc__cntl__cp_valid       ;
+  assign from_NoC_control_fifo[0].cntl       = noc__scntl__cp_cntl        ;
+  assign from_NoC_control_fifo[0].typee      = noc__scntl__cp_type        ;  // type cannot be used in SV
+  assign from_NoC_control_fifo[0].data       = noc__scntl__cp_data        ;
+  assign from_NoC_control_fifo[0].peId       = noc__scntl__cp_peId        ;
+  assign from_NoC_control_fifo[0].laneId     = noc__scntl__cp_laneId      ;
+  assign from_NoC_control_fifo[0].strmId     = noc__scntl__cp_strmId      ;
+  assign from_NoC_control_fifo[0].fifo_write = noc__scntl__cp_valid       ;
   always @(posedge clk)
-    cntl__noc__cp_ready             <= ~from_NoC_control_fifo[0].fifo_almost_full ;
+    scntl__noc__cp_ready             <= ~from_NoC_control_fifo[0].fifo_almost_full ;
 
   assign from_NoC_control_fifo[0].clear      = 1'b0;
 
@@ -1317,14 +1317,14 @@ module streamingOps_cntl (
       end
   endgenerate
 
-  assign from_NoC_data_fifo[0].cntl       = noc__cntl__dp_cntl        ;
-  assign from_NoC_data_fifo[0].typee      = noc__cntl__dp_type        ;
-  assign from_NoC_data_fifo[0].laneId     = noc__cntl__dp_laneId      ;
-  assign from_NoC_data_fifo[0].strmId     = noc__cntl__dp_strmId      ;
-  assign from_NoC_data_fifo[0].data       = noc__cntl__dp_data        ;
-  assign from_NoC_data_fifo[0].fifo_write = noc__cntl__dp_valid       ;
+  assign from_NoC_data_fifo[0].cntl       = noc__scntl__dp_cntl        ;
+  assign from_NoC_data_fifo[0].typee      = noc__scntl__dp_type        ;
+  assign from_NoC_data_fifo[0].laneId     = noc__scntl__dp_laneId      ;
+  assign from_NoC_data_fifo[0].strmId     = noc__scntl__dp_strmId      ;
+  assign from_NoC_data_fifo[0].data       = noc__scntl__dp_data        ;
+  assign from_NoC_data_fifo[0].fifo_write = noc__scntl__dp_valid       ;
   always @(posedge clk)
-    cntl__noc__dp_ready             <= ~from_NoC_data_fifo[0].fifo_almost_full ;
+    scntl__noc__dp_ready             <= ~from_NoC_data_fifo[0].fifo_almost_full ;
 
   assign from_NoC_data_fifo[0].clear     = 1'b0                                    ;
   assign from_NoC_data_fifo[0].fifo_read = fromNocDataFifoRead                     ;

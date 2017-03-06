@@ -87,8 +87,8 @@ module pe (
   //-------------------------------------------------------------------------------------------------
   // Streaming Operations Control
 
-  wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  cntl__stOp__operation ;
-  wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  cntl__dma__operation  ;
+  wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  scntl__stOp__operation ;
+  wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  scntl__dma__operation  ;
 
   `include "pe_stOp_to_cntl_regfile_connection_wires.vh"
   `include "pe_dma_memc_connection_wires.vh"
@@ -209,40 +209,40 @@ module pe (
   noc_cntl noc_cntl (
 
                         // Aggregate Control-Path (cp) to NoC 
-                       .noc__cntl__cp_ready          ( noc__cntl__cp_ready         ), 
-                       .cntl__noc__cp_cntl           ( cntl__noc__cp_cntl          ), 
-                       .cntl__noc__cp_type           ( cntl__noc__cp_type          ), 
-                       .cntl__noc__cp_data           ( cntl__noc__cp_data          ), 
-                       .cntl__noc__cp_laneId         ( cntl__noc__cp_laneId        ), 
-                       .cntl__noc__cp_strmId         ( cntl__noc__cp_strmId        ), 
-                       .cntl__noc__cp_valid          ( cntl__noc__cp_valid         ), 
+                       .noc__scntl__cp_ready          ( noc__scntl__cp_ready         ), 
+                       .scntl__noc__cp_cntl           ( scntl__noc__cp_cntl          ), 
+                       .scntl__noc__cp_type           ( scntl__noc__cp_type          ), 
+                       .scntl__noc__cp_data           ( scntl__noc__cp_data          ), 
+                       .scntl__noc__cp_laneId         ( scntl__noc__cp_laneId        ), 
+                       .scntl__noc__cp_strmId         ( scntl__noc__cp_strmId        ), 
+                       .scntl__noc__cp_valid          ( scntl__noc__cp_valid         ), 
                         // Aggregate Data-Path (cp) from NoC 
-                       .cntl__noc__cp_ready          ( cntl__noc__cp_ready         ), 
-                       .noc__cntl__cp_cntl           ( noc__cntl__cp_cntl          ), 
-                       .noc__cntl__cp_type           ( noc__cntl__cp_type          ), 
-                       .noc__cntl__cp_data           ( noc__cntl__cp_data          ), 
-                       .noc__cntl__cp_peId           ( noc__cntl__cp_peId          ), 
-                       .noc__cntl__cp_laneId         ( noc__cntl__cp_laneId        ), 
-                       .noc__cntl__cp_strmId         ( noc__cntl__cp_strmId        ), 
-                       .noc__cntl__cp_valid          ( noc__cntl__cp_valid         ), 
+                       .scntl__noc__cp_ready          ( scntl__noc__cp_ready         ), 
+                       .noc__scntl__cp_cntl           ( noc__scntl__cp_cntl          ), 
+                       .noc__scntl__cp_type           ( noc__scntl__cp_type          ), 
+                       .noc__scntl__cp_data           ( noc__scntl__cp_data          ), 
+                       .noc__scntl__cp_peId           ( noc__scntl__cp_peId          ), 
+                       .noc__scntl__cp_laneId         ( noc__scntl__cp_laneId        ), 
+                       .noc__scntl__cp_strmId         ( noc__scntl__cp_strmId        ), 
+                       .noc__scntl__cp_valid          ( noc__scntl__cp_valid         ), 
                        
                         // Aggregate Data-Path (dp) to NoC 
-                       .noc__cntl__dp_ready          ( noc__cntl__dp_ready         ), 
-                       .cntl__noc__dp_type           ( cntl__noc__dp_type          ), 
-                       .cntl__noc__dp_cntl           ( cntl__noc__dp_cntl          ), 
-                       .cntl__noc__dp_peId           ( cntl__noc__dp_peId          ), 
-                       .cntl__noc__dp_laneId         ( cntl__noc__dp_laneId        ), 
-                       .cntl__noc__dp_strmId         ( cntl__noc__dp_strmId        ), 
-                       .cntl__noc__dp_data           ( cntl__noc__dp_data          ), 
-                       .cntl__noc__dp_valid          ( cntl__noc__dp_valid         ), 
+                       .noc__scntl__dp_ready          ( noc__scntl__dp_ready         ), 
+                       .scntl__noc__dp_type           ( scntl__noc__dp_type          ), 
+                       .scntl__noc__dp_cntl           ( scntl__noc__dp_cntl          ), 
+                       .scntl__noc__dp_peId           ( scntl__noc__dp_peId          ), 
+                       .scntl__noc__dp_laneId         ( scntl__noc__dp_laneId        ), 
+                       .scntl__noc__dp_strmId         ( scntl__noc__dp_strmId        ), 
+                       .scntl__noc__dp_data           ( scntl__noc__dp_data          ), 
+                       .scntl__noc__dp_valid          ( scntl__noc__dp_valid         ), 
                         // Aggregate Data-Path (dp) from NoC 
-                       .cntl__noc__dp_ready          ( cntl__noc__dp_ready         ), 
-                       .noc__cntl__dp_cntl           ( noc__cntl__dp_cntl          ), 
-                       .noc__cntl__dp_type           ( noc__cntl__dp_type          ), 
-                       .noc__cntl__dp_laneId         ( noc__cntl__dp_laneId        ), 
-                       .noc__cntl__dp_strmId         ( noc__cntl__dp_strmId        ), 
-                       .noc__cntl__dp_data           ( noc__cntl__dp_data          ), 
-                       .noc__cntl__dp_valid          ( noc__cntl__dp_valid         ), 
+                       .scntl__noc__dp_ready          ( scntl__noc__dp_ready         ), 
+                       .noc__scntl__dp_cntl           ( noc__scntl__dp_cntl          ), 
+                       .noc__scntl__dp_type           ( noc__scntl__dp_type          ), 
+                       .noc__scntl__dp_laneId         ( noc__scntl__dp_laneId        ), 
+                       .noc__scntl__dp_strmId         ( noc__scntl__dp_strmId        ), 
+                       .noc__scntl__dp_data           ( noc__scntl__dp_data          ), 
+                       .noc__scntl__dp_valid          ( noc__scntl__dp_valid         ), 
 
                         // Connections to external NoC
                         `include "noc_cntl_noc_ports_instance_ports.vh"
@@ -275,9 +275,9 @@ module pe (
                           `include "streamingOps_cntl_control_instance_ports.vh"
                           
                            // Memory Access Interface                                      
-                          .cntl__memc__request      ( cntl__memc__request             ),
-                          .memc__cntl__granted      ( memc__cntl__granted             ),
-                          .cntl__memc__released     ( cntl__memc__released            ),
+                          .scntl__memc__request      ( scntl__memc__request             ),
+                          .memc__scntl__granted      ( memc__scntl__granted             ),
+                          .scntl__memc__released     ( scntl__memc__released            ),
 
                           // external interface
                           .ext_enable        (  ),
@@ -307,9 +307,9 @@ module pe (
         //-------------------------------------------------------------------------------------------------
         // DMA Engine
    
-        wire                                         cntl__memc__request           ;
-        wire                                         memc__cntl__granted           ;
-        wire                                         cntl__memc__released          ;
+        wire                                         scntl__memc__request           ;
+        wire                                         memc__scntl__granted           ;
+        wire                                         scntl__memc__released          ;
       
         wire                                         dma__memc__write_valid0      ;
         wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__write_address0    ;
@@ -333,42 +333,42 @@ module pe (
         wire                                         memc__dma__read_ready1       ;
         wire                                         dma__memc__read_pause1       ;
  
-        wire                                         cntl__dma__strm0_read_enable         ;
-        wire                                         cntl__dma__strm1_read_enable         ;
-        wire                                         cntl__dma__strm0_write_enable        ;
-        wire                                         cntl__dma__strm1_write_enable        ;
-        wire                                         dma__cntl__strm0_read_complete       ;
-        wire                                         dma__cntl__strm1_read_complete       ;
-        wire                                         dma__cntl__strm0_write_complete      ;
-        wire                                         dma__cntl__strm1_write_complete      ;
-        wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  cntl__dma__strm0_read_start_address  ;  // streaming op arg0
-        wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  cntl__dma__strm1_read_start_address  ;  // streaming op arg1
-        wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  cntl__dma__strm0_write_start_address ;  // streaiming op result start address
-        wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  cntl__dma__strm1_write_start_address ;  // streaiming op result start address
-        wire  [`DMA_CONT_DATA_TYPES_RANGE         ]  cntl__dma__type0         ;
-        wire  [`DMA_CONT_DATA_TYPES_RANGE         ]  cntl__dma__type1         ;
-        wire  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ]  cntl__dma__num_of_types0 ;
-        wire  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ]  cntl__dma__num_of_types1 ;
+        wire                                         scntl__dma__strm0_read_enable         ;
+        wire                                         scntl__dma__strm1_read_enable         ;
+        wire                                         scntl__dma__strm0_write_enable        ;
+        wire                                         scntl__dma__strm1_write_enable        ;
+        wire                                         dma__scntl__strm0_read_complete       ;
+        wire                                         dma__scntl__strm1_read_complete       ;
+        wire                                         dma__scntl__strm0_write_complete      ;
+        wire                                         dma__scntl__strm1_write_complete      ;
+        wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  scntl__dma__strm0_read_start_address  ;  // streaming op arg0
+        wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  scntl__dma__strm1_read_start_address  ;  // streaming op arg1
+        wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  scntl__dma__strm0_write_start_address ;  // streaiming op result start address
+        wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  scntl__dma__strm1_write_start_address ;  // streaiming op result start address
+        wire  [`DMA_CONT_DATA_TYPES_RANGE         ]  scntl__dma__type0         ;
+        wire  [`DMA_CONT_DATA_TYPES_RANGE         ]  scntl__dma__type1         ;
+        wire  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ]  scntl__dma__num_of_types0 ;
+        wire  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ]  scntl__dma__num_of_types1 ;
    
         wire                                         reg__stOp__ready         ;
         wire                                         stOp__reg__valid         ;
         wire   [`STREAMING_OP_RESULT_RANGE        ]  stOp__reg__data          ;
         wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  stOp__reg__cntl          ; 
 
-        wire  [`STREAMING_OP_CNTL_OPERATION_RANGE ]  cntl__dma__operation     ;
+        wire  [`STREAMING_OP_CNTL_OPERATION_RANGE ]  scntl__dma__operation     ;
 
-        wire                                                          stOp__cntl__complete          ;
-        wire                                                          cntl__stOp__strm0_enable      ;
-        wire                                                          cntl__stOp__strm1_enable      ;
-        wire                                                          stOp__cntl__strm0_ready       ;
-        wire                                                          stOp__cntl__strm1_ready       ;
-        wire                                                          stOp__cntl__strm0_complete    ;
-        wire                                                          stOp__cntl__strm1_complete    ;
-        wire  [`STREAMING_OP_CNTL_OPERATION_RANGE ]                   cntl__stOp__operation         ;
-        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  cntl__stOp__strm0_source      ;
-        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  cntl__stOp__strm1_source      ;
-        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  cntl__stOp__strm0_destination ;
-        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  cntl__stOp__strm1_destination ;
+        wire                                                          stOp__scntl__complete          ;
+        wire                                                          scntl__stOp__strm0_enable      ;
+        wire                                                          scntl__stOp__strm1_enable      ;
+        wire                                                          stOp__scntl__strm0_ready       ;
+        wire                                                          stOp__scntl__strm1_ready       ;
+        wire                                                          stOp__scntl__strm0_complete    ;
+        wire                                                          stOp__scntl__strm1_complete    ;
+        wire  [`STREAMING_OP_CNTL_OPERATION_RANGE ]                   scntl__stOp__operation         ;
+        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  scntl__stOp__strm0_source      ;
+        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  scntl__stOp__strm1_source      ;
+        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  scntl__stOp__strm0_destination ;
+        wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  scntl__stOp__strm1_destination ;
 
         wire                                         stOp__noc__strm_ready       ;
         wire  [`DMA_CONT_STRM_CNTL_RANGE          ]  noc__stOp__strm_cntl        ; 
@@ -401,58 +401,58 @@ module pe (
                                  //--------------------------------------------------------------------------------
                                  // stOp Control
                                  //
-                                 .cntl__stOp__operation          ( cntl__stOp__operation          ),
+                                 .scntl__stOp__operation          ( scntl__stOp__operation          ),
 
                                  // Stream 0
-                                 .cntl__stOp__strm0_enable       ( cntl__stOp__strm0_enable       ),
-                                 .stOp__cntl__strm0_ready        ( stOp__cntl__strm0_ready        ),
-                                 .stOp__cntl__strm0_complete     ( stOp__cntl__strm0_complete     ),
-                                 .cntl__stOp__strm0_source       ( cntl__stOp__strm0_source       ),
-                                 .cntl__stOp__strm0_destination  ( cntl__stOp__strm0_destination  ),
+                                 .scntl__stOp__strm0_enable       ( scntl__stOp__strm0_enable       ),
+                                 .stOp__scntl__strm0_ready        ( stOp__scntl__strm0_ready        ),
+                                 .stOp__scntl__strm0_complete     ( stOp__scntl__strm0_complete     ),
+                                 .scntl__stOp__strm0_source       ( scntl__stOp__strm0_source       ),
+                                 .scntl__stOp__strm0_destination  ( scntl__stOp__strm0_destination  ),
 
                                  // Stream 1
-                                 .cntl__stOp__strm1_enable       ( cntl__stOp__strm1_enable       ),
-                                 .stOp__cntl__strm1_ready        ( stOp__cntl__strm1_ready        ),
-                                 .stOp__cntl__strm1_complete     ( stOp__cntl__strm1_complete     ),
-                                 .cntl__stOp__strm1_source       ( cntl__stOp__strm1_source       ),
-                                 .cntl__stOp__strm1_destination  ( cntl__stOp__strm1_destination  ),
+                                 .scntl__stOp__strm1_enable       ( scntl__stOp__strm1_enable       ),
+                                 .stOp__scntl__strm1_ready        ( stOp__scntl__strm1_ready        ),
+                                 .stOp__scntl__strm1_complete     ( stOp__scntl__strm1_complete     ),
+                                 .scntl__stOp__strm1_source       ( scntl__stOp__strm1_source       ),
+                                 .scntl__stOp__strm1_destination  ( scntl__stOp__strm1_destination  ),
 
                                  //--------------------------------------------------------------------------------
                                  // DMA Control
 
-                                 .cntl__dma__operation                 ( cntl__dma__operation                 ),
+                                 .scntl__dma__operation                 ( scntl__dma__operation                 ),
 
                                  // Stream 0
 
-                                 .cntl__dma__type0                     ( cntl__dma__type0                     ),
-                                 .cntl__dma__num_of_types0             ( cntl__dma__num_of_types0             ),
+                                 .scntl__dma__type0                     ( scntl__dma__type0                     ),
+                                 .scntl__dma__num_of_types0             ( scntl__dma__num_of_types0             ),
 
                                  // dma read
-                                 .cntl__dma__strm0_read_enable         ( cntl__dma__strm0_read_enable         ),
-                                 .dma__cntl__strm0_read_ready          ( dma__cntl__strm0_read_ready          ),
-                                 .dma__cntl__strm0_read_complete       ( dma__cntl__strm0_read_complete       ),
-                                 .cntl__dma__strm0_read_start_address  ( cntl__dma__strm0_read_start_address  ),
+                                 .scntl__dma__strm0_read_enable         ( scntl__dma__strm0_read_enable         ),
+                                 .dma__scntl__strm0_read_ready          ( dma__scntl__strm0_read_ready          ),
+                                 .dma__scntl__strm0_read_complete       ( dma__scntl__strm0_read_complete       ),
+                                 .scntl__dma__strm0_read_start_address  ( scntl__dma__strm0_read_start_address  ),
                                  // dma write
-                                 .cntl__dma__strm0_write_enable        ( cntl__dma__strm0_write_enable        ),
-                                 .dma__cntl__strm0_write_ready         ( dma__cntl__strm0_write_ready         ),
-                                 .dma__cntl__strm0_write_complete      ( dma__cntl__strm0_write_complete      ),
-                                 .cntl__dma__strm0_write_start_address ( cntl__dma__strm0_write_start_address ),
+                                 .scntl__dma__strm0_write_enable        ( scntl__dma__strm0_write_enable        ),
+                                 .dma__scntl__strm0_write_ready         ( dma__scntl__strm0_write_ready         ),
+                                 .dma__scntl__strm0_write_complete      ( dma__scntl__strm0_write_complete      ),
+                                 .scntl__dma__strm0_write_start_address ( scntl__dma__strm0_write_start_address ),
 
                                  // Stream 1
 
-                                 .cntl__dma__type1                     ( cntl__dma__type1                     ),
-                                 .cntl__dma__num_of_types1             ( cntl__dma__num_of_types1             ),
+                                 .scntl__dma__type1                     ( scntl__dma__type1                     ),
+                                 .scntl__dma__num_of_types1             ( scntl__dma__num_of_types1             ),
 
                                  // dma read
-                                 .cntl__dma__strm1_read_enable         ( cntl__dma__strm1_read_enable         ),
-                                 .dma__cntl__strm1_read_ready          ( dma__cntl__strm1_read_ready          ),
-                                 .dma__cntl__strm1_read_complete       ( dma__cntl__strm1_read_complete       ),
-                                 .cntl__dma__strm1_read_start_address  ( cntl__dma__strm1_read_start_address  ),
+                                 .scntl__dma__strm1_read_enable         ( scntl__dma__strm1_read_enable         ),
+                                 .dma__scntl__strm1_read_ready          ( dma__scntl__strm1_read_ready          ),
+                                 .dma__scntl__strm1_read_complete       ( dma__scntl__strm1_read_complete       ),
+                                 .scntl__dma__strm1_read_start_address  ( scntl__dma__strm1_read_start_address  ),
                                  // dma write
-                                 .cntl__dma__strm1_write_enable        ( cntl__dma__strm1_write_enable        ),
-                                 .dma__cntl__strm1_write_ready         ( dma__cntl__strm1_write_ready         ),
-                                 .dma__cntl__strm1_write_complete      ( dma__cntl__strm1_write_complete      ),
-                                 .cntl__dma__strm1_write_start_address ( cntl__dma__strm1_write_start_address ),
+                                 .scntl__dma__strm1_write_enable        ( scntl__dma__strm1_write_enable        ),
+                                 .dma__scntl__strm1_write_ready         ( dma__scntl__strm1_write_ready         ),
+                                 .dma__scntl__strm1_write_complete      ( dma__scntl__strm1_write_complete      ),
+                                 .scntl__dma__strm1_write_start_address ( scntl__dma__strm1_write_start_address ),
                                                                 
                                                                                                   
                                  //--------------------------------------------------------------------------------
@@ -582,9 +582,9 @@ module pe (
 
             //-------------------------------
             // DMA Interface
-            .cntl__memc__request            ( cntl__memc__request           ), 
-            .memc__cntl__granted            ( memc__cntl__granted           ),
-            .cntl__memc__released           ( cntl__memc__released          ),
+            .scntl__memc__request            ( scntl__memc__request           ), 
+            .memc__scntl__granted            ( memc__scntl__granted           ),
+            .scntl__memc__released           ( scntl__memc__released          ),
 
             `include "mem_acc_cont_instance_ports.vh"
             //`include "mem_acc_cont_unused_streams.vh"

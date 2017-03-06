@@ -1149,291 +1149,291 @@
       case(toNocSelectedLane)
         'd0:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd1:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd2:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd3:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd4:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd5:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd6:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd7:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd8:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd9:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd10:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd11:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd12:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd13:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd14:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd15:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd16:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd17:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd18:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd19:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd20:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd21:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd22:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd23:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd24:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd25:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd26:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd27:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd28:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd29:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd30:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
         'd31:
         begin
-          cntl__noc__dp_cntl   <= cntl__noc__dp_cntl_p1    ; 
-          cntl__noc__dp_type   <= cntl__noc__dp_type_p1    ; 
-          cntl__noc__dp_peId   <= cntl__noc__dp_peId_p1    ; 
-          cntl__noc__dp_laneId <= cntl__noc__dp_laneId_p1  ; 
-          cntl__noc__dp_strmId <= cntl__noc__dp_strmId_p1  ; 
-          cntl__noc__dp_data   <= cntl__noc__dp_data_p1    ; 
+          scntl__noc__dp_cntl   <= scntl__noc__dp_cntl_p1    ; 
+          scntl__noc__dp_type   <= scntl__noc__dp_type_p1    ; 
+          scntl__noc__dp_peId   <= scntl__noc__dp_peId_p1    ; 
+          scntl__noc__dp_laneId <= scntl__noc__dp_laneId_p1  ; 
+          scntl__noc__dp_strmId <= scntl__noc__dp_strmId_p1  ; 
+          scntl__noc__dp_data   <= scntl__noc__dp_data_p1    ; 
         end
       endcase
     end
@@ -1929,419 +1929,419 @@
       case(toNocSelectedLane)
         'd0:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane0_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane0_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane0_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane0_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane0_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane0_fromStOp_strm_id) ? strm_control[0].strm1_ExternalDmaPeId   : strm_control[0].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane0_fromStOp_strm_id) ? strm_control[0].strm1_ExternalDmaLaneId : strm_control[0].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane0_fromStOp_strm_id) ? strm_control[0].strm1_ExternalDmaStrmId : strm_control[0].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane0_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane0_fromStOp_strm_id) ? strm_control[0].strm1_ExternalDmaPeId   : strm_control[0].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane0_fromStOp_strm_id) ? strm_control[0].strm1_ExternalDmaLaneId : strm_control[0].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane0_fromStOp_strm_id) ? strm_control[0].strm1_ExternalDmaStrmId : strm_control[0].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane0_fromStOp_strm_fifo_read_data ; 
         end
         'd1:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane1_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane1_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane1_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane1_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane1_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane1_fromStOp_strm_id) ? strm_control[1].strm1_ExternalDmaPeId   : strm_control[1].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane1_fromStOp_strm_id) ? strm_control[1].strm1_ExternalDmaLaneId : strm_control[1].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane1_fromStOp_strm_id) ? strm_control[1].strm1_ExternalDmaStrmId : strm_control[1].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane1_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane1_fromStOp_strm_id) ? strm_control[1].strm1_ExternalDmaPeId   : strm_control[1].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane1_fromStOp_strm_id) ? strm_control[1].strm1_ExternalDmaLaneId : strm_control[1].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane1_fromStOp_strm_id) ? strm_control[1].strm1_ExternalDmaStrmId : strm_control[1].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane1_fromStOp_strm_fifo_read_data ; 
         end
         'd2:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane2_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane2_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane2_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane2_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane2_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane2_fromStOp_strm_id) ? strm_control[2].strm1_ExternalDmaPeId   : strm_control[2].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane2_fromStOp_strm_id) ? strm_control[2].strm1_ExternalDmaLaneId : strm_control[2].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane2_fromStOp_strm_id) ? strm_control[2].strm1_ExternalDmaStrmId : strm_control[2].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane2_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane2_fromStOp_strm_id) ? strm_control[2].strm1_ExternalDmaPeId   : strm_control[2].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane2_fromStOp_strm_id) ? strm_control[2].strm1_ExternalDmaLaneId : strm_control[2].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane2_fromStOp_strm_id) ? strm_control[2].strm1_ExternalDmaStrmId : strm_control[2].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane2_fromStOp_strm_fifo_read_data ; 
         end
         'd3:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane3_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane3_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane3_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane3_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane3_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane3_fromStOp_strm_id) ? strm_control[3].strm1_ExternalDmaPeId   : strm_control[3].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane3_fromStOp_strm_id) ? strm_control[3].strm1_ExternalDmaLaneId : strm_control[3].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane3_fromStOp_strm_id) ? strm_control[3].strm1_ExternalDmaStrmId : strm_control[3].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane3_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane3_fromStOp_strm_id) ? strm_control[3].strm1_ExternalDmaPeId   : strm_control[3].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane3_fromStOp_strm_id) ? strm_control[3].strm1_ExternalDmaLaneId : strm_control[3].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane3_fromStOp_strm_id) ? strm_control[3].strm1_ExternalDmaStrmId : strm_control[3].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane3_fromStOp_strm_fifo_read_data ; 
         end
         'd4:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane4_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane4_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane4_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane4_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane4_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane4_fromStOp_strm_id) ? strm_control[4].strm1_ExternalDmaPeId   : strm_control[4].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane4_fromStOp_strm_id) ? strm_control[4].strm1_ExternalDmaLaneId : strm_control[4].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane4_fromStOp_strm_id) ? strm_control[4].strm1_ExternalDmaStrmId : strm_control[4].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane4_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane4_fromStOp_strm_id) ? strm_control[4].strm1_ExternalDmaPeId   : strm_control[4].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane4_fromStOp_strm_id) ? strm_control[4].strm1_ExternalDmaLaneId : strm_control[4].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane4_fromStOp_strm_id) ? strm_control[4].strm1_ExternalDmaStrmId : strm_control[4].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane4_fromStOp_strm_fifo_read_data ; 
         end
         'd5:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane5_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane5_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane5_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane5_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane5_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane5_fromStOp_strm_id) ? strm_control[5].strm1_ExternalDmaPeId   : strm_control[5].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane5_fromStOp_strm_id) ? strm_control[5].strm1_ExternalDmaLaneId : strm_control[5].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane5_fromStOp_strm_id) ? strm_control[5].strm1_ExternalDmaStrmId : strm_control[5].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane5_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane5_fromStOp_strm_id) ? strm_control[5].strm1_ExternalDmaPeId   : strm_control[5].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane5_fromStOp_strm_id) ? strm_control[5].strm1_ExternalDmaLaneId : strm_control[5].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane5_fromStOp_strm_id) ? strm_control[5].strm1_ExternalDmaStrmId : strm_control[5].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane5_fromStOp_strm_fifo_read_data ; 
         end
         'd6:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane6_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane6_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane6_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane6_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane6_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane6_fromStOp_strm_id) ? strm_control[6].strm1_ExternalDmaPeId   : strm_control[6].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane6_fromStOp_strm_id) ? strm_control[6].strm1_ExternalDmaLaneId : strm_control[6].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane6_fromStOp_strm_id) ? strm_control[6].strm1_ExternalDmaStrmId : strm_control[6].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane6_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane6_fromStOp_strm_id) ? strm_control[6].strm1_ExternalDmaPeId   : strm_control[6].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane6_fromStOp_strm_id) ? strm_control[6].strm1_ExternalDmaLaneId : strm_control[6].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane6_fromStOp_strm_id) ? strm_control[6].strm1_ExternalDmaStrmId : strm_control[6].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane6_fromStOp_strm_fifo_read_data ; 
         end
         'd7:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane7_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane7_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane7_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane7_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane7_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane7_fromStOp_strm_id) ? strm_control[7].strm1_ExternalDmaPeId   : strm_control[7].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane7_fromStOp_strm_id) ? strm_control[7].strm1_ExternalDmaLaneId : strm_control[7].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane7_fromStOp_strm_id) ? strm_control[7].strm1_ExternalDmaStrmId : strm_control[7].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane7_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane7_fromStOp_strm_id) ? strm_control[7].strm1_ExternalDmaPeId   : strm_control[7].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane7_fromStOp_strm_id) ? strm_control[7].strm1_ExternalDmaLaneId : strm_control[7].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane7_fromStOp_strm_id) ? strm_control[7].strm1_ExternalDmaStrmId : strm_control[7].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane7_fromStOp_strm_fifo_read_data ; 
         end
         'd8:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane8_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane8_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane8_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane8_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane8_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane8_fromStOp_strm_id) ? strm_control[8].strm1_ExternalDmaPeId   : strm_control[8].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane8_fromStOp_strm_id) ? strm_control[8].strm1_ExternalDmaLaneId : strm_control[8].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane8_fromStOp_strm_id) ? strm_control[8].strm1_ExternalDmaStrmId : strm_control[8].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane8_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane8_fromStOp_strm_id) ? strm_control[8].strm1_ExternalDmaPeId   : strm_control[8].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane8_fromStOp_strm_id) ? strm_control[8].strm1_ExternalDmaLaneId : strm_control[8].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane8_fromStOp_strm_id) ? strm_control[8].strm1_ExternalDmaStrmId : strm_control[8].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane8_fromStOp_strm_fifo_read_data ; 
         end
         'd9:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane9_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane9_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane9_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane9_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane9_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane9_fromStOp_strm_id) ? strm_control[9].strm1_ExternalDmaPeId   : strm_control[9].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane9_fromStOp_strm_id) ? strm_control[9].strm1_ExternalDmaLaneId : strm_control[9].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane9_fromStOp_strm_id) ? strm_control[9].strm1_ExternalDmaStrmId : strm_control[9].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane9_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane9_fromStOp_strm_id) ? strm_control[9].strm1_ExternalDmaPeId   : strm_control[9].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane9_fromStOp_strm_id) ? strm_control[9].strm1_ExternalDmaLaneId : strm_control[9].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane9_fromStOp_strm_id) ? strm_control[9].strm1_ExternalDmaStrmId : strm_control[9].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane9_fromStOp_strm_fifo_read_data ; 
         end
         'd10:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane10_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane10_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane10_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane10_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane10_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane10_fromStOp_strm_id) ? strm_control[10].strm1_ExternalDmaPeId   : strm_control[10].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane10_fromStOp_strm_id) ? strm_control[10].strm1_ExternalDmaLaneId : strm_control[10].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane10_fromStOp_strm_id) ? strm_control[10].strm1_ExternalDmaStrmId : strm_control[10].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane10_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane10_fromStOp_strm_id) ? strm_control[10].strm1_ExternalDmaPeId   : strm_control[10].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane10_fromStOp_strm_id) ? strm_control[10].strm1_ExternalDmaLaneId : strm_control[10].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane10_fromStOp_strm_id) ? strm_control[10].strm1_ExternalDmaStrmId : strm_control[10].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane10_fromStOp_strm_fifo_read_data ; 
         end
         'd11:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane11_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane11_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane11_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane11_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane11_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane11_fromStOp_strm_id) ? strm_control[11].strm1_ExternalDmaPeId   : strm_control[11].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane11_fromStOp_strm_id) ? strm_control[11].strm1_ExternalDmaLaneId : strm_control[11].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane11_fromStOp_strm_id) ? strm_control[11].strm1_ExternalDmaStrmId : strm_control[11].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane11_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane11_fromStOp_strm_id) ? strm_control[11].strm1_ExternalDmaPeId   : strm_control[11].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane11_fromStOp_strm_id) ? strm_control[11].strm1_ExternalDmaLaneId : strm_control[11].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane11_fromStOp_strm_id) ? strm_control[11].strm1_ExternalDmaStrmId : strm_control[11].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane11_fromStOp_strm_fifo_read_data ; 
         end
         'd12:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane12_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane12_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane12_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane12_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane12_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane12_fromStOp_strm_id) ? strm_control[12].strm1_ExternalDmaPeId   : strm_control[12].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane12_fromStOp_strm_id) ? strm_control[12].strm1_ExternalDmaLaneId : strm_control[12].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane12_fromStOp_strm_id) ? strm_control[12].strm1_ExternalDmaStrmId : strm_control[12].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane12_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane12_fromStOp_strm_id) ? strm_control[12].strm1_ExternalDmaPeId   : strm_control[12].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane12_fromStOp_strm_id) ? strm_control[12].strm1_ExternalDmaLaneId : strm_control[12].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane12_fromStOp_strm_id) ? strm_control[12].strm1_ExternalDmaStrmId : strm_control[12].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane12_fromStOp_strm_fifo_read_data ; 
         end
         'd13:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane13_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane13_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane13_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane13_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane13_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane13_fromStOp_strm_id) ? strm_control[13].strm1_ExternalDmaPeId   : strm_control[13].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane13_fromStOp_strm_id) ? strm_control[13].strm1_ExternalDmaLaneId : strm_control[13].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane13_fromStOp_strm_id) ? strm_control[13].strm1_ExternalDmaStrmId : strm_control[13].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane13_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane13_fromStOp_strm_id) ? strm_control[13].strm1_ExternalDmaPeId   : strm_control[13].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane13_fromStOp_strm_id) ? strm_control[13].strm1_ExternalDmaLaneId : strm_control[13].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane13_fromStOp_strm_id) ? strm_control[13].strm1_ExternalDmaStrmId : strm_control[13].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane13_fromStOp_strm_fifo_read_data ; 
         end
         'd14:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane14_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane14_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane14_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane14_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane14_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane14_fromStOp_strm_id) ? strm_control[14].strm1_ExternalDmaPeId   : strm_control[14].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane14_fromStOp_strm_id) ? strm_control[14].strm1_ExternalDmaLaneId : strm_control[14].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane14_fromStOp_strm_id) ? strm_control[14].strm1_ExternalDmaStrmId : strm_control[14].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane14_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane14_fromStOp_strm_id) ? strm_control[14].strm1_ExternalDmaPeId   : strm_control[14].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane14_fromStOp_strm_id) ? strm_control[14].strm1_ExternalDmaLaneId : strm_control[14].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane14_fromStOp_strm_id) ? strm_control[14].strm1_ExternalDmaStrmId : strm_control[14].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane14_fromStOp_strm_fifo_read_data ; 
         end
         'd15:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane15_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane15_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane15_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane15_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane15_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane15_fromStOp_strm_id) ? strm_control[15].strm1_ExternalDmaPeId   : strm_control[15].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane15_fromStOp_strm_id) ? strm_control[15].strm1_ExternalDmaLaneId : strm_control[15].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane15_fromStOp_strm_id) ? strm_control[15].strm1_ExternalDmaStrmId : strm_control[15].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane15_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane15_fromStOp_strm_id) ? strm_control[15].strm1_ExternalDmaPeId   : strm_control[15].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane15_fromStOp_strm_id) ? strm_control[15].strm1_ExternalDmaLaneId : strm_control[15].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane15_fromStOp_strm_id) ? strm_control[15].strm1_ExternalDmaStrmId : strm_control[15].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane15_fromStOp_strm_fifo_read_data ; 
         end
         'd16:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane16_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane16_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane16_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane16_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane16_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane16_fromStOp_strm_id) ? strm_control[16].strm1_ExternalDmaPeId   : strm_control[16].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane16_fromStOp_strm_id) ? strm_control[16].strm1_ExternalDmaLaneId : strm_control[16].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane16_fromStOp_strm_id) ? strm_control[16].strm1_ExternalDmaStrmId : strm_control[16].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane16_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane16_fromStOp_strm_id) ? strm_control[16].strm1_ExternalDmaPeId   : strm_control[16].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane16_fromStOp_strm_id) ? strm_control[16].strm1_ExternalDmaLaneId : strm_control[16].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane16_fromStOp_strm_id) ? strm_control[16].strm1_ExternalDmaStrmId : strm_control[16].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane16_fromStOp_strm_fifo_read_data ; 
         end
         'd17:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane17_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane17_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane17_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane17_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane17_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane17_fromStOp_strm_id) ? strm_control[17].strm1_ExternalDmaPeId   : strm_control[17].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane17_fromStOp_strm_id) ? strm_control[17].strm1_ExternalDmaLaneId : strm_control[17].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane17_fromStOp_strm_id) ? strm_control[17].strm1_ExternalDmaStrmId : strm_control[17].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane17_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane17_fromStOp_strm_id) ? strm_control[17].strm1_ExternalDmaPeId   : strm_control[17].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane17_fromStOp_strm_id) ? strm_control[17].strm1_ExternalDmaLaneId : strm_control[17].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane17_fromStOp_strm_id) ? strm_control[17].strm1_ExternalDmaStrmId : strm_control[17].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane17_fromStOp_strm_fifo_read_data ; 
         end
         'd18:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane18_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane18_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane18_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane18_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane18_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane18_fromStOp_strm_id) ? strm_control[18].strm1_ExternalDmaPeId   : strm_control[18].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane18_fromStOp_strm_id) ? strm_control[18].strm1_ExternalDmaLaneId : strm_control[18].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane18_fromStOp_strm_id) ? strm_control[18].strm1_ExternalDmaStrmId : strm_control[18].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane18_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane18_fromStOp_strm_id) ? strm_control[18].strm1_ExternalDmaPeId   : strm_control[18].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane18_fromStOp_strm_id) ? strm_control[18].strm1_ExternalDmaLaneId : strm_control[18].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane18_fromStOp_strm_id) ? strm_control[18].strm1_ExternalDmaStrmId : strm_control[18].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane18_fromStOp_strm_fifo_read_data ; 
         end
         'd19:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane19_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane19_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane19_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane19_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane19_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane19_fromStOp_strm_id) ? strm_control[19].strm1_ExternalDmaPeId   : strm_control[19].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane19_fromStOp_strm_id) ? strm_control[19].strm1_ExternalDmaLaneId : strm_control[19].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane19_fromStOp_strm_id) ? strm_control[19].strm1_ExternalDmaStrmId : strm_control[19].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane19_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane19_fromStOp_strm_id) ? strm_control[19].strm1_ExternalDmaPeId   : strm_control[19].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane19_fromStOp_strm_id) ? strm_control[19].strm1_ExternalDmaLaneId : strm_control[19].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane19_fromStOp_strm_id) ? strm_control[19].strm1_ExternalDmaStrmId : strm_control[19].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane19_fromStOp_strm_fifo_read_data ; 
         end
         'd20:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane20_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane20_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane20_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane20_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane20_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane20_fromStOp_strm_id) ? strm_control[20].strm1_ExternalDmaPeId   : strm_control[20].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane20_fromStOp_strm_id) ? strm_control[20].strm1_ExternalDmaLaneId : strm_control[20].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane20_fromStOp_strm_id) ? strm_control[20].strm1_ExternalDmaStrmId : strm_control[20].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane20_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane20_fromStOp_strm_id) ? strm_control[20].strm1_ExternalDmaPeId   : strm_control[20].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane20_fromStOp_strm_id) ? strm_control[20].strm1_ExternalDmaLaneId : strm_control[20].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane20_fromStOp_strm_id) ? strm_control[20].strm1_ExternalDmaStrmId : strm_control[20].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane20_fromStOp_strm_fifo_read_data ; 
         end
         'd21:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane21_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane21_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane21_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane21_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane21_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane21_fromStOp_strm_id) ? strm_control[21].strm1_ExternalDmaPeId   : strm_control[21].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane21_fromStOp_strm_id) ? strm_control[21].strm1_ExternalDmaLaneId : strm_control[21].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane21_fromStOp_strm_id) ? strm_control[21].strm1_ExternalDmaStrmId : strm_control[21].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane21_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane21_fromStOp_strm_id) ? strm_control[21].strm1_ExternalDmaPeId   : strm_control[21].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane21_fromStOp_strm_id) ? strm_control[21].strm1_ExternalDmaLaneId : strm_control[21].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane21_fromStOp_strm_id) ? strm_control[21].strm1_ExternalDmaStrmId : strm_control[21].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane21_fromStOp_strm_fifo_read_data ; 
         end
         'd22:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane22_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane22_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane22_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane22_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane22_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane22_fromStOp_strm_id) ? strm_control[22].strm1_ExternalDmaPeId   : strm_control[22].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane22_fromStOp_strm_id) ? strm_control[22].strm1_ExternalDmaLaneId : strm_control[22].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane22_fromStOp_strm_id) ? strm_control[22].strm1_ExternalDmaStrmId : strm_control[22].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane22_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane22_fromStOp_strm_id) ? strm_control[22].strm1_ExternalDmaPeId   : strm_control[22].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane22_fromStOp_strm_id) ? strm_control[22].strm1_ExternalDmaLaneId : strm_control[22].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane22_fromStOp_strm_id) ? strm_control[22].strm1_ExternalDmaStrmId : strm_control[22].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane22_fromStOp_strm_fifo_read_data ; 
         end
         'd23:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane23_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane23_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane23_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane23_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane23_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane23_fromStOp_strm_id) ? strm_control[23].strm1_ExternalDmaPeId   : strm_control[23].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane23_fromStOp_strm_id) ? strm_control[23].strm1_ExternalDmaLaneId : strm_control[23].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane23_fromStOp_strm_id) ? strm_control[23].strm1_ExternalDmaStrmId : strm_control[23].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane23_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane23_fromStOp_strm_id) ? strm_control[23].strm1_ExternalDmaPeId   : strm_control[23].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane23_fromStOp_strm_id) ? strm_control[23].strm1_ExternalDmaLaneId : strm_control[23].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane23_fromStOp_strm_id) ? strm_control[23].strm1_ExternalDmaStrmId : strm_control[23].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane23_fromStOp_strm_fifo_read_data ; 
         end
         'd24:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane24_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane24_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane24_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane24_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane24_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane24_fromStOp_strm_id) ? strm_control[24].strm1_ExternalDmaPeId   : strm_control[24].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane24_fromStOp_strm_id) ? strm_control[24].strm1_ExternalDmaLaneId : strm_control[24].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane24_fromStOp_strm_id) ? strm_control[24].strm1_ExternalDmaStrmId : strm_control[24].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane24_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane24_fromStOp_strm_id) ? strm_control[24].strm1_ExternalDmaPeId   : strm_control[24].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane24_fromStOp_strm_id) ? strm_control[24].strm1_ExternalDmaLaneId : strm_control[24].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane24_fromStOp_strm_id) ? strm_control[24].strm1_ExternalDmaStrmId : strm_control[24].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane24_fromStOp_strm_fifo_read_data ; 
         end
         'd25:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane25_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane25_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane25_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane25_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane25_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane25_fromStOp_strm_id) ? strm_control[25].strm1_ExternalDmaPeId   : strm_control[25].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane25_fromStOp_strm_id) ? strm_control[25].strm1_ExternalDmaLaneId : strm_control[25].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane25_fromStOp_strm_id) ? strm_control[25].strm1_ExternalDmaStrmId : strm_control[25].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane25_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane25_fromStOp_strm_id) ? strm_control[25].strm1_ExternalDmaPeId   : strm_control[25].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane25_fromStOp_strm_id) ? strm_control[25].strm1_ExternalDmaLaneId : strm_control[25].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane25_fromStOp_strm_id) ? strm_control[25].strm1_ExternalDmaStrmId : strm_control[25].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane25_fromStOp_strm_fifo_read_data ; 
         end
         'd26:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane26_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane26_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane26_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane26_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane26_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane26_fromStOp_strm_id) ? strm_control[26].strm1_ExternalDmaPeId   : strm_control[26].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane26_fromStOp_strm_id) ? strm_control[26].strm1_ExternalDmaLaneId : strm_control[26].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane26_fromStOp_strm_id) ? strm_control[26].strm1_ExternalDmaStrmId : strm_control[26].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane26_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane26_fromStOp_strm_id) ? strm_control[26].strm1_ExternalDmaPeId   : strm_control[26].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane26_fromStOp_strm_id) ? strm_control[26].strm1_ExternalDmaLaneId : strm_control[26].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane26_fromStOp_strm_id) ? strm_control[26].strm1_ExternalDmaStrmId : strm_control[26].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane26_fromStOp_strm_fifo_read_data ; 
         end
         'd27:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane27_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane27_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane27_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane27_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane27_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane27_fromStOp_strm_id) ? strm_control[27].strm1_ExternalDmaPeId   : strm_control[27].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane27_fromStOp_strm_id) ? strm_control[27].strm1_ExternalDmaLaneId : strm_control[27].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane27_fromStOp_strm_id) ? strm_control[27].strm1_ExternalDmaStrmId : strm_control[27].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane27_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane27_fromStOp_strm_id) ? strm_control[27].strm1_ExternalDmaPeId   : strm_control[27].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane27_fromStOp_strm_id) ? strm_control[27].strm1_ExternalDmaLaneId : strm_control[27].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane27_fromStOp_strm_id) ? strm_control[27].strm1_ExternalDmaStrmId : strm_control[27].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane27_fromStOp_strm_fifo_read_data ; 
         end
         'd28:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane28_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane28_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane28_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane28_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane28_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane28_fromStOp_strm_id) ? strm_control[28].strm1_ExternalDmaPeId   : strm_control[28].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane28_fromStOp_strm_id) ? strm_control[28].strm1_ExternalDmaLaneId : strm_control[28].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane28_fromStOp_strm_id) ? strm_control[28].strm1_ExternalDmaStrmId : strm_control[28].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane28_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane28_fromStOp_strm_id) ? strm_control[28].strm1_ExternalDmaPeId   : strm_control[28].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane28_fromStOp_strm_id) ? strm_control[28].strm1_ExternalDmaLaneId : strm_control[28].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane28_fromStOp_strm_id) ? strm_control[28].strm1_ExternalDmaStrmId : strm_control[28].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane28_fromStOp_strm_fifo_read_data ; 
         end
         'd29:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane29_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane29_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane29_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane29_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane29_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane29_fromStOp_strm_id) ? strm_control[29].strm1_ExternalDmaPeId   : strm_control[29].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane29_fromStOp_strm_id) ? strm_control[29].strm1_ExternalDmaLaneId : strm_control[29].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane29_fromStOp_strm_id) ? strm_control[29].strm1_ExternalDmaStrmId : strm_control[29].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane29_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane29_fromStOp_strm_id) ? strm_control[29].strm1_ExternalDmaPeId   : strm_control[29].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane29_fromStOp_strm_id) ? strm_control[29].strm1_ExternalDmaLaneId : strm_control[29].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane29_fromStOp_strm_id) ? strm_control[29].strm1_ExternalDmaStrmId : strm_control[29].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane29_fromStOp_strm_fifo_read_data ; 
         end
         'd30:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane30_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane30_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane30_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane30_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane30_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane30_fromStOp_strm_id) ? strm_control[30].strm1_ExternalDmaPeId   : strm_control[30].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane30_fromStOp_strm_id) ? strm_control[30].strm1_ExternalDmaLaneId : strm_control[30].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane30_fromStOp_strm_id) ? strm_control[30].strm1_ExternalDmaStrmId : strm_control[30].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane30_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane30_fromStOp_strm_id) ? strm_control[30].strm1_ExternalDmaPeId   : strm_control[30].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane30_fromStOp_strm_id) ? strm_control[30].strm1_ExternalDmaLaneId : strm_control[30].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane30_fromStOp_strm_id) ? strm_control[30].strm1_ExternalDmaStrmId : strm_control[30].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane30_fromStOp_strm_fifo_read_data ; 
         end
         'd31:
         begin
-          cntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane31_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane31_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane31_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
                                     (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane31_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
                                                                                                                 lane31_fromStOp_strm_fifo_read_cntl                                        ; 
-          cntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
+          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
-          cntl__noc__dp_peId_p1   = (lane31_fromStOp_strm_id) ? strm_control[31].strm1_ExternalDmaPeId   : strm_control[31].strm0_ExternalDmaPeId   ; // requesting PE          
-          cntl__noc__dp_laneId_p1 = (lane31_fromStOp_strm_id) ? strm_control[31].strm1_ExternalDmaLaneId : strm_control[31].strm0_ExternalDmaLaneId ; // lane in requesting PE  
-          cntl__noc__dp_strmId_p1 = (lane31_fromStOp_strm_id) ? strm_control[31].strm1_ExternalDmaStrmId : strm_control[31].strm0_ExternalDmaStrmId ; // stream in requesting PE
-          cntl__noc__dp_data_p1   = lane31_fromStOp_strm_fifo_read_data ; 
+          scntl__noc__dp_peId_p1   = (lane31_fromStOp_strm_id) ? strm_control[31].strm1_ExternalDmaPeId   : strm_control[31].strm0_ExternalDmaPeId   ; // requesting PE          
+          scntl__noc__dp_laneId_p1 = (lane31_fromStOp_strm_id) ? strm_control[31].strm1_ExternalDmaLaneId : strm_control[31].strm0_ExternalDmaLaneId ; // lane in requesting PE  
+          scntl__noc__dp_strmId_p1 = (lane31_fromStOp_strm_id) ? strm_control[31].strm1_ExternalDmaStrmId : strm_control[31].strm0_ExternalDmaStrmId ; // stream in requesting PE
+          scntl__noc__dp_data_p1   = lane31_fromStOp_strm_fifo_read_data ; 
         end
       endcase
     end
