@@ -30,13 +30,12 @@
 
 // Out of band interface
 interface std_pe_oob_ifc(
-                           input bit clk_oob   , 
-                           input bit reset_poweron );
+                           input bit clk_oob   );
 
     // Stack Bus - downstream Out-of-band
     // FIXME - right now type is a per lane signal??
     stack_down_oob_type                         std__pe__oob_type        ;  // Control or Data, Vector or scalar
-    stack_down_oob_data                         std__pe__oob_data        ;  // e.g. {option type, option data}
+    logic [`STACK_DOWN_OOB_INTF_DATA_RANGE ]    std__pe__oob_data        ;  // e.g. {option type, option data}
 
     logic                                       std__pe__oob_valid        ;
     logic [`COMMON_STD_INTF_CNTL_RANGE  ]       std__pe__oob_cntl         ;
@@ -45,7 +44,6 @@ interface std_pe_oob_ifc(
     logic                                       sys__pe__allSynchronized  ;
     logic                                       pe__sys__thisSynchronized ;
                                         
-    logic [`PE_PE_ID_RANGE              ]       sys__pe__peId             ;
     logic                                       pe__sys__ready            ;
     logic                                       pe__sys__complete         ;
 
@@ -60,7 +58,6 @@ interface std_pe_oob_ifc(
         output       sys__pe__allSynchronized  ;
         input        pe__sys__thisSynchronized ;
 
-        output       sys__pe__peId             ;
         input        pe__sys__ready            ;
         input        pe__sys__complete         ;
 
@@ -78,25 +75,23 @@ interface std_pe_oob_ifc(
         input        sys__pe__allSynchronized  ;
         output       pe__sys__thisSynchronized ;
 
-        input        sys__pe__peId             ;
         output       pe__sys__ready            ;
         output       pe__sys__complete         ;
 
     endclocking : cb_dut
  
     modport TB_PeArray2OobSys (
-        clocking    cb_dut  ,
-        input       reset_poweron 
+        clocking    cb_dut   
     );
  
     modport TB_SysOob2PeArray (
-        clocking    cb_test ,
-        output      reset_poweron 
+        clocking    cb_test  
     );
 
 endinterface : std_pe_oob_ifc
 
-typedef virtual std_pe_oob_ifc.TB_SysOob2PeArray vSysOob2PeArray_T;
+typedef virtual std_pe_oob_ifc vSysOob2PeArray_T;
+//typedef virtual std_pe_oob_ifc.TB_SysOob2PeArray vSysOob2PeArray_T;
 typedef virtual std_pe_oob_ifc.TB_PeArray2SysOob vPeArray2SysOob_T;
 
 
@@ -212,8 +207,10 @@ interface stu_pe_lane_ifc(
 
 endinterface : stu_pe_lane_ifc
 
-typedef virtual stu_pe_lane_ifc.TB_Sys2PeArrayResult vSys2PeArrayResult_T;
-typedef virtual stu_pe_lane_ifc.TB_PeArrayResult2Sys vPeArrayResult2Sys_T;
+typedef virtual stu_pe_lane_ifc vSys2PeArrayResult_T;
+typedef virtual stu_pe_lane_ifc vPeArrayResult2Sys_T;
+//typedef virtual stu_pe_lane_ifc.TB_Sys2PeArrayResult vSys2PeArrayResult_T;
+//typedef virtual stu_pe_lane_ifc.TB_PeArrayResult2Sys vPeArrayResult2Sys_T;
 
 
 interface sti_stOp_lane_ifc(
@@ -314,8 +311,10 @@ interface sti_stOp_lane_ifc(
 
 endinterface : sti_stOp_lane_ifc
 
-typedef virtual sti_stOp_lane_ifc.TB_Sti2StOp vSti2StOp_T;
-typedef virtual sti_stOp_lane_ifc.TB_StOp2Sti vStOp2Sti_T;
+typedef virtual sti_stOp_lane_ifc vSti2StOp_T;
+typedef virtual sti_stOp_lane_ifc vStOp2Sti_T;
+//typedef virtual sti_stOp_lane_ifc.TB_Sti2StOp vSti2StOp_T;
+//typedef virtual sti_stOp_lane_ifc.TB_StOp2Sti vStOp2Sti_T;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

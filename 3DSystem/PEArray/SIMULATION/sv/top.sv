@@ -10,6 +10,8 @@
 *********************************************************************************************/
 
 `timescale 1ns/10ps
+
+`include "TB_common.vh"
 `include "common.vh"
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
@@ -38,9 +40,8 @@ module top;
     // Instantiate an interface for every pe/lane/stream pair
     //
     //                              pe  lane
-    std_pe_lane_ifc    SysLane2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (.clk_lane            ( clk           ));  // shorthand for [0:63] ....
-    std_pe_oob_ifc     SysOob2PeArray  [`PE_ARRAY_NUM_OF_PE]                        (.clk_oob             ( clk           ) ,
-                                                                                     .reset_poweron       ( reset_poweron ));  
+    std_pe_lane_ifc    SysLane2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (.clk_lane            ( clk           ));  // [64] shorthand for [0:63] ....
+    std_pe_oob_ifc     SysOob2PeArray  [`PE_ARRAY_NUM_OF_PE]                        (.clk_oob             ( clk           ));  
 
     //----------------------------------------------------------------------------------------------------
     // Probe interface(s)
@@ -76,13 +77,13 @@ module top;
     // Testbench
     //
         test  ti  (
-                   SysLane2PeArray         ,  // array of interfaces for each downstream pe/lane stack bus
-                   SysOob2PeArray          ,  // array of downstream stack bus OOB interfaces to each PE
-                   Dma2Mem                 ,  // array of monitor probes for the DMA to Memory interface for each PE/Lane
-                   RegFileScalar2StOpCntl  ,  // array of driver probes for the RegFile Scalar registers to stOp Controller for each PE
-                   RegFileLane2StOpCntl    ,  // array of driver probes for the RegFile Vector registers to stOp Controller for each PE/Lane
-                   LoadStore2memCntl       ,  // array of driver probes for the Load/Store from SIMD to memory controller for each PE
-                   reset_poweron
+                   .SysOob2PeArray         ( SysOob2PeArray         ) ,  // array of downstream stack bus OOB interfaces to each PE
+                   .SysLane2PeArray        ( SysLane2PeArray        ) ,  // array of interfaces for each downstream pe/lane stack bus
+                   .Dma2Mem                ( Dma2Mem                ) ,  // array of monitor probes for the DMA to Memory interface for each PE/Lane
+                   .RegFileScalar2StOpCntl ( RegFileScalar2StOpCntl ) ,  // array of driver probes for the RegFile Scalar registers to stOp Controller for each PE
+                   .RegFileLane2StOpCntl   ( RegFileLane2StOpCntl   ) ,  // array of driver probes for the RegFile Vector registers to stOp Controller for each PE/Lane
+                   .LoadStore2memCntl      ( LoadStore2memCntl      ) ,  // array of driver probes for the Load/Store from SIMD to memory controller for each PE
+                   .reset                  ( reset_poweron          ) 
                   );
 
     //----------------------------------------------------------------------------------------------------
@@ -115,6 +116,7 @@ module top;
     // Forces
     //
     // connect regFile interfaces to SIMD regFile to streaming Ops controller interface
+    `ifdef TB_ENABLE_REGFILE_DRIVER
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
@@ -135,6 +137,7 @@ module top;
                    end
            end
     endgenerate
+    `endif
 
     // connect Load/Store interface between SIMD and memory Controller
     generate

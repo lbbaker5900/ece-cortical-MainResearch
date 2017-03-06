@@ -48,7 +48,7 @@
 // PE Execution Lane 
 //------------------------------------------------
 
-`define PE_NUM_OF_EXEC_LANES         32
+`define PE_NUM_OF_EXEC_LANES               32
 `define PE_NUM_OF_EXEC_LANES_MSB           (`PE_NUM_OF_EXEC_LANES -1)
 `define PE_NUM_OF_EXEC_LANES_LSB            0
 `define PE_NUM_OF_EXEC_LANES_SIZE           (`PE_NUM_OF_EXEC_LANES_MSB - `PE_NUM_OF_EXEC_LANES_LSB +1)
@@ -59,7 +59,8 @@
 `define PE_EXEC_LANE_ID_SIZE              (`PE_EXEC_LANE_ID_MSB - `PE_EXEC_LANE_ID_LSB +1)
 `define PE_EXEC_LANE_ID_RANGE              `PE_EXEC_LANE_ID_MSB : `PE_EXEC_LANE_ID_LSB
 
-`define PE_EXEC_LANE_WIDTH_MSB           31
+`define PE_EXEC_LANE_WIDTH               32
+`define PE_EXEC_LANE_WIDTH_MSB           `PE_EXEC_LANE_WIDTH-1
 `define PE_EXEC_LANE_WIDTH_LSB            0
 `define PE_EXEC_LANE_WIDTH_SIZE           (`PE_EXEC_LANE_WIDTH_MSB - `PE_EXEC_LANE_WIDTH_LSB +1)
 `define PE_EXEC_LANE_WIDTH_RANGE           `PE_EXEC_LANE_WIDTH_MSB : `PE_EXEC_LANE_WIDTH_LSB

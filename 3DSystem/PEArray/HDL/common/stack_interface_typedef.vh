@@ -22,10 +22,15 @@ typedef enum logic [`STACK_DOWN_OOB_INTF_TYPE_RANGE ] {
 
 // FIXME : set to {optionType=stOp, stOp_values},{optionType=simdOp, simd_values} from python/DNNconnectivity/dnnConnectivityAndMemoryAllocation.py
 typedef enum logic [`STACK_DOWN_OOB_INTF_DATA_RANGE ] {
-                                            STD_PACKET_OOB_DATA_PE_OP_CMD     = {{8'd5, 8'd2},{8'd6, 8'd1}},
+                                            STD_PACKET_OOB_DATA_PE_OP_CMD     = {{8'd2, 8'd6},{8'd1, 8'd5}}, // {{val, option},{{val, option}}
                                             STD_PACKET_OOB_DATA_NA            = {`STACK_DOWN_OOB_INTF_TYPE_SIZE {1'b0}}
                                           } stack_down_oob_data ;
 
+// Options for : {val, option}
+typedef enum logic [`STACK_DOWN_OOB_INTF_OPTION_SIZE -1:0 ] {
+                                            STD_PACKET_OOB_DATA_STOP_CMD          = 8'd5,
+                                            STD_PACKET_OOB_DATA_SIMD_RELU_CMD     = 8'd6  // doesnt work `STACK_DOWN_OOB_INTF_OPTION_SIZE 'd6
+                                          } stack_down_oob_option ;
 
 
 `endif

@@ -62,7 +62,7 @@ class manager;
 
     //-------------------------------------------------------------------------
     // HOW MANY?
-    integer num_operations = 3;  // fp mac:{std,std}->mem, copy:std->mem, fp mac:{std,mem}->mem
+    integer num_operations = 6;  // fp mac:{std,std}->mem, copy:std->mem, fp mac:{std,mem}->mem
 
 
     integer operationNum   = 0;  // used to set operation ID
@@ -85,7 +85,7 @@ class manager;
 
     base_operation    sys_operation                              ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_mgr                          ;  // operation packet containing all data associated with operation
-    //base_operation    sys_operation_lane                         ;  // copy for each lane
+    base_operation    sys_operation_oob                          ;  // need to make sure OOB oepration matches lane
     base_operation    sys_operation_lane [`PE_NUM_OF_EXEC_LANES] ;  // copy for each lane
 
     oob_packet       oob_packet_mgr     ;  // constructed from the sys_operation and sent to the OOB driver
@@ -142,15 +142,23 @@ class manager;
                 // create new operation
                 assert(sys_operation_mgr.randomize()) ;
 
+                //----------------------------------------------------------------------------------------------------
+                // Create an oob_packet and send to OOB driver
+
+                // we need to randomize to update fields such as number of operands based on prior operation. 
+                // This randomize takes place in the generator when it sends operations to the driver so we should be the same although the OOB
+                // only cares about a subset of the fields e.g. doesnt need operands.
+                sys_operation_oob = new sys_operation_mgr ;                                                                                 
+                sys_operation_oob.setPriorOperations(priorOperations)   ;  // object may need to know what went before
+                assert(sys_operation_oob.randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
+
                 // Keep copy of previous operations as they may influence future operations
                 // Note: this is also kept in the sys_operation_mgr as we dont create a new for each transaction
                 priorOperations.push_back(sys_operation_mgr)       ;
 
-                //----------------------------------------------------------------------------------------------------
-                // Create an oob_packet and send to OOB driver
-
+                // create the oob_packet object from the operation
                 oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
-                oob_packet_mgr.createFromOperation(0, sys_operation_mgr)     ;
+                oob_packet_mgr.createFromOperation(0, sys_operation_oob)     ;
                 mgr2oob.put(oob_packet_mgr)                                  ;  // oob needs to prepare the PE
                 $display("@%0t:%s:%0d:LEE: Manager {%0d} sent oob_packet {%0d} to oob_driver", $time, `__FILE__, `__LINE__, Id, operationNum);
 
@@ -167,12 +175,16 @@ class manager;
                 // send this to all the lane generators for this PE and wait for acknowledge
                         
                 $display("@%0t:%s:%0d:LEE: Manager {%0d} sending operation {%0d} to generators and waiting for ack", $time, `__FILE__, `__LINE__, Id, operationNum);
+                // include has mgr2gen and mgr2gen_ack
                 `include "TB_manager_send_operation_to_generators.vh"
                 wait fork;
+                // this should have waited till generator, driver and mem_checker are done 
 
                 // wait till OOB packet is complete before startng next operation
                 //@mgr2oob_ack ;
                 //wait(mgr2oob_ack.triggered) ;
+                //
+                
                 $display("@%0t:%s:%0d:LEE: Manager {%0d} operation {%0d} acked by generators", $time, `__FILE__, `__LINE__, Id, operationNum);
 
                 operationNum++                                ;

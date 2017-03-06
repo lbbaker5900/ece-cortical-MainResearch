@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n            // General control and status                  ,'.format(pe) 
-    pLine = pLine + '\n            sys__pe{0}__peId                               ,'.format(pe) 
+    pLine = pLine + '\n            //sys__pe{0}__peId                               ,'.format(pe) 
     pLine = pLine + '\n            sys__pe{0}__allSynchronized                    ,'.format(pe) 
     pLine = pLine + '\n            pe{0}__sys__thisSynchronized                   ,'.format(pe) 
     pLine = pLine + '\n            pe{0}__sys__ready                              ,'.format(pe) 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // General control and status                                                  '.format(pe) 
-    pLine = pLine + '\n  input [`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
+    pLine = pLine + '\n  //input [`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
     pLine = pLine + '\n  input                                         sys__pe{0}__allSynchronized     ;'.format(pe) 
     pLine = pLine + '\n  output                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
     pLine = pLine + '\n  output                                        pe{0}__sys__ready               ;'.format(pe) 
@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // General control and status                                                '.format(pe) 
-    pLine = pLine + '\n  wire[`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
+    pLine = pLine + '\n  //wire[`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
     pLine = pLine + '\n  wire                                        sys__pe{0}__allSynchronized     ;'.format(pe) 
     pLine = pLine + '\n  wire                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
     pLine = pLine + '\n  wire                                        pe{0}__sys__ready               ;'.format(pe) 
@@ -153,23 +153,27 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // General control and status                                                                     '.format(pe) 
-    pLine = pLine + '\n        .sys__pe{0}__peId               ( SysOob2PeArray[{0}].cb_test.sys__pe__peId              ), '.format(pe) 
+    pLine = pLine + '\n  //  - doesnt seem to work if you use cb_test for observed signals                                 '.format(pe) 
+    pLine = pLine + '\n  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         '.format(pe) 
     pLine = pLine + '\n        .sys__pe{0}__allSynchronized    ( SysOob2PeArray[{0}].cb_test.sys__pe__allSynchronized   ), '.format(pe) 
-    pLine = pLine + '\n        .pe{0}__sys__thisSynchronized   ( SysOob2PeArray[{0}].cb_test.pe__sys__thisSynchronized  ), '.format(pe) 
-    pLine = pLine + '\n        .pe{0}__sys__ready              ( SysOob2PeArray[{0}].cb_test.pe__sys__ready             ), '.format(pe) 
-    pLine = pLine + '\n        .pe{0}__sys__complete           ( SysOob2PeArray[{0}].cb_test.pe__sys__complete          ), '.format(pe) 
-    #                                                                                                            
+    pLine = pLine + '\n        .pe{0}__sys__thisSynchronized   ( SysOob2PeArray[{0}].pe__sys__thisSynchronized          ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__sys__ready              ( SysOob2PeArray[{0}].pe__sys__ready                     ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__sys__complete           ( SysOob2PeArray[{0}].pe__sys__complete                  ), '.format(pe) 
+    #                                                                                                    
     pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                                     '.format(pe) 
+    pLine = pLine + '\n  //  - doesnt seem to work if you use cb_test for observed signals                                 '.format(pe) 
+    pLine = pLine + '\n  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         '.format(pe) 
     pLine = pLine + '\n        .std__pe{0}__oob_cntl           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_cntl          ), '.format(pe) 
     pLine = pLine + '\n        .std__pe{0}__oob_valid          ( SysOob2PeArray[{0}].cb_test.std__pe__oob_valid         ), '.format(pe) 
-    pLine = pLine + '\n        .pe{0}__std__oob_ready          ( SysOob2PeArray[{0}].cb_test.pe__std__oob_ready         ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__std__oob_ready          ( SysOob2PeArray[{0}].pe__std__oob_ready                 ), '.format(pe) 
     pLine = pLine + '\n        .std__pe{0}__oob_type           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_type          ), '.format(pe) 
     pLine = pLine + '\n        .std__pe{0}__oob_data           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_data          ), '.format(pe) 
     # 
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n        // PE {1}, Lane {0}                 '.format(lane,pe)
       for strm in range (0, 2):
-        pLine = pLine + '\n        .pe{0}__std__lane{1}_strm{2}_ready         ( SysLane2PeArray[{0}][{1}].cb_test.pe__std__lane_strm{2}_ready      ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        //  - doesnt seem to work if you use cb_test for observed signals                                                       '.format(pe) 
+        pLine = pLine + '\n        .pe{0}__std__lane{1}_strm{2}_ready         ( SysLane2PeArray[{0}][{1}].pe__std__lane_strm{2}_ready              ),      '.format(pe,lane,strm)
         pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_cntl          ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_cntl       ),      '.format(pe,lane,strm)
         pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data          ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data       ),      '.format(pe,lane,strm)
         pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_valid    ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid ),      '.format(pe,lane,strm)
@@ -181,6 +185,37 @@ if __name__ == "__main__":
 
 
   # Start all the generators and drivers
+
+  f = open('../SIMULATION/common/TB_reset_generators_and_drivers.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    pLine = pLine + '\n//            begin'                                  
+    pLine = pLine + '\n//              ldst_driver[{0}].reset()  ;'.format(pe) 
+    pLine = pLine + '\n//            end'
+    pLine = pLine + '\n//            begin'                                  
+    pLine = pLine + '\n//              mgr[{0}].reset()  ;'.format(pe) 
+    pLine = pLine + '\n//            end'
+    pLine = pLine + '\n//            begin'                                  
+    pLine = pLine + '\n//              oob_drv[{0}].reset()  ;'.format(pe) 
+    pLine = pLine + '\n//            end'
+    for lane in range (0, numOfExecLanes):
+      pLine = pLine + '\n//            begin'
+      pLine = pLine + '\n//              gen[{0}][{1}].reset()  ;'.format(pe,lane) 
+      pLine = pLine + '\n//            end'                                    
+      pLine = pLine + '\n//            begin'                                  
+      pLine = pLine + '\n//              drv[{0}][{1}].reset()  ;'.format(pe,lane) 
+      pLine = pLine + '\n//            end'
+      pLine = pLine + '\n//            begin'                                  
+      pLine = pLine + '\n//              mem_check[{0}][{1}].reset()  ;'.format(pe,lane) 
+      pLine = pLine + '\n//            end'
+      pLine = pLine + '\n            begin'                                  
+      pLine = pLine + '\n              rf_driver[{0}][{1}].reset()  ;'.format(pe,lane) 
+      pLine = pLine + '\n            end'
+      pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
 
   f = open('../SIMULATION/common/TB_start_generators_and_drivers.vh', 'w')
   pLine = ""

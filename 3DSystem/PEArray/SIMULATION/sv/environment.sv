@@ -141,6 +141,15 @@ class Environment;
     endtask
 
     task run();                                                       //This task spawns parallel run tasks of generator, driver, golden models and their respective checkers.
+        /* */
+        // Remove when driving via OOB packet
+        $display("@%0t:%s:%0d: : INFO:ENV: Reset generators and drivers \n", $time, `__FILE__, `__LINE__,);
+        fork                                                          
+            // We have a generator, driver and checker for every pe/lane
+            `include "TB_reset_generators_and_drivers.vh"
+        join
+        /* */
+
         $display("@%0t:%s:%0d: : INFO:ENV: Run generators and drivers \n", $time, `__FILE__, `__LINE__,);
         fork                                                          
             // We have a generator, driver and checker for every pe/lane

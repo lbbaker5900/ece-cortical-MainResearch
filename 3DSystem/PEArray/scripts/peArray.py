@@ -2803,6 +2803,7 @@ if __name__ == "__main__":
 
   f.write(pLine)
   f.close()
+
   f = open('../HDL/common/pe_simd_port_declarations.vh', 'w')
   pLine = ""
 
@@ -2823,6 +2824,7 @@ if __name__ == "__main__":
  
   f.write(pLine)  
   f.close()
+
   f = open('../HDL/common/pe_simd_instance_ports.vh', 'w')
   pLine = ""
 
@@ -2842,6 +2844,27 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
 
   f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/pe_cntl_simd_port_declarations.vh', 'w')
+  pLine = ""
+
+  pLine = pLine + '\n  // Common (Scalar) Register(s)                '
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0   ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1   ;'.format(lane)
+  pLine = pLine + '\n'
+  pLine = pLine + '\n  // Lane Register(s)                '
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n'  
+ 
+  f.write(pLine)  
   f.close()
 
 
@@ -3082,7 +3105,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n            // General control and status                  ,'.format(pe) 
-    pLine = pLine + '\n            sys__pe{0}__peId                               ,'.format(pe) 
+    pLine = pLine + '\n            //sys__pe{0}__peId                               ,'.format(pe) 
     pLine = pLine + '\n            sys__pe{0}__allSynchronized                    ,'.format(pe) 
     pLine = pLine + '\n            pe{0}__sys__thisSynchronized                   ,'.format(pe) 
     pLine = pLine + '\n            pe{0}__sys__ready                              ,'.format(pe) 
@@ -3113,7 +3136,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // General control and status                                                  '.format(pe) 
-    pLine = pLine + '\n  input [`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
+    pLine = pLine + '\n  //input [`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
     pLine = pLine + '\n  input                                         sys__pe{0}__allSynchronized     ;'.format(pe) 
     pLine = pLine + '\n  output                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
     pLine = pLine + '\n  output                                        pe{0}__sys__ready               ;'.format(pe) 
@@ -3143,7 +3166,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // General control and status                                                '.format(pe) 
-    pLine = pLine + '\n  wire[`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
+    pLine = pLine + '\n  //wire[`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
     pLine = pLine + '\n  wire                                        sys__pe{0}__allSynchronized     ;'.format(pe) 
     pLine = pLine + '\n  wire                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
     pLine = pLine + '\n  wire                                        pe{0}__sys__ready               ;'.format(pe) 
@@ -3173,7 +3196,7 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n               // General control and status                                                       '.format(pe,lane,strm) 
-    pLine = pLine + '\n               .sys__pe{0}__peId                      ( sys__pe{0}__peId                   ),      '.format(pe,lane,strm)
+    pLine = pLine + '\n               //.sys__pe{0}__peId                      ( sys__pe{0}__peId                   ),      '.format(pe,lane,strm)
     pLine = pLine + '\n               .sys__pe{0}__allSynchronized           ( sys__pe{0}__allSynchronized        ),      '.format(pe,lane,strm)
     pLine = pLine + '\n               .pe{0}__sys__thisSynchronized          ( pe{0}__sys__thisSynchronized       ),      '.format(pe,lane,strm)
     pLine = pLine + '\n               .pe{0}__sys__ready                     ( pe{0}__sys__ready                  ),      '.format(pe,lane,strm)
@@ -3436,6 +3459,41 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+
+  f = open('../HDL/common/pe_cntl_simd_instance_wires.vh', 'w')
+  pLine = ""
+  # always create 16 sets of wires for the testbench
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0  ;'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1  ;'.format(lane)
+  pLine = pLine + '\n'
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n'
+
+  # always create 16 sets of regs to latch the output of the configuration memory
+  pLine = pLine + '\n  // create 16 sets of regs to latch the output of the configuration memory'
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1_e1  ;'.format(lane)
+  pLine = pLine + '\n'
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135_e1  ;'.format(lane)
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
 
 
 

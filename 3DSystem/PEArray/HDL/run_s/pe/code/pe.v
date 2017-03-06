@@ -13,6 +13,15 @@
 *********************************************************************************************/
     
 `timescale 1ns/10ps
+
+//--------------------------------------------------
+// test related defines
+`ifdef TESTING
+`include "TB_common.vh"
+`endif
+
+//--------------------------------------------------
+// RTL related defines
 `include "common.vh"
 `include "pe_array.vh"
 `include "pe.vh"
@@ -134,6 +143,36 @@ module pe (
   );
 
 
+  //-------------------------------------------------------------------------------------------------
+  // PE Control
+  // 
+  pe_cntl pe_cntl (
+
+            //-------------------------------
+            // Stack Bus interface
+            //
+            .sys__pe__peId                        ( sys__pe__peId                     ),
+            // OOB Downstream carries PE configuration 
+            .sti__cntl__oob_cntl                  ( sti__cntl__oob_cntl               ),      
+            .sti__cntl__oob_valid                 ( sti__cntl__oob_valid              ),      
+            .cntl__sti__oob_ready                 ( cntl__sti__oob_ready              ),      
+            .sti__cntl__oob_type                  ( sti__cntl__oob_type               ),      
+            .sti__cntl__oob_data                  ( sti__cntl__oob_data               ),      
+            
+            //-------------------------------
+            // Configuration output
+            //   - comment out when PE configured by regFile driver
+            `ifndef TB_ENABLE_REGFILE_DRIVER
+            `include "pe_simd_instance_ports.vh"
+            `endif
+            .stOp_complete                        ( pe__sys__complete                 ),
+
+            //-------------------------------
+            // General
+            //
+            .clk                                  ( clk                               ),
+            .reset_poweron                        ( reset_poweron                     )
+  );
 
 
   //-------------------------------------------------------------------------------------------------
