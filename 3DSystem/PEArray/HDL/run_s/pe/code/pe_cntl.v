@@ -44,7 +44,7 @@ module pe_cntl (
             //-------------------------------
             // Configuration output
             //
-            `include "pe_simd_ports.vh"
+            `include "pe_cntl_simd_ports.vh"
             stOp_complete                                 ,
 
             //-------------------------------
@@ -124,39 +124,39 @@ module pe_cntl (
               assign lane_from_genvar                     = lane                  ;
 
               // From the manager, we use a common address for all lanes, so index into the lane memory
-              assign simd__cntl__lane_r130[lane]          = {simd__cntl__lane_r130_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  simd__cntl__lane_r130_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign simd__cntl__lane_r134[lane]          = {simd__cntl__lane_r134_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  simd__cntl__lane_r134_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign simd__cntl__lane_r132[lane][19:16]   = simd__cntl__lane_r132_e1[19:16]   ;  // type (bit, nibble, byte, word)
+              assign cntl__simd__lane_r130[lane]          = {cntl__simd__lane_r130_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r130_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign cntl__simd__lane_r134[lane]          = {cntl__simd__lane_r134_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r134_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign cntl__simd__lane_r132[lane][19:16]   = cntl__simd__lane_r132_e1[19:16]   ;  // type (bit, nibble, byte, word)
                                                                                               
-              assign simd__cntl__lane_r131[lane]          = {simd__cntl__lane_r131_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  simd__cntl__lane_r131_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign simd__cntl__lane_r135[lane]          = {simd__cntl__lane_r135_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  simd__cntl__lane_r135_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign simd__cntl__lane_r133[lane][19:16]   = simd__cntl__lane_r133_e1[19:16]   ;  // type (bit, nibble, byte, word)
+              assign cntl__simd__lane_r131[lane]          = {cntl__simd__lane_r131_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r131_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign cntl__simd__lane_r135[lane]          = {cntl__simd__lane_r135_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r135_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+              assign cntl__simd__lane_r133[lane][19:16]   = cntl__simd__lane_r133_e1[19:16]   ;  // type (bit, nibble, byte, word)
                                                                                               
-              assign simd__cntl__lane_r133[lane][15: 0]   = simd__cntl__lane_r133_e1[15: 0]   ;
-              assign simd__cntl__lane_r132[lane][15: 0]   = simd__cntl__lane_r132_e1[15: 0]   ;  // num of types - for dma
+              assign cntl__simd__lane_r133[lane][15: 0]   = cntl__simd__lane_r133_e1[15: 0]   ;
+              assign cntl__simd__lane_r132[lane][15: 0]   = cntl__simd__lane_r132_e1[15: 0]   ;  // num of types - for dma
                                                                                               
-              assign simd__cntl__rs0[0]                   = simd__cntl__rs0_e1[0]             ;
-              assign simd__cntl__rs0[31:1]                = simd__cntl__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
-              assign simd__cntl__rs1                      = simd__cntl__rs1_e1                ;
+              assign cntl__simd__rs0[0]                   = cntl__simd__rs0_e1[0]             ;
+              assign cntl__simd__rs0[31:1]                = cntl__simd__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
+              assign cntl__simd__rs1                      = cntl__simd__rs1_e1                ;
           end
   endgenerate
 
   always @(posedge clk)
     begin
-      simd__cntl__lane_r130_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? sourceAddress0                                      : simd__cntl__lane_r130_e1          ;
-      simd__cntl__lane_r134_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? destinationAddress0                                 : simd__cntl__lane_r134_e1          ;
-      simd__cntl__lane_r132_e1[19:16]   <= (reset_poweron ) ? 4'd0                    : ( sti__cntl__oob_valid_d1 ) ? src_data_type0                                      : simd__cntl__lane_r132_e1[19:16]   ;  // type (bit, nibble, byte, word)
+      cntl__simd__lane_r130_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? sourceAddress0                                      : cntl__simd__lane_r130_e1          ;
+      cntl__simd__lane_r134_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? destinationAddress0                                 : cntl__simd__lane_r134_e1          ;
+      cntl__simd__lane_r132_e1[19:16]   <= (reset_poweron ) ? 4'd0                    : ( sti__cntl__oob_valid_d1 ) ? src_data_type0                                      : cntl__simd__lane_r132_e1[19:16]   ;  // type (bit, nibble, byte, word)
                                                                                                                                                                                                             
-      simd__cntl__lane_r131_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? sourceAddress1                                      : simd__cntl__lane_r131_e1          ;
-      simd__cntl__lane_r135_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? destinationAddress1                                 : simd__cntl__lane_r135_e1          ;
-      simd__cntl__lane_r133_e1[19:16]   <= (reset_poweron ) ? 4'd0                    : ( sti__cntl__oob_valid_d1 ) ? src_data_type1                                      : simd__cntl__lane_r133_e1[19:16]   ;  // type (bit, nibble, byte, word)
+      cntl__simd__lane_r131_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? sourceAddress1                                      : cntl__simd__lane_r131_e1          ;
+      cntl__simd__lane_r135_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? destinationAddress1                                 : cntl__simd__lane_r135_e1          ;
+      cntl__simd__lane_r133_e1[19:16]   <= (reset_poweron ) ? 4'd0                    : ( sti__cntl__oob_valid_d1 ) ? src_data_type1                                      : cntl__simd__lane_r133_e1[19:16]   ;  // type (bit, nibble, byte, word)
                                                                                                                                                                                                             
-      simd__cntl__lane_r133_e1[15: 0]   <= (reset_poweron ) ? 16'd0                   : ( sti__cntl__oob_valid_d1 ) ? numberOfOperands                                    : simd__cntl__lane_r133_e1[15: 0]   ;
-      simd__cntl__lane_r132_e1[15: 0]   <= (reset_poweron ) ? 16'd0                   : ( sti__cntl__oob_valid_d1 ) ? numberOfOperands                                    : simd__cntl__lane_r132_e1[15: 0]   ;  // num of types - for dma
+      cntl__simd__lane_r133_e1[15: 0]   <= (reset_poweron ) ? 16'd0                   : ( sti__cntl__oob_valid_d1 ) ? numberOfOperands                                    : cntl__simd__lane_r133_e1[15: 0]   ;
+      cntl__simd__lane_r132_e1[15: 0]   <= (reset_poweron ) ? 16'd0                   : ( sti__cntl__oob_valid_d1 ) ? numberOfOperands                                    : cntl__simd__lane_r132_e1[15: 0]   ;  // num of types - for dma
                                                                                                                                                                                                             
-      simd__cntl__rs0_e1[0]             <= (reset_poweron ) ? 1'b0                    : ( sti__cntl__oob_valid_d1 ) ? 1'b1                  : ( stOp_completed ) ? 1'b0   : simd__cntl__rs0_e1[0]             ;
-      simd__cntl__rs0_e1[31:1]          <= (reset_poweron ) ? 31'd0                   : ( sti__cntl__oob_valid_d1 ) ? stOp_operation                                      : simd__cntl__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
-      simd__cntl__rs1_e1                <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? {32{1'b1}}                                          : simd__cntl__rs1_e1                ;
+      cntl__simd__rs0_e1[0]             <= (reset_poweron ) ? 1'b0                    : ( sti__cntl__oob_valid_d1 ) ? 1'b1                  : ( stOp_completed ) ? 1'b0   : cntl__simd__rs0_e1[0]             ;
+      cntl__simd__rs0_e1[31:1]          <= (reset_poweron ) ? 31'd0                   : ( sti__cntl__oob_valid_d1 ) ? stOp_operation                                      : cntl__simd__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
+      cntl__simd__rs1_e1                <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? {32{1'b1}}                                          : cntl__simd__rs1_e1                ;
     end
   //----------------------------------------------------------------------------------------------------
   // StreamingOp configuration memory

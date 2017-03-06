@@ -112,6 +112,11 @@ module pe (
   `include "stack_interface_to_pe_cntl_downstream_instance_wires.vh"
 
   //---------------------------------------
+  // PE Control
+  // 
+  `include "pe_cntl_simd_instance_wires.vh"
+
+  //---------------------------------------
   // SIMD
   // 
   `include "pe_simd_instance_wires.vh"
@@ -163,7 +168,7 @@ module pe (
             // Configuration output
             //   - comment out when PE configured by regFile driver
             `ifndef TB_ENABLE_REGFILE_DRIVER
-            `include "pe_simd_instance_ports.vh"
+            `include "pe_cntl_simd_instance_ports.vh"
             `endif
             .stOp_complete                        ( pe__sys__complete                 ),
 
@@ -172,6 +177,29 @@ module pe (
             //
             .clk                                  ( clk                               ),
             .reset_poweron                        ( reset_poweron                     )
+  );
+
+
+  //-------------------------------------------------------------------------------------------------
+  // SIMD Wrapper
+  // 
+  simd_wrapper simd_wrapper (
+
+            //-------------------------------
+            // SIMD regFile control to stOp
+            `include "pe_simd_instance_ports.vh"
+
+            //-------------------------------
+            // PE control to stOp via simd
+            `include "pe_cntl_simd_instance_ports.vh"
+
+            //-------------------------------
+            // General
+            //
+            .peId                         ( peId                        ),
+            .clk                          ( clk                         ),
+            .reset_poweron                ( reset_poweron               )
+                          
   );
 
 

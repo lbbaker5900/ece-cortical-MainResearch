@@ -1694,6 +1694,10 @@ if __name__ == "__main__":
     pLine = pLine + '\n  assign sdp__reg__lane{0}_data          = stOp_lane[{0}].stOp__reg__data   ;'.format(lane)
   pLine = pLine + '\n'
 
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n  assign reg__sdp__lane{0}_ready  = 1\'b1          ;'.format(lane)
+  pLine = pLine + '\n'
+
   f.write(pLine)
   f.close()
 
@@ -2782,7 +2786,164 @@ if __name__ == "__main__":
   f.write(pLine)
 
   #-------------------------------------------------------------------------------------------------------------------------------------
+  # PE_CNTL Interface
+
+  f = open('../HDL/common/pe_cntl_simd_port_declarations.vh', 'w')
+  pLine = ""
+
+  pLine = pLine + '\n  // Common (Scalar) Register(s)                        '
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs0   ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs1   ;'.format(lane)
+  pLine = pLine + '\n'
+  pLine = pLine + '\n  // Lane Register(s)                                                                 '
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n'  
+ 
+  f.write(pLine)  
+  f.close()
+
+  f = open('../HDL/common/pe_cntl_simd_ports.vh', 'w')
+  pLine = ""
+
+  pLine = pLine + '\n    // Common (Scalar) Register(s)                '
+  pLine = pLine + '\n            cntl__simd__rs0                  ,'.format(lane)
+  pLine = pLine + '\n            cntl__simd__rs1                  ,'.format(lane)
+  pLine = pLine + '\n'
+  pLine = pLine + '\n    // Lane Registers                 '.format(lane)
+  pLine = pLine + '\n            cntl__simd__lane_r128                  ,'.format(lane)
+  pLine = pLine + '\n            cntl__simd__lane_r129                  ,'.format(lane)
+  pLine = pLine + '\n            cntl__simd__lane_r130                  ,'.format(lane)
+  pLine = pLine + '\n            cntl__simd__lane_r131                  ,'.format(lane)
+  pLine = pLine + '\n            cntl__simd__lane_r132                  ,'.format(lane)
+  pLine = pLine + '\n            cntl__simd__lane_r133                  ,'.format(lane)
+  pLine = pLine + '\n            cntl__simd__lane_r134                  ,'.format(lane)
+  pLine = pLine + '\n            cntl__simd__lane_r135                  ,'.format(lane)
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/pe_cntl_simd_instance_ports.vh', 'w')
+  pLine = ""
+
+  pLine = pLine + '\n            // Common (Scalar) Register(s)                '
+  pLine = pLine + '\n            .cntl__simd__rs0         ( cntl__simd__rs0        ),'.format(lane)
+  pLine = pLine + '\n            .cntl__simd__rs1         ( cntl__simd__rs1        ),'.format(lane)
+  pLine = pLine + '\n'
+  pLine = pLine + '\n            // Lane {0}             '.format(lane)
+  pLine = pLine + '\n            .cntl__simd__lane_r128   ( cntl__simd__lane_r128  ),'.format(lane)
+  pLine = pLine + '\n            .cntl__simd__lane_r129   ( cntl__simd__lane_r129  ),'.format(lane)
+  pLine = pLine + '\n            .cntl__simd__lane_r130   ( cntl__simd__lane_r130  ),'.format(lane)
+  pLine = pLine + '\n            .cntl__simd__lane_r131   ( cntl__simd__lane_r131  ),'.format(lane)
+  pLine = pLine + '\n            .cntl__simd__lane_r132   ( cntl__simd__lane_r132  ),'.format(lane)
+  pLine = pLine + '\n            .cntl__simd__lane_r133   ( cntl__simd__lane_r133  ),'.format(lane)
+  pLine = pLine + '\n            .cntl__simd__lane_r134   ( cntl__simd__lane_r134  ),'.format(lane)
+  pLine = pLine + '\n            .cntl__simd__lane_r135   ( cntl__simd__lane_r135  ),'.format(lane)
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/pe_cntl_simd_instance_wires.vh', 'w')
+  pLine = ""
+  # always create 16 sets of wires for the testbench
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs0  ;'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs1  ;'.format(lane)
+  pLine = pLine + '\n'
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
+
+
+  #-------------------------------------------------------------------------------------------------------------------------------------
+  # SIMD Wrapper
+
+  f = open('../HDL/common/pe_simd_wrapper_output_port_declarations.vh', 'w')
+  pLine = ""
+
+  pLine = pLine + '\n  // Common (Scalar) Register(s)                '
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0   ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1   ;'.format(lane)
+  pLine = pLine + '\n'
+  pLine = pLine + '\n  // Lane Register(s)                '
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  output [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n'  
+ 
+  f.write(pLine)  
+  f.close()
+
+  f = open('../HDL/common/pe_simd_wrapper_input_port_declarations.vh', 'w')
+  pLine = ""
+
+  pLine = pLine + '\n  // Common (Scalar) Register(s)                '
+  pLine = pLine + '\n  input  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs0   ;'.format(lane)
+  pLine = pLine + '\n  input  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs1   ;'.format(lane)
+  pLine = pLine + '\n'
+  pLine = pLine + '\n  // Lane Register(s)                '
+  pLine = pLine + '\n  input  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n  input  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
+  pLine = pLine + '\n'  
+ 
+  f.write(pLine)  
+  f.close()
+
+  f = open('../HDL/common/pe_simd_wrapper_assignments.vh', 'w')
+  pLine = ""
+
+  pLine = pLine + '\n  // Common (Scalar) Register(s)                '
+  pLine = pLine + '\n  assign   simd__cntl__rs0  = cntl__simd__rs0 ;'.format(lane)
+  pLine = pLine + '\n  assign   simd__cntl__rs1  = cntl__simd__rs1 ;'.format(lane)
+  pLine = pLine + '\n'
+  pLine = pLine + '\n  // Lane Register(s)                '
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n// Lane {0}                 '.format(lane)
+    pLine = pLine + '\n  assign  simd__cntl__lane_r128  [{0}]   =   cntl__simd__lane_r128  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__cntl__lane_r129  [{0}]   =   cntl__simd__lane_r129  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__cntl__lane_r130  [{0}]   =   cntl__simd__lane_r130  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__cntl__lane_r131  [{0}]   =   cntl__simd__lane_r131  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__cntl__lane_r132  [{0}]   =   cntl__simd__lane_r132  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__cntl__lane_r133  [{0}]   =   cntl__simd__lane_r133  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__cntl__lane_r134  [{0}]   =   cntl__simd__lane_r134  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n  assign  simd__cntl__lane_r135  [{0}]   =   cntl__simd__lane_r135  [{0}]  ;'.format(lane)
+    pLine = pLine + '\n'  
+  pLine = pLine + '\n'  
+ 
+  f.write(pLine)  
+  f.close()
+
+  #-------------------------------------------------------------------------------------------------------------------------------------
   # SIMD Interface
+
   f = open('../HDL/common/pe_simd_ports.vh', 'w')
   pLine = ""
 
@@ -2846,32 +3007,10 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/pe_cntl_simd_port_declarations.vh', 'w')
-  pLine = ""
-
-  pLine = pLine + '\n  // Common (Scalar) Register(s)                '
-  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0   ;'.format(lane)
-  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1   ;'.format(lane)
-  pLine = pLine + '\n'
-  pLine = pLine + '\n  // Lane Register(s)                '
-  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n  output[`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;'.format(lane)
-  pLine = pLine + '\n'  
- 
-  f.write(pLine)  
-  f.close()
-
-
-
 
   #-------------------------------------------------------------------------------------------------------------------------------------
   # Test SIMD defines and assignments
+
   f = open('../HDL/common/pe_simd_instance_wires.vh', 'w')
   pLine = ""
   # always create 16 sets of wires for the testbench
@@ -3463,32 +3602,32 @@ if __name__ == "__main__":
   f = open('../HDL/common/pe_cntl_simd_instance_wires.vh', 'w')
   pLine = ""
   # always create 16 sets of wires for the testbench
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0  ;'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1  ;'.format(lane)
-  pLine = pLine + '\n'
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs0  ;'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs1  ;'.format(lane)
+  pLine = pLine + '\n'                                               
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
   pLine = pLine + '\n'
 
   # always create 16 sets of regs to latch the output of the configuration memory
   pLine = pLine + '\n  // create 16 sets of regs to latch the output of the configuration memory'
-  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs0_e1  ;'.format(lane)
-  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__rs1_e1  ;'.format(lane)
-  pLine = pLine + '\n'
-  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r128_e1  ;'.format(lane)
-  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r129_e1  ;'.format(lane)
-  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r130_e1  ;'.format(lane)
-  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r131_e1  ;'.format(lane)
-  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r132_e1  ;'.format(lane)
-  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r133_e1  ;'.format(lane)
-  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r134_e1  ;'.format(lane)
-  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  simd__cntl__lane_r135_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs0_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs1_e1  ;'.format(lane)
+  pLine = pLine + '\n'                                               
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r128_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r129_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r130_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r131_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r132_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r133_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r134_e1  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r135_e1  ;'.format(lane)
   pLine = pLine + '\n'
 
 

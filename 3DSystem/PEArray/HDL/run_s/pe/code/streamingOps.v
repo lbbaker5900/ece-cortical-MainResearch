@@ -371,9 +371,11 @@ module streamingOps (
           stOp__dma__strm0_cntl        =  `COMMON_STD_INTF_CNTL_SOM_EOM                                                       ; // only one result
           stOp__dma__strm0_data_valid  =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & bsum_result_valid  ;
 
+          // FIXME : always send single result operations to simd register 
           stOp__reg__data              =   bsum                                                                               ;
           stOp__reg__cntl              =  `COMMON_STD_INTF_CNTL_SOM_EOM                                                       ; // only one result
-          stOp__reg__valid             =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_REG   ) & bsum_result_valid  ;
+          // stOp__reg__valid             =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_REG   ) & bsum_result_valid  ;
+          stOp__reg__valid             =   bsum_result_valid  ;
 
           // FIFO control
           strm0_fifo_read              =   strm0_enable & strm_fifo_data_available ;
@@ -413,6 +415,11 @@ module streamingOps (
           stOp__dma__strm0_data        =   fp_mac                     ;
           stOp__dma__strm0_cntl        =  `DMA_CONT_STRM_CNTL_SOP_EOP ; // only one result
           stOp__dma__strm0_data_valid  =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & fp_mac_result_valid ;
+          // FIXME : always send single result operations to simd register 
+          stOp__reg__valid             =   fp_mac_result_valid           ;
+          stOp__reg__data              =   fp_mac                        ;
+          stOp__reg__cntl              =  `COMMON_STD_INTF_CNTL_SOM_EOM  ; // only one result
+
 
           // FIFO control
           strm0_fifo_read              =   strm0_enable & strm_fifo_data_available ;
