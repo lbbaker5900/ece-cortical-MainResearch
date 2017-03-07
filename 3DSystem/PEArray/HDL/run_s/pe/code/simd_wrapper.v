@@ -80,10 +80,42 @@ module simd_wrapper (
   `include "pe_simd_wrapper_assignments.vh"
   `include "simd_wrapper_scntl_to_simd_regfile_wires.vh"
 
+  // store in reg before transferring to simd
+  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  allLanes_results  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  allLanes_valid                             ;
+
   //----------------------------------------------------------------------------------------------------
   // Assignments
   //
+  //----------------------------------------------------------------------
+  // Update each lanes regFile with result from streaming operation module 
+
+  genvar gvi;
+  generate
+    for (gvi=0; gvi<`PE_NUM_OF_EXEC_LANES ; gvi=gvi+1) 
+      begin: regFile_load
+
+        wire                               lane_result_valid  ;
+        wire  [`PE_EXEC_LANE_WIDTH_RANGE]  lane_result        ;
+        
+        always @(posedge clk)
+          begin
+            allLanes_valid  [gvi]  <=  ( reset_poweron     ) ? 1'd0                    :
+                                       ( lane_result_valid ) ? 1'b1                    :
+                                                               allLanes_valid[gvi]     ;
+
+            allLanes_results[gvi]  <=  ( reset_poweron     ) ? `PE_EXEC_LANE_WIDTH 'd0 :
+                                       ( lane_result_valid ) ? lane_result             :
+                                                               allLanes_results[gvi]   ;
+
+          end
+
+      end
+  endgenerate
+
   `include "simd_wrapper_scntl_to_simd_regfile_assignments.vh"
+
+  //----------------------------------------------------------------------------------------------------
   
 endmodule
 

@@ -3146,6 +3146,11 @@ if __name__ == "__main__":
 
   pLine = ""
   for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n  assign regFile_load[{0}].lane_result_valid  = scntl__reg__lane{0}_valid  ;'.format(lane)
+    pLine = pLine + '\n  assign regFile_load[{0}].lane_result        = scntl__reg__lane{0}_data   ;'.format(lane)
+  pLine = pLine + '\n'
+
+  for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  assign reg__scntl__lane{0}_ready  = 1\'b1          ;'.format(lane)
   pLine = pLine + '\n'
 
