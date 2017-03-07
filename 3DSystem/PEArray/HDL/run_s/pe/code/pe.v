@@ -90,7 +90,14 @@ module pe (
   wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  scntl__stOp__operation ;
   wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  scntl__dma__operation  ;
 
+  //-------------------------------------------------------------------------------------------------
+  // Result from stOp to simd (via scntl)
+
   `include "pe_stOp_to_cntl_regfile_connection_wires.vh"
+  `include "pe_scntl_to_simd_regfile_connection_wires.vh"
+
+
+  //-------------------------------------------------------------------------------------------------
   `include "pe_dma_memc_connection_wires.vh"
   `include "pe_std_to_stOp_connection_wires.vh"
 
@@ -194,6 +201,10 @@ module pe (
             `include "pe_cntl_simd_instance_ports.vh"
 
             //-------------------------------
+            // Result from stOp to regFile
+            `include "simd_wrapper_scntl_to_simd_regfile_instance_ports.vh"
+
+            //-------------------------------
             // General
             //
             .peId                         ( peId                        ),
@@ -258,33 +269,48 @@ module pe (
   // 
   streamingOps_cntl streamingOps_cntl (
 
+                          //------------------------------------------------------------
                           // PE core interface
                           .ready             ( pe__sys__ready     ), // ready to start streaming
                           .complete          ( pe__sys__complete  ),  // FIXME
                           
+                          //------------------------------------------------------------
                           // General system signals
                           .sys__pe__allSynchronized  (sys__pe__allSynchronized ),  // all PE streams are complete
                           .pe__sys__thisSynchronized (pe__sys__thisSynchronized),  // this PE's streams are complete
                           
+                          //------------------------------------------------------------
                           // stOp NoC Interface(s)
                           // connections to datapath made via mem_acc_control python script
                           `include "streamingOps_cntl_stOp_instance_ports.vh"
                           `include "streamingOps_cntl_noc_instance_ports.vh"
                           
+                          //------------------------------------------------------------
                           // connections to datapath made via mem_acc_control python script
                           `include "streamingOps_cntl_control_instance_ports.vh"
                           
+                          //------------------------------------------------------------
                            // Memory Access Interface                                      
                           .scntl__memc__request      ( scntl__memc__request             ),
                           .memc__scntl__granted      ( memc__scntl__granted             ),
                           .scntl__memc__released     ( scntl__memc__released            ),
 
+                          //------------------------------------------------------------
                           // external interface
                           .ext_enable        (  ),
                           .ext_ready         ( 1'b1 ),  // FIXME
                           .ext_start         (  ),
                           .ext_complete      ( 1'b1 ),  // FIXME
 
+                          //------------------------------------------------------------
+                           // Result to simd regFile 
+                          `include "streamingOps_cntl_to_simd_regfile_instance_ports.vh"
+
+                          //------------------------------------------------------------
+                           // Result from stOp to simd regFile
+                          `include "streamingOps_cntl_stOp_to_cntl_regfile_instance_ports.vh"
+
+                          //------------------------------------------------------------
                            // SIMD Register interface
                           `include "pe_simd_instance_ports.vh"
 

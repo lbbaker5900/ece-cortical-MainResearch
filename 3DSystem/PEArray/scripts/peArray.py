@@ -1599,6 +1599,18 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../HDL/common/pe_scntl_to_simd_regfile_connection_wires.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n  wire                                    reg__scntl__lane{0}_ready    ;'.format(lane)
+    pLine = pLine + '\n  wire                                    scntl__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  wire   [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane{0}_data     ;'.format(lane)
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
 
   f = open('../HDL/common/pe_dma_memc_connection_wires.vh', 'w')
   pLine = ""
@@ -1694,9 +1706,6 @@ if __name__ == "__main__":
     pLine = pLine + '\n  assign sdp__reg__lane{0}_data          = stOp_lane[{0}].stOp__reg__data   ;'.format(lane)
   pLine = pLine + '\n'
 
-  for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  assign reg__sdp__lane{0}_ready  = 1\'b1          ;'.format(lane)
-  pLine = pLine + '\n'
 
   f.write(pLine)
   f.close()
@@ -2151,10 +2160,144 @@ if __name__ == "__main__":
 
 
 
+  #-------------------------------------------------------------------------------------------------------------------------------------
+  # Result interface to simd regFile
+
+  #--------------------------------------------------
+  # scntl to simd
+
+  f = open('../HDL/common/streamingOps_cntl_stOp_to_cntl_regfile_ports.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n    reg__sdp__lane{0}_ready    ,'.format(lane)
+    pLine = pLine + '\n    sdp__reg__lane{0}_valid    ,'.format(lane)
+    pLine = pLine + '\n    sdp__reg__lane{0}_data     ,'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/streamingOps_cntl_stOp_to_cntl_regfile_ports_declaration.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n  output                                   reg__sdp__lane{0}_ready    ;'.format(lane)
+    pLine = pLine + '\n  input                                    sdp__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  input   [`STREAMING_OP_RESULT_RANGE   ]  sdp__reg__lane{0}_data     ;'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/streamingOps_cntl_stOp_to_cntl_regfile_instance_ports.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n    .reg__sdp__lane{0}_ready    ( reg__sdp__lane{0}_ready  ),'.format(lane)
+    pLine = pLine + '\n    .sdp__reg__lane{0}_valid    ( sdp__reg__lane{0}_valid  ),'.format(lane)
+    pLine = pLine + '\n    .sdp__reg__lane{0}_data     ( sdp__reg__lane{0}_data   ),'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/streamingOps_cntl_stOp_to_cntl_regfile_wires.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n  wire                                   reg__sdp__lane{0}_ready    ;'.format(lane)
+    pLine = pLine + '\n  wire                                   sdp__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  wire  [`STREAMING_OP_RESULT_RANGE   ]  sdp__reg__lane{0}_data     ;'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
+
+  #--------------------------------------------------
+  # stOp to scntl
+
+  f = open('../HDL/common/streamingOps_cntl_to_simd_regfile_ports.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n    reg__scntl__lane{0}_ready    ,'.format(lane)
+    pLine = pLine + '\n    scntl__reg__lane{0}_valid    ,'.format(lane)
+    pLine = pLine + '\n    scntl__reg__lane{0}_data     ,'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/streamingOps_cntl_to_simd_regfile_ports_declaration.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n  input                                    reg__scntl__lane{0}_ready    ;'.format(lane)
+    pLine = pLine + '\n  output                                   scntl__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  output  [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane{0}_data     ;'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/streamingOps_cntl_to_simd_regfile_instance_ports.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n    .reg__scntl__lane{0}_ready   ( reg__scntl__lane{0}_ready  ) ,'.format(lane)
+    pLine = pLine + '\n    .scntl__reg__lane{0}_valid   ( scntl__reg__lane{0}_valid  ) ,'.format(lane)
+    pLine = pLine + '\n    .scntl__reg__lane{0}_data    ( scntl__reg__lane{0}_data   ) ,'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/streamingOps_cntl_to_simd_regfile_wires.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n  wire                                    reg__scntl__lane{0}_ready    ;'.format(lane)
+    pLine = pLine + '\n  wire                                    scntl__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  wire   [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane{0}_data     ;'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/streamingOps_cntl_to_simd_regfile_assignments.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n    assign reg__sdp__lane{0}_ready    =  reg__scntl__lane{0}_ready  ;'.format(lane)
+    pLine = pLine + '\n    assign scntl__reg__lane{0}_valid  =  sdp__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n    assign scntl__reg__lane{0}_data   =  sdp__reg__lane{0}_data     ;'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
 
 
   #-------------------------------------------------------------------------------------------------------------------------------------
   # NoC
+
   f = open('../HDL/common/streamingOps_cntl_stOp_noc_ports.vh', 'w')
   pLine = ""
 
@@ -2939,6 +3082,74 @@ if __name__ == "__main__":
   pLine = pLine + '\n'  
  
   f.write(pLine)  
+  f.close()
+
+  #--------------------------------------------------
+  # Result from stOp to regFile
+
+  f = open('../HDL/common/simd_wrapper_scntl_to_simd_regfile_ports.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n    reg__scntl__lane{0}_ready    ,'.format(lane)
+    pLine = pLine + '\n    scntl__reg__lane{0}_valid    ,'.format(lane)
+    pLine = pLine + '\n    scntl__reg__lane{0}_data     ,'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/simd_wrapper_scntl_to_simd_regfile_ports_declaration.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n  output                                    reg__scntl__lane{0}_ready    ;'.format(lane)
+    pLine = pLine + '\n  input                                     scntl__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  input    [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane{0}_data     ;'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/simd_wrapper_scntl_to_simd_regfile_instance_ports.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n    .reg__scntl__lane{0}_ready   ( reg__scntl__lane{0}_ready  ) ,'.format(lane)
+    pLine = pLine + '\n    .scntl__reg__lane{0}_valid   ( scntl__reg__lane{0}_valid  ) ,'.format(lane)
+    pLine = pLine + '\n    .scntl__reg__lane{0}_data    ( scntl__reg__lane{0}_data   ) ,'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/simd_wrapper_scntl_to_simd_regfile_wires.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n  wire                                    reg__scntl__lane{0}_ready    ;'.format(lane)
+    pLine = pLine + '\n  wire                                    scntl__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  wire   [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane{0}_data     ;'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/simd_wrapper_scntl_to_simd_regfile_assignments.vh', 'w')
+
+  pLine = ""
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n  assign reg__scntl__lane{0}_ready  = 1\'b1          ;'.format(lane)
+  pLine = pLine + '\n'
+
+  f.write(pLine)
   f.close()
 
   #-------------------------------------------------------------------------------------------------------------------------------------

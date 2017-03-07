@@ -30,6 +30,7 @@
 `include "stack_interface.vh"
 `include "noc_cntl.vh"
 `include "streamingOps_cntl.vh"
+`include "streamingOps.vh"
 `include "dma_cont.vh"
 `include "mem_acc_cont.vh"
 
@@ -98,6 +99,14 @@ module streamingOps_cntl (
                           ext_complete      ,
 
                           //--------------------------------------------------------
+                          // Result interface to simd regFile
+                          `include "streamingOps_cntl_to_simd_regfile_ports.vh"
+
+                          //--------------------------------------------------------
+                          // Result interface from stOp 
+                          `include "streamingOps_cntl_stOp_to_cntl_regfile_ports.vh"
+
+                          //--------------------------------------------------------
                           // register interface
                           `include "pe_simd_ports.vh"
 
@@ -108,10 +117,15 @@ module streamingOps_cntl (
                           reset_poweron     
     );
 
+
+  //----------------------------------------------------------------------------------------------------
+  // General
   input                       clk            ;
   input                       reset_poweron  ;
   input [`PE_PE_ID_RANGE   ]  peId           ; 
 
+
+  //----------------------------------------------------------------------------------------------------
   // interface to PE core
   output      ready             ; // ready to start streaming
   output      complete          ;
@@ -119,19 +133,27 @@ module streamingOps_cntl (
   input       sys__pe__allSynchronized  ;  // all PE streams are complete
   output      pe__sys__thisSynchronized ;  // this PE's streams are complete
 
+
+  //----------------------------------------------------------------------------------------------------
   // NoC interface to stOp
   // includes data to and from all execution lane streaming operation modules
   `include "streamingOps_cntl_stOp_noc_ports_declaration.vh"
 
+
+  //----------------------------------------------------------------------------------------------------
   // streaming op and dma function control interface
   `include "streamingOps_cntl_control_ports_declaration.vh"
   
+
+  //----------------------------------------------------------------------------------------------------
   // External interface
   output ext_enable        ;
   input  ext_ready         ;
   output ext_start         ;
   input  ext_complete      ;
   
+
+  //----------------------------------------------------------------------------------------------------
   // interface to memory controller
   output       scntl__memc__request          ;
   input        memc__scntl__granted          ;
@@ -142,6 +164,17 @@ module streamingOps_cntl (
   // Exec lane Register(s)
   //
   `include "pe_simd_port_declarations.vh"
+
+
+  //-------------------------------------------------------------------------------------------------
+  // Result to simd regFile
+  //
+  `include "streamingOps_cntl_to_simd_regfile_ports_declaration.vh"
+  
+  //-------------------------------------------------------------------------------------------------
+  // Result from stOp to simd regFile
+  //
+  `include "streamingOps_cntl_stOp_to_cntl_regfile_ports_declaration.vh"
   
   //-------------------------------------------------------------------------------------------
   // Wires and Register
@@ -167,6 +200,11 @@ module streamingOps_cntl (
 
   // assign control to dma and stOp from loaded registers
   `include "streamingOps_cntl_control_wires.vh"
+
+  // result between stOp and simd regFile
+  `include "streamingOps_cntl_to_simd_regfile_wires.vh"
+  `include "streamingOps_cntl_stOp_to_cntl_regfile_wires.vh"
+
 
   //------------------------------------------------------------
   // Operation related fields
@@ -1341,6 +1379,10 @@ module streamingOps_cntl (
   assign fromNocDataPktStrmId            =  from_NoC_data_fifo[0].fifo_read_strmId ;
   assign fromNocDataPktData              =  from_NoC_data_fifo[0].fifo_read_data   ;
 
+  //-------------------------------------------------------------------------------------------------
+  // Connect result bus from stOp to simd regFile
+  //
+  `include "streamingOps_cntl_to_simd_regfile_assignments.vh"
 
 endmodule
 

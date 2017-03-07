@@ -145,6 +145,34 @@ package operation;
                     this.hasBeenRandomized         = 0       ;
         endfunction
 
+        
+        function base_operation copy ();
+                    copy                           = new this                     ;
+                    copy.srandom($urandom())                                      ;  // need to iniialize RNG for each object otherwise they will create the same stuff
+                    copy.operands[0]               = new [this.numberOfOperands]  ;
+                    copy.operands[1]               = new [this.numberOfOperands]  ;
+                    copy.operandsSign[0]           = new [this.numberOfOperands]  ;
+                    copy.operandsSign[1]           = new [this.numberOfOperands]  ;
+                    copy.operandsExp[0]            = new [this.numberOfOperands]  ;
+                    copy.operandsExp[1]            = new [this.numberOfOperands]  ;
+                    copy.operandsSignificand[0]    = new [this.numberOfOperands]  ;
+                    copy.operandsSignificand[1]    = new [this.numberOfOperands]  ;
+                    return copy ;
+        endfunction
+        
+        function void deepCopy (base_operation c);
+                    c                           = new this     ;
+                    c.operands[0]               = new [this.numberOfOperands]  ;
+                    c.operands[1]               = new [this.numberOfOperands]  ;
+                    c.operandsSign[0]           = new [this.numberOfOperands]  ;
+                    c.operandsSign[1]           = new [this.numberOfOperands]  ;
+                    c.operandsExp[0]            = new [this.numberOfOperands]  ;
+                    c.operandsExp[1]            = new [this.numberOfOperands]  ;
+                    c.operandsSignificand[0]    = new [this.numberOfOperands]  ;
+                    c.operandsSignificand[1]    = new [this.numberOfOperands]  ;
+        endfunction
+        
+
         //------------------------------------------------------------------------------------------------------
         // Pre randomize
 
@@ -290,7 +318,7 @@ package operation;
 
         //----------------------------------------------------------------------------------------------------
         // SIZE
-
+        // FIXME
         constraint c_numberOfOperands {
             // set number of operands same as memCopy in previous operation
             if (OpType == `STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM ) {
@@ -552,21 +580,20 @@ package operation;
 
         endfunction
     
-        function void displayOperationFoo(string fromFile, int fromLine);
-            $display("@%0t :%s:%0d:INFO: {PE,Lane,tId}:{%s,%0d}: = {%0d,%0d,%0d}", $time, `__FILE__, `__LINE__,  fromFile, fromLine, Id[0], Id[1], tId);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: stOp_operation : %b", $time, `__FILE__, `__LINE__, Id[0], Id[1], fromFile, fromLine, stOp_operation);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: src{0,1},dest{0,1} : {%3b,%3b,%3b,%3b}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], pe_stOp_stream_src[0], pe_stOp_stream_src[1], pe_stOp_stream_dest[0], pe_stOp_stream_dest[1]);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}:      Source Address: {%h,%h}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], sourceAddress[0], sourceAddress[1]);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Destination Address: {%h,%h}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], destinationAddress[0], destinationAddress[1]);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Enable Destination: {%b,%b}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], enableDestinationStream[0], enableDestinationStream[1]);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: {numberOfOperands, setNumberOfOperands, priorOperationNumberOfOperands} = {%0d,%0d,%0d}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], numberOfOperands, setNumberOfOperands, priorOperationNumberOfOperands);
+        function void displayOperationLong();
+            this.displayOperation();
             for (int i=0; i<numberOfOperands-1; i++)
                 begin
-                    operandsReal[0] = $bitstoshortreal({operands[0][i]});
-                    operandsReal[1] = $bitstoshortreal({operands[1][i]});
-                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Operand %3d {%f, %f}, ", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], i, operandsReal[0], operandsReal[1]);
+                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}: OperandSign %3d {%h, %h}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsSign[0][i], operandsSign[1][i]);
                 end
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Result %f ", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], result);
+            for (int i=0; i<numberOfOperands-1; i++)
+                begin
+                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}: OperandExp %3d {%h, %h}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsExp[0][i], operandsExp[1][i]);
+                end
+            for (int i=0; i<numberOfOperands-1; i++)
+                begin
+                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}: OperandSignificand %3d {%h, %h}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsSignificand[0][i], operandsSignificand[1][i]);
+                end
 
         endfunction
     

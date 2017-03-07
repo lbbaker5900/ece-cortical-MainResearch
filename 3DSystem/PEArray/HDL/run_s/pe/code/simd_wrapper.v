@@ -23,6 +23,7 @@
 `include "stack_interface.vh"
 `include "noc_cntl.vh"
 `include "streamingOps_cntl.vh"
+`include "streamingOps.vh"
 `include "dma_cont.vh"
 `include "mem_acc_cont.vh"
 
@@ -40,6 +41,10 @@ module simd_wrapper (
                           // Configuration output to stOp
                           //
                           `include "pe_simd_ports.vh"
+
+                          //-------------------------------
+                          // Result from stOp to regFile (via scntl)
+                          `include "simd_wrapper_scntl_to_simd_regfile_ports.vh"
 
                           //--------------------------------------------------------
                           // System
@@ -63,11 +68,22 @@ module simd_wrapper (
 
   `include "pe_simd_wrapper_input_port_declarations.vh"
 
+  //----------------------------------------------------------------------------------------------------
+  // Result from stOp to regFile
+
+  `include "simd_wrapper_scntl_to_simd_regfile_ports_declaration.vh"
+
 
   //----------------------------------------------------------------------------------------------------
   // Registers/Wires
   //
   `include "pe_simd_wrapper_assignments.vh"
+  `include "simd_wrapper_scntl_to_simd_regfile_wires.vh"
 
+  //----------------------------------------------------------------------------------------------------
+  // Assignments
+  //
+  `include "simd_wrapper_scntl_to_simd_regfile_assignments.vh"
+  
 endmodule
 
