@@ -1,0 +1,52 @@
+Coding GuideLines
+----------------------
+
+For logic that is in a different clock domain than the main clock, add the clock name at end of any signals in that domain
+- clk is main clock
+- other clocks have names such as clk_ddr??
+- <signal name>_clk_*
+
+Inter Block signal name
+- standardize on 3/4 digit block names
+- signal names have from/to prefix with double underscores
+- e.g. memc__dma__<signal name>
+- direction can be inferred from signal name
+-  
+Make signal names descriptive
+- e.g. use enable not en
+- make state names descriptive on why the state exists
+
+Put each wire/reg typedef on a separate line
+
+Do not use if-statement for reseting register (reset), use conditional
+- a <= ( reset ) ? 1’b0 : b;
+- we want X-propagation
+
+Put at top of each file
+- includes description, name etc
+- do not put copyright in any file
+- timescale
+
+Use separate files for each module
+- ensure module name same as file name
+
+MACROs
+- Each verilog file will have a corresponding .vh file in a common directory
+- macro’s must start with a file name descriptor that corresponds to the file name to ensure any two designer will not use the same name
+- use single underscores to separate descriptor from macro name
+- e.g. `define RFSH_CONT_NUM_PAGES_RANGE `RFSH_CONT_NUM_PAGES_MSB : `RFSH_CONT_NUM_PAGES_LSB
+- descriptor=RFSH_CONT, macro=NUM_PAGES_RANGE
+
+No async resets
+- however, if an exception needs to be made, ensure synchronous deactivation of reset
+
+Need to decide on common notation for active low
+- e.g. resetn, reset_n etc.
+- in general we prefer positive logic
+
+
+Don’t use tabs, use only spaces
+- do a search for <tab> and make sure you can’t find any
+
+If files edited in Windows domain, make sure you run dos2unix on files before committing
+

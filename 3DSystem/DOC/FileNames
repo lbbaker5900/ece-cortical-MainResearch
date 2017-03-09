@@ -1,0 +1,14 @@
+Module files:
+<std>   : stack_interface.v
+<stu>   : stack_interface.v
+<scntl> : streamingOp_cntl.v
+<cntl>  : pe_cntl.v
+<simdw> : simd_wrapper.v
+<sui>   : simd_upstream_intf.v
+<stOp>  : streamingOp.v
+<dma>   : dma_cont.v
+<memc>  : mem_acc_cont.v
+
+Notes:
+<stOp>, <dma> : Per lane instances instantiated in streamingOp_datapath.v
+
