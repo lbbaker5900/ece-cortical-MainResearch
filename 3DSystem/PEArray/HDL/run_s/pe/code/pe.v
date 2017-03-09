@@ -48,6 +48,16 @@ module pe (
             `include "pe_stack_bus_downstream_ports.vh"
 
             //-------------------------------
+            // Stack Bus - Upstream
+            //
+            pe__stu__valid         ,
+            pe__stu__cntl          ,
+            stu__pe__ready         ,
+            pe__stu__type          ,  // Control or Data, Vector or scalar
+            pe__stu__data          ,
+            pe__stu__oob_data      ,
+ 
+            //-------------------------------
             // NoC
             //
             `include "noc_cntl_noc_ports.vh"
@@ -72,13 +82,34 @@ module pe (
 
 
   //-------------------------------------------------------------------------------------------------
-  // interface to External Interface
+  // Stack Bus - Downstream
 
-  //-------------------------------------------------------------------------------------------------
-  // interface to External Interface
   `include "pe_stack_bus_downstream_port_declarations.vh"
 
+  //-------------------------------------------------------------------------------------------------
+  // Stack Bus - Upstream
+  //
+  output                                         pe__stu__valid       ;
+  output  [`COMMON_STD_INTF_CNTL_RANGE   ]       pe__stu__cntl        ;
+  input                                          stu__pe__ready       ;
+  output  [`STACK_UP_INTF_TYPE_RANGE     ]       pe__stu__type        ;  // Control or Data, Vector or scalar
+  output  [`STACK_UP_INTF_DATA_RANGE     ]       pe__stu__data        ;
+  output  [`STACK_UP_INTF_OOB_DATA_RANGE ]       pe__stu__oob_data    ;
+ 
 
+  //-------------------------------------------------------------------------------------------------
+  // Regs and Wires
+  
+  //-------------------------------------------------------------------------------------------------
+  // Stack Bus - Upstream
+  //
+  wire                                           pe__stu__valid       ;
+  wire    [`COMMON_STD_INTF_CNTL_RANGE   ]       pe__stu__cntl        ;
+  wire                                           stu__pe__ready       ;
+  wire    [`STACK_UP_INTF_TYPE_RANGE     ]       pe__stu__type        ;  // Control or Data, Vector or scalar
+  wire    [`STACK_UP_INTF_DATA_RANGE     ]       pe__stu__data        ;
+  wire    [`STACK_UP_INTF_OOB_DATA_RANGE ]       pe__stu__oob_data    ;
+ 
   //-------------------------------------------------------------------------------------------------
   // NoC
   //
@@ -132,12 +163,39 @@ module pe (
 
 
 
+  wire                                           sui__sti__valid      ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE   ]        sui__sti__cntl       ;
+  wire                                           sti__sui__ready      ;
+  wire   [`STACK_UP_INTF_TYPE_RANGE     ]        sui__sti__type       ;  // Control or Data, Vector or scalar
+  wire   [`STACK_UP_INTF_DATA_RANGE     ]        sui__sti__data       ;
+  wire   [`STACK_UP_INTF_OOB_DATA_RANGE ]        sui__sti__oob_data   ;
+
   stack_interface stack_interface (
 
                         //---------------------------------------
                         // Downstream Stack bus
                         //
                         `include "pe_stack_bus_downstream_instance_ports.vh"
+
+                        //-------------------------------
+                        // Stack Bus - Upstream
+                        //
+                        .pe__stu__valid        ( pe__stu__valid        ),
+                        .pe__stu__cntl         ( pe__stu__cntl         ),
+                        .stu__pe__ready        ( stu__pe__ready        ),
+                        .pe__stu__type         ( pe__stu__type         ),  // Control or Data, Vector or scalar
+                        .pe__stu__data         ( pe__stu__data         ),
+                        .pe__stu__oob_data     ( pe__stu__oob_data     ),
+ 
+                        //--------------------------------------------------
+                        // Stack Upstream from simd
+                        .sui__sti__valid       ( sui__sti__valid       ), 
+                        .sui__sti__cntl        ( sui__sti__cntl        ), 
+                        .sti__sui__ready       ( sti__sui__ready       ), 
+                                                                   
+                        .sui__sti__type        ( sui__sti__type        ), 
+                        .sui__sti__data        ( sui__sti__data        ), 
+                        .sui__sti__oob_data    ( sui__sti__oob_data    ), 
 
                         //---------------------------------------
                         // Downstream Stack OOB to PE control
@@ -163,6 +221,7 @@ module pe (
             //-------------------------------
             // Stack Bus interface
             //
+            
             .sys__pe__peId                        ( sys__pe__peId                     ),
             // OOB Downstream carries PE configuration 
             .sti__cntl__oob_cntl                  ( sti__cntl__oob_cntl               ),      
@@ -188,6 +247,38 @@ module pe (
 
 
   //-------------------------------------------------------------------------------------------------
+  // SIMD Registers to Stack Up 
+  // 
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs   [`PE_NUM_OF_EXEC_LANES ] ;
+  wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid                      ;
+  wire                                    sui__simd__regs_complete                   ;
+
+  simd_upstream_intf simd_upstream_intf (
+
+                  //--------------------------------------------------
+                  // Stack Upstream interface
+                  .sui__sti__valid       ( sui__sti__valid       ), 
+                  .sui__sti__cntl        ( sui__sti__cntl        ), 
+                  .sti__sui__ready       ( sti__sui__ready       ), 
+                                                             
+                  .sui__sti__type        ( sui__sti__type        ), 
+                  .sui__sti__data        ( sui__sti__data        ), 
+                  .sui__sti__oob_data    ( sui__sti__oob_data    ), 
+
+                  //--------------------------------------------------
+                  // Register(s) from simd
+                  .simd__sui__regs          ( simd__sui__regs          ),
+                  .simd__sui__regs_valid    ( simd__sui__regs_valid    ),
+                  .sui__simd__regs_complete ( sui__simd__regs_complete ),
+
+                  //--------------------------------------------------
+                  // General
+                  .peId                  ( sys__pe__peId         ),
+                  .clk                   ( clk                   ),
+                  .reset_poweron         ( reset_poweron         )
+  );
+
+  //-------------------------------------------------------------------------------------------------
   // SIMD Wrapper
   // 
   simd_wrapper simd_wrapper (
@@ -204,12 +295,19 @@ module pe (
             // Result from stOp to regFile
             `include "simd_wrapper_scntl_to_simd_regfile_instance_ports.vh"
 
+            //-------------------------------------------------------------------------------------------------
+            // SIMD Registers to Stack Up 
+            // 
+            .simd__sui__regs              ( simd__sui__regs          ),
+            .simd__sui__regs_valid        ( simd__sui__regs_valid    ),
+            .sui__simd__regs_complete     ( sui__simd__regs_complete ),
+
             //-------------------------------
             // General
             //
-            .peId                         ( peId                        ),
-            .clk                          ( clk                         ),
-            .reset_poweron                ( reset_poweron               )
+            .peId                         ( sys__pe__peId          ),
+            .clk                          ( clk                    ),
+            .reset_poweron                ( reset_poweron          )
                           
   );
 

@@ -6,7 +6,7 @@
     Date        : Nov 2016
     email       : lbbaker@ncsu.edu
 
-    Description : This module is the LBB Cortical Processor PEE array.
+    Description : This module is the LBB Cortical Processor PE array.
                   It instantiates an array of PE's which include a :
                      - SIMD core
                      - DMA engine
@@ -38,6 +38,12 @@ module pe_array (
         // Stack Bus - Downstream
         `include "system_stack_bus_downstream_ports.vh"
 
+        //-------------------------------------------------------------------------------------------
+        // Stack Bus - Upstream
+        `include "system_stack_bus_upstream_ports.vh"
+
+        //-------------------------------------------------------------------------------------------
+        // General
         clk              ,
         reset_poweron    
  
@@ -55,6 +61,10 @@ module pe_array (
   `include "system_stack_bus_downstream_port_declarations.vh"
 
 
+  //-------------------------------------------------------------------------------------------
+  // Stack Bus - Upstream
+  `include "system_stack_bus_upstream_port_declarations.vh"
+
 
   //-------------------------------------------------------------------------------------------
   // Regs and wires
@@ -66,8 +76,12 @@ module pe_array (
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
   `include "system_stack_bus_downstream_instance_wires.vh"
-  //
-  //
+  
+  //-------------------------------------------------------------------------------------------
+  // Stack Bus - Upstream
+  `include "system_stack_bus_upstream_instance_wires.vh"
+  
+  
  
   genvar gvi;
   generate
@@ -75,13 +89,26 @@ module pe_array (
     //for (gvi=0; gvi<1; gvi=gvi+1) 
       begin: pe_inst
 
+        //-------------------------------------------------------------------------------------------------
         // Stack Bus downstream Interface
         `include "pe_stack_bus_downstream_instance_wires.vh"
 
+        //-------------------------------------------------------------------------------------------------
+        // Stack Bus - Upstream
+        //
+        wire                                           pe__stu__valid       ;
+        wire    [`COMMON_STD_INTF_CNTL_RANGE   ]       pe__stu__cntl        ;
+        wire                                           stu__pe__ready       ;
+        wire    [`STACK_UP_INTF_TYPE_RANGE     ]       pe__stu__type        ;  // Control or Data, Vector or scalar
+        wire    [`STACK_UP_INTF_DATA_RANGE     ]       pe__stu__data        ;
+        wire    [`STACK_UP_INTF_OOB_DATA_RANGE ]       pe__stu__oob_data    ;
+ 
+        //-------------------------------------------------------------------------------------------------
         // interface to PE core - FIXME
         wire        ready             ; // ready to start streaming
         wire        complete          ;
 
+        //-------------------------------------------------------------------------------------------------
         // NoC Interface
         `include "pe_noc_instance_wires.vh"
 
@@ -89,27 +116,40 @@ module pe_array (
 
         pe pe (
    
-                      // NoC Interface
-                      `include "pe_noc_instance_ports.vh"
+                //-------------------------------
+                // NoC Interface
+                `include "pe_noc_instance_ports.vh"
    
-                      // Stack Bus downstream Interface
-                      `include "pe_stack_bus_downstream_instance_ports.vh"
+                //-------------------------------
+                // Stack Bus downstream Interface
+                `include "pe_stack_bus_downstream_instance_ports.vh"
    
-                      // Stack Bus upstream Interface
-                      // FIXME : TBD
-                      // `include "pe_stu_instance_ports.vh"
-   
-   
-                     //.peId              ( peId              ),
-                     .clk               ( clk               ),
-                     .reset_poweron     ( reset_poweron     )
+                //-------------------------------
+                // Stack Bus - Upstream
+                .pe__stu__valid        ( pe__stu__valid        ),
+                .pe__stu__cntl         ( pe__stu__cntl         ),
+                .stu__pe__ready        ( stu__pe__ready        ),
+                .pe__stu__type         ( pe__stu__type         ),  // Control or Data, Vector or scalar
+                .pe__stu__data         ( pe__stu__data         ),
+                .pe__stu__oob_data     ( pe__stu__oob_data     ),
+ 
+                //-------------------------------
+                // General
+                .clk               ( clk               ),
+                .reset_poweron     ( reset_poweron     )
               );
       end
   endgenerate
 
-  // Stack Bus downstream Interface
+  //-------------------------------------------------------------------------------------------------
+  // Stack Bus Downstream Interface
   `include "system_stack_bus_downstream_instance_connections.vh"
 
+  //-------------------------------------------------------------------------------------------------
+  // Stack Bus Upstream Interface
+  `include "system_stack_bus_upstream_instance_connections.vh"
+
+  //-------------------------------------------------------------------------------------------------
   // Inter PE NoC Connectivity      
   `include "pe_noc_interpe_connections.vh"
   `include "noc_interpe_port_Bitmask_assignments.vh"

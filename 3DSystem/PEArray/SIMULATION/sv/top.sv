@@ -38,10 +38,13 @@ module top;
 
     //----------------------------------------------------------------------------------------------------
     // Instantiate an interface for every pe/lane/stream pair
-    //
+    // Downstream
     //                              pe  lane
     std_pe_lane_ifc    SysLane2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (.clk_lane            ( clk           ));  // [64] shorthand for [0:63] ....
     std_pe_oob_ifc     SysOob2PeArray  [`PE_ARRAY_NUM_OF_PE]                        (.clk_oob             ( clk           ));  
+
+    // Upstream
+    stu_pe_ifc         PeArray2Sys     [`PE_ARRAY_NUM_OF_PE]                        (.clk                 ( clk           ));  // [64] shorthand for [0:63] ....
 
     //----------------------------------------------------------------------------------------------------
     // Probe interface(s)
@@ -66,6 +69,9 @@ module top;
    
          // Downstream Stack bus Interface
          `include "TB_system_stack_bus_downstream_instance_ports.vh"
+       
+         // Upstream Stack bus Interface
+         `include "TB_system_stack_bus_upstream_instance_ports.vh"
        
         .clk               ( clk       ),
         .reset_poweron     ( reset_poweron     )

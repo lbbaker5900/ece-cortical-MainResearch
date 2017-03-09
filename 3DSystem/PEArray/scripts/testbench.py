@@ -183,6 +183,25 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../SIMULATION/common/TB_system_stack_bus_upstream_instance_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+        pLine = pLine + '\n        //  - doesnt seem to work if you use cb_test for observed signals                                                       '.format(pe) 
+        pLine = pLine + '\n        .pe{0}__stu__valid        ( PeArray2Sys[{0}].pe__stu__valid             ),      '.format(pe)
+        pLine = pLine + '\n        .pe{0}__stu__cntl         ( PeArray2Sys[{0}].pe__stu__cntl              ),      '.format(pe)
+        pLine = pLine + '\n        .stu__pe{0}__ready        ( 1\'b1     ),      '.format(pe)
+        pLine = pLine + '\n        //.stu__pe{0}__ready        ( PeArray2Sys[{0}].cb_test.stu__pe__ready     ),      '.format(pe)
+        pLine = pLine + '\n        .pe{0}__stu__type         ( PeArray2Sys[{0}].pe__stu__type              ),      '.format(pe)
+        pLine = pLine + '\n        .pe{0}__stu__data         ( PeArray2Sys[{0}].pe__stu__data              ),      '.format(pe)
+        pLine = pLine + '\n        .pe{0}__stu__oob_data     ( PeArray2Sys[{0}].pe__stu__oob_data          ),      '.format(pe)
+        pLine = pLine + '\n        '
+                                             
+  f.write(pLine)
+  f.close()
+
+
+  #------------------------------------------------------------------------------------------------------------------------------------------------------
 
   # Start all the generators and drivers
 

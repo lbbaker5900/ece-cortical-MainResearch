@@ -210,7 +210,7 @@ class driver;
                                                     begin
                                                         @(vSysLane2PeArray.cb_test);
                                                     
-                                                        if (vSysLane2PeArray.cb_test.pe__std__lane_strm0_ready) 
+                                                        if (vSysLane2PeArray.pe__std__lane_strm0_ready) 
                                                             begin
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 1  ;
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm0_cntl        <= ((transaction[0] == 0) && (transaction[0] == (strm_operation[0].numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
@@ -220,7 +220,6 @@ class driver;
                                                                 //if ((Id[0]==0)&&(Id[1]==0))
                                                                 //    $display("%s:%0d:DEBUG: operand%d , %h", `__FILE__, `__LINE__, transaction[0], strm_operation[0].operands[transaction[0]] ) ;
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm0_data        <= strm_operation[0].operands[transaction[0]]  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
                                                                 
                                                                 transaction[0] = transaction[0] + 1;
                                                                 
@@ -231,7 +230,6 @@ class driver;
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm0_cntl        <= 0  ;         //Passing the instruction to the system interface
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm0_data        <= 0  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
                                                             end
                                                     end  //while (transaction[0] < strm_operation[0].numberOfOperands)
                                                     @(vSysLane2PeArray.cb_test);
@@ -276,7 +274,7 @@ class driver;
                                                     begin
                                                         @(vSysLane2PeArray.cb_test);
                                                     
-                                                        if (vSysLane2PeArray.cb_test.pe__std__lane_strm1_ready) 
+                                                        if (vSysLane2PeArray.pe__std__lane_strm1_ready) 
                                                             begin
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 1  ;
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm1_cntl        <= ((transaction[1] == 0) && (transaction[1] == (strm_operation[1].numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
@@ -286,7 +284,6 @@ class driver;
                                                                 //if ((Id[0]==0)&&(Id[1]==0))
                                                                 //    $display("%s:%0d:DEBUG: operand%d , %h", `__FILE__, `__LINE__, transaction[1], strm_operation[1].operands[transaction[1]] ) ;
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm1_data        <= strm_operation[1].operands[transaction[1]]  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
                                                                 
                                                                 transaction[1] = transaction[1] + 1;
                                                                 
@@ -297,7 +294,6 @@ class driver;
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm1_cntl        <= 0  ;         //Passing the instruction to the system interface
                                                                 vSysLane2PeArray.cb_test.std__pe__lane_strm1_data        <= 0  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
                                                             end
                                                     end  //while (transaction[1] < strm_operation[1].numberOfOperands)
                                                     @(vSysLane2PeArray.cb_test);

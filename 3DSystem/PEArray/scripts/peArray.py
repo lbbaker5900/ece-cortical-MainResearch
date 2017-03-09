@@ -1644,7 +1644,6 @@ if __name__ == "__main__":
       pLine = pLine + '\n  wire                                         sdp__std__lane{0}_strm{1}_ready         ;'.format(lane,strm)
       pLine = pLine + '\n  wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       std__sdp__lane{0}_strm{1}_cntl          ;'.format(lane,strm)
       pLine = pLine + '\n  wire  [`STREAMING_OP_DATA_RANGE      ]       std__sdp__lane{0}_strm{1}_data          ;'.format(lane,strm)
-      #pLine = pLine + '\n  wire  [`STREAMING_OP_DATA_RANGE      ]       std__sdp__lane{0}_strm{1}_data_mask     ;'.format(lane,strm)
       pLine = pLine + '\n  wire                                         std__sdp__lane{0}_strm{1}_data_valid    ;'.format(lane,strm)
     pLine = pLine + '\n'
 
@@ -1741,7 +1740,6 @@ if __name__ == "__main__":
       pLine = pLine + '\n  assign stOp__sti__lane{0}_strm{1}_ready             =  stOp_lane[{0}].stOp__sti__strm{1}_ready  ;'.format(lane,strm)
       pLine = pLine + '\n  assign stOp_lane[{0}].sti__stOp__strm{1}_cntl       =  sti__stOp__lane{0}_strm{1}_cntl          ;'.format(lane,strm)
       pLine = pLine + '\n  assign stOp_lane[{0}].sti__stOp__strm{1}_data       =  sti__stOp__lane{0}_strm{1}_data          ;'.format(lane,strm)
-      pLine = pLine + '\n  assign stOp_lane[{0}].sti__stOp__strm{1}_data_mask  =  sti__stOp__lane{0}_strm{1}_data_mask     ;'.format(lane,strm)
       pLine = pLine + '\n  assign stOp_lane[{0}].sti__stOp__strm{1}_data_valid =  sti__stOp__lane{0}_strm{1}_data_valid    ;'.format(lane,strm)
     pLine = pLine + '\n'
 
@@ -3158,6 +3156,68 @@ if __name__ == "__main__":
   f.close()
 
   #-------------------------------------------------------------------------------------------------------------------------------------
+  # STU from SIMD Interface
+
+
+  # Caclulate register seelction using cycle number, word/bus widths etc.
+  FoundLanes = False
+  searchFile = open("../HDL/common/pe.vh", "r")
+  for line in searchFile:
+    if FoundLanes == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "PE_NUM_OF_EXEC_LANES" in data[1]:
+        numOfExecLanes = int(data[2])
+        FoundLanes = True
+  searchFile.close()
+
+  Found = False
+  searchFile = open("../HDL/common/stack_interface.vh", "r")
+  for line in searchFile:
+    if Found == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "STACK_UP_INTF_DATA_WIDTH" in data[1]:
+        stackUpWidth = int(data[2])
+        Found = True
+  searchFile.close()
+
+  Found = False
+  searchFile = open("../HDL/common/pe.vh", "r")
+  for line in searchFile:
+    if Found == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "PE_EXEC_LANE_WIDTH" in data[1]:
+        execLaneWidth = int(data[2])
+        Found = True
+  searchFile.close()
+
+
+  f = open('../HDL/common/simd_upstream_intf_register_mux.vh', 'w')
+  pLine = ""
+
+  regsPerCycle   = stackUpWidth / execLaneWidth
+  numberOfCycles = numOfExecLanes / regsPerCycle
+  #print regsPerCycle, stackUpWidth, execLaneWidth
+
+  for cycle in range (0, numberOfCycles):
+    lsReg = regsPerCycle*cycle
+    pLine = pLine + '\n    {0} :'.format(cycle)
+    pLine = pLine + '\n      begin'.format(cycle)
+    pLine = pLine + '\n        to_Stu_Fifo[0].write_data   <= {{simd__sui__regs[{0}],  '.format(lsReg)
+    for reg in range (1, regsPerCycle-1):
+      pLine = pLine + '\n                                        simd__sui__regs[{0}],  '.format(lsReg+reg)
+    pLine = pLine + '\n                                        simd__sui__regs[{0}]}}; '.format(lsReg+regsPerCycle-1)
+    pLine = pLine + '\n      end '.format(cycle)
+
+
+  f.write(pLine)
+  f.close()
+
+  #-------------------------------------------------------------------------------------------------------------------------------------
+
+  #-------------------------------------------------------------------------------------------------------------------------------------
   # SIMD Interface
 
   f = open('../HDL/common/pe_simd_ports.vh', 'w')
@@ -3452,7 +3512,9 @@ if __name__ == "__main__":
   f.close()
 
   searchFile.close()
+  
 
+  #----------------------------------------------------------------------------------------------------
   # Generate stack bus connections
 
   f = open('../HDL/common/system_stack_bus_downstream_ports.vh', 'w')
@@ -3479,7 +3541,6 @@ if __name__ == "__main__":
         pLine = pLine + '\n            pe{0}__std__lane{1}_strm{2}_ready       ,'.format(pe,lane,strm)
         pLine = pLine + '\n            std__pe{0}__lane{1}_strm{2}_cntl        ,'.format(pe,lane,strm) 
         pLine = pLine + '\n            std__pe{0}__lane{1}_strm{2}_data        ,'.format(pe,lane,strm) 
-        #pLine = pLine + '\n            std__pe{0}__lane{1}_strm{2}_data_mask   ,'.format(pe,lane,strm) 
         pLine = pLine + '\n            std__pe{0}__lane{1}_strm{2}_data_valid  ,'.format(pe,lane,strm) 
         pLine = pLine + '\n'
 
@@ -3509,7 +3570,6 @@ if __name__ == "__main__":
         pLine = pLine + '\n  output                                          pe{0}__std__lane{1}_strm{2}_ready       ;'.format(pe,lane,strm)
         pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE      ]       std__pe{0}__lane{1}_strm{2}_cntl        ;'.format(pe,lane,strm) 
         pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       std__pe{0}__lane{1}_strm{2}_data        ;'.format(pe,lane,strm) 
-        #pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       std__pe{0}__lane{1}_strm{2}_data_mask   ;'.format(pe,lane,strm) 
         pLine = pLine + '\n  input                                           std__pe{0}__lane{1}_strm{2}_data_valid  ;'.format(pe,lane,strm) 
         pLine = pLine + '\n'
 
@@ -3539,7 +3599,6 @@ if __name__ == "__main__":
         pLine = pLine + '\n  wire                                        pe{0}__std__lane{1}_strm{2}_ready       ;'.format(pe,lane,strm)
         pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE       ]   std__pe{0}__lane{1}_strm{2}_cntl        ;'.format(pe,lane,strm) 
         pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   std__pe{0}__lane{1}_strm{2}_data        ;'.format(pe,lane,strm) 
-        #pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   std__pe{0}__lane{1}_strm{2}_data_mask   ;'.format(pe,lane,strm) 
         pLine = pLine + '\n  wire                                        std__pe{0}__lane{1}_strm{2}_data_valid  ;'.format(pe,lane,strm) 
         pLine = pLine + '\n'
      
@@ -3571,7 +3630,6 @@ if __name__ == "__main__":
         pLine = pLine + '\n               .std__pe{0}__lane{1}_strm{2}_cntl          ( std__pe{0}__lane{1}_strm{2}_cntl       ),      '.format(pe,lane,strm)
         pLine = pLine + '\n               .std__pe{0}__lane{1}_strm{2}_data          ( std__pe{0}__lane{1}_strm{2}_data       ),      '.format(pe,lane,strm)
         pLine = pLine + '\n               .std__pe{0}__lane{1}_strm{2}_data_valid    ( std__pe{0}__lane{1}_strm{2}_data_valid ),      '.format(pe,lane,strm)
-        #pLine = pLine + '\n               .std__pe{0}__lane{1}_strm{2}_data_mask     ( std__pe{0}__lane{1}_strm{2}_data_mask  ),      '.format(pe,lane,strm)
         pLine = pLine + '\n'
                                              
   f.write(pLine)
@@ -3599,14 +3657,80 @@ if __name__ == "__main__":
         pLine = pLine + '\n  assign   pe{0}__std__lane{1}_strm{2}_ready                 =  pe_inst[{0}].pe__std__lane{1}_strm{2}_ready  ;'.format(pe,lane,strm)
         pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__lane{1}_strm{2}_cntl        =  std__pe{0}__lane{1}_strm{2}_cntl             ;'.format(pe,lane,strm) 
         pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__lane{1}_strm{2}_data        =  std__pe{0}__lane{1}_strm{2}_data             ;'.format(pe,lane,strm) 
-        #pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__lane{1}_strm{2}_data_mask   =  std__pe{0}__lane{1}_strm{2}_data_mask        ;'.format(pe,lane,strm) 
         pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__lane{1}_strm{2}_data_valid  =  std__pe{0}__lane{1}_strm{2}_data_valid       ;'.format(pe,lane,strm) 
         pLine = pLine + '\n'
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
 
   f.write(pLine)
   f.close()
 
-  #    pLine = pLine + '\n  assign pe_inst[{1}].noc__pe__port{0}_valid = pe_inst[{1}].pe__noc__port{0}_valid ;'.format(port,pe)
+  f = open('../HDL/common/system_stack_bus_upstream_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    pLine = pLine + '\n            pe{0}__stu__valid          ,'.format(pe)
+    pLine = pLine + '\n            pe{0}__stu__cntl           ,'.format(pe) 
+    pLine = pLine + '\n            stu__pe{0}__ready          ,'.format(pe) 
+    pLine = pLine + '\n            pe{0}__stu__type           ,'.format(pe) 
+    pLine = pLine + '\n            pe{0}__stu__data           ,'.format(pe) 
+    pLine = pLine + '\n            pe{0}__stu__oob_data       ,'.format(pe) 
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/system_stack_bus_upstream_port_declarations.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    pLine = pLine + '\n    output                                         pe{0}__stu__valid          ;'.format(pe)
+    pLine = pLine + '\n    output  [`COMMON_STD_INTF_CNTL_RANGE   ]       pe{0}__stu__cntl           ;'.format(pe) 
+    pLine = pLine + '\n    input                                          stu__pe{0}__ready          ;'.format(pe) 
+    pLine = pLine + '\n    output  [`STACK_UP_INTF_TYPE_RANGE     ]       pe{0}__stu__type           ;'.format(pe) 
+    pLine = pLine + '\n    output  [`STACK_UP_INTF_DATA_RANGE     ]       pe{0}__stu__data           ;'.format(pe) 
+    pLine = pLine + '\n    output  [`STACK_UP_INTF_OOB_DATA_RANGE ]       pe{0}__stu__oob_data       ;'.format(pe) 
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../HDL/common/system_stack_bus_upstream_instance_wires.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    pLine = pLine + '\n    wire                                           pe{0}__stu__valid          ;'.format(pe)
+    pLine = pLine + '\n    wire    [`COMMON_STD_INTF_CNTL_RANGE   ]       pe{0}__stu__cntl           ;'.format(pe) 
+    pLine = pLine + '\n    wire                                           stu__pe{0}__ready          ;'.format(pe) 
+    pLine = pLine + '\n    wire    [`STACK_UP_INTF_TYPE_RANGE     ]       pe{0}__stu__type           ;'.format(pe) 
+    pLine = pLine + '\n    wire    [`STACK_UP_INTF_DATA_RANGE     ]       pe{0}__stu__data           ;'.format(pe) 
+    pLine = pLine + '\n    wire    [`STACK_UP_INTF_OOB_DATA_RANGE ]       pe{0}__stu__oob_data       ;'.format(pe) 
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+     
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/system_stack_bus_upstream_instance_connections.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    pLine = pLine + '\n  assign   pe{0}__stu__valid                =  pe_inst[{0}].pe__stu__valid     ;'.format(pe)
+    pLine = pLine + '\n  assign   pe{0}__stu__cntl                 =  pe_inst[{0}].pe__stu__cntl      ;'.format(pe)
+    pLine = pLine + '\n  assign   pe_inst[{0}].stu__pe__ready      =  stu__pe{0}__ready               ;'.format(pe) 
+    pLine = pLine + '\n  assign   pe{0}__stu__type                 =  pe_inst[{0}].pe__stu__type      ;'.format(pe)
+    pLine = pLine + '\n  assign   pe{0}__stu__data                 =  pe_inst[{0}].pe__stu__data      ;'.format(pe)
+    pLine = pLine + '\n  assign   pe{0}__stu__oob_data             =  pe_inst[{0}].pe__stu__oob_data  ;'.format(pe)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+  #------------------------------------------------------------------------------------------------------------------------------------------------------
+  #
 
   f = open('../HDL/common/sys_general_connections.vh', 'w')
   pLine = ""
@@ -3645,13 +3769,11 @@ if __name__ == "__main__":
     pLine = pLine + '\n            pe__std__lane{0}_strm0_ready       ,'.format(lane)
     pLine = pLine + '\n            std__pe__lane{0}_strm0_cntl        ,'.format(lane) 
     pLine = pLine + '\n            std__pe__lane{0}_strm0_data        ,'.format(lane) 
-    #pLine = pLine + '\n            std__pe__lane{0}_strm0_data_mask   ,'.format(lane) 
     pLine = pLine + '\n            std__pe__lane{0}_strm0_data_valid  ,'.format(lane) 
     pLine = pLine + '\n            pe__std__lane{0}_strm1_ready       ,'.format(lane)
     pLine = pLine + '\n            std__pe__lane{0}_strm1_cntl        ,'.format(lane) 
     pLine = pLine + '\n            std__pe__lane{0}_strm1_data        ,'.format(lane) 
     pLine = pLine + '\n            std__pe__lane{0}_strm1_data_valid  ,'.format(lane) 
-    #pLine = pLine + '\n            std__pe__lane{0}_strm1_data_mask   ,'.format(lane)
     pLine = pLine + '\n'
 
   f.write(pLine)
@@ -3679,12 +3801,10 @@ if __name__ == "__main__":
     pLine = pLine + '\n  output                                           pe__std__lane{0}_strm0_ready       ;'.format(lane)
     pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE       ]       std__pe__lane{0}_strm0_cntl        ;'.format(lane) 
     pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       std__pe__lane{0}_strm0_data        ;'.format(lane) 
-    #pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       std__pe__lane{0}_strm0_data_mask   ;'.format(lane) 
     pLine = pLine + '\n  input                                            std__pe__lane{0}_strm0_data_valid  ;'.format(lane) 
     pLine = pLine + '\n  output                                           pe__std__lane{0}_strm1_ready       ;'.format(lane)
     pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE       ]       std__pe__lane{0}_strm1_cntl        ;'.format(lane) 
     pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       std__pe__lane{0}_strm1_data        ;'.format(lane) 
-    #pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       std__pe__lane{0}_strm1_data_mask   ;'.format(lane) 
     pLine = pLine + '\n  input                                            std__pe__lane{0}_strm1_data_valid  ;'.format(lane) 
     pLine = pLine + '\n'
 
@@ -3713,12 +3833,10 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire                                           pe__std__lane{0}_strm0_ready       ;'.format(lane)
     pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE       ]      std__pe__lane{0}_strm0_cntl        ;'.format(lane) 
     pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]      std__pe__lane{0}_strm0_data        ;'.format(lane) 
-    #pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]      std__pe__lane{0}_strm0_data_mask   ;'.format(lane) 
     pLine = pLine + '\n  wire                                           std__pe__lane{0}_strm0_data_valid  ;'.format(lane) 
     pLine = pLine + '\n  wire                                           pe__std__lane{0}_strm1_ready       ;'.format(lane)
     pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE       ]      std__pe__lane{0}_strm1_cntl        ;'.format(lane) 
     pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]      std__pe__lane{0}_strm1_data        ;'.format(lane) 
-    #pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]      std__pe__lane{0}_strm1_data_mask   ;'.format(lane) 
     pLine = pLine + '\n  wire                                           std__pe__lane{0}_strm1_data_valid  ;'.format(lane) 
 
   f.write(pLine)
@@ -3748,7 +3866,6 @@ if __name__ == "__main__":
       pLine = pLine + '\n               .std__pe__lane{0}_strm{1}_cntl          ( std__pe__lane{0}_strm{1}_cntl       ),      '.format(lane,strm)
       pLine = pLine + '\n               .std__pe__lane{0}_strm{1}_data          ( std__pe__lane{0}_strm{1}_data       ),      '.format(lane,strm)
       pLine = pLine + '\n               .std__pe__lane{0}_strm{1}_data_valid    ( std__pe__lane{0}_strm{1}_data_valid ),      '.format(lane,strm)
-      #pLine = pLine + '\n               .std__pe__lane{0}_strm{1}_data_mask     ( std__pe__lane{0}_strm{1}_data_mask  ),      '.format(lane,strm)
                                              
   f.write(pLine)
   f.close()
@@ -3861,7 +3978,6 @@ if __name__ == "__main__":
       pLine = pLine + '\n            stOp__sti__lane{0}_strm{1}_ready       ,'.format(lane,strm)
       pLine = pLine + '\n            sti__stOp__lane{0}_strm{1}_cntl        ,'.format(lane,strm) 
       pLine = pLine + '\n            sti__stOp__lane{0}_strm{1}_data        ,'.format(lane,strm) 
-      pLine = pLine + '\n            sti__stOp__lane{0}_strm{1}_data_mask   ,'.format(lane,strm) 
       pLine = pLine + '\n            sti__stOp__lane{0}_strm{1}_data_valid  ,'.format(lane,strm) 
       pLine = pLine + '\n'
 
@@ -3876,7 +3992,6 @@ if __name__ == "__main__":
       pLine = pLine + '\n  input                                             stOp__sti__lane{0}_strm{1}_ready       ;'.format(lane,strm)
       pLine = pLine + '\n  output [`COMMON_STD_INTF_CNTL_RANGE       ]       sti__stOp__lane{0}_strm{1}_cntl        ;'.format(lane,strm) 
       pLine = pLine + '\n  output [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       sti__stOp__lane{0}_strm{1}_data        ;'.format(lane,strm) 
-      pLine = pLine + '\n  output [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       sti__stOp__lane{0}_strm{1}_data_mask   ;'.format(lane,strm) 
       pLine = pLine + '\n  output                                            sti__stOp__lane{0}_strm{1}_data_valid  ;'.format(lane,strm) 
       pLine = pLine + '\n'
 
@@ -3892,7 +4007,6 @@ if __name__ == "__main__":
       pLine = pLine + '\n               .stOp__sti__lane{0}_strm{1}_ready      ( stOp__sti__lane{0}_strm{1}_ready      ),      '.format(lane,strm)
       pLine = pLine + '\n               .sti__stOp__lane{0}_strm{1}_cntl       ( sti__stOp__lane{0}_strm{1}_cntl       ),      '.format(lane,strm)
       pLine = pLine + '\n               .sti__stOp__lane{0}_strm{1}_data       ( sti__stOp__lane{0}_strm{1}_data       ),      '.format(lane,strm)
-      pLine = pLine + '\n               .sti__stOp__lane{0}_strm{1}_data_mask  ( sti__stOp__lane{0}_strm{1}_data_mask  ),      '.format(lane,strm)
       pLine = pLine + '\n               .sti__stOp__lane{0}_strm{1}_data_valid ( sti__stOp__lane{0}_strm{1}_data_valid ),      '.format(lane,strm)
                                              
   f.write(pLine)
@@ -3906,7 +4020,6 @@ if __name__ == "__main__":
       pLine = pLine + '\n  wire                                            stOp__sti__lane{0}_strm{1}_ready       ;'.format(lane,strm)
       pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE       ]       sti__stOp__lane{0}_strm{1}_cntl        ;'.format(lane,strm) 
       pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       sti__stOp__lane{0}_strm{1}_data        ;'.format(lane,strm) 
-      pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       sti__stOp__lane{0}_strm{1}_data_mask   ;'.format(lane,strm) 
       pLine = pLine + '\n  wire                                            sti__stOp__lane{0}_strm{1}_data_valid  ;'.format(lane,strm) 
       pLine = pLine + '\n'
       
@@ -3922,7 +4035,6 @@ if __name__ == "__main__":
       pLine = pLine + '\n  assign    pe__std__lane{0}_strm{1}_ready         =  stOp__sti__lane{0}_strm{1}_ready   ;'.format(lane,strm)
       pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_cntl        =  std__pe__lane{0}_strm{1}_cntl      ;'.format(lane,strm) 
       pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_data        =  std__pe__lane{0}_strm{1}_data      ;'.format(lane,strm) 
-      #pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_data_mask   =  std__pe__lane{0}_strm{1}_data_mask ;'.format(lane,strm) 
       #FIXME : right now oob and lane buses are separate
       pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_data_valid  =  std__pe__lane{0}_strm{1}_data_valid & ~std__pe__oob_valid   ; // not for stOp if OOB valid'.format(lane,strm) 
       pLine = pLine + '\n'

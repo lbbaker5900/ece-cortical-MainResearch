@@ -13,6 +13,8 @@
                   Local memory
                     - provides a means to arbittrate for the local memory 
 
+                 Name: simd
+
 *********************************************************************************************/
     
 `timescale 1ns/10ps
@@ -46,6 +48,12 @@ module simd_wrapper (
                           // Result from stOp to regFile (via scntl)
                           `include "simd_wrapper_scntl_to_simd_regfile_ports.vh"
 
+                          //--------------------------------------------------
+                          // Register(s) to stack upstream
+                          simd__sui__regs          ,
+                          simd__sui__regs_valid    ,
+                          sui__simd__regs_complete ,
+
                           //--------------------------------------------------------
                           // System
                           peId              ,
@@ -58,6 +66,13 @@ module simd_wrapper (
   input [`PE_PE_ID_RANGE   ]  peId           ; 
 
 
+  //-------------------------------------------------------------------------------------------
+  // Register File interface to stack interface
+  //
+  output  [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs  [`PE_NUM_OF_EXEC_LANES ] ;
+  output  [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                     ;
+  input                                              sui__simd__regs_complete                  ;
+   
   //----------------------------------------------------------------------------------------------------
   // RegFile Outputs to stOp controller
 
@@ -81,12 +96,27 @@ module simd_wrapper (
   `include "simd_wrapper_scntl_to_simd_regfile_wires.vh"
 
   // store in reg before transferring to simd
-  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  allLanes_results  [`PE_NUM_OF_EXEC_LANES ] ;
-  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  allLanes_valid                             ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE     ]  allLanes_results  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  allLanes_valid                             ;
+
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs   [`PE_NUM_OF_EXEC_LANES ] ;
+  wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid                      ;
+  wire                                    sui__simd__regs_complete                   ;
+  reg                                     sui__simd__regs_complete_d1                ;
+
+
+
 
   //----------------------------------------------------------------------------------------------------
   // Assignments
-  //
+
+  //----------------------------------------------------------------------
+  // Registered inputs
+  always @(posedge clk)
+    begin
+      sui__simd__regs_complete_d1  <= ( reset_poweron ) ? 'd0 : sui__simd__regs_complete ;
+    end
+
   //----------------------------------------------------------------------
   // Update each lanes regFile with result from streaming operation module 
 
@@ -100,9 +130,10 @@ module simd_wrapper (
         
         always @(posedge clk)
           begin
-            allLanes_valid  [gvi]  <=  ( reset_poweron     ) ? 1'd0                    :
-                                       ( lane_result_valid ) ? 1'b1                    :
-                                                               allLanes_valid[gvi]     ;
+            allLanes_valid  [gvi]  <=  ( reset_poweron               ) ? 1'd0                    :
+                                       ( lane_result_valid           ) ? 1'b1                    :
+                                       ( sui__simd__regs_complete_d1 ) ? 1'b0                    :  // clear when we have transfered regs to stack upstream
+                                                                         allLanes_valid[gvi]     ;
 
             allLanes_results[gvi]  <=  ( reset_poweron     ) ? `PE_EXEC_LANE_WIDTH 'd0 :
                                        ( lane_result_valid ) ? lane_result             :
@@ -110,12 +141,13 @@ module simd_wrapper (
 
           end
 
+        assign  simd__sui__regs [gvi]  =  allLanes_results[gvi] ;
       end
   endgenerate
+  assign  simd__sui__regs_valid  =  allLanes_valid  ;
 
   `include "simd_wrapper_scntl_to_simd_regfile_assignments.vh"
 
-  //----------------------------------------------------------------------------------------------------
   
 endmodule
 

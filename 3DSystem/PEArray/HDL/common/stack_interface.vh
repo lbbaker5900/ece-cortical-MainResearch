@@ -57,22 +57,28 @@
 //---------------------------------------------------------------------------------------------------------------------
 // Stack Upstream interface
 
-`define STACK_UP_INTF_LANE_RESULT_WIDTH          16
-`define STACK_UP_INTF_LANE_RESULT_MSB            `STACK_UP_INTF_LANE_RESULT_WIDTH-1
-`define STACK_UP_INTF_LANE_RESULT_LSB            0
-`define STACK_UP_INTF_LANE_RESULT_RANGE          `STACK_UP_INTF_LANE_RESULT_MSB : `STACK_UP_INTF_LANE_RESULT_LSB
+`define STACK_UP_INTF_DATA_WIDTH                   128
+`define STACK_UP_INTF_DATA_MSB                     `STACK_UP_INTF_DATA_WIDTH-1
+`define STACK_UP_INTF_DATA_LSB                     0
+`define STACK_UP_INTF_DATA_RANGE                   `STACK_UP_INTF_DATA_MSB : `STACK_UP_INTF_DATA_LSB
 
 // EOM/SOM codes for cntl signal for the "standard" inter-module interface
-`define STACK_UP_INTF_TYPE_WIDTH          4
-`define STACK_UP_INTF_TYPE_MSB            `STACK_UP_INTF_TYPE_WIDTH-1
-`define STACK_UP_INTF_TYPE_LSB            0
-`define STACK_UP_INTF_TYPE_RANGE          `STACK_UP_INTF_TYPE_MSB : `STACK_UP_INTF_TYPE_LSB
-
+`define STACK_UP_INTF_TYPE_WIDTH                   4
+`define STACK_UP_INTF_TYPE_MSB                     `STACK_UP_INTF_TYPE_WIDTH-1
+`define STACK_UP_INTF_TYPE_LSB                     0
+`define STACK_UP_INTF_TYPE_RANGE                   `STACK_UP_INTF_TYPE_MSB : `STACK_UP_INTF_TYPE_LSB
+                                                  
 `define STACK_UP_INTF_TYPE_CNTL_SCALAR            0
 `define STACK_UP_INTF_TYPE_CNTL_VECTOR            1
 `define STACK_UP_INTF_TYPE_DATA_SCALAR            2
 `define STACK_UP_INTF_TYPE_DATA_VECTOR            3
+                                                  
+`define STACK_UP_INTF_OOB_DATA_WIDTH              16
+`define STACK_UP_INTF_OOB_DATA_MSB                `STACK_UP_INTF_OOB_DATA_WIDTH-1
+`define STACK_UP_INTF_OOB_DATA_LSB                0
+`define STACK_UP_INTF_OOB_DATA_RANGE              `STACK_UP_INTF_OOB_DATA_MSB : `STACK_UP_INTF_OOB_DATA_LSB
 
+//---------------------------------------------------------------------------------------------------------------------
 
 
 `endif

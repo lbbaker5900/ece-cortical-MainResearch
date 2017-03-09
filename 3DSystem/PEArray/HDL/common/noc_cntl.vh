@@ -1,3 +1,7 @@
+`ifndef _noc_cntl_vh
+`define _noc_cntl_vh
+
+
 /*****************************************************************
 
     File name   : noc_cntl.vh
@@ -374,3 +378,277 @@
 `define NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_SIZE    (`NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_MSB - `NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_LSB +1)
 `define NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_RANGE    `NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_MSB : `NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_LSB
 
+
+//--------------------------------------------------------------------------------------------------
+//------------------------------------------------
+// FIFO's
+//------------------------------------------------
+
+//--------------------------------------------------------
+// Streaming Op Control to NoC FIFO
+
+// Note: Additional "fifo contains eop" flag
+//       Needed for the last piece of data that doesnt fill an entire DMA packet
+//       Assumes no more than one eop in the fifo as this DMA will complete before another is started
+
+// Uses:
+//      inside noc - control from cntl
+
+`define Control_to_NoC_FIFO \
+\
+        reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ]        fifo_cntl   [`STREAMING_OP_CNTL_CONT_TO_NOC_FIFO_DEPTH_RANGE]    ;\
+        reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ]        fifo_type   [`STREAMING_OP_CNTL_CONT_TO_NOC_FIFO_DEPTH_RANGE]    ;\
+        reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ]        fifo_laneId [`STREAMING_OP_CNTL_CONT_TO_NOC_FIFO_DEPTH_RANGE]    ;\
+        reg                                                    fifo_strmId [`STREAMING_OP_CNTL_CONT_TO_NOC_FIFO_DEPTH_RANGE]    ;\
+        reg  [`NOC_CONT_INTERNAL_DATA_RANGE           ]        fifo_data   [`STREAMING_OP_CNTL_CONT_TO_NOC_FIFO_DEPTH_RANGE]    ;\
+        reg  [`STREAMING_OP_CNTL_CONT_TO_NOC_FIFO_RANGE]       fifo_wp              ; \
+        reg  [`STREAMING_OP_CNTL_CONT_TO_NOC_FIFO_RANGE]       fifo_rp              ; \
+        reg  [`STREAMING_OP_CNTL_CONT_TO_NOC_FIFO_RANGE]       fifo_depth           ; \
+        reg  [`STREAMING_OP_CNTL_CONT_TO_NOC_FIFO_EOP_COUNT_RANGE] fifo_eop_count   ; \
+        wire                                        fifo_empty           ; \
+        wire                                        fifo_almost_full     ; \
+        wire                                        fifo_read            ; \
+        reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ]        fifo_read_cntl   ;\
+        reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ]        fifo_read_type   ;\
+        reg  [`NOC_CONT_INTERNAL_DATA_RANGE           ]        fifo_read_data   ;\
+        reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ]        fifo_read_laneId ;\
+        reg                                                    fifo_read_strmId ;\
+        reg                                                    fifo_read_data_valid ; \
+        wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ]        cntl             ;\
+        wire [`STREAMING_OP_CNTL_TYPE_RANGE           ]        type             ;\
+        wire [`NOC_CONT_INTERNAL_DATA_RANGE           ]        data             ;\
+        wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ]        laneId           ;\
+        wire                                                   strmId           ;\
+        wire                                        fifo_write           ; \
+        wire                                        clear                ; \
+   \
+        always @(posedge clk)\
+          begin\
+            fifo_wp                 <= ( reset_poweron   ) ? 'd0            : \
+                                       ( clear           ) ? 'd0            : \
+                                       ( fifo_write      ) ? fifo_wp + 'd1  :\
+                                                             fifo_wp        ;\
+   \
+            fifo_cntl[fifo_wp]      <= ( fifo_write       ) ? cntl               : \
+                                                              fifo_cntl[fifo_wp] ;\
+   \
+            fifo_type[fifo_wp]      <= ( fifo_write       ) ? type               : \
+                                                              fifo_type[fifo_wp] ;\
+   \
+            fifo_data[fifo_wp]      <= ( fifo_write       ) ? data               : \
+                                                              fifo_data[fifo_wp] ;\
+   \
+            fifo_laneId[fifo_wp]      <= ( fifo_write       ) ? laneId               : \
+                                                              fifo_laneId[fifo_wp] ;\
+   \
+            fifo_strmId[fifo_wp]      <= ( fifo_write       ) ? strmId               : \
+                                                              fifo_strmId[fifo_wp] ;\
+   \
+            fifo_rp                 <= ( reset_poweron    ) ? 'd0           : \
+                                       ( clear            ) ? 'd0           : \
+                                       ( fifo_read        ) ? fifo_rp + 'd1 :\
+                                                              fifo_rp       ;\
+\
+            fifo_eop_count          <= ( reset_poweron                                                                                                                       )  ? 'd0                  : \
+                                       ( clear                                                                                                                               )  ? 'd0                  : \
+                                       ((((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid ) &&                       \
+                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )) ? fifo_eop_count       : \
+                                       (((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid )  ? fifo_eop_count - 'd1 : \
+                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )  ? fifo_eop_count + 'd1 : \
+                                                                                                                                                                                  fifo_eop_count       ; \
+\
+            fifo_depth              <= ( reset_poweron                   ) ? 'd0              : \
+                                       ( clear                           ) ? 'd0              : \
+                                       (  fifo_read & ~fifo_write        ) ? fifo_depth - 'd1 :\
+                                       ( ~fifo_read &  fifo_write        ) ? fifo_depth + 'd1 :\
+                                                                             fifo_depth       ;\
+   \
+            fifo_read_data_valid    <= ( reset_poweron                   ) ? 'd0        : \
+                                       ( clear                           ) ? 'd0        : \
+                                                                              fifo_read ;\
+   \
+          end\
+\
+          assign fifo_empty          = (fifo_rp == fifo_wp)    ;\
+          assign fifo_almost_full    = (fifo_depth >= 'd`STREAMING_OP_CNTL_CONT_TO_NOC_FIFO_DEPTH-`COMMON_FIFO_ALMOST_FULL_THRESHOLD_DEFAULT)    ;\
+\
+          always @(posedge clk)\
+            begin\
+              fifo_read_cntl      <= (fifo_read) ? fifo_cntl [fifo_rp]   : fifo_read_cntl   ;\
+              fifo_read_type      <= (fifo_read) ? fifo_type [fifo_rp]   : fifo_read_type   ;\
+              fifo_read_data      <= (fifo_read) ? fifo_data [fifo_rp]   : fifo_read_data   ;\
+              fifo_read_laneId    <= (fifo_read) ? fifo_laneId [fifo_rp] : fifo_read_laneId ;\
+              fifo_read_strmId    <= (fifo_read) ? fifo_strmId [fifo_rp] : fifo_read_strmId ;\
+            end\
+      
+
+//--------------------------------------------------------
+// NoC controller to NoC Interface Data
+// Uses:
+//      inside noc - data from cntl
+
+`define NoC_to_NoC_data_intf \
+\
+        reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ]        fifo_cntl   [`NOC_CONT_TO_INTF_DATA_FIFO_DEPTH_RANGE]    ;\
+        reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ]        fifo_type   [`NOC_CONT_TO_INTF_DATA_FIFO_DEPTH_RANGE]    ;\
+        reg  [`NOC_CONT_INTERNAL_DATA_RANGE           ]        fifo_data   [`NOC_CONT_TO_INTF_DATA_FIFO_DEPTH_RANGE]    ;\
+        reg  [`STREAMING_OP_CNTL_PE_ID_RANGE          ]        fifo_peId   [`NOC_CONT_TO_INTF_DATA_FIFO_DEPTH_RANGE]    ;\
+        reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ]        fifo_laneId [`NOC_CONT_TO_INTF_DATA_FIFO_DEPTH_RANGE]    ;\
+        reg                                                    fifo_strmId [`NOC_CONT_TO_INTF_DATA_FIFO_DEPTH_RANGE]    ;\
+        reg  [`NOC_CONT_TO_INTF_DATA_FIFO_RANGE]       fifo_wp              ; \
+        reg  [`NOC_CONT_TO_INTF_DATA_FIFO_RANGE]       fifo_rp              ; \
+        reg  [`NOC_CONT_TO_INTF_DATA_FIFO_RANGE]       fifo_depth           ; \
+        reg  [`NOC_CONT_TO_INTF_DATA_FIFO_EOP_COUNT_RANGE] fifo_eop_count   ; \
+        wire                                        fifo_empty           ; \
+        wire                                        fifo_almost_full     ; \
+        wire                                        fifo_read            ; \
+        reg  [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ]        fifo_read_cntl   ;\
+        reg  [`STREAMING_OP_CNTL_TYPE_RANGE           ]        fifo_read_type   ;\
+        reg  [`NOC_CONT_INTERNAL_DATA_RANGE           ]        fifo_read_data   ;\
+        reg  [`STREAMING_OP_CNTL_PE_ID_RANGE          ]        fifo_read_peId   ;\
+        reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ]        fifo_read_laneId ;\
+        reg                                                    fifo_read_strmId ;\
+        reg                                                    fifo_read_data_valid ; \
+        wire [`STREAMING_OP_CNTL_STRM_CNTL_RANGE      ]        cntl             ;\
+        wire [`STREAMING_OP_CNTL_TYPE_RANGE           ]        type             ;\
+        wire [`NOC_CONT_INTERNAL_DATA_RANGE           ]        data             ;\
+        wire [`PE_PE_ID_RANGE                         ]        peId             ;\
+        wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ]        laneId           ;\
+        wire                                                   strmId           ;\
+        wire                                        fifo_write           ; \
+        wire                                        clear                ; \
+   \
+        always @(posedge clk)\
+          begin\
+            fifo_wp                 <= ( reset_poweron   ) ? 'd0            : \
+                                       ( clear           ) ? 'd0            : \
+                                       ( fifo_write      ) ? fifo_wp + 'd1  :\
+                                                             fifo_wp        ;\
+   \
+            fifo_cntl[fifo_wp]      <= ( fifo_write       ) ? cntl               : \
+                                                              fifo_cntl[fifo_wp] ;\
+   \
+            fifo_type[fifo_wp]      <= ( fifo_write       ) ? type               : \
+                                                              fifo_type[fifo_wp] ;\
+   \
+            fifo_data[fifo_wp]      <= ( fifo_write       ) ? data               : \
+                                                              fifo_data[fifo_wp] ;\
+   \
+            fifo_peId[fifo_wp]      <= ( fifo_write       ) ? peId               : \
+                                                              fifo_peId[fifo_wp] ;\
+   \
+            fifo_laneId[fifo_wp]    <= ( fifo_write       ) ? laneId               : \
+                                                              fifo_laneId[fifo_wp] ;\
+   \
+            fifo_strmId[fifo_wp]    <= ( fifo_write       ) ? strmId               : \
+                                                              fifo_strmId[fifo_wp] ;\
+   \
+            fifo_rp                 <= ( reset_poweron    ) ? 'd0           : \
+                                       ( clear            ) ? 'd0           : \
+                                       ( fifo_read        ) ? fifo_rp + 'd1 :\
+                                                              fifo_rp       ;\
+\
+            fifo_eop_count          <= ( reset_poweron                                                                                                                       )  ? 'd0                  : \
+                                       ( clear                                                                                                                               )  ? 'd0                  : \
+                                       ((((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid ) &&                       \
+                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )) ? fifo_eop_count       : \
+                                       (((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid )  ? fifo_eop_count - 'd1 : \
+                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )  ? fifo_eop_count + 'd1 : \
+                                                                                                                                                                                  fifo_eop_count       ; \
+\
+            fifo_depth              <= ( reset_poweron                   ) ? 'd0              : \
+                                       ( clear                           ) ? 'd0              : \
+                                       (  fifo_read & ~fifo_write        ) ? fifo_depth - 'd1 :\
+                                       ( ~fifo_read &  fifo_write        ) ? fifo_depth + 'd1 :\
+                                                                             fifo_depth       ;\
+   \
+            fifo_read_data_valid    <= ( reset_poweron                   ) ? 'd0        : \
+                                       ( clear                           ) ? 'd0        : \
+                                                                              fifo_read ;\
+   \
+          end\
+\
+          assign fifo_empty          = (fifo_rp == fifo_wp)    ;\
+          assign fifo_almost_full    = (fifo_depth >= 'd`NOC_CONT_TO_INTF_DATA_FIFO_DEPTH-`COMMON_FIFO_ALMOST_FULL_THRESHOLD_DEFAULT)    ;\
+\
+          always @(posedge clk)\
+            begin\
+              fifo_read_cntl      <= (fifo_read) ? fifo_cntl [fifo_rp]   : fifo_read_cntl   ;\
+              fifo_read_type      <= (fifo_read) ? fifo_type [fifo_rp]   : fifo_read_type   ;\
+              fifo_read_data      <= (fifo_read) ? fifo_data [fifo_rp]   : fifo_read_data   ;\
+              fifo_read_peId      <= (fifo_read) ? fifo_peId [fifo_rp]   : fifo_read_peId   ;\
+              fifo_read_laneId    <= (fifo_read) ? fifo_laneId [fifo_rp] : fifo_read_laneId ;\
+              fifo_read_strmId    <= (fifo_read) ? fifo_strmId [fifo_rp] : fifo_read_strmId ;\
+            end\
+
+
+//--------------------------------------------------------
+// NoC FIFO's
+
+`define NoC_Port_fifo \
+\
+        reg  [`NOC_CONT_NOC_PORT_CNTL_RANGE ]                   fifo_cntl      [`NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH_RANGE] ; \
+        reg  [`NOC_CONT_NOC_PORT_DATA_RANGE]                    fifo_data      [`NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH_RANGE] ; \
+        reg  [`NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_RANGE]           fifo_wp              ; \
+        reg  [`NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_RANGE]           fifo_rp              ; \
+        reg  [`NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_RANGE]           fifo_depth           ; \
+        reg  [`NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_RANGE] fifo_eop_count       ; \
+        wire                                                    fifo_empty           ; \
+        wire                                                    fifo_almost_full     ; \
+        wire                                                    fifo_read            ; \
+        reg  [`NOC_CONT_NOC_PORT_CNTL_RANGE ]                   fifo_read_cntl       ; \
+        reg  [`NOC_CONT_NOC_PORT_DATA_RANGE]                    fifo_read_data       ; \
+        reg                                                     fifo_read_data_valid ; \
+        reg  [`NOC_CONT_NOC_PORT_CNTL_RANGE ]                   cntl                 ; \
+        reg  [`NOC_CONT_NOC_PORT_DATA_RANGE]                    data                 ; \
+        reg                                                     fifo_write           ; \
+        wire                                                    clear                ; \
+   \
+        always @(posedge clk)\
+          begin\
+            fifo_wp                 <= ( reset_poweron   ) ? 'd0            : \
+                                       ( clear           ) ? 'd0            : \
+                                       ( fifo_write      ) ? fifo_wp + 'd1  :\
+                                                             fifo_wp        ;\
+   \
+            fifo_cntl[fifo_wp]      <= ( fifo_write       ) ? cntl               : \
+                                                              fifo_cntl[fifo_wp] ;\
+   \
+            fifo_data[fifo_wp]      <= ( fifo_write       ) ? data               : \
+                                                              fifo_data[fifo_wp] ;\
+   \
+            fifo_rp                 <= ( reset_poweron    ) ? 'd0           : \
+                                       ( clear            ) ? 'd0           : \
+                                       ( fifo_read        ) ? fifo_rp + 'd1 :\
+                                                              fifo_rp       ;\
+\
+            fifo_eop_count          <= ( reset_poweron                                                                                                                       )  ? 'd0                  : \
+                                       ( clear                                                                                                                               )  ? 'd0                  : \
+                                       ((((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid ) &&                       \
+                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )) ? fifo_eop_count       : \
+                                       (((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid )  ? fifo_eop_count - 'd1 : \
+                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )  ? fifo_eop_count + 'd1 : \
+                                                                                                                                                                                  fifo_eop_count       ; \
+\
+            fifo_depth              <= ( reset_poweron                   ) ? 'd0              : \
+                                       ( clear                           ) ? 'd0              : \
+                                       (  fifo_read & ~fifo_write        ) ? fifo_depth - 'd1 :\
+                                       ( ~fifo_read &  fifo_write        ) ? fifo_depth + 'd1 :\
+                                                                             fifo_depth       ;\
+   \
+            fifo_read_data_valid    <= ( reset_poweron                   ) ? 'd0        : \
+                                       ( clear                           ) ? 'd0        : \
+                                                                              fifo_read ;\
+   \
+          end\
+\
+          assign fifo_empty          = (fifo_rp == fifo_wp)    ;\
+          assign fifo_almost_full    = (fifo_depth >= 'd`NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH-`NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_ALMOST_FULL_THRESHOLD)    ;\
+        always @(posedge clk)\
+          begin\
+            fifo_read_cntl      <= (fifo_read) ? fifo_cntl [fifo_rp]   : fifo_read_cntl   ;\
+            fifo_read_data      <= (fifo_read) ? fifo_data [fifo_rp]   : fifo_read_data   ;\
+          end\
+
+//------------------------------------------------------------------------------------------------------------
+`endif
