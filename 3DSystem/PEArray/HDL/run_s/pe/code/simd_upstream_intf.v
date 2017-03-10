@@ -19,6 +19,7 @@
 `include "pe_array.vh"
 `include "pe.vh"
 `include "stack_interface.vh"
+`include "stack_interface_typedef.vh"
 `include "simd_upstream_intf.vh"
 
 
@@ -36,6 +37,7 @@ module simd_upstream_intf (
 
                   //--------------------------------------------------
                   // Register(s) from simd
+                  simd__sui__tag           ,
                   simd__sui__regs          ,
                   simd__sui__regs_valid    ,
                   sui__simd__regs_complete ,
@@ -69,6 +71,7 @@ module simd_upstream_intf (
   //-------------------------------------------------------------------------------------------
   // Register File interface
   //
+  input  [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag                            ;
   input  [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs  [`PE_NUM_OF_EXEC_LANES ] ;
   input  [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                     ;
   output                                            sui__simd__regs_complete                  ;
@@ -84,6 +87,7 @@ module simd_upstream_intf (
   wire   [`STACK_UP_INTF_DATA_RANGE     ]           sui__sti__data             ;
   wire   [`STACK_UP_INTF_OOB_DATA_RANGE ]           sui__sti__oob_data         ;
 
+  wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag                                 ;
   wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ;
   wire   [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                          ;
   reg                                               sui__simd__regs_complete                       ;
@@ -93,6 +97,7 @@ module simd_upstream_intf (
   // General use assignments
   //  - all inputs must be registered
   //
+  reg    [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag_d1                                 ;
   reg    [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs_d1       [`PE_NUM_OF_EXEC_LANES ] ;
   reg    [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid_d1                          ;
   genvar gvi;
@@ -106,6 +111,11 @@ module simd_upstream_intf (
           end
       end
   endgenerate
+
+  always @(posedge clk)
+    begin
+      simd__sui__tag_d1   <=  ( reset_poweron ) ? 'd0 : simd__sui__tag     ;
+    end
 
   reg                                              sti__sui__ready_d1            ;
   always @(posedge clk)
@@ -129,9 +139,10 @@ module simd_upstream_intf (
 
         // Write data
         reg    [`COMMON_STD_INTF_CNTL_RANGE   ]           write_cntl       ;
-        wire   [`STACK_UP_INTF_TYPE_RANGE     ]           write_type       ;
+        stack_up_type                                     write_type       ;
+        //wire   [`STACK_UP_INTF_TYPE_RANGE     ]           write_type       ;
         reg    [`STACK_UP_INTF_DATA_RANGE     ]           write_data       ;  // because assigned in proc
-        wire   [`STACK_UP_INTF_OOB_DATA_RANGE ]           write_oob_data   ;
+        reg    [`STACK_UP_INTF_OOB_DATA_RANGE ]           write_oob_data   ;
 
         // Read data
         wire   [`COMMON_STD_INTF_CNTL_RANGE   ]           read_cntl        ;
@@ -318,6 +329,12 @@ module simd_upstream_intf (
       to_Stu_Fifo[0].write_cntl   <= (sui2stiTransferCount == 0                               ) ? `COMMON_STD_INTF_CNTL_SOM   :
                                      (sui2stiTransferCount == `SIMD_TO_STI_NUM_OF_TRANSFERS-1 ) ? `COMMON_STD_INTF_CNTL_EOM   :
                                                                                                   `COMMON_STD_INTF_CNTL_MOM   ;
+
+      to_Stu_Fifo[0].write_type   <= (sui2stiTransferCount == 0                               ) ?  STU_PACKET_TYPE_DATA       :
+                                                                                                   STU_PACKET_TYPE_NA         ;
+
+      to_Stu_Fifo[0].write_oob_data   <= simd__sui__tag_d1   ;
+
       case  (sui2stiTransferCount )
         `include "simd_upstream_intf_register_mux.vh"
       endcase 

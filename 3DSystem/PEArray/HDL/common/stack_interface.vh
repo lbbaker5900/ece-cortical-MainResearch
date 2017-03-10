@@ -16,6 +16,14 @@
 // Stack Interface
 //------------------------------------------------
 
+//---------------------------------------------------------------------------------------------------------------------
+// OOB Downstream interface
+
+`define STACK_DOWN_OOB_INTF_TAG_SIZE           8
+`define STACK_DOWN_OOB_INTF_TAG_WIDTH          `STACK_DOWN_OOB_INTF_TAG_SIZE
+`define STACK_DOWN_OOB_INTF_TAG_MSB            `STACK_DOWN_OOB_INTF_TAG_WIDTH-1
+`define STACK_DOWN_OOB_INTF_TAG_LSB            0
+`define STACK_DOWN_OOB_INTF_TAG_RANGE          `STACK_DOWN_OOB_INTF_TAG_MSB : `STACK_DOWN_OOB_INTF_TAG_LSB
 
 //---------------------------------------------------------------------------------------------------------------------
 // OOB Downstream interface
@@ -37,7 +45,7 @@
 `define STACK_DOWN_OOB_INTF_OPTION_SIZE         8
 `define STACK_DOWN_OOB_INTF_VALUE_SIZE          8
 
-`define STACK_DOWN_OOB_INTF_TUPLES_PER_CYCLE  `STACK_DOWN_OOB_INTF_DATA_SIZE/((`STACK_DOWN_OOB_INTF_OPTION_SIZE + `STACK_DOWN_OOB_INTF_VALUE_SIZE)*2)
+`define STACK_DOWN_OOB_INTF_TUPLES_PER_CYCLE  `STACK_DOWN_OOB_INTF_DATA_SIZE/((`STACK_DOWN_OOB_INTF_OPTION_SIZE + `STACK_DOWN_OOB_INTF_VALUE_SIZE))
 
 //---------------------------------------------------------------------------------------------------------------------
 // Stack Downstream interface

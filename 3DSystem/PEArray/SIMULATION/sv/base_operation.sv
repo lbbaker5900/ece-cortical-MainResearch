@@ -14,6 +14,7 @@
 `timescale 1ns/10ps
 
 `include "common.vh"
+`include "stack_interface.vh"
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
 `include "dma_cont.vh"
@@ -56,7 +57,7 @@ package operation;
 
         time                                                timeTag                                                  ;
         int                                                 Id [2]                                                   ; // PE, Lane
-        int                                                 tId                                                      ; // transaction number
+        logic  [`STACK_DOWN_OOB_INTF_TAG_RANGE ]            tId                                                      ; // transaction number
 
         int                                                 beenConstrained                                          ; // 
 

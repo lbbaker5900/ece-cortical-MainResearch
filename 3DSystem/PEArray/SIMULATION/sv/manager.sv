@@ -158,7 +158,7 @@ class manager;
 
                 // create the oob_packet object from the operation
                 oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
-                oob_packet_mgr.createFromOperation(0, sys_operation_oob)     ;
+                oob_packet_mgr.createFromOperation(sys_operation_oob.tId, sys_operation_oob)     ;
                 mgr2oob.put(oob_packet_mgr)                                  ;  // oob needs to prepare the PE
                 $display("@%0t:%s:%0d:LEE: Manager {%0d} sent oob_packet {%0d} to oob_driver", $time, `__FILE__, `__LINE__, Id, operationNum);
 

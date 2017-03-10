@@ -153,11 +153,13 @@ module pe (
   // PE Control
   // 
   `include "pe_cntl_simd_instance_wires.vh"
+  wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag            ;
 
   //---------------------------------------
   // SIMD
   // 
   `include "pe_simd_instance_wires.vh"
+  wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag            ;
 
   wire [`PE_PE_ID_RANGE     ]     peId = sys__pe__peId   ;
 
@@ -237,6 +239,7 @@ module pe (
             `include "pe_cntl_simd_instance_ports.vh"
             `endif
             .stOp_complete                        ( pe__sys__complete                 ),
+            .cntl__simd__tag                      ( cntl__simd__tag                   ),
 
             //-------------------------------
             // General
@@ -272,6 +275,10 @@ module pe (
                   .sui__simd__regs_complete ( sui__simd__regs_complete ),
 
                   //--------------------------------------------------
+                  // Additional control from simd
+                  .simd__sui__tag           ( simd__sui__tag           ),
+
+                  //--------------------------------------------------
                   // General
                   .peId                  ( sys__pe__peId         ),
                   .clk                   ( clk                   ),
@@ -292,8 +299,16 @@ module pe (
             `include "pe_cntl_simd_instance_ports.vh"
 
             //-------------------------------
+            // Additional PE control
+            .cntl__simd__tag          ( cntl__simd__tag          ),
+
+            //-------------------------------
             // Result from stOp to regFile
             `include "simd_wrapper_scntl_to_simd_regfile_instance_ports.vh"
+
+            //--------------------------------------------------
+            // Additional control to stack upstream 
+            .simd__sui__tag           ( simd__sui__tag           ),
 
             //-------------------------------------------------------------------------------------------------
             // SIMD Registers to Stack Up 

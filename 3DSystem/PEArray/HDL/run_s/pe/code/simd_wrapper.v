@@ -45,11 +45,16 @@ module simd_wrapper (
                           `include "pe_simd_ports.vh"
 
                           //-------------------------------
+                          // Additional PE control configuration 
+                          cntl__simd__tag          ,
+
+                          //-------------------------------
                           // Result from stOp to regFile (via scntl)
                           `include "simd_wrapper_scntl_to_simd_regfile_ports.vh"
 
                           //--------------------------------------------------
                           // Register(s) to stack upstream
+                          simd__sui__tag           ,
                           simd__sui__regs          ,
                           simd__sui__regs_valid    ,
                           sui__simd__regs_complete ,
@@ -66,9 +71,14 @@ module simd_wrapper (
   input [`PE_PE_ID_RANGE   ]  peId           ; 
 
 
+  //----------------------------------------------------------------------------------------------------
+  // PE control
+  input   [`STACK_DOWN_OOB_INTF_TAG_RANGE]           cntl__simd__tag                           ;
+
   //-------------------------------------------------------------------------------------------
   // Register File interface to stack interface
   //
+  output  [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag                            ;
   output  [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs  [`PE_NUM_OF_EXEC_LANES ] ;
   output  [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                     ;
   input                                              sui__simd__regs_complete                  ;
@@ -99,12 +109,13 @@ module simd_wrapper (
   reg   [`PE_EXEC_LANE_WIDTH_RANGE     ]  allLanes_results  [`PE_NUM_OF_EXEC_LANES ] ;
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  allLanes_valid                             ;
 
+  wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag                             ;
   wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs   [`PE_NUM_OF_EXEC_LANES ] ;
   wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid                      ;
   wire                                    sui__simd__regs_complete                   ;
   reg                                     sui__simd__regs_complete_d1                ;
 
-
+  wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag                            ;
 
 
   //----------------------------------------------------------------------------------------------------
@@ -145,6 +156,7 @@ module simd_wrapper (
       end
   endgenerate
   assign  simd__sui__regs_valid  =  allLanes_valid  ;
+  assign  simd__sui__tag         =  cntl__simd__tag ;
 
   `include "simd_wrapper_scntl_to_simd_regfile_assignments.vh"
 

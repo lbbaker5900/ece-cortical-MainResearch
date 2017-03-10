@@ -20,6 +20,7 @@
 `include "pe_array.vh"
 `include "pe.vh"
 `include "stack_interface.vh"
+`include "stack_interface_typedef.vh"
 `include "pe_cntl.vh"
 `include "noc_cntl.vh"
 `include "mem_acc_cont.vh"
@@ -44,6 +45,7 @@ module pe_cntl (
             //-------------------------------
             // Configuration output
             //
+            cntl__simd__tag                               ,
             `include "pe_cntl_simd_ports.vh"
             stOp_complete                                 ,
 
@@ -66,13 +68,14 @@ module pe_cntl (
   //----------------------------------------------------------------------------------------------------
   // Stack down OOB
 
-  input [`COMMON_STD_INTF_CNTL_RANGE     ]        sti__cntl__oob_cntl            ;
-  input                                           sti__cntl__oob_valid           ;
-  output                                          cntl__sti__oob_ready           ;
-  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]        sti__cntl__oob_type            ;
-  input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]        sti__cntl__oob_data            ;
+  input  [`COMMON_STD_INTF_CNTL_RANGE     ]        sti__cntl__oob_cntl            ;
+  input                                            sti__cntl__oob_valid           ;
+  output                                           cntl__sti__oob_ready           ;
+  input  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]        sti__cntl__oob_type            ;
+  input  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]        sti__cntl__oob_data            ;
                                                 
-  input                                           stOp_complete                  ;  // dont allow another OOB command until we are complete
+  output [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]        cntl__simd__tag                ;
+  input                                            stOp_complete                  ;  // dont allow another OOB command until we are complete
 
   //----------------------------------------------------------------------------------------------------
   // Outputs to controller
@@ -83,6 +86,8 @@ module pe_cntl (
   // Configuration output
 
   wire   [`STREAMING_OP_CNTL_OPERATION_RANGE ]    stOp_operation             ;  
+
+  reg    [`STACK_DOWN_OOB_INTF_TAG_RANGE     ]    tag                        ;  // tag from OOB packet
 
   wire   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    sourceAddress0             ;  
   wire   [`PE_ARRAY_CHIPLET_ADDRESS_RANGE    ]    destinationAddress0        ;  
@@ -103,19 +108,45 @@ module pe_cntl (
 
   reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    stOp_optionPtr             ; 
   reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    simd_optionPtr             ; 
-  reg                                             command_valid              ;  // when a command has been received
-  reg                                             stOp_complete_d1           ;  // we will create a pulse off the rising edge
-  wire                                            stOp_completed             ;  // a pulse indicating a command has been run and completed
-  wire                                            stOp_complete_deasserted   ;  // we deassert rs0[0] and wait for complete to deassert before starting next command
-  reg                                             sti__cntl__oob_valid_d1    ;  // we will create a pulse off the rising edge
+  reg                                             start_stOp_operation       ;  // when a completed packet has been received and it contained a stOp operation
+  reg                                             start_simd_operation       ;  // when a completed packet has been received and it contained a simd operation
+  reg                                             stop_stOp_operation        ;  // wait for complete to be asserted, then deassert rs0[0] and wait for complete to be deasserted
+  reg                                             stop_simd_operation        ;  
+  reg                                             contained_stOp             ;  // the OOB packet indicated a operation should be initiated
+  reg                                             contained_simd             ;  // the OOB packet indicated a operation should be initiated
+  wire                                            oob_packet_starting        ;  // when a packet is first received
+
+  wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]        cntl__simd__tag            ;
 
   `include "pe_cntl_simd_instance_wires.vh"
+
+  reg   [`COMMON_STD_INTF_CNTL_RANGE     ]        sti__cntl__oob_cntl_d1         ;
+  reg                                             sti__cntl__oob_valid_d1        ;
+  reg                                             cntl__sti__oob_ready           ;
+  wire                                            cntl__sti__oob_ready_e1        ;
+  reg   [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]        sti__cntl__oob_type_d1         ;
+  reg   [`STACK_DOWN_OOB_INTF_DATA_RANGE ]        sti__cntl__oob_data_d1         ;
+
+  //----------------------------------------------------------------------------------------------------
+  // Registered Inputs and Outputs
+
+  always @(posedge clk)
+    begin
+      sti__cntl__oob_cntl_d1    <= ( reset_poweron   ) ? 'd0  :  sti__cntl__oob_cntl        ;
+      sti__cntl__oob_valid_d1   <= ( reset_poweron   ) ? 'd0  :  sti__cntl__oob_valid       ;
+      cntl__sti__oob_ready      <= ( reset_poweron   ) ? 'd0  :  cntl__sti__oob_ready_e1    ;
+      sti__cntl__oob_type_d1    <= ( reset_poweron   ) ? 'd0  :  sti__cntl__oob_type        ;
+      sti__cntl__oob_data_d1    <= ( reset_poweron   ) ? 'd0  :  sti__cntl__oob_data        ;
+    end
+
+
 
   //----------------------------------------------------------------------------------------------------
   // Connections from control memory to all simd lane control
   //
   // Originally the control for the stOp was going to come from the simd registers, so we have maintain the register naming for the stOp although these should probably change.
   //
+
   genvar pe, lane;
   generate
       for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
@@ -143,21 +174,23 @@ module pe_cntl (
 
   always @(posedge clk)
     begin
-      cntl__simd__lane_r130_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? sourceAddress0                                      : cntl__simd__lane_r130_e1          ;
-      cntl__simd__lane_r134_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? destinationAddress0                                 : cntl__simd__lane_r134_e1          ;
-      cntl__simd__lane_r132_e1[19:16]   <= (reset_poweron ) ? 4'd0                    : ( sti__cntl__oob_valid_d1 ) ? src_data_type0                                      : cntl__simd__lane_r132_e1[19:16]   ;  // type (bit, nibble, byte, word)
-                                                                                                                                                                                                            
-      cntl__simd__lane_r131_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? sourceAddress1                                      : cntl__simd__lane_r131_e1          ;
-      cntl__simd__lane_r135_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? destinationAddress1                                 : cntl__simd__lane_r135_e1          ;
-      cntl__simd__lane_r133_e1[19:16]   <= (reset_poweron ) ? 4'd0                    : ( sti__cntl__oob_valid_d1 ) ? src_data_type1                                      : cntl__simd__lane_r133_e1[19:16]   ;  // type (bit, nibble, byte, word)
-                                                                                                                                                                                                            
-      cntl__simd__lane_r133_e1[15: 0]   <= (reset_poweron ) ? 16'd0                   : ( sti__cntl__oob_valid_d1 ) ? numberOfOperands                                    : cntl__simd__lane_r133_e1[15: 0]   ;
-      cntl__simd__lane_r132_e1[15: 0]   <= (reset_poweron ) ? 16'd0                   : ( sti__cntl__oob_valid_d1 ) ? numberOfOperands                                    : cntl__simd__lane_r132_e1[15: 0]   ;  // num of types - for dma
-                                                                                                                                                                                                            
-      cntl__simd__rs0_e1[0]             <= (reset_poweron ) ? 1'b0                    : ( sti__cntl__oob_valid_d1 ) ? 1'b1                  : ( stOp_completed ) ? 1'b0   : cntl__simd__rs0_e1[0]             ;
-      cntl__simd__rs0_e1[31:1]          <= (reset_poweron ) ? 31'd0                   : ( sti__cntl__oob_valid_d1 ) ? stOp_operation                                      : cntl__simd__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
-      cntl__simd__rs1_e1                <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( sti__cntl__oob_valid_d1 ) ? {32{1'b1}}                                          : cntl__simd__rs1_e1                ;
+      cntl__simd__lane_r130_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? sourceAddress0                                      : cntl__simd__lane_r130_e1          ;
+      cntl__simd__lane_r134_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? destinationAddress0                                 : cntl__simd__lane_r134_e1          ;
+      cntl__simd__lane_r132_e1[19:16]   <= (reset_poweron ) ? 4'd0                    : ( start_stOp_operation ) ? src_data_type0                                      : cntl__simd__lane_r132_e1[19:16]   ;  // type (bit, nibble, byte, word)
+                                                                                                                                                                                                         
+      cntl__simd__lane_r131_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? sourceAddress1                                      : cntl__simd__lane_r131_e1          ;
+      cntl__simd__lane_r135_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? destinationAddress1                                 : cntl__simd__lane_r135_e1          ;
+      cntl__simd__lane_r133_e1[19:16]   <= (reset_poweron ) ? 4'd0                    : ( start_stOp_operation ) ? src_data_type1                                      : cntl__simd__lane_r133_e1[19:16]   ;  // type (bit, nibble, byte, word)
+                                                                                                                                                                                                         
+      cntl__simd__lane_r133_e1[15: 0]   <= (reset_poweron ) ? 16'd0                   : ( start_stOp_operation ) ? numberOfOperands                                    : cntl__simd__lane_r133_e1[15: 0]   ;
+      cntl__simd__lane_r132_e1[15: 0]   <= (reset_poweron ) ? 16'd0                   : ( start_stOp_operation ) ? numberOfOperands                                    : cntl__simd__lane_r132_e1[15: 0]   ;  // num of types - for dma
+                                                                                                                                                                                                         
+      cntl__simd__rs0_e1[0]             <= (reset_poweron ) ? 1'b0                    : ( start_stOp_operation ) ? 1'b1             : ( stop_stOp_operation ) ? 1'b0   : cntl__simd__rs0_e1[0]             ;
+      cntl__simd__rs0_e1[31:1]          <= (reset_poweron ) ? 31'd0                   : ( start_stOp_operation ) ? stOp_operation                                      : cntl__simd__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
+      cntl__simd__rs1_e1                <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? {32{1'b1}}                                          : cntl__simd__rs1_e1                ;
     end
+
+
   //----------------------------------------------------------------------------------------------------
   // StreamingOp configuration memory
   //
@@ -165,7 +198,7 @@ module pe_cntl (
   //
   
   pe_cntl_stOp_rom pe_cntl_stOp_rom (  
-                                     .valid                 ( sti__cntl__oob_valid ),  // used by readmem. If we are receiving a WU, update control memory
+                                     .valid                 ( oob_packet_starting  ),  // used by readmem. If we are receiving a WU, update control memory
                                      .optionPtr             ( stOp_optionPtr       ),
                                                                                   
                                      .stOp_operation        ( stOp_operation       ),
@@ -187,29 +220,262 @@ module pe_cntl (
                                   );
 
   //----------------------------------------------------------------------------------------------------
+  // Downstream OOB FIFO
+  //
+
+  //------------------------------------------
+  // Assume the STU can flow control, so we will start to send the data by placing n-bit wide transactions in a FIFO then sending the output to the
+  // stack bus 
+  //
+  // From SIMD register FIFO
+  //
+  // Put in a generate in case we decide to extend to multiple downstream lanes
+
+  genvar gvi;
+  generate
+    for (gvi=0; gvi<1; gvi=gvi+1) 
+      begin: from_Sti_OOB_Fifo
+
+        // Write data
+        reg    [`COMMON_STD_INTF_CNTL_RANGE     ]         write_cntl       ;
+        //stack_down_oob_type                               write_type       ; // cause error during vlog ???  FIXME
+        wire   [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]         write_type       ;
+        wire   [`STACK_DOWN_OOB_INTF_DATA_RANGE ]         write_data       ;
+                                                                           
+        // Read data                                                       
+        wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         read_cntl        ;
+        wire   [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]         read_type        ;
+        wire   [`STACK_DOWN_OOB_INTF_DATA_RANGE ]         read_data        ;
+
+        // Control
+        wire                                              clear            ; 
+        wire                                              empty            ; 
+        wire                                              almost_full      ; 
+        wire                                              read             ; 
+        wire                                              write            ; 
+
+        // FIXME: Combine FIFO's for synthesis
+        generic_fifo #(.GENERIC_FIFO_DEPTH      (`PE_CNTL_OOB_RX_FIFO_DEPTH     ), 
+                       .GENERIC_FIFO_THRESHOLD  (`PE_CNTL_OOB_RX_FIFO_THRESHOLD ),
+                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`STACK_DOWN_OOB_INTF_TYPE_WIDTH+`STACK_DOWN_OOB_INTF_DATA_WIDTH )
+                        ) stu_data_fifo (
+                                          // Status
+                                         .empty            ( empty                                ),
+                                         .almost_full      ( almost_full                          ),
+                                          // Write
+                                         .write            ( write                                ),
+                                         .write_data       ( {write_cntl, write_type, write_data} ),
+                                          // Read
+                                         .read             ( read                                 ),
+                                         .read_data        ( { read_cntl,  read_type,  read_data} ),
+
+                                         // General
+                                         .clear            ( clear                                ),
+                                         .reset_poweron    ( reset_poweron                        ),
+                                         .clk              ( clk                                  )
+                                         );
+
+        // Note: First stage of pipeline is inside FIFO
+        // fifo output stage
+        reg                                                  fifo_pipe_valid   ;
+        wire                                                 fifo_pipe_read    ;
+        // pipe stage
+        reg                                                  pipe_valid        ;
+        reg    [`COMMON_STD_INTF_CNTL_RANGE     ]            pipe_cntl         ;
+        reg    [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]            pipe_type         ;
+        reg    [`STACK_DOWN_OOB_INTF_DATA_RANGE ]            pipe_data         ;
+        wire                                                 pipe_read         ;
+
+        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
+        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
+
+        // If we are reading the fifo, then this stage will be valid
+        // If we are not reading the fifo but the next stage is reading this stage, then this stage will not be valid
+        always @(posedge clk)
+          begin
+            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
+                               ( read               ) ? 'b1               :
+                               ( fifo_pipe_read     ) ? 'b0               :
+                                                         fifo_pipe_valid  ;
+          end
+
+        always @(posedge clk)
+          begin
+            // If we are reading the previous stage, then this stage will be valid
+            // otherwise if we are reading this stage this stage will not be valid
+            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
+                               ( fifo_pipe_read     ) ? 'b1              :
+                               ( pipe_read          ) ? 'b0              :
+                                                         pipe_valid      ;
+        
+            // if we are reading, transfer from previous pipe stage. 
+            pipe_cntl       <= ( fifo_pipe_read     ) ? read_cntl        :
+                                                        pipe_cntl        ;
+            pipe_type       <= ( fifo_pipe_read     ) ? read_type        :
+                                                        pipe_type        ;
+            pipe_data       <= ( fifo_pipe_read     ) ? read_data        :
+                                                        pipe_data        ;
+          end
+
+      end
+  endgenerate
+
+  assign from_Sti_OOB_Fifo[0].clear      =   1'b0                         ;
+  assign from_Sti_OOB_Fifo[0].write      =   sti__cntl__oob_valid_d1      ;
+  assign from_Sti_OOB_Fifo[0].write_cntl =   sti__cntl__oob_cntl_d1       ;
+  assign from_Sti_OOB_Fifo[0].write_type =   sti__cntl__oob_type_d1       ;
+  assign from_Sti_OOB_Fifo[0].write_data =   sti__cntl__oob_data_d1       ;
+         
+  assign cntl__sti__oob_ready_e1         = ~from_Sti_OOB_Fifo[0].almost_full ;
+
+/*
+  assign sui__sti__valid           = to_Stu_Fifo[0].pipe_read     ;
+  assign sui__sti__cntl            = to_Stu_Fifo[0].pipe_cntl     ;
+  assign sui__sti__type            = to_Stu_Fifo[0].pipe_type     ;
+  assign sui__sti__data            = to_Stu_Fifo[0].pipe_data     ;
+*/
+
+
+
+
+
+  //----------------------------------------------------------------------------------------------------
+  // Downstream OOB Packet Processing FSM
+  //
+
+  reg [`PE_CNTL_OOB_RX_CNTL_STATE_RANGE ] pe_cntl_oob_rx_cntl_state      ; // state flop
+  reg [`PE_CNTL_OOB_RX_CNTL_STATE_RANGE ] pe_cntl_oob_rx_cntl_state_next ;
+  
+  
+
+  // State register 
+  always @(posedge clk)
+    begin
+      pe_cntl_oob_rx_cntl_state <= ( reset_poweron ) ? `PE_CNTL_OOB_RX_CNTL_WAIT       :
+                                                       pe_cntl_oob_rx_cntl_state_next  ;
+    end
+  
+  // Every cycle of the OOB packet, examine each {option, value} tuple and set local config
+  // Once the packet has completed, initiate the command.
+  // Note: a) we might choose to start commands such as stOp as soon as the tuple is observed
+  //       b) FIXME:There is currentlyno checking to see if a option is repeated or if an option is invalid
+  //       c) Make error checking more robust as this is an external interface
+  //
+  //       FIXME: I am adding what might be redundant states as I suspect coordinating stOp's and SIMD might take a few states
+ 
+  always @(*)
+    begin
+      case (pe_cntl_oob_rx_cntl_state)
+
+        
+        `PE_CNTL_OOB_RX_CNTL_WAIT: 
+          pe_cntl_oob_rx_cntl_state_next =  ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ? `PE_CNTL_OOB_RX_CNTL_SOM          :  // start processing command
+                                            ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ? `PE_CNTL_OOB_RX_CNTL_START_CMD    :  // initiate command
+                                            ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_MOM    )) ? `PE_CNTL_OOB_RX_CNTL_ERR          :  // error
+                                            ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ? `PE_CNTL_OOB_RX_CNTL_ERR          :  // error
+                                                                                                                                                      `PE_CNTL_OOB_RX_CNTL_WAIT         ;
+  
+
+        `PE_CNTL_OOB_RX_CNTL_SOM: // start of message
+          pe_cntl_oob_rx_cntl_state_next =  ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_MOM    )) ? `PE_CNTL_OOB_RX_CNTL_MOM          :  // continue processing command
+                                            ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ? `PE_CNTL_OOB_RX_CNTL_START_CMD    :  // initiate command
+                                            ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ? `PE_CNTL_OOB_RX_CNTL_ERR          :  // error
+                                            ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ? `PE_CNTL_OOB_RX_CNTL_ERR          :  // error
+                                                                                                                                                      `PE_CNTL_OOB_RX_CNTL_SOM          ;
+
+        `PE_CNTL_OOB_RX_CNTL_MOM: // middle of message
+          pe_cntl_oob_rx_cntl_state_next =  ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_MOM    )) ? `PE_CNTL_OOB_RX_CNTL_MOM          :  // continue processing command
+                                            ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ? `PE_CNTL_OOB_RX_CNTL_START_CMD    :  // initiate command
+                                            ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ? `PE_CNTL_OOB_RX_CNTL_ERR          :  // error
+                                            ( from_Sti_OOB_Fifo[0].pipe_valid && (from_Sti_OOB_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ? `PE_CNTL_OOB_RX_CNTL_ERR          :  // error
+                                                                                                                                                      `PE_CNTL_OOB_RX_CNTL_SOM          ;
+
+
+        // Transition directly to wait complete so this will create a pulse and the option tuple has been latched
+        `PE_CNTL_OOB_RX_CNTL_START_CMD:
+          pe_cntl_oob_rx_cntl_state_next =   `PE_CNTL_OOB_RX_CNTL_OP_RUNNING ;  // 
+
+        // make sure the operations have started to allow for some time for simd and/or stOp to get started
+        `PE_CNTL_OOB_RX_CNTL_OP_RUNNING:
+          pe_cntl_oob_rx_cntl_state_next =   ( stOp_complete            ) ? `PE_CNTL_OOB_RX_CNTL_WAIT_COMPLETE_DEASSERTED  :  // 
+                                                                            `PE_CNTL_OOB_RX_CNTL_OP_RUNNING     ;  // 
+
+        `PE_CNTL_OOB_RX_CNTL_WAIT_COMPLETE_DEASSERTED:
+          pe_cntl_oob_rx_cntl_state_next =   ( stOp_complete            ) ? `PE_CNTL_OOB_RX_CNTL_WAIT_COMPLETE_DEASSERTED         :  // 
+                                                                            `PE_CNTL_OOB_RX_CNTL_COMPLETE    ;  // 
+
+        `PE_CNTL_OOB_RX_CNTL_COMPLETE:
+          pe_cntl_oob_rx_cntl_state_next =   `PE_CNTL_OOB_RX_CNTL_WAIT  ;  // 
+
+        // Latch state on error
+        `PE_CNTL_OOB_RX_CNTL_ERR:
+          pe_cntl_oob_rx_cntl_state_next = `PE_CNTL_OOB_RX_CNTL_ERR ;
+  
+        default:
+          pe_cntl_oob_rx_cntl_state_next = `PE_CNTL_OOB_RX_CNTL_WAIT ;
+    
+      endcase // case(so_cntl_state)
+    end // always @ (*)
+  
+
+  //----------------------------------------------------------------------------------------------------
   // Assignments
   //
+  assign from_Sti_OOB_Fifo[0].pipe_read = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT) & from_Sti_OOB_Fifo[0].pipe_valid |
+                                          (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_SOM ) & from_Sti_OOB_Fifo[0].pipe_valid |
+                                          (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_MOM ) & from_Sti_OOB_Fifo[0].pipe_valid ;
+
+
+  always @(*)
+    begin
+  
+      start_stOp_operation    = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_START_CMD               ) & contained_stOp ;
+      stop_stOp_operation     = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT_COMPLETE_DEASSERTED) & contained_stOp ;
+      start_simd_operation    = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_START_CMD               ) & contained_simd ;
+      stop_simd_operation     = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT_COMPLETE_DEASSERTED) & contained_simd ;
+
+    end
+
   // examine {option, value} tuples and set local fields
   always @(posedge clk)
     begin
+      contained_stOp           <=  ( reset_poweron                                                                                                               ) ? 1'b0           :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_RANGE] == STD_PACKET_OOB_OPT_STOP_CMD)) ? 1'b1           :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_RANGE] == STD_PACKET_OOB_OPT_STOP_CMD)) ? 1'b1           :
+                                   ((pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_COMPLETE                                                                 )) ? 1'b0           :  // clear when packet and operation complete
+                                                                                                                                                                     contained_stOp ;
+
+      // FIXME
+      contained_simd           <=  ( reset_poweron                                                                                                               ) ? 1'b0           :
+                                                                                                                                                                     contained_simd ;
+
       // pointer to stOp operation control memory
-      stOp_optionPtr           <=  ( reset_poweron                                                                                         ) ?  'd0                         :
-                                   ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
-                                   ( sti__cntl__oob_valid  && (sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_RANGE] == `PE_CNTL_OOB_OPTION_STOP)) ? sti__cntl__oob_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
-                                                                                                                                               stOp_optionPtr                                       ;
-      command_valid            <=  ( reset_poweron                 ) ? 1'd0            :
-                                   ( sti__cntl__oob_valid          ) ? 1'b1            :
-                                   ( stOp_complete_deasserted      ) ? 1'b0            :  // the stOp_cntl is readt once it deasserts complete after we deassert rs[0] (enable)
-                                                                       command_valid   ;
-      stOp_complete_d1         <=  stOp_complete               ;
-      sti__cntl__oob_valid_d1  <=  sti__cntl__oob_valid        ;
+      stOp_optionPtr           <=  ( reset_poweron                                                                                                               ) ?  'd0                                                            :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_RANGE] == STD_PACKET_OOB_OPT_STOP_CMD)) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_RANGE] == STD_PACKET_OOB_OPT_STOP_CMD)) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
+                                                                                                                                                                     stOp_optionPtr                                                  ;
+
+      // FIXME
+      simd_optionPtr           <=  ( reset_poweron                                                                                                               ) ?  'd0                                                       :
+                                                                                                                                                                     simd_optionPtr                                             ;
+
+      tag                      <=  ( reset_poweron                                                                                                               ) ?  'd0                                                            :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_RANGE] ==  STD_PACKET_OOB_OPT_TAG )) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_RANGE] ==  STD_PACKET_OOB_OPT_TAG )) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
+                                                                                                                                                                     stOp_optionPtr                                                  ;
+
+
     end
 
-  assign cntl__sti__oob_ready           = ~command_valid                   ;  // we are ready when there isnt a valid command:w
-  assign stOp_completed                 = stOp_complete & ~stOp_complete_d1;
-  assign stOp_complete_deasserted       = ~stOp_complete & stOp_complete_d1;
+  assign oob_packet_starting     = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT) & (pe_cntl_oob_rx_cntl_state_next != `PE_CNTL_OOB_RX_CNTL_WAIT) ;  // transitioning out of WAIT
+
+  assign cntl__simd__tag         = tag     ;
+
 
 endmodule
+
+
+
 
 
 //----------------------------------------------------------------------------------------------------

@@ -234,20 +234,19 @@ class oob_driver;
                         $display("@%0t:%s:%0d: INFO:{%0d}: Driving WU via OOB with contents of OOB packet from manager : {%0d,%0d}", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1]);
                         oob_packet_mgr.displayPacket();
 
-                        // set operation and pointer
-                        tmp_oob_option = STD_PACKET_OOB_DATA_STOP_CMD            ;
-                        oob_option [0] = tmp_oob_option  ;
-                        oob_value  [0] = operationNumber ;
-                        tmp_oob_option = STD_PACKET_OOB_DATA_SIMD_RELU_CMD            ;
-                        oob_option [1] = tmp_oob_option  ;
-                        oob_value  [1] = operationNumber ;
-
                         oob_sent = 0 ;
                         while (~oob_sent)
                           begin
                             @(vSysOob2PeArray.cb_test);
 
                             // Check if the PE can accept a new operation
+                            while (~vSysOob2PeArray.pe__std__oob_ready) 
+                              begin
+                                vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;
+                                @(vSysOob2PeArray.cb_test);
+                              end
+
+/*
                             if (vSysOob2PeArray.pe__std__oob_ready) 
                               begin
                               vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 1  ;
@@ -259,11 +258,40 @@ class oob_driver;
                                 //$display("@%0t:%s:%0d: INFO:{%0d}: Not ready for OOB from manager : {%0d,%0d}. rdy = %d", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1], vSysOob2PeArray.pe__std__oob_ready );
                                 vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;
                               end
+*/
+                            vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 1  ;
+
+                            //----------------------------------------------------------------------------------------------------
+                            // set operation and pointer
+                            tmp_oob_option = STD_PACKET_OOB_OPT_STOP_CMD            ;
+                            oob_option [0] = tmp_oob_option  ;
+                            oob_value  [0] = operationNumber ;
+                            tmp_oob_option = STD_PACKET_OOB_OPT_SIMD_RELU_CMD            ;
+                            oob_option [1] = tmp_oob_option  ;
+                            oob_value  [1] = operationNumber ;
                             // drive but these are conditioned on valid
-                            vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;  
+                            vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM      ;  
                             vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
                             vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
-                            vSysOob2PeArray.cb_test.std__pe__oob_data         <= {{oob_value[1], oob_option[1]},{oob_value[0], oob_option[0]}};
+                            vSysOob2PeArray.cb_test.std__pe__oob_data         <= {oob_value[1], oob_option[1],oob_value[0], oob_option[0]};
+
+                            @(vSysOob2PeArray.cb_test);
+                            //----------------------------------------------------------------------------------------------------
+                            // set tag
+                            tmp_oob_option = STD_PACKET_OOB_OPT_TAG            ;
+                            oob_option [0] = tmp_oob_option  ;
+                            oob_value  [0] = oob_packet_mgr.tag ;
+                            tmp_oob_option = STD_PACKET_OOB_OPT_NOP            ;
+                            oob_option [1] = tmp_oob_option  ;
+                            oob_value  [1] = 0               ;
+                            // drive but these are conditioned on valid
+                            vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_EOM      ;  
+                            vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
+                            vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
+                            vSysOob2PeArray.cb_test.std__pe__oob_data         <= {oob_value[1], oob_option[1],oob_value[0], oob_option[0]};
+
+                            oob_sent = 1;
+
 
                             // right now all PE configuration is passed to the PE over the OOB using {option, value} tuples
                             // So we assume the source and destination addresses are the same but offset into the lane memory
@@ -289,7 +317,8 @@ class oob_driver;
                                   */
                         
                               end
-                          end
+
+                          end  // while ~oob_sent
       
                         // Now quiesce the STD bus by deasserting valid
                         @(vSysOob2PeArray.cb_test);
