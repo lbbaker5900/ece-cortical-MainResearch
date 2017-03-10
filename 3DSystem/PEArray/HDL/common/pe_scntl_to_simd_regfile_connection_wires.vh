@@ -95,3 +95,7 @@
   wire                                    reg__scntl__lane31_ready    ;
   wire                                    scntl__reg__lane31_valid    ;
   wire   [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane31_data     ;
+
+ wire   [`PE_NUM_OF_EXEC_LANES_RANGE ]      scntl__reg__valid                          ;
+ wire   [`PE_EXEC_LANE_WIDTH_RANGE   ]      scntl__reg__data  [`PE_NUM_OF_EXEC_LANES ] ;
+ wire   [`PE_NUM_OF_EXEC_LANES_RANGE ]      reg__scntl__ready                          ;

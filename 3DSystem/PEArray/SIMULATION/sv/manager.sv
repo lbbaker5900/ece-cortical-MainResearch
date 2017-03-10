@@ -64,8 +64,12 @@ class manager;
     // HOW MANY?
     integer num_operations = 6;  // fp mac:{std,std}->mem, copy:std->mem, fp mac:{std,mem}->mem
 
-
-    integer operationNum   = 0;  // used to set operation ID
+   
+    // Use multiple of 3 if we want to see std_std_fpmac_mem, std_na_nop_mem, std_mem_fpmac_mem
+    // FIXME: if we use a staring opNum that is remainder, the system hangs. This is likely because the first transaction will be a mem_std_fpmac_mem
+    // and it assumes a prior operation has loaded memory, but I still dont like it hanging.
+    integer operationNum   = 43*3;  // used to set operation ID
+                                   // This will be the tag, so start higher to make the tag distinguishable
 
     //variable to define the timeout in 'wrapup()' task in environment.sv
     integer transaction_timeout = 3000;

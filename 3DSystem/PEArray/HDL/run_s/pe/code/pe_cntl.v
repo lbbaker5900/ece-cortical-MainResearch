@@ -45,7 +45,10 @@ module pe_cntl (
             //-------------------------------
             // Configuration output
             //
+            cntl__simd__tag_valid                         ,
             cntl__simd__tag                               ,
+            simd__cntl__tag_ready                         ,
+
             `include "pe_cntl_simd_ports.vh"
             stOp_complete                                 ,
 
@@ -74,7 +77,10 @@ module pe_cntl (
   input  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]        sti__cntl__oob_type            ;
   input  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]        sti__cntl__oob_data            ;
                                                 
-  output [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]        cntl__simd__tag                ;
+  output                                           cntl__simd__tag_valid          ;  // tag to simd needs to be a fifo interface as the next stOp may start while the 
+  output [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]        cntl__simd__tag                ;  // simd is processing the previosu stOp result
+  input                                            simd__cntl__tag_ready          ;
+
   input                                            stOp_complete                  ;  // dont allow another OOB command until we are complete
 
   //----------------------------------------------------------------------------------------------------
@@ -116,7 +122,10 @@ module pe_cntl (
   reg                                             contained_simd             ;  // the OOB packet indicated a operation should be initiated
   wire                                            oob_packet_starting        ;  // when a packet is first received
 
-  wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]        cntl__simd__tag            ;
+  wire                                            cntl__simd__tag_valid      ;  // tag to simd needs to be a fifo interface as the next stOp may start while the 
+  wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]        cntl__simd__tag            ;  // simd is processing the previosu stOp result
+  wire                                            simd__cntl__tag_ready      ;
+  reg                                             simd__cntl__tag_ready_d1   ;
 
   `include "pe_cntl_simd_instance_wires.vh"
 
@@ -137,6 +146,8 @@ module pe_cntl (
       cntl__sti__oob_ready      <= ( reset_poweron   ) ? 'd0  :  cntl__sti__oob_ready_e1    ;
       sti__cntl__oob_type_d1    <= ( reset_poweron   ) ? 'd0  :  sti__cntl__oob_type        ;
       sti__cntl__oob_data_d1    <= ( reset_poweron   ) ? 'd0  :  sti__cntl__oob_data        ;
+
+      simd__cntl__tag_ready_d1  <= ( reset_poweron   ) ? 'd0  :  simd__cntl__tag_ready      ;
     end
 
 
@@ -392,6 +403,7 @@ module pe_cntl (
 
 
         // Transition directly to wait complete so this will create a pulse and the option tuple has been latched
+        // This state generates a pulse, so beware of adding conditions
         `PE_CNTL_OOB_RX_CNTL_START_CMD:
           pe_cntl_oob_rx_cntl_state_next =   `PE_CNTL_OOB_RX_CNTL_OP_RUNNING ;  // 
 
@@ -405,7 +417,8 @@ module pe_cntl (
                                                                             `PE_CNTL_OOB_RX_CNTL_COMPLETE    ;  // 
 
         `PE_CNTL_OOB_RX_CNTL_COMPLETE:
-          pe_cntl_oob_rx_cntl_state_next =   `PE_CNTL_OOB_RX_CNTL_WAIT  ;  // 
+          pe_cntl_oob_rx_cntl_state_next =   ( simd__cntl__tag_ready_d1 ) ? `PE_CNTL_OOB_RX_CNTL_WAIT        :  // 
+                                                                            `PE_CNTL_OOB_RX_CNTL_COMPLETE    ;  // if the simd isnt ready for the tag, dont perform the next operation
 
         // Latch state on error
         `PE_CNTL_OOB_RX_CNTL_ERR:
@@ -462,7 +475,7 @@ module pe_cntl (
       tag                      <=  ( reset_poweron                                                                                                               ) ?  'd0                                                            :
                                    ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_RANGE] ==  STD_PACKET_OOB_OPT_TAG )) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
                                    ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_RANGE] ==  STD_PACKET_OOB_OPT_TAG )) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
-                                                                                                                                                                     stOp_optionPtr                                                  ;
+                                                                                                                                                                     tag                                                             ;
 
 
     end
@@ -470,6 +483,8 @@ module pe_cntl (
   assign oob_packet_starting     = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT) & (pe_cntl_oob_rx_cntl_state_next != `PE_CNTL_OOB_RX_CNTL_WAIT) ;  // transitioning out of WAIT
 
   assign cntl__simd__tag         = tag     ;
+  // send the tag as soon as we start the operations
+  assign cntl__simd__tag_valid   = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_START_CMD) & simd__cntl__tag_ready_d1    ;
 
 
 endmodule

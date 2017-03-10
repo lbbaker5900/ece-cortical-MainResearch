@@ -30,5 +30,38 @@
 
 
 
+//------------------------------------------------
+// FIFO's
+//------------------------------------------------
+
+`define SIMD_WRAP_REG_FROM_SCNTL_FIFO_DEPTH          4
+`define SIMD_WRAP_REG_FROM_SCNTL_FIFO_THRESHOLD      2
+
+
+`define SIMD_WRAP_TAG_FROM_CNTL_FIFO_DEPTH           4
+`define SIMD_WRAP_TAG_FROM_CNTL_FIFO_THRESHOLD       2
+
+
+//--------------------------------------------------------
+// Transfer from System interface to bank interface
+
+`define SIMD_WRAP_UPSTREAM_CNTL_WAIT                            6'b00_0001
+`define SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA                       6'b00_0010
+`define SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_COMPLETE               6'b00_0100
+`define SIMD_WRAP_UPSTREAM_CNTL_WAIT_COMPLETE_DEASSERTED        6'b00_1000
+`define SIMD_WRAP_UPSTREAM_CNTL_COMPLETE                        6'b01_0000
+`define SIMD_WRAP_UPSTREAM_CNTL_ERR                             6'b10_0000
+
+`define SIMD_WRAP_UPSTREAM_CNTL_STATE_WIDTH                     6
+`define SIMD_WRAP_UPSTREAM_CNTL_STATE_MSB                       `SIMD_WRAP_UPSTREAM_CNTL_STATE_WIDTH-1
+`define SIMD_WRAP_UPSTREAM_CNTL_STATE_LSB                       0
+`define SIMD_WRAP_UPSTREAM_CNTL_STATE_SIZE                      (`SIMD_WRAP_UPSTREAM_CNTL_STATE_MSB - `SIMD_WRAP_UPSTREAM_CNTL_STATE_LSB +1)
+`define SIMD_WRAP_UPSTREAM_CNTL_STATE_RANGE                      `SIMD_WRAP_UPSTREAM_CNTL_STATE_MSB : `SIMD_WRAP_UPSTREAM_CNTL_STATE_LSB
+
+
+//------------------------------------------------------------------------------------------------------------
+
+
+
 `endif
 

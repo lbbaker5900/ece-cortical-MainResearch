@@ -41,6 +41,7 @@ module simd_upstream_intf (
                   simd__sui__regs          ,
                   simd__sui__regs_valid    ,
                   sui__simd__regs_complete ,
+                  sui__simd__regs_ready    ,
 
                   //--------------------------------------------------
                   // General
@@ -75,6 +76,7 @@ module simd_upstream_intf (
   input  [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs  [`PE_NUM_OF_EXEC_LANES ] ;
   input  [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                     ;
   output                                            sui__simd__regs_complete                  ;
+  output                                            sui__simd__regs_ready                     ;
    
   //-------------------------------------------------------------------------------------------
   // Wires and Register
@@ -91,6 +93,7 @@ module simd_upstream_intf (
   wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ;
   wire   [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                          ;
   reg                                               sui__simd__regs_complete                       ;
+  reg                                               sui__simd__regs_ready                          ;
 
 
   //-------------------------------------------------------------------------------------------
@@ -114,7 +117,7 @@ module simd_upstream_intf (
 
   always @(posedge clk)
     begin
-      simd__sui__tag_d1   <=  ( reset_poweron ) ? 'd0 : simd__sui__tag     ;
+      simd__sui__tag_d1   <=  ( reset_poweron ) ? 'd0 : ( simd__sui__regs_valid ) ? simd__sui__tag  : simd__sui__tag_d1     ;
     end
 
   reg                                              sti__sui__ready_d1            ;
@@ -282,7 +285,7 @@ module simd_upstream_intf (
   
 
         `SIMD_TO_STI_CNTL_MOM: // MOM ~ middle of message
-          simd_to_sti_cntl_state_next = ( sui2stiTransferCount == (`SIMD_TO_STI_NUM_OF_TRANSFERS-1) )  ? `SIMD_TO_STI_CNTL_EOM :  
+          simd_to_sti_cntl_state_next = ( sui2stiTransferCount == (`SIMD_TO_STI_NUM_OF_TRANSFERS-2) )  ? `SIMD_TO_STI_CNTL_EOM :  // need to transition to EOM one cycle before the end
                                                                                                          `SIMD_TO_STI_CNTL_MOM ;
 
         `SIMD_TO_STI_CNTL_EOM: 
@@ -307,21 +310,24 @@ module simd_upstream_intf (
   always @(posedge clk)
     begin
   
-      sui2stiTransferCount   <= ( reset_poweron                                                                                           )  ? 'd0                     :
-                                ((simd_to_sti_cntl_state_next == `SIMD_TO_STI_CNTL_WAIT ) && allRegsReady && ~to_Stu_Fifo[0].almost_full  )  ? sui2stiTransferCount+1  :
-                                ((simd_to_sti_cntl_state_next == `SIMD_TO_STI_CNTL_WAIT )                 && ~to_Stu_Fifo[0].almost_full  )  ? 'd0                     :
-                                ((simd_to_sti_cntl_state_next == `SIMD_TO_STI_CNTL_MOM  )                 && ~to_Stu_Fifo[0].almost_full  )  ? sui2stiTransferCount+1  :
-                                ((simd_to_sti_cntl_state_next == `SIMD_TO_STI_CNTL_EOM  )                 && ~to_Stu_Fifo[0].almost_full  )  ? 'd0                     :
-                                                                                                                                               sui2stiTransferCount    ;
+      sui2stiTransferCount   <= ( reset_poweron                                                                                      )  ? 'd0                     :
+                                ((simd_to_sti_cntl_state == `SIMD_TO_STI_CNTL_WAIT ) && allRegsReady && ~to_Stu_Fifo[0].almost_full  )  ? sui2stiTransferCount+1  :
+                                ((simd_to_sti_cntl_state == `SIMD_TO_STI_CNTL_WAIT )                 && ~to_Stu_Fifo[0].almost_full  )  ? 'd0                     :
+                                ((simd_to_sti_cntl_state == `SIMD_TO_STI_CNTL_MOM  )                 && ~to_Stu_Fifo[0].almost_full  )  ? sui2stiTransferCount+1  :
+                                ((simd_to_sti_cntl_state == `SIMD_TO_STI_CNTL_EOM  )                 && ~to_Stu_Fifo[0].almost_full  )  ? 'd0                     :
+                                                                                                                                          sui2stiTransferCount    ;
 
-      sui__simd__regs_complete  <= ((simd_to_sti_cntl_state_next == `SIMD_TO_STI_CNTL_EOM       ) && ~to_Stu_Fifo[0].almost_full ) | 
-                                   ( simd_to_sti_cntl_state_next == `SIMD_TO_STI_CNTL_COMPLETE  )                                  ;  // clear reg valid in simd once we have completed transfer
+      sui__simd__regs_complete  <= ((simd_to_sti_cntl_state == `SIMD_TO_STI_CNTL_EOM       ) && ~to_Stu_Fifo[0].almost_full ) | 
+                                   ( simd_to_sti_cntl_state == `SIMD_TO_STI_CNTL_COMPLETE  )                                  ;  // clear reg valid in simd once we have completed transfer
+
+      sui__simd__regs_ready     <= (simd_to_sti_cntl_state == `SIMD_TO_STI_CNTL_WAIT );
 
     end
 
-  assign to_Stu_Fifo[0].write  = ((simd_to_sti_cntl_state_next == `SIMD_TO_STI_CNTL_WAIT ) && allRegsReady && ~to_Stu_Fifo[0].almost_full ) |
-                                 ((simd_to_sti_cntl_state_next == `SIMD_TO_STI_CNTL_MOM  )                 && ~to_Stu_Fifo[0].almost_full ) |
-                                 ((simd_to_sti_cntl_state_next == `SIMD_TO_STI_CNTL_EOM  )                 && ~to_Stu_Fifo[0].almost_full ) ;
+
+  assign to_Stu_Fifo[0].write  = ((simd_to_sti_cntl_state == `SIMD_TO_STI_CNTL_WAIT ) && allRegsReady && ~to_Stu_Fifo[0].almost_full ) |
+                                 ((simd_to_sti_cntl_state == `SIMD_TO_STI_CNTL_MOM  )                 && ~to_Stu_Fifo[0].almost_full ) |
+                                 ((simd_to_sti_cntl_state == `SIMD_TO_STI_CNTL_EOM  )                 && ~to_Stu_Fifo[0].almost_full ) ;
 
   // mux registers to fifo inputs
   always @(*)

@@ -153,7 +153,9 @@ module pe (
   // PE Control
   // 
   `include "pe_cntl_simd_instance_wires.vh"
+  wire                                    cntl__simd__tag_valid      ;
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag            ;
+  wire                                    simd__cntl__tag_ready      ;
 
   //---------------------------------------
   // SIMD
@@ -239,7 +241,9 @@ module pe (
             `include "pe_cntl_simd_instance_ports.vh"
             `endif
             .stOp_complete                        ( pe__sys__complete                 ),
+            .cntl__simd__tag_valid                ( cntl__simd__tag_valid             ),
             .cntl__simd__tag                      ( cntl__simd__tag                   ),
+            .simd__cntl__tag_ready                ( simd__cntl__tag_ready             ),
 
             //-------------------------------
             // General
@@ -255,6 +259,7 @@ module pe (
   wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs   [`PE_NUM_OF_EXEC_LANES ] ;
   wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid                      ;
   wire                                    sui__simd__regs_complete                   ;
+  wire                                    sui__simd__regs_ready                      ;
 
   simd_upstream_intf simd_upstream_intf (
 
@@ -273,6 +278,7 @@ module pe (
                   .simd__sui__regs          ( simd__sui__regs          ),
                   .simd__sui__regs_valid    ( simd__sui__regs_valid    ),
                   .sui__simd__regs_complete ( sui__simd__regs_complete ),
+                  .sui__simd__regs_ready    ( sui__simd__regs_ready    ),
 
                   //--------------------------------------------------
                   // Additional control from simd
@@ -288,6 +294,11 @@ module pe (
   //-------------------------------------------------------------------------------------------------
   // SIMD Wrapper
   // 
+  
+  // Convert from individual register interfaces to a register array prior to
+  // driving into the simd wrapper
+  `include "simd_wrapper_scntl_to_simd_regfile_instance_assignments.vh"
+
   simd_wrapper simd_wrapper (
 
             //-------------------------------
@@ -300,11 +311,16 @@ module pe (
 
             //-------------------------------
             // Additional PE control
+            .cntl__simd__tag_valid    ( cntl__simd__tag_valid    ),
             .cntl__simd__tag          ( cntl__simd__tag          ),
+            .simd__cntl__tag_ready    ( simd__cntl__tag_ready    ),
 
             //-------------------------------
             // Result from stOp to regFile
-            `include "simd_wrapper_scntl_to_simd_regfile_instance_ports.vh"
+            .scntl__reg__valid         ( scntl__reg__valid       ),
+            .scntl__reg__data          ( scntl__reg__data        ),
+            .reg__scntl__ready         ( reg__scntl__ready       ),
+            //`include "simd_wrapper_scntl_to_simd_regfile_instance_ports.vh"
 
             //--------------------------------------------------
             // Additional control to stack upstream 
@@ -316,6 +332,7 @@ module pe (
             .simd__sui__regs              ( simd__sui__regs          ),
             .simd__sui__regs_valid        ( simd__sui__regs_valid    ),
             .sui__simd__regs_complete     ( sui__simd__regs_complete ),
+            .sui__simd__regs_ready        ( sui__simd__regs_ready    ),
 
             //-------------------------------
             // General

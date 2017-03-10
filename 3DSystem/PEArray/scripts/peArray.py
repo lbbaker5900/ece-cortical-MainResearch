@@ -1608,6 +1608,10 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire   [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane{0}_data     ;'.format(lane)
   pLine = pLine + '\n'
 
+  pLine = pLine + '\n wire   [`PE_NUM_OF_EXEC_LANES_RANGE ]      scntl__reg__valid                          ;'
+  pLine = pLine + '\n wire   [`PE_EXEC_LANE_WIDTH_RANGE   ]      scntl__reg__data  [`PE_NUM_OF_EXEC_LANES ] ;'
+  pLine = pLine + '\n wire   [`PE_NUM_OF_EXEC_LANES_RANGE ]      reg__scntl__ready                          ;'
+
 
   f.write(pLine)
   f.close()
@@ -3085,6 +3089,11 @@ if __name__ == "__main__":
   #--------------------------------------------------
   # Result from stOp to regFile
 
+  '''
+  Note: We changed from individual register ports in the simd_wrapper to arrays of registers
+        So below we kept the file generation for the original method but we dont use all of them
+  '''
+
   f = open('../HDL/common/simd_wrapper_scntl_to_simd_regfile_ports.vh', 'w')
   pLine = ""
 
@@ -3113,13 +3122,39 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+
   f = open('../HDL/common/simd_wrapper_scntl_to_simd_regfile_instance_ports.vh', 'w')
   pLine = ""
 
+  # Note: This didnt work, so we used the method of assigning to the regs in pe.v as in:
+  #       simd_wrapper_scntl_to_simd_regfile_instance_assignments.vh
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n    .reg__scntl__ready [{0}]   ( reg__scntl__lane{0}_ready  ) ,'.format(lane)
+    pLine = pLine + '\n    .scntl__reg__valid [{0}]   ( scntl__reg__lane{0}_valid  ) ,'.format(lane)
+    pLine = pLine + '\n    .scntl__reg__data  [{0}]   ( scntl__reg__lane{0}_data   ) ,'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+  '''
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n    .reg__scntl__lane{0}_ready   ( reg__scntl__lane{0}_ready  ) ,'.format(lane)
     pLine = pLine + '\n    .scntl__reg__lane{0}_valid   ( scntl__reg__lane{0}_valid  ) ,'.format(lane)
     pLine = pLine + '\n    .scntl__reg__lane{0}_data    ( scntl__reg__lane{0}_data   ) ,'.format(lane)
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+  '''
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/simd_wrapper_scntl_to_simd_regfile_instance_assignments.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n    assign reg__scntl__lane{0}_ready = reg__scntl__ready [{0}]    ;'.format(lane)
+    pLine = pLine + '\n    assign scntl__reg__valid [{0}]   = scntl__reg__lane{0}_valid  ;'.format(lane)
+    pLine = pLine + '\n    assign scntl__reg__data  [{0}]   = scntl__reg__lane{0}_data   ;'.format(lane)
     pLine = pLine + '\n'
   pLine = pLine + '\n'
 
@@ -3135,7 +3170,6 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire   [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane{0}_data     ;'.format(lane)
     pLine = pLine + '\n'
   pLine = pLine + '\n'
-
 
   f.write(pLine)
   f.close()
@@ -3202,13 +3236,15 @@ if __name__ == "__main__":
   #print regsPerCycle, stackUpWidth, execLaneWidth
 
   for cycle in range (0, numberOfCycles):
+    # Assume little endian
     lsReg = regsPerCycle*cycle
+    msReg = regsPerCycle*(cycle+1)-1
     pLine = pLine + '\n    {0} :'.format(cycle)
     pLine = pLine + '\n      begin'.format(cycle)
-    pLine = pLine + '\n        to_Stu_Fifo[0].write_data   <= {{simd__sui__regs[{0}],  '.format(lsReg)
+    pLine = pLine + '\n        to_Stu_Fifo[0].write_data   <= {{simd__sui__regs[{0}],  '.format(msReg)
     for reg in range (1, regsPerCycle-1):
-      pLine = pLine + '\n                                        simd__sui__regs[{0}],  '.format(lsReg+reg)
-    pLine = pLine + '\n                                        simd__sui__regs[{0}]}}; '.format(lsReg+regsPerCycle-1)
+      pLine = pLine + '\n                                        simd__sui__regs[{0}],  '.format(msReg-reg)
+    pLine = pLine + '\n                                        simd__sui__regs[{0}]}}; '.format(lsReg)
     pLine = pLine + '\n      end '.format(cycle)
 
 
