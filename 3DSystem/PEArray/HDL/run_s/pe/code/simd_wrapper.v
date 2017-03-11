@@ -130,7 +130,7 @@ module simd_wrapper (
                                                                                           
   wire                                    cntl__simd__tag_valid                           ;  // tag to simd needs to be a fifo interface as the next stOp may start while the 
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag                                 ;  // simd is processing the previosu stOp result
-  wire                                    simd__cntl__tag_ready                           ;
+  reg                                     simd__cntl__tag_ready                           ;
   reg                                     cntl__simd__tag_valid_d1                        ;
   reg   [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag_d1                              ; 
 
@@ -144,7 +144,6 @@ module simd_wrapper (
 
   `include "pe_simd_wrapper_assignments.vh"
 
-  assign simd__cntl__tag_ready = 1'b1 ; // FIXME
 
   //----------------------------------------------------------------------
   // Registered inputs
@@ -402,7 +401,7 @@ module simd_wrapper (
             pipe_tag        <= ( fifo_pipe_read     ) ?  read_tag        :
                                                          pipe_tag        ;
 
-            // DEBUG simd__cntl__tag_ready <=  ~almost_full                  ;
+            simd__cntl__tag_ready <=  ~almost_full                  ;
           end
 
         assign write                      =   cntl__simd__tag_valid       ;
