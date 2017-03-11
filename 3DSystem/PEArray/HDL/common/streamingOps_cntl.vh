@@ -181,15 +181,26 @@
 `define STREAMING_OP_CNTL_NOC_DATA_TRANSACTION_COUNT_SIZE     (`STREAMING_OP_CNTL_NOC_DATA_TRANSACTION_COUNT_MSB - `STREAMING_OP_CNTL_NOC_DATA_TRANSACTION_COUNT_LSB +1)
 `define STREAMING_OP_CNTL_NOC_DATA_TRANSACTION_COUNT_RANGE     `STREAMING_OP_CNTL_NOC_DATA_TRANSACTION_COUNT_MSB : `STREAMING_OP_CNTL_NOC_DATA_TRANSACTION_COUNT_LSB
 
-//------------------------------------------------
-// STREAMING_OP_CNTL Operations
-//------------------------------------------------
 
 `define STREAMING_OP_CNTL_OPERATION_STREAM_SRC_SIZE     3                                                                            
 `define STREAMING_OP_CNTL_OPERATION_STREAM_SRC_MSB      (`STREAMING_OP_CNTL_OPERATION_STREAM_SRC_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_SRC_SIZE-1)
 `define STREAMING_OP_CNTL_OPERATION_STREAM_SRC_LSB      0
 `define STREAMING_OP_CNTL_OPERATION_STREAM_SRC_RANGE    `STREAMING_OP_CNTL_OPERATION_STREAM_SRC_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_SRC_LSB     
+
+`define STREAMING_OP_CNTL_OPERATION_STREAM_DEST_SIZE     3                                                                            
+`define STREAMING_OP_CNTL_OPERATION_STREAM_DEST_MSB      (`STREAMING_OP_CNTL_OPERATION_STREAM_DEST_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_DEST_SIZE-1)
+`define STREAMING_OP_CNTL_OPERATION_STREAM_DEST_LSB      0
+`define STREAMING_OP_CNTL_OPERATION_STREAM_DEST_RANGE    `STREAMING_OP_CNTL_OPERATION_STREAM_DEST_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_DEST_LSB     
                                                              
+                                                             
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+// Start of operations struct - must match pe_stOp_operation in / TB_streamingOps_cntl.vh
+//----------------------------------------------------------------------------------------------------
+//------------------------------------------------
+// STREAMING_OP_CNTL Operations
+//------------------------------------------------
+
 `define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_SIZE     3                                                                            
 `define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_MSB      (`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_SIZE-1)
 `define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_LSB      0
@@ -200,11 +211,6 @@
 `define STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_LSB       (`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_MSB + 1)
 `define STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE     `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_LSB
 
-`define STREAMING_OP_CNTL_OPERATION_STREAM_DEST_SIZE     3                                                                            
-`define STREAMING_OP_CNTL_OPERATION_STREAM_DEST_MSB      (`STREAMING_OP_CNTL_OPERATION_STREAM_DEST_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_DEST_SIZE-1)
-`define STREAMING_OP_CNTL_OPERATION_STREAM_DEST_LSB      (`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_MSB + 1)
-`define STREAMING_OP_CNTL_OPERATION_STREAM_DEST_RANGE    `STREAMING_OP_CNTL_OPERATION_STREAM_DEST_MSB : `STREAMING_OP_CNTL_OPERATION_STREAM_DEST_LSB     
-                                                             
 `define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_SIZE     3                                                                            
 `define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_MSB      (`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_LSB + `STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_SIZE-1)
 `define STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_LSB      (`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_MSB + 1)
@@ -241,6 +247,11 @@
 `define STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_LSB            (`STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_MSB + 1)
 `define STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_RANGE          `STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_MSB : `STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_LSB     
 
+//----------------------------------------------------------------------------------------------------
+// End of operations struct - must match pe_stOp_operation in TB_streamingOps_cntl.vh
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+//
 // SRC and DEST codes
 `define STREAMING_OP_CNTL_OPERATION_FROM_NONE                0
 `define STREAMING_OP_CNTL_OPERATION_FROM_MEMORY              1

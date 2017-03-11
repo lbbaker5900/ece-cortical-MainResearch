@@ -28,6 +28,7 @@
 `include "streamingOps.vh"
 `include "dma_cont.vh"
 
+
 module pe_cntl (
 
             //-------------------------------
@@ -483,8 +484,11 @@ module pe_cntl (
   assign oob_packet_starting     = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT) & (pe_cntl_oob_rx_cntl_state_next != `PE_CNTL_OOB_RX_CNTL_WAIT) ;  // transitioning out of WAIT
 
   assign cntl__simd__tag         = tag     ;
-  // send the tag as soon as we start the operations
-  assign cntl__simd__tag_valid   = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_START_CMD) & simd__cntl__tag_ready_d1    ;
+
+  // send the tag as soon as we start the operations 
+  //   - only send tags whose operations are FPMAC
+  //   - this assumes we only use FPMAC operations that send a result to a reg in the simd
+  assign cntl__simd__tag_valid   = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_START_CMD) & simd__cntl__tag_ready_d1 & (stOp_operation[`STREAMING_OP_CNTL_OPERATION_OPCODE_RANGE ] == `STREAMING_OP_CNTL_OPERATION_FP_MAC ) ;  // FIXME : may need to handle tags in simd
 
 
 endmodule

@@ -59,7 +59,10 @@ typedef enum logic [`STREAMING_OP_CNTL_OPERATION_STREAM_DEST_RANGE ] {
 
 
 
-
+//----------------------------------------------------------------------------------------------------
+// Start of operations struct 
+//   - The order of these fields must match the order of the "STREAMING_OP_CNTL Operations" in streamingOps_cntl.vh
+//----------------------------------------------------------------------------------------------------
 typedef struct packed  {
                          logic [`STREAMING_OP_CNTL_OPERATION_NUM_OF_DEST_STREAMS_RANGE ]  numberOfDestStreams ;
                          logic [`STREAMING_OP_CNTL_OPERATION_NUM_OF_SRC_STREAMS_RANGE  ]  numberOfSrcStreams  ;
@@ -71,6 +74,7 @@ typedef struct packed  {
                        } pe_stOp_operation ; 
 
 
+//----------------------------------------------------------------------------------------------------
 
 
 
