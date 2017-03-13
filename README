@@ -1,0 +1,25 @@
+3D DRAM based architecture for Deep Neural rNnetworks
+
+ - the architecture includes a 3D-DRAM (e.g. DiRAM4), a manager layer and a PE array layer
+
+Manager Layer
+  - under 3DSystem/Manager
+  - RTL WIP
+  - Simulation - WIP
+
+PE Array Layer
+  - under 3DSystem/PEArray
+  - RTL WIP
+      * completed floating point operations for convolution
+      * need to instantiate SIMD (currently convolution operations are passed directly back to the Manager 
+  - Simulation
+      * system verilog
+      * SV checks mamory writes to PE local and upstream stack bus packets to ensure values and addresses are correct
+        - focuses on floating point operations
+      * To run PE Array simulation
+        a) cd 3DSystem/PEArray/SIMULATION/sv
+        b) source ../../setup.do
+        c) ./compile.do compile.log
+        d) grep ERROR transcript ; grep PASS transcript | wc -l
+           - should be no ERROR's and a PASS count of 20480
+

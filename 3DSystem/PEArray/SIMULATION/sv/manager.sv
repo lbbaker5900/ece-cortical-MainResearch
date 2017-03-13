@@ -204,7 +204,10 @@ class manager;
                 operationNum++                                ;
                 
             end
-           
+        // Wait a little time for the last result to be received by the upstream checker
+        repeat (50) @(vDownstreamStackBusOOB.cb_test);  
+
+
         -> final_operation;
     endtask
 endclass

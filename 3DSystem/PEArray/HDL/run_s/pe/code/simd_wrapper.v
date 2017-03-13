@@ -173,47 +173,6 @@ module simd_wrapper (
   // Update each lanes regFile with result from streaming operation module 
 
 
-
-
-  //----------------------------------------------------------------------------------------------------
-  // Original code
-
-  /*
-  generate
-    for (gvi=0; gvi<`PE_NUM_OF_EXEC_LANES ; gvi=gvi+1) 
-      begin: regFile_load
-
-        always @(posedge clk)
-          begin
-            allLanes_valid  [gvi]  <=  ( reset_poweron               ) ? 1'd0                    :
-                                       ( scntl__reg__valid [gvi]     ) ? 1'b1                    :
-                                       ( sui__simd__regs_complete_d1 ) ? 1'b0                    :  // clear when we have transfered regs to stack upstream
-                                                                         allLanes_valid[gvi]     ;
-
-            allLanes_results[gvi]  <=  ( reset_poweron           ) ? `PE_EXEC_LANE_WIDTH 'd0 :
-                                       ( scntl__reg__valid [gvi] ) ? scntl__reg__data  [gvi] :
-                                                                     allLanes_results[gvi]   ;
-
-          end
-
-        assign  simd__sui__regs [gvi]  =  allLanes_results [gvi] ;
-      end
-  endgenerate
-  assign  simd__sui__regs_valid  =  allLanes_valid  ;
-  assign  simd__sui__tag         =  cntl__simd__tag ;
-
-  assign  reg__scntl__ready      = {32{1'b1}};
-  //`include "simd_wrapper_scntl_to_simd_regfile_assignments.vh"
-
-  */
-
-  // end Original code
-  //----------------------------------------------------------------------------------------------------
-
-
-
-
-
   //----------------------------------------------------------------------------------------------------
   // Result FIFO
   //
