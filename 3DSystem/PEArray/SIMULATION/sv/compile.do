@@ -61,6 +61,7 @@ vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/commo
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common generator.sv                                                                                   2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common manager.sv                                                                                     2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common mem_checker.sv                                                                                 2>&1   | tee -a $1  
+vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common upstream_checker.sv                                                                            2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common regFile_driver.sv                                                                              2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common loadStore_driver.sv                                                                            2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common environment.sv                                                                                 2>&1   | tee -a $1  

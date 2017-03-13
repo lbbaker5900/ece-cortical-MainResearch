@@ -155,29 +155,29 @@ if __name__ == "__main__":
     pLine = pLine + '\n  // General control and status                                                                     '.format(pe) 
     pLine = pLine + '\n  //  - doesnt seem to work if you use cb_test for observed signals                                 '.format(pe) 
     pLine = pLine + '\n  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         '.format(pe) 
-    pLine = pLine + '\n        .sys__pe{0}__allSynchronized    ( SysOob2PeArray[{0}].cb_test.sys__pe__allSynchronized   ), '.format(pe) 
-    pLine = pLine + '\n        .pe{0}__sys__thisSynchronized   ( SysOob2PeArray[{0}].pe__sys__thisSynchronized          ), '.format(pe) 
-    pLine = pLine + '\n        .pe{0}__sys__ready              ( SysOob2PeArray[{0}].pe__sys__ready                     ), '.format(pe) 
-    pLine = pLine + '\n        .pe{0}__sys__complete           ( SysOob2PeArray[{0}].pe__sys__complete                  ), '.format(pe) 
+    pLine = pLine + '\n        .sys__pe{0}__allSynchronized    ( DownstreamStackBusOOB[{0}].cb_test.sys__pe__allSynchronized   ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__sys__thisSynchronized   ( DownstreamStackBusOOB[{0}].pe__sys__thisSynchronized          ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__sys__ready              ( DownstreamStackBusOOB[{0}].pe__sys__ready                     ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__sys__complete           ( DownstreamStackBusOOB[{0}].pe__sys__complete                  ), '.format(pe) 
     #                                                                                                    
     pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                                     '.format(pe) 
     pLine = pLine + '\n  //  - doesnt seem to work if you use cb_test for observed signals                                 '.format(pe) 
     pLine = pLine + '\n  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         '.format(pe) 
-    pLine = pLine + '\n        .std__pe{0}__oob_cntl           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_cntl          ), '.format(pe) 
-    pLine = pLine + '\n        .std__pe{0}__oob_valid          ( SysOob2PeArray[{0}].cb_test.std__pe__oob_valid         ), '.format(pe) 
-    pLine = pLine + '\n        .pe{0}__std__oob_ready          ( SysOob2PeArray[{0}].pe__std__oob_ready                 ), '.format(pe) 
-    pLine = pLine + '\n        .std__pe{0}__oob_type           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_type          ), '.format(pe) 
-    pLine = pLine + '\n        .std__pe{0}__oob_data           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_data          ), '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_cntl           ( DownstreamStackBusOOB[{0}].cb_test.std__pe__oob_cntl          ), '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_valid          ( DownstreamStackBusOOB[{0}].cb_test.std__pe__oob_valid         ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__std__oob_ready          ( DownstreamStackBusOOB[{0}].pe__std__oob_ready                 ), '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_type           ( DownstreamStackBusOOB[{0}].cb_test.std__pe__oob_type          ), '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_data           ( DownstreamStackBusOOB[{0}].cb_test.std__pe__oob_data          ), '.format(pe) 
     # 
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n        // PE {1}, Lane {0}                 '.format(lane,pe)
       for strm in range (0, 2):
         pLine = pLine + '\n        //  - doesnt seem to work if you use cb_test for observed signals                                                       '.format(pe) 
-        pLine = pLine + '\n        .pe{0}__std__lane{1}_strm{2}_ready         ( SysLane2PeArray[{0}][{1}].pe__std__lane_strm{2}_ready              ),      '.format(pe,lane,strm)
-        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_cntl          ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_cntl       ),      '.format(pe,lane,strm)
-        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data          ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data       ),      '.format(pe,lane,strm)
-        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_valid    ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid ),      '.format(pe,lane,strm)
-        #pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_mask     ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_mask  ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .pe{0}__std__lane{1}_strm{2}_ready         ( DownstreamStackBusLane[{0}][{1}].pe__std__lane_strm{2}_ready              ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_cntl          ( DownstreamStackBusLane[{0}][{1}].cb_test.std__pe__lane_strm{2}_cntl       ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data          ( DownstreamStackBusLane[{0}][{1}].cb_test.std__pe__lane_strm{2}_data       ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_valid    ( DownstreamStackBusLane[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid ),      '.format(pe,lane,strm)
+        #pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_mask     ( DownstreamStackBusLane[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_mask  ),      '.format(pe,lane,strm)
         pLine = pLine + '\n        '
                                              
   f.write(pLine)
@@ -188,19 +188,94 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
         pLine = pLine + '\n        //  - doesnt seem to work if you use cb_test for observed signals                                                       '.format(pe) 
-        pLine = pLine + '\n        .pe{0}__stu__valid        ( PeArray2Sys[{0}].pe__stu__valid             ),      '.format(pe)
-        pLine = pLine + '\n        .pe{0}__stu__cntl         ( PeArray2Sys[{0}].pe__stu__cntl              ),      '.format(pe)
-        pLine = pLine + '\n        .stu__pe{0}__ready        ( 1\'b1     ),      '.format(pe)
-        pLine = pLine + '\n        //.stu__pe{0}__ready        ( PeArray2Sys[{0}].cb_test.stu__pe__ready     ),      '.format(pe)
-        pLine = pLine + '\n        .pe{0}__stu__type         ( PeArray2Sys[{0}].pe__stu__type              ),      '.format(pe)
-        pLine = pLine + '\n        .pe{0}__stu__data         ( PeArray2Sys[{0}].pe__stu__data              ),      '.format(pe)
-        pLine = pLine + '\n        .pe{0}__stu__oob_data     ( PeArray2Sys[{0}].pe__stu__oob_data          ),      '.format(pe)
+        pLine = pLine + '\n        .pe{0}__stu__valid        ( UpstreamStackBus[{0}].pe__stu__valid             ),      '.format(pe)
+        pLine = pLine + '\n        .pe{0}__stu__cntl         ( UpstreamStackBus[{0}].pe__stu__cntl              ),      '.format(pe)
+        pLine = pLine + '\n        .stu__pe{0}__ready        ( 1\'b1                                            ),      '.format(pe)
+        pLine = pLine + '\n        //.stu__pe{0}__ready        ( UpstreamStackBus[{0}].stu__pe__ready     ),      '.format(pe)
+        pLine = pLine + '\n        .pe{0}__stu__type         ( UpstreamStackBus[{0}].pe__stu__type              ),      '.format(pe)
+        pLine = pLine + '\n        .pe{0}__stu__data         ( UpstreamStackBus[{0}].pe__stu__data              ),      '.format(pe)
+        pLine = pLine + '\n        .pe{0}__stu__oob_data     ( UpstreamStackBus[{0}].pe__stu__oob_data          ),      '.format(pe)
         pLine = pLine + '\n        '
                                              
   f.write(pLine)
   f.close()
 
+  #-------------------------------------------------------------------------------------------------------------------------------------
+  # Upstream Stack Bus
 
+
+  # Calculate register selection using cycle number, word/bus widths etc.
+  FoundLanes = False
+  searchFile = open("../HDL/common/pe.vh", "r")
+  for line in searchFile:
+    if FoundLanes == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "PE_NUM_OF_EXEC_LANES" in data[1]:
+        numOfExecLanes = int(data[2])
+        FoundLanes = True
+  searchFile.close()
+
+  FoundLanes = False
+  searchFile = open("../HDL/common/pe.vh", "r")
+  for line in searchFile:
+    if FoundLanes == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "PE_EXEC_LANE_width" in data[1]:
+        execLaneWidth = int(data[2])
+        FoundLanes = True
+  searchFile.close()
+
+  Found = False
+  searchFile = open("../HDL/common/stack_interface.vh", "r")
+  for line in searchFile:
+    if Found == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "STACK_UP_INTF_DATA_WIDTH" in data[1]:
+        stackUpWidth = int(data[2])
+        Found = True
+  searchFile.close()
+
+  Found = False
+  searchFile = open("../HDL/common/pe.vh", "r")
+  for line in searchFile:
+    if Found == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "PE_EXEC_LANE_WIDTH" in data[1]:
+        execLaneWidth = int(data[2])
+        Found = True
+  searchFile.close()
+
+
+  f = open('../SIMULATION/common/TB_upstream_stack_bus_lane_extraction.vh', 'w')
+  pLine = ""
+
+  # Extrack the lane data from the stack bus based on cycle/transaction number
+  regsPerCycle   = stackUpWidth / execLaneWidth
+  numberOfCycles = numOfExecLanes / regsPerCycle
+  #print regsPerCycle, stackUpWidth, execLaneWidth
+
+  for cycle in range (0, numberOfCycles):
+    # Assume little endian
+    lsReg = regsPerCycle*cycle
+    msReg = regsPerCycle*(cycle+1)-1
+    pLine = pLine + '\n    {0} :  // note: in system verilog checker, we increment cycle count 1..8 not 0..7'.format(cycle+1)
+    pLine = pLine + '\n      begin'
+    for reg in range (0, regsPerCycle):
+      regId    = lsReg+reg
+      regLsb = (regId%regsPerCycle)*execLaneWidth
+      regMsb = regLsb+execLaneWidth-1
+      pLine = pLine + '\n        upstream_packet_data [{0}] = upstream_data[{1}:{2}] ; '.format(regId, regMsb, regLsb)
+    pLine = pLine + '\n      end '.format(cycle)
+
+
+  f.write(pLine)
+  f.close()
+
+  #-------------------------------------------------------------------------------------------------------------------------------------
   #------------------------------------------------------------------------------------------------------------------------------------------------------
 
   # Start all the generators and drivers
@@ -217,6 +292,9 @@ if __name__ == "__main__":
     pLine = pLine + '\n//            end'
     pLine = pLine + '\n//            begin'                                  
     pLine = pLine + '\n//              oob_drv[{0}].reset()  ;'.format(pe) 
+    pLine = pLine + '\n//            end'
+    pLine = pLine + '\n//            begin'                                  
+    pLine = pLine + '\n//              up_check[{0}].reset()  ;'.format(pe,lane) 
     pLine = pLine + '\n//            end'
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n//            begin'
@@ -248,6 +326,9 @@ if __name__ == "__main__":
     pLine = pLine + '\n            end'
     pLine = pLine + '\n            begin'                                  
     pLine = pLine + '\n              oob_drv[{0}].run()  ;'.format(pe) 
+    pLine = pLine + '\n            end'
+    pLine = pLine + '\n            begin'                                  
+    pLine = pLine + '\n              up_check[{0}].run()  ;'.format(pe,lane) 
     pLine = pLine + '\n            end'
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n            begin'
@@ -287,9 +368,9 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n            begin'
-      pLine = pLine + '\n                @vSysLane2PeArray[{0}][{1}].cb_test                                      ;'.format(pe,lane) 
+      pLine = pLine + '\n                @vDownstreamStackBusLane[{0}][{1}].cb_test                                      ;'.format(pe,lane) 
       for strm in range (0, 2):
-        pLine = pLine + '\n                vSysLane2PeArray [{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid  <= 0  ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n                vDownstreamStackBusLane [{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid  <= 0  ;'.format(pe,lane,strm) 
       pLine = pLine + '\n            end'                                         
     pLine = pLine + '\n'
 

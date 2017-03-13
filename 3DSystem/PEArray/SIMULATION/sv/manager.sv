@@ -48,6 +48,11 @@ class manager;
 
 
     //----------------------------------------------------------------------------------------------------
+    //  Manager sends base operation to Upstream checker
+
+    mailbox mgr2up                                   ;
+
+    //----------------------------------------------------------------------------------------------------
 
     event   new_operation                             ;
     event   final_operation                           ;
@@ -84,8 +89,8 @@ class manager;
     integer systemEventDeltaTime = 5;  // next time for event as integer
     //-------------------------------------------------------------------------
 
-    vSysOob2PeArray_T    vSysOob2PeArray                            ;  // FIXME OOB interface is a per PE i/f where generator is per lane
-    vSysLane2PeArray_T   vSysLane2PeArray  [`PE_NUM_OF_EXEC_LANES]  ;  // manager communicates will lane generators
+    vDownstreamStackBusOOB_T    vDownstreamStackBusOOB                            ;  // FIXME OOB interface is a per PE i/f where generator is per lane
+    vDownstreamStackBusLane_T   vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES]  ;  // manager communicates will lane generators
 
     base_operation    sys_operation                              ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_mgr                          ;  // operation packet containing all data associated with operation
@@ -106,8 +111,9 @@ class manager;
                   input event                 mgr2gen_ack      [`PE_NUM_OF_EXEC_LANES] ,
                   //input event                 new_operation                            ,
                   input event                 final_operation                          ,
-                  input vSysOob2PeArray_T     vSysOob2PeArray                          ,
-                  input vSysLane2PeArray_T    vSysLane2PeArray [`PE_NUM_OF_EXEC_LANES] 
+                  input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB                          ,
+                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane [`PE_NUM_OF_EXEC_LANES] ,
+                  input mailbox               mgr2up                                      // send operation to upstream checker
                   //input mailbox               mgr2rfP                                  ,
                   //input event                 mgr2rfP_ack       
                  );
@@ -119,8 +125,9 @@ class manager;
         this.mgr2gen_ack            = mgr2gen_ack        ;
         //this.new_operation          = new_operation      ;
         this.final_operation        = final_operation    ;
-        this.vSysOob2PeArray        = vSysOob2PeArray    ;
-        this.vSysLane2PeArray       = vSysLane2PeArray   ;
+        this.vDownstreamStackBusOOB        = vDownstreamStackBusOOB    ;
+        this.vDownstreamStackBusLane       = vDownstreamStackBusLane   ;
+        this.mgr2up                 = mgr2up             ;
         //this.mgr2rfP                = mgr2rfP            ;
         //this.mgr2rfP_ack            = mgr2rfP_ack        ;
 
@@ -129,7 +136,7 @@ class manager;
     task run ();
         //$display("@%0t:%s:%0d:LEE: Running manager : {%0d}", $time, `__FILE__, `__LINE__, Id);
         // wait a few cycles before starting
-        repeat (20) @(vSysOob2PeArray.cb_test);  
+        repeat (20) @(vDownstreamStackBusOOB.cb_test);  
 
         $display("@%0t:%s:%0d:INFO:Manager {%0d} Running operations:%0d", $time, `__FILE__, `__LINE__, Id, num_operations);
         repeat (num_operations)                 //Number of transactions to be generated
@@ -159,6 +166,9 @@ class manager;
                 // Keep copy of previous operations as they may influence future operations
                 // Note: this is also kept in the sys_operation_mgr as we dont create a new for each transaction
                 priorOperations.push_back(sys_operation_mgr)       ;
+
+                // send actual base operation to upstream checker 
+                mgr2up.put(sys_operation_mgr)                      ; 
 
                 // create the oob_packet object from the operation
                 oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation

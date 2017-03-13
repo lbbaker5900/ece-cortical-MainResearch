@@ -48,6 +48,11 @@ class generator;
     event   gen2drv_ack      ;
 
     //----------------------------------------------------------------------------------------------------
+    //  Generator sends operation to Upstream checker for value check
+
+    mailbox gen2up                                   ;
+
+    //----------------------------------------------------------------------------------------------------
     event   new_operation    ;
     int     Id [2]           ; // PE, Lane
 
@@ -67,8 +72,8 @@ class generator;
     //----------------------------------------------------------------------------------------------------
     // Interfaces
 
-    vSysOob2PeArray_T    vSysOob2PeArray  ;  // FIXME OOB interface is a per PE i/f where generator is per lane
-    vSysLane2PeArray_T   vSysLane2PeArray ;
+    vDownstreamStackBusOOB_T    vDownstreamStackBusOOB  ;  // FIXME OOB interface is a per PE i/f where generator is per lane
+    vDownstreamStackBusLane_T   vDownstreamStackBusLane ;
 
     //----------------------------------------------------------------------------------------------------
     // Operation objects
@@ -96,10 +101,11 @@ class generator;
                   input mailbox               gen2oob           ,
                   input event                 gen2oob_ack       ,
                   input event                 new_operation     ,
-                  input vSysOob2PeArray_T     vSysOob2PeArray   ,
-                  input vSysLane2PeArray_T    vSysLane2PeArray  ,
+                  input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB   ,
+                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane  ,
                   input mailbox               gen2rfP           ,
-                  input event                 gen2rfP_ack       
+                  input event                 gen2rfP_ack       ,
+                  input mailbox               gen2up                         
                  );
 
         this.Id                = Id                 ;
@@ -110,10 +116,11 @@ class generator;
         this.gen2oob           = gen2oob            ;
         this.gen2oob_ack       = gen2oob_ack        ;
         this.new_operation     = new_operation      ;
-        this.vSysOob2PeArray   = vSysOob2PeArray    ;
-        this.vSysLane2PeArray  = vSysLane2PeArray   ;
+        this.vDownstreamStackBusOOB   = vDownstreamStackBusOOB    ;
+        this.vDownstreamStackBusLane  = vDownstreamStackBusLane   ;
         this.gen2rfP           = gen2rfP            ;
         this.gen2rfP_ack       = gen2rfP_ack        ;
+        this.gen2up            = gen2up             ;
 
     endfunction
 
@@ -127,11 +134,11 @@ class generator;
         sys_operation_gen        =  new ()  ;  // copy of operation gcreated in manager, Generator re-creates different operand values
         sys_operation_gen.Id     =  Id      ;  // randomize needs to know which PE and lane
 
-        repeat (20) @(vSysOob2PeArray.cb_test);  
+        repeat (20) @(vDownstreamStackBusOOB.cb_test);  
 
         forever
             begin
-                @(vSysOob2PeArray.cb_test);  
+                @(vDownstreamStackBusOOB.cb_test);  
                 if ( mgr2gen.num() != 0 )
                     begin
                         mgr2gen.peek(sys_operation_mgr);   //Taking the instruction from the manager
@@ -205,6 +212,9 @@ class generator;
 
                         sys_operation.clearPriors();  // avoid nested pointers as we dont need here
                         priorOperations.push_back(sys_operation)                       ;  
+
+                        // send actual operation with expected result to upstream checker 
+                        gen2up.put(sys_operation)                      ; 
 
                         //----------------------------------------------------------------------------------------------------
                         // Stack Downstream Bus drive

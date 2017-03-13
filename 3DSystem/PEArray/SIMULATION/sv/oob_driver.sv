@@ -43,9 +43,9 @@ class oob_driver;
     oob_packet       oob_packet_gen     ;  // from generator
 
     // OOB driver needs oob signals and lane signals to send oob packet
-    vSysOob2PeArray_T  vSysOob2PeArray                                 ;  // FIXME: OOB is a per PE interface but we have driver objects for all PE/Lanes
-    vSysLane2PeArray_T vSysLane2PeArray [`PE_NUM_OF_EXEC_LANES_RANGE ] ;
-    vSysLane2PeArray_T tmp_vSysLane2PeArray ;
+    vDownstreamStackBusOOB_T  vDownstreamStackBusOOB                                 ;  // FIXME: OOB is a per PE interface but we have driver objects for all PE/Lanes
+    vDownstreamStackBusLane_T vDownstreamStackBusLane [`PE_NUM_OF_EXEC_LANES_RANGE ] ;
+    vDownstreamStackBusLane_T tmp_vDownstreamStackBusLane ;
 
 
     //----------------------------------------------------------------------------------------------------
@@ -64,16 +64,16 @@ class oob_driver;
                   input event                 mgr2oob_ack                                  ,
                   input mailbox               gen2oob                                      ,
                   input event                 gen2oob_ack       [`PE_NUM_OF_EXEC_LANES   ] ,
-                  input vSysOob2PeArray_T     vSysOob2PeArray                              ,
-                  input vSysLane2PeArray_T    vSysLane2PeArray  [`PE_NUM_OF_EXEC_LANES   ] );
+                  input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB                              ,
+                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES   ] );
 
         this.Id                            = Id                    ;
         this.mgr2oob                       = mgr2oob               ;
         this.mgr2oob_ack                   = mgr2oob_ack           ;
         this.gen2oob                       = gen2oob               ;
         this.gen2oob_ack                   = gen2oob_ack           ;
-        this.vSysOob2PeArray               = vSysOob2PeArray       ;
-        this.vSysLane2PeArray              = vSysLane2PeArray      ;
+        this.vDownstreamStackBusOOB               = vDownstreamStackBusOOB       ;
+        this.vDownstreamStackBusLane              = vDownstreamStackBusLane      ;
         this.receivedManagerOobPacket      = 0                     ;
         this.receivedGeneratorOobPackets   = 0                     ;
     endfunction
@@ -237,29 +237,29 @@ class oob_driver;
                         oob_sent = 0 ;
                         while (~oob_sent)
                           begin
-                            @(vSysOob2PeArray.cb_test);
+                            @(vDownstreamStackBusOOB.cb_test);
 
                             // Check if the PE can accept a new operation
-                            while (~vSysOob2PeArray.pe__std__oob_ready) 
+                            while (~vDownstreamStackBusOOB.pe__std__oob_ready) 
                               begin
-                                vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;
-                                @(vSysOob2PeArray.cb_test);
+                                vDownstreamStackBusOOB.cb_test.std__pe__oob_valid        <= 0  ;
+                                @(vDownstreamStackBusOOB.cb_test);
                               end
 
 /*
-                            if (vSysOob2PeArray.pe__std__oob_ready) 
+                            if (vDownstreamStackBusOOB.pe__std__oob_ready) 
                               begin
-                              vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 1  ;
+                              vDownstreamStackBusOOB.cb_test.std__pe__oob_valid        <= 1  ;
                               oob_sent = 1;
                               end
                             else
                               begin
                                 // cb_dut or cb_test dont work for inputs/observed signals
-                                //$display("@%0t:%s:%0d: INFO:{%0d}: Not ready for OOB from manager : {%0d,%0d}. rdy = %d", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1], vSysOob2PeArray.pe__std__oob_ready );
-                                vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;
+                                //$display("@%0t:%s:%0d: INFO:{%0d}: Not ready for OOB from manager : {%0d,%0d}. rdy = %d", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1], vDownstreamStackBusOOB.pe__std__oob_ready );
+                                vDownstreamStackBusOOB.cb_test.std__pe__oob_valid        <= 0  ;
                               end
 */
-                            vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 1  ;
+                            vDownstreamStackBusOOB.cb_test.std__pe__oob_valid        <= 1  ;
 
                             //----------------------------------------------------------------------------------------------------
                             // set operation and pointer
@@ -270,12 +270,12 @@ class oob_driver;
                             oob_option [1] = tmp_oob_option  ;
                             oob_value  [1] = operationNumber ;
                             // drive but these are conditioned on valid
-                            vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM      ;  
-                            vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
-                            vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
-                            vSysOob2PeArray.cb_test.std__pe__oob_data         <= {oob_value[1], oob_option[1],oob_value[0], oob_option[0]};
+                            vDownstreamStackBusOOB.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM      ;  
+                            vDownstreamStackBusOOB.cb_test.sys__pe__allSynchronized  <= 1  ;
+                            vDownstreamStackBusOOB.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
+                            vDownstreamStackBusOOB.cb_test.std__pe__oob_data         <= {oob_value[1], oob_option[1],oob_value[0], oob_option[0]};
 
-                            @(vSysOob2PeArray.cb_test);
+                            @(vDownstreamStackBusOOB.cb_test);
                             //----------------------------------------------------------------------------------------------------
                             // set tag
                             tmp_oob_option = STD_PACKET_OOB_OPT_TAG            ;
@@ -285,10 +285,10 @@ class oob_driver;
                             oob_option [1] = tmp_oob_option  ;
                             oob_value  [1] = 0               ;
                             // drive but these are conditioned on valid
-                            vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_EOM      ;  
-                            vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
-                            vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
-                            vSysOob2PeArray.cb_test.std__pe__oob_data         <= {oob_value[1], oob_option[1],oob_value[0], oob_option[0]};
+                            vDownstreamStackBusOOB.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_EOM      ;  
+                            vDownstreamStackBusOOB.cb_test.sys__pe__allSynchronized  <= 1  ;
+                            vDownstreamStackBusOOB.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
+                            vDownstreamStackBusOOB.cb_test.std__pe__oob_data         <= {oob_value[1], oob_option[1],oob_value[0], oob_option[0]};
 
                             oob_sent = 1;
 
@@ -304,16 +304,16 @@ class oob_driver;
                                   //$display("@%0t:%s:%0d: DEBUG:{%0d}: Driving OOB Lane with contents of OOB packet from generator : {%0d,%0d}", $time, `__FILE__, `__LINE__, this.Id, oob_packet_gen.Id[0], oob_packet_gen.Id[1]);
                                   //oob_packet_mgr.displayPacket();
                                   /*
-                                  tmp_vSysLane2PeArray = vSysLane2PeArray[oob_packet_gen.Id[1]];
+                                  tmp_vDownstreamStackBusLane = vDownstreamStackBusLane[oob_packet_gen.Id[1]];
                         
-                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 1  ;
-                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_cntl        <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;         //Passing the instruction to the system interface
-                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data        <= 32'hdead_beef  ;
-                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
-                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 1  ;
-                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_cntl        <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;         //Passing the instruction to the system interface
-                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data        <= 32'hbabe_cafe  ;
-                                  tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
+                                  tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm0_data_valid  <= 1  ;
+                                  tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm0_cntl        <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;         //Passing the instruction to the system interface
+                                  tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm0_data        <= 32'hdead_beef  ;
+                                  tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
+                                  tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm1_data_valid  <= 1  ;
+                                  tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm1_cntl        <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;         //Passing the instruction to the system interface
+                                  tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm1_data        <= 32'hbabe_cafe  ;
+                                  tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
                                   */
                         
                               end
@@ -321,19 +321,19 @@ class oob_driver;
                           end  // while ~oob_sent
       
                         // Now quiesce the STD bus by deasserting valid
-                        @(vSysOob2PeArray.cb_test);
+                        @(vDownstreamStackBusOOB.cb_test);
 
-                        vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
-                        vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_NA  ;
-                        vSysOob2PeArray.cb_test.std__pe__oob_data         <= STD_PACKET_OOB_DATA_NA  ;
+                        vDownstreamStackBusOOB.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
+                        vDownstreamStackBusOOB.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_NA  ;
+                        vDownstreamStackBusOOB.cb_test.std__pe__oob_data         <= STD_PACKET_OOB_DATA_NA  ;
                         for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                             begin
                                 // right now we dont drive the lane interface in the oob_driver so just remove the oob_packet from the generator
                                 gen2oob.get(oob_packet_gen)  ;  //Removing the instruction from manager mailbox
                                 //fork
-                                    tmp_vSysLane2PeArray = vSysLane2PeArray[oob_packet_gen.Id[1]];
-                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
-                                    tmp_vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
+                                    tmp_vDownstreamStackBusLane = vDownstreamStackBusLane[oob_packet_gen.Id[1]];
+                                    tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
+                                    tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
                                 //join_none
                             end
 
@@ -357,8 +357,8 @@ class oob_driver;
                     //----------------------------------------------------------------------
                     // make sure we dont have a zero delay loop
                     begin
-                        @(vSysOob2PeArray.cb_test);
-                        vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // driver.sv takes care of stream valids
+                        @(vDownstreamStackBusOOB.cb_test);
+                        vDownstreamStackBusOOB.cb_test.std__pe__oob_valid        <= 0  ;  // driver.sv takes care of stream valids
                     end
 
             end  // forever

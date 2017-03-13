@@ -84,15 +84,13 @@ interface std_pe_oob_ifc(
         clocking    cb_dut   
     );
  
-    modport TB_SysOob2PeArray (
+    modport TB_DownstreamStackBusOOB (
         clocking    cb_test  
     );
 
 endinterface : std_pe_oob_ifc
 
-typedef virtual std_pe_oob_ifc vSysOob2PeArray_T;
-//typedef virtual std_pe_oob_ifc.TB_SysOob2PeArray vSysOob2PeArray_T;
-typedef virtual std_pe_oob_ifc.TB_PeArray2SysOob vPeArray2SysOob_T;
+typedef virtual std_pe_oob_ifc vDownstreamStackBusOOB_T;
 
 
 interface std_pe_lane_ifc(
@@ -152,10 +150,7 @@ interface std_pe_lane_ifc(
 
 endinterface : std_pe_lane_ifc
 
-//typedef virtual std_pe_lane_ifc.TB_SysLane2PeArray vSysLane2PeArray_T;
-//typedef virtual std_pe_lane_ifc.TB_PeArray2SysLane vPeArray2SysLane_T;
 typedef virtual std_pe_lane_ifc vSysLane2PeArray_T;
-typedef virtual std_pe_lane_ifc vPeArray2SysLane_T;
 
 
 interface stu_pe_ifc(
@@ -170,30 +165,39 @@ interface stu_pe_ifc(
     logic [`STACK_UP_INTF_DATA_RANGE     ]       pe__stu__data        ;
     logic [`STACK_UP_INTF_OOB_DATA_RANGE ]       pe__stu__oob_data    ;
  
-    clocking cb_test @(posedge clk);
-        output        stu__pe__ready        ;
+    // cant get &^*&^$# inputs to work
+    // modports are complete crap, basically, dont *&%*%^ use them
+    clocking cb_pe @(posedge clk);
+        output      stu__pe__ready        ;
+        //input        pe__stu__valid       ;
+        //input        pe__stu__cntl        ;
+        //input        pe__stu__type        ;  // Control or Data, Vector or scalar
+        //input        pe__stu__data        ;
+        //input        pe__stu__oob_data    ;
 
-    endclocking : cb_test
+    endclocking : cb_pe
  
-    clocking cb_dut @(posedge clk);
-        input         stu__pe__ready        ;
+    clocking cb_mgr @(posedge clk);
+        //input         stu__pe__ready       ;
+        output        pe__stu__valid       ;
+        output        pe__stu__cntl        ;
+        output        pe__stu__type        ;  // Control or Data, Vector or scalar
+        output        pe__stu__data        ;
+        output        pe__stu__oob_data    ;
 
-    endclocking : cb_dut
+    endclocking : cb_mgr
  
-    modport TB_PeArrayResult2Sys (
-        clocking    cb_dut   
+    modport TB_Pe (
+        clocking    cb_pe   
     );
  
-    modport TB_Sys2PeArrayResult (
-        clocking    cb_test  
+    modport TB_Mgr (
+        clocking    cb_mgr  
     );
 
 endinterface : stu_pe_ifc
 
-typedef virtual stu_pe_ifc vSys2PeArray_T;
-typedef virtual stu_pe_ifc vPeArray2Sys_T;
-//typedef virtual stu_pe_lane_ifc.TB_Sys2PeArrayResult vSys2PeArrayResult_T;
-//typedef virtual stu_pe_lane_ifc.TB_PeArrayResult2Sys vPeArrayResult2Sys_T;
+typedef virtual stu_pe_ifc vUpstreamStackBus_T;
 
 
 

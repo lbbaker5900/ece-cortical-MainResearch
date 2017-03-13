@@ -13,6 +13,7 @@
 
 `include "TB_common.vh"
 `include "common.vh"
+`include "stack_interface.vh"
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
 `include "dma_cont.vh"
@@ -20,6 +21,8 @@
 `include "pe.vh"
 `include "pe_array.vh"
 `include "noc_interpe_port_Bitmasks.vh"
+
+import virtual_interface::*;
 
 module top;
 
@@ -40,11 +43,11 @@ module top;
     // Instantiate an interface for every pe/lane/stream pair
     // Downstream
     //                              pe  lane
-    std_pe_lane_ifc    SysLane2PeArray [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (.clk_lane            ( clk           ));  // [64] shorthand for [0:63] ....
-    std_pe_oob_ifc     SysOob2PeArray  [`PE_ARRAY_NUM_OF_PE]                        (.clk_oob             ( clk           ));  
+    std_pe_lane_ifc    DownstreamStackBusLane        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (.clk_lane            ( clk           ));  // [64] shorthand for [0:63] ....
+    std_pe_oob_ifc     DownstreamStackBusOOB  [`PE_ARRAY_NUM_OF_PE]                        (.clk_oob             ( clk           ));  
+    stu_pe_ifc         UpstreamStackBus       [`PE_ARRAY_NUM_OF_PE]                        (.clk                 ( clk           ));  
 
-    // Upstream
-    stu_pe_ifc         PeArray2Sys     [`PE_ARRAY_NUM_OF_PE]                        (.clk                 ( clk           ));  // [64] shorthand for [0:63] ....
+
 
     //----------------------------------------------------------------------------------------------------
     // Probe interface(s)
@@ -65,6 +68,7 @@ module top;
     //----------------------------------------------------------------------------------------------------
     // Processing layer
     //
+
     pe_array pe_array_inst (
    
          // Downstream Stack bus Interface
@@ -83,8 +87,9 @@ module top;
     // Testbench
     //
         test  ti  (
-                   .SysOob2PeArray         ( SysOob2PeArray         ) ,  // array of downstream stack bus OOB interfaces to each PE
-                   .SysLane2PeArray        ( SysLane2PeArray        ) ,  // array of interfaces for each downstream pe/lane stack bus
+                   .DownstreamStackBusOOB         ( DownstreamStackBusOOB         ) ,  // array of downstream stack bus OOB interfaces to each PE
+                   .DownstreamStackBusLane        ( DownstreamStackBusLane        ) ,  // array of interfaces for each downstream pe/lane stack bus
+                   .UpstreamStackBus       ( UpstreamStackBus       ) ,  // array of upstream stack bus OOB interfaces to each PE
                    .Dma2Mem                ( Dma2Mem                ) ,  // array of monitor probes for the DMA to Memory interface for each PE/Lane
                    .RegFileScalar2StOpCntl ( RegFileScalar2StOpCntl ) ,  // array of driver probes for the RegFile Scalar registers to stOp Controller for each PE
                    .RegFileLane2StOpCntl   ( RegFileLane2StOpCntl   ) ,  // array of driver probes for the RegFile Vector registers to stOp Controller for each PE/Lane
@@ -96,7 +101,8 @@ module top;
     // Probes
     //
     // DMA to memory interface for result check
-    genvar pe, lane;
+    genvar pe;
+    genvar lane;
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
