@@ -21,6 +21,7 @@ import os
 import inspect
 import copy
 import time
+import re
 import pickle   # for saving variables
 from copy import deepcopy as copy_deepcopy
 from copy import copy as copy_copy
@@ -72,11 +73,70 @@ else :
 ########################################################################################################################
 ## Globals
 
+# Extract variables from HDL
+FoundMemorySize = False
+FoundNumOfPes   = False
+FoundNumOfLanes = False
+FoundLaneWidth  = False
+searchFile = open("../../github/ece-cortical-MainResearch/3DSystem/PEArray/HDL/common/pe_array.vh", "r")
+for line in searchFile:
+  if FoundNumOfPes == False :
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "PE_ARRAY_NUM_OF_PE" in data[1]:
+      numOfPes       = int(data[2])
+      FoundNumOfPes  = True
+searchFile.close()
+searchFile = open("../../github/ece-cortical-MainResearch/3DSystem/PEArray/HDL/common/pe_array.vh", "r")
+for line in searchFile:
+  if FoundMemorySize == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "PE_ARRAY_CHIPLET_ADDRESS_WIDTH" in data[1]:
+      memorySize      = int(data[2])
+      FoundMemorySize = True
+searchFile.close()
+searchFile = open("../../github/ece-cortical-MainResearch/3DSystem/PEArray/HDL/common/pe.vh", "r")
+for line in searchFile:
+  if FoundNumOfLanes == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "PE_NUM_OF_EXEC_LANES" in data[1]:
+      numOfLanes      = int(data[2])
+      FoundNumOfLanes = True
+searchFile.close()
+searchFile = open("../../github/ece-cortical-MainResearch/3DSystem/PEArray/HDL/common/pe.vh", "r")
+for line in searchFile:
+  if FoundLaneWidth == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "PE_EXEC_LANE_WIDTH" in data[1]:
+      laneWidth      = int(data[2])
+      FoundLaneWidth = True
+searchFile.close()
+#print numOfPes, memorySize, numOfLanes, laneWidth
+NUMOFEXECLANES = numOfLanes
 ## Memory
-WORDSIZE = 32
+WORDSIZE = laneWidth
 
-## PE
-NUMOFEXECLANES = 32
+FoundDescPtrWidth = False
+
+descPtrWidth      = 17  # default if not found
+
+################################################################################
+## FIXME
+################################################################################
+"""
+searchFile = open("../../github/ece-cortical-MainResearch/3DSystem/Manager/HDL/common/descriptor.vh", "r")
+for line in searchFile:
+  if FoundDescPtrWidth == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "DESC_POINTER_WIDTH" in data[1]:
+      descPtrWidth      = int(data[2])
+      FoundDescPtrWidth = True
+searchFile.close()
+"""
 
 
 ## Extract class methods and fields for prints
@@ -224,6 +284,103 @@ OrderValues = namedtuple('OrderValues',              \
                                       NOP            ')
 orderValues  = OrderValues._make([int(math.ceil(math.log(len(OrderValues._fields)-1,16)))] + range(len(OrderValues._fields)-1))
 
+
+
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------------
+# Create typedef files for verilog
+
+timeStr = time.strftime("%Y%m%d")  # just today
+dirStr = './verilogFiles/'
+if not os.path.exists(dirStr) :
+    os.makedirs(dirStr)
+dirStr = dirStr + timeStr + '/'
+if not os.path.exists(dirStr) :
+    os.makedirs(dirStr)
+outFile = dirStr + 'python.vh'
+
+oFile = open(outFile, 'w')
+
+pLine = '\n'
+
+pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(descType)-1,2))-1)))
+for i in range(1,len(descType)-1) :
+  pass
+  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(descType._fields[i], str(getattr(descType, descType._fields[i])))
+i += 1
+pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(descType._fields[i], str(getattr(descType, descType._fields[i])))
+pLine = pLine + '\n                           }} {0} ; '.format('python_desc_type')
+pLine = pLine + '\n'
+pLine = pLine + '\n'
+
+pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(optionType)-1,2))-1)))
+for i in range(1,len(optionType)-1) :
+  pass
+  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(optionType._fields[i], str(getattr(optionType, optionType._fields[i])))
+i += 1
+pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(optionType._fields[i], str(getattr(optionType, optionType._fields[i])))
+pLine = pLine + '\n                           }} {0} ; '.format('python_option_type')
+pLine = pLine + '\n'
+pLine = pLine + '\n'
+
+pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(stOpValues)-1,2))-1)))
+for i in range(1,len(stOpValues)-1) :
+  pass
+  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(stOpValues._fields[i], str(getattr(stOpValues, stOpValues._fields[i])))
+i += 1
+pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(stOpValues._fields[i], str(getattr(stOpValues, stOpValues._fields[i])))
+pLine = pLine + '\n                           }} {0} ; '.format('python_stOp_type')
+pLine = pLine + '\n'
+pLine = pLine + '\n'
+
+pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(simdValues)-1,2))-1)))
+for i in range(1,len(simdValues)-1) :
+  pass
+  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(simdValues._fields[i], str(getattr(simdValues, simdValues._fields[i])))
+i += 1
+pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(simdValues._fields[i], str(getattr(simdValues, simdValues._fields[i])))
+pLine = pLine + '\n                           }} {0} ; '.format('python_simd_type')
+pLine = pLine + '\n'
+pLine = pLine + '\n'
+
+pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(tgtValues)-1,2))-1)))
+for i in range(1,len(tgtValues)-1) :
+  pass
+  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(tgtValues._fields[i], str(getattr(tgtValues, tgtValues._fields[i])))
+i += 1
+pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(tgtValues._fields[i], str(getattr(tgtValues, tgtValues._fields[i])))
+pLine = pLine + '\n                           }} {0} ; '.format('python_target_type')
+pLine = pLine + '\n'
+pLine = pLine + '\n'
+
+pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(txferValues)-1,2))-1)))
+for i in range(1,len(txferValues)-1) :
+  pass
+  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(txferValues._fields[i], str(getattr(txferValues, txferValues._fields[i])))
+i += 1
+pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(txferValues._fields[i], str(getattr(txferValues, txferValues._fields[i])))
+pLine = pLine + '\n                           }} {0} ; '.format('python_transfer_type')
+pLine = pLine + '\n'
+pLine = pLine + '\n'
+
+pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(orderValues)-1,2))-1)))
+for i in range(1,len(orderValues)-1) :
+  pass
+  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(orderValues._fields[i], str(getattr(orderValues, orderValues._fields[i])))
+i += 1
+pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(orderValues._fields[i], str(getattr(orderValues, orderValues._fields[i])))
+pLine = pLine + '\n                           }} {0} ; '.format('python_order_type')
+pLine = pLine + '\n'
+pLine = pLine + '\n'
+
+oFile.write(pLine)
+oFile.close()
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 ########################################################################################################################
 ## KERNELS
 
@@ -266,6 +423,38 @@ class Kernel():
 
 ########################################################################################################################
 ## MEMORY
+
+class StorageDescriptor():
+
+    #The storage descriptor takes the following form :        "Address"        "Increment order"   "consequtive"    "valid" "jump" "valid" ....    "consequtive"    "invalid"
+    # In the case of the Memory write, there may be more than one optionType=storage if the result has to be written to multiple managers
+    # Only increment the ptr value if a descriptor is actually used. This keeps a tally of the number of descriptors and is the pointer to the next descriptor added
+    ptr = 0
+
+    def __init__(self, address, access, accessOrder, consequtive, jump):
+      self.Id          = None          # Id also represents the pointer to this descriptor when used in a WU
+      self.address     = address     
+      self.access      = access        # read/write - not important other thanshows what required the descriptor, so dont use it in the _-eq__ method
+      self.accessOrder = accessOrder 
+      self.consequtive = consequtive   # list
+      self.jump        = jump          # list
+
+    def __str__(self):
+        pLine = ""
+        pLine = pLine + 'Id:{0}, Address:{1},  Access:{2},  AccessOrder:{3},  '.format(self.Id, self.address, self.access, self.accessOrder)
+        for i in range(len(self.consequtive)) :
+          if (i != len(self.consequtive)-1) :
+            pLine = pLine + '\nConsequtive:{0},  '.format(self.consequtive[i])
+          else :
+            pLine = pLine + '\nConsequtive:{0}   '.format(self.consequtive[i])
+          if (i != len(self.consequtive)-1) :
+            pLine = pLine + 'Jump:{0}'.format(self.jump[i])
+
+        return pLine
+
+    def __eq__(self, other):
+        return (self.address == other.address) and (self.consequtive == other.consequtive) and (self.jump == other.jump) and (self.accessOrder == other.accessOrder)  
+
 
 ## DiRAM4 memory is channels/banks/pages
 class Page():
@@ -402,6 +591,13 @@ class MemoryLocation():
                raise Exception('{0}:{1}:Something wrong with address format'.format(__FILE__(), __LINE__())) 
         return cmp
 
+    def asHexString(self):
+      hexAddr = ''
+      hexAddr = hexAddr + '{0:>{1}}_' .format(toHexPad(self.channel , int(math.ceil(math.log(self.memory.configuration.numOfChannels       ,16))) ), int(math.ceil(math.log(self.memory.configuration.numOfChannels       ,16))))
+      hexAddr = hexAddr + '{0:>{1}}_' .format(toHexPad(self.bank    , int(math.ceil(math.log(self.memory.configuration.numOfBanksPerChannel,16))) ), int(math.ceil(math.log(self.memory.configuration.numOfBanksPerChannel,16))))
+      hexAddr = hexAddr + '{0:>{1}}_' .format(toHexPad(self.page    , int(math.ceil(math.log(self.memory.configuration.numOfPagesPerBank   ,16))) ), int(math.ceil(math.log(self.memory.configuration.numOfPagesPerBank   ,16))))
+      hexAddr = hexAddr + '{0:>{1}} ' .format(toHexPad(self.word    , int(math.ceil(math.log(self.memory.configuration.sizeOfPage/32       ,16))) ), int(math.ceil(math.log(self.memory.configuration.sizeOfPage/32       ,16))))
+      return hexAddr
 
 class MemoryAllocationOptions():
 
@@ -2300,10 +2496,25 @@ class Manager():
             self.memoryKernelAllocationOptions.append(None)     # For layer n, how memory was assigned to group kernels
 
         self.cellGroups                  = []  # groups of cells with same ROI
-
+        self.numberOfStorageDescriptors  = 0
+        self.storageDescriptors          = []
+        """
+        self.kernelStorageDescriptors = []
+        self.roiStorageDescriptors    = []
+        self.writeStorageDescriptors  = []
+        """
+ 
+        # Layer specific
         for l in range(numberOfLayers):
           self.roiCells.append(None)
           self.cellGroups.append([])
+          self.storageDescriptors.append([])
+          """
+          self.kernelStorageDescriptors.append([])
+          self.roiStorageDescriptors.append([])
+          self.writeStorageDescriptors.append([])
+          """
+          pass
 
 
     #----------------------------------------------------------------------------------------------------
@@ -2504,6 +2715,14 @@ class Manager():
 
         pLine = pLine + '\n# In the case of the Memory write, there may be more than one optionType=storage if the result has to be written to multiple managers'
         pLine = pLine + '\n# Address format = "Mgr, Local/Global, channel, bank, page, word"'
+        pLine = pLine + '\n'
+        pLine = pLine + '\nField lengths:'
+        pLine = pLine + '\nDelineator      : {0:^{1}}, '.format(int(math.ceil(math.log(len(descDelin  )-1,2))), int(math.ceil(math.log(len(descDelin  )-1,10))))
+        pLine = pLine + '\nDescriptor Type : {0:^{1}}, '.format(int(math.ceil(math.log(len(descType   )-1,2))), int(math.ceil(math.log(len(descType   )-1,10))))
+        pLine = pLine + '\nOption Type     : {0:^{1}}, '.format(int(math.ceil(math.log(len(optionType )-1,2))), int(math.ceil(math.log(len(optionType )-1,10))))
+        optValLen = max(len(stOpValues), len(simdValues), len(tgtValues), len(txferValues), len(orderValues))
+        pLine = pLine + '\nOption Value    : {0:^{1}}, '.format(int(math.ceil(math.log(    optValLen   -1,2))), int(math.ceil(math.log(    optValLen   -1,10))))
+
         WUs.append(pLine)
 
         separatorStr = '****  '
@@ -2519,6 +2738,7 @@ class Manager():
             # OPERATION Descriptor
             #  - streamingOp = FP MAC 
             #  - SIMD = ReLu
+            
             opDescRowStr = ''
             opDescRowStr = opDescRowStr + '{0:^{1}}, '.format(toHexPad(descDelin.SOD         , descDelin .WIDTH ), descDelin .WIDTH ) 
             opDescRowStr = opDescRowStr + '{0:^{1}}, '.format(toHexPad(descType.OP           , descType  .WIDTH ), descType  .WIDTH )         
@@ -2527,12 +2747,23 @@ class Manager():
             opDescRowStr = opDescRowStr + '{0:^{1}}: '.format(toHexPad(optionType.simdOp     , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(simdValues.ReLu                                             , simdValues.WIDTH), simdValues.WIDTH )
             opDescRowStr = opDescRowStr + '{0:^{1}}, '.format(toHexPad(optionType.NOP        , optionType.WIDTH ), optionType.WIDTH )   
             opDescRowStr = opDescRowStr + '{0:^{1}}  '.format(toHexPad(descDelin.EOD         , descDelin .WIDTH ), descDelin .WIDTH ) 
-            #opDescRowStr = opDescRowStr + '{0:>6} {1:>6} '.format(op['stOp Operation'], op['SIMD Operation']) 
 
             
             #----------------------------------------------------------------------------------------------------
-            # MEMORY_READ Descriptor
+            # MEMORY_READ Descriptor and text file
             #  - BCast to arg0
+
+            #--------------------------------------------------
+            # Descriptor
+
+            # Address is chiplet wide address, so include Manager ID in msb's
+            roiAddress = '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
+            roiAddress = roiAddress + roi['StartAddress'].asHexString()
+            readDesc   = StorageDescriptor(roiAddress, 'read', roi['Order'], [], [] )
+
+            #--------------------------------------------------
+            # Text file
+
             roiRowStr = ''
             roiRowStr = roiRowStr + '{0:^{1}}, '.format(toHexPad(descDelin.SOD               , descDelin .WIDTH ), descDelin .WIDTH ) 
             roiRowStr = roiRowStr + '{0:^{1}}, '.format(toHexPad(descType.MR                 , descType  .WIDTH ), descType  .WIDTH )         
@@ -2541,33 +2772,57 @@ class Manager():
             roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TXFER            , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(txferValues.BCAST       , txferValues.WIDTH), txferValues.WIDTH )
             roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_LANES     , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(ker['NumberOfCells']    , 2                ), txferValues.WIDTH )
             #  - memory option
+            # Construct storage descriptor
+            # - save storage descriptor and ptr to storage descriptor as option value
             roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType         .MEMORY  , optionType.WIDTH                                                                      ), optionType.WIDTH                                                                     )   
-            roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
+
+            
+            #roiRowStr = roiRowStr + roiAddress
+
+            """
             roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(roi['StartAddress'].channel , int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfChannels       ,16))) ), int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfChannels       ,16))))
             roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(roi['StartAddress'].bank    , int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfBanksPerChannel,16))) ), int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfBanksPerChannel,16))))
             roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(roi['StartAddress'].page    , int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))) ), int(math.ceil(math.log(roi['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))))
             roiRowStr = roiRowStr + '{0:>{1}} ' .format(toHexPad(roi['StartAddress'].word    , int(math.ceil(math.log(roi['StartAddress'].memory.configuration.sizeOfPage/32       ,16))) ), int(math.ceil(math.log(roi['StartAddress'].memory.configuration.sizeOfPage/32       ,16))))
-            #toHexPad(roi['StartAddress'].bank, 4), toHexPad(roi['StartAddress'].page, 4),  toHexPad(roi['StartAddress'].word, 4))
-            roiRowStr = roiRowStr + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  roi['Order'])), orderValues.WIDTH)
-            #roiRowStr = roiRowStr + '{0:>4} '.format(''.join(roi['Order']))
+            """
+            #roiRowStr = roiRowStr + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  roi['Order'])), orderValues.WIDTH)
+
+            # descriptor access order added during descriptor creation
             for c in range(len(roi['Consequtive'])) :
-                roiRowStr = roiRowStr + '{0:>4} '.format(toHexPad(roi['Consequtive'][c],4))
+                #roiRowStr = roiRowStr + '{0:>4} '.format(toHexPad(roi['Consequtive'][c],4))
+                readDesc.consequtive.append(toHexPad(roi['Consequtive'][c],4))
                 try :
-                    roiRowStr = roiRowStr + '1 {0:>3} '.format(toHexPad(roi['Jump'][c], 3))
+                    #roiRowStr = roiRowStr + '1 {0:>3} '.format(toHexPad(roi['Jump'][c], 3))
+                    readDesc.jump.append(toHexPad(roi['Jump'][c], 3))
                 except:
                     pass
-            roiRowStr = roiRowStr + '0, '
+            # Add descriptor to manager list
+            descPtr = self.addStorageDescriptor(layerID, readDesc)  
+            # add value to storage tuple
+            roiRowStr = roiRowStr + '{0:^{1}}, '    .format(toHexPad(descPtr, int(math.ceil(math.log(math.pow(descPtrWidth,2),16)))), int(math.ceil(math.log(math.pow(descPtrWidth,2),16))) )
+
+            #roiRowStr = roiRowStr + '0, '
             #  - memory option end
             roiRowStr = roiRowStr + '{0:^{1}}, '    .format(toHexPad(optionType.NOP   , optionType.WIDTH ), optionType.WIDTH )   
             roiRowStr = roiRowStr + '{0:^{1}}  '    .format(toHexPad(descDelin.EOD    , descDelin .WIDTH ), descDelin .WIDTH ) 
             pass
 
+            # Store the descriptor
+            #self.roiStorageDescriptors[layerID].append(readDesc)
+            #self.storageDescriptors[layerID].append(readDesc)
+
 
             #----------------------------------------------------------------------------------------------------
             # MEMORY_READ Descriptor
             #  - Vector to arg1
-            kerRowStr = ''
-            kerRowStr = kerRowStr + '{0:^{1}}, '.format(toHexPad(descDelin.SOD               , descDelin .WIDTH ), descDelin .WIDTH ) 
+            # Address is a chiplet wdide address, so include Manager ID as msb's of address
+            kerAddress = '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
+            kerAddress = kerAddress + ker['StartAddress'].asHexString()
+            readDesc   = StorageDescriptor(kerAddress, 'read', ker['Order'], [], [] )
+
+
+
+            kerRowStr = '{0:^{1}}, '.format(toHexPad(descDelin.SOD               , descDelin .WIDTH ), descDelin .WIDTH ) 
             kerRowStr = kerRowStr + '{0:^{1}}, '.format(toHexPad(descType.MR                 , descType  .WIDTH ), descType  .WIDTH )         
             # option tuples
             kerRowStr = kerRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TGT              , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(tgtValues.STACK_DN_ARG1 , tgtValues  .WIDTH), tgtValues  .WIDTH )
@@ -2575,28 +2830,41 @@ class Manager():
             kerRowStr = kerRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_LANES     , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(ker['NumberOfCells']    , 2                ), txferValues.WIDTH )
 
             #  - memory option
+            # Construct storage descriptor
+            # - save storage descriptor and ptr to storage descriptor as option value
             kerRowStr = kerRowStr + '{0:^{1}}: '.format(toHexPad(optionType         .MEMORY  , optionType.WIDTH                                                                      ), optionType.WIDTH                                                                     )   
-            kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
+            #kerRowStr = kerRowStr + kerAddress
+
+            """
             kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(ker['StartAddress'].channel , int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfChannels       ,16))) ), int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfChannels       ,16))))
             kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(ker['StartAddress'].bank    , int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfBanksPerChannel,16))) ), int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfBanksPerChannel,16))))
             kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(ker['StartAddress'].page    , int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))) ), int(math.ceil(math.log(ker['StartAddress'].memory.configuration.numOfPagesPerBank   ,16))))
             kerRowStr = kerRowStr + '{0:>{1}} ' .format(toHexPad(ker['StartAddress'].word    , int(math.ceil(math.log(ker['StartAddress'].memory.configuration.sizeOfPage/32       ,16))) ), int(math.ceil(math.log(ker['StartAddress'].memory.configuration.sizeOfPage/32       ,16))))
+            """
 
-            #kerRowStr = kerRowStr + '{0:>4} {1:>4} {2:>4} {3:>4} '.format(toHexPad(ker['StartAddress'].channel, 4), toHexPad(ker['StartAddress'].bank, 4), toHexPad(ker['StartAddress'].page, 4),  toHexPad(ker['StartAddress'].word, 4))
-            #kerRowStr = kerRowStr + '{0:>8} '.format('Vector')
-            kerRowStr = kerRowStr + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  ker['Order'])), orderValues.WIDTH)
-            #kerRowStr = kerRowStr + '{0:>4} '.format(''.join(ker['Order']))
+            # descriptor access order added during descriptor creation
+            #kerRowStr = kerRowStr + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  ker['Order'])), orderValues.WIDTH)
             for c in range(len(ker['Consequtive'])) :
-                kerRowStr = kerRowStr + '{0:>5} '.format(toHexPad(ker['Consequtive'][c],5))
+                #kerRowStr = kerRowStr + '{0:>4} '.format(toHexPad(ker['Consequtive'][c],4))
+                readDesc.consequtive.append(toHexPad(ker['Consequtive'][c],4))
                 try :
-                    kerRowStr = kerRowStr + '1 {0:>3} '.format(toHexPad(ker['Jump'][c], 3))
+                    #kerRowStr = kerRowStr + '1 {0:>3} '.format(toHexPad(ker['Jump'][c], 3))
+                    readDesc.jump.append(toHexPad(ker['Jump'][c], 3))
                 except:
                     pass
-            kerRowStr = kerRowStr + '0, '
+            # Add descriptor to manager list
+            descPtr = self.addStorageDescriptor(layerID, readDesc)  
+            kerRowStr = kerRowStr + '{0:^{1}}, '    .format(toHexPad(descPtr, int(math.ceil(math.log(math.pow(descPtrWidth,2),16)))), int(math.ceil(math.log(math.pow(descPtrWidth,2),16))) )
+
+            #kerRowStr = kerRowStr + '0, '
             #  - memory option end
             kerRowStr = kerRowStr + '{0:^{1}}, '    .format(toHexPad(optionType.NOP   , optionType.WIDTH ), optionType.WIDTH )   
             kerRowStr = kerRowStr + '{0:^{1}}  '    .format(toHexPad(descDelin.EOD    , descDelin .WIDTH ), descDelin .WIDTH ) 
             pass
+
+            # Store the descriptor
+            #self.storageDescriptors[layerID].append(readDesc)
+            #self.kernelStorageDescriptors[layerID].append(readDesc)
 
 
             #----------------------------------------------------------------------------------------------------
@@ -2613,22 +2881,44 @@ class Manager():
             #dRowStr = dRowStr + '{0:>2} '.format(toHexPad(dest.__len__(), 2))
             #  - memory option
             for d in dest :
+
+                # Create a storage descriptor for each destination
+                destAddress =   '{0:>{1}}_' .format(toHexPad(  d['Manager'].absID        , int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X  ,16))) ), int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X   ,16))))
+                destAddress =   destAddress + d['StartAddress'].asHexString()
+                writeDesc   =   StorageDescriptor(destAddress, 'write', d['Order'], [], [] )
+
+                # Construct storage descriptor
+                # - save storage descriptor and ptr to storage descriptor as option value
                 dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType         .MEMORY  , optionType.WIDTH                                                                      ), optionType.WIDTH                                                                     )   
-                #dRowStr = dRowStr + '{0:>2} {1:>2} '.format(toHexPad(int(d['Manager'].ID[0]), 2), toHexPad(int(d['Manager'].ID[1]), 2))
-                dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['Manager'].absID        , int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X  ,16))) ), int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X   ,16))))
+
+                #dRowStr =   dRowStr + destAddress
+                """
                 dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['StartAddress'].channel , int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfChannels                 ,16))) ), int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfChannels                  ,16))))
                 dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['StartAddress'].bank    , int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfBanksPerChannel          ,16))) ), int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfBanksPerChannel           ,16))))
                 dRowStr =   dRowStr + '{0:>{1}}_' .format(toHexPad(  d['StartAddress'].page    , int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfPagesPerBank             ,16))) ), int(math.ceil(math.log(  d['StartAddress'].memory.configuration.numOfPagesPerBank              ,16))))
                 dRowStr =   dRowStr + '{0:>{1}} ' .format(toHexPad(  d['StartAddress'].word    , int(math.ceil(math.log(  d['StartAddress'].memory.configuration.sizeOfPage/32                 ,16))) ), int(math.ceil(math.log(  d['StartAddress'].memory.configuration.sizeOfPage/32                  ,16))))
-                dRowStr =   dRowStr + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  d['Order'])), orderValues.WIDTH)
+                """
+                #dRowStr =   dRowStr + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  d['Order'])), orderValues.WIDTH)
+                
+                # descriptor access order added during descriptor creation
                 #dRowStr =   dRowStr + '{0:>4} '.format(toHexPad(orderValues.''.join(d['Order']), orderValues.WIDTH))
                 for c in range(len(d['Consequtive'])) :
-                    dRowStr = dRowStr + '{0:>5} '.format(toHexPad(d['Consequtive'][c],5))
+                    #dRowStr = dRowStr + '{0:>4} '.format(toHexPad(d['Consequtive'][c],4))
+                    writeDesc.consequtive.append(toHexPad(d['Consequtive'][c],4))
                     try :
-                        dRowStr = dRowStr + '1 {0:>3} '.format(toHexPad(d['Jump'][c], 3))
+                        #dRowStr = dRowStr + '1 {0:>3} '.format(toHexPad(d['Jump'][c], 3))
+                        writeDesc.jump.append(toHexPad(d['Jump'][c], 3))
                     except:
                         pass
-                dRowStr = dRowStr + '0, '
+                # Add descriptor to manager list
+                descPtr = self.addStorageDescriptor(layerID, writeDesc)  
+                dRowStr = dRowStr + '{0:^{1}}, '    .format(toHexPad(descPtr, int(math.ceil(math.log(math.pow(descPtrWidth,2),16)))), int(math.ceil(math.log(math.pow(descPtrWidth,2),16))) )
+                #dRowStr = dRowStr + '0, '
+
+                # Store the descriptor and return the descriptor pointer
+                #self.storageDescriptors[layerID].append(writeDesc)
+                #self.writeStorageDescriptors[layerID].append(writeDesc)
+
             #  - memory option end
             dRowStr =   dRowStr + '{0:^{1}}, '    .format(toHexPad(optionType.NOP   , optionType.WIDTH ), optionType.WIDTH )   
             dRowStr =   dRowStr + '{0:^{1}}  '    .format(toHexPad(descDelin.EOD    , descDelin .WIDTH ), descDelin .WIDTH ) 
@@ -2666,6 +2956,37 @@ class Manager():
         oFile.close()
         pass
 
+
+    # When we create a storage descriptor, we will search the existing list of descriptors to see if it already exists,
+    # if it does, then simply return the pointer, if it doesnt, add it to the list and increment the static pointer in the storage class
+    def addStorageDescriptor(self, layerID, newStorageDesc):  
+      if self.numberOfStorageDescriptors == 0 :
+          #print '{0}:{1}:LEE:INFO:DEBUG: First descriptor for layer {2}: {3}'.format(__FILE__(), __LINE__(), layerID, newStorageDesc)
+          #newStorageDesc.Id = StorageDescriptor.ptr  # assign this descriptors ptr to the static pointer in the class. Note: this gets incremented for all managers, so sue different method
+          newStorageDesc.Id = 0
+          self.storageDescriptors[layerID].append(newStorageDesc)
+          newPtr = newStorageDesc.Id
+          self.numberOfStorageDescriptors += 1                 # pointer to the next descriptor
+      else :
+        #print '{0}:{1}:LEE:ERROR:DEBUG: Current number of storage descriptors = {2}, New descriptor = {3}'.format(__FILE__(), __LINE__(), len(self.storageDescriptors[layerID]), newStorageDesc)
+        for storageDesc in self.storageDescriptors[layerID] :
+          #print '{0}:{1}:LEE:ERROR:DEBUG:'.format(__FILE__(), __LINE__()), storageDesc
+          if storageDesc == newStorageDesc :
+            existingPtr = storageDesc.Id  # return descriptor already stored in this manager
+            #print '{0}:{1}:LEE:ERROR:DEBUG: Use existing descriptor ptr {2}'.format(__FILE__(), __LINE__(), existingPtr)
+            return existingPtr
+        # Descriptor not in list
+        #newStorageDesc.Id = StorageDescriptor.ptr  # assign this descriptors ptr to the static pointer in the class
+        newStorageDesc.Id = self.numberOfStorageDescriptors 
+        self.storageDescriptors[layerID].append(newStorageDesc)
+        self.numberOfStorageDescriptors += 1                 # pointer to the next descriptor in this manager
+        StorageDescriptor.ptr += 1                 # Keep track of all storage pointers across all managers
+        newPtr = newStorageDesc.Id
+        #print '{0}:{1}:LEE:ERROR:DEBUG: Add new descriptor ptr {2}'.format(__FILE__(), __LINE__(), newPtr)
+      #print '{0}:{1}:LEE:ERROR:DEBUG: Returning ptr = {2}'.format(__FILE__(), __LINE__(), newPtr)
+      return newPtr
+          
+        
 
     #----------------------------------------------------------------------------------------------------
 
@@ -3310,16 +3631,16 @@ def main():
     #network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
     
-    #network.addLayer('Input',           55,  55,    4,                      ) #   96,
-    #network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
-    #network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
-    #network.addLayer('Convolutional',   13,  13,  4,    3,   3,   8,   1 ) #  384,
+    network.addLayer('Input',           55,  55,    4,                      ) #   96,
+    network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
+    network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
+    network.addLayer('Convolutional',   13,  13,  4,    3,   3,   8,   1 ) #  384,
     #network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   1 ) #  384,
     
-    network.addLayer('Input',           55,  55,    3,                      ) #   96,
-    network.addLayer('Convolutional',   27,  27,  128,    5,   5,    3,   2 ) #  256,
-    network.addLayer('Convolutional',   13,  13,   64,    3,   3,  128,   2 ) #  384,
-    network.addLayer('Convolutional',   13,  13,   32,    3,   3,   64,   1 ) #  384,
+    #network.addLayer('Input',           55,  55,    3,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,  128,    5,   5,    3,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,   64,    3,   3,  128,   2 ) #  384,
+    #network.addLayer('Convolutional',   13,  13,   32,    3,   3,   64,   1 ) #  384,
     #network.addLayer('Convolutional',   13,  13,   64,    3,   3,   32,   1 ) #  384,
     #
     
@@ -3476,7 +3797,7 @@ def main():
                     for grp in range(network.managerArray.manager[mgrY][mgrX].cellGroups[l].__len__()):
                         network.managerArray.manager[mgrY][mgrX].createAllGroupMemoryFile(l,grp)
 
-    if CREATEFILES and DEBUG:
+    if CREATEFILES :
         # For a
         pYmin = 0  # .1
         pYmax = 1  # .3
@@ -3494,6 +3815,14 @@ def main():
                 # Uses the managers roiCells[<layer>] list
                 network.managerArray.manager[mgrY][mgrX].createRoiMemoryAllocationFile(l)
 
+    if CREATEFILES :
+        print '{0}:{1}:INFO:Create Work Unit files'.format(__FILE__(), __LINE__(), l)
+        # Do layer 1 only for now
+        for l in [1] :
+            for mgrY in range(network.managerArray.Y):
+                for mgrX in range(network.managerArray.X):
+                    print '{0}:{1}:INFO:Create Work Unit files for manager {2},{3} layer {4}'.format(__FILE__(), __LINE__(), mgrY, mgrX, l)
+                    network.managerArray.manager[mgrY][mgrX].createWUfiles(l)
 
     #------------------------------------------------------------------------------------------------------------------------
     # Checks
@@ -3553,13 +3882,6 @@ def main():
             network.peArray.createROIAnimation(l, dc.displayOptions(pplot=True, pprint=False, createFile=False)) 
             plt.show()
     
-    print '{0}:{1}:INFO:Create Work Unit files'.format(__FILE__(), __LINE__(), l)
-    # Do layer 1 only for now
-    for l in [1] :
-        for mgrY in range(network.managerArray.Y):
-            for mgrX in range(network.managerArray.X):
-                print '{0}:{1}:INFO:Create Work Unit files for manager {2},{3} layer {4}'.format(__FILE__(), __LINE__(), mgrY, mgrX, l)
-                network.managerArray.manager[mgrY][mgrX].createWUfiles(l)
 
     print '{0}:{1}:END:'.format(__FILE__(), __LINE__())
 
