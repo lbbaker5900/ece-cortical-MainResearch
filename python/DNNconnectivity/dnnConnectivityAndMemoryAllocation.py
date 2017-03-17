@@ -455,6 +455,8 @@ class StorageDescriptor():
     def __eq__(self, other):
         return (self.address == other.address) and (self.consequtive == other.consequtive) and (self.jump == other.jump) and (self.accessOrder == other.accessOrder)  
 
+    def printDesc(self):
+        pLine = ""
 
 ## DiRAM4 memory is channels/banks/pages
 class Page():
@@ -2759,7 +2761,8 @@ class Manager():
             # Address is chiplet wide address, so include Manager ID in msb's
             roiAddress = '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
             roiAddress = roiAddress + roi['StartAddress'].asHexString()
-            readDesc   = StorageDescriptor(roiAddress, 'read', roi['Order'], [], [] )
+            # remember to remove any spaces when adding fields to descriptor
+            readDesc   = StorageDescriptor(roiAddress.replace(" ",""), 'read', roi['Order'], [], [] )
 
             #--------------------------------------------------
             # Text file
@@ -2818,7 +2821,7 @@ class Manager():
             # Address is a chiplet wdide address, so include Manager ID as msb's of address
             kerAddress = '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
             kerAddress = kerAddress + ker['StartAddress'].asHexString()
-            readDesc   = StorageDescriptor(kerAddress, 'read', ker['Order'], [], [] )
+            readDesc   = StorageDescriptor(kerAddress.replace(" ",""), 'read', ker['Order'], [], [] )
 
 
 
@@ -2885,7 +2888,7 @@ class Manager():
                 # Create a storage descriptor for each destination
                 destAddress =   '{0:>{1}}_' .format(toHexPad(  d['Manager'].absID        , int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X  ,16))) ), int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X   ,16))))
                 destAddress =   destAddress + d['StartAddress'].asHexString()
-                writeDesc   =   StorageDescriptor(destAddress, 'write', d['Order'], [], [] )
+                writeDesc   =   StorageDescriptor(destAddress.replace(" ",""), 'write', d['Order'], [], [] )
 
                 # Construct storage descriptor
                 # - save storage descriptor and ptr to storage descriptor as option value
@@ -2951,6 +2954,39 @@ class Manager():
         pLine = ''
         for wu in wus :
             pLine = pLine + wu + '\n'
+        
+        oFile.write(pLine)
+        oFile.close()
+        pass
+
+    def createStorageDescriptorFiles(self, layerID):  
+  
+        timeStr = time.strftime("%Y%m%d")  # just today
+        dirStr = './outputFiles/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + timeStr + '/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + 'manager_{0}_{1}/'.format(self.ID[0], self.ID[1])
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        outFile = dirStr + 'manager_{0}_{1}_layer{2}_storageDescriptors'.format(self.ID[0], self.ID[1], layerID)
+
+        oFile = open(outFile, 'w')
+
+        pLine = ''
+        for storageDesc in self.storageDescriptors[layerID] :
+          pLine = pLine + '{0:^{1}} '    .format(toHexPad(storageDesc.Id, int(math.ceil(math.log(math.pow(descPtrWidth,2),16)))), int(math.ceil(math.log(math.pow(descPtrWidth,2),16))) )
+          pLine = pLine + storageDesc.address 
+          pLine = pLine + '{0:>{1}}_' .format(getattr(orderValues, ''.join(  storageDesc.accessOrder)), orderValues.WIDTH)
+          for c in range(len(storageDesc.consequtive)) :
+              pLine = pLine + '{0:>4}_'.format(storageDesc.consequtive[c])
+              try :
+                  pLine = pLine + '1_{0:>3}_'.format(storageDesc.jump[c])
+              except:
+                  pass
+          pLine = pLine + '0\n'
         
         oFile.write(pLine)
         oFile.close()
