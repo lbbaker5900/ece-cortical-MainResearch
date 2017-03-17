@@ -2978,7 +2978,7 @@ class Manager():
         pLine = ''
         for storageDesc in self.storageDescriptors[layerID] :
           pLine = pLine + '{0:^{1}} '    .format(toHexPad(storageDesc.Id, int(math.ceil(math.log(math.pow(descPtrWidth,2),16)))), int(math.ceil(math.log(math.pow(descPtrWidth,2),16))) )
-          pLine = pLine + storageDesc.address 
+          pLine = pLine + storageDesc.address + '_' 
           pLine = pLine + '{0:>{1}}_' .format(getattr(orderValues, ''.join(  storageDesc.accessOrder)), orderValues.WIDTH)
           for c in range(len(storageDesc.consequtive)) :
               pLine = pLine + '{0:>4}_'.format(storageDesc.consequtive[c])
