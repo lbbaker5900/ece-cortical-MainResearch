@@ -22,6 +22,8 @@
 `include "mem_acc_cont.vh"
 `include "pe.vh"
 `include "pe_array.vh"
+`include "manager.vh"
+`include "manager_array.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
 `timescale 1ns/10ps
@@ -30,11 +32,11 @@ module manager_array (
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - Downstream
-        `include "system_stack_bus_downstream_ports.vh"
+        `include "system_manager_stack_bus_downstream_ports.vh"
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - Upstream
-        `include "system_stack_bus_upstream_ports.vh"
+        `include "system_manager_stack_bus_upstream_ports.vh"
 
         //-------------------------------------------------------------------------------------------
         // General
@@ -69,23 +71,23 @@ module manager_array (
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
-  `include "system_stack_bus_downstream_instance_wires.vh"
+  `include "system_manager_stack_bus_downstream_instance_wires.vh"
   
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
-  `include "system_stack_bus_upstream_instance_wires.vh"
+  `include "system_manager_stack_bus_upstream_instance_wires.vh"
   
   
  
   genvar gvi;
   generate
-    for (gvi=0; gvi<`PE_ARRAY_NUM_OF_PE; gvi=gvi+1) 
+    for (gvi=0; gvi<`MGR_ARRAY_NUM_OF_MGR; gvi=gvi+1) 
     //for (gvi=0; gvi<1; gvi=gvi+1) 
-      begin: manager_inst
+      begin: mgr_inst
 
         //-------------------------------------------------------------------------------------------------
         // Stack Bus downstream Interface
-        `include "pe_stack_bus_downstream_instance_wires.vh"
+        `include "manager_stack_bus_downstream_instance_wires.vh"
 
         //-------------------------------------------------------------------------------------------------
         // Stack Bus - Upstream
@@ -101,18 +103,42 @@ module manager_array (
         // NoC Interface
         `include "pe_noc_instance_wires.vh"
 
-        assign sys__mgr__peId = gvi;
+        assign sys__mgr__mgrId = gvi;
 
+        mgr mgr (
+   
+                //-------------------------------
+                // NoC Interface
+                `include "pe_noc_instance_ports.vh"
+   
+                //-------------------------------
+                // Stack Bus downstream Interface
+                `include "manager_stack_bus_downstream_instance_ports.vh"
+   
+                //-------------------------------
+                // Stack Bus - Upstream
+                .stu__mgr__valid        ( stu__mgr__valid        ),
+                .stu__mgr__cntl         ( stu__mgr__cntl         ),
+                .mgr__stu__ready        ( mgr__stu__ready        ),
+                .stu__mgr__type         ( stu__mgr__type         ),  // Control or Data, Vector or scalar
+                .stu__mgr__data         ( stu__mgr__data         ),
+                .stu__mgr__oob_data     ( stu__mgr__oob_data     ),
+ 
+                //-------------------------------
+                // General
+                .clk               ( clk               ),
+                .reset_poweron     ( reset_poweron     )
+              );
       end
   endgenerate
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus Downstream Interface
-  //`include "system_stack_bus_downstream_instance_connections.vh"
+  `include "system_manager_stack_bus_downstream_instance_connections.vh"
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus Upstream Interface
-  //`include "system_stack_bus_upstream_instance_connections.vh"
+  `include "system_manager_stack_bus_upstream_instance_connections.vh"
 
   //-------------------------------------------------------------------------------------------------
   // Inter PE NoC Connectivity      

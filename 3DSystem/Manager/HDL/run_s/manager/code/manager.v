@@ -25,6 +25,8 @@
 `include "common.vh"
 `include "pe_array.vh"
 `include "pe.vh"
+`include "manager_array.vh"
+`include "manager.vh"
 `include "stack_interface.vh"
 `include "noc_cntl.vh"
 `include "mem_acc_cont.vh"

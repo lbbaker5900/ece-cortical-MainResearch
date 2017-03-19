@@ -31,10 +31,13 @@ pushd ../../../PEArray/scripts
 ./testbench.py  2>&1  | tee -a ../SIMULATION/sv/$1
 ./peArray.py 2>&1   | tee -a ../SIMULATION/sv/$1
 popd
-
+pushd ../../scripts  
+./managerArray.py 2>&1   | tee -a ../SIMULATION/sv/$1
+popd
                                                                                                                                                                  
-vlog +define+TESTING     +incdir+../../HDL/common +incdir+../../../PEArray/HDL/common +incdir+../../SIMULATION/common                                                                              ../../../PEArray/HDL/run_s/common/code/generic_fifo.v       2>&1   | tee -a $1  
-vlog +define+TESTING     +incdir+../../HDL/common +incdir+../../../PEArray/HDL/common +incdir+../../SIMULATION/common                                                                              ../../HDL/run_s/manager_array.v                             2>&1   | tee -a $1  
+vlog +define+TESTING     +incdir+../../HDL/common +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../SIMULATION/common                   ../../../PEArray/HDL/run_s/common/code/generic_fifo.v       2>&1   | tee -a $1  
+vlog +define+TESTING     +incdir+../../HDL/common +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../SIMULATION/common                   ../../HDL/run_s/manager/code/manager.v                      2>&1   | tee -a $1  
+vlog +define+TESTING     +incdir+../../HDL/common +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../SIMULATION/common                   ../../HDL/run_s/manager_array.v                             2>&1   | tee -a $1  
                                                                                                                                                                  
 
 

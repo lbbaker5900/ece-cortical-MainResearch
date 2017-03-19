@@ -3614,6 +3614,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  """
   f = open('../../Manager/HDL/common/system_manager_stack_bus_downstream_port_declarations.vh', 'w')
   pLine = ""
 
@@ -3641,39 +3642,7 @@ if __name__ == "__main__":
 
   f.write(pLine)
   f.close()
-
-  f = open('../HDL/common/manager_stack_bus_downstream_ports.vh', 'w')
-  pLine = ""
-
-  pLine = pLine + '\n            // General control and status                ,' 
-  pLine = pLine + '\n            sys__mgr__mgrId                              ,' 
-  pLine = pLine + '\n            sys__mgr__allSynchronized                    ,' 
-  pLine = pLine + '\n            mgr__sys__thisSynchronized                   ,' 
-  pLine = pLine + '\n            mgr__sys__ready                              ,' 
-  pLine = pLine + '\n            mgr__sys__complete                           ,' 
-  #
-  pLine = pLine + '\n            // OOB controls how the lanes are interpreted  ,'.format(lane,mgr,strm) 
-  pLine = pLine + '\n            std__mgr__oob_cntl                           ,'.format(lane,mgr,strm) 
-  pLine = pLine + '\n            std__mgr__oob_valid                          ,'.format(lane,mgr,strm) 
-  pLine = pLine + '\n            mgr__std__oob_ready                          ,'.format(lane,mgr,strm) 
-  pLine = pLine + '\n            std__mgr__oob_type                           ,'.format(lane,mgr,strm) 
-  pLine = pLine + '\n            std__mgr__oob_data                           ,'.format(lane,mgr,strm) 
-  #
-  for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n            // Lane omgrrand bus                 '.format(lane)
-    pLine = pLine + '\n            mgr__std__lane{0}_strm0_ready       ,'.format(lane)
-    pLine = pLine + '\n            std__mgr__lane{0}_strm0_cntl        ,'.format(lane) 
-    pLine = pLine + '\n            std__mgr__lane{0}_strm0_data        ,'.format(lane) 
-    pLine = pLine + '\n            std__mgr__lane{0}_strm0_data_valid  ,'.format(lane) 
-    pLine = pLine + '\n            mgr__std__lane{0}_strm1_ready       ,'.format(lane)
-    pLine = pLine + '\n            std__mgr__lane{0}_strm1_cntl        ,'.format(lane) 
-    pLine = pLine + '\n            std__mgr__lane{0}_strm1_data        ,'.format(lane) 
-    pLine = pLine + '\n            std__mgr__lane{0}_strm1_data_valid  ,'.format(lane) 
-    pLine = pLine + '\n'
-
-  f.write(pLine)
-  f.close()
-
+  """
 
   f = open('../HDL/common/system_stack_bus_downstream_instance_wires.vh', 'w')
   pLine = ""
