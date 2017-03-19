@@ -3550,8 +3550,11 @@ if __name__ == "__main__":
   searchFile.close()
   
 
-  #----------------------------------------------------------------------------------------------------
+  #----------------------------------------------------------------------------------------------------------------------------------
   # Generate stack bus connections
+  #----------------------------------------------------------------------------------------------------
+  # Manager and PE
+
 
   f = open('../HDL/common/system_stack_bus_downstream_ports.vh', 'w')
   pLine = ""
@@ -3588,7 +3591,6 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // General control and status                                                  '.format(pe) 
-    pLine = pLine + '\n  //input [`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
     pLine = pLine + '\n  input                                         sys__pe{0}__allSynchronized     ;'.format(pe) 
     pLine = pLine + '\n  output                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
     pLine = pLine + '\n  output                                        pe{0}__sys__ready               ;'.format(pe) 
@@ -3611,6 +3613,67 @@ if __name__ == "__main__":
 
   f.write(pLine)
   f.close()
+
+  f = open('../../Manager/HDL/common/system_manager_stack_bus_downstream_port_declarations.vh', 'w')
+  pLine = ""
+
+  for mgr in range (0, numOfPe):
+    pLine = pLine + '\n  // General control and status                                                  '.format(mgr) 
+    pLine = pLine + '\n  output                                        sys__mgr{0}__allSynchronized     ;'.format(mgr) 
+    pLine = pLine + '\n  input                                         mgr{0}__sys__thisSynchronized    ;'.format(mgr) 
+    pLine = pLine + '\n  input                                         mgr{0}__sys__ready               ;'.format(mgr) 
+    pLine = pLine + '\n  input                                         mgr{0}__sys__complete            ;'.format(mgr) 
+    #                                                                                                              
+    pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                  '.format(mgr) 
+    pLine = pLine + '\n  output [`COMMON_STD_INTF_CNTL_RANGE     ]     std__mgr{0}__oob_cntl            ;'.format(mgr) 
+    pLine = pLine + '\n  output                                        std__mgr{0}__oob_valid           ;'.format(mgr) 
+    pLine = pLine + '\n  input                                         mgr{0}__std__oob_ready           ;'.format(mgr) 
+    pLine = pLine + '\n  output [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]     std__mgr{0}__oob_tymgr            ;'.format(mgr) 
+    pLine = pLine + '\n  output [`STACK_DOWN_OOB_INTF_DATA_RANGE ]     std__mgr{0}__oob_data            ;'.format(mgr) 
+    #                                                             
+    for lane in range (0, numOfExecLanes):
+      for strm in range (0, 2):
+        pLine = pLine + '\n  input                                           mgr{0}__std__lane{1}_strm{2}_ready       ;'.format(mgr,lane,strm)
+        pLine = pLine + '\n  output [`COMMON_STD_INTF_CNTL_RANGE      ]      std__mgr{0}__lane{1}_strm{2}_cntl        ;'.format(mgr,lane,strm) 
+        pLine = pLine + '\n  output [`STACK_DOWN_INTF_STRM_DATA_RANGE ]      std__mgr{0}__lane{1}_strm{2}_data        ;'.format(mgr,lane,strm) 
+        pLine = pLine + '\n  output                                          std__mgr{0}__lane{1}_strm{2}_data_valid  ;'.format(mgr,lane,strm) 
+        pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/manager_stack_bus_downstream_ports.vh', 'w')
+  pLine = ""
+
+  pLine = pLine + '\n            // General control and status                ,' 
+  pLine = pLine + '\n            sys__mgr__mgrId                              ,' 
+  pLine = pLine + '\n            sys__mgr__allSynchronized                    ,' 
+  pLine = pLine + '\n            mgr__sys__thisSynchronized                   ,' 
+  pLine = pLine + '\n            mgr__sys__ready                              ,' 
+  pLine = pLine + '\n            mgr__sys__complete                           ,' 
+  #
+  pLine = pLine + '\n            // OOB controls how the lanes are interpreted  ,'.format(lane,mgr,strm) 
+  pLine = pLine + '\n            std__mgr__oob_cntl                           ,'.format(lane,mgr,strm) 
+  pLine = pLine + '\n            std__mgr__oob_valid                          ,'.format(lane,mgr,strm) 
+  pLine = pLine + '\n            mgr__std__oob_ready                          ,'.format(lane,mgr,strm) 
+  pLine = pLine + '\n            std__mgr__oob_type                           ,'.format(lane,mgr,strm) 
+  pLine = pLine + '\n            std__mgr__oob_data                           ,'.format(lane,mgr,strm) 
+  #
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n            // Lane omgrrand bus                 '.format(lane)
+    pLine = pLine + '\n            mgr__std__lane{0}_strm0_ready       ,'.format(lane)
+    pLine = pLine + '\n            std__mgr__lane{0}_strm0_cntl        ,'.format(lane) 
+    pLine = pLine + '\n            std__mgr__lane{0}_strm0_data        ,'.format(lane) 
+    pLine = pLine + '\n            std__mgr__lane{0}_strm0_data_valid  ,'.format(lane) 
+    pLine = pLine + '\n            mgr__std__lane{0}_strm1_ready       ,'.format(lane)
+    pLine = pLine + '\n            std__mgr__lane{0}_strm1_cntl        ,'.format(lane) 
+    pLine = pLine + '\n            std__mgr__lane{0}_strm1_data        ,'.format(lane) 
+    pLine = pLine + '\n            std__mgr__lane{0}_strm1_data_valid  ,'.format(lane) 
+    pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
 
   f = open('../HDL/common/system_stack_bus_downstream_instance_wires.vh', 'w')
   pLine = ""
@@ -3733,7 +3796,6 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-
   f = open('../HDL/common/system_stack_bus_upstream_instance_wires.vh', 'w')
   pLine = ""
 
@@ -3765,6 +3827,9 @@ if __name__ == "__main__":
 
   f.write(pLine)
   f.close()
+
+
+
   #------------------------------------------------------------------------------------------------------------------------------------------------------
   #
 
