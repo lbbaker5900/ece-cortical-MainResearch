@@ -44,12 +44,12 @@ module manager (
             //-------------------------------
             // Stack Bus - Upstream
             //
-            mgr__stu__valid         ,
-            mgr__stu__cntl          ,
-            stu__mgr__ready         ,
-            mgr__stu__tymgr          ,  // Control or Data, Vector or scalar
-            mgr__stu__data          ,
-            mgr__stu__oob_data      ,
+            stu__mgr__valid         ,
+            stu__mgr__cntl          ,
+            mgr__stu__ready         ,
+            stu__mgr__type          ,  // Control or Data, Vector or scalar
+            stu__mgr__data          ,
+            stu__mgr__oob_data      ,
  
             //-------------------------------
             // NoC
@@ -59,10 +59,10 @@ module manager (
  
             // General control and status 
             sys__mgr__mgrId               , 
-            sys__mgr__allSynchronized     , 
-            mgr__sys__thisSynchronized    , 
-            mgr__sys__ready               , 
-            mgr__sys__complete            , 
+            mgr__sys__allSynchronized     , 
+            sys__mgr__thisSynchronized    , 
+            sys__mgr__ready               , 
+            sys__mgr__complete            , 
 
             clk                    ,
             reset_poweron    
@@ -74,10 +74,10 @@ module manager (
 
   // General control and status                                
   input   [`MGR_MGR_ID_RANGE    ]     sys__mgr__mgrId               ;
-  output                              sys__mgr__allSynchronized     ;
-  input                               mgr__sys__thisSynchronized    ; 
-  input                               mgr__sys__ready               ; 
-  input                               mgr__sys__complete            ; 
+  output                              mgr__sys__allSynchronized     ;
+  input                               sys__mgr__thisSynchronized    ; 
+  input                               sys__mgr__ready               ; 
+  input                               sys__mgr__complete            ; 
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
@@ -87,12 +87,12 @@ module manager (
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
   //
-  output                                         mgr__stu__valid       ;
-  output  [`COMMON_STD_INTF_CNTL_RANGE   ]       mgr__stu__cntl        ;
-  input                                          stu__mgr__ready       ;
-  output  [`STACK_UP_INTF_TYPE_RANGE     ]       mgr__stu__tymgr        ;  // Control or Data, Vector or scalar
-  output  [`STACK_UP_INTF_DATA_RANGE     ]       mgr__stu__data        ;
-  output  [`STACK_UP_INTF_OOB_DATA_RANGE ]       mgr__stu__oob_data    ;
+  output                                         stu__mgr__valid       ;
+  output  [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr__cntl        ;
+  input                                          mgr__stu__ready       ;
+  output  [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr__type        ;  // Control or Data, Vector or scalar
+  output  [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr__data        ;
+  output  [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data    ;
  
 
   //-------------------------------------------------------------------------------------------------
@@ -103,18 +103,75 @@ module manager (
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
   //
-  wire                                           mgr__stu__valid       ;
-  wire    [`COMMON_STD_INTF_CNTL_RANGE   ]       mgr__stu__cntl        ;
-  wire                                           stu__mgr__ready       ;
-  wire    [`STACK_UP_INTF_TYPE_RANGE     ]       mgr__stu__tymgr        ;  // Control or Data, Vector or scalar
-  wire    [`STACK_UP_INTF_DATA_RANGE     ]       mgr__stu__data        ;
-  wire    [`STACK_UP_INTF_OOB_DATA_RANGE ]       mgr__stu__oob_data    ;
+  wire                                           stu__mgr__valid       ;
+  wire    [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr__cntl        ;
+  wire                                           mgr__stu__ready       ;
+  wire    [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr__type        ;  // Control or Data, Vector or scalar
+  wire    [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr__data        ;
+  wire    [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data    ;
  
   //-------------------------------------------------------------------------------------------------
   // NoC
   //
   //`include "noc_cntl_noc_ports_declaration.vh"
 
+
+  wire  [`MGR_WU_ADDRESS_RANGE    ]     wuf__wum__addr          ;
+  wire  [`MGR_WU_ADDRESS_RANGE    ]     mcntl__wuf__start_addr  ;  // first WU address
+
+  wu_fetch wu_fetch (
+  
+          //-------------------------------
+          // To WU memory
+          .wuf__wum__read          ( wuf__wum__read           ),
+          .wuf__wum__addr          ( wuf__wum__addr           ),
+ 
+          //-------------------------------
+          // Control
+          .mcntl__wuf__enable      ( mcntl__wuf__enable       ),
+          .mcntl__wuf__start_addr  ( mcntl__wuf__start_addr   ),
+
+          //-------------------------------
+          // 
+          .xxx__wuf__stall         ( xxx__wuf__stall          ),
+ 
+          //-------------------------------
+          // General
+          .clk               ( clk               ),
+          .reset_poweron     ( reset_poweron     )
+        );
+
+
+  wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__icntl                ;  // instruction delineator
+  wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__dcntl                ;  // descriptor delineator
+  // WU Instruction option fields
+  wire  [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type    [`MGR_WU_OPT_PER_INST ] ;  // 
+  wire  [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value   [`MGR_WU_OPT_PER_INST ] ;  // 
+
+  wu_memory wu_memory (
+  
+          //-------------------------------
+          // From WU fetch 
+          .wuf__wum__read          ( wuf__wum__read           ),
+          .wuf__wum__addr          ( wuf__wum__addr           ),
+ 
+          //-------------------------------
+          // To WU decode
+          .wum__wud__valid         ( wum__wud__valid          ),
+          .wum__wud__icntl         ( wum__wud__icntl          ),
+          .wum__wud__dcntl         ( wum__wud__dcntl          ),
+          .wum__wud__option_type   ( wum__wud__option_type    ),
+          .wum__wud__option_value  ( wum__wud__option_value   ),
+
+          //-------------------------------
+          // 
+          .xxx__wuf__stall         ( xxx__wuf__stall          ),
+ 
+          //-------------------------------
+          // General
+          .clk               ( clk               ),
+          .reset_poweron     ( reset_poweron     )
+        );
 
 endmodule
 

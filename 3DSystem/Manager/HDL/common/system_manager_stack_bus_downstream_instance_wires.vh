@@ -1,16 +1,17 @@
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe0__peId                ;
-  wire                                        sys__pe0__allSynchronized     ;
-  wire                                        pe0__sys__thisSynchronized    ;
-  wire                                        pe0__sys__ready               ;
-  wire                                        pe0__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr0__sys__allSynchronized     ;
+  wire                                        sys__mgr0__thisSynchronized    ;
+  wire                                        sys__mgr0__ready               ;
+  wire                                        sys__mgr0__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr0__std__oob_cntl            ;
   wire                                        mgr0__std__oob_valid           ;
   wire                                        std__mgr0__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr0__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr0__std__oob_data            ;
+
   wire                                        std__mgr0__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr0__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr0__std__lane0_strm0_data        ;
@@ -331,18 +332,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr0__std__lane31_strm1_data        ;
   wire                                        mgr0__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe1__peId                ;
-  wire                                        sys__pe1__allSynchronized     ;
-  wire                                        pe1__sys__thisSynchronized    ;
-  wire                                        pe1__sys__ready               ;
-  wire                                        pe1__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr1__sys__allSynchronized     ;
+  wire                                        sys__mgr1__thisSynchronized    ;
+  wire                                        sys__mgr1__ready               ;
+  wire                                        sys__mgr1__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr1__std__oob_cntl            ;
   wire                                        mgr1__std__oob_valid           ;
   wire                                        std__mgr1__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr1__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr1__std__oob_data            ;
+
   wire                                        std__mgr1__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr1__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr1__std__lane0_strm0_data        ;
@@ -663,18 +665,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr1__std__lane31_strm1_data        ;
   wire                                        mgr1__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe2__peId                ;
-  wire                                        sys__pe2__allSynchronized     ;
-  wire                                        pe2__sys__thisSynchronized    ;
-  wire                                        pe2__sys__ready               ;
-  wire                                        pe2__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr2__sys__allSynchronized     ;
+  wire                                        sys__mgr2__thisSynchronized    ;
+  wire                                        sys__mgr2__ready               ;
+  wire                                        sys__mgr2__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr2__std__oob_cntl            ;
   wire                                        mgr2__std__oob_valid           ;
   wire                                        std__mgr2__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr2__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr2__std__oob_data            ;
+
   wire                                        std__mgr2__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr2__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr2__std__lane0_strm0_data        ;
@@ -995,18 +998,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr2__std__lane31_strm1_data        ;
   wire                                        mgr2__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe3__peId                ;
-  wire                                        sys__pe3__allSynchronized     ;
-  wire                                        pe3__sys__thisSynchronized    ;
-  wire                                        pe3__sys__ready               ;
-  wire                                        pe3__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr3__sys__allSynchronized     ;
+  wire                                        sys__mgr3__thisSynchronized    ;
+  wire                                        sys__mgr3__ready               ;
+  wire                                        sys__mgr3__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr3__std__oob_cntl            ;
   wire                                        mgr3__std__oob_valid           ;
   wire                                        std__mgr3__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr3__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr3__std__oob_data            ;
+
   wire                                        std__mgr3__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr3__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr3__std__lane0_strm0_data        ;
@@ -1327,18 +1331,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr3__std__lane31_strm1_data        ;
   wire                                        mgr3__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe4__peId                ;
-  wire                                        sys__pe4__allSynchronized     ;
-  wire                                        pe4__sys__thisSynchronized    ;
-  wire                                        pe4__sys__ready               ;
-  wire                                        pe4__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr4__sys__allSynchronized     ;
+  wire                                        sys__mgr4__thisSynchronized    ;
+  wire                                        sys__mgr4__ready               ;
+  wire                                        sys__mgr4__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr4__std__oob_cntl            ;
   wire                                        mgr4__std__oob_valid           ;
   wire                                        std__mgr4__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr4__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr4__std__oob_data            ;
+
   wire                                        std__mgr4__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr4__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr4__std__lane0_strm0_data        ;
@@ -1659,18 +1664,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr4__std__lane31_strm1_data        ;
   wire                                        mgr4__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe5__peId                ;
-  wire                                        sys__pe5__allSynchronized     ;
-  wire                                        pe5__sys__thisSynchronized    ;
-  wire                                        pe5__sys__ready               ;
-  wire                                        pe5__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr5__sys__allSynchronized     ;
+  wire                                        sys__mgr5__thisSynchronized    ;
+  wire                                        sys__mgr5__ready               ;
+  wire                                        sys__mgr5__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr5__std__oob_cntl            ;
   wire                                        mgr5__std__oob_valid           ;
   wire                                        std__mgr5__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr5__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr5__std__oob_data            ;
+
   wire                                        std__mgr5__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr5__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr5__std__lane0_strm0_data        ;
@@ -1991,18 +1997,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr5__std__lane31_strm1_data        ;
   wire                                        mgr5__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe6__peId                ;
-  wire                                        sys__pe6__allSynchronized     ;
-  wire                                        pe6__sys__thisSynchronized    ;
-  wire                                        pe6__sys__ready               ;
-  wire                                        pe6__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr6__sys__allSynchronized     ;
+  wire                                        sys__mgr6__thisSynchronized    ;
+  wire                                        sys__mgr6__ready               ;
+  wire                                        sys__mgr6__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr6__std__oob_cntl            ;
   wire                                        mgr6__std__oob_valid           ;
   wire                                        std__mgr6__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr6__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr6__std__oob_data            ;
+
   wire                                        std__mgr6__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr6__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr6__std__lane0_strm0_data        ;
@@ -2323,18 +2330,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr6__std__lane31_strm1_data        ;
   wire                                        mgr6__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe7__peId                ;
-  wire                                        sys__pe7__allSynchronized     ;
-  wire                                        pe7__sys__thisSynchronized    ;
-  wire                                        pe7__sys__ready               ;
-  wire                                        pe7__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr7__sys__allSynchronized     ;
+  wire                                        sys__mgr7__thisSynchronized    ;
+  wire                                        sys__mgr7__ready               ;
+  wire                                        sys__mgr7__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr7__std__oob_cntl            ;
   wire                                        mgr7__std__oob_valid           ;
   wire                                        std__mgr7__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr7__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr7__std__oob_data            ;
+
   wire                                        std__mgr7__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr7__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr7__std__lane0_strm0_data        ;
@@ -2655,18 +2663,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr7__std__lane31_strm1_data        ;
   wire                                        mgr7__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe8__peId                ;
-  wire                                        sys__pe8__allSynchronized     ;
-  wire                                        pe8__sys__thisSynchronized    ;
-  wire                                        pe8__sys__ready               ;
-  wire                                        pe8__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr8__sys__allSynchronized     ;
+  wire                                        sys__mgr8__thisSynchronized    ;
+  wire                                        sys__mgr8__ready               ;
+  wire                                        sys__mgr8__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr8__std__oob_cntl            ;
   wire                                        mgr8__std__oob_valid           ;
   wire                                        std__mgr8__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr8__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr8__std__oob_data            ;
+
   wire                                        std__mgr8__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr8__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr8__std__lane0_strm0_data        ;
@@ -2987,18 +2996,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr8__std__lane31_strm1_data        ;
   wire                                        mgr8__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe9__peId                ;
-  wire                                        sys__pe9__allSynchronized     ;
-  wire                                        pe9__sys__thisSynchronized    ;
-  wire                                        pe9__sys__ready               ;
-  wire                                        pe9__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr9__sys__allSynchronized     ;
+  wire                                        sys__mgr9__thisSynchronized    ;
+  wire                                        sys__mgr9__ready               ;
+  wire                                        sys__mgr9__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr9__std__oob_cntl            ;
   wire                                        mgr9__std__oob_valid           ;
   wire                                        std__mgr9__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr9__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr9__std__oob_data            ;
+
   wire                                        std__mgr9__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr9__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr9__std__lane0_strm0_data        ;
@@ -3319,18 +3329,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr9__std__lane31_strm1_data        ;
   wire                                        mgr9__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe10__peId                ;
-  wire                                        sys__pe10__allSynchronized     ;
-  wire                                        pe10__sys__thisSynchronized    ;
-  wire                                        pe10__sys__ready               ;
-  wire                                        pe10__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr10__sys__allSynchronized     ;
+  wire                                        sys__mgr10__thisSynchronized    ;
+  wire                                        sys__mgr10__ready               ;
+  wire                                        sys__mgr10__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr10__std__oob_cntl            ;
   wire                                        mgr10__std__oob_valid           ;
   wire                                        std__mgr10__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr10__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr10__std__oob_data            ;
+
   wire                                        std__mgr10__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr10__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr10__std__lane0_strm0_data        ;
@@ -3651,18 +3662,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr10__std__lane31_strm1_data        ;
   wire                                        mgr10__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe11__peId                ;
-  wire                                        sys__pe11__allSynchronized     ;
-  wire                                        pe11__sys__thisSynchronized    ;
-  wire                                        pe11__sys__ready               ;
-  wire                                        pe11__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr11__sys__allSynchronized     ;
+  wire                                        sys__mgr11__thisSynchronized    ;
+  wire                                        sys__mgr11__ready               ;
+  wire                                        sys__mgr11__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr11__std__oob_cntl            ;
   wire                                        mgr11__std__oob_valid           ;
   wire                                        std__mgr11__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr11__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr11__std__oob_data            ;
+
   wire                                        std__mgr11__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr11__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr11__std__lane0_strm0_data        ;
@@ -3983,18 +3995,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr11__std__lane31_strm1_data        ;
   wire                                        mgr11__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe12__peId                ;
-  wire                                        sys__pe12__allSynchronized     ;
-  wire                                        pe12__sys__thisSynchronized    ;
-  wire                                        pe12__sys__ready               ;
-  wire                                        pe12__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr12__sys__allSynchronized     ;
+  wire                                        sys__mgr12__thisSynchronized    ;
+  wire                                        sys__mgr12__ready               ;
+  wire                                        sys__mgr12__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr12__std__oob_cntl            ;
   wire                                        mgr12__std__oob_valid           ;
   wire                                        std__mgr12__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr12__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr12__std__oob_data            ;
+
   wire                                        std__mgr12__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr12__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr12__std__lane0_strm0_data        ;
@@ -4315,18 +4328,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr12__std__lane31_strm1_data        ;
   wire                                        mgr12__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe13__peId                ;
-  wire                                        sys__pe13__allSynchronized     ;
-  wire                                        pe13__sys__thisSynchronized    ;
-  wire                                        pe13__sys__ready               ;
-  wire                                        pe13__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr13__sys__allSynchronized     ;
+  wire                                        sys__mgr13__thisSynchronized    ;
+  wire                                        sys__mgr13__ready               ;
+  wire                                        sys__mgr13__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr13__std__oob_cntl            ;
   wire                                        mgr13__std__oob_valid           ;
   wire                                        std__mgr13__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr13__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr13__std__oob_data            ;
+
   wire                                        std__mgr13__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr13__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr13__std__lane0_strm0_data        ;
@@ -4647,18 +4661,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr13__std__lane31_strm1_data        ;
   wire                                        mgr13__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe14__peId                ;
-  wire                                        sys__pe14__allSynchronized     ;
-  wire                                        pe14__sys__thisSynchronized    ;
-  wire                                        pe14__sys__ready               ;
-  wire                                        pe14__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr14__sys__allSynchronized     ;
+  wire                                        sys__mgr14__thisSynchronized    ;
+  wire                                        sys__mgr14__ready               ;
+  wire                                        sys__mgr14__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr14__std__oob_cntl            ;
   wire                                        mgr14__std__oob_valid           ;
   wire                                        std__mgr14__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr14__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr14__std__oob_data            ;
+
   wire                                        std__mgr14__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr14__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr14__std__lane0_strm0_data        ;
@@ -4979,18 +4994,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr14__std__lane31_strm1_data        ;
   wire                                        mgr14__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe15__peId                ;
-  wire                                        sys__pe15__allSynchronized     ;
-  wire                                        pe15__sys__thisSynchronized    ;
-  wire                                        pe15__sys__ready               ;
-  wire                                        pe15__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr15__sys__allSynchronized     ;
+  wire                                        sys__mgr15__thisSynchronized    ;
+  wire                                        sys__mgr15__ready               ;
+  wire                                        sys__mgr15__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr15__std__oob_cntl            ;
   wire                                        mgr15__std__oob_valid           ;
   wire                                        std__mgr15__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr15__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr15__std__oob_data            ;
+
   wire                                        std__mgr15__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr15__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr15__std__lane0_strm0_data        ;
@@ -5311,18 +5327,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr15__std__lane31_strm1_data        ;
   wire                                        mgr15__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe16__peId                ;
-  wire                                        sys__pe16__allSynchronized     ;
-  wire                                        pe16__sys__thisSynchronized    ;
-  wire                                        pe16__sys__ready               ;
-  wire                                        pe16__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr16__sys__allSynchronized     ;
+  wire                                        sys__mgr16__thisSynchronized    ;
+  wire                                        sys__mgr16__ready               ;
+  wire                                        sys__mgr16__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr16__std__oob_cntl            ;
   wire                                        mgr16__std__oob_valid           ;
   wire                                        std__mgr16__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr16__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr16__std__oob_data            ;
+
   wire                                        std__mgr16__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr16__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr16__std__lane0_strm0_data        ;
@@ -5643,18 +5660,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr16__std__lane31_strm1_data        ;
   wire                                        mgr16__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe17__peId                ;
-  wire                                        sys__pe17__allSynchronized     ;
-  wire                                        pe17__sys__thisSynchronized    ;
-  wire                                        pe17__sys__ready               ;
-  wire                                        pe17__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr17__sys__allSynchronized     ;
+  wire                                        sys__mgr17__thisSynchronized    ;
+  wire                                        sys__mgr17__ready               ;
+  wire                                        sys__mgr17__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr17__std__oob_cntl            ;
   wire                                        mgr17__std__oob_valid           ;
   wire                                        std__mgr17__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr17__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr17__std__oob_data            ;
+
   wire                                        std__mgr17__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr17__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr17__std__lane0_strm0_data        ;
@@ -5975,18 +5993,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr17__std__lane31_strm1_data        ;
   wire                                        mgr17__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe18__peId                ;
-  wire                                        sys__pe18__allSynchronized     ;
-  wire                                        pe18__sys__thisSynchronized    ;
-  wire                                        pe18__sys__ready               ;
-  wire                                        pe18__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr18__sys__allSynchronized     ;
+  wire                                        sys__mgr18__thisSynchronized    ;
+  wire                                        sys__mgr18__ready               ;
+  wire                                        sys__mgr18__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr18__std__oob_cntl            ;
   wire                                        mgr18__std__oob_valid           ;
   wire                                        std__mgr18__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr18__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr18__std__oob_data            ;
+
   wire                                        std__mgr18__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr18__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr18__std__lane0_strm0_data        ;
@@ -6307,18 +6326,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr18__std__lane31_strm1_data        ;
   wire                                        mgr18__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe19__peId                ;
-  wire                                        sys__pe19__allSynchronized     ;
-  wire                                        pe19__sys__thisSynchronized    ;
-  wire                                        pe19__sys__ready               ;
-  wire                                        pe19__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr19__sys__allSynchronized     ;
+  wire                                        sys__mgr19__thisSynchronized    ;
+  wire                                        sys__mgr19__ready               ;
+  wire                                        sys__mgr19__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr19__std__oob_cntl            ;
   wire                                        mgr19__std__oob_valid           ;
   wire                                        std__mgr19__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr19__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr19__std__oob_data            ;
+
   wire                                        std__mgr19__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr19__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr19__std__lane0_strm0_data        ;
@@ -6639,18 +6659,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr19__std__lane31_strm1_data        ;
   wire                                        mgr19__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe20__peId                ;
-  wire                                        sys__pe20__allSynchronized     ;
-  wire                                        pe20__sys__thisSynchronized    ;
-  wire                                        pe20__sys__ready               ;
-  wire                                        pe20__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr20__sys__allSynchronized     ;
+  wire                                        sys__mgr20__thisSynchronized    ;
+  wire                                        sys__mgr20__ready               ;
+  wire                                        sys__mgr20__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr20__std__oob_cntl            ;
   wire                                        mgr20__std__oob_valid           ;
   wire                                        std__mgr20__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr20__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr20__std__oob_data            ;
+
   wire                                        std__mgr20__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr20__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr20__std__lane0_strm0_data        ;
@@ -6971,18 +6992,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr20__std__lane31_strm1_data        ;
   wire                                        mgr20__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe21__peId                ;
-  wire                                        sys__pe21__allSynchronized     ;
-  wire                                        pe21__sys__thisSynchronized    ;
-  wire                                        pe21__sys__ready               ;
-  wire                                        pe21__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr21__sys__allSynchronized     ;
+  wire                                        sys__mgr21__thisSynchronized    ;
+  wire                                        sys__mgr21__ready               ;
+  wire                                        sys__mgr21__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr21__std__oob_cntl            ;
   wire                                        mgr21__std__oob_valid           ;
   wire                                        std__mgr21__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr21__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr21__std__oob_data            ;
+
   wire                                        std__mgr21__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr21__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr21__std__lane0_strm0_data        ;
@@ -7303,18 +7325,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr21__std__lane31_strm1_data        ;
   wire                                        mgr21__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe22__peId                ;
-  wire                                        sys__pe22__allSynchronized     ;
-  wire                                        pe22__sys__thisSynchronized    ;
-  wire                                        pe22__sys__ready               ;
-  wire                                        pe22__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr22__sys__allSynchronized     ;
+  wire                                        sys__mgr22__thisSynchronized    ;
+  wire                                        sys__mgr22__ready               ;
+  wire                                        sys__mgr22__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr22__std__oob_cntl            ;
   wire                                        mgr22__std__oob_valid           ;
   wire                                        std__mgr22__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr22__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr22__std__oob_data            ;
+
   wire                                        std__mgr22__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr22__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr22__std__lane0_strm0_data        ;
@@ -7635,18 +7658,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr22__std__lane31_strm1_data        ;
   wire                                        mgr22__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe23__peId                ;
-  wire                                        sys__pe23__allSynchronized     ;
-  wire                                        pe23__sys__thisSynchronized    ;
-  wire                                        pe23__sys__ready               ;
-  wire                                        pe23__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr23__sys__allSynchronized     ;
+  wire                                        sys__mgr23__thisSynchronized    ;
+  wire                                        sys__mgr23__ready               ;
+  wire                                        sys__mgr23__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr23__std__oob_cntl            ;
   wire                                        mgr23__std__oob_valid           ;
   wire                                        std__mgr23__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr23__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr23__std__oob_data            ;
+
   wire                                        std__mgr23__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr23__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr23__std__lane0_strm0_data        ;
@@ -7967,18 +7991,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr23__std__lane31_strm1_data        ;
   wire                                        mgr23__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe24__peId                ;
-  wire                                        sys__pe24__allSynchronized     ;
-  wire                                        pe24__sys__thisSynchronized    ;
-  wire                                        pe24__sys__ready               ;
-  wire                                        pe24__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr24__sys__allSynchronized     ;
+  wire                                        sys__mgr24__thisSynchronized    ;
+  wire                                        sys__mgr24__ready               ;
+  wire                                        sys__mgr24__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr24__std__oob_cntl            ;
   wire                                        mgr24__std__oob_valid           ;
   wire                                        std__mgr24__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr24__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr24__std__oob_data            ;
+
   wire                                        std__mgr24__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr24__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr24__std__lane0_strm0_data        ;
@@ -8299,18 +8324,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr24__std__lane31_strm1_data        ;
   wire                                        mgr24__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe25__peId                ;
-  wire                                        sys__pe25__allSynchronized     ;
-  wire                                        pe25__sys__thisSynchronized    ;
-  wire                                        pe25__sys__ready               ;
-  wire                                        pe25__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr25__sys__allSynchronized     ;
+  wire                                        sys__mgr25__thisSynchronized    ;
+  wire                                        sys__mgr25__ready               ;
+  wire                                        sys__mgr25__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr25__std__oob_cntl            ;
   wire                                        mgr25__std__oob_valid           ;
   wire                                        std__mgr25__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr25__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr25__std__oob_data            ;
+
   wire                                        std__mgr25__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr25__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr25__std__lane0_strm0_data        ;
@@ -8631,18 +8657,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr25__std__lane31_strm1_data        ;
   wire                                        mgr25__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe26__peId                ;
-  wire                                        sys__pe26__allSynchronized     ;
-  wire                                        pe26__sys__thisSynchronized    ;
-  wire                                        pe26__sys__ready               ;
-  wire                                        pe26__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr26__sys__allSynchronized     ;
+  wire                                        sys__mgr26__thisSynchronized    ;
+  wire                                        sys__mgr26__ready               ;
+  wire                                        sys__mgr26__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr26__std__oob_cntl            ;
   wire                                        mgr26__std__oob_valid           ;
   wire                                        std__mgr26__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr26__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr26__std__oob_data            ;
+
   wire                                        std__mgr26__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr26__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr26__std__lane0_strm0_data        ;
@@ -8963,18 +8990,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr26__std__lane31_strm1_data        ;
   wire                                        mgr26__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe27__peId                ;
-  wire                                        sys__pe27__allSynchronized     ;
-  wire                                        pe27__sys__thisSynchronized    ;
-  wire                                        pe27__sys__ready               ;
-  wire                                        pe27__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr27__sys__allSynchronized     ;
+  wire                                        sys__mgr27__thisSynchronized    ;
+  wire                                        sys__mgr27__ready               ;
+  wire                                        sys__mgr27__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr27__std__oob_cntl            ;
   wire                                        mgr27__std__oob_valid           ;
   wire                                        std__mgr27__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr27__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr27__std__oob_data            ;
+
   wire                                        std__mgr27__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr27__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr27__std__lane0_strm0_data        ;
@@ -9295,18 +9323,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr27__std__lane31_strm1_data        ;
   wire                                        mgr27__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe28__peId                ;
-  wire                                        sys__pe28__allSynchronized     ;
-  wire                                        pe28__sys__thisSynchronized    ;
-  wire                                        pe28__sys__ready               ;
-  wire                                        pe28__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr28__sys__allSynchronized     ;
+  wire                                        sys__mgr28__thisSynchronized    ;
+  wire                                        sys__mgr28__ready               ;
+  wire                                        sys__mgr28__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr28__std__oob_cntl            ;
   wire                                        mgr28__std__oob_valid           ;
   wire                                        std__mgr28__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr28__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr28__std__oob_data            ;
+
   wire                                        std__mgr28__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr28__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr28__std__lane0_strm0_data        ;
@@ -9627,18 +9656,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr28__std__lane31_strm1_data        ;
   wire                                        mgr28__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe29__peId                ;
-  wire                                        sys__pe29__allSynchronized     ;
-  wire                                        pe29__sys__thisSynchronized    ;
-  wire                                        pe29__sys__ready               ;
-  wire                                        pe29__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr29__sys__allSynchronized     ;
+  wire                                        sys__mgr29__thisSynchronized    ;
+  wire                                        sys__mgr29__ready               ;
+  wire                                        sys__mgr29__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr29__std__oob_cntl            ;
   wire                                        mgr29__std__oob_valid           ;
   wire                                        std__mgr29__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr29__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr29__std__oob_data            ;
+
   wire                                        std__mgr29__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr29__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr29__std__lane0_strm0_data        ;
@@ -9959,18 +9989,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr29__std__lane31_strm1_data        ;
   wire                                        mgr29__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe30__peId                ;
-  wire                                        sys__pe30__allSynchronized     ;
-  wire                                        pe30__sys__thisSynchronized    ;
-  wire                                        pe30__sys__ready               ;
-  wire                                        pe30__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr30__sys__allSynchronized     ;
+  wire                                        sys__mgr30__thisSynchronized    ;
+  wire                                        sys__mgr30__ready               ;
+  wire                                        sys__mgr30__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr30__std__oob_cntl            ;
   wire                                        mgr30__std__oob_valid           ;
   wire                                        std__mgr30__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr30__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr30__std__oob_data            ;
+
   wire                                        std__mgr30__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr30__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr30__std__lane0_strm0_data        ;
@@ -10291,18 +10322,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr30__std__lane31_strm1_data        ;
   wire                                        mgr30__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe31__peId                ;
-  wire                                        sys__pe31__allSynchronized     ;
-  wire                                        pe31__sys__thisSynchronized    ;
-  wire                                        pe31__sys__ready               ;
-  wire                                        pe31__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr31__sys__allSynchronized     ;
+  wire                                        sys__mgr31__thisSynchronized    ;
+  wire                                        sys__mgr31__ready               ;
+  wire                                        sys__mgr31__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr31__std__oob_cntl            ;
   wire                                        mgr31__std__oob_valid           ;
   wire                                        std__mgr31__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr31__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr31__std__oob_data            ;
+
   wire                                        std__mgr31__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr31__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr31__std__lane0_strm0_data        ;
@@ -10623,18 +10655,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr31__std__lane31_strm1_data        ;
   wire                                        mgr31__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe32__peId                ;
-  wire                                        sys__pe32__allSynchronized     ;
-  wire                                        pe32__sys__thisSynchronized    ;
-  wire                                        pe32__sys__ready               ;
-  wire                                        pe32__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr32__sys__allSynchronized     ;
+  wire                                        sys__mgr32__thisSynchronized    ;
+  wire                                        sys__mgr32__ready               ;
+  wire                                        sys__mgr32__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr32__std__oob_cntl            ;
   wire                                        mgr32__std__oob_valid           ;
   wire                                        std__mgr32__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr32__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr32__std__oob_data            ;
+
   wire                                        std__mgr32__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr32__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr32__std__lane0_strm0_data        ;
@@ -10955,18 +10988,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr32__std__lane31_strm1_data        ;
   wire                                        mgr32__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe33__peId                ;
-  wire                                        sys__pe33__allSynchronized     ;
-  wire                                        pe33__sys__thisSynchronized    ;
-  wire                                        pe33__sys__ready               ;
-  wire                                        pe33__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr33__sys__allSynchronized     ;
+  wire                                        sys__mgr33__thisSynchronized    ;
+  wire                                        sys__mgr33__ready               ;
+  wire                                        sys__mgr33__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr33__std__oob_cntl            ;
   wire                                        mgr33__std__oob_valid           ;
   wire                                        std__mgr33__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr33__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr33__std__oob_data            ;
+
   wire                                        std__mgr33__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr33__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr33__std__lane0_strm0_data        ;
@@ -11287,18 +11321,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr33__std__lane31_strm1_data        ;
   wire                                        mgr33__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe34__peId                ;
-  wire                                        sys__pe34__allSynchronized     ;
-  wire                                        pe34__sys__thisSynchronized    ;
-  wire                                        pe34__sys__ready               ;
-  wire                                        pe34__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr34__sys__allSynchronized     ;
+  wire                                        sys__mgr34__thisSynchronized    ;
+  wire                                        sys__mgr34__ready               ;
+  wire                                        sys__mgr34__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr34__std__oob_cntl            ;
   wire                                        mgr34__std__oob_valid           ;
   wire                                        std__mgr34__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr34__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr34__std__oob_data            ;
+
   wire                                        std__mgr34__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr34__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr34__std__lane0_strm0_data        ;
@@ -11619,18 +11654,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr34__std__lane31_strm1_data        ;
   wire                                        mgr34__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe35__peId                ;
-  wire                                        sys__pe35__allSynchronized     ;
-  wire                                        pe35__sys__thisSynchronized    ;
-  wire                                        pe35__sys__ready               ;
-  wire                                        pe35__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr35__sys__allSynchronized     ;
+  wire                                        sys__mgr35__thisSynchronized    ;
+  wire                                        sys__mgr35__ready               ;
+  wire                                        sys__mgr35__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr35__std__oob_cntl            ;
   wire                                        mgr35__std__oob_valid           ;
   wire                                        std__mgr35__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr35__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr35__std__oob_data            ;
+
   wire                                        std__mgr35__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr35__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr35__std__lane0_strm0_data        ;
@@ -11951,18 +11987,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr35__std__lane31_strm1_data        ;
   wire                                        mgr35__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe36__peId                ;
-  wire                                        sys__pe36__allSynchronized     ;
-  wire                                        pe36__sys__thisSynchronized    ;
-  wire                                        pe36__sys__ready               ;
-  wire                                        pe36__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr36__sys__allSynchronized     ;
+  wire                                        sys__mgr36__thisSynchronized    ;
+  wire                                        sys__mgr36__ready               ;
+  wire                                        sys__mgr36__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr36__std__oob_cntl            ;
   wire                                        mgr36__std__oob_valid           ;
   wire                                        std__mgr36__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr36__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr36__std__oob_data            ;
+
   wire                                        std__mgr36__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr36__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr36__std__lane0_strm0_data        ;
@@ -12283,18 +12320,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr36__std__lane31_strm1_data        ;
   wire                                        mgr36__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe37__peId                ;
-  wire                                        sys__pe37__allSynchronized     ;
-  wire                                        pe37__sys__thisSynchronized    ;
-  wire                                        pe37__sys__ready               ;
-  wire                                        pe37__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr37__sys__allSynchronized     ;
+  wire                                        sys__mgr37__thisSynchronized    ;
+  wire                                        sys__mgr37__ready               ;
+  wire                                        sys__mgr37__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr37__std__oob_cntl            ;
   wire                                        mgr37__std__oob_valid           ;
   wire                                        std__mgr37__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr37__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr37__std__oob_data            ;
+
   wire                                        std__mgr37__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr37__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr37__std__lane0_strm0_data        ;
@@ -12615,18 +12653,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr37__std__lane31_strm1_data        ;
   wire                                        mgr37__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe38__peId                ;
-  wire                                        sys__pe38__allSynchronized     ;
-  wire                                        pe38__sys__thisSynchronized    ;
-  wire                                        pe38__sys__ready               ;
-  wire                                        pe38__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr38__sys__allSynchronized     ;
+  wire                                        sys__mgr38__thisSynchronized    ;
+  wire                                        sys__mgr38__ready               ;
+  wire                                        sys__mgr38__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr38__std__oob_cntl            ;
   wire                                        mgr38__std__oob_valid           ;
   wire                                        std__mgr38__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr38__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr38__std__oob_data            ;
+
   wire                                        std__mgr38__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr38__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr38__std__lane0_strm0_data        ;
@@ -12947,18 +12986,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr38__std__lane31_strm1_data        ;
   wire                                        mgr38__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe39__peId                ;
-  wire                                        sys__pe39__allSynchronized     ;
-  wire                                        pe39__sys__thisSynchronized    ;
-  wire                                        pe39__sys__ready               ;
-  wire                                        pe39__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr39__sys__allSynchronized     ;
+  wire                                        sys__mgr39__thisSynchronized    ;
+  wire                                        sys__mgr39__ready               ;
+  wire                                        sys__mgr39__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr39__std__oob_cntl            ;
   wire                                        mgr39__std__oob_valid           ;
   wire                                        std__mgr39__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr39__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr39__std__oob_data            ;
+
   wire                                        std__mgr39__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr39__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr39__std__lane0_strm0_data        ;
@@ -13279,18 +13319,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr39__std__lane31_strm1_data        ;
   wire                                        mgr39__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe40__peId                ;
-  wire                                        sys__pe40__allSynchronized     ;
-  wire                                        pe40__sys__thisSynchronized    ;
-  wire                                        pe40__sys__ready               ;
-  wire                                        pe40__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr40__sys__allSynchronized     ;
+  wire                                        sys__mgr40__thisSynchronized    ;
+  wire                                        sys__mgr40__ready               ;
+  wire                                        sys__mgr40__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr40__std__oob_cntl            ;
   wire                                        mgr40__std__oob_valid           ;
   wire                                        std__mgr40__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr40__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr40__std__oob_data            ;
+
   wire                                        std__mgr40__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr40__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr40__std__lane0_strm0_data        ;
@@ -13611,18 +13652,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr40__std__lane31_strm1_data        ;
   wire                                        mgr40__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe41__peId                ;
-  wire                                        sys__pe41__allSynchronized     ;
-  wire                                        pe41__sys__thisSynchronized    ;
-  wire                                        pe41__sys__ready               ;
-  wire                                        pe41__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr41__sys__allSynchronized     ;
+  wire                                        sys__mgr41__thisSynchronized    ;
+  wire                                        sys__mgr41__ready               ;
+  wire                                        sys__mgr41__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr41__std__oob_cntl            ;
   wire                                        mgr41__std__oob_valid           ;
   wire                                        std__mgr41__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr41__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr41__std__oob_data            ;
+
   wire                                        std__mgr41__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr41__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr41__std__lane0_strm0_data        ;
@@ -13943,18 +13985,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr41__std__lane31_strm1_data        ;
   wire                                        mgr41__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe42__peId                ;
-  wire                                        sys__pe42__allSynchronized     ;
-  wire                                        pe42__sys__thisSynchronized    ;
-  wire                                        pe42__sys__ready               ;
-  wire                                        pe42__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr42__sys__allSynchronized     ;
+  wire                                        sys__mgr42__thisSynchronized    ;
+  wire                                        sys__mgr42__ready               ;
+  wire                                        sys__mgr42__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr42__std__oob_cntl            ;
   wire                                        mgr42__std__oob_valid           ;
   wire                                        std__mgr42__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr42__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr42__std__oob_data            ;
+
   wire                                        std__mgr42__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr42__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr42__std__lane0_strm0_data        ;
@@ -14275,18 +14318,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr42__std__lane31_strm1_data        ;
   wire                                        mgr42__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe43__peId                ;
-  wire                                        sys__pe43__allSynchronized     ;
-  wire                                        pe43__sys__thisSynchronized    ;
-  wire                                        pe43__sys__ready               ;
-  wire                                        pe43__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr43__sys__allSynchronized     ;
+  wire                                        sys__mgr43__thisSynchronized    ;
+  wire                                        sys__mgr43__ready               ;
+  wire                                        sys__mgr43__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr43__std__oob_cntl            ;
   wire                                        mgr43__std__oob_valid           ;
   wire                                        std__mgr43__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr43__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr43__std__oob_data            ;
+
   wire                                        std__mgr43__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr43__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr43__std__lane0_strm0_data        ;
@@ -14607,18 +14651,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr43__std__lane31_strm1_data        ;
   wire                                        mgr43__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe44__peId                ;
-  wire                                        sys__pe44__allSynchronized     ;
-  wire                                        pe44__sys__thisSynchronized    ;
-  wire                                        pe44__sys__ready               ;
-  wire                                        pe44__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr44__sys__allSynchronized     ;
+  wire                                        sys__mgr44__thisSynchronized    ;
+  wire                                        sys__mgr44__ready               ;
+  wire                                        sys__mgr44__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr44__std__oob_cntl            ;
   wire                                        mgr44__std__oob_valid           ;
   wire                                        std__mgr44__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr44__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr44__std__oob_data            ;
+
   wire                                        std__mgr44__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr44__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr44__std__lane0_strm0_data        ;
@@ -14939,18 +14984,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr44__std__lane31_strm1_data        ;
   wire                                        mgr44__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe45__peId                ;
-  wire                                        sys__pe45__allSynchronized     ;
-  wire                                        pe45__sys__thisSynchronized    ;
-  wire                                        pe45__sys__ready               ;
-  wire                                        pe45__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr45__sys__allSynchronized     ;
+  wire                                        sys__mgr45__thisSynchronized    ;
+  wire                                        sys__mgr45__ready               ;
+  wire                                        sys__mgr45__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr45__std__oob_cntl            ;
   wire                                        mgr45__std__oob_valid           ;
   wire                                        std__mgr45__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr45__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr45__std__oob_data            ;
+
   wire                                        std__mgr45__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr45__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr45__std__lane0_strm0_data        ;
@@ -15271,18 +15317,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr45__std__lane31_strm1_data        ;
   wire                                        mgr45__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe46__peId                ;
-  wire                                        sys__pe46__allSynchronized     ;
-  wire                                        pe46__sys__thisSynchronized    ;
-  wire                                        pe46__sys__ready               ;
-  wire                                        pe46__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr46__sys__allSynchronized     ;
+  wire                                        sys__mgr46__thisSynchronized    ;
+  wire                                        sys__mgr46__ready               ;
+  wire                                        sys__mgr46__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr46__std__oob_cntl            ;
   wire                                        mgr46__std__oob_valid           ;
   wire                                        std__mgr46__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr46__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr46__std__oob_data            ;
+
   wire                                        std__mgr46__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr46__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr46__std__lane0_strm0_data        ;
@@ -15603,18 +15650,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr46__std__lane31_strm1_data        ;
   wire                                        mgr46__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe47__peId                ;
-  wire                                        sys__pe47__allSynchronized     ;
-  wire                                        pe47__sys__thisSynchronized    ;
-  wire                                        pe47__sys__ready               ;
-  wire                                        pe47__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr47__sys__allSynchronized     ;
+  wire                                        sys__mgr47__thisSynchronized    ;
+  wire                                        sys__mgr47__ready               ;
+  wire                                        sys__mgr47__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr47__std__oob_cntl            ;
   wire                                        mgr47__std__oob_valid           ;
   wire                                        std__mgr47__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr47__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr47__std__oob_data            ;
+
   wire                                        std__mgr47__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr47__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr47__std__lane0_strm0_data        ;
@@ -15935,18 +15983,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr47__std__lane31_strm1_data        ;
   wire                                        mgr47__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe48__peId                ;
-  wire                                        sys__pe48__allSynchronized     ;
-  wire                                        pe48__sys__thisSynchronized    ;
-  wire                                        pe48__sys__ready               ;
-  wire                                        pe48__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr48__sys__allSynchronized     ;
+  wire                                        sys__mgr48__thisSynchronized    ;
+  wire                                        sys__mgr48__ready               ;
+  wire                                        sys__mgr48__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr48__std__oob_cntl            ;
   wire                                        mgr48__std__oob_valid           ;
   wire                                        std__mgr48__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr48__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr48__std__oob_data            ;
+
   wire                                        std__mgr48__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr48__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr48__std__lane0_strm0_data        ;
@@ -16267,18 +16316,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr48__std__lane31_strm1_data        ;
   wire                                        mgr48__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe49__peId                ;
-  wire                                        sys__pe49__allSynchronized     ;
-  wire                                        pe49__sys__thisSynchronized    ;
-  wire                                        pe49__sys__ready               ;
-  wire                                        pe49__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr49__sys__allSynchronized     ;
+  wire                                        sys__mgr49__thisSynchronized    ;
+  wire                                        sys__mgr49__ready               ;
+  wire                                        sys__mgr49__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr49__std__oob_cntl            ;
   wire                                        mgr49__std__oob_valid           ;
   wire                                        std__mgr49__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr49__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr49__std__oob_data            ;
+
   wire                                        std__mgr49__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr49__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr49__std__lane0_strm0_data        ;
@@ -16599,18 +16649,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr49__std__lane31_strm1_data        ;
   wire                                        mgr49__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe50__peId                ;
-  wire                                        sys__pe50__allSynchronized     ;
-  wire                                        pe50__sys__thisSynchronized    ;
-  wire                                        pe50__sys__ready               ;
-  wire                                        pe50__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr50__sys__allSynchronized     ;
+  wire                                        sys__mgr50__thisSynchronized    ;
+  wire                                        sys__mgr50__ready               ;
+  wire                                        sys__mgr50__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr50__std__oob_cntl            ;
   wire                                        mgr50__std__oob_valid           ;
   wire                                        std__mgr50__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr50__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr50__std__oob_data            ;
+
   wire                                        std__mgr50__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr50__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr50__std__lane0_strm0_data        ;
@@ -16931,18 +16982,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr50__std__lane31_strm1_data        ;
   wire                                        mgr50__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe51__peId                ;
-  wire                                        sys__pe51__allSynchronized     ;
-  wire                                        pe51__sys__thisSynchronized    ;
-  wire                                        pe51__sys__ready               ;
-  wire                                        pe51__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr51__sys__allSynchronized     ;
+  wire                                        sys__mgr51__thisSynchronized    ;
+  wire                                        sys__mgr51__ready               ;
+  wire                                        sys__mgr51__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr51__std__oob_cntl            ;
   wire                                        mgr51__std__oob_valid           ;
   wire                                        std__mgr51__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr51__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr51__std__oob_data            ;
+
   wire                                        std__mgr51__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr51__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr51__std__lane0_strm0_data        ;
@@ -17263,18 +17315,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr51__std__lane31_strm1_data        ;
   wire                                        mgr51__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe52__peId                ;
-  wire                                        sys__pe52__allSynchronized     ;
-  wire                                        pe52__sys__thisSynchronized    ;
-  wire                                        pe52__sys__ready               ;
-  wire                                        pe52__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr52__sys__allSynchronized     ;
+  wire                                        sys__mgr52__thisSynchronized    ;
+  wire                                        sys__mgr52__ready               ;
+  wire                                        sys__mgr52__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr52__std__oob_cntl            ;
   wire                                        mgr52__std__oob_valid           ;
   wire                                        std__mgr52__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr52__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr52__std__oob_data            ;
+
   wire                                        std__mgr52__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr52__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr52__std__lane0_strm0_data        ;
@@ -17595,18 +17648,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr52__std__lane31_strm1_data        ;
   wire                                        mgr52__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe53__peId                ;
-  wire                                        sys__pe53__allSynchronized     ;
-  wire                                        pe53__sys__thisSynchronized    ;
-  wire                                        pe53__sys__ready               ;
-  wire                                        pe53__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr53__sys__allSynchronized     ;
+  wire                                        sys__mgr53__thisSynchronized    ;
+  wire                                        sys__mgr53__ready               ;
+  wire                                        sys__mgr53__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr53__std__oob_cntl            ;
   wire                                        mgr53__std__oob_valid           ;
   wire                                        std__mgr53__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr53__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr53__std__oob_data            ;
+
   wire                                        std__mgr53__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr53__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr53__std__lane0_strm0_data        ;
@@ -17927,18 +17981,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr53__std__lane31_strm1_data        ;
   wire                                        mgr53__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe54__peId                ;
-  wire                                        sys__pe54__allSynchronized     ;
-  wire                                        pe54__sys__thisSynchronized    ;
-  wire                                        pe54__sys__ready               ;
-  wire                                        pe54__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr54__sys__allSynchronized     ;
+  wire                                        sys__mgr54__thisSynchronized    ;
+  wire                                        sys__mgr54__ready               ;
+  wire                                        sys__mgr54__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr54__std__oob_cntl            ;
   wire                                        mgr54__std__oob_valid           ;
   wire                                        std__mgr54__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr54__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr54__std__oob_data            ;
+
   wire                                        std__mgr54__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr54__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr54__std__lane0_strm0_data        ;
@@ -18259,18 +18314,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr54__std__lane31_strm1_data        ;
   wire                                        mgr54__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe55__peId                ;
-  wire                                        sys__pe55__allSynchronized     ;
-  wire                                        pe55__sys__thisSynchronized    ;
-  wire                                        pe55__sys__ready               ;
-  wire                                        pe55__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr55__sys__allSynchronized     ;
+  wire                                        sys__mgr55__thisSynchronized    ;
+  wire                                        sys__mgr55__ready               ;
+  wire                                        sys__mgr55__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr55__std__oob_cntl            ;
   wire                                        mgr55__std__oob_valid           ;
   wire                                        std__mgr55__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr55__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr55__std__oob_data            ;
+
   wire                                        std__mgr55__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr55__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr55__std__lane0_strm0_data        ;
@@ -18591,18 +18647,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr55__std__lane31_strm1_data        ;
   wire                                        mgr55__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe56__peId                ;
-  wire                                        sys__pe56__allSynchronized     ;
-  wire                                        pe56__sys__thisSynchronized    ;
-  wire                                        pe56__sys__ready               ;
-  wire                                        pe56__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr56__sys__allSynchronized     ;
+  wire                                        sys__mgr56__thisSynchronized    ;
+  wire                                        sys__mgr56__ready               ;
+  wire                                        sys__mgr56__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr56__std__oob_cntl            ;
   wire                                        mgr56__std__oob_valid           ;
   wire                                        std__mgr56__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr56__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr56__std__oob_data            ;
+
   wire                                        std__mgr56__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr56__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr56__std__lane0_strm0_data        ;
@@ -18923,18 +18980,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr56__std__lane31_strm1_data        ;
   wire                                        mgr56__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe57__peId                ;
-  wire                                        sys__pe57__allSynchronized     ;
-  wire                                        pe57__sys__thisSynchronized    ;
-  wire                                        pe57__sys__ready               ;
-  wire                                        pe57__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr57__sys__allSynchronized     ;
+  wire                                        sys__mgr57__thisSynchronized    ;
+  wire                                        sys__mgr57__ready               ;
+  wire                                        sys__mgr57__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr57__std__oob_cntl            ;
   wire                                        mgr57__std__oob_valid           ;
   wire                                        std__mgr57__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr57__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr57__std__oob_data            ;
+
   wire                                        std__mgr57__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr57__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr57__std__lane0_strm0_data        ;
@@ -19255,18 +19313,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr57__std__lane31_strm1_data        ;
   wire                                        mgr57__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe58__peId                ;
-  wire                                        sys__pe58__allSynchronized     ;
-  wire                                        pe58__sys__thisSynchronized    ;
-  wire                                        pe58__sys__ready               ;
-  wire                                        pe58__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr58__sys__allSynchronized     ;
+  wire                                        sys__mgr58__thisSynchronized    ;
+  wire                                        sys__mgr58__ready               ;
+  wire                                        sys__mgr58__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr58__std__oob_cntl            ;
   wire                                        mgr58__std__oob_valid           ;
   wire                                        std__mgr58__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr58__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr58__std__oob_data            ;
+
   wire                                        std__mgr58__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr58__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr58__std__lane0_strm0_data        ;
@@ -19587,18 +19646,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr58__std__lane31_strm1_data        ;
   wire                                        mgr58__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe59__peId                ;
-  wire                                        sys__pe59__allSynchronized     ;
-  wire                                        pe59__sys__thisSynchronized    ;
-  wire                                        pe59__sys__ready               ;
-  wire                                        pe59__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr59__sys__allSynchronized     ;
+  wire                                        sys__mgr59__thisSynchronized    ;
+  wire                                        sys__mgr59__ready               ;
+  wire                                        sys__mgr59__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr59__std__oob_cntl            ;
   wire                                        mgr59__std__oob_valid           ;
   wire                                        std__mgr59__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr59__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr59__std__oob_data            ;
+
   wire                                        std__mgr59__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr59__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr59__std__lane0_strm0_data        ;
@@ -19919,18 +19979,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr59__std__lane31_strm1_data        ;
   wire                                        mgr59__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe60__peId                ;
-  wire                                        sys__pe60__allSynchronized     ;
-  wire                                        pe60__sys__thisSynchronized    ;
-  wire                                        pe60__sys__ready               ;
-  wire                                        pe60__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr60__sys__allSynchronized     ;
+  wire                                        sys__mgr60__thisSynchronized    ;
+  wire                                        sys__mgr60__ready               ;
+  wire                                        sys__mgr60__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr60__std__oob_cntl            ;
   wire                                        mgr60__std__oob_valid           ;
   wire                                        std__mgr60__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr60__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr60__std__oob_data            ;
+
   wire                                        std__mgr60__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr60__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr60__std__lane0_strm0_data        ;
@@ -20251,18 +20312,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr60__std__lane31_strm1_data        ;
   wire                                        mgr60__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe61__peId                ;
-  wire                                        sys__pe61__allSynchronized     ;
-  wire                                        pe61__sys__thisSynchronized    ;
-  wire                                        pe61__sys__ready               ;
-  wire                                        pe61__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr61__sys__allSynchronized     ;
+  wire                                        sys__mgr61__thisSynchronized    ;
+  wire                                        sys__mgr61__ready               ;
+  wire                                        sys__mgr61__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr61__std__oob_cntl            ;
   wire                                        mgr61__std__oob_valid           ;
   wire                                        std__mgr61__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr61__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr61__std__oob_data            ;
+
   wire                                        std__mgr61__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr61__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr61__std__lane0_strm0_data        ;
@@ -20583,18 +20645,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr61__std__lane31_strm1_data        ;
   wire                                        mgr61__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe62__peId                ;
-  wire                                        sys__pe62__allSynchronized     ;
-  wire                                        pe62__sys__thisSynchronized    ;
-  wire                                        pe62__sys__ready               ;
-  wire                                        pe62__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr62__sys__allSynchronized     ;
+  wire                                        sys__mgr62__thisSynchronized    ;
+  wire                                        sys__mgr62__ready               ;
+  wire                                        sys__mgr62__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr62__std__oob_cntl            ;
   wire                                        mgr62__std__oob_valid           ;
   wire                                        std__mgr62__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr62__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr62__std__oob_data            ;
+
   wire                                        std__mgr62__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr62__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr62__std__lane0_strm0_data        ;
@@ -20915,18 +20978,19 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr62__std__lane31_strm1_data        ;
   wire                                        mgr62__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                
-  //wire[`PE_PE_ID_RANGE                 ]      sys__pe63__peId                ;
-  wire                                        sys__pe63__allSynchronized     ;
-  wire                                        pe63__sys__thisSynchronized    ;
-  wire                                        pe63__sys__ready               ;
-  wire                                        pe63__sys__complete            ;
+  // General control and status                                                 
+  wire                                        mgr63__sys__allSynchronized     ;
+  wire                                        sys__mgr63__thisSynchronized    ;
+  wire                                        sys__mgr63__ready               ;
+  wire                                        sys__mgr63__complete            ;
+
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr63__std__oob_cntl            ;
   wire                                        mgr63__std__oob_valid           ;
   wire                                        std__mgr63__oob_ready           ;
   wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr63__std__oob_type            ;
   wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr63__std__oob_data            ;
+
   wire                                        std__mgr63__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr63__std__lane0_strm0_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr63__std__lane0_strm0_data        ;

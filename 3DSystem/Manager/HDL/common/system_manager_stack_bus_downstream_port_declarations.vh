@@ -1,9 +1,9 @@
 
-  // General control and status                                                  
-  input                                         sys__pe0__allSynchronized     ;
-  output                                        pe0__sys__thisSynchronized    ;
-  output                                        pe0__sys__ready               ;
-  output                                        pe0__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr0__sys__allSynchronized     ;
+  output                                        sys__mgr0__thisSynchronized    ;
+  output                                        sys__mgr0__ready               ;
+  output                                        sys__mgr0__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr0__std__oob_cntl            ;
   input                                         mgr0__std__oob_valid           ;
@@ -330,11 +330,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr0__std__lane31_strm1_data        ;
   input                                           mgr0__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe1__allSynchronized     ;
-  output                                        pe1__sys__thisSynchronized    ;
-  output                                        pe1__sys__ready               ;
-  output                                        pe1__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr1__sys__allSynchronized     ;
+  output                                        sys__mgr1__thisSynchronized    ;
+  output                                        sys__mgr1__ready               ;
+  output                                        sys__mgr1__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr1__std__oob_cntl            ;
   input                                         mgr1__std__oob_valid           ;
@@ -661,11 +661,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr1__std__lane31_strm1_data        ;
   input                                           mgr1__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe2__allSynchronized     ;
-  output                                        pe2__sys__thisSynchronized    ;
-  output                                        pe2__sys__ready               ;
-  output                                        pe2__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr2__sys__allSynchronized     ;
+  output                                        sys__mgr2__thisSynchronized    ;
+  output                                        sys__mgr2__ready               ;
+  output                                        sys__mgr2__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr2__std__oob_cntl            ;
   input                                         mgr2__std__oob_valid           ;
@@ -992,11 +992,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr2__std__lane31_strm1_data        ;
   input                                           mgr2__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe3__allSynchronized     ;
-  output                                        pe3__sys__thisSynchronized    ;
-  output                                        pe3__sys__ready               ;
-  output                                        pe3__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr3__sys__allSynchronized     ;
+  output                                        sys__mgr3__thisSynchronized    ;
+  output                                        sys__mgr3__ready               ;
+  output                                        sys__mgr3__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr3__std__oob_cntl            ;
   input                                         mgr3__std__oob_valid           ;
@@ -1323,11 +1323,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr3__std__lane31_strm1_data        ;
   input                                           mgr3__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe4__allSynchronized     ;
-  output                                        pe4__sys__thisSynchronized    ;
-  output                                        pe4__sys__ready               ;
-  output                                        pe4__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr4__sys__allSynchronized     ;
+  output                                        sys__mgr4__thisSynchronized    ;
+  output                                        sys__mgr4__ready               ;
+  output                                        sys__mgr4__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr4__std__oob_cntl            ;
   input                                         mgr4__std__oob_valid           ;
@@ -1654,11 +1654,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr4__std__lane31_strm1_data        ;
   input                                           mgr4__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe5__allSynchronized     ;
-  output                                        pe5__sys__thisSynchronized    ;
-  output                                        pe5__sys__ready               ;
-  output                                        pe5__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr5__sys__allSynchronized     ;
+  output                                        sys__mgr5__thisSynchronized    ;
+  output                                        sys__mgr5__ready               ;
+  output                                        sys__mgr5__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr5__std__oob_cntl            ;
   input                                         mgr5__std__oob_valid           ;
@@ -1985,11 +1985,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr5__std__lane31_strm1_data        ;
   input                                           mgr5__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe6__allSynchronized     ;
-  output                                        pe6__sys__thisSynchronized    ;
-  output                                        pe6__sys__ready               ;
-  output                                        pe6__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr6__sys__allSynchronized     ;
+  output                                        sys__mgr6__thisSynchronized    ;
+  output                                        sys__mgr6__ready               ;
+  output                                        sys__mgr6__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr6__std__oob_cntl            ;
   input                                         mgr6__std__oob_valid           ;
@@ -2316,11 +2316,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr6__std__lane31_strm1_data        ;
   input                                           mgr6__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe7__allSynchronized     ;
-  output                                        pe7__sys__thisSynchronized    ;
-  output                                        pe7__sys__ready               ;
-  output                                        pe7__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr7__sys__allSynchronized     ;
+  output                                        sys__mgr7__thisSynchronized    ;
+  output                                        sys__mgr7__ready               ;
+  output                                        sys__mgr7__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr7__std__oob_cntl            ;
   input                                         mgr7__std__oob_valid           ;
@@ -2647,11 +2647,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr7__std__lane31_strm1_data        ;
   input                                           mgr7__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe8__allSynchronized     ;
-  output                                        pe8__sys__thisSynchronized    ;
-  output                                        pe8__sys__ready               ;
-  output                                        pe8__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr8__sys__allSynchronized     ;
+  output                                        sys__mgr8__thisSynchronized    ;
+  output                                        sys__mgr8__ready               ;
+  output                                        sys__mgr8__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr8__std__oob_cntl            ;
   input                                         mgr8__std__oob_valid           ;
@@ -2978,11 +2978,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr8__std__lane31_strm1_data        ;
   input                                           mgr8__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe9__allSynchronized     ;
-  output                                        pe9__sys__thisSynchronized    ;
-  output                                        pe9__sys__ready               ;
-  output                                        pe9__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr9__sys__allSynchronized     ;
+  output                                        sys__mgr9__thisSynchronized    ;
+  output                                        sys__mgr9__ready               ;
+  output                                        sys__mgr9__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr9__std__oob_cntl            ;
   input                                         mgr9__std__oob_valid           ;
@@ -3309,11 +3309,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr9__std__lane31_strm1_data        ;
   input                                           mgr9__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe10__allSynchronized     ;
-  output                                        pe10__sys__thisSynchronized    ;
-  output                                        pe10__sys__ready               ;
-  output                                        pe10__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr10__sys__allSynchronized     ;
+  output                                        sys__mgr10__thisSynchronized    ;
+  output                                        sys__mgr10__ready               ;
+  output                                        sys__mgr10__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr10__std__oob_cntl            ;
   input                                         mgr10__std__oob_valid           ;
@@ -3640,11 +3640,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr10__std__lane31_strm1_data        ;
   input                                           mgr10__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe11__allSynchronized     ;
-  output                                        pe11__sys__thisSynchronized    ;
-  output                                        pe11__sys__ready               ;
-  output                                        pe11__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr11__sys__allSynchronized     ;
+  output                                        sys__mgr11__thisSynchronized    ;
+  output                                        sys__mgr11__ready               ;
+  output                                        sys__mgr11__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr11__std__oob_cntl            ;
   input                                         mgr11__std__oob_valid           ;
@@ -3971,11 +3971,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr11__std__lane31_strm1_data        ;
   input                                           mgr11__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe12__allSynchronized     ;
-  output                                        pe12__sys__thisSynchronized    ;
-  output                                        pe12__sys__ready               ;
-  output                                        pe12__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr12__sys__allSynchronized     ;
+  output                                        sys__mgr12__thisSynchronized    ;
+  output                                        sys__mgr12__ready               ;
+  output                                        sys__mgr12__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr12__std__oob_cntl            ;
   input                                         mgr12__std__oob_valid           ;
@@ -4302,11 +4302,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr12__std__lane31_strm1_data        ;
   input                                           mgr12__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe13__allSynchronized     ;
-  output                                        pe13__sys__thisSynchronized    ;
-  output                                        pe13__sys__ready               ;
-  output                                        pe13__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr13__sys__allSynchronized     ;
+  output                                        sys__mgr13__thisSynchronized    ;
+  output                                        sys__mgr13__ready               ;
+  output                                        sys__mgr13__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr13__std__oob_cntl            ;
   input                                         mgr13__std__oob_valid           ;
@@ -4633,11 +4633,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr13__std__lane31_strm1_data        ;
   input                                           mgr13__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe14__allSynchronized     ;
-  output                                        pe14__sys__thisSynchronized    ;
-  output                                        pe14__sys__ready               ;
-  output                                        pe14__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr14__sys__allSynchronized     ;
+  output                                        sys__mgr14__thisSynchronized    ;
+  output                                        sys__mgr14__ready               ;
+  output                                        sys__mgr14__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr14__std__oob_cntl            ;
   input                                         mgr14__std__oob_valid           ;
@@ -4964,11 +4964,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr14__std__lane31_strm1_data        ;
   input                                           mgr14__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe15__allSynchronized     ;
-  output                                        pe15__sys__thisSynchronized    ;
-  output                                        pe15__sys__ready               ;
-  output                                        pe15__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr15__sys__allSynchronized     ;
+  output                                        sys__mgr15__thisSynchronized    ;
+  output                                        sys__mgr15__ready               ;
+  output                                        sys__mgr15__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr15__std__oob_cntl            ;
   input                                         mgr15__std__oob_valid           ;
@@ -5295,11 +5295,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr15__std__lane31_strm1_data        ;
   input                                           mgr15__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe16__allSynchronized     ;
-  output                                        pe16__sys__thisSynchronized    ;
-  output                                        pe16__sys__ready               ;
-  output                                        pe16__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr16__sys__allSynchronized     ;
+  output                                        sys__mgr16__thisSynchronized    ;
+  output                                        sys__mgr16__ready               ;
+  output                                        sys__mgr16__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr16__std__oob_cntl            ;
   input                                         mgr16__std__oob_valid           ;
@@ -5626,11 +5626,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr16__std__lane31_strm1_data        ;
   input                                           mgr16__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe17__allSynchronized     ;
-  output                                        pe17__sys__thisSynchronized    ;
-  output                                        pe17__sys__ready               ;
-  output                                        pe17__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr17__sys__allSynchronized     ;
+  output                                        sys__mgr17__thisSynchronized    ;
+  output                                        sys__mgr17__ready               ;
+  output                                        sys__mgr17__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr17__std__oob_cntl            ;
   input                                         mgr17__std__oob_valid           ;
@@ -5957,11 +5957,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr17__std__lane31_strm1_data        ;
   input                                           mgr17__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe18__allSynchronized     ;
-  output                                        pe18__sys__thisSynchronized    ;
-  output                                        pe18__sys__ready               ;
-  output                                        pe18__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr18__sys__allSynchronized     ;
+  output                                        sys__mgr18__thisSynchronized    ;
+  output                                        sys__mgr18__ready               ;
+  output                                        sys__mgr18__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr18__std__oob_cntl            ;
   input                                         mgr18__std__oob_valid           ;
@@ -6288,11 +6288,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr18__std__lane31_strm1_data        ;
   input                                           mgr18__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe19__allSynchronized     ;
-  output                                        pe19__sys__thisSynchronized    ;
-  output                                        pe19__sys__ready               ;
-  output                                        pe19__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr19__sys__allSynchronized     ;
+  output                                        sys__mgr19__thisSynchronized    ;
+  output                                        sys__mgr19__ready               ;
+  output                                        sys__mgr19__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr19__std__oob_cntl            ;
   input                                         mgr19__std__oob_valid           ;
@@ -6619,11 +6619,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr19__std__lane31_strm1_data        ;
   input                                           mgr19__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe20__allSynchronized     ;
-  output                                        pe20__sys__thisSynchronized    ;
-  output                                        pe20__sys__ready               ;
-  output                                        pe20__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr20__sys__allSynchronized     ;
+  output                                        sys__mgr20__thisSynchronized    ;
+  output                                        sys__mgr20__ready               ;
+  output                                        sys__mgr20__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr20__std__oob_cntl            ;
   input                                         mgr20__std__oob_valid           ;
@@ -6950,11 +6950,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr20__std__lane31_strm1_data        ;
   input                                           mgr20__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe21__allSynchronized     ;
-  output                                        pe21__sys__thisSynchronized    ;
-  output                                        pe21__sys__ready               ;
-  output                                        pe21__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr21__sys__allSynchronized     ;
+  output                                        sys__mgr21__thisSynchronized    ;
+  output                                        sys__mgr21__ready               ;
+  output                                        sys__mgr21__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr21__std__oob_cntl            ;
   input                                         mgr21__std__oob_valid           ;
@@ -7281,11 +7281,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr21__std__lane31_strm1_data        ;
   input                                           mgr21__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe22__allSynchronized     ;
-  output                                        pe22__sys__thisSynchronized    ;
-  output                                        pe22__sys__ready               ;
-  output                                        pe22__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr22__sys__allSynchronized     ;
+  output                                        sys__mgr22__thisSynchronized    ;
+  output                                        sys__mgr22__ready               ;
+  output                                        sys__mgr22__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr22__std__oob_cntl            ;
   input                                         mgr22__std__oob_valid           ;
@@ -7612,11 +7612,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr22__std__lane31_strm1_data        ;
   input                                           mgr22__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe23__allSynchronized     ;
-  output                                        pe23__sys__thisSynchronized    ;
-  output                                        pe23__sys__ready               ;
-  output                                        pe23__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr23__sys__allSynchronized     ;
+  output                                        sys__mgr23__thisSynchronized    ;
+  output                                        sys__mgr23__ready               ;
+  output                                        sys__mgr23__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr23__std__oob_cntl            ;
   input                                         mgr23__std__oob_valid           ;
@@ -7943,11 +7943,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr23__std__lane31_strm1_data        ;
   input                                           mgr23__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe24__allSynchronized     ;
-  output                                        pe24__sys__thisSynchronized    ;
-  output                                        pe24__sys__ready               ;
-  output                                        pe24__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr24__sys__allSynchronized     ;
+  output                                        sys__mgr24__thisSynchronized    ;
+  output                                        sys__mgr24__ready               ;
+  output                                        sys__mgr24__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr24__std__oob_cntl            ;
   input                                         mgr24__std__oob_valid           ;
@@ -8274,11 +8274,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr24__std__lane31_strm1_data        ;
   input                                           mgr24__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe25__allSynchronized     ;
-  output                                        pe25__sys__thisSynchronized    ;
-  output                                        pe25__sys__ready               ;
-  output                                        pe25__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr25__sys__allSynchronized     ;
+  output                                        sys__mgr25__thisSynchronized    ;
+  output                                        sys__mgr25__ready               ;
+  output                                        sys__mgr25__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr25__std__oob_cntl            ;
   input                                         mgr25__std__oob_valid           ;
@@ -8605,11 +8605,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr25__std__lane31_strm1_data        ;
   input                                           mgr25__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe26__allSynchronized     ;
-  output                                        pe26__sys__thisSynchronized    ;
-  output                                        pe26__sys__ready               ;
-  output                                        pe26__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr26__sys__allSynchronized     ;
+  output                                        sys__mgr26__thisSynchronized    ;
+  output                                        sys__mgr26__ready               ;
+  output                                        sys__mgr26__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr26__std__oob_cntl            ;
   input                                         mgr26__std__oob_valid           ;
@@ -8936,11 +8936,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr26__std__lane31_strm1_data        ;
   input                                           mgr26__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe27__allSynchronized     ;
-  output                                        pe27__sys__thisSynchronized    ;
-  output                                        pe27__sys__ready               ;
-  output                                        pe27__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr27__sys__allSynchronized     ;
+  output                                        sys__mgr27__thisSynchronized    ;
+  output                                        sys__mgr27__ready               ;
+  output                                        sys__mgr27__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr27__std__oob_cntl            ;
   input                                         mgr27__std__oob_valid           ;
@@ -9267,11 +9267,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr27__std__lane31_strm1_data        ;
   input                                           mgr27__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe28__allSynchronized     ;
-  output                                        pe28__sys__thisSynchronized    ;
-  output                                        pe28__sys__ready               ;
-  output                                        pe28__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr28__sys__allSynchronized     ;
+  output                                        sys__mgr28__thisSynchronized    ;
+  output                                        sys__mgr28__ready               ;
+  output                                        sys__mgr28__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr28__std__oob_cntl            ;
   input                                         mgr28__std__oob_valid           ;
@@ -9598,11 +9598,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr28__std__lane31_strm1_data        ;
   input                                           mgr28__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe29__allSynchronized     ;
-  output                                        pe29__sys__thisSynchronized    ;
-  output                                        pe29__sys__ready               ;
-  output                                        pe29__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr29__sys__allSynchronized     ;
+  output                                        sys__mgr29__thisSynchronized    ;
+  output                                        sys__mgr29__ready               ;
+  output                                        sys__mgr29__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr29__std__oob_cntl            ;
   input                                         mgr29__std__oob_valid           ;
@@ -9929,11 +9929,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr29__std__lane31_strm1_data        ;
   input                                           mgr29__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe30__allSynchronized     ;
-  output                                        pe30__sys__thisSynchronized    ;
-  output                                        pe30__sys__ready               ;
-  output                                        pe30__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr30__sys__allSynchronized     ;
+  output                                        sys__mgr30__thisSynchronized    ;
+  output                                        sys__mgr30__ready               ;
+  output                                        sys__mgr30__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr30__std__oob_cntl            ;
   input                                         mgr30__std__oob_valid           ;
@@ -10260,11 +10260,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr30__std__lane31_strm1_data        ;
   input                                           mgr30__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe31__allSynchronized     ;
-  output                                        pe31__sys__thisSynchronized    ;
-  output                                        pe31__sys__ready               ;
-  output                                        pe31__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr31__sys__allSynchronized     ;
+  output                                        sys__mgr31__thisSynchronized    ;
+  output                                        sys__mgr31__ready               ;
+  output                                        sys__mgr31__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr31__std__oob_cntl            ;
   input                                         mgr31__std__oob_valid           ;
@@ -10591,11 +10591,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr31__std__lane31_strm1_data        ;
   input                                           mgr31__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe32__allSynchronized     ;
-  output                                        pe32__sys__thisSynchronized    ;
-  output                                        pe32__sys__ready               ;
-  output                                        pe32__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr32__sys__allSynchronized     ;
+  output                                        sys__mgr32__thisSynchronized    ;
+  output                                        sys__mgr32__ready               ;
+  output                                        sys__mgr32__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr32__std__oob_cntl            ;
   input                                         mgr32__std__oob_valid           ;
@@ -10922,11 +10922,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr32__std__lane31_strm1_data        ;
   input                                           mgr32__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe33__allSynchronized     ;
-  output                                        pe33__sys__thisSynchronized    ;
-  output                                        pe33__sys__ready               ;
-  output                                        pe33__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr33__sys__allSynchronized     ;
+  output                                        sys__mgr33__thisSynchronized    ;
+  output                                        sys__mgr33__ready               ;
+  output                                        sys__mgr33__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr33__std__oob_cntl            ;
   input                                         mgr33__std__oob_valid           ;
@@ -11253,11 +11253,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr33__std__lane31_strm1_data        ;
   input                                           mgr33__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe34__allSynchronized     ;
-  output                                        pe34__sys__thisSynchronized    ;
-  output                                        pe34__sys__ready               ;
-  output                                        pe34__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr34__sys__allSynchronized     ;
+  output                                        sys__mgr34__thisSynchronized    ;
+  output                                        sys__mgr34__ready               ;
+  output                                        sys__mgr34__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr34__std__oob_cntl            ;
   input                                         mgr34__std__oob_valid           ;
@@ -11584,11 +11584,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr34__std__lane31_strm1_data        ;
   input                                           mgr34__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe35__allSynchronized     ;
-  output                                        pe35__sys__thisSynchronized    ;
-  output                                        pe35__sys__ready               ;
-  output                                        pe35__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr35__sys__allSynchronized     ;
+  output                                        sys__mgr35__thisSynchronized    ;
+  output                                        sys__mgr35__ready               ;
+  output                                        sys__mgr35__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr35__std__oob_cntl            ;
   input                                         mgr35__std__oob_valid           ;
@@ -11915,11 +11915,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr35__std__lane31_strm1_data        ;
   input                                           mgr35__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe36__allSynchronized     ;
-  output                                        pe36__sys__thisSynchronized    ;
-  output                                        pe36__sys__ready               ;
-  output                                        pe36__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr36__sys__allSynchronized     ;
+  output                                        sys__mgr36__thisSynchronized    ;
+  output                                        sys__mgr36__ready               ;
+  output                                        sys__mgr36__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr36__std__oob_cntl            ;
   input                                         mgr36__std__oob_valid           ;
@@ -12246,11 +12246,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr36__std__lane31_strm1_data        ;
   input                                           mgr36__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe37__allSynchronized     ;
-  output                                        pe37__sys__thisSynchronized    ;
-  output                                        pe37__sys__ready               ;
-  output                                        pe37__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr37__sys__allSynchronized     ;
+  output                                        sys__mgr37__thisSynchronized    ;
+  output                                        sys__mgr37__ready               ;
+  output                                        sys__mgr37__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr37__std__oob_cntl            ;
   input                                         mgr37__std__oob_valid           ;
@@ -12577,11 +12577,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr37__std__lane31_strm1_data        ;
   input                                           mgr37__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe38__allSynchronized     ;
-  output                                        pe38__sys__thisSynchronized    ;
-  output                                        pe38__sys__ready               ;
-  output                                        pe38__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr38__sys__allSynchronized     ;
+  output                                        sys__mgr38__thisSynchronized    ;
+  output                                        sys__mgr38__ready               ;
+  output                                        sys__mgr38__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr38__std__oob_cntl            ;
   input                                         mgr38__std__oob_valid           ;
@@ -12908,11 +12908,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr38__std__lane31_strm1_data        ;
   input                                           mgr38__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe39__allSynchronized     ;
-  output                                        pe39__sys__thisSynchronized    ;
-  output                                        pe39__sys__ready               ;
-  output                                        pe39__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr39__sys__allSynchronized     ;
+  output                                        sys__mgr39__thisSynchronized    ;
+  output                                        sys__mgr39__ready               ;
+  output                                        sys__mgr39__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr39__std__oob_cntl            ;
   input                                         mgr39__std__oob_valid           ;
@@ -13239,11 +13239,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr39__std__lane31_strm1_data        ;
   input                                           mgr39__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe40__allSynchronized     ;
-  output                                        pe40__sys__thisSynchronized    ;
-  output                                        pe40__sys__ready               ;
-  output                                        pe40__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr40__sys__allSynchronized     ;
+  output                                        sys__mgr40__thisSynchronized    ;
+  output                                        sys__mgr40__ready               ;
+  output                                        sys__mgr40__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr40__std__oob_cntl            ;
   input                                         mgr40__std__oob_valid           ;
@@ -13570,11 +13570,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr40__std__lane31_strm1_data        ;
   input                                           mgr40__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe41__allSynchronized     ;
-  output                                        pe41__sys__thisSynchronized    ;
-  output                                        pe41__sys__ready               ;
-  output                                        pe41__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr41__sys__allSynchronized     ;
+  output                                        sys__mgr41__thisSynchronized    ;
+  output                                        sys__mgr41__ready               ;
+  output                                        sys__mgr41__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr41__std__oob_cntl            ;
   input                                         mgr41__std__oob_valid           ;
@@ -13901,11 +13901,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr41__std__lane31_strm1_data        ;
   input                                           mgr41__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe42__allSynchronized     ;
-  output                                        pe42__sys__thisSynchronized    ;
-  output                                        pe42__sys__ready               ;
-  output                                        pe42__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr42__sys__allSynchronized     ;
+  output                                        sys__mgr42__thisSynchronized    ;
+  output                                        sys__mgr42__ready               ;
+  output                                        sys__mgr42__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr42__std__oob_cntl            ;
   input                                         mgr42__std__oob_valid           ;
@@ -14232,11 +14232,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr42__std__lane31_strm1_data        ;
   input                                           mgr42__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe43__allSynchronized     ;
-  output                                        pe43__sys__thisSynchronized    ;
-  output                                        pe43__sys__ready               ;
-  output                                        pe43__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr43__sys__allSynchronized     ;
+  output                                        sys__mgr43__thisSynchronized    ;
+  output                                        sys__mgr43__ready               ;
+  output                                        sys__mgr43__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr43__std__oob_cntl            ;
   input                                         mgr43__std__oob_valid           ;
@@ -14563,11 +14563,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr43__std__lane31_strm1_data        ;
   input                                           mgr43__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe44__allSynchronized     ;
-  output                                        pe44__sys__thisSynchronized    ;
-  output                                        pe44__sys__ready               ;
-  output                                        pe44__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr44__sys__allSynchronized     ;
+  output                                        sys__mgr44__thisSynchronized    ;
+  output                                        sys__mgr44__ready               ;
+  output                                        sys__mgr44__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr44__std__oob_cntl            ;
   input                                         mgr44__std__oob_valid           ;
@@ -14894,11 +14894,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr44__std__lane31_strm1_data        ;
   input                                           mgr44__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe45__allSynchronized     ;
-  output                                        pe45__sys__thisSynchronized    ;
-  output                                        pe45__sys__ready               ;
-  output                                        pe45__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr45__sys__allSynchronized     ;
+  output                                        sys__mgr45__thisSynchronized    ;
+  output                                        sys__mgr45__ready               ;
+  output                                        sys__mgr45__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr45__std__oob_cntl            ;
   input                                         mgr45__std__oob_valid           ;
@@ -15225,11 +15225,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr45__std__lane31_strm1_data        ;
   input                                           mgr45__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe46__allSynchronized     ;
-  output                                        pe46__sys__thisSynchronized    ;
-  output                                        pe46__sys__ready               ;
-  output                                        pe46__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr46__sys__allSynchronized     ;
+  output                                        sys__mgr46__thisSynchronized    ;
+  output                                        sys__mgr46__ready               ;
+  output                                        sys__mgr46__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr46__std__oob_cntl            ;
   input                                         mgr46__std__oob_valid           ;
@@ -15556,11 +15556,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr46__std__lane31_strm1_data        ;
   input                                           mgr46__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe47__allSynchronized     ;
-  output                                        pe47__sys__thisSynchronized    ;
-  output                                        pe47__sys__ready               ;
-  output                                        pe47__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr47__sys__allSynchronized     ;
+  output                                        sys__mgr47__thisSynchronized    ;
+  output                                        sys__mgr47__ready               ;
+  output                                        sys__mgr47__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr47__std__oob_cntl            ;
   input                                         mgr47__std__oob_valid           ;
@@ -15887,11 +15887,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr47__std__lane31_strm1_data        ;
   input                                           mgr47__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe48__allSynchronized     ;
-  output                                        pe48__sys__thisSynchronized    ;
-  output                                        pe48__sys__ready               ;
-  output                                        pe48__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr48__sys__allSynchronized     ;
+  output                                        sys__mgr48__thisSynchronized    ;
+  output                                        sys__mgr48__ready               ;
+  output                                        sys__mgr48__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr48__std__oob_cntl            ;
   input                                         mgr48__std__oob_valid           ;
@@ -16218,11 +16218,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr48__std__lane31_strm1_data        ;
   input                                           mgr48__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe49__allSynchronized     ;
-  output                                        pe49__sys__thisSynchronized    ;
-  output                                        pe49__sys__ready               ;
-  output                                        pe49__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr49__sys__allSynchronized     ;
+  output                                        sys__mgr49__thisSynchronized    ;
+  output                                        sys__mgr49__ready               ;
+  output                                        sys__mgr49__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr49__std__oob_cntl            ;
   input                                         mgr49__std__oob_valid           ;
@@ -16549,11 +16549,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr49__std__lane31_strm1_data        ;
   input                                           mgr49__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe50__allSynchronized     ;
-  output                                        pe50__sys__thisSynchronized    ;
-  output                                        pe50__sys__ready               ;
-  output                                        pe50__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr50__sys__allSynchronized     ;
+  output                                        sys__mgr50__thisSynchronized    ;
+  output                                        sys__mgr50__ready               ;
+  output                                        sys__mgr50__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr50__std__oob_cntl            ;
   input                                         mgr50__std__oob_valid           ;
@@ -16880,11 +16880,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr50__std__lane31_strm1_data        ;
   input                                           mgr50__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe51__allSynchronized     ;
-  output                                        pe51__sys__thisSynchronized    ;
-  output                                        pe51__sys__ready               ;
-  output                                        pe51__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr51__sys__allSynchronized     ;
+  output                                        sys__mgr51__thisSynchronized    ;
+  output                                        sys__mgr51__ready               ;
+  output                                        sys__mgr51__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr51__std__oob_cntl            ;
   input                                         mgr51__std__oob_valid           ;
@@ -17211,11 +17211,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr51__std__lane31_strm1_data        ;
   input                                           mgr51__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe52__allSynchronized     ;
-  output                                        pe52__sys__thisSynchronized    ;
-  output                                        pe52__sys__ready               ;
-  output                                        pe52__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr52__sys__allSynchronized     ;
+  output                                        sys__mgr52__thisSynchronized    ;
+  output                                        sys__mgr52__ready               ;
+  output                                        sys__mgr52__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr52__std__oob_cntl            ;
   input                                         mgr52__std__oob_valid           ;
@@ -17542,11 +17542,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr52__std__lane31_strm1_data        ;
   input                                           mgr52__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe53__allSynchronized     ;
-  output                                        pe53__sys__thisSynchronized    ;
-  output                                        pe53__sys__ready               ;
-  output                                        pe53__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr53__sys__allSynchronized     ;
+  output                                        sys__mgr53__thisSynchronized    ;
+  output                                        sys__mgr53__ready               ;
+  output                                        sys__mgr53__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr53__std__oob_cntl            ;
   input                                         mgr53__std__oob_valid           ;
@@ -17873,11 +17873,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr53__std__lane31_strm1_data        ;
   input                                           mgr53__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe54__allSynchronized     ;
-  output                                        pe54__sys__thisSynchronized    ;
-  output                                        pe54__sys__ready               ;
-  output                                        pe54__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr54__sys__allSynchronized     ;
+  output                                        sys__mgr54__thisSynchronized    ;
+  output                                        sys__mgr54__ready               ;
+  output                                        sys__mgr54__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr54__std__oob_cntl            ;
   input                                         mgr54__std__oob_valid           ;
@@ -18204,11 +18204,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr54__std__lane31_strm1_data        ;
   input                                           mgr54__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe55__allSynchronized     ;
-  output                                        pe55__sys__thisSynchronized    ;
-  output                                        pe55__sys__ready               ;
-  output                                        pe55__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr55__sys__allSynchronized     ;
+  output                                        sys__mgr55__thisSynchronized    ;
+  output                                        sys__mgr55__ready               ;
+  output                                        sys__mgr55__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr55__std__oob_cntl            ;
   input                                         mgr55__std__oob_valid           ;
@@ -18535,11 +18535,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr55__std__lane31_strm1_data        ;
   input                                           mgr55__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe56__allSynchronized     ;
-  output                                        pe56__sys__thisSynchronized    ;
-  output                                        pe56__sys__ready               ;
-  output                                        pe56__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr56__sys__allSynchronized     ;
+  output                                        sys__mgr56__thisSynchronized    ;
+  output                                        sys__mgr56__ready               ;
+  output                                        sys__mgr56__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr56__std__oob_cntl            ;
   input                                         mgr56__std__oob_valid           ;
@@ -18866,11 +18866,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr56__std__lane31_strm1_data        ;
   input                                           mgr56__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe57__allSynchronized     ;
-  output                                        pe57__sys__thisSynchronized    ;
-  output                                        pe57__sys__ready               ;
-  output                                        pe57__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr57__sys__allSynchronized     ;
+  output                                        sys__mgr57__thisSynchronized    ;
+  output                                        sys__mgr57__ready               ;
+  output                                        sys__mgr57__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr57__std__oob_cntl            ;
   input                                         mgr57__std__oob_valid           ;
@@ -19197,11 +19197,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr57__std__lane31_strm1_data        ;
   input                                           mgr57__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe58__allSynchronized     ;
-  output                                        pe58__sys__thisSynchronized    ;
-  output                                        pe58__sys__ready               ;
-  output                                        pe58__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr58__sys__allSynchronized     ;
+  output                                        sys__mgr58__thisSynchronized    ;
+  output                                        sys__mgr58__ready               ;
+  output                                        sys__mgr58__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr58__std__oob_cntl            ;
   input                                         mgr58__std__oob_valid           ;
@@ -19528,11 +19528,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr58__std__lane31_strm1_data        ;
   input                                           mgr58__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe59__allSynchronized     ;
-  output                                        pe59__sys__thisSynchronized    ;
-  output                                        pe59__sys__ready               ;
-  output                                        pe59__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr59__sys__allSynchronized     ;
+  output                                        sys__mgr59__thisSynchronized    ;
+  output                                        sys__mgr59__ready               ;
+  output                                        sys__mgr59__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr59__std__oob_cntl            ;
   input                                         mgr59__std__oob_valid           ;
@@ -19859,11 +19859,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr59__std__lane31_strm1_data        ;
   input                                           mgr59__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe60__allSynchronized     ;
-  output                                        pe60__sys__thisSynchronized    ;
-  output                                        pe60__sys__ready               ;
-  output                                        pe60__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr60__sys__allSynchronized     ;
+  output                                        sys__mgr60__thisSynchronized    ;
+  output                                        sys__mgr60__ready               ;
+  output                                        sys__mgr60__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr60__std__oob_cntl            ;
   input                                         mgr60__std__oob_valid           ;
@@ -20190,11 +20190,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr60__std__lane31_strm1_data        ;
   input                                           mgr60__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe61__allSynchronized     ;
-  output                                        pe61__sys__thisSynchronized    ;
-  output                                        pe61__sys__ready               ;
-  output                                        pe61__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr61__sys__allSynchronized     ;
+  output                                        sys__mgr61__thisSynchronized    ;
+  output                                        sys__mgr61__ready               ;
+  output                                        sys__mgr61__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr61__std__oob_cntl            ;
   input                                         mgr61__std__oob_valid           ;
@@ -20521,11 +20521,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr61__std__lane31_strm1_data        ;
   input                                           mgr61__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe62__allSynchronized     ;
-  output                                        pe62__sys__thisSynchronized    ;
-  output                                        pe62__sys__ready               ;
-  output                                        pe62__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr62__sys__allSynchronized     ;
+  output                                        sys__mgr62__thisSynchronized    ;
+  output                                        sys__mgr62__ready               ;
+  output                                        sys__mgr62__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr62__std__oob_cntl            ;
   input                                         mgr62__std__oob_valid           ;
@@ -20852,11 +20852,11 @@
   input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr62__std__lane31_strm1_data        ;
   input                                           mgr62__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                  
-  input                                         sys__pe63__allSynchronized     ;
-  output                                        pe63__sys__thisSynchronized    ;
-  output                                        pe63__sys__ready               ;
-  output                                        pe63__sys__complete            ;
+  // General control and status                                                   
+  input                                         mgr63__sys__allSynchronized     ;
+  output                                        sys__mgr63__thisSynchronized    ;
+  output                                        sys__mgr63__ready               ;
+  output                                        sys__mgr63__complete            ;
   // OOB controls how the lanes are interpreted                                  
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr63__std__oob_cntl            ;
   input                                         mgr63__std__oob_valid           ;

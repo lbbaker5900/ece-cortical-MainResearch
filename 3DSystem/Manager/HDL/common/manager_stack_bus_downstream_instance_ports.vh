@@ -1,11 +1,11 @@
 
-               // General control and status                                                 
-               .sys__pe__peId                      ( sys__pe__peId                   ),      
-               .sys__pe__allSynchronized           ( sys__pe__allSynchronized        ),      
-               .pe__sys__thisSynchronized          ( pe__sys__thisSynchronized       ),      
-               .pe__sys__ready                     ( pe__sys__ready                  ),      
-               .pe__sys__complete                  ( pe__sys__complete               ),      
-               // OOB carries PE configuration                                               
+               // General control and status                                                   
+               .sys__mgr__mgrId                     ( sys__mgr__mgrId                  ),      
+               .mgr__sys__allSynchronized           ( mgr__sys__allSynchronized        ),      
+               .sys__mgr__thisSynchronized          ( sys__mgr__thisSynchronized       ),      
+               .sys__mgr__ready                     ( sys__mgr__ready                  ),      
+               .sys__mgr__complete                  ( sys__mgr__complete               ),      
+               // OOB carries PE configuration                                                 
                .mgr__std__oob_cntl                  ( mgr__std__oob_cntl               ),      
                .mgr__std__oob_valid                 ( mgr__std__oob_valid              ),      
                .std__mgr__oob_ready                 ( std__mgr__oob_ready              ),      

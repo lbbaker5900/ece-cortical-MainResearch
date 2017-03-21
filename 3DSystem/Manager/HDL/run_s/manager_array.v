@@ -82,7 +82,6 @@ module manager_array (
   genvar gvi;
   generate
     for (gvi=0; gvi<`MGR_ARRAY_NUM_OF_MGR; gvi=gvi+1) 
-    //for (gvi=0; gvi<1; gvi=gvi+1) 
       begin: mgr_inst
 
         //-------------------------------------------------------------------------------------------------
@@ -92,12 +91,12 @@ module manager_array (
         //-------------------------------------------------------------------------------------------------
         // Stack Bus - Upstream
         //
-        wire                                           pe__stu__valid       ;
-        wire    [`COMMON_STD_INTF_CNTL_RANGE   ]       pe__stu__cntl        ;
-        wire                                           stu__pe__ready       ;
-        wire    [`STACK_UP_INTF_TYPE_RANGE     ]       pe__stu__type        ;  // Control or Data, Vector or scalar
-        wire    [`STACK_UP_INTF_DATA_RANGE     ]       pe__stu__data        ;
-        wire    [`STACK_UP_INTF_OOB_DATA_RANGE ]       pe__stu__oob_data    ;
+        wire                                           stu__mgr__valid       ;
+        wire    [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr__cntl        ;
+        wire                                           mgr__stu__ready       ;
+        wire    [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr__type        ;  // Control or Data, Vector or scalar
+        wire    [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr__data        ;
+        wire    [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data    ;
  
         //-------------------------------------------------------------------------------------------------
         // NoC Interface

@@ -45,7 +45,38 @@ if __name__ == "__main__":
 
 
   #------------------------------------------------------------------------------------------------------------------------------------------------------
-  # Manager Arrary
+  # Manager Array
+
+  f = open('../HDL/common/system_manager_stack_bus_downstream_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    pLine = pLine + '\n            // General control and status                    '.format(pe) 
+    pLine = pLine + '\n            mgr{0}__sys__allSynchronized                    ,'.format(pe) 
+    pLine = pLine + '\n            sys__mgr{0}__thisSynchronized                   ,'.format(pe) 
+    pLine = pLine + '\n            sys__mgr{0}__ready                              ,'.format(pe) 
+    pLine = pLine + '\n            sys__mgr{0}__complete                           ,'.format(pe) 
+    pLine = pLine + '\n'
+    #
+    pLine = pLine + '\n            // OOB controls the PE                          '.format(pe) 
+    pLine = pLine + '\n            // For now assume OOB is separate to lanes      '.format(pe) 
+    pLine = pLine + '\n            mgr{0}__std__oob_cntl                           ,'.format(pe) 
+    pLine = pLine + '\n            mgr{0}__std__oob_valid                          ,'.format(pe) 
+    pLine = pLine + '\n            std__mgr{0}__oob_ready                          ,'.format(pe) 
+    pLine = pLine + '\n            mgr{0}__std__oob_type                           ,'.format(pe) 
+    pLine = pLine + '\n            mgr{0}__std__oob_data                           ,'.format(pe) 
+    pLine = pLine + '\n'
+    #                                                             
+    for lane in range (0, numOfExecLanes):
+      for strm in range (0, 2):
+        pLine = pLine + '\n            std__mgr{0}__lane{1}_strm{2}_ready       ,'.format(pe,lane,strm)
+        pLine = pLine + '\n            mgr{0}__std__lane{1}_strm{2}_cntl        ,'.format(pe,lane,strm) 
+        pLine = pLine + '\n            mgr{0}__std__lane{1}_strm{2}_data        ,'.format(pe,lane,strm) 
+        pLine = pLine + '\n            mgr{0}__std__lane{1}_strm{2}_data_valid  ,'.format(pe,lane,strm) 
+        pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
 
   f = open('../../Manager/HDL/common/system_manager_stack_bus_upstream_port_declarations.vh', 'w')
   pLine = ""
@@ -67,11 +98,11 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
-    pLine = pLine + '\n  // General control and status                                                  '.format(pe) 
-    pLine = pLine + '\n  input                                         sys__pe{0}__allSynchronized     ;'.format(pe) 
-    pLine = pLine + '\n  output                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
-    pLine = pLine + '\n  output                                        pe{0}__sys__ready               ;'.format(pe) 
-    pLine = pLine + '\n  output                                        pe{0}__sys__complete            ;'.format(pe) 
+    pLine = pLine + '\n  // General control and status                                                   '.format(pe) 
+    pLine = pLine + '\n  input                                         mgr{0}__sys__allSynchronized     ;'.format(pe) 
+    pLine = pLine + '\n  output                                        sys__mgr{0}__thisSynchronized    ;'.format(pe) 
+    pLine = pLine + '\n  output                                        sys__mgr{0}__ready               ;'.format(pe) 
+    pLine = pLine + '\n  output                                        sys__mgr{0}__complete            ;'.format(pe) 
     #                                                                                                              
     pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                  '.format(pe) 
     pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr{0}__std__oob_cntl            ;'.format(pe) 
@@ -95,12 +126,12 @@ if __name__ == "__main__":
   pLine = ""
 
   for pe in range (0, numOfPe):
-    pLine = pLine + '\n  // General control and status                                                '.format(pe) 
-    pLine = pLine + '\n  //wire[`PE_PE_ID_RANGE                 ]      sys__pe{0}__peId                ;'.format(pe) 
-    pLine = pLine + '\n  wire                                        sys__pe{0}__allSynchronized     ;'.format(pe) 
-    pLine = pLine + '\n  wire                                        pe{0}__sys__thisSynchronized    ;'.format(pe) 
-    pLine = pLine + '\n  wire                                        pe{0}__sys__ready               ;'.format(pe) 
-    pLine = pLine + '\n  wire                                        pe{0}__sys__complete            ;'.format(pe) 
+    pLine = pLine + '\n  // General control and status                                                 '.format(pe) 
+    pLine = pLine + '\n  wire                                        mgr{0}__sys__allSynchronized     ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        sys__mgr{0}__thisSynchronized    ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        sys__mgr{0}__ready               ;'.format(pe) 
+    pLine = pLine + '\n  wire                                        sys__mgr{0}__complete            ;'.format(pe) 
+    pLine = pLine + '\n'
     #                                                                                                            
     pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                '.format(pe) 
     pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr{0}__std__oob_cntl            ;'.format(pe) 
@@ -108,6 +139,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire                                        std__mgr{0}__oob_ready           ;'.format(pe) 
     pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr{0}__std__oob_type            ;'.format(pe) 
     pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr{0}__std__oob_data            ;'.format(pe) 
+    pLine = pLine + '\n'
     #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
@@ -125,16 +157,18 @@ if __name__ == "__main__":
 
   for pe in range (0, numOfPe):
     #
-    pLine = pLine + '\n  assign  sys__pe{0}__allSynchronized                 =  mgr_inst[{0}].sys__pe__allSynchronized    ;'.format(pe) 
-    pLine = pLine + '\n  assign  mgr_inst[{0}].pe__sys__thisSynchronized     =  pe{0}__sys__thisSynchronized              ;'.format(pe)
-    pLine = pLine + '\n  assign  mgr_inst[{0}].pe__sys__ready                =  pe{0}__sys__ready                         ;'.format(pe)
-    pLine = pLine + '\n  assign  mgr_inst[{0}].pe__sys__complete             =  pe{0}__sys__complete                      ;'.format(pe)
+    pLine = pLine + '\n  assign  mgr{0}__sys__allSynchronized                 =  mgr_inst[{0}].mgr__sys__allSynchronized    ;'.format(pe) 
+    pLine = pLine + '\n  assign  mgr_inst[{0}].sys__mgr__thisSynchronized     =  sys__mgr{0}__thisSynchronized              ;'.format(pe)
+    pLine = pLine + '\n  assign  mgr_inst[{0}].sys__mgr__ready                =  sys__mgr{0}__ready                         ;'.format(pe)
+    pLine = pLine + '\n  assign  mgr_inst[{0}].sys__mgr__complete             =  sys__mgr{0}__complete                      ;'.format(pe)
+    pLine = pLine + '\n'
     #                                                                                                                  
     pLine = pLine + '\n  assign  mgr{0}__std__oob_cntl                       =  mgr_inst[{0}].mgr__std__oob_cntl       ;'.format(pe) 
     pLine = pLine + '\n  assign  mgr{0}__std__oob_valid                      =  mgr_inst[{0}].mgr__std__oob_valid      ;'.format(pe) 
     pLine = pLine + '\n  assign  mgr_inst[{0}].std__mgr__oob_ready           =  std__mgr{0}__oob_ready                 ;'.format(pe)
     pLine = pLine + '\n  assign  mgr{0}__std__oob_tystd                      =  mgr_inst[{0}].mgr__std__oob_tystd      ;'.format(pe) 
     pLine = pLine + '\n  assign  mgr{0}__std__oob_data                       =  mgr_inst[{0}].mgr__std__oob_data       ;'.format(pe) 
+    pLine = pLine + '\n'
     #
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
@@ -181,36 +215,6 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_manager_stack_bus_downstream_ports.vh', 'w')
-  pLine = ""
-
-  for pe in range (0, numOfPe):
-    pLine = pLine + '\n            // General control and status                  ,'.format(pe) 
-    pLine = pLine + '\n            //sys__pe{0}__peId                               ,'.format(pe) 
-    pLine = pLine + '\n            sys__pe{0}__allSynchronized                    ,'.format(pe) 
-    pLine = pLine + '\n            pe{0}__sys__thisSynchronized                   ,'.format(pe) 
-    pLine = pLine + '\n            pe{0}__sys__ready                              ,'.format(pe) 
-    pLine = pLine + '\n            pe{0}__sys__complete                           ,'.format(pe) 
-    #
-    pLine = pLine + '\n            // OOB controls the PE                         ,'.format(pe) 
-    pLine = pLine + '\n            // For now assume OOB is separate to lanes     ,'.format(pe) 
-    pLine = pLine + '\n            mgr{0}__std__oob_cntl                           ,'.format(pe) 
-    pLine = pLine + '\n            mgr{0}__std__oob_valid                          ,'.format(pe) 
-    pLine = pLine + '\n            std__mgr{0}__oob_ready                          ,'.format(pe) 
-    pLine = pLine + '\n            mgr{0}__std__oob_type                           ,'.format(pe) 
-    pLine = pLine + '\n            mgr{0}__std__oob_data                           ,'.format(pe) 
-    #                                                             
-    for lane in range (0, numOfExecLanes):
-      for strm in range (0, 2):
-        pLine = pLine + '\n            std__mgr{0}__lane{1}_strm{2}_ready       ,'.format(pe,lane,strm)
-        pLine = pLine + '\n            mgr{0}__std__lane{1}_strm{2}_cntl        ,'.format(pe,lane,strm) 
-        pLine = pLine + '\n            mgr{0}__std__lane{1}_strm{2}_data        ,'.format(pe,lane,strm) 
-        pLine = pLine + '\n            mgr{0}__std__lane{1}_strm{2}_data_valid  ,'.format(pe,lane,strm) 
-        pLine = pLine + '\n'
-
-  f.write(pLine)
-  f.close()
-
 
   #------------------------------------------------------------------------------------------------------------------------------------------------------
   # Manager
@@ -248,11 +252,11 @@ if __name__ == "__main__":
   pLine = ""
 
   pLine = pLine + '\n  // General control and status                                             ' 
-  pLine = pLine + '\n  wire [`PE_PE_ID_RANGE                 ]     sys__pe__peId                ;' 
-  pLine = pLine + '\n  wire                                        sys__pe__allSynchronized     ;' 
-  pLine = pLine + '\n  wire                                        pe__sys__thisSynchronized    ;' 
-  pLine = pLine + '\n  wire                                        pe__sys__ready               ;' 
-  pLine = pLine + '\n  wire                                        pe__sys__complete            ;' 
+  pLine = pLine + '\n  wire [`PE_PE_ID_RANGE                 ]     sys__mgr__mgrId               ;' 
+  pLine = pLine + '\n  wire                                        mgr__sys__allSynchronized     ;' 
+  pLine = pLine + '\n  wire                                        sys__mgr__thisSynchronized    ;' 
+  pLine = pLine + '\n  wire                                        sys__mgr__ready               ;' 
+  pLine = pLine + '\n  wire                                        sys__mgr__complete            ;' 
   #
   pLine = pLine + '\n  // OOB carries PE configuration                                           '
   pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl            ;' 
@@ -278,14 +282,14 @@ if __name__ == "__main__":
   f = open('../HDL/common/manager_stack_bus_downstream_instance_ports.vh', 'w')
   pLine = ""
 
-  pLine = pLine + '\n               // General control and status                                                 '
-  pLine = pLine + '\n               .sys__pe__peId                      ( sys__pe__peId                   ),      '
-  pLine = pLine + '\n               .sys__pe__allSynchronized           ( sys__pe__allSynchronized        ),      '
-  pLine = pLine + '\n               .pe__sys__thisSynchronized          ( pe__sys__thisSynchronized       ),      '
-  pLine = pLine + '\n               .pe__sys__ready                     ( pe__sys__ready                  ),      '
-  pLine = pLine + '\n               .pe__sys__complete                  ( pe__sys__complete               ),      '
+  pLine = pLine + '\n               // General control and status                                                   '
+  pLine = pLine + '\n               .sys__mgr__mgrId                     ( sys__mgr__mgrId                  ),      '
+  pLine = pLine + '\n               .mgr__sys__allSynchronized           ( mgr__sys__allSynchronized        ),      '
+  pLine = pLine + '\n               .sys__mgr__thisSynchronized          ( sys__mgr__thisSynchronized       ),      '
+  pLine = pLine + '\n               .sys__mgr__ready                     ( sys__mgr__ready                  ),      '
+  pLine = pLine + '\n               .sys__mgr__complete                  ( sys__mgr__complete               ),      '
 
-  pLine = pLine + '\n               // OOB carries PE configuration                                               '
+  pLine = pLine + '\n               // OOB carries PE configuration                                                 '
   pLine = pLine + '\n               .mgr__std__oob_cntl                  ( mgr__std__oob_cntl               ),      '
   pLine = pLine + '\n               .mgr__std__oob_valid                 ( mgr__std__oob_valid              ),      '
   pLine = pLine + '\n               .std__mgr__oob_ready                 ( std__mgr__oob_ready              ),      '
@@ -309,10 +313,10 @@ if __name__ == "__main__":
 
   pLine = pLine + '\n            // General control and status                ,' 
   pLine = pLine + '\n            sys__mgr__mgrId                              ,' 
-  pLine = pLine + '\n            sys__mgr__allSynchronized                    ,' 
-  pLine = pLine + '\n            mgr__sys__thisSynchronized                   ,' 
-  pLine = pLine + '\n            mgr__sys__ready                              ,' 
-  pLine = pLine + '\n            mgr__sys__complete                           ,' 
+  pLine = pLine + '\n            mgr__sys__allSynchronized                    ,' 
+  pLine = pLine + '\n            sys__mgr__thisSynchronized                   ,' 
+  pLine = pLine + '\n            sys__mgr__ready                              ,' 
+  pLine = pLine + '\n            sys__mgr__complete                           ,' 
   #
   pLine = pLine + '\n            // OOB controls how the lanes are interpreted,' 
   pLine = pLine + '\n            mgr__std__oob_cntl                           ,' 
@@ -322,7 +326,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n            mgr__std__oob_data                           ,' 
   #
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n            // Lane operand bus                 '.format(lane)
+    pLine = pLine + '\n            // Lane operand bus                  '.format(lane)
     pLine = pLine + '\n            std__mgr__lane{0}_strm0_ready       ,'.format(lane)
     pLine = pLine + '\n            mgr__std__lane{0}_strm0_cntl        ,'.format(lane) 
     pLine = pLine + '\n            mgr__std__lane{0}_strm0_data        ,'.format(lane) 
@@ -356,18 +360,3 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_manager_stack_bus_upstream_port_declarations.vh', 'w')
-  pLine = ""
-
-  for pe in range (0, numOfPe):
-    pLine = pLine + '\n    input                                         stu__mgr{0}__valid          ;'.format(pe)
-    pLine = pLine + '\n    input  [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr{0}__cntl           ;'.format(pe) 
-    pLine = pLine + '\n    output                                        mgr{0}__stu__ready          ;'.format(pe) 
-    pLine = pLine + '\n    input  [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr{0}__type           ;'.format(pe) 
-    pLine = pLine + '\n    input  [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr{0}__data           ;'.format(pe) 
-    pLine = pLine + '\n    input  [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr{0}__oob_data       ;'.format(pe) 
-    pLine = pLine + '\n'
-  pLine = pLine + '\n'
-
-  f.write(pLine)
-  f.close()
