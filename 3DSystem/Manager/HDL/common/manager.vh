@@ -117,6 +117,15 @@
 `define MGR_WU_EXTD_OPT_VALUE_RANGE                  `MGR_WU_EXTD_OPT_VALUE_MSB : `MGR_WU_EXTD_OPT_VALUE_LSB
 
 
+// Instruction fields
+`define MGR_INST_TYPE_WIDTH               5
+`define MGR_INST_TYPE_MSB           `MGR_INST_TYPE_WIDTH-1
+`define MGR_INST_TYPE_LSB            0
+`define MGR_INST_TYPE_SIZE           (`MGR_INST_TYPE_MSB - `MGR_INST_TYPE_LSB +1)
+`define MGR_INST_TYPE_RANGE           `MGR_INST_TYPE_MSB : `MGR_INST_TYPE_LSB
+
+//---------------------------------------------------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------------------------------------------------
 // Storage Descriptor Memory
 

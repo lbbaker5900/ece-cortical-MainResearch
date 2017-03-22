@@ -37,7 +37,8 @@ typedef enum logic [`STACK_DOWN_OOB_INTF_OPTION_SIZE -1:0 ] {
                                             STD_PACKET_OOB_OPT_NOP               = 8'hFF,
                                             STD_PACKET_OOB_OPT_TAG               = 8'd4,
                                             STD_PACKET_OOB_OPT_STOP_CMD          = 8'd5,
-                                            STD_PACKET_OOB_OPT_SIMD_RELU_CMD     = 8'd6  // doesnt work `STACK_DOWN_OOB_INTF_OPTION_SIZE 'd6
+                                            STD_PACKET_OOB_OPT_SIMD_RELU_CMD     = 8'd6,  // doesnt work `STACK_DOWN_OOB_INTF_OPTION_SIZE 'd6
+                                            STD_PACKET_OOB_OPT_NUM_LANES         = 8'd7
                                           } stack_down_oob_option ;
 
 //----------------------------------------------------------------------------------------------------

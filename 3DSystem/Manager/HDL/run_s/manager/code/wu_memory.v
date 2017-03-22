@@ -83,6 +83,7 @@ module wu_memory (
     wire                                      valid_e1                ;
     // Delineators
     reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    icntl_e1                ;  // instruction delineator
+    reg  [`MGR_INST_TYPE_RANGE           ]    op_e1                   ;  // 
     reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    dcntl_e1                ;  // descriptor delineator
 
     // WU Instruction option fields
@@ -120,11 +121,11 @@ module wu_memory (
     // Memories 
 
     reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    icntl                                        [`MGR_STORAGE_DESC_MEMORY_RANGE ] ;  // instruction delineator
-    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    dcntl                                        [`MGR_STORAGE_DESC_MEMORY_RANGE ] ;  // descriptor delineator
-
+    reg    [`MGR_INST_TYPE_RANGE           ]    op                                           [`MGR_STORAGE_DESC_MEMORY_RANGE ] ;  // 
     // WU Instruction option fields
     reg    [`MGR_WU_OPT_TYPE_RANGE         ]    option_type    [`MGR_WU_OPT_PER_INST_RANGE ] [`MGR_STORAGE_DESC_MEMORY_RANGE ] ;  // 
     reg    [`MGR_WU_OPT_VALUE_RANGE        ]    option_value   [`MGR_WU_OPT_PER_INST_RANGE ] [`MGR_STORAGE_DESC_MEMORY_RANGE ] ;  // 
+    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    dcntl                                        [`MGR_STORAGE_DESC_MEMORY_RANGE ] ;  // descriptor delineator
 
     
     // The memory is updated using the testbench, so everytime we see an option, reload the memory
@@ -132,12 +133,17 @@ module wu_memory (
       begin
 
         $readmemh($sformatf("./inputFiles/mgr%0d_icntl.dat"        , sys__mgr__mgrId) , icntl                );
+        $readmemh($sformatf("./inputFiles/mgr%0d_op.dat"           , sys__mgr__mgrId) , op                   );
+        for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
+          begin: option_mem
+            $readmemh($sformatf("./inputFiles/mgr%0d_optionType%0d.dat"  , sys__mgr__mgrId, opt) , option_type    [opt]   );
+            $readmemh($sformatf("./inputFiles/mgr%0d_optionValue%0d.dat" , sys__mgr__mgrId, opt) , option_value   [opt]   );
+            //$readmemh($sformatf("./inputFiles/mgr%0d_optionType1.dat"  , sys__mgr__mgrId) , option_type    [1]   );
+            //$readmemh($sformatf("./inputFiles/mgr%0d_optionValue1.dat" , sys__mgr__mgrId) , option_value   [1]   );
+            //$readmemh($sformatf("./inputFiles/mgr%0d_optionType1.dat"  , sys__mgr__mgrId) , option_type    [2]   );
+            //$readmemh($sformatf("./inputFiles/mgr%0d_optionValue1.dat" , sys__mgr__mgrId) , option_value   [2]   );
+          end
         $readmemh($sformatf("./inputFiles/mgr%0d_dcntl.dat"        , sys__mgr__mgrId) , dcntl                );
-        $readmemh($sformatf("./inputFiles/mgr%0d_optionType0.dat"  , sys__mgr__mgrId) , option_type    [0]   );
-        $readmemh($sformatf("./inputFiles/mgr%0d_optionValue0.dat" , sys__mgr__mgrId) , option_value   [0]   );
-        $readmemh($sformatf("./inputFiles/mgr%0d_optionType1.dat"  , sys__mgr__mgrId) , option_type    [1]   );
-        $readmemh($sformatf("./inputFiles/mgr%0d_optionValue1.dat" , sys__mgr__mgrId) , option_value   [1]   );
-
       end
     
     //----------------------------------------------------------------------------------------------------
@@ -145,13 +151,17 @@ module wu_memory (
 
     always @(*) 
       begin 
-        #0.3   icntl_e1            =  (wuf__wum__read_d1) ? icntl              [wuf__wum__addr_d1] : 'd0 ;
-        #0.3   dcntl_e1            =  (wuf__wum__read_d1) ? dcntl              [wuf__wum__addr_d1] : 'd0 ;
+        #0.3   icntl_e1            =  (wuf__wum__read_d1) ? icntl [wuf__wum__addr_d1] : 'd0 ;
+        #0.3   op_e1               =  (wuf__wum__read_d1) ? op    [wuf__wum__addr_d1] : 'd0 ;
                                 
-        #0.3   option_type_e1  [0] =  (wuf__wum__read_d1) ? option_type    [0] [wuf__wum__addr_d1] : 'd0 ;
-        #0.3   option_value_e1 [0] =  (wuf__wum__read_d1) ? option_value   [0] [wuf__wum__addr_d1] : 'd0 ;
-        #0.3   option_type_e1  [1] =  (wuf__wum__read_d1) ? option_type    [1] [wuf__wum__addr_d1] : 'd0 ;
-        #0.3   option_value_e1 [1] =  (wuf__wum__read_d1) ? option_value   [1] [wuf__wum__addr_d1] : 'd0 ;
+        for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
+          begin: option_mem
+            #0.3   option_type_e1  [opt] =  (wuf__wum__read_d1) ? option_type    [opt] [wuf__wum__addr_d1] : 'd0 ;
+            #0.3   option_value_e1 [opt] =  (wuf__wum__read_d1) ? option_value   [opt] [wuf__wum__addr_d1] : 'd0 ;
+            //#0.3   option_type_e1  [1] =  (wuf__wum__read_d1) ? option_type    [1] [wuf__wum__addr_d1] : 'd0 ;
+            //#0.3   option_value_e1 [1] =  (wuf__wum__read_d1) ? option_value   [1] [wuf__wum__addr_d1] : 'd0 ;
+          end
+        #0.3   dcntl_e1            =  (wuf__wum__read_d1) ? dcntl              [wuf__wum__addr_d1] : 'd0 ;
 
       end
 

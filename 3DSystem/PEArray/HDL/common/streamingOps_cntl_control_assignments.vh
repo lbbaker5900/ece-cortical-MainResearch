@@ -1670,38 +1670,38 @@
   assign strm_control[31].strm1_num_of_types =  lane31_num_of_types1 ; 
   assign strm_control[31].strm1_stagger      =  lane31_stagger1      ; 
   assign strms_completed = 
-               (strm_control[0].strm_complete | ~rs1[0]) & 
-               (strm_control[1].strm_complete | ~rs1[1]) & 
-               (strm_control[2].strm_complete | ~rs1[2]) & 
-               (strm_control[3].strm_complete | ~rs1[3]) & 
-               (strm_control[4].strm_complete | ~rs1[4]) & 
-               (strm_control[5].strm_complete | ~rs1[5]) & 
-               (strm_control[6].strm_complete | ~rs1[6]) & 
-               (strm_control[7].strm_complete | ~rs1[7]) & 
-               (strm_control[8].strm_complete | ~rs1[8]) & 
-               (strm_control[9].strm_complete | ~rs1[9]) & 
-               (strm_control[10].strm_complete | ~rs1[10]) & 
-               (strm_control[11].strm_complete | ~rs1[11]) & 
-               (strm_control[12].strm_complete | ~rs1[12]) & 
-               (strm_control[13].strm_complete | ~rs1[13]) & 
-               (strm_control[14].strm_complete | ~rs1[14]) & 
-               (strm_control[15].strm_complete | ~rs1[15]) & 
-               (strm_control[16].strm_complete | ~rs1[16]) & 
-               (strm_control[17].strm_complete | ~rs1[17]) & 
-               (strm_control[18].strm_complete | ~rs1[18]) & 
-               (strm_control[19].strm_complete | ~rs1[19]) & 
-               (strm_control[20].strm_complete | ~rs1[20]) & 
-               (strm_control[21].strm_complete | ~rs1[21]) & 
-               (strm_control[22].strm_complete | ~rs1[22]) & 
-               (strm_control[23].strm_complete | ~rs1[23]) & 
-               (strm_control[24].strm_complete | ~rs1[24]) & 
-               (strm_control[25].strm_complete | ~rs1[25]) & 
-               (strm_control[26].strm_complete | ~rs1[26]) & 
-               (strm_control[27].strm_complete | ~rs1[27]) & 
-               (strm_control[28].strm_complete | ~rs1[28]) & 
-               (strm_control[29].strm_complete | ~rs1[29]) & 
-               (strm_control[30].strm_complete | ~rs1[30]) & 
-               (strm_control[31].strm_complete | ~rs1[31]) ; 
+               (strm_control[0].strm_complete | ~exec_lane_active[0]) & 
+               (strm_control[1].strm_complete | ~exec_lane_active[1]) & 
+               (strm_control[2].strm_complete | ~exec_lane_active[2]) & 
+               (strm_control[3].strm_complete | ~exec_lane_active[3]) & 
+               (strm_control[4].strm_complete | ~exec_lane_active[4]) & 
+               (strm_control[5].strm_complete | ~exec_lane_active[5]) & 
+               (strm_control[6].strm_complete | ~exec_lane_active[6]) & 
+               (strm_control[7].strm_complete | ~exec_lane_active[7]) & 
+               (strm_control[8].strm_complete | ~exec_lane_active[8]) & 
+               (strm_control[9].strm_complete | ~exec_lane_active[9]) & 
+               (strm_control[10].strm_complete | ~exec_lane_active[10]) & 
+               (strm_control[11].strm_complete | ~exec_lane_active[11]) & 
+               (strm_control[12].strm_complete | ~exec_lane_active[12]) & 
+               (strm_control[13].strm_complete | ~exec_lane_active[13]) & 
+               (strm_control[14].strm_complete | ~exec_lane_active[14]) & 
+               (strm_control[15].strm_complete | ~exec_lane_active[15]) & 
+               (strm_control[16].strm_complete | ~exec_lane_active[16]) & 
+               (strm_control[17].strm_complete | ~exec_lane_active[17]) & 
+               (strm_control[18].strm_complete | ~exec_lane_active[18]) & 
+               (strm_control[19].strm_complete | ~exec_lane_active[19]) & 
+               (strm_control[20].strm_complete | ~exec_lane_active[20]) & 
+               (strm_control[21].strm_complete | ~exec_lane_active[21]) & 
+               (strm_control[22].strm_complete | ~exec_lane_active[22]) & 
+               (strm_control[23].strm_complete | ~exec_lane_active[23]) & 
+               (strm_control[24].strm_complete | ~exec_lane_active[24]) & 
+               (strm_control[25].strm_complete | ~exec_lane_active[25]) & 
+               (strm_control[26].strm_complete | ~exec_lane_active[26]) & 
+               (strm_control[27].strm_complete | ~exec_lane_active[27]) & 
+               (strm_control[28].strm_complete | ~exec_lane_active[28]) & 
+               (strm_control[29].strm_complete | ~exec_lane_active[29]) & 
+               (strm_control[30].strm_complete | ~exec_lane_active[30]) & 
+               (strm_control[31].strm_complete | ~exec_lane_active[31]) ; 
 
   assign  lane0_strm0_read_start_peId  = lane0_r130[`STREAMING_OP_CNTL_PE_DECODE_ADDRESS_RANGE]  ;
   assign  lane0_strm1_read_start_peId  = lane0_r131[`STREAMING_OP_CNTL_PE_DECODE_ADDRESS_RANGE]  ;
@@ -1832,38 +1832,38 @@
   assign  lane31_strm0_write_start_peId = lane31_r134[`STREAMING_OP_CNTL_PE_DECODE_ADDRESS_RANGE]  ;
   assign  lane31_strm1_write_start_peId = lane31_r135[`STREAMING_OP_CNTL_PE_DECODE_ADDRESS_RANGE]  ;
 
-  assign strm_control[0].lane_enable  =  rs1[0]  ; 
-  assign strm_control[1].lane_enable  =  rs1[1]  ; 
-  assign strm_control[2].lane_enable  =  rs1[2]  ; 
-  assign strm_control[3].lane_enable  =  rs1[3]  ; 
-  assign strm_control[4].lane_enable  =  rs1[4]  ; 
-  assign strm_control[5].lane_enable  =  rs1[5]  ; 
-  assign strm_control[6].lane_enable  =  rs1[6]  ; 
-  assign strm_control[7].lane_enable  =  rs1[7]  ; 
-  assign strm_control[8].lane_enable  =  rs1[8]  ; 
-  assign strm_control[9].lane_enable  =  rs1[9]  ; 
-  assign strm_control[10].lane_enable  =  rs1[10]  ; 
-  assign strm_control[11].lane_enable  =  rs1[11]  ; 
-  assign strm_control[12].lane_enable  =  rs1[12]  ; 
-  assign strm_control[13].lane_enable  =  rs1[13]  ; 
-  assign strm_control[14].lane_enable  =  rs1[14]  ; 
-  assign strm_control[15].lane_enable  =  rs1[15]  ; 
-  assign strm_control[16].lane_enable  =  rs1[16]  ; 
-  assign strm_control[17].lane_enable  =  rs1[17]  ; 
-  assign strm_control[18].lane_enable  =  rs1[18]  ; 
-  assign strm_control[19].lane_enable  =  rs1[19]  ; 
-  assign strm_control[20].lane_enable  =  rs1[20]  ; 
-  assign strm_control[21].lane_enable  =  rs1[21]  ; 
-  assign strm_control[22].lane_enable  =  rs1[22]  ; 
-  assign strm_control[23].lane_enable  =  rs1[23]  ; 
-  assign strm_control[24].lane_enable  =  rs1[24]  ; 
-  assign strm_control[25].lane_enable  =  rs1[25]  ; 
-  assign strm_control[26].lane_enable  =  rs1[26]  ; 
-  assign strm_control[27].lane_enable  =  rs1[27]  ; 
-  assign strm_control[28].lane_enable  =  rs1[28]  ; 
-  assign strm_control[29].lane_enable  =  rs1[29]  ; 
-  assign strm_control[30].lane_enable  =  rs1[30]  ; 
-  assign strm_control[31].lane_enable  =  rs1[31]  ; 
+  assign strm_control[0].lane_enable  =  exec_lane_active[0]  ; 
+  assign strm_control[1].lane_enable  =  exec_lane_active[1]  ; 
+  assign strm_control[2].lane_enable  =  exec_lane_active[2]  ; 
+  assign strm_control[3].lane_enable  =  exec_lane_active[3]  ; 
+  assign strm_control[4].lane_enable  =  exec_lane_active[4]  ; 
+  assign strm_control[5].lane_enable  =  exec_lane_active[5]  ; 
+  assign strm_control[6].lane_enable  =  exec_lane_active[6]  ; 
+  assign strm_control[7].lane_enable  =  exec_lane_active[7]  ; 
+  assign strm_control[8].lane_enable  =  exec_lane_active[8]  ; 
+  assign strm_control[9].lane_enable  =  exec_lane_active[9]  ; 
+  assign strm_control[10].lane_enable  =  exec_lane_active[10]  ; 
+  assign strm_control[11].lane_enable  =  exec_lane_active[11]  ; 
+  assign strm_control[12].lane_enable  =  exec_lane_active[12]  ; 
+  assign strm_control[13].lane_enable  =  exec_lane_active[13]  ; 
+  assign strm_control[14].lane_enable  =  exec_lane_active[14]  ; 
+  assign strm_control[15].lane_enable  =  exec_lane_active[15]  ; 
+  assign strm_control[16].lane_enable  =  exec_lane_active[16]  ; 
+  assign strm_control[17].lane_enable  =  exec_lane_active[17]  ; 
+  assign strm_control[18].lane_enable  =  exec_lane_active[18]  ; 
+  assign strm_control[19].lane_enable  =  exec_lane_active[19]  ; 
+  assign strm_control[20].lane_enable  =  exec_lane_active[20]  ; 
+  assign strm_control[21].lane_enable  =  exec_lane_active[21]  ; 
+  assign strm_control[22].lane_enable  =  exec_lane_active[22]  ; 
+  assign strm_control[23].lane_enable  =  exec_lane_active[23]  ; 
+  assign strm_control[24].lane_enable  =  exec_lane_active[24]  ; 
+  assign strm_control[25].lane_enable  =  exec_lane_active[25]  ; 
+  assign strm_control[26].lane_enable  =  exec_lane_active[26]  ; 
+  assign strm_control[27].lane_enable  =  exec_lane_active[27]  ; 
+  assign strm_control[28].lane_enable  =  exec_lane_active[28]  ; 
+  assign strm_control[29].lane_enable  =  exec_lane_active[29]  ; 
+  assign strm_control[30].lane_enable  =  exec_lane_active[30]  ; 
+  assign strm_control[31].lane_enable  =  exec_lane_active[31]  ; 
 
   assign strm_control[0].strm0_read_peId  =  lane0_strm0_read_start_peId  ; 
   assign strm_control[0].strm0_write_peId =  lane0_strm0_write_start_peId ; 

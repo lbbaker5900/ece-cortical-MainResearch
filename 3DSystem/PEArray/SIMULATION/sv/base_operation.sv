@@ -59,6 +59,7 @@ package operation;
         int                                                 Id [2]                                                   ; // PE, Lane
         logic  [`STACK_DOWN_OOB_INTF_TAG_RANGE ]            tId                                                      ; // transaction number
 
+        int                                                 numberOfLanes                                            ; // 
         int                                                 beenConstrained                                          ; // 
 
         //------------------------------------------------------------------------------------------------------
@@ -139,6 +140,7 @@ package operation;
      
         function new ();
                     this.timeTag                   = $time   ;
+                    this.numberOfLanes             = 32      ;  // constraint will check if this is zero before randomizing
                     this.beenConstrained           = 0       ;  // constraint will check if this is zero before randomizing
                     this.setNumberOfOperands       = 0       ;  
                     this.setDestinationAddress [0] = 0       ;  
@@ -158,6 +160,7 @@ package operation;
                     copy.operandsExp[1]            = new [this.numberOfOperands]  ;
                     copy.operandsSignificand[0]    = new [this.numberOfOperands]  ;
                     copy.operandsSignificand[1]    = new [this.numberOfOperands]  ;
+                    //copy.numberOfLanes             = this.numberOfLanes           ;
                     return copy ;
         endfunction
         
@@ -171,6 +174,7 @@ package operation;
                     c.operandsExp[1]            = new [this.numberOfOperands]  ;
                     c.operandsSignificand[0]    = new [this.numberOfOperands]  ;
                     c.operandsSignificand[1]    = new [this.numberOfOperands]  ;
+                    //c.numberOfLanes             = this.numberOfLanes           ;
         endfunction
         
 
@@ -326,8 +330,8 @@ package operation;
                 numberOfOperands == priorOperationNumberOfOperands;
             // test if number of operands had been set by manager
             } else if (beenConstrained == 0) {
-                //numberOfOperands inside {20};
-                numberOfOperands inside {[200:500]};
+                numberOfOperands inside {20};
+                //numberOfOperands inside {[200:500]};
                 //numberOfOperands inside {[0:65535]};
             } else {
                 // use number of operands set by manager
@@ -640,6 +644,7 @@ package operation;
         rand pe_data_type                                           src_data_type          [`PE_NUM_OF_STREAMS_RANGE ]   ;
         rand pe_data_type                                           dest_data_type         [`PE_NUM_OF_STREAMS_RANGE ]   ;
         rand bit               [`PE_MAX_NUM_OF_TYPES_RANGE       ]  numberOfOperands                                     ;
+        int                                                         numberOfLanes                                        ; 
      
 
         function new ();
@@ -650,6 +655,7 @@ package operation;
             
             this.tag                =   tag                                       ;
             this.Id                 =   operation.Id                              ;
+            this.numberOfLanes      =   operation.numberOfLanes                   ;
             this.stOp_operation     =   operation.stOp_operation                  ;
             this.sourceAddress      =   operation.sourceAddress                   ;
             this.destinationAddress =   operation.destinationAddress              ;

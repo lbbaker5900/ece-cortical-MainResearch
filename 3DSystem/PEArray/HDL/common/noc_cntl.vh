@@ -64,7 +64,7 @@
 // FSM(s) 
 
 // Local Input Queue Controller
-`include "/home/lbbaker/Cortical/StreamingOps/PE/HDL/common/noc_cntl_noc_local_inq_control_fsm_state_definitions.vh"
+`include "noc_cntl_noc_local_inq_control_fsm_state_definitions.vh"
 
 // Local Output Queue Controller
 `define NOC_CONT_LOCAL_OUTQ_CNTL_WAIT                    15'b000_0000_0000_0001
@@ -90,7 +90,7 @@
 
 
 // Port Output Controller
-`include "/home/lbbaker/Cortical/StreamingOps/PE/HDL/common/noc_cntl_noc_port_output_control_fsm_state_definitions.vh"
+`include "noc_cntl_noc_port_output_control_fsm_state_definitions.vh"
 
 
 // Port Input Controller

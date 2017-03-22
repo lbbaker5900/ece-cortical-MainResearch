@@ -108,6 +108,8 @@ module pe_cntl (
 
   wire   [`PE_MAX_NUM_OF_TYPES_RANGE         ]    numberOfOperands           ;
 
+  reg    [`PE_NUM_OF_EXEC_LANES_RANGE        ]    execLanesActive            ;
+  reg    [`PE_EXEC_LANE_ID_RANGE             ]    numberOfActiveLanes        ;
 
 
   //----------------------------------------------------------------------------------------------------
@@ -478,7 +480,26 @@ module pe_cntl (
                                    ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_RANGE] ==  STD_PACKET_OOB_OPT_TAG )) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
                                                                                                                                                                      tag                                                             ;
 
+      // if we dont get a number of active lanes, assume all are active, set all active at begining of oob packet
+      numberOfActiveLanes      <=  ( reset_poweron                                                                                                                     ) ?  { `PE_NUM_OF_EXEC_LANES {1'b1}}                                :
+                                   ( oob_packet_starting                                                                                                               ) ?  { `PE_NUM_OF_EXEC_LANES {1'b1}}                                :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_RANGE] == STD_PACKET_OOB_OPT_NUM_LANES  )) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_RANGE] == STD_PACKET_OOB_OPT_NUM_LANES  )) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
+                                                                                                                                                                           numberOfActiveLanes                                             ;
 
+
+    end
+
+  // activate lanes. Number of lanes start from '0'
+  always @(*)
+    begin
+      case(numberOfActiveLanes)
+        `include "pe_cntl_lane_enable_assignments.vh"
+        default:
+          begin
+            execLanesActive  = 'd0     ;
+          end
+      endcase
     end
 
   assign oob_packet_starting     = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT) & (pe_cntl_oob_rx_cntl_state_next != `PE_CNTL_OOB_RX_CNTL_WAIT) ;  // transitioning out of WAIT

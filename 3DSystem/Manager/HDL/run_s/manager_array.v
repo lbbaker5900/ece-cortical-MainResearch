@@ -71,7 +71,7 @@ module manager_array (
 
   //-------------------------------------------------------------------------------------------
   // General system connectivity
-  `include "sys_manager_general_connections.vh"
+  `include "manager_sys_general_connections.vh"
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
@@ -128,10 +128,16 @@ module manager_array (
                 .stu__mgr__oob_data     ( stu__mgr__oob_data     ),
  
                 //-------------------------------
-                // General
-                `include "manager_sys_general_instance_ports.vh"
-                .clk               ( clk               ),
-                .reset_poweron     ( reset_poweron     )
+                // General control and status  
+                .sys__mgr__mgrId              ( sys__mgr__mgrId             ), 
+                .mgr__sys__allSynchronized    ( mgr__sys__allSynchronized   ), 
+                .sys__mgr__thisSynchronized   ( sys__mgr__thisSynchronized  ), 
+                .sys__mgr__ready              ( sys__mgr__ready             ), 
+                .sys__mgr__complete           ( sys__mgr__complete          ), 
+                //`include "manager_sys_general_instance_ports.vh"
+                //
+                .clk                          ( clk                         ),
+                .reset_poweron                ( reset_powero          n     )
               );
       end
   endgenerate

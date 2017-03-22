@@ -179,11 +179,11 @@ interface stu_pe_ifc(
  
     clocking cb_mgr @(posedge clk);
         //input         stu__pe__ready       ;
-        output        pe__stu__valid       ;
-        output        pe__stu__cntl        ;
-        output        pe__stu__type        ;  // Control or Data, Vector or scalar
-        output        pe__stu__data        ;
-        output        pe__stu__oob_data    ;
+        //output        pe__stu__valid       ;
+        //output        pe__stu__cntl        ;
+        //output        pe__stu__type        ;  // Control or Data, Vector or scalar
+        //output        pe__stu__data        ;
+        //output        pe__stu__oob_data    ;
 
     endclocking : cb_mgr
  

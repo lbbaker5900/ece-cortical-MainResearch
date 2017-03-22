@@ -1951,9 +1951,9 @@ if __name__ == "__main__":
   pLine = pLine + '\n  assign strms_completed = '
   for lane in range (0, numOfExecLanes):
     if lane < ((numOfExecLanes)-1):
-      pLine = pLine + '\n               (strm_control[{0}].strm_complete | ~rs1[{0}]) & '.format(lane)
+      pLine = pLine + '\n               (strm_control[{0}].strm_complete | ~exec_lane_active[{0}]) & '.format(lane)
     else:
-      pLine = pLine + '\n               (strm_control[{0}].strm_complete | ~rs1[{0}]) ; '.format(lane)
+      pLine = pLine + '\n               (strm_control[{0}].strm_complete | ~exec_lane_active[{0}]) ; '.format(lane)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
@@ -1965,7 +1965,7 @@ if __name__ == "__main__":
 
   # lane control fsm
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  assign strm_control[{0}].lane_enable  =  rs1[{0}]  ; '.format(lane)
+    pLine = pLine + '\n  assign strm_control[{0}].lane_enable  =  exec_lane_active[{0}]  ; '.format(lane)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
@@ -2621,6 +2621,28 @@ if __name__ == "__main__":
     pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE      ]      sdp__cntl__lane{0}_strm_data       ; '.format(lane)
     pLine = pLine + '\n   wire                                            sdp__cntl__lane{0}_strm_data_valid ; '.format(lane)
   pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/pe_cntl_lane_enable_assignments.vh', 'w')
+  pLine = ""
+
+  # In this case, '0' means one active lane
+  pLine = pLine + '\n'
+  numOfExecLaneIdBits = int(math.log(numOfExecLanes,2))
+  pLine = pLine + '\n  // Set bit in rs1 for each enabled lane'
+  pLine = pLine + '\n  // In this case, \'0\' means one active lane e.g. always at least one active'
+  for activeLanes in range (numOfExecLanes-1, -1, -1 ):
+    pLine = pLine + '\n      {2}\'d{0} :'.format(activeLanes, numOfExecLanes, numOfExecLaneIdBits)
+    pLine = pLine + '\n        begin'
+    pLine = pLine + '\n          execLanesActive = {1}\'b'.format(activeLanes, numOfExecLanes, numOfExecLaneIdBits)
+    for bit in range (numOfExecLanes -1 - activeLanes) :
+      pLine = pLine + '0'
+    for bit in range (activeLanes+1) :
+      pLine = pLine + '1'
+    pLine = pLine + '  ; '
+    pLine = pLine + '\n        end'
 
   f.write(pLine)
   f.close()

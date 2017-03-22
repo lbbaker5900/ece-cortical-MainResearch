@@ -213,7 +213,7 @@ module streamingOps_cntl (
   wire enable ;
   assign enable = rs0[0] ; // FIXME
 
-  wire [`PE_NUM_OF_EXEC_LANES_RANGE] exec_lanes_active ;
+  wire [`PE_NUM_OF_EXEC_LANES_RANGE] exec_lane_active ;
   assign exec_lane_active = rs1[`PE_NUM_OF_EXEC_LANES_RANGE];
 
   wire [31:0] operation = rs0[31:1];  // FIXME
