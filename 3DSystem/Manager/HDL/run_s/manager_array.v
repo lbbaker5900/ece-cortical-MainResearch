@@ -24,7 +24,7 @@
 `include "pe_array.vh"
 `include "manager.vh"
 `include "manager_array.vh"
-`include "noc_interpe_port_Bitmasks.vh"
+`include "noc_interMgr_port_Bitmasks.vh"
 
 `timescale 1ns/10ps
 
@@ -66,8 +66,12 @@ module manager_array (
   // Regs and wires
 
   //-------------------------------------------------------------------------------------------
+  // NoC
+  `include "manager_noc_connection_wires.vh"
+
+  //-------------------------------------------------------------------------------------------
   // General system connectivity
-  `include "sys_general_connections.vh"
+  `include "sys_manager_general_connections.vh"
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
@@ -100,15 +104,15 @@ module manager_array (
  
         //-------------------------------------------------------------------------------------------------
         // NoC Interface
-        `include "pe_noc_instance_wires.vh"
+        `include "manager_noc_instance_wires.vh"
 
         assign sys__mgr__mgrId = gvi;
 
-        mgr mgr (
+        manager manager (
    
                 //-------------------------------
                 // NoC Interface
-                `include "pe_noc_instance_ports.vh"
+                `include "manager_noc_instance_ports.vh"
    
                 //-------------------------------
                 // Stack Bus downstream Interface
@@ -125,6 +129,7 @@ module manager_array (
  
                 //-------------------------------
                 // General
+                `include "manager_sys_general_instance_ports.vh"
                 .clk               ( clk               ),
                 .reset_poweron     ( reset_poweron     )
               );
@@ -140,9 +145,9 @@ module manager_array (
   `include "system_manager_stack_bus_upstream_instance_connections.vh"
 
   //-------------------------------------------------------------------------------------------------
-  // Inter PE NoC Connectivity      
-  //`include "pe_noc_interpe_connections.vh"
-  //`include "noc_interpe_port_Bitmask_assignments.vh"
+  // Inter Manager NoC Connectivity      
+  `include "noc_interMgr_connections.vh"
+  `include "noc_interMgr_port_Bitmask_assignments.vh"
 
 
 

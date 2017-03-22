@@ -1,10 +1,4 @@
 
-            // General control and status                ,
-            sys__mgr__mgrId                              ,
-            mgr__sys__allSynchronized                    ,
-            sys__mgr__thisSynchronized                   ,
-            sys__mgr__ready                              ,
-            sys__mgr__complete                           ,
             // OOB controls how the lanes are interpreted,
             mgr__std__oob_cntl                           ,
             mgr__std__oob_valid                          ,

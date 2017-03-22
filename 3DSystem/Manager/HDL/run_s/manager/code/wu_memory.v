@@ -30,6 +30,7 @@
 
 module wu_memory (  
                            valid                       ,
+                           sys__mgr__mgrId             ,
 
                            // from WU fetch
                            wuf__wum__addr              ,
@@ -47,6 +48,7 @@ module wu_memory (
 
     input                                       clk                            ;
     input                                       valid                          ;
+    input   [`MGR_MGR_ID_RANGE    ]             sys__mgr__mgrId                ;
 
     // from WU fetch
     input  [`MGR_WU_ADDRESS_RANGE          ]    wuf__wum__addr                 ;

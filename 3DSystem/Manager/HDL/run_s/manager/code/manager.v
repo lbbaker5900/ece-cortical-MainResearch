@@ -37,6 +37,11 @@
 module manager (
 
             //-------------------------------
+            // NoC
+            //
+            `include "manager_noc_cntl_noc_ports.vh"
+ 
+            //-------------------------------
             // Stack Bus - Downstream
             //
             `include "manager_stack_bus_downstream_ports.vh"
@@ -50,12 +55,6 @@ module manager (
             stu__mgr__type          ,  // Control or Data, Vector or scalar
             stu__mgr__data          ,
             stu__mgr__oob_data      ,
- 
-            //-------------------------------
-            // NoC
-            //
-            //`include "noc_cntl_noc_ports.vh"
-            //
  
             // General control and status 
             sys__mgr__mgrId               , 
@@ -113,8 +112,11 @@ module manager (
   //-------------------------------------------------------------------------------------------------
   // NoC
   //
-  //`include "noc_cntl_noc_ports_declaration.vh"
+  `include "manager_noc_cntl_noc_ports_declaration.vh"
 
+  `include "noc_to_mgrArray_connection_wires.vh"
+
+  `include "manager_noc_connection_wires.vh"
 
   wire  [`MGR_WU_ADDRESS_RANGE    ]     wuf__wum__addr          ;
   wire  [`MGR_WU_ADDRESS_RANGE    ]     mcntl__wuf__start_addr  ;  // first WU address
@@ -137,8 +139,10 @@ module manager (
  
           //-------------------------------
           // General
-          .clk               ( clk               ),
-          .reset_poweron     ( reset_poweron     )
+          .sys__mgr__mgrId         ( sys__mgr__mgrId          ),
+
+          .clk                     ( clk                      ),
+          .reset_poweron           ( reset_poweron            )
         );
 
 
@@ -150,6 +154,8 @@ module manager (
 
   wu_memory wu_memory (
   
+          .valid                   ( wuf__wum__read           ),  // used to initiate readmemh
+
           //-------------------------------
           // From WU fetch 
           .wuf__wum__read          ( wuf__wum__read           ),
@@ -164,14 +170,60 @@ module manager (
           .wum__wud__option_value  ( wum__wud__option_value   ),
 
           //-------------------------------
-          // 
-          .xxx__wuf__stall         ( xxx__wuf__stall          ),
- 
-          //-------------------------------
           // General
-          .clk               ( clk               ),
-          .reset_poweron     ( reset_poweron     )
+          .sys__mgr__mgrId         ( sys__mgr__mgrId          ),
+
+          .clk                     ( clk               )
         );
 
+  //-------------------------------------------------------------------------------------------------
+  // NoC Interface
+  // 
+  noc_cntl noc_cntl (
+
+                        // Aggregate Control-Path (cp) to NoC 
+                       .noc__scntl__cp_ready          ( noc__mcntl__cp_ready         ), 
+                       .scntl__noc__cp_cntl           ( mcntl__noc__cp_cntl          ), 
+                       .scntl__noc__cp_type           ( mcntl__noc__cp_type          ), 
+                       .scntl__noc__cp_data           ( mcntl__noc__cp_data          ), 
+                       .scntl__noc__cp_laneId         ( mcntl__noc__cp_laneId        ), 
+                       .scntl__noc__cp_strmId         ( mcntl__noc__cp_strmId        ), 
+                       .scntl__noc__cp_valid          ( mcntl__noc__cp_valid         ), 
+                        // Aggregate Data-Path (cp) from NoC 
+                       .scntl__noc__cp_ready          ( mcntl__noc__cp_ready         ), 
+                       .noc__scntl__cp_cntl           ( noc__mcntl__cp_cntl          ), 
+                       .noc__scntl__cp_type           ( noc__mcntl__cp_type          ), 
+                       .noc__scntl__cp_data           ( noc__mcntl__cp_data          ), 
+                       .noc__scntl__cp_peId           ( noc__mcntl__cp_peId          ), 
+                       .noc__scntl__cp_laneId         ( noc__mcntl__cp_laneId        ), 
+                       .noc__scntl__cp_strmId         ( noc__mcntl__cp_strmId        ), 
+                       .noc__scntl__cp_valid          ( noc__mcntl__cp_valid         ), 
+                       
+                        // Aggregate Data-Path (dp) to NoC 
+                       .noc__scntl__dp_ready          ( noc__mcntl__dp_ready         ), 
+                       .scntl__noc__dp_type           ( mcntl__noc__dp_type          ), 
+                       .scntl__noc__dp_cntl           ( mcntl__noc__dp_cntl          ), 
+                       .scntl__noc__dp_peId           ( mcntl__noc__dp_peId          ), 
+                       .scntl__noc__dp_laneId         ( mcntl__noc__dp_laneId        ), 
+                       .scntl__noc__dp_strmId         ( mcntl__noc__dp_strmId        ), 
+                       .scntl__noc__dp_data           ( mcntl__noc__dp_data          ), 
+                       .scntl__noc__dp_valid          ( mcntl__noc__dp_valid         ), 
+                        // Aggregate Data-Path (dp) from NoC 
+                       .scntl__noc__dp_ready          ( mcntl__noc__dp_ready         ), 
+                       .noc__scntl__dp_cntl           ( noc__mcntl__dp_cntl          ), 
+                       .noc__scntl__dp_type           ( noc__mcntl__dp_type          ), 
+                       .noc__scntl__dp_laneId         ( noc__mcntl__dp_laneId        ), 
+                       .noc__scntl__dp_strmId         ( noc__mcntl__dp_strmId        ), 
+                       .noc__scntl__dp_data           ( noc__mcntl__dp_data          ), 
+                       .noc__scntl__dp_valid          ( noc__mcntl__dp_valid         ), 
+
+                        // Connections to external NoC
+                        `include "manager_noc_cntl_noc_ports_instance_ports.vh"
+
+                       .peId                         ( sys__mgr__mgrId             ),
+                       .clk                          ( clk                         ),
+                       .reset_poweron                ( reset_poweron               )
+                          
+  );
 endmodule
 

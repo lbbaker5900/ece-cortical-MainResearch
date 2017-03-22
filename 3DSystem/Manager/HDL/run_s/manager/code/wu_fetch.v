@@ -34,22 +34,23 @@ module wu_fetch (
             //-------------------------------
             // WU Memory
             //
-            wuf__wum__read                             ,
-            wuf__wum__addr                             ,
+            wuf__wum__read                    ,
+            wuf__wum__addr                    ,
             
             //-------------------------------
             // Configuration
-            mcntl__wuf__enable                           ,
-            mcntl__wuf__start_addr                       ,
+            mcntl__wuf__enable                ,
+            mcntl__wuf__start_addr            ,
             
             //-------------------------------
             //
-            xxx__wuf__stall                            ,
+            xxx__wuf__stall                   ,
 
             //-------------------------------
             // General
             //
-            clk              ,
+            sys__mgr__mgrId                   ,
+            clk                               ,
             reset_poweron    
  
     );
@@ -60,6 +61,7 @@ module wu_fetch (
   input                                     clk                          ;
   input                                     reset_poweron                ;
 
+  input   [`MGR_MGR_ID_RANGE    ]           sys__mgr__mgrId              ;
   //----------------------------------------------------------------------------------------------------
   // Control
 
