@@ -36,11 +36,11 @@ module pe_array (
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - Downstream
-        `include "system_stack_bus_downstream_ports.vh"
+        `include "system_pe_stack_bus_downstream_ports.vh"
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - Upstream
-        `include "system_stack_bus_upstream_ports.vh"
+        `include "system_pe_stack_bus_upstream_ports.vh"
 
         //-------------------------------------------------------------------------------------------
         // General
@@ -58,12 +58,12 @@ module pe_array (
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
-  `include "system_stack_bus_downstream_port_declarations.vh"
+  `include "system_pe_stack_bus_downstream_port_declarations.vh"
 
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
-  `include "system_stack_bus_upstream_port_declarations.vh"
+  `include "system_pe_stack_bus_upstream_port_declarations.vh"
 
 
   //-------------------------------------------------------------------------------------------
@@ -75,11 +75,11 @@ module pe_array (
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
-  `include "system_stack_bus_downstream_instance_wires.vh"
+  `include "system_pe_stack_bus_downstream_instance_wires.vh"
   
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
-  `include "system_stack_bus_upstream_instance_wires.vh"
+  `include "system_pe_stack_bus_upstream_instance_wires.vh"
   
   
  
@@ -143,11 +143,11 @@ module pe_array (
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus Downstream Interface
-  `include "system_stack_bus_downstream_instance_connections.vh"
+  `include "system_pe_stack_bus_downstream_instance_connections.vh"
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus Upstream Interface
-  `include "system_stack_bus_upstream_instance_connections.vh"
+  `include "system_pe_stack_bus_upstream_instance_connections.vh"
 
   //-------------------------------------------------------------------------------------------------
   // Inter PE NoC Connectivity      

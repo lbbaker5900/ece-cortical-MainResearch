@@ -3578,7 +3578,7 @@ if __name__ == "__main__":
   # Manager and PE
 
 
-  f = open('../HDL/common/system_stack_bus_downstream_ports.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_downstream_ports.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3608,7 +3608,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_stack_bus_downstream_port_declarations.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_downstream_port_declarations.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3666,7 +3666,7 @@ if __name__ == "__main__":
   f.close()
   """
 
-  f = open('../HDL/common/system_stack_bus_downstream_instance_wires.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_downstream_instance_wires.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3695,7 +3695,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_stack_bus_downstream_instance_ports.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_downstream_instance_ports.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3725,7 +3725,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_stack_bus_downstream_instance_connections.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_downstream_instance_connections.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3755,7 +3755,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_stack_bus_upstream_ports.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_upstream_ports.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3771,7 +3771,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_stack_bus_upstream_port_declarations.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_upstream_port_declarations.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3787,7 +3787,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_stack_bus_upstream_instance_wires.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_upstream_instance_wires.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3803,7 +3803,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_stack_bus_upstream_instance_connections.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_upstream_instance_connections.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):

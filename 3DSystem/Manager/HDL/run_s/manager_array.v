@@ -67,7 +67,7 @@ module manager_array (
 
   //-------------------------------------------------------------------------------------------
   // NoC
-  `include "manager_noc_connection_wires.vh"
+  //`include "manager_noc_connection_wires.vh"
 
   //-------------------------------------------------------------------------------------------
   // General system connectivity
@@ -137,7 +137,7 @@ module manager_array (
                 //`include "manager_sys_general_instance_ports.vh"
                 //
                 .clk                          ( clk                         ),
-                .reset_poweron                ( reset_powero          n     )
+                .reset_poweron                ( reset_poweron               )
               );
       end
   endgenerate

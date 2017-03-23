@@ -1,0 +1,797 @@
+
+
+//-------------------------------                 
+// Network Configuration                          
+                                                  
+[Config]                                          
+Number of PEs in X direction = 8                
+Number of PEs in Y direction = 8                
+                                                  
+[PE]                                              
+Type = Normal                                     
+                                                  
+//----------------------------------------------------------             
+[PE 0 0]                                                             
+Type = Normal                                                            
+Number of Ports = 2                      
+// PE <0,0> Port East Connected to Node <0,1> port West 
+Port 0 Connected to Node = 0 1 2                      
+// PE <0,0> Port South Connected to Node <1,0> port North 
+Port 1 Connected to Node = 1 0 0                      
+
+//----------------------------------------------------------             
+[PE 0 1]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <0,1> Port East Connected to Node <0,2> port West 
+Port 0 Connected to Node = 0 2 2                      
+// PE <0,1> Port South Connected to Node <1,1> port North 
+Port 1 Connected to Node = 1 1 0                      
+// PE <0,1> Port West Connected to Node <0,0> port East 
+Port 2 Connected to Node = 0 0 0                      
+
+//----------------------------------------------------------             
+[PE 0 2]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <0,2> Port East Connected to Node <0,3> port West 
+Port 0 Connected to Node = 0 3 2                      
+// PE <0,2> Port South Connected to Node <1,2> port North 
+Port 1 Connected to Node = 1 2 0                      
+// PE <0,2> Port West Connected to Node <0,1> port East 
+Port 2 Connected to Node = 0 1 0                      
+
+//----------------------------------------------------------             
+[PE 0 3]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <0,3> Port East Connected to Node <0,4> port West 
+Port 0 Connected to Node = 0 4 2                      
+// PE <0,3> Port South Connected to Node <1,3> port North 
+Port 1 Connected to Node = 1 3 0                      
+// PE <0,3> Port West Connected to Node <0,2> port East 
+Port 2 Connected to Node = 0 2 0                      
+
+//----------------------------------------------------------             
+[PE 0 4]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <0,4> Port East Connected to Node <0,5> port West 
+Port 0 Connected to Node = 0 5 2                      
+// PE <0,4> Port South Connected to Node <1,4> port North 
+Port 1 Connected to Node = 1 4 0                      
+// PE <0,4> Port West Connected to Node <0,3> port East 
+Port 2 Connected to Node = 0 3 0                      
+
+//----------------------------------------------------------             
+[PE 0 5]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <0,5> Port East Connected to Node <0,6> port West 
+Port 0 Connected to Node = 0 6 2                      
+// PE <0,5> Port South Connected to Node <1,5> port North 
+Port 1 Connected to Node = 1 5 0                      
+// PE <0,5> Port West Connected to Node <0,4> port East 
+Port 2 Connected to Node = 0 4 0                      
+
+//----------------------------------------------------------             
+[PE 0 6]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <0,6> Port East Connected to Node <0,7> port West 
+Port 0 Connected to Node = 0 7 1                      
+// PE <0,6> Port South Connected to Node <1,6> port North 
+Port 1 Connected to Node = 1 6 0                      
+// PE <0,6> Port West Connected to Node <0,5> port East 
+Port 2 Connected to Node = 0 5 0                      
+
+//----------------------------------------------------------             
+[PE 0 7]                                                             
+Type = Normal                                                            
+Number of Ports = 2                      
+// PE <0,7> Port South Connected to Node <1,7> port North 
+Port 0 Connected to Node = 1 7 0                      
+// PE <0,7> Port West Connected to Node <0,6> port East 
+Port 1 Connected to Node = 0 6 0                      
+
+//----------------------------------------------------------             
+[PE 1 0]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <1,0> Port North Connected to Node <0,0> port South 
+Port 0 Connected to Node = 0 0 1                      
+// PE <1,0> Port East Connected to Node <1,1> port West 
+Port 1 Connected to Node = 1 1 3                      
+// PE <1,0> Port South Connected to Node <2,0> port North 
+Port 2 Connected to Node = 2 0 0                      
+
+//----------------------------------------------------------             
+[PE 1 1]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <1,1> Port North Connected to Node <0,1> port South 
+Port 0 Connected to Node = 0 1 1                      
+// PE <1,1> Port East Connected to Node <1,2> port West 
+Port 1 Connected to Node = 1 2 3                      
+// PE <1,1> Port South Connected to Node <2,1> port North 
+Port 2 Connected to Node = 2 1 0                      
+// PE <1,1> Port West Connected to Node <1,0> port East 
+Port 3 Connected to Node = 1 0 1                      
+
+//----------------------------------------------------------             
+[PE 1 2]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <1,2> Port North Connected to Node <0,2> port South 
+Port 0 Connected to Node = 0 2 1                      
+// PE <1,2> Port East Connected to Node <1,3> port West 
+Port 1 Connected to Node = 1 3 3                      
+// PE <1,2> Port South Connected to Node <2,2> port North 
+Port 2 Connected to Node = 2 2 0                      
+// PE <1,2> Port West Connected to Node <1,1> port East 
+Port 3 Connected to Node = 1 1 1                      
+
+//----------------------------------------------------------             
+[PE 1 3]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <1,3> Port North Connected to Node <0,3> port South 
+Port 0 Connected to Node = 0 3 1                      
+// PE <1,3> Port East Connected to Node <1,4> port West 
+Port 1 Connected to Node = 1 4 3                      
+// PE <1,3> Port South Connected to Node <2,3> port North 
+Port 2 Connected to Node = 2 3 0                      
+// PE <1,3> Port West Connected to Node <1,2> port East 
+Port 3 Connected to Node = 1 2 1                      
+
+//----------------------------------------------------------             
+[PE 1 4]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <1,4> Port North Connected to Node <0,4> port South 
+Port 0 Connected to Node = 0 4 1                      
+// PE <1,4> Port East Connected to Node <1,5> port West 
+Port 1 Connected to Node = 1 5 3                      
+// PE <1,4> Port South Connected to Node <2,4> port North 
+Port 2 Connected to Node = 2 4 0                      
+// PE <1,4> Port West Connected to Node <1,3> port East 
+Port 3 Connected to Node = 1 3 1                      
+
+//----------------------------------------------------------             
+[PE 1 5]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <1,5> Port North Connected to Node <0,5> port South 
+Port 0 Connected to Node = 0 5 1                      
+// PE <1,5> Port East Connected to Node <1,6> port West 
+Port 1 Connected to Node = 1 6 3                      
+// PE <1,5> Port South Connected to Node <2,5> port North 
+Port 2 Connected to Node = 2 5 0                      
+// PE <1,5> Port West Connected to Node <1,4> port East 
+Port 3 Connected to Node = 1 4 1                      
+
+//----------------------------------------------------------             
+[PE 1 6]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <1,6> Port North Connected to Node <0,6> port South 
+Port 0 Connected to Node = 0 6 1                      
+// PE <1,6> Port East Connected to Node <1,7> port West 
+Port 1 Connected to Node = 1 7 2                      
+// PE <1,6> Port South Connected to Node <2,6> port North 
+Port 2 Connected to Node = 2 6 0                      
+// PE <1,6> Port West Connected to Node <1,5> port East 
+Port 3 Connected to Node = 1 5 1                      
+
+//----------------------------------------------------------             
+[PE 1 7]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <1,7> Port North Connected to Node <0,7> port South 
+Port 0 Connected to Node = 0 7 0                      
+// PE <1,7> Port South Connected to Node <2,7> port North 
+Port 1 Connected to Node = 2 7 0                      
+// PE <1,7> Port West Connected to Node <1,6> port East 
+Port 2 Connected to Node = 1 6 1                      
+
+//----------------------------------------------------------             
+[PE 2 0]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <2,0> Port North Connected to Node <1,0> port South 
+Port 0 Connected to Node = 1 0 2                      
+// PE <2,0> Port East Connected to Node <2,1> port West 
+Port 1 Connected to Node = 2 1 3                      
+// PE <2,0> Port South Connected to Node <3,0> port North 
+Port 2 Connected to Node = 3 0 0                      
+
+//----------------------------------------------------------             
+[PE 2 1]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <2,1> Port North Connected to Node <1,1> port South 
+Port 0 Connected to Node = 1 1 2                      
+// PE <2,1> Port East Connected to Node <2,2> port West 
+Port 1 Connected to Node = 2 2 3                      
+// PE <2,1> Port South Connected to Node <3,1> port North 
+Port 2 Connected to Node = 3 1 0                      
+// PE <2,1> Port West Connected to Node <2,0> port East 
+Port 3 Connected to Node = 2 0 1                      
+
+//----------------------------------------------------------             
+[PE 2 2]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <2,2> Port North Connected to Node <1,2> port South 
+Port 0 Connected to Node = 1 2 2                      
+// PE <2,2> Port East Connected to Node <2,3> port West 
+Port 1 Connected to Node = 2 3 3                      
+// PE <2,2> Port South Connected to Node <3,2> port North 
+Port 2 Connected to Node = 3 2 0                      
+// PE <2,2> Port West Connected to Node <2,1> port East 
+Port 3 Connected to Node = 2 1 1                      
+
+//----------------------------------------------------------             
+[PE 2 3]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <2,3> Port North Connected to Node <1,3> port South 
+Port 0 Connected to Node = 1 3 2                      
+// PE <2,3> Port East Connected to Node <2,4> port West 
+Port 1 Connected to Node = 2 4 3                      
+// PE <2,3> Port South Connected to Node <3,3> port North 
+Port 2 Connected to Node = 3 3 0                      
+// PE <2,3> Port West Connected to Node <2,2> port East 
+Port 3 Connected to Node = 2 2 1                      
+
+//----------------------------------------------------------             
+[PE 2 4]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <2,4> Port North Connected to Node <1,4> port South 
+Port 0 Connected to Node = 1 4 2                      
+// PE <2,4> Port East Connected to Node <2,5> port West 
+Port 1 Connected to Node = 2 5 3                      
+// PE <2,4> Port South Connected to Node <3,4> port North 
+Port 2 Connected to Node = 3 4 0                      
+// PE <2,4> Port West Connected to Node <2,3> port East 
+Port 3 Connected to Node = 2 3 1                      
+
+//----------------------------------------------------------             
+[PE 2 5]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <2,5> Port North Connected to Node <1,5> port South 
+Port 0 Connected to Node = 1 5 2                      
+// PE <2,5> Port East Connected to Node <2,6> port West 
+Port 1 Connected to Node = 2 6 3                      
+// PE <2,5> Port South Connected to Node <3,5> port North 
+Port 2 Connected to Node = 3 5 0                      
+// PE <2,5> Port West Connected to Node <2,4> port East 
+Port 3 Connected to Node = 2 4 1                      
+
+//----------------------------------------------------------             
+[PE 2 6]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <2,6> Port North Connected to Node <1,6> port South 
+Port 0 Connected to Node = 1 6 2                      
+// PE <2,6> Port East Connected to Node <2,7> port West 
+Port 1 Connected to Node = 2 7 2                      
+// PE <2,6> Port South Connected to Node <3,6> port North 
+Port 2 Connected to Node = 3 6 0                      
+// PE <2,6> Port West Connected to Node <2,5> port East 
+Port 3 Connected to Node = 2 5 1                      
+
+//----------------------------------------------------------             
+[PE 2 7]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <2,7> Port North Connected to Node <1,7> port South 
+Port 0 Connected to Node = 1 7 1                      
+// PE <2,7> Port South Connected to Node <3,7> port North 
+Port 1 Connected to Node = 3 7 0                      
+// PE <2,7> Port West Connected to Node <2,6> port East 
+Port 2 Connected to Node = 2 6 1                      
+
+//----------------------------------------------------------             
+[PE 3 0]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <3,0> Port North Connected to Node <2,0> port South 
+Port 0 Connected to Node = 2 0 2                      
+// PE <3,0> Port East Connected to Node <3,1> port West 
+Port 1 Connected to Node = 3 1 3                      
+// PE <3,0> Port South Connected to Node <4,0> port North 
+Port 2 Connected to Node = 4 0 0                      
+
+//----------------------------------------------------------             
+[PE 3 1]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <3,1> Port North Connected to Node <2,1> port South 
+Port 0 Connected to Node = 2 1 2                      
+// PE <3,1> Port East Connected to Node <3,2> port West 
+Port 1 Connected to Node = 3 2 3                      
+// PE <3,1> Port South Connected to Node <4,1> port North 
+Port 2 Connected to Node = 4 1 0                      
+// PE <3,1> Port West Connected to Node <3,0> port East 
+Port 3 Connected to Node = 3 0 1                      
+
+//----------------------------------------------------------             
+[PE 3 2]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <3,2> Port North Connected to Node <2,2> port South 
+Port 0 Connected to Node = 2 2 2                      
+// PE <3,2> Port East Connected to Node <3,3> port West 
+Port 1 Connected to Node = 3 3 3                      
+// PE <3,2> Port South Connected to Node <4,2> port North 
+Port 2 Connected to Node = 4 2 0                      
+// PE <3,2> Port West Connected to Node <3,1> port East 
+Port 3 Connected to Node = 3 1 1                      
+
+//----------------------------------------------------------             
+[PE 3 3]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <3,3> Port North Connected to Node <2,3> port South 
+Port 0 Connected to Node = 2 3 2                      
+// PE <3,3> Port East Connected to Node <3,4> port West 
+Port 1 Connected to Node = 3 4 3                      
+// PE <3,3> Port South Connected to Node <4,3> port North 
+Port 2 Connected to Node = 4 3 0                      
+// PE <3,3> Port West Connected to Node <3,2> port East 
+Port 3 Connected to Node = 3 2 1                      
+
+//----------------------------------------------------------             
+[PE 3 4]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <3,4> Port North Connected to Node <2,4> port South 
+Port 0 Connected to Node = 2 4 2                      
+// PE <3,4> Port East Connected to Node <3,5> port West 
+Port 1 Connected to Node = 3 5 3                      
+// PE <3,4> Port South Connected to Node <4,4> port North 
+Port 2 Connected to Node = 4 4 0                      
+// PE <3,4> Port West Connected to Node <3,3> port East 
+Port 3 Connected to Node = 3 3 1                      
+
+//----------------------------------------------------------             
+[PE 3 5]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <3,5> Port North Connected to Node <2,5> port South 
+Port 0 Connected to Node = 2 5 2                      
+// PE <3,5> Port East Connected to Node <3,6> port West 
+Port 1 Connected to Node = 3 6 3                      
+// PE <3,5> Port South Connected to Node <4,5> port North 
+Port 2 Connected to Node = 4 5 0                      
+// PE <3,5> Port West Connected to Node <3,4> port East 
+Port 3 Connected to Node = 3 4 1                      
+
+//----------------------------------------------------------             
+[PE 3 6]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <3,6> Port North Connected to Node <2,6> port South 
+Port 0 Connected to Node = 2 6 2                      
+// PE <3,6> Port East Connected to Node <3,7> port West 
+Port 1 Connected to Node = 3 7 2                      
+// PE <3,6> Port South Connected to Node <4,6> port North 
+Port 2 Connected to Node = 4 6 0                      
+// PE <3,6> Port West Connected to Node <3,5> port East 
+Port 3 Connected to Node = 3 5 1                      
+
+//----------------------------------------------------------             
+[PE 3 7]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <3,7> Port North Connected to Node <2,7> port South 
+Port 0 Connected to Node = 2 7 1                      
+// PE <3,7> Port South Connected to Node <4,7> port North 
+Port 1 Connected to Node = 4 7 0                      
+// PE <3,7> Port West Connected to Node <3,6> port East 
+Port 2 Connected to Node = 3 6 1                      
+
+//----------------------------------------------------------             
+[PE 4 0]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <4,0> Port North Connected to Node <3,0> port South 
+Port 0 Connected to Node = 3 0 2                      
+// PE <4,0> Port East Connected to Node <4,1> port West 
+Port 1 Connected to Node = 4 1 3                      
+// PE <4,0> Port South Connected to Node <5,0> port North 
+Port 2 Connected to Node = 5 0 0                      
+
+//----------------------------------------------------------             
+[PE 4 1]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <4,1> Port North Connected to Node <3,1> port South 
+Port 0 Connected to Node = 3 1 2                      
+// PE <4,1> Port East Connected to Node <4,2> port West 
+Port 1 Connected to Node = 4 2 3                      
+// PE <4,1> Port South Connected to Node <5,1> port North 
+Port 2 Connected to Node = 5 1 0                      
+// PE <4,1> Port West Connected to Node <4,0> port East 
+Port 3 Connected to Node = 4 0 1                      
+
+//----------------------------------------------------------             
+[PE 4 2]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <4,2> Port North Connected to Node <3,2> port South 
+Port 0 Connected to Node = 3 2 2                      
+// PE <4,2> Port East Connected to Node <4,3> port West 
+Port 1 Connected to Node = 4 3 3                      
+// PE <4,2> Port South Connected to Node <5,2> port North 
+Port 2 Connected to Node = 5 2 0                      
+// PE <4,2> Port West Connected to Node <4,1> port East 
+Port 3 Connected to Node = 4 1 1                      
+
+//----------------------------------------------------------             
+[PE 4 3]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <4,3> Port North Connected to Node <3,3> port South 
+Port 0 Connected to Node = 3 3 2                      
+// PE <4,3> Port East Connected to Node <4,4> port West 
+Port 1 Connected to Node = 4 4 3                      
+// PE <4,3> Port South Connected to Node <5,3> port North 
+Port 2 Connected to Node = 5 3 0                      
+// PE <4,3> Port West Connected to Node <4,2> port East 
+Port 3 Connected to Node = 4 2 1                      
+
+//----------------------------------------------------------             
+[PE 4 4]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <4,4> Port North Connected to Node <3,4> port South 
+Port 0 Connected to Node = 3 4 2                      
+// PE <4,4> Port East Connected to Node <4,5> port West 
+Port 1 Connected to Node = 4 5 3                      
+// PE <4,4> Port South Connected to Node <5,4> port North 
+Port 2 Connected to Node = 5 4 0                      
+// PE <4,4> Port West Connected to Node <4,3> port East 
+Port 3 Connected to Node = 4 3 1                      
+
+//----------------------------------------------------------             
+[PE 4 5]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <4,5> Port North Connected to Node <3,5> port South 
+Port 0 Connected to Node = 3 5 2                      
+// PE <4,5> Port East Connected to Node <4,6> port West 
+Port 1 Connected to Node = 4 6 3                      
+// PE <4,5> Port South Connected to Node <5,5> port North 
+Port 2 Connected to Node = 5 5 0                      
+// PE <4,5> Port West Connected to Node <4,4> port East 
+Port 3 Connected to Node = 4 4 1                      
+
+//----------------------------------------------------------             
+[PE 4 6]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <4,6> Port North Connected to Node <3,6> port South 
+Port 0 Connected to Node = 3 6 2                      
+// PE <4,6> Port East Connected to Node <4,7> port West 
+Port 1 Connected to Node = 4 7 2                      
+// PE <4,6> Port South Connected to Node <5,6> port North 
+Port 2 Connected to Node = 5 6 0                      
+// PE <4,6> Port West Connected to Node <4,5> port East 
+Port 3 Connected to Node = 4 5 1                      
+
+//----------------------------------------------------------             
+[PE 4 7]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <4,7> Port North Connected to Node <3,7> port South 
+Port 0 Connected to Node = 3 7 1                      
+// PE <4,7> Port South Connected to Node <5,7> port North 
+Port 1 Connected to Node = 5 7 0                      
+// PE <4,7> Port West Connected to Node <4,6> port East 
+Port 2 Connected to Node = 4 6 1                      
+
+//----------------------------------------------------------             
+[PE 5 0]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <5,0> Port North Connected to Node <4,0> port South 
+Port 0 Connected to Node = 4 0 2                      
+// PE <5,0> Port East Connected to Node <5,1> port West 
+Port 1 Connected to Node = 5 1 3                      
+// PE <5,0> Port South Connected to Node <6,0> port North 
+Port 2 Connected to Node = 6 0 0                      
+
+//----------------------------------------------------------             
+[PE 5 1]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <5,1> Port North Connected to Node <4,1> port South 
+Port 0 Connected to Node = 4 1 2                      
+// PE <5,1> Port East Connected to Node <5,2> port West 
+Port 1 Connected to Node = 5 2 3                      
+// PE <5,1> Port South Connected to Node <6,1> port North 
+Port 2 Connected to Node = 6 1 0                      
+// PE <5,1> Port West Connected to Node <5,0> port East 
+Port 3 Connected to Node = 5 0 1                      
+
+//----------------------------------------------------------             
+[PE 5 2]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <5,2> Port North Connected to Node <4,2> port South 
+Port 0 Connected to Node = 4 2 2                      
+// PE <5,2> Port East Connected to Node <5,3> port West 
+Port 1 Connected to Node = 5 3 3                      
+// PE <5,2> Port South Connected to Node <6,2> port North 
+Port 2 Connected to Node = 6 2 0                      
+// PE <5,2> Port West Connected to Node <5,1> port East 
+Port 3 Connected to Node = 5 1 1                      
+
+//----------------------------------------------------------             
+[PE 5 3]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <5,3> Port North Connected to Node <4,3> port South 
+Port 0 Connected to Node = 4 3 2                      
+// PE <5,3> Port East Connected to Node <5,4> port West 
+Port 1 Connected to Node = 5 4 3                      
+// PE <5,3> Port South Connected to Node <6,3> port North 
+Port 2 Connected to Node = 6 3 0                      
+// PE <5,3> Port West Connected to Node <5,2> port East 
+Port 3 Connected to Node = 5 2 1                      
+
+//----------------------------------------------------------             
+[PE 5 4]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <5,4> Port North Connected to Node <4,4> port South 
+Port 0 Connected to Node = 4 4 2                      
+// PE <5,4> Port East Connected to Node <5,5> port West 
+Port 1 Connected to Node = 5 5 3                      
+// PE <5,4> Port South Connected to Node <6,4> port North 
+Port 2 Connected to Node = 6 4 0                      
+// PE <5,4> Port West Connected to Node <5,3> port East 
+Port 3 Connected to Node = 5 3 1                      
+
+//----------------------------------------------------------             
+[PE 5 5]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <5,5> Port North Connected to Node <4,5> port South 
+Port 0 Connected to Node = 4 5 2                      
+// PE <5,5> Port East Connected to Node <5,6> port West 
+Port 1 Connected to Node = 5 6 3                      
+// PE <5,5> Port South Connected to Node <6,5> port North 
+Port 2 Connected to Node = 6 5 0                      
+// PE <5,5> Port West Connected to Node <5,4> port East 
+Port 3 Connected to Node = 5 4 1                      
+
+//----------------------------------------------------------             
+[PE 5 6]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <5,6> Port North Connected to Node <4,6> port South 
+Port 0 Connected to Node = 4 6 2                      
+// PE <5,6> Port East Connected to Node <5,7> port West 
+Port 1 Connected to Node = 5 7 2                      
+// PE <5,6> Port South Connected to Node <6,6> port North 
+Port 2 Connected to Node = 6 6 0                      
+// PE <5,6> Port West Connected to Node <5,5> port East 
+Port 3 Connected to Node = 5 5 1                      
+
+//----------------------------------------------------------             
+[PE 5 7]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <5,7> Port North Connected to Node <4,7> port South 
+Port 0 Connected to Node = 4 7 1                      
+// PE <5,7> Port South Connected to Node <6,7> port North 
+Port 1 Connected to Node = 6 7 0                      
+// PE <5,7> Port West Connected to Node <5,6> port East 
+Port 2 Connected to Node = 5 6 1                      
+
+//----------------------------------------------------------             
+[PE 6 0]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <6,0> Port North Connected to Node <5,0> port South 
+Port 0 Connected to Node = 5 0 2                      
+// PE <6,0> Port East Connected to Node <6,1> port West 
+Port 1 Connected to Node = 6 1 3                      
+// PE <6,0> Port South Connected to Node <7,0> port North 
+Port 2 Connected to Node = 7 0 0                      
+
+//----------------------------------------------------------             
+[PE 6 1]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <6,1> Port North Connected to Node <5,1> port South 
+Port 0 Connected to Node = 5 1 2                      
+// PE <6,1> Port East Connected to Node <6,2> port West 
+Port 1 Connected to Node = 6 2 3                      
+// PE <6,1> Port South Connected to Node <7,1> port North 
+Port 2 Connected to Node = 7 1 0                      
+// PE <6,1> Port West Connected to Node <6,0> port East 
+Port 3 Connected to Node = 6 0 1                      
+
+//----------------------------------------------------------             
+[PE 6 2]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <6,2> Port North Connected to Node <5,2> port South 
+Port 0 Connected to Node = 5 2 2                      
+// PE <6,2> Port East Connected to Node <6,3> port West 
+Port 1 Connected to Node = 6 3 3                      
+// PE <6,2> Port South Connected to Node <7,2> port North 
+Port 2 Connected to Node = 7 2 0                      
+// PE <6,2> Port West Connected to Node <6,1> port East 
+Port 3 Connected to Node = 6 1 1                      
+
+//----------------------------------------------------------             
+[PE 6 3]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <6,3> Port North Connected to Node <5,3> port South 
+Port 0 Connected to Node = 5 3 2                      
+// PE <6,3> Port East Connected to Node <6,4> port West 
+Port 1 Connected to Node = 6 4 3                      
+// PE <6,3> Port South Connected to Node <7,3> port North 
+Port 2 Connected to Node = 7 3 0                      
+// PE <6,3> Port West Connected to Node <6,2> port East 
+Port 3 Connected to Node = 6 2 1                      
+
+//----------------------------------------------------------             
+[PE 6 4]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <6,4> Port North Connected to Node <5,4> port South 
+Port 0 Connected to Node = 5 4 2                      
+// PE <6,4> Port East Connected to Node <6,5> port West 
+Port 1 Connected to Node = 6 5 3                      
+// PE <6,4> Port South Connected to Node <7,4> port North 
+Port 2 Connected to Node = 7 4 0                      
+// PE <6,4> Port West Connected to Node <6,3> port East 
+Port 3 Connected to Node = 6 3 1                      
+
+//----------------------------------------------------------             
+[PE 6 5]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <6,5> Port North Connected to Node <5,5> port South 
+Port 0 Connected to Node = 5 5 2                      
+// PE <6,5> Port East Connected to Node <6,6> port West 
+Port 1 Connected to Node = 6 6 3                      
+// PE <6,5> Port South Connected to Node <7,5> port North 
+Port 2 Connected to Node = 7 5 0                      
+// PE <6,5> Port West Connected to Node <6,4> port East 
+Port 3 Connected to Node = 6 4 1                      
+
+//----------------------------------------------------------             
+[PE 6 6]                                                             
+Type = Normal                                                            
+Number of Ports = 4                      
+// PE <6,6> Port North Connected to Node <5,6> port South 
+Port 0 Connected to Node = 5 6 2                      
+// PE <6,6> Port East Connected to Node <6,7> port West 
+Port 1 Connected to Node = 6 7 2                      
+// PE <6,6> Port South Connected to Node <7,6> port North 
+Port 2 Connected to Node = 7 6 0                      
+// PE <6,6> Port West Connected to Node <6,5> port East 
+Port 3 Connected to Node = 6 5 1                      
+
+//----------------------------------------------------------             
+[PE 6 7]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <6,7> Port North Connected to Node <5,7> port South 
+Port 0 Connected to Node = 5 7 1                      
+// PE <6,7> Port South Connected to Node <7,7> port North 
+Port 1 Connected to Node = 7 7 0                      
+// PE <6,7> Port West Connected to Node <6,6> port East 
+Port 2 Connected to Node = 6 6 1                      
+
+//----------------------------------------------------------             
+[PE 7 0]                                                             
+Type = Normal                                                            
+Number of Ports = 2                      
+// PE <7,0> Port North Connected to Node <6,0> port South 
+Port 0 Connected to Node = 6 0 2                      
+// PE <7,0> Port East Connected to Node <7,1> port West 
+Port 1 Connected to Node = 7 1 2                      
+
+//----------------------------------------------------------             
+[PE 7 1]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <7,1> Port North Connected to Node <6,1> port South 
+Port 0 Connected to Node = 6 1 2                      
+// PE <7,1> Port East Connected to Node <7,2> port West 
+Port 1 Connected to Node = 7 2 2                      
+// PE <7,1> Port West Connected to Node <7,0> port East 
+Port 2 Connected to Node = 7 0 1                      
+
+//----------------------------------------------------------             
+[PE 7 2]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <7,2> Port North Connected to Node <6,2> port South 
+Port 0 Connected to Node = 6 2 2                      
+// PE <7,2> Port East Connected to Node <7,3> port West 
+Port 1 Connected to Node = 7 3 2                      
+// PE <7,2> Port West Connected to Node <7,1> port East 
+Port 2 Connected to Node = 7 1 1                      
+
+//----------------------------------------------------------             
+[PE 7 3]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <7,3> Port North Connected to Node <6,3> port South 
+Port 0 Connected to Node = 6 3 2                      
+// PE <7,3> Port East Connected to Node <7,4> port West 
+Port 1 Connected to Node = 7 4 2                      
+// PE <7,3> Port West Connected to Node <7,2> port East 
+Port 2 Connected to Node = 7 2 1                      
+
+//----------------------------------------------------------             
+[PE 7 4]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <7,4> Port North Connected to Node <6,4> port South 
+Port 0 Connected to Node = 6 4 2                      
+// PE <7,4> Port East Connected to Node <7,5> port West 
+Port 1 Connected to Node = 7 5 2                      
+// PE <7,4> Port West Connected to Node <7,3> port East 
+Port 2 Connected to Node = 7 3 1                      
+
+//----------------------------------------------------------             
+[PE 7 5]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <7,5> Port North Connected to Node <6,5> port South 
+Port 0 Connected to Node = 6 5 2                      
+// PE <7,5> Port East Connected to Node <7,6> port West 
+Port 1 Connected to Node = 7 6 2                      
+// PE <7,5> Port West Connected to Node <7,4> port East 
+Port 2 Connected to Node = 7 4 1                      
+
+//----------------------------------------------------------             
+[PE 7 6]                                                             
+Type = Normal                                                            
+Number of Ports = 3                      
+// PE <7,6> Port North Connected to Node <6,6> port South 
+Port 0 Connected to Node = 6 6 2                      
+// PE <7,6> Port East Connected to Node <7,7> port West 
+Port 1 Connected to Node = 7 7 1                      
+// PE <7,6> Port West Connected to Node <7,5> port East 
+Port 2 Connected to Node = 7 5 1                      
+
+//----------------------------------------------------------             
+[PE 7 7]                                                             
+Type = Normal                                                            
+Number of Ports = 2                      
+// PE <7,7> Port North Connected to Node <6,7> port South 
+Port 0 Connected to Node = 6 7 1                      
+// PE <7,7> Port West Connected to Node <7,6> port East 
+Port 1 Connected to Node = 7 6 1                      
+
+//-------------------------------
+
+
+//-------------------------------
+// Parameters
+
+[Parameters]
+
+
+//-------------------------------
+// Debug
+
+[Debug]
+
+// verbosity
+Verbosity Level = 3
+
