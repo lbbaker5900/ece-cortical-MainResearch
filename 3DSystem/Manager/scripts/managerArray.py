@@ -330,6 +330,25 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  #--------------------------------------------------
+  # Upstream Stack Bus
+
+  f = open('../HDL/common/system_manager_stack_bus_upstream_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    pLine = pLine + '\n            stu__mgr{0}__valid          ,'.format(pe)
+    pLine = pLine + '\n            stu__mgr{0}__cntl           ,'.format(pe) 
+    pLine = pLine + '\n            mgr{0}__stu__ready          ,'.format(pe) 
+    pLine = pLine + '\n            stu__mgr{0}__type           ,'.format(pe) 
+    pLine = pLine + '\n            stu__mgr{0}__data           ,'.format(pe) 
+    pLine = pLine + '\n            stu__mgr{0}__oob_data       ,'.format(pe) 
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
   f = open('../HDL/common/system_manager_stack_bus_downstream_ports.vh', 'w')
   pLine = ""
 
@@ -616,23 +635,4 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-
-  #--------------------------------------------------
-  # Upstream Stack Bus
-
-  f = open('../HDL/common/system_manager_stack_bus_upstream_ports.vh', 'w')
-  pLine = ""
-
-  for pe in range (0, numOfPe):
-    pLine = pLine + '\n            stu__mgr{0}__valid          ,'.format(pe)
-    pLine = pLine + '\n            stu__mgr{0}__cntl           ,'.format(pe) 
-    pLine = pLine + '\n            mgr{0}__stu__ready          ,'.format(pe) 
-    pLine = pLine + '\n            stu__mgr{0}__type           ,'.format(pe) 
-    pLine = pLine + '\n            stu__mgr{0}__data           ,'.format(pe) 
-    pLine = pLine + '\n            stu__mgr{0}__oob_data       ,'.format(pe) 
-    pLine = pLine + '\n'
-  pLine = pLine + '\n'
-
-  f.write(pLine)
-  f.close()
 
