@@ -42,7 +42,16 @@ module pe (
             //sys__pe__allSynchronized  ,  // all PE streams are complete
             //pe__sys__thisSynchronized ,  // this PE's streams are complete
                           
-             //-------------------------------
+            //-------------------------------
+            // Stack Bus - General
+            //
+            sys__pe__peId                   , 
+            sys__pe__allSynchronized        , 
+            pe__sys__thisSynchronized       , 
+            pe__sys__ready                  , 
+            pe__sys__complete               , 
+
+            //-------------------------------
             // Stack Bus - Downstream
             //
             `include "pe_stack_bus_downstream_ports.vh"
@@ -80,6 +89,16 @@ module pe (
   //output      ready             ; // ready to start streaming
   //output      complete          ;
 
+
+  //-------------------------------------------------------------------------------------------------
+  // Stack Bus - Downstream
+
+  // General control and status                                                
+  input [`PE_PE_ID_RANGE                 ]      sys__pe__peId                ; 
+  input                                         sys__pe__allSynchronized     ; 
+  output                                        pe__sys__thisSynchronized    ; 
+  output                                        pe__sys__ready               ; 
+  output                                        pe__sys__complete            ; 
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Downstream

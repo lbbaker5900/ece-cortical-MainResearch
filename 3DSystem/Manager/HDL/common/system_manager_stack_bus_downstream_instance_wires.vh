@@ -1,10 +1,4 @@
 
-  // General control and status                                                 
-  wire                                        mgr0__sys__allSynchronized     ;
-  wire                                        sys__mgr0__thisSynchronized    ;
-  wire                                        sys__mgr0__ready               ;
-  wire                                        sys__mgr0__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr0__std__oob_cntl            ;
   wire                                        mgr0__std__oob_valid           ;
@@ -331,12 +325,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr0__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr0__std__lane31_strm1_data        ;
   wire                                        mgr0__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr1__sys__allSynchronized     ;
-  wire                                        sys__mgr1__thisSynchronized    ;
-  wire                                        sys__mgr1__ready               ;
-  wire                                        sys__mgr1__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr1__std__oob_cntl            ;
@@ -665,12 +653,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr1__std__lane31_strm1_data        ;
   wire                                        mgr1__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr2__sys__allSynchronized     ;
-  wire                                        sys__mgr2__thisSynchronized    ;
-  wire                                        sys__mgr2__ready               ;
-  wire                                        sys__mgr2__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr2__std__oob_cntl            ;
   wire                                        mgr2__std__oob_valid           ;
@@ -997,12 +979,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr2__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr2__std__lane31_strm1_data        ;
   wire                                        mgr2__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr3__sys__allSynchronized     ;
-  wire                                        sys__mgr3__thisSynchronized    ;
-  wire                                        sys__mgr3__ready               ;
-  wire                                        sys__mgr3__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr3__std__oob_cntl            ;
@@ -1331,12 +1307,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr3__std__lane31_strm1_data        ;
   wire                                        mgr3__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr4__sys__allSynchronized     ;
-  wire                                        sys__mgr4__thisSynchronized    ;
-  wire                                        sys__mgr4__ready               ;
-  wire                                        sys__mgr4__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr4__std__oob_cntl            ;
   wire                                        mgr4__std__oob_valid           ;
@@ -1663,12 +1633,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr4__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr4__std__lane31_strm1_data        ;
   wire                                        mgr4__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr5__sys__allSynchronized     ;
-  wire                                        sys__mgr5__thisSynchronized    ;
-  wire                                        sys__mgr5__ready               ;
-  wire                                        sys__mgr5__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr5__std__oob_cntl            ;
@@ -1997,12 +1961,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr5__std__lane31_strm1_data        ;
   wire                                        mgr5__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr6__sys__allSynchronized     ;
-  wire                                        sys__mgr6__thisSynchronized    ;
-  wire                                        sys__mgr6__ready               ;
-  wire                                        sys__mgr6__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr6__std__oob_cntl            ;
   wire                                        mgr6__std__oob_valid           ;
@@ -2329,12 +2287,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr6__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr6__std__lane31_strm1_data        ;
   wire                                        mgr6__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr7__sys__allSynchronized     ;
-  wire                                        sys__mgr7__thisSynchronized    ;
-  wire                                        sys__mgr7__ready               ;
-  wire                                        sys__mgr7__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr7__std__oob_cntl            ;
@@ -2663,12 +2615,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr7__std__lane31_strm1_data        ;
   wire                                        mgr7__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr8__sys__allSynchronized     ;
-  wire                                        sys__mgr8__thisSynchronized    ;
-  wire                                        sys__mgr8__ready               ;
-  wire                                        sys__mgr8__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr8__std__oob_cntl            ;
   wire                                        mgr8__std__oob_valid           ;
@@ -2995,12 +2941,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr8__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr8__std__lane31_strm1_data        ;
   wire                                        mgr8__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr9__sys__allSynchronized     ;
-  wire                                        sys__mgr9__thisSynchronized    ;
-  wire                                        sys__mgr9__ready               ;
-  wire                                        sys__mgr9__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr9__std__oob_cntl            ;
@@ -3329,12 +3269,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr9__std__lane31_strm1_data        ;
   wire                                        mgr9__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr10__sys__allSynchronized     ;
-  wire                                        sys__mgr10__thisSynchronized    ;
-  wire                                        sys__mgr10__ready               ;
-  wire                                        sys__mgr10__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr10__std__oob_cntl            ;
   wire                                        mgr10__std__oob_valid           ;
@@ -3661,12 +3595,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr10__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr10__std__lane31_strm1_data        ;
   wire                                        mgr10__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr11__sys__allSynchronized     ;
-  wire                                        sys__mgr11__thisSynchronized    ;
-  wire                                        sys__mgr11__ready               ;
-  wire                                        sys__mgr11__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr11__std__oob_cntl            ;
@@ -3995,12 +3923,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr11__std__lane31_strm1_data        ;
   wire                                        mgr11__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr12__sys__allSynchronized     ;
-  wire                                        sys__mgr12__thisSynchronized    ;
-  wire                                        sys__mgr12__ready               ;
-  wire                                        sys__mgr12__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr12__std__oob_cntl            ;
   wire                                        mgr12__std__oob_valid           ;
@@ -4327,12 +4249,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr12__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr12__std__lane31_strm1_data        ;
   wire                                        mgr12__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr13__sys__allSynchronized     ;
-  wire                                        sys__mgr13__thisSynchronized    ;
-  wire                                        sys__mgr13__ready               ;
-  wire                                        sys__mgr13__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr13__std__oob_cntl            ;
@@ -4661,12 +4577,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr13__std__lane31_strm1_data        ;
   wire                                        mgr13__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr14__sys__allSynchronized     ;
-  wire                                        sys__mgr14__thisSynchronized    ;
-  wire                                        sys__mgr14__ready               ;
-  wire                                        sys__mgr14__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr14__std__oob_cntl            ;
   wire                                        mgr14__std__oob_valid           ;
@@ -4993,12 +4903,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr14__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr14__std__lane31_strm1_data        ;
   wire                                        mgr14__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr15__sys__allSynchronized     ;
-  wire                                        sys__mgr15__thisSynchronized    ;
-  wire                                        sys__mgr15__ready               ;
-  wire                                        sys__mgr15__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr15__std__oob_cntl            ;
@@ -5327,12 +5231,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr15__std__lane31_strm1_data        ;
   wire                                        mgr15__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr16__sys__allSynchronized     ;
-  wire                                        sys__mgr16__thisSynchronized    ;
-  wire                                        sys__mgr16__ready               ;
-  wire                                        sys__mgr16__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr16__std__oob_cntl            ;
   wire                                        mgr16__std__oob_valid           ;
@@ -5659,12 +5557,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr16__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr16__std__lane31_strm1_data        ;
   wire                                        mgr16__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr17__sys__allSynchronized     ;
-  wire                                        sys__mgr17__thisSynchronized    ;
-  wire                                        sys__mgr17__ready               ;
-  wire                                        sys__mgr17__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr17__std__oob_cntl            ;
@@ -5993,12 +5885,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr17__std__lane31_strm1_data        ;
   wire                                        mgr17__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr18__sys__allSynchronized     ;
-  wire                                        sys__mgr18__thisSynchronized    ;
-  wire                                        sys__mgr18__ready               ;
-  wire                                        sys__mgr18__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr18__std__oob_cntl            ;
   wire                                        mgr18__std__oob_valid           ;
@@ -6325,12 +6211,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr18__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr18__std__lane31_strm1_data        ;
   wire                                        mgr18__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr19__sys__allSynchronized     ;
-  wire                                        sys__mgr19__thisSynchronized    ;
-  wire                                        sys__mgr19__ready               ;
-  wire                                        sys__mgr19__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr19__std__oob_cntl            ;
@@ -6659,12 +6539,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr19__std__lane31_strm1_data        ;
   wire                                        mgr19__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr20__sys__allSynchronized     ;
-  wire                                        sys__mgr20__thisSynchronized    ;
-  wire                                        sys__mgr20__ready               ;
-  wire                                        sys__mgr20__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr20__std__oob_cntl            ;
   wire                                        mgr20__std__oob_valid           ;
@@ -6991,12 +6865,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr20__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr20__std__lane31_strm1_data        ;
   wire                                        mgr20__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr21__sys__allSynchronized     ;
-  wire                                        sys__mgr21__thisSynchronized    ;
-  wire                                        sys__mgr21__ready               ;
-  wire                                        sys__mgr21__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr21__std__oob_cntl            ;
@@ -7325,12 +7193,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr21__std__lane31_strm1_data        ;
   wire                                        mgr21__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr22__sys__allSynchronized     ;
-  wire                                        sys__mgr22__thisSynchronized    ;
-  wire                                        sys__mgr22__ready               ;
-  wire                                        sys__mgr22__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr22__std__oob_cntl            ;
   wire                                        mgr22__std__oob_valid           ;
@@ -7657,12 +7519,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr22__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr22__std__lane31_strm1_data        ;
   wire                                        mgr22__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr23__sys__allSynchronized     ;
-  wire                                        sys__mgr23__thisSynchronized    ;
-  wire                                        sys__mgr23__ready               ;
-  wire                                        sys__mgr23__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr23__std__oob_cntl            ;
@@ -7991,12 +7847,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr23__std__lane31_strm1_data        ;
   wire                                        mgr23__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr24__sys__allSynchronized     ;
-  wire                                        sys__mgr24__thisSynchronized    ;
-  wire                                        sys__mgr24__ready               ;
-  wire                                        sys__mgr24__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr24__std__oob_cntl            ;
   wire                                        mgr24__std__oob_valid           ;
@@ -8323,12 +8173,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr24__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr24__std__lane31_strm1_data        ;
   wire                                        mgr24__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr25__sys__allSynchronized     ;
-  wire                                        sys__mgr25__thisSynchronized    ;
-  wire                                        sys__mgr25__ready               ;
-  wire                                        sys__mgr25__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr25__std__oob_cntl            ;
@@ -8657,12 +8501,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr25__std__lane31_strm1_data        ;
   wire                                        mgr25__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr26__sys__allSynchronized     ;
-  wire                                        sys__mgr26__thisSynchronized    ;
-  wire                                        sys__mgr26__ready               ;
-  wire                                        sys__mgr26__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr26__std__oob_cntl            ;
   wire                                        mgr26__std__oob_valid           ;
@@ -8989,12 +8827,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr26__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr26__std__lane31_strm1_data        ;
   wire                                        mgr26__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr27__sys__allSynchronized     ;
-  wire                                        sys__mgr27__thisSynchronized    ;
-  wire                                        sys__mgr27__ready               ;
-  wire                                        sys__mgr27__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr27__std__oob_cntl            ;
@@ -9323,12 +9155,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr27__std__lane31_strm1_data        ;
   wire                                        mgr27__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr28__sys__allSynchronized     ;
-  wire                                        sys__mgr28__thisSynchronized    ;
-  wire                                        sys__mgr28__ready               ;
-  wire                                        sys__mgr28__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr28__std__oob_cntl            ;
   wire                                        mgr28__std__oob_valid           ;
@@ -9655,12 +9481,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr28__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr28__std__lane31_strm1_data        ;
   wire                                        mgr28__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr29__sys__allSynchronized     ;
-  wire                                        sys__mgr29__thisSynchronized    ;
-  wire                                        sys__mgr29__ready               ;
-  wire                                        sys__mgr29__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr29__std__oob_cntl            ;
@@ -9989,12 +9809,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr29__std__lane31_strm1_data        ;
   wire                                        mgr29__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr30__sys__allSynchronized     ;
-  wire                                        sys__mgr30__thisSynchronized    ;
-  wire                                        sys__mgr30__ready               ;
-  wire                                        sys__mgr30__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr30__std__oob_cntl            ;
   wire                                        mgr30__std__oob_valid           ;
@@ -10321,12 +10135,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr30__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr30__std__lane31_strm1_data        ;
   wire                                        mgr30__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr31__sys__allSynchronized     ;
-  wire                                        sys__mgr31__thisSynchronized    ;
-  wire                                        sys__mgr31__ready               ;
-  wire                                        sys__mgr31__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr31__std__oob_cntl            ;
@@ -10655,12 +10463,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr31__std__lane31_strm1_data        ;
   wire                                        mgr31__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr32__sys__allSynchronized     ;
-  wire                                        sys__mgr32__thisSynchronized    ;
-  wire                                        sys__mgr32__ready               ;
-  wire                                        sys__mgr32__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr32__std__oob_cntl            ;
   wire                                        mgr32__std__oob_valid           ;
@@ -10987,12 +10789,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr32__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr32__std__lane31_strm1_data        ;
   wire                                        mgr32__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr33__sys__allSynchronized     ;
-  wire                                        sys__mgr33__thisSynchronized    ;
-  wire                                        sys__mgr33__ready               ;
-  wire                                        sys__mgr33__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr33__std__oob_cntl            ;
@@ -11321,12 +11117,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr33__std__lane31_strm1_data        ;
   wire                                        mgr33__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr34__sys__allSynchronized     ;
-  wire                                        sys__mgr34__thisSynchronized    ;
-  wire                                        sys__mgr34__ready               ;
-  wire                                        sys__mgr34__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr34__std__oob_cntl            ;
   wire                                        mgr34__std__oob_valid           ;
@@ -11653,12 +11443,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr34__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr34__std__lane31_strm1_data        ;
   wire                                        mgr34__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr35__sys__allSynchronized     ;
-  wire                                        sys__mgr35__thisSynchronized    ;
-  wire                                        sys__mgr35__ready               ;
-  wire                                        sys__mgr35__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr35__std__oob_cntl            ;
@@ -11987,12 +11771,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr35__std__lane31_strm1_data        ;
   wire                                        mgr35__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr36__sys__allSynchronized     ;
-  wire                                        sys__mgr36__thisSynchronized    ;
-  wire                                        sys__mgr36__ready               ;
-  wire                                        sys__mgr36__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr36__std__oob_cntl            ;
   wire                                        mgr36__std__oob_valid           ;
@@ -12319,12 +12097,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr36__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr36__std__lane31_strm1_data        ;
   wire                                        mgr36__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr37__sys__allSynchronized     ;
-  wire                                        sys__mgr37__thisSynchronized    ;
-  wire                                        sys__mgr37__ready               ;
-  wire                                        sys__mgr37__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr37__std__oob_cntl            ;
@@ -12653,12 +12425,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr37__std__lane31_strm1_data        ;
   wire                                        mgr37__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr38__sys__allSynchronized     ;
-  wire                                        sys__mgr38__thisSynchronized    ;
-  wire                                        sys__mgr38__ready               ;
-  wire                                        sys__mgr38__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr38__std__oob_cntl            ;
   wire                                        mgr38__std__oob_valid           ;
@@ -12985,12 +12751,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr38__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr38__std__lane31_strm1_data        ;
   wire                                        mgr38__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr39__sys__allSynchronized     ;
-  wire                                        sys__mgr39__thisSynchronized    ;
-  wire                                        sys__mgr39__ready               ;
-  wire                                        sys__mgr39__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr39__std__oob_cntl            ;
@@ -13319,12 +13079,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr39__std__lane31_strm1_data        ;
   wire                                        mgr39__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr40__sys__allSynchronized     ;
-  wire                                        sys__mgr40__thisSynchronized    ;
-  wire                                        sys__mgr40__ready               ;
-  wire                                        sys__mgr40__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr40__std__oob_cntl            ;
   wire                                        mgr40__std__oob_valid           ;
@@ -13651,12 +13405,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr40__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr40__std__lane31_strm1_data        ;
   wire                                        mgr40__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr41__sys__allSynchronized     ;
-  wire                                        sys__mgr41__thisSynchronized    ;
-  wire                                        sys__mgr41__ready               ;
-  wire                                        sys__mgr41__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr41__std__oob_cntl            ;
@@ -13985,12 +13733,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr41__std__lane31_strm1_data        ;
   wire                                        mgr41__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr42__sys__allSynchronized     ;
-  wire                                        sys__mgr42__thisSynchronized    ;
-  wire                                        sys__mgr42__ready               ;
-  wire                                        sys__mgr42__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr42__std__oob_cntl            ;
   wire                                        mgr42__std__oob_valid           ;
@@ -14317,12 +14059,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr42__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr42__std__lane31_strm1_data        ;
   wire                                        mgr42__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr43__sys__allSynchronized     ;
-  wire                                        sys__mgr43__thisSynchronized    ;
-  wire                                        sys__mgr43__ready               ;
-  wire                                        sys__mgr43__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr43__std__oob_cntl            ;
@@ -14651,12 +14387,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr43__std__lane31_strm1_data        ;
   wire                                        mgr43__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr44__sys__allSynchronized     ;
-  wire                                        sys__mgr44__thisSynchronized    ;
-  wire                                        sys__mgr44__ready               ;
-  wire                                        sys__mgr44__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr44__std__oob_cntl            ;
   wire                                        mgr44__std__oob_valid           ;
@@ -14983,12 +14713,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr44__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr44__std__lane31_strm1_data        ;
   wire                                        mgr44__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr45__sys__allSynchronized     ;
-  wire                                        sys__mgr45__thisSynchronized    ;
-  wire                                        sys__mgr45__ready               ;
-  wire                                        sys__mgr45__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr45__std__oob_cntl            ;
@@ -15317,12 +15041,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr45__std__lane31_strm1_data        ;
   wire                                        mgr45__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr46__sys__allSynchronized     ;
-  wire                                        sys__mgr46__thisSynchronized    ;
-  wire                                        sys__mgr46__ready               ;
-  wire                                        sys__mgr46__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr46__std__oob_cntl            ;
   wire                                        mgr46__std__oob_valid           ;
@@ -15649,12 +15367,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr46__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr46__std__lane31_strm1_data        ;
   wire                                        mgr46__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr47__sys__allSynchronized     ;
-  wire                                        sys__mgr47__thisSynchronized    ;
-  wire                                        sys__mgr47__ready               ;
-  wire                                        sys__mgr47__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr47__std__oob_cntl            ;
@@ -15983,12 +15695,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr47__std__lane31_strm1_data        ;
   wire                                        mgr47__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr48__sys__allSynchronized     ;
-  wire                                        sys__mgr48__thisSynchronized    ;
-  wire                                        sys__mgr48__ready               ;
-  wire                                        sys__mgr48__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr48__std__oob_cntl            ;
   wire                                        mgr48__std__oob_valid           ;
@@ -16315,12 +16021,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr48__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr48__std__lane31_strm1_data        ;
   wire                                        mgr48__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr49__sys__allSynchronized     ;
-  wire                                        sys__mgr49__thisSynchronized    ;
-  wire                                        sys__mgr49__ready               ;
-  wire                                        sys__mgr49__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr49__std__oob_cntl            ;
@@ -16649,12 +16349,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr49__std__lane31_strm1_data        ;
   wire                                        mgr49__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr50__sys__allSynchronized     ;
-  wire                                        sys__mgr50__thisSynchronized    ;
-  wire                                        sys__mgr50__ready               ;
-  wire                                        sys__mgr50__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr50__std__oob_cntl            ;
   wire                                        mgr50__std__oob_valid           ;
@@ -16981,12 +16675,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr50__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr50__std__lane31_strm1_data        ;
   wire                                        mgr50__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr51__sys__allSynchronized     ;
-  wire                                        sys__mgr51__thisSynchronized    ;
-  wire                                        sys__mgr51__ready               ;
-  wire                                        sys__mgr51__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr51__std__oob_cntl            ;
@@ -17315,12 +17003,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr51__std__lane31_strm1_data        ;
   wire                                        mgr51__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr52__sys__allSynchronized     ;
-  wire                                        sys__mgr52__thisSynchronized    ;
-  wire                                        sys__mgr52__ready               ;
-  wire                                        sys__mgr52__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr52__std__oob_cntl            ;
   wire                                        mgr52__std__oob_valid           ;
@@ -17647,12 +17329,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr52__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr52__std__lane31_strm1_data        ;
   wire                                        mgr52__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr53__sys__allSynchronized     ;
-  wire                                        sys__mgr53__thisSynchronized    ;
-  wire                                        sys__mgr53__ready               ;
-  wire                                        sys__mgr53__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr53__std__oob_cntl            ;
@@ -17981,12 +17657,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr53__std__lane31_strm1_data        ;
   wire                                        mgr53__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr54__sys__allSynchronized     ;
-  wire                                        sys__mgr54__thisSynchronized    ;
-  wire                                        sys__mgr54__ready               ;
-  wire                                        sys__mgr54__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr54__std__oob_cntl            ;
   wire                                        mgr54__std__oob_valid           ;
@@ -18313,12 +17983,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr54__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr54__std__lane31_strm1_data        ;
   wire                                        mgr54__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr55__sys__allSynchronized     ;
-  wire                                        sys__mgr55__thisSynchronized    ;
-  wire                                        sys__mgr55__ready               ;
-  wire                                        sys__mgr55__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr55__std__oob_cntl            ;
@@ -18647,12 +18311,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr55__std__lane31_strm1_data        ;
   wire                                        mgr55__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr56__sys__allSynchronized     ;
-  wire                                        sys__mgr56__thisSynchronized    ;
-  wire                                        sys__mgr56__ready               ;
-  wire                                        sys__mgr56__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr56__std__oob_cntl            ;
   wire                                        mgr56__std__oob_valid           ;
@@ -18979,12 +18637,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr56__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr56__std__lane31_strm1_data        ;
   wire                                        mgr56__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr57__sys__allSynchronized     ;
-  wire                                        sys__mgr57__thisSynchronized    ;
-  wire                                        sys__mgr57__ready               ;
-  wire                                        sys__mgr57__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr57__std__oob_cntl            ;
@@ -19313,12 +18965,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr57__std__lane31_strm1_data        ;
   wire                                        mgr57__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr58__sys__allSynchronized     ;
-  wire                                        sys__mgr58__thisSynchronized    ;
-  wire                                        sys__mgr58__ready               ;
-  wire                                        sys__mgr58__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr58__std__oob_cntl            ;
   wire                                        mgr58__std__oob_valid           ;
@@ -19645,12 +19291,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr58__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr58__std__lane31_strm1_data        ;
   wire                                        mgr58__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr59__sys__allSynchronized     ;
-  wire                                        sys__mgr59__thisSynchronized    ;
-  wire                                        sys__mgr59__ready               ;
-  wire                                        sys__mgr59__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr59__std__oob_cntl            ;
@@ -19979,12 +19619,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr59__std__lane31_strm1_data        ;
   wire                                        mgr59__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr60__sys__allSynchronized     ;
-  wire                                        sys__mgr60__thisSynchronized    ;
-  wire                                        sys__mgr60__ready               ;
-  wire                                        sys__mgr60__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr60__std__oob_cntl            ;
   wire                                        mgr60__std__oob_valid           ;
@@ -20311,12 +19945,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr60__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr60__std__lane31_strm1_data        ;
   wire                                        mgr60__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr61__sys__allSynchronized     ;
-  wire                                        sys__mgr61__thisSynchronized    ;
-  wire                                        sys__mgr61__ready               ;
-  wire                                        sys__mgr61__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr61__std__oob_cntl            ;
@@ -20645,12 +20273,6 @@
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr61__std__lane31_strm1_data        ;
   wire                                        mgr61__std__lane31_strm1_data_valid  ;
 
-  // General control and status                                                 
-  wire                                        mgr62__sys__allSynchronized     ;
-  wire                                        sys__mgr62__thisSynchronized    ;
-  wire                                        sys__mgr62__ready               ;
-  wire                                        sys__mgr62__complete            ;
-
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr62__std__oob_cntl            ;
   wire                                        mgr62__std__oob_valid           ;
@@ -20977,12 +20599,6 @@
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr62__std__lane31_strm1_cntl        ;
   wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]   mgr62__std__lane31_strm1_data        ;
   wire                                        mgr62__std__lane31_strm1_data_valid  ;
-
-  // General control and status                                                 
-  wire                                        mgr63__sys__allSynchronized     ;
-  wire                                        sys__mgr63__thisSynchronized    ;
-  wire                                        sys__mgr63__ready               ;
-  wire                                        sys__mgr63__complete            ;
 
   // OOB controls how the lanes are interpreted                                
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr63__std__oob_cntl            ;

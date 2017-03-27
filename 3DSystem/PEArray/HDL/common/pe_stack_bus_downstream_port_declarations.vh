@@ -1,10 +1,4 @@
 
-  // General control and status                                               
-  input [`PE_PE_ID_RANGE                 ]      sys__pe__peId                ;
-  input                                         sys__pe__allSynchronized     ;
-  output                                        pe__sys__thisSynchronized    ;
-  output                                        pe__sys__ready               ;
-  output                                        pe__sys__complete            ;
   // OOB carries PE configuration                                           
   input [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;
   input                                         std__pe__oob_valid           ;

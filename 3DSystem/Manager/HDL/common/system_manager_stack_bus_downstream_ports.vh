@@ -1,10 +1,4 @@
 
-            // General control and status                    
-            mgr0__sys__allSynchronized                    ,
-            sys__mgr0__thisSynchronized                   ,
-            sys__mgr0__ready                              ,
-            sys__mgr0__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr0__std__oob_cntl                           ,
@@ -332,12 +326,6 @@
             mgr0__std__lane31_strm1_cntl        ,
             mgr0__std__lane31_strm1_data        ,
             mgr0__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr1__sys__allSynchronized                    ,
-            sys__mgr1__thisSynchronized                   ,
-            sys__mgr1__ready                              ,
-            sys__mgr1__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -667,12 +655,6 @@
             mgr1__std__lane31_strm1_data        ,
             mgr1__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr2__sys__allSynchronized                    ,
-            sys__mgr2__thisSynchronized                   ,
-            sys__mgr2__ready                              ,
-            sys__mgr2__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr2__std__oob_cntl                           ,
@@ -1000,12 +982,6 @@
             mgr2__std__lane31_strm1_cntl        ,
             mgr2__std__lane31_strm1_data        ,
             mgr2__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr3__sys__allSynchronized                    ,
-            sys__mgr3__thisSynchronized                   ,
-            sys__mgr3__ready                              ,
-            sys__mgr3__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -1335,12 +1311,6 @@
             mgr3__std__lane31_strm1_data        ,
             mgr3__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr4__sys__allSynchronized                    ,
-            sys__mgr4__thisSynchronized                   ,
-            sys__mgr4__ready                              ,
-            sys__mgr4__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr4__std__oob_cntl                           ,
@@ -1668,12 +1638,6 @@
             mgr4__std__lane31_strm1_cntl        ,
             mgr4__std__lane31_strm1_data        ,
             mgr4__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr5__sys__allSynchronized                    ,
-            sys__mgr5__thisSynchronized                   ,
-            sys__mgr5__ready                              ,
-            sys__mgr5__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -2003,12 +1967,6 @@
             mgr5__std__lane31_strm1_data        ,
             mgr5__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr6__sys__allSynchronized                    ,
-            sys__mgr6__thisSynchronized                   ,
-            sys__mgr6__ready                              ,
-            sys__mgr6__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr6__std__oob_cntl                           ,
@@ -2336,12 +2294,6 @@
             mgr6__std__lane31_strm1_cntl        ,
             mgr6__std__lane31_strm1_data        ,
             mgr6__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr7__sys__allSynchronized                    ,
-            sys__mgr7__thisSynchronized                   ,
-            sys__mgr7__ready                              ,
-            sys__mgr7__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -2671,12 +2623,6 @@
             mgr7__std__lane31_strm1_data        ,
             mgr7__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr8__sys__allSynchronized                    ,
-            sys__mgr8__thisSynchronized                   ,
-            sys__mgr8__ready                              ,
-            sys__mgr8__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr8__std__oob_cntl                           ,
@@ -3004,12 +2950,6 @@
             mgr8__std__lane31_strm1_cntl        ,
             mgr8__std__lane31_strm1_data        ,
             mgr8__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr9__sys__allSynchronized                    ,
-            sys__mgr9__thisSynchronized                   ,
-            sys__mgr9__ready                              ,
-            sys__mgr9__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -3339,12 +3279,6 @@
             mgr9__std__lane31_strm1_data        ,
             mgr9__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr10__sys__allSynchronized                    ,
-            sys__mgr10__thisSynchronized                   ,
-            sys__mgr10__ready                              ,
-            sys__mgr10__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr10__std__oob_cntl                           ,
@@ -3672,12 +3606,6 @@
             mgr10__std__lane31_strm1_cntl        ,
             mgr10__std__lane31_strm1_data        ,
             mgr10__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr11__sys__allSynchronized                    ,
-            sys__mgr11__thisSynchronized                   ,
-            sys__mgr11__ready                              ,
-            sys__mgr11__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -4007,12 +3935,6 @@
             mgr11__std__lane31_strm1_data        ,
             mgr11__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr12__sys__allSynchronized                    ,
-            sys__mgr12__thisSynchronized                   ,
-            sys__mgr12__ready                              ,
-            sys__mgr12__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr12__std__oob_cntl                           ,
@@ -4340,12 +4262,6 @@
             mgr12__std__lane31_strm1_cntl        ,
             mgr12__std__lane31_strm1_data        ,
             mgr12__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr13__sys__allSynchronized                    ,
-            sys__mgr13__thisSynchronized                   ,
-            sys__mgr13__ready                              ,
-            sys__mgr13__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -4675,12 +4591,6 @@
             mgr13__std__lane31_strm1_data        ,
             mgr13__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr14__sys__allSynchronized                    ,
-            sys__mgr14__thisSynchronized                   ,
-            sys__mgr14__ready                              ,
-            sys__mgr14__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr14__std__oob_cntl                           ,
@@ -5008,12 +4918,6 @@
             mgr14__std__lane31_strm1_cntl        ,
             mgr14__std__lane31_strm1_data        ,
             mgr14__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr15__sys__allSynchronized                    ,
-            sys__mgr15__thisSynchronized                   ,
-            sys__mgr15__ready                              ,
-            sys__mgr15__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -5343,12 +5247,6 @@
             mgr15__std__lane31_strm1_data        ,
             mgr15__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr16__sys__allSynchronized                    ,
-            sys__mgr16__thisSynchronized                   ,
-            sys__mgr16__ready                              ,
-            sys__mgr16__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr16__std__oob_cntl                           ,
@@ -5676,12 +5574,6 @@
             mgr16__std__lane31_strm1_cntl        ,
             mgr16__std__lane31_strm1_data        ,
             mgr16__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr17__sys__allSynchronized                    ,
-            sys__mgr17__thisSynchronized                   ,
-            sys__mgr17__ready                              ,
-            sys__mgr17__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -6011,12 +5903,6 @@
             mgr17__std__lane31_strm1_data        ,
             mgr17__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr18__sys__allSynchronized                    ,
-            sys__mgr18__thisSynchronized                   ,
-            sys__mgr18__ready                              ,
-            sys__mgr18__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr18__std__oob_cntl                           ,
@@ -6344,12 +6230,6 @@
             mgr18__std__lane31_strm1_cntl        ,
             mgr18__std__lane31_strm1_data        ,
             mgr18__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr19__sys__allSynchronized                    ,
-            sys__mgr19__thisSynchronized                   ,
-            sys__mgr19__ready                              ,
-            sys__mgr19__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -6679,12 +6559,6 @@
             mgr19__std__lane31_strm1_data        ,
             mgr19__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr20__sys__allSynchronized                    ,
-            sys__mgr20__thisSynchronized                   ,
-            sys__mgr20__ready                              ,
-            sys__mgr20__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr20__std__oob_cntl                           ,
@@ -7012,12 +6886,6 @@
             mgr20__std__lane31_strm1_cntl        ,
             mgr20__std__lane31_strm1_data        ,
             mgr20__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr21__sys__allSynchronized                    ,
-            sys__mgr21__thisSynchronized                   ,
-            sys__mgr21__ready                              ,
-            sys__mgr21__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -7347,12 +7215,6 @@
             mgr21__std__lane31_strm1_data        ,
             mgr21__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr22__sys__allSynchronized                    ,
-            sys__mgr22__thisSynchronized                   ,
-            sys__mgr22__ready                              ,
-            sys__mgr22__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr22__std__oob_cntl                           ,
@@ -7680,12 +7542,6 @@
             mgr22__std__lane31_strm1_cntl        ,
             mgr22__std__lane31_strm1_data        ,
             mgr22__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr23__sys__allSynchronized                    ,
-            sys__mgr23__thisSynchronized                   ,
-            sys__mgr23__ready                              ,
-            sys__mgr23__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -8015,12 +7871,6 @@
             mgr23__std__lane31_strm1_data        ,
             mgr23__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr24__sys__allSynchronized                    ,
-            sys__mgr24__thisSynchronized                   ,
-            sys__mgr24__ready                              ,
-            sys__mgr24__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr24__std__oob_cntl                           ,
@@ -8348,12 +8198,6 @@
             mgr24__std__lane31_strm1_cntl        ,
             mgr24__std__lane31_strm1_data        ,
             mgr24__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr25__sys__allSynchronized                    ,
-            sys__mgr25__thisSynchronized                   ,
-            sys__mgr25__ready                              ,
-            sys__mgr25__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -8683,12 +8527,6 @@
             mgr25__std__lane31_strm1_data        ,
             mgr25__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr26__sys__allSynchronized                    ,
-            sys__mgr26__thisSynchronized                   ,
-            sys__mgr26__ready                              ,
-            sys__mgr26__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr26__std__oob_cntl                           ,
@@ -9016,12 +8854,6 @@
             mgr26__std__lane31_strm1_cntl        ,
             mgr26__std__lane31_strm1_data        ,
             mgr26__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr27__sys__allSynchronized                    ,
-            sys__mgr27__thisSynchronized                   ,
-            sys__mgr27__ready                              ,
-            sys__mgr27__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -9351,12 +9183,6 @@
             mgr27__std__lane31_strm1_data        ,
             mgr27__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr28__sys__allSynchronized                    ,
-            sys__mgr28__thisSynchronized                   ,
-            sys__mgr28__ready                              ,
-            sys__mgr28__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr28__std__oob_cntl                           ,
@@ -9684,12 +9510,6 @@
             mgr28__std__lane31_strm1_cntl        ,
             mgr28__std__lane31_strm1_data        ,
             mgr28__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr29__sys__allSynchronized                    ,
-            sys__mgr29__thisSynchronized                   ,
-            sys__mgr29__ready                              ,
-            sys__mgr29__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -10019,12 +9839,6 @@
             mgr29__std__lane31_strm1_data        ,
             mgr29__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr30__sys__allSynchronized                    ,
-            sys__mgr30__thisSynchronized                   ,
-            sys__mgr30__ready                              ,
-            sys__mgr30__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr30__std__oob_cntl                           ,
@@ -10352,12 +10166,6 @@
             mgr30__std__lane31_strm1_cntl        ,
             mgr30__std__lane31_strm1_data        ,
             mgr30__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr31__sys__allSynchronized                    ,
-            sys__mgr31__thisSynchronized                   ,
-            sys__mgr31__ready                              ,
-            sys__mgr31__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -10687,12 +10495,6 @@
             mgr31__std__lane31_strm1_data        ,
             mgr31__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr32__sys__allSynchronized                    ,
-            sys__mgr32__thisSynchronized                   ,
-            sys__mgr32__ready                              ,
-            sys__mgr32__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr32__std__oob_cntl                           ,
@@ -11020,12 +10822,6 @@
             mgr32__std__lane31_strm1_cntl        ,
             mgr32__std__lane31_strm1_data        ,
             mgr32__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr33__sys__allSynchronized                    ,
-            sys__mgr33__thisSynchronized                   ,
-            sys__mgr33__ready                              ,
-            sys__mgr33__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -11355,12 +11151,6 @@
             mgr33__std__lane31_strm1_data        ,
             mgr33__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr34__sys__allSynchronized                    ,
-            sys__mgr34__thisSynchronized                   ,
-            sys__mgr34__ready                              ,
-            sys__mgr34__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr34__std__oob_cntl                           ,
@@ -11688,12 +11478,6 @@
             mgr34__std__lane31_strm1_cntl        ,
             mgr34__std__lane31_strm1_data        ,
             mgr34__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr35__sys__allSynchronized                    ,
-            sys__mgr35__thisSynchronized                   ,
-            sys__mgr35__ready                              ,
-            sys__mgr35__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -12023,12 +11807,6 @@
             mgr35__std__lane31_strm1_data        ,
             mgr35__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr36__sys__allSynchronized                    ,
-            sys__mgr36__thisSynchronized                   ,
-            sys__mgr36__ready                              ,
-            sys__mgr36__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr36__std__oob_cntl                           ,
@@ -12356,12 +12134,6 @@
             mgr36__std__lane31_strm1_cntl        ,
             mgr36__std__lane31_strm1_data        ,
             mgr36__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr37__sys__allSynchronized                    ,
-            sys__mgr37__thisSynchronized                   ,
-            sys__mgr37__ready                              ,
-            sys__mgr37__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -12691,12 +12463,6 @@
             mgr37__std__lane31_strm1_data        ,
             mgr37__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr38__sys__allSynchronized                    ,
-            sys__mgr38__thisSynchronized                   ,
-            sys__mgr38__ready                              ,
-            sys__mgr38__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr38__std__oob_cntl                           ,
@@ -13024,12 +12790,6 @@
             mgr38__std__lane31_strm1_cntl        ,
             mgr38__std__lane31_strm1_data        ,
             mgr38__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr39__sys__allSynchronized                    ,
-            sys__mgr39__thisSynchronized                   ,
-            sys__mgr39__ready                              ,
-            sys__mgr39__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -13359,12 +13119,6 @@
             mgr39__std__lane31_strm1_data        ,
             mgr39__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr40__sys__allSynchronized                    ,
-            sys__mgr40__thisSynchronized                   ,
-            sys__mgr40__ready                              ,
-            sys__mgr40__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr40__std__oob_cntl                           ,
@@ -13692,12 +13446,6 @@
             mgr40__std__lane31_strm1_cntl        ,
             mgr40__std__lane31_strm1_data        ,
             mgr40__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr41__sys__allSynchronized                    ,
-            sys__mgr41__thisSynchronized                   ,
-            sys__mgr41__ready                              ,
-            sys__mgr41__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -14027,12 +13775,6 @@
             mgr41__std__lane31_strm1_data        ,
             mgr41__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr42__sys__allSynchronized                    ,
-            sys__mgr42__thisSynchronized                   ,
-            sys__mgr42__ready                              ,
-            sys__mgr42__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr42__std__oob_cntl                           ,
@@ -14360,12 +14102,6 @@
             mgr42__std__lane31_strm1_cntl        ,
             mgr42__std__lane31_strm1_data        ,
             mgr42__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr43__sys__allSynchronized                    ,
-            sys__mgr43__thisSynchronized                   ,
-            sys__mgr43__ready                              ,
-            sys__mgr43__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -14695,12 +14431,6 @@
             mgr43__std__lane31_strm1_data        ,
             mgr43__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr44__sys__allSynchronized                    ,
-            sys__mgr44__thisSynchronized                   ,
-            sys__mgr44__ready                              ,
-            sys__mgr44__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr44__std__oob_cntl                           ,
@@ -15028,12 +14758,6 @@
             mgr44__std__lane31_strm1_cntl        ,
             mgr44__std__lane31_strm1_data        ,
             mgr44__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr45__sys__allSynchronized                    ,
-            sys__mgr45__thisSynchronized                   ,
-            sys__mgr45__ready                              ,
-            sys__mgr45__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -15363,12 +15087,6 @@
             mgr45__std__lane31_strm1_data        ,
             mgr45__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr46__sys__allSynchronized                    ,
-            sys__mgr46__thisSynchronized                   ,
-            sys__mgr46__ready                              ,
-            sys__mgr46__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr46__std__oob_cntl                           ,
@@ -15696,12 +15414,6 @@
             mgr46__std__lane31_strm1_cntl        ,
             mgr46__std__lane31_strm1_data        ,
             mgr46__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr47__sys__allSynchronized                    ,
-            sys__mgr47__thisSynchronized                   ,
-            sys__mgr47__ready                              ,
-            sys__mgr47__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -16031,12 +15743,6 @@
             mgr47__std__lane31_strm1_data        ,
             mgr47__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr48__sys__allSynchronized                    ,
-            sys__mgr48__thisSynchronized                   ,
-            sys__mgr48__ready                              ,
-            sys__mgr48__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr48__std__oob_cntl                           ,
@@ -16364,12 +16070,6 @@
             mgr48__std__lane31_strm1_cntl        ,
             mgr48__std__lane31_strm1_data        ,
             mgr48__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr49__sys__allSynchronized                    ,
-            sys__mgr49__thisSynchronized                   ,
-            sys__mgr49__ready                              ,
-            sys__mgr49__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -16699,12 +16399,6 @@
             mgr49__std__lane31_strm1_data        ,
             mgr49__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr50__sys__allSynchronized                    ,
-            sys__mgr50__thisSynchronized                   ,
-            sys__mgr50__ready                              ,
-            sys__mgr50__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr50__std__oob_cntl                           ,
@@ -17032,12 +16726,6 @@
             mgr50__std__lane31_strm1_cntl        ,
             mgr50__std__lane31_strm1_data        ,
             mgr50__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr51__sys__allSynchronized                    ,
-            sys__mgr51__thisSynchronized                   ,
-            sys__mgr51__ready                              ,
-            sys__mgr51__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -17367,12 +17055,6 @@
             mgr51__std__lane31_strm1_data        ,
             mgr51__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr52__sys__allSynchronized                    ,
-            sys__mgr52__thisSynchronized                   ,
-            sys__mgr52__ready                              ,
-            sys__mgr52__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr52__std__oob_cntl                           ,
@@ -17700,12 +17382,6 @@
             mgr52__std__lane31_strm1_cntl        ,
             mgr52__std__lane31_strm1_data        ,
             mgr52__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr53__sys__allSynchronized                    ,
-            sys__mgr53__thisSynchronized                   ,
-            sys__mgr53__ready                              ,
-            sys__mgr53__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -18035,12 +17711,6 @@
             mgr53__std__lane31_strm1_data        ,
             mgr53__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr54__sys__allSynchronized                    ,
-            sys__mgr54__thisSynchronized                   ,
-            sys__mgr54__ready                              ,
-            sys__mgr54__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr54__std__oob_cntl                           ,
@@ -18368,12 +18038,6 @@
             mgr54__std__lane31_strm1_cntl        ,
             mgr54__std__lane31_strm1_data        ,
             mgr54__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr55__sys__allSynchronized                    ,
-            sys__mgr55__thisSynchronized                   ,
-            sys__mgr55__ready                              ,
-            sys__mgr55__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -18703,12 +18367,6 @@
             mgr55__std__lane31_strm1_data        ,
             mgr55__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr56__sys__allSynchronized                    ,
-            sys__mgr56__thisSynchronized                   ,
-            sys__mgr56__ready                              ,
-            sys__mgr56__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr56__std__oob_cntl                           ,
@@ -19036,12 +18694,6 @@
             mgr56__std__lane31_strm1_cntl        ,
             mgr56__std__lane31_strm1_data        ,
             mgr56__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr57__sys__allSynchronized                    ,
-            sys__mgr57__thisSynchronized                   ,
-            sys__mgr57__ready                              ,
-            sys__mgr57__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -19371,12 +19023,6 @@
             mgr57__std__lane31_strm1_data        ,
             mgr57__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr58__sys__allSynchronized                    ,
-            sys__mgr58__thisSynchronized                   ,
-            sys__mgr58__ready                              ,
-            sys__mgr58__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr58__std__oob_cntl                           ,
@@ -19704,12 +19350,6 @@
             mgr58__std__lane31_strm1_cntl        ,
             mgr58__std__lane31_strm1_data        ,
             mgr58__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr59__sys__allSynchronized                    ,
-            sys__mgr59__thisSynchronized                   ,
-            sys__mgr59__ready                              ,
-            sys__mgr59__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -20039,12 +19679,6 @@
             mgr59__std__lane31_strm1_data        ,
             mgr59__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr60__sys__allSynchronized                    ,
-            sys__mgr60__thisSynchronized                   ,
-            sys__mgr60__ready                              ,
-            sys__mgr60__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr60__std__oob_cntl                           ,
@@ -20372,12 +20006,6 @@
             mgr60__std__lane31_strm1_cntl        ,
             mgr60__std__lane31_strm1_data        ,
             mgr60__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr61__sys__allSynchronized                    ,
-            sys__mgr61__thisSynchronized                   ,
-            sys__mgr61__ready                              ,
-            sys__mgr61__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
@@ -20707,12 +20335,6 @@
             mgr61__std__lane31_strm1_data        ,
             mgr61__std__lane31_strm1_data_valid  ,
 
-            // General control and status                    
-            mgr62__sys__allSynchronized                    ,
-            sys__mgr62__thisSynchronized                   ,
-            sys__mgr62__ready                              ,
-            sys__mgr62__complete                           ,
-
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      
             mgr62__std__oob_cntl                           ,
@@ -21040,12 +20662,6 @@
             mgr62__std__lane31_strm1_cntl        ,
             mgr62__std__lane31_strm1_data        ,
             mgr62__std__lane31_strm1_data_valid  ,
-
-            // General control and status                    
-            mgr63__sys__allSynchronized                    ,
-            sys__mgr63__thisSynchronized                   ,
-            sys__mgr63__ready                              ,
-            sys__mgr63__complete                           ,
 
             // OOB controls the PE                          
             // For now assume OOB is separate to lanes      

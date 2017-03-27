@@ -1,10 +1,4 @@
 
-  // General control and status                                             
-  wire [`PE_PE_ID_RANGE                 ]     sys__pe__peId                ;
-  wire                                        sys__pe__allSynchronized     ;
-  wire                                        pe__sys__thisSynchronized    ;
-  wire                                        pe__sys__ready               ;
-  wire                                        pe__sys__complete            ;
   // OOB carries PE configuration                                           
   wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;
   wire                                        std__pe__oob_valid           ;

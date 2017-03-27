@@ -315,7 +315,7 @@ if __name__ == "__main__":
   #------------------------------------------------------------------------------------------------------------------------------------------------------
   # Manager Array
 
-  f = open('../HDL/common/system_manager_stack_bus_downstream_ports.vh', 'w')
+  f = open('../HDL/common/system_manager_sys_general_ports.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -325,6 +325,15 @@ if __name__ == "__main__":
     pLine = pLine + '\n            sys__mgr{0}__ready                              ,'.format(pe) 
     pLine = pLine + '\n            sys__mgr{0}__complete                           ,'.format(pe) 
     pLine = pLine + '\n'
+    #
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/system_manager_stack_bus_downstream_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     #
     pLine = pLine + '\n            // OOB controls the PE                          '.format(pe) 
     pLine = pLine + '\n            // For now assume OOB is separate to lanes      '.format(pe) 
@@ -362,35 +371,45 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_manager_stack_bus_downstream_port_declarations.vh', 'w')
+  f = open('../HDL/common/system_manager_sys_general_port_declarations.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // General control and status                                                   '.format(pe) 
-    pLine = pLine + '\n  input                                         mgr{0}__sys__allSynchronized     ;'.format(pe) 
-    pLine = pLine + '\n  output                                        sys__mgr{0}__thisSynchronized    ;'.format(pe) 
-    pLine = pLine + '\n  output                                        sys__mgr{0}__ready               ;'.format(pe) 
-    pLine = pLine + '\n  output                                        sys__mgr{0}__complete            ;'.format(pe) 
+    pLine = pLine + '\n  output                                        mgr{0}__sys__allSynchronized     ;'.format(pe) 
+    pLine = pLine + '\n  input                                         sys__mgr{0}__thisSynchronized    ;'.format(pe) 
+    pLine = pLine + '\n  input                                         sys__mgr{0}__ready               ;'.format(pe) 
+    pLine = pLine + '\n  input                                         sys__mgr{0}__complete            ;'.format(pe) 
+    #                                                                                                              
+
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../HDL/common/system_manager_stack_bus_downstream_port_declarations.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     #                                                                                                              
     pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                  '.format(pe) 
-    pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr{0}__std__oob_cntl            ;'.format(pe) 
-    pLine = pLine + '\n  input                                         mgr{0}__std__oob_valid           ;'.format(pe) 
-    pLine = pLine + '\n  output                                        std__mgr{0}__oob_ready           ;'.format(pe) 
-    pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr{0}__std__oob_type            ;'.format(pe) 
-    pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr{0}__std__oob_data            ;'.format(pe) 
+    pLine = pLine + '\n  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr{0}__std__oob_cntl            ;'.format(pe) 
+    pLine = pLine + '\n  output                                          mgr{0}__std__oob_valid           ;'.format(pe) 
+    pLine = pLine + '\n  input                                           std__mgr{0}__oob_ready           ;'.format(pe) 
+    pLine = pLine + '\n  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr{0}__std__oob_type            ;'.format(pe) 
+    pLine = pLine + '\n  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr{0}__std__oob_data            ;'.format(pe) 
     #                                                             
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
-        pLine = pLine + '\n  output                                          std__mgr{0}__lane{1}_strm{2}_ready       ;'.format(pe,lane,strm)
-        pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE      ]       mgr{0}__std__lane{1}_strm{2}_cntl        ;'.format(pe,lane,strm) 
-        pLine = pLine + '\n  input [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mgr{0}__std__lane{1}_strm{2}_data        ;'.format(pe,lane,strm) 
-        pLine = pLine + '\n  input                                           mgr{0}__std__lane{1}_strm{2}_data_valid  ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  input                                         std__mgr{0}__lane{1}_strm{2}_ready       ;'.format(pe,lane,strm)
+        pLine = pLine + '\n  output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr{0}__std__lane{1}_strm{2}_cntl        ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr{0}__std__lane{1}_strm{2}_data        ;'.format(pe,lane,strm) 
+        pLine = pLine + '\n  output                                        mgr{0}__std__lane{1}_strm{2}_data_valid  ;'.format(pe,lane,strm) 
         pLine = pLine + '\n'
 
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_manager_stack_bus_downstream_instance_wires.vh', 'w')
+  f = open('../HDL/common/system_manager_sys_general_instance_wires.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -400,6 +419,16 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire                                        sys__mgr{0}__ready               ;'.format(pe) 
     pLine = pLine + '\n  wire                                        sys__mgr{0}__complete            ;'.format(pe) 
     pLine = pLine + '\n'
+    #                                                                                                            
+
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../HDL/common/system_manager_stack_bus_downstream_instance_wires.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     #                                                                                                            
     pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                '.format(pe) 
     pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr{0}__std__oob_cntl            ;'.format(pe) 
@@ -519,13 +548,6 @@ if __name__ == "__main__":
   f = open('../HDL/common/manager_stack_bus_downstream_instance_wires.vh', 'w')
   pLine = ""
 
-  pLine = pLine + '\n  // General control and status                                             ' 
-  pLine = pLine + '\n  wire [`PE_PE_ID_RANGE                 ]     sys__mgr__mgrId               ;' 
-  pLine = pLine + '\n  wire                                        mgr__sys__allSynchronized     ;' 
-  pLine = pLine + '\n  wire                                        sys__mgr__thisSynchronized    ;' 
-  pLine = pLine + '\n  wire                                        sys__mgr__ready               ;' 
-  pLine = pLine + '\n  wire                                        sys__mgr__complete            ;' 
-  #
   pLine = pLine + '\n  // OOB carries PE configuration                                           '
   pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl            ;' 
   pLine = pLine + '\n  wire                                        mgr__std__oob_valid           ;' 

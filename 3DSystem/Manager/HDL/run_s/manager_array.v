@@ -31,6 +31,10 @@
 module manager_array (
 
         //-------------------------------------------------------------------------------------------
+        // Stack Bus - General
+        `include "system_manager_sys_general_ports.vh"
+
+        //-------------------------------------------------------------------------------------------
         // Stack Bus - Downstream
         `include "system_manager_stack_bus_downstream_ports.vh"
 
@@ -53,6 +57,10 @@ module manager_array (
   input                      reset_poweron  ;
 
   //-------------------------------------------------------------------------------------------
+  // Stack Bus - General
+  `include "system_manager_sys_general_port_declarations.vh"
+
+  //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
   `include "system_manager_stack_bus_downstream_port_declarations.vh"
 
@@ -63,6 +71,7 @@ module manager_array (
 
 
   //-------------------------------------------------------------------------------------------
+  //-------------------------------------------------------------------------------------------
   // Regs and wires
 
   //-------------------------------------------------------------------------------------------
@@ -70,9 +79,9 @@ module manager_array (
   //`include "manager_noc_connection_wires.vh"
 
   //-------------------------------------------------------------------------------------------
-  // General system connectivity
-  `include "manager_sys_general_connections.vh"
-
+  // Stack Bus - General
+  `include "system_manager_sys_general_instance_wires.vh"
+  
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
   `include "system_manager_stack_bus_downstream_instance_wires.vh"
@@ -81,12 +90,24 @@ module manager_array (
   // Stack Bus - Upstream
   `include "system_manager_stack_bus_upstream_instance_wires.vh"
   
+  //-------------------------------------------------------------------------------------------
+  // General system connectivity
+  `include "manager_sys_general_connections.vh"
+
   
  
   genvar gvi;
   generate
     for (gvi=0; gvi<`MGR_ARRAY_NUM_OF_MGR; gvi=gvi+1) 
       begin: mgr_inst
+
+        //-------------------------------------------------------------------------------------------------
+        // General control and status 
+        wire [`PE_PE_ID_RANGE                 ]     sys__mgr__mgrId               ; 
+        wire                                        mgr__sys__allSynchronized     ; 
+        wire                                        sys__mgr__thisSynchronized    ; 
+        wire                                        sys__mgr__ready               ; 
+        wire                                        sys__mgr__complete            ; 
 
         //-------------------------------------------------------------------------------------------------
         // Stack Bus downstream Interface

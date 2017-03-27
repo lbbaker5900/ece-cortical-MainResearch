@@ -56,6 +56,7 @@ module manager (
             stu__mgr__data          ,
             stu__mgr__oob_data      ,
  
+            //-------------------------------
             // General control and status 
             sys__mgr__mgrId               , 
             mgr__sys__allSynchronized     , 

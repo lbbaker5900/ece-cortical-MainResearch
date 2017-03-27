@@ -35,6 +35,10 @@
 module pe_array (
 
         //-------------------------------------------------------------------------------------------
+        // Stack Bus - General
+        `include "system_pe_sys_general_ports.vh"
+
+        //-------------------------------------------------------------------------------------------
         // Stack Bus - Downstream
         `include "system_pe_stack_bus_downstream_ports.vh"
 
@@ -57,6 +61,10 @@ module pe_array (
   input                      reset_poweron  ;
 
   //-------------------------------------------------------------------------------------------
+  // Stack Bus - General
+  `include "system_pe_sys_general_port_declarations.vh"
+
+  //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
   `include "system_pe_stack_bus_downstream_port_declarations.vh"
 
@@ -67,12 +75,13 @@ module pe_array (
 
 
   //-------------------------------------------------------------------------------------------
+  //-------------------------------------------------------------------------------------------
   // Regs and wires
 
   //-------------------------------------------------------------------------------------------
-  // General system connectivity
-  `include "sys_general_connections.vh"
-
+  // Stack Bus - General
+  `include "system_pe_sys_general_instance_wires.vh"
+  
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
   `include "system_pe_stack_bus_downstream_instance_wires.vh"
@@ -81,6 +90,11 @@ module pe_array (
   // Stack Bus - Upstream
   `include "system_pe_stack_bus_upstream_instance_wires.vh"
   
+  //-------------------------------------------------------------------------------------------
+  // General system connectivity]
+  // FIXME: make these connections inside the manager
+  `include "pe_sys_general_connections.vh"
+
   
  
   genvar gvi;
@@ -88,6 +102,14 @@ module pe_array (
     for (gvi=0; gvi<`PE_ARRAY_NUM_OF_PE; gvi=gvi+1) 
     //for (gvi=0; gvi<1; gvi=gvi+1) 
       begin: pe_inst
+
+        //-------------------------------------------------------------------------------------------------
+        // General control and status 
+        wire [`PE_PE_ID_RANGE                 ]     sys__pe__peId                ; 
+        wire                                        sys__pe__allSynchronized     ; 
+        wire                                        pe__sys__thisSynchronized    ; 
+        wire                                        pe__sys__ready               ; 
+        wire                                        pe__sys__complete            ; 
 
         //-------------------------------------------------------------------------------------------------
         // Stack Bus downstream Interface
@@ -119,6 +141,15 @@ module pe_array (
                 //-------------------------------
                 // NoC Interface
                 `include "pe_noc_instance_ports.vh"
+   
+                //-------------------------------
+                // Stack Bus General control and status     
+                .sys__pe__peId                      ( sys__pe__peId                   ),
+                .sys__pe__allSynchronized           ( sys__pe__allSynchronized        ),
+                .pe__sys__thisSynchronized          ( pe__sys__thisSynchronized       ),
+                .pe__sys__ready                     ( pe__sys__ready                  ),
+                .pe__sys__complete                  ( pe__sys__complete               ),
+                //`include "pe_sys_general_instance_ports.vh"
    
                 //-------------------------------
                 // Stack Bus downstream Interface
