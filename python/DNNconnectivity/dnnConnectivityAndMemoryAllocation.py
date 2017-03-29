@@ -2976,14 +2976,15 @@ class Manager():
         oFile = open(outFile, 'w')
 
         pLine = ''
+        pLine = pLine + '# ID Address(mgr,chan,bank,page,word) Order Consequtive Valid Jump Consequtive Valid Jump .... Invalid\n'
         for storageDesc in self.storageDescriptors[layerID] :
           pLine = pLine + '{0:^{1}} '    .format(toHexPad(storageDesc.Id, int(math.ceil(math.log(math.pow(descPtrWidth,2),16)))), int(math.ceil(math.log(math.pow(descPtrWidth,2),16))) )
-          pLine = pLine + storageDesc.address + '_' 
-          pLine = pLine + '{0:>{1}}_' .format(getattr(orderValues, ''.join(  storageDesc.accessOrder)), orderValues.WIDTH)
+          pLine = pLine + storageDesc.address + ' ' 
+          pLine = pLine + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  storageDesc.accessOrder)), orderValues.WIDTH)
           for c in range(len(storageDesc.consequtive)) :
-              pLine = pLine + '{0:>4}_'.format(storageDesc.consequtive[c])
+              pLine = pLine + '{0:>4} '.format(storageDesc.consequtive[c])
               try :
-                  pLine = pLine + '1_{0:>3}_'.format(storageDesc.jump[c])
+                  pLine = pLine + '1 {0:>3} '.format(storageDesc.jump[c])
               except:
                   pass
           pLine = pLine + '0\n'
@@ -3859,6 +3860,7 @@ def main():
                 for mgrX in range(network.managerArray.X):
                     print '{0}:{1}:INFO:Create Work Unit files for manager {2},{3} layer {4}'.format(__FILE__(), __LINE__(), mgrY, mgrX, l)
                     network.managerArray.manager[mgrY][mgrX].createWUfiles(l)
+                    network.managerArray.manager[mgrY][mgrX].createStorageDescriptorFiles(l)
 
     #------------------------------------------------------------------------------------------------------------------------
     # Checks
