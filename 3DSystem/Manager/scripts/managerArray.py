@@ -521,7 +521,7 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  assign   mgr_inst[{0}].stu__mgr__valid     =   stu__mgr{0}__valid               ;'.format(pe)
     pLine = pLine + '\n  assign   mgr_inst[{0}].stu__mgr__cntl      =   stu__mgr{0}__cntl                ;'.format(pe)
-    pLine = pLine + '\n  assign   mgr__stu{0}__ready                =   mgr_inst[{0}].mgr__stu__ready    ;'.format(pe) 
+    pLine = pLine + '\n  assign   mgr{0}__stu__ready                =   mgr_inst[{0}].mgr__stu__ready    ;'.format(pe) 
     pLine = pLine + '\n  assign   mgr_inst[{0}].stu__mgr__type      =   stu__mgr{0}__type                ;'.format(pe)
     pLine = pLine + '\n  assign   mgr_inst[{0}].stu__mgr__data      =   stu__mgr{0}__data                ;'.format(pe)
     pLine = pLine + '\n  assign   mgr_inst[{0}].stu__mgr__oob_data  =   stu__mgr{0}__oob_data            ;'.format(pe)

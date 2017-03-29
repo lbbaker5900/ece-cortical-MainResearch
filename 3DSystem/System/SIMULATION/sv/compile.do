@@ -89,7 +89,7 @@ vlog +define+TESTING -sv +incdir+../../HDL/common     +incdir+../../SIMULATION/c
 
 
 
-#vsim -c -sv_seed 3 -do "run.do" -novopt top 
+vsim -c -sv_seed 3 -do "run.do" -novopt top 
 #vsim    -sv_seed 3   -l gTranscript  -novopt top &
 # transcript file ""
 # transcript file 'gTranscript"

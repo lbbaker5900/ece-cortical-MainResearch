@@ -138,7 +138,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                  '.format(pe) 
     pLine = pLine + '\n assign    std__pe{0}__oob_cntl    =    mgr{0}__std__oob_cntl            ;'.format(pe) 
     pLine = pLine + '\n assign    std__pe{0}__oob_valid   =    mgr{0}__std__oob_valid           ;'.format(pe) 
-    pLine = pLine + '\n assign    pe{0}__std__oob_ready   =    std__mgr{0}__oob_ready           ;'.format(pe) 
+    pLine = pLine + '\n assign    std__mgr{0}__oob_ready  =    pe{0}__std__oob_ready            ;'.format(pe) 
     pLine = pLine + '\n assign    std__pe{0}__oob_type    =    mgr{0}__std__oob_type            ;'.format(pe) 
     pLine = pLine + '\n assign    std__pe{0}__oob_data    =    mgr{0}__std__oob_data            ;'.format(pe) 
     pLine = pLine + '\n'
