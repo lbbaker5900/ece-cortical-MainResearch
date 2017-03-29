@@ -1,19 +1,4 @@
 
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe0__allSynchronized    ( DownstreamStackBusOOB[0].cb_test.sys__pe__allSynchronized   ), 
-        .pe0__sys__thisSynchronized   ( DownstreamStackBusOOB[0].pe__sys__thisSynchronized          ), 
-        .pe0__sys__ready              ( DownstreamStackBusOOB[0].pe__sys__ready                     ), 
-        .pe0__sys__complete           ( DownstreamStackBusOOB[0].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe0__oob_cntl           ( DownstreamStackBusOOB[0].cb_test.std__pe__oob_cntl          ), 
-        .std__pe0__oob_valid          ( DownstreamStackBusOOB[0].cb_test.std__pe__oob_valid         ), 
-        .pe0__std__oob_ready          ( DownstreamStackBusOOB[0].pe__std__oob_ready                 ), 
-        .std__pe0__oob_type           ( DownstreamStackBusOOB[0].cb_test.std__pe__oob_type          ), 
-        .std__pe0__oob_data           ( DownstreamStackBusOOB[0].cb_test.std__pe__oob_data          ), 
         // PE 0, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe0__std__lane0_strm0_ready         ( DownstreamStackBusLane[0][0].pe__std__lane_strm0_ready              ),      
@@ -430,21 +415,6 @@
         .std__pe0__lane31_strm1_data          ( DownstreamStackBusLane[0][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe0__lane31_strm1_data_valid    ( DownstreamStackBusLane[0][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe1__allSynchronized    ( DownstreamStackBusOOB[1].cb_test.sys__pe__allSynchronized   ), 
-        .pe1__sys__thisSynchronized   ( DownstreamStackBusOOB[1].pe__sys__thisSynchronized          ), 
-        .pe1__sys__ready              ( DownstreamStackBusOOB[1].pe__sys__ready                     ), 
-        .pe1__sys__complete           ( DownstreamStackBusOOB[1].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe1__oob_cntl           ( DownstreamStackBusOOB[1].cb_test.std__pe__oob_cntl          ), 
-        .std__pe1__oob_valid          ( DownstreamStackBusOOB[1].cb_test.std__pe__oob_valid         ), 
-        .pe1__std__oob_ready          ( DownstreamStackBusOOB[1].pe__std__oob_ready                 ), 
-        .std__pe1__oob_type           ( DownstreamStackBusOOB[1].cb_test.std__pe__oob_type          ), 
-        .std__pe1__oob_data           ( DownstreamStackBusOOB[1].cb_test.std__pe__oob_data          ), 
         // PE 1, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe1__std__lane0_strm0_ready         ( DownstreamStackBusLane[1][0].pe__std__lane_strm0_ready              ),      
@@ -861,21 +831,6 @@
         .std__pe1__lane31_strm1_data          ( DownstreamStackBusLane[1][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe1__lane31_strm1_data_valid    ( DownstreamStackBusLane[1][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe2__allSynchronized    ( DownstreamStackBusOOB[2].cb_test.sys__pe__allSynchronized   ), 
-        .pe2__sys__thisSynchronized   ( DownstreamStackBusOOB[2].pe__sys__thisSynchronized          ), 
-        .pe2__sys__ready              ( DownstreamStackBusOOB[2].pe__sys__ready                     ), 
-        .pe2__sys__complete           ( DownstreamStackBusOOB[2].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe2__oob_cntl           ( DownstreamStackBusOOB[2].cb_test.std__pe__oob_cntl          ), 
-        .std__pe2__oob_valid          ( DownstreamStackBusOOB[2].cb_test.std__pe__oob_valid         ), 
-        .pe2__std__oob_ready          ( DownstreamStackBusOOB[2].pe__std__oob_ready                 ), 
-        .std__pe2__oob_type           ( DownstreamStackBusOOB[2].cb_test.std__pe__oob_type          ), 
-        .std__pe2__oob_data           ( DownstreamStackBusOOB[2].cb_test.std__pe__oob_data          ), 
         // PE 2, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe2__std__lane0_strm0_ready         ( DownstreamStackBusLane[2][0].pe__std__lane_strm0_ready              ),      
@@ -1292,21 +1247,6 @@
         .std__pe2__lane31_strm1_data          ( DownstreamStackBusLane[2][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe2__lane31_strm1_data_valid    ( DownstreamStackBusLane[2][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe3__allSynchronized    ( DownstreamStackBusOOB[3].cb_test.sys__pe__allSynchronized   ), 
-        .pe3__sys__thisSynchronized   ( DownstreamStackBusOOB[3].pe__sys__thisSynchronized          ), 
-        .pe3__sys__ready              ( DownstreamStackBusOOB[3].pe__sys__ready                     ), 
-        .pe3__sys__complete           ( DownstreamStackBusOOB[3].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe3__oob_cntl           ( DownstreamStackBusOOB[3].cb_test.std__pe__oob_cntl          ), 
-        .std__pe3__oob_valid          ( DownstreamStackBusOOB[3].cb_test.std__pe__oob_valid         ), 
-        .pe3__std__oob_ready          ( DownstreamStackBusOOB[3].pe__std__oob_ready                 ), 
-        .std__pe3__oob_type           ( DownstreamStackBusOOB[3].cb_test.std__pe__oob_type          ), 
-        .std__pe3__oob_data           ( DownstreamStackBusOOB[3].cb_test.std__pe__oob_data          ), 
         // PE 3, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe3__std__lane0_strm0_ready         ( DownstreamStackBusLane[3][0].pe__std__lane_strm0_ready              ),      
@@ -1723,21 +1663,6 @@
         .std__pe3__lane31_strm1_data          ( DownstreamStackBusLane[3][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe3__lane31_strm1_data_valid    ( DownstreamStackBusLane[3][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe4__allSynchronized    ( DownstreamStackBusOOB[4].cb_test.sys__pe__allSynchronized   ), 
-        .pe4__sys__thisSynchronized   ( DownstreamStackBusOOB[4].pe__sys__thisSynchronized          ), 
-        .pe4__sys__ready              ( DownstreamStackBusOOB[4].pe__sys__ready                     ), 
-        .pe4__sys__complete           ( DownstreamStackBusOOB[4].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe4__oob_cntl           ( DownstreamStackBusOOB[4].cb_test.std__pe__oob_cntl          ), 
-        .std__pe4__oob_valid          ( DownstreamStackBusOOB[4].cb_test.std__pe__oob_valid         ), 
-        .pe4__std__oob_ready          ( DownstreamStackBusOOB[4].pe__std__oob_ready                 ), 
-        .std__pe4__oob_type           ( DownstreamStackBusOOB[4].cb_test.std__pe__oob_type          ), 
-        .std__pe4__oob_data           ( DownstreamStackBusOOB[4].cb_test.std__pe__oob_data          ), 
         // PE 4, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe4__std__lane0_strm0_ready         ( DownstreamStackBusLane[4][0].pe__std__lane_strm0_ready              ),      
@@ -2154,21 +2079,6 @@
         .std__pe4__lane31_strm1_data          ( DownstreamStackBusLane[4][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe4__lane31_strm1_data_valid    ( DownstreamStackBusLane[4][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe5__allSynchronized    ( DownstreamStackBusOOB[5].cb_test.sys__pe__allSynchronized   ), 
-        .pe5__sys__thisSynchronized   ( DownstreamStackBusOOB[5].pe__sys__thisSynchronized          ), 
-        .pe5__sys__ready              ( DownstreamStackBusOOB[5].pe__sys__ready                     ), 
-        .pe5__sys__complete           ( DownstreamStackBusOOB[5].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe5__oob_cntl           ( DownstreamStackBusOOB[5].cb_test.std__pe__oob_cntl          ), 
-        .std__pe5__oob_valid          ( DownstreamStackBusOOB[5].cb_test.std__pe__oob_valid         ), 
-        .pe5__std__oob_ready          ( DownstreamStackBusOOB[5].pe__std__oob_ready                 ), 
-        .std__pe5__oob_type           ( DownstreamStackBusOOB[5].cb_test.std__pe__oob_type          ), 
-        .std__pe5__oob_data           ( DownstreamStackBusOOB[5].cb_test.std__pe__oob_data          ), 
         // PE 5, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe5__std__lane0_strm0_ready         ( DownstreamStackBusLane[5][0].pe__std__lane_strm0_ready              ),      
@@ -2585,21 +2495,6 @@
         .std__pe5__lane31_strm1_data          ( DownstreamStackBusLane[5][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe5__lane31_strm1_data_valid    ( DownstreamStackBusLane[5][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe6__allSynchronized    ( DownstreamStackBusOOB[6].cb_test.sys__pe__allSynchronized   ), 
-        .pe6__sys__thisSynchronized   ( DownstreamStackBusOOB[6].pe__sys__thisSynchronized          ), 
-        .pe6__sys__ready              ( DownstreamStackBusOOB[6].pe__sys__ready                     ), 
-        .pe6__sys__complete           ( DownstreamStackBusOOB[6].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe6__oob_cntl           ( DownstreamStackBusOOB[6].cb_test.std__pe__oob_cntl          ), 
-        .std__pe6__oob_valid          ( DownstreamStackBusOOB[6].cb_test.std__pe__oob_valid         ), 
-        .pe6__std__oob_ready          ( DownstreamStackBusOOB[6].pe__std__oob_ready                 ), 
-        .std__pe6__oob_type           ( DownstreamStackBusOOB[6].cb_test.std__pe__oob_type          ), 
-        .std__pe6__oob_data           ( DownstreamStackBusOOB[6].cb_test.std__pe__oob_data          ), 
         // PE 6, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe6__std__lane0_strm0_ready         ( DownstreamStackBusLane[6][0].pe__std__lane_strm0_ready              ),      
@@ -3016,21 +2911,6 @@
         .std__pe6__lane31_strm1_data          ( DownstreamStackBusLane[6][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe6__lane31_strm1_data_valid    ( DownstreamStackBusLane[6][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe7__allSynchronized    ( DownstreamStackBusOOB[7].cb_test.sys__pe__allSynchronized   ), 
-        .pe7__sys__thisSynchronized   ( DownstreamStackBusOOB[7].pe__sys__thisSynchronized          ), 
-        .pe7__sys__ready              ( DownstreamStackBusOOB[7].pe__sys__ready                     ), 
-        .pe7__sys__complete           ( DownstreamStackBusOOB[7].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe7__oob_cntl           ( DownstreamStackBusOOB[7].cb_test.std__pe__oob_cntl          ), 
-        .std__pe7__oob_valid          ( DownstreamStackBusOOB[7].cb_test.std__pe__oob_valid         ), 
-        .pe7__std__oob_ready          ( DownstreamStackBusOOB[7].pe__std__oob_ready                 ), 
-        .std__pe7__oob_type           ( DownstreamStackBusOOB[7].cb_test.std__pe__oob_type          ), 
-        .std__pe7__oob_data           ( DownstreamStackBusOOB[7].cb_test.std__pe__oob_data          ), 
         // PE 7, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe7__std__lane0_strm0_ready         ( DownstreamStackBusLane[7][0].pe__std__lane_strm0_ready              ),      
@@ -3447,21 +3327,6 @@
         .std__pe7__lane31_strm1_data          ( DownstreamStackBusLane[7][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe7__lane31_strm1_data_valid    ( DownstreamStackBusLane[7][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe8__allSynchronized    ( DownstreamStackBusOOB[8].cb_test.sys__pe__allSynchronized   ), 
-        .pe8__sys__thisSynchronized   ( DownstreamStackBusOOB[8].pe__sys__thisSynchronized          ), 
-        .pe8__sys__ready              ( DownstreamStackBusOOB[8].pe__sys__ready                     ), 
-        .pe8__sys__complete           ( DownstreamStackBusOOB[8].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe8__oob_cntl           ( DownstreamStackBusOOB[8].cb_test.std__pe__oob_cntl          ), 
-        .std__pe8__oob_valid          ( DownstreamStackBusOOB[8].cb_test.std__pe__oob_valid         ), 
-        .pe8__std__oob_ready          ( DownstreamStackBusOOB[8].pe__std__oob_ready                 ), 
-        .std__pe8__oob_type           ( DownstreamStackBusOOB[8].cb_test.std__pe__oob_type          ), 
-        .std__pe8__oob_data           ( DownstreamStackBusOOB[8].cb_test.std__pe__oob_data          ), 
         // PE 8, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe8__std__lane0_strm0_ready         ( DownstreamStackBusLane[8][0].pe__std__lane_strm0_ready              ),      
@@ -3878,21 +3743,6 @@
         .std__pe8__lane31_strm1_data          ( DownstreamStackBusLane[8][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe8__lane31_strm1_data_valid    ( DownstreamStackBusLane[8][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe9__allSynchronized    ( DownstreamStackBusOOB[9].cb_test.sys__pe__allSynchronized   ), 
-        .pe9__sys__thisSynchronized   ( DownstreamStackBusOOB[9].pe__sys__thisSynchronized          ), 
-        .pe9__sys__ready              ( DownstreamStackBusOOB[9].pe__sys__ready                     ), 
-        .pe9__sys__complete           ( DownstreamStackBusOOB[9].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe9__oob_cntl           ( DownstreamStackBusOOB[9].cb_test.std__pe__oob_cntl          ), 
-        .std__pe9__oob_valid          ( DownstreamStackBusOOB[9].cb_test.std__pe__oob_valid         ), 
-        .pe9__std__oob_ready          ( DownstreamStackBusOOB[9].pe__std__oob_ready                 ), 
-        .std__pe9__oob_type           ( DownstreamStackBusOOB[9].cb_test.std__pe__oob_type          ), 
-        .std__pe9__oob_data           ( DownstreamStackBusOOB[9].cb_test.std__pe__oob_data          ), 
         // PE 9, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe9__std__lane0_strm0_ready         ( DownstreamStackBusLane[9][0].pe__std__lane_strm0_ready              ),      
@@ -4309,21 +4159,6 @@
         .std__pe9__lane31_strm1_data          ( DownstreamStackBusLane[9][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe9__lane31_strm1_data_valid    ( DownstreamStackBusLane[9][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe10__allSynchronized    ( DownstreamStackBusOOB[10].cb_test.sys__pe__allSynchronized   ), 
-        .pe10__sys__thisSynchronized   ( DownstreamStackBusOOB[10].pe__sys__thisSynchronized          ), 
-        .pe10__sys__ready              ( DownstreamStackBusOOB[10].pe__sys__ready                     ), 
-        .pe10__sys__complete           ( DownstreamStackBusOOB[10].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe10__oob_cntl           ( DownstreamStackBusOOB[10].cb_test.std__pe__oob_cntl          ), 
-        .std__pe10__oob_valid          ( DownstreamStackBusOOB[10].cb_test.std__pe__oob_valid         ), 
-        .pe10__std__oob_ready          ( DownstreamStackBusOOB[10].pe__std__oob_ready                 ), 
-        .std__pe10__oob_type           ( DownstreamStackBusOOB[10].cb_test.std__pe__oob_type          ), 
-        .std__pe10__oob_data           ( DownstreamStackBusOOB[10].cb_test.std__pe__oob_data          ), 
         // PE 10, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe10__std__lane0_strm0_ready         ( DownstreamStackBusLane[10][0].pe__std__lane_strm0_ready              ),      
@@ -4740,21 +4575,6 @@
         .std__pe10__lane31_strm1_data          ( DownstreamStackBusLane[10][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe10__lane31_strm1_data_valid    ( DownstreamStackBusLane[10][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe11__allSynchronized    ( DownstreamStackBusOOB[11].cb_test.sys__pe__allSynchronized   ), 
-        .pe11__sys__thisSynchronized   ( DownstreamStackBusOOB[11].pe__sys__thisSynchronized          ), 
-        .pe11__sys__ready              ( DownstreamStackBusOOB[11].pe__sys__ready                     ), 
-        .pe11__sys__complete           ( DownstreamStackBusOOB[11].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe11__oob_cntl           ( DownstreamStackBusOOB[11].cb_test.std__pe__oob_cntl          ), 
-        .std__pe11__oob_valid          ( DownstreamStackBusOOB[11].cb_test.std__pe__oob_valid         ), 
-        .pe11__std__oob_ready          ( DownstreamStackBusOOB[11].pe__std__oob_ready                 ), 
-        .std__pe11__oob_type           ( DownstreamStackBusOOB[11].cb_test.std__pe__oob_type          ), 
-        .std__pe11__oob_data           ( DownstreamStackBusOOB[11].cb_test.std__pe__oob_data          ), 
         // PE 11, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe11__std__lane0_strm0_ready         ( DownstreamStackBusLane[11][0].pe__std__lane_strm0_ready              ),      
@@ -5171,21 +4991,6 @@
         .std__pe11__lane31_strm1_data          ( DownstreamStackBusLane[11][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe11__lane31_strm1_data_valid    ( DownstreamStackBusLane[11][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe12__allSynchronized    ( DownstreamStackBusOOB[12].cb_test.sys__pe__allSynchronized   ), 
-        .pe12__sys__thisSynchronized   ( DownstreamStackBusOOB[12].pe__sys__thisSynchronized          ), 
-        .pe12__sys__ready              ( DownstreamStackBusOOB[12].pe__sys__ready                     ), 
-        .pe12__sys__complete           ( DownstreamStackBusOOB[12].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe12__oob_cntl           ( DownstreamStackBusOOB[12].cb_test.std__pe__oob_cntl          ), 
-        .std__pe12__oob_valid          ( DownstreamStackBusOOB[12].cb_test.std__pe__oob_valid         ), 
-        .pe12__std__oob_ready          ( DownstreamStackBusOOB[12].pe__std__oob_ready                 ), 
-        .std__pe12__oob_type           ( DownstreamStackBusOOB[12].cb_test.std__pe__oob_type          ), 
-        .std__pe12__oob_data           ( DownstreamStackBusOOB[12].cb_test.std__pe__oob_data          ), 
         // PE 12, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe12__std__lane0_strm0_ready         ( DownstreamStackBusLane[12][0].pe__std__lane_strm0_ready              ),      
@@ -5602,21 +5407,6 @@
         .std__pe12__lane31_strm1_data          ( DownstreamStackBusLane[12][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe12__lane31_strm1_data_valid    ( DownstreamStackBusLane[12][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe13__allSynchronized    ( DownstreamStackBusOOB[13].cb_test.sys__pe__allSynchronized   ), 
-        .pe13__sys__thisSynchronized   ( DownstreamStackBusOOB[13].pe__sys__thisSynchronized          ), 
-        .pe13__sys__ready              ( DownstreamStackBusOOB[13].pe__sys__ready                     ), 
-        .pe13__sys__complete           ( DownstreamStackBusOOB[13].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe13__oob_cntl           ( DownstreamStackBusOOB[13].cb_test.std__pe__oob_cntl          ), 
-        .std__pe13__oob_valid          ( DownstreamStackBusOOB[13].cb_test.std__pe__oob_valid         ), 
-        .pe13__std__oob_ready          ( DownstreamStackBusOOB[13].pe__std__oob_ready                 ), 
-        .std__pe13__oob_type           ( DownstreamStackBusOOB[13].cb_test.std__pe__oob_type          ), 
-        .std__pe13__oob_data           ( DownstreamStackBusOOB[13].cb_test.std__pe__oob_data          ), 
         // PE 13, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe13__std__lane0_strm0_ready         ( DownstreamStackBusLane[13][0].pe__std__lane_strm0_ready              ),      
@@ -6033,21 +5823,6 @@
         .std__pe13__lane31_strm1_data          ( DownstreamStackBusLane[13][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe13__lane31_strm1_data_valid    ( DownstreamStackBusLane[13][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe14__allSynchronized    ( DownstreamStackBusOOB[14].cb_test.sys__pe__allSynchronized   ), 
-        .pe14__sys__thisSynchronized   ( DownstreamStackBusOOB[14].pe__sys__thisSynchronized          ), 
-        .pe14__sys__ready              ( DownstreamStackBusOOB[14].pe__sys__ready                     ), 
-        .pe14__sys__complete           ( DownstreamStackBusOOB[14].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe14__oob_cntl           ( DownstreamStackBusOOB[14].cb_test.std__pe__oob_cntl          ), 
-        .std__pe14__oob_valid          ( DownstreamStackBusOOB[14].cb_test.std__pe__oob_valid         ), 
-        .pe14__std__oob_ready          ( DownstreamStackBusOOB[14].pe__std__oob_ready                 ), 
-        .std__pe14__oob_type           ( DownstreamStackBusOOB[14].cb_test.std__pe__oob_type          ), 
-        .std__pe14__oob_data           ( DownstreamStackBusOOB[14].cb_test.std__pe__oob_data          ), 
         // PE 14, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe14__std__lane0_strm0_ready         ( DownstreamStackBusLane[14][0].pe__std__lane_strm0_ready              ),      
@@ -6464,21 +6239,6 @@
         .std__pe14__lane31_strm1_data          ( DownstreamStackBusLane[14][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe14__lane31_strm1_data_valid    ( DownstreamStackBusLane[14][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe15__allSynchronized    ( DownstreamStackBusOOB[15].cb_test.sys__pe__allSynchronized   ), 
-        .pe15__sys__thisSynchronized   ( DownstreamStackBusOOB[15].pe__sys__thisSynchronized          ), 
-        .pe15__sys__ready              ( DownstreamStackBusOOB[15].pe__sys__ready                     ), 
-        .pe15__sys__complete           ( DownstreamStackBusOOB[15].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe15__oob_cntl           ( DownstreamStackBusOOB[15].cb_test.std__pe__oob_cntl          ), 
-        .std__pe15__oob_valid          ( DownstreamStackBusOOB[15].cb_test.std__pe__oob_valid         ), 
-        .pe15__std__oob_ready          ( DownstreamStackBusOOB[15].pe__std__oob_ready                 ), 
-        .std__pe15__oob_type           ( DownstreamStackBusOOB[15].cb_test.std__pe__oob_type          ), 
-        .std__pe15__oob_data           ( DownstreamStackBusOOB[15].cb_test.std__pe__oob_data          ), 
         // PE 15, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe15__std__lane0_strm0_ready         ( DownstreamStackBusLane[15][0].pe__std__lane_strm0_ready              ),      
@@ -6895,21 +6655,6 @@
         .std__pe15__lane31_strm1_data          ( DownstreamStackBusLane[15][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe15__lane31_strm1_data_valid    ( DownstreamStackBusLane[15][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe16__allSynchronized    ( DownstreamStackBusOOB[16].cb_test.sys__pe__allSynchronized   ), 
-        .pe16__sys__thisSynchronized   ( DownstreamStackBusOOB[16].pe__sys__thisSynchronized          ), 
-        .pe16__sys__ready              ( DownstreamStackBusOOB[16].pe__sys__ready                     ), 
-        .pe16__sys__complete           ( DownstreamStackBusOOB[16].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe16__oob_cntl           ( DownstreamStackBusOOB[16].cb_test.std__pe__oob_cntl          ), 
-        .std__pe16__oob_valid          ( DownstreamStackBusOOB[16].cb_test.std__pe__oob_valid         ), 
-        .pe16__std__oob_ready          ( DownstreamStackBusOOB[16].pe__std__oob_ready                 ), 
-        .std__pe16__oob_type           ( DownstreamStackBusOOB[16].cb_test.std__pe__oob_type          ), 
-        .std__pe16__oob_data           ( DownstreamStackBusOOB[16].cb_test.std__pe__oob_data          ), 
         // PE 16, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe16__std__lane0_strm0_ready         ( DownstreamStackBusLane[16][0].pe__std__lane_strm0_ready              ),      
@@ -7326,21 +7071,6 @@
         .std__pe16__lane31_strm1_data          ( DownstreamStackBusLane[16][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe16__lane31_strm1_data_valid    ( DownstreamStackBusLane[16][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe17__allSynchronized    ( DownstreamStackBusOOB[17].cb_test.sys__pe__allSynchronized   ), 
-        .pe17__sys__thisSynchronized   ( DownstreamStackBusOOB[17].pe__sys__thisSynchronized          ), 
-        .pe17__sys__ready              ( DownstreamStackBusOOB[17].pe__sys__ready                     ), 
-        .pe17__sys__complete           ( DownstreamStackBusOOB[17].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe17__oob_cntl           ( DownstreamStackBusOOB[17].cb_test.std__pe__oob_cntl          ), 
-        .std__pe17__oob_valid          ( DownstreamStackBusOOB[17].cb_test.std__pe__oob_valid         ), 
-        .pe17__std__oob_ready          ( DownstreamStackBusOOB[17].pe__std__oob_ready                 ), 
-        .std__pe17__oob_type           ( DownstreamStackBusOOB[17].cb_test.std__pe__oob_type          ), 
-        .std__pe17__oob_data           ( DownstreamStackBusOOB[17].cb_test.std__pe__oob_data          ), 
         // PE 17, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe17__std__lane0_strm0_ready         ( DownstreamStackBusLane[17][0].pe__std__lane_strm0_ready              ),      
@@ -7757,21 +7487,6 @@
         .std__pe17__lane31_strm1_data          ( DownstreamStackBusLane[17][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe17__lane31_strm1_data_valid    ( DownstreamStackBusLane[17][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe18__allSynchronized    ( DownstreamStackBusOOB[18].cb_test.sys__pe__allSynchronized   ), 
-        .pe18__sys__thisSynchronized   ( DownstreamStackBusOOB[18].pe__sys__thisSynchronized          ), 
-        .pe18__sys__ready              ( DownstreamStackBusOOB[18].pe__sys__ready                     ), 
-        .pe18__sys__complete           ( DownstreamStackBusOOB[18].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe18__oob_cntl           ( DownstreamStackBusOOB[18].cb_test.std__pe__oob_cntl          ), 
-        .std__pe18__oob_valid          ( DownstreamStackBusOOB[18].cb_test.std__pe__oob_valid         ), 
-        .pe18__std__oob_ready          ( DownstreamStackBusOOB[18].pe__std__oob_ready                 ), 
-        .std__pe18__oob_type           ( DownstreamStackBusOOB[18].cb_test.std__pe__oob_type          ), 
-        .std__pe18__oob_data           ( DownstreamStackBusOOB[18].cb_test.std__pe__oob_data          ), 
         // PE 18, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe18__std__lane0_strm0_ready         ( DownstreamStackBusLane[18][0].pe__std__lane_strm0_ready              ),      
@@ -8188,21 +7903,6 @@
         .std__pe18__lane31_strm1_data          ( DownstreamStackBusLane[18][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe18__lane31_strm1_data_valid    ( DownstreamStackBusLane[18][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe19__allSynchronized    ( DownstreamStackBusOOB[19].cb_test.sys__pe__allSynchronized   ), 
-        .pe19__sys__thisSynchronized   ( DownstreamStackBusOOB[19].pe__sys__thisSynchronized          ), 
-        .pe19__sys__ready              ( DownstreamStackBusOOB[19].pe__sys__ready                     ), 
-        .pe19__sys__complete           ( DownstreamStackBusOOB[19].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe19__oob_cntl           ( DownstreamStackBusOOB[19].cb_test.std__pe__oob_cntl          ), 
-        .std__pe19__oob_valid          ( DownstreamStackBusOOB[19].cb_test.std__pe__oob_valid         ), 
-        .pe19__std__oob_ready          ( DownstreamStackBusOOB[19].pe__std__oob_ready                 ), 
-        .std__pe19__oob_type           ( DownstreamStackBusOOB[19].cb_test.std__pe__oob_type          ), 
-        .std__pe19__oob_data           ( DownstreamStackBusOOB[19].cb_test.std__pe__oob_data          ), 
         // PE 19, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe19__std__lane0_strm0_ready         ( DownstreamStackBusLane[19][0].pe__std__lane_strm0_ready              ),      
@@ -8619,21 +8319,6 @@
         .std__pe19__lane31_strm1_data          ( DownstreamStackBusLane[19][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe19__lane31_strm1_data_valid    ( DownstreamStackBusLane[19][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe20__allSynchronized    ( DownstreamStackBusOOB[20].cb_test.sys__pe__allSynchronized   ), 
-        .pe20__sys__thisSynchronized   ( DownstreamStackBusOOB[20].pe__sys__thisSynchronized          ), 
-        .pe20__sys__ready              ( DownstreamStackBusOOB[20].pe__sys__ready                     ), 
-        .pe20__sys__complete           ( DownstreamStackBusOOB[20].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe20__oob_cntl           ( DownstreamStackBusOOB[20].cb_test.std__pe__oob_cntl          ), 
-        .std__pe20__oob_valid          ( DownstreamStackBusOOB[20].cb_test.std__pe__oob_valid         ), 
-        .pe20__std__oob_ready          ( DownstreamStackBusOOB[20].pe__std__oob_ready                 ), 
-        .std__pe20__oob_type           ( DownstreamStackBusOOB[20].cb_test.std__pe__oob_type          ), 
-        .std__pe20__oob_data           ( DownstreamStackBusOOB[20].cb_test.std__pe__oob_data          ), 
         // PE 20, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe20__std__lane0_strm0_ready         ( DownstreamStackBusLane[20][0].pe__std__lane_strm0_ready              ),      
@@ -9050,21 +8735,6 @@
         .std__pe20__lane31_strm1_data          ( DownstreamStackBusLane[20][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe20__lane31_strm1_data_valid    ( DownstreamStackBusLane[20][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe21__allSynchronized    ( DownstreamStackBusOOB[21].cb_test.sys__pe__allSynchronized   ), 
-        .pe21__sys__thisSynchronized   ( DownstreamStackBusOOB[21].pe__sys__thisSynchronized          ), 
-        .pe21__sys__ready              ( DownstreamStackBusOOB[21].pe__sys__ready                     ), 
-        .pe21__sys__complete           ( DownstreamStackBusOOB[21].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe21__oob_cntl           ( DownstreamStackBusOOB[21].cb_test.std__pe__oob_cntl          ), 
-        .std__pe21__oob_valid          ( DownstreamStackBusOOB[21].cb_test.std__pe__oob_valid         ), 
-        .pe21__std__oob_ready          ( DownstreamStackBusOOB[21].pe__std__oob_ready                 ), 
-        .std__pe21__oob_type           ( DownstreamStackBusOOB[21].cb_test.std__pe__oob_type          ), 
-        .std__pe21__oob_data           ( DownstreamStackBusOOB[21].cb_test.std__pe__oob_data          ), 
         // PE 21, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe21__std__lane0_strm0_ready         ( DownstreamStackBusLane[21][0].pe__std__lane_strm0_ready              ),      
@@ -9481,21 +9151,6 @@
         .std__pe21__lane31_strm1_data          ( DownstreamStackBusLane[21][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe21__lane31_strm1_data_valid    ( DownstreamStackBusLane[21][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe22__allSynchronized    ( DownstreamStackBusOOB[22].cb_test.sys__pe__allSynchronized   ), 
-        .pe22__sys__thisSynchronized   ( DownstreamStackBusOOB[22].pe__sys__thisSynchronized          ), 
-        .pe22__sys__ready              ( DownstreamStackBusOOB[22].pe__sys__ready                     ), 
-        .pe22__sys__complete           ( DownstreamStackBusOOB[22].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe22__oob_cntl           ( DownstreamStackBusOOB[22].cb_test.std__pe__oob_cntl          ), 
-        .std__pe22__oob_valid          ( DownstreamStackBusOOB[22].cb_test.std__pe__oob_valid         ), 
-        .pe22__std__oob_ready          ( DownstreamStackBusOOB[22].pe__std__oob_ready                 ), 
-        .std__pe22__oob_type           ( DownstreamStackBusOOB[22].cb_test.std__pe__oob_type          ), 
-        .std__pe22__oob_data           ( DownstreamStackBusOOB[22].cb_test.std__pe__oob_data          ), 
         // PE 22, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe22__std__lane0_strm0_ready         ( DownstreamStackBusLane[22][0].pe__std__lane_strm0_ready              ),      
@@ -9912,21 +9567,6 @@
         .std__pe22__lane31_strm1_data          ( DownstreamStackBusLane[22][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe22__lane31_strm1_data_valid    ( DownstreamStackBusLane[22][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe23__allSynchronized    ( DownstreamStackBusOOB[23].cb_test.sys__pe__allSynchronized   ), 
-        .pe23__sys__thisSynchronized   ( DownstreamStackBusOOB[23].pe__sys__thisSynchronized          ), 
-        .pe23__sys__ready              ( DownstreamStackBusOOB[23].pe__sys__ready                     ), 
-        .pe23__sys__complete           ( DownstreamStackBusOOB[23].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe23__oob_cntl           ( DownstreamStackBusOOB[23].cb_test.std__pe__oob_cntl          ), 
-        .std__pe23__oob_valid          ( DownstreamStackBusOOB[23].cb_test.std__pe__oob_valid         ), 
-        .pe23__std__oob_ready          ( DownstreamStackBusOOB[23].pe__std__oob_ready                 ), 
-        .std__pe23__oob_type           ( DownstreamStackBusOOB[23].cb_test.std__pe__oob_type          ), 
-        .std__pe23__oob_data           ( DownstreamStackBusOOB[23].cb_test.std__pe__oob_data          ), 
         // PE 23, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe23__std__lane0_strm0_ready         ( DownstreamStackBusLane[23][0].pe__std__lane_strm0_ready              ),      
@@ -10343,21 +9983,6 @@
         .std__pe23__lane31_strm1_data          ( DownstreamStackBusLane[23][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe23__lane31_strm1_data_valid    ( DownstreamStackBusLane[23][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe24__allSynchronized    ( DownstreamStackBusOOB[24].cb_test.sys__pe__allSynchronized   ), 
-        .pe24__sys__thisSynchronized   ( DownstreamStackBusOOB[24].pe__sys__thisSynchronized          ), 
-        .pe24__sys__ready              ( DownstreamStackBusOOB[24].pe__sys__ready                     ), 
-        .pe24__sys__complete           ( DownstreamStackBusOOB[24].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe24__oob_cntl           ( DownstreamStackBusOOB[24].cb_test.std__pe__oob_cntl          ), 
-        .std__pe24__oob_valid          ( DownstreamStackBusOOB[24].cb_test.std__pe__oob_valid         ), 
-        .pe24__std__oob_ready          ( DownstreamStackBusOOB[24].pe__std__oob_ready                 ), 
-        .std__pe24__oob_type           ( DownstreamStackBusOOB[24].cb_test.std__pe__oob_type          ), 
-        .std__pe24__oob_data           ( DownstreamStackBusOOB[24].cb_test.std__pe__oob_data          ), 
         // PE 24, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe24__std__lane0_strm0_ready         ( DownstreamStackBusLane[24][0].pe__std__lane_strm0_ready              ),      
@@ -10774,21 +10399,6 @@
         .std__pe24__lane31_strm1_data          ( DownstreamStackBusLane[24][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe24__lane31_strm1_data_valid    ( DownstreamStackBusLane[24][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe25__allSynchronized    ( DownstreamStackBusOOB[25].cb_test.sys__pe__allSynchronized   ), 
-        .pe25__sys__thisSynchronized   ( DownstreamStackBusOOB[25].pe__sys__thisSynchronized          ), 
-        .pe25__sys__ready              ( DownstreamStackBusOOB[25].pe__sys__ready                     ), 
-        .pe25__sys__complete           ( DownstreamStackBusOOB[25].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe25__oob_cntl           ( DownstreamStackBusOOB[25].cb_test.std__pe__oob_cntl          ), 
-        .std__pe25__oob_valid          ( DownstreamStackBusOOB[25].cb_test.std__pe__oob_valid         ), 
-        .pe25__std__oob_ready          ( DownstreamStackBusOOB[25].pe__std__oob_ready                 ), 
-        .std__pe25__oob_type           ( DownstreamStackBusOOB[25].cb_test.std__pe__oob_type          ), 
-        .std__pe25__oob_data           ( DownstreamStackBusOOB[25].cb_test.std__pe__oob_data          ), 
         // PE 25, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe25__std__lane0_strm0_ready         ( DownstreamStackBusLane[25][0].pe__std__lane_strm0_ready              ),      
@@ -11205,21 +10815,6 @@
         .std__pe25__lane31_strm1_data          ( DownstreamStackBusLane[25][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe25__lane31_strm1_data_valid    ( DownstreamStackBusLane[25][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe26__allSynchronized    ( DownstreamStackBusOOB[26].cb_test.sys__pe__allSynchronized   ), 
-        .pe26__sys__thisSynchronized   ( DownstreamStackBusOOB[26].pe__sys__thisSynchronized          ), 
-        .pe26__sys__ready              ( DownstreamStackBusOOB[26].pe__sys__ready                     ), 
-        .pe26__sys__complete           ( DownstreamStackBusOOB[26].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe26__oob_cntl           ( DownstreamStackBusOOB[26].cb_test.std__pe__oob_cntl          ), 
-        .std__pe26__oob_valid          ( DownstreamStackBusOOB[26].cb_test.std__pe__oob_valid         ), 
-        .pe26__std__oob_ready          ( DownstreamStackBusOOB[26].pe__std__oob_ready                 ), 
-        .std__pe26__oob_type           ( DownstreamStackBusOOB[26].cb_test.std__pe__oob_type          ), 
-        .std__pe26__oob_data           ( DownstreamStackBusOOB[26].cb_test.std__pe__oob_data          ), 
         // PE 26, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe26__std__lane0_strm0_ready         ( DownstreamStackBusLane[26][0].pe__std__lane_strm0_ready              ),      
@@ -11636,21 +11231,6 @@
         .std__pe26__lane31_strm1_data          ( DownstreamStackBusLane[26][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe26__lane31_strm1_data_valid    ( DownstreamStackBusLane[26][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe27__allSynchronized    ( DownstreamStackBusOOB[27].cb_test.sys__pe__allSynchronized   ), 
-        .pe27__sys__thisSynchronized   ( DownstreamStackBusOOB[27].pe__sys__thisSynchronized          ), 
-        .pe27__sys__ready              ( DownstreamStackBusOOB[27].pe__sys__ready                     ), 
-        .pe27__sys__complete           ( DownstreamStackBusOOB[27].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe27__oob_cntl           ( DownstreamStackBusOOB[27].cb_test.std__pe__oob_cntl          ), 
-        .std__pe27__oob_valid          ( DownstreamStackBusOOB[27].cb_test.std__pe__oob_valid         ), 
-        .pe27__std__oob_ready          ( DownstreamStackBusOOB[27].pe__std__oob_ready                 ), 
-        .std__pe27__oob_type           ( DownstreamStackBusOOB[27].cb_test.std__pe__oob_type          ), 
-        .std__pe27__oob_data           ( DownstreamStackBusOOB[27].cb_test.std__pe__oob_data          ), 
         // PE 27, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe27__std__lane0_strm0_ready         ( DownstreamStackBusLane[27][0].pe__std__lane_strm0_ready              ),      
@@ -12067,21 +11647,6 @@
         .std__pe27__lane31_strm1_data          ( DownstreamStackBusLane[27][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe27__lane31_strm1_data_valid    ( DownstreamStackBusLane[27][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe28__allSynchronized    ( DownstreamStackBusOOB[28].cb_test.sys__pe__allSynchronized   ), 
-        .pe28__sys__thisSynchronized   ( DownstreamStackBusOOB[28].pe__sys__thisSynchronized          ), 
-        .pe28__sys__ready              ( DownstreamStackBusOOB[28].pe__sys__ready                     ), 
-        .pe28__sys__complete           ( DownstreamStackBusOOB[28].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe28__oob_cntl           ( DownstreamStackBusOOB[28].cb_test.std__pe__oob_cntl          ), 
-        .std__pe28__oob_valid          ( DownstreamStackBusOOB[28].cb_test.std__pe__oob_valid         ), 
-        .pe28__std__oob_ready          ( DownstreamStackBusOOB[28].pe__std__oob_ready                 ), 
-        .std__pe28__oob_type           ( DownstreamStackBusOOB[28].cb_test.std__pe__oob_type          ), 
-        .std__pe28__oob_data           ( DownstreamStackBusOOB[28].cb_test.std__pe__oob_data          ), 
         // PE 28, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe28__std__lane0_strm0_ready         ( DownstreamStackBusLane[28][0].pe__std__lane_strm0_ready              ),      
@@ -12498,21 +12063,6 @@
         .std__pe28__lane31_strm1_data          ( DownstreamStackBusLane[28][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe28__lane31_strm1_data_valid    ( DownstreamStackBusLane[28][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe29__allSynchronized    ( DownstreamStackBusOOB[29].cb_test.sys__pe__allSynchronized   ), 
-        .pe29__sys__thisSynchronized   ( DownstreamStackBusOOB[29].pe__sys__thisSynchronized          ), 
-        .pe29__sys__ready              ( DownstreamStackBusOOB[29].pe__sys__ready                     ), 
-        .pe29__sys__complete           ( DownstreamStackBusOOB[29].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe29__oob_cntl           ( DownstreamStackBusOOB[29].cb_test.std__pe__oob_cntl          ), 
-        .std__pe29__oob_valid          ( DownstreamStackBusOOB[29].cb_test.std__pe__oob_valid         ), 
-        .pe29__std__oob_ready          ( DownstreamStackBusOOB[29].pe__std__oob_ready                 ), 
-        .std__pe29__oob_type           ( DownstreamStackBusOOB[29].cb_test.std__pe__oob_type          ), 
-        .std__pe29__oob_data           ( DownstreamStackBusOOB[29].cb_test.std__pe__oob_data          ), 
         // PE 29, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe29__std__lane0_strm0_ready         ( DownstreamStackBusLane[29][0].pe__std__lane_strm0_ready              ),      
@@ -12929,21 +12479,6 @@
         .std__pe29__lane31_strm1_data          ( DownstreamStackBusLane[29][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe29__lane31_strm1_data_valid    ( DownstreamStackBusLane[29][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe30__allSynchronized    ( DownstreamStackBusOOB[30].cb_test.sys__pe__allSynchronized   ), 
-        .pe30__sys__thisSynchronized   ( DownstreamStackBusOOB[30].pe__sys__thisSynchronized          ), 
-        .pe30__sys__ready              ( DownstreamStackBusOOB[30].pe__sys__ready                     ), 
-        .pe30__sys__complete           ( DownstreamStackBusOOB[30].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe30__oob_cntl           ( DownstreamStackBusOOB[30].cb_test.std__pe__oob_cntl          ), 
-        .std__pe30__oob_valid          ( DownstreamStackBusOOB[30].cb_test.std__pe__oob_valid         ), 
-        .pe30__std__oob_ready          ( DownstreamStackBusOOB[30].pe__std__oob_ready                 ), 
-        .std__pe30__oob_type           ( DownstreamStackBusOOB[30].cb_test.std__pe__oob_type          ), 
-        .std__pe30__oob_data           ( DownstreamStackBusOOB[30].cb_test.std__pe__oob_data          ), 
         // PE 30, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe30__std__lane0_strm0_ready         ( DownstreamStackBusLane[30][0].pe__std__lane_strm0_ready              ),      
@@ -13360,21 +12895,6 @@
         .std__pe30__lane31_strm1_data          ( DownstreamStackBusLane[30][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe30__lane31_strm1_data_valid    ( DownstreamStackBusLane[30][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe31__allSynchronized    ( DownstreamStackBusOOB[31].cb_test.sys__pe__allSynchronized   ), 
-        .pe31__sys__thisSynchronized   ( DownstreamStackBusOOB[31].pe__sys__thisSynchronized          ), 
-        .pe31__sys__ready              ( DownstreamStackBusOOB[31].pe__sys__ready                     ), 
-        .pe31__sys__complete           ( DownstreamStackBusOOB[31].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe31__oob_cntl           ( DownstreamStackBusOOB[31].cb_test.std__pe__oob_cntl          ), 
-        .std__pe31__oob_valid          ( DownstreamStackBusOOB[31].cb_test.std__pe__oob_valid         ), 
-        .pe31__std__oob_ready          ( DownstreamStackBusOOB[31].pe__std__oob_ready                 ), 
-        .std__pe31__oob_type           ( DownstreamStackBusOOB[31].cb_test.std__pe__oob_type          ), 
-        .std__pe31__oob_data           ( DownstreamStackBusOOB[31].cb_test.std__pe__oob_data          ), 
         // PE 31, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe31__std__lane0_strm0_ready         ( DownstreamStackBusLane[31][0].pe__std__lane_strm0_ready              ),      
@@ -13791,21 +13311,6 @@
         .std__pe31__lane31_strm1_data          ( DownstreamStackBusLane[31][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe31__lane31_strm1_data_valid    ( DownstreamStackBusLane[31][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe32__allSynchronized    ( DownstreamStackBusOOB[32].cb_test.sys__pe__allSynchronized   ), 
-        .pe32__sys__thisSynchronized   ( DownstreamStackBusOOB[32].pe__sys__thisSynchronized          ), 
-        .pe32__sys__ready              ( DownstreamStackBusOOB[32].pe__sys__ready                     ), 
-        .pe32__sys__complete           ( DownstreamStackBusOOB[32].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe32__oob_cntl           ( DownstreamStackBusOOB[32].cb_test.std__pe__oob_cntl          ), 
-        .std__pe32__oob_valid          ( DownstreamStackBusOOB[32].cb_test.std__pe__oob_valid         ), 
-        .pe32__std__oob_ready          ( DownstreamStackBusOOB[32].pe__std__oob_ready                 ), 
-        .std__pe32__oob_type           ( DownstreamStackBusOOB[32].cb_test.std__pe__oob_type          ), 
-        .std__pe32__oob_data           ( DownstreamStackBusOOB[32].cb_test.std__pe__oob_data          ), 
         // PE 32, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe32__std__lane0_strm0_ready         ( DownstreamStackBusLane[32][0].pe__std__lane_strm0_ready              ),      
@@ -14222,21 +13727,6 @@
         .std__pe32__lane31_strm1_data          ( DownstreamStackBusLane[32][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe32__lane31_strm1_data_valid    ( DownstreamStackBusLane[32][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe33__allSynchronized    ( DownstreamStackBusOOB[33].cb_test.sys__pe__allSynchronized   ), 
-        .pe33__sys__thisSynchronized   ( DownstreamStackBusOOB[33].pe__sys__thisSynchronized          ), 
-        .pe33__sys__ready              ( DownstreamStackBusOOB[33].pe__sys__ready                     ), 
-        .pe33__sys__complete           ( DownstreamStackBusOOB[33].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe33__oob_cntl           ( DownstreamStackBusOOB[33].cb_test.std__pe__oob_cntl          ), 
-        .std__pe33__oob_valid          ( DownstreamStackBusOOB[33].cb_test.std__pe__oob_valid         ), 
-        .pe33__std__oob_ready          ( DownstreamStackBusOOB[33].pe__std__oob_ready                 ), 
-        .std__pe33__oob_type           ( DownstreamStackBusOOB[33].cb_test.std__pe__oob_type          ), 
-        .std__pe33__oob_data           ( DownstreamStackBusOOB[33].cb_test.std__pe__oob_data          ), 
         // PE 33, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe33__std__lane0_strm0_ready         ( DownstreamStackBusLane[33][0].pe__std__lane_strm0_ready              ),      
@@ -14653,21 +14143,6 @@
         .std__pe33__lane31_strm1_data          ( DownstreamStackBusLane[33][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe33__lane31_strm1_data_valid    ( DownstreamStackBusLane[33][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe34__allSynchronized    ( DownstreamStackBusOOB[34].cb_test.sys__pe__allSynchronized   ), 
-        .pe34__sys__thisSynchronized   ( DownstreamStackBusOOB[34].pe__sys__thisSynchronized          ), 
-        .pe34__sys__ready              ( DownstreamStackBusOOB[34].pe__sys__ready                     ), 
-        .pe34__sys__complete           ( DownstreamStackBusOOB[34].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe34__oob_cntl           ( DownstreamStackBusOOB[34].cb_test.std__pe__oob_cntl          ), 
-        .std__pe34__oob_valid          ( DownstreamStackBusOOB[34].cb_test.std__pe__oob_valid         ), 
-        .pe34__std__oob_ready          ( DownstreamStackBusOOB[34].pe__std__oob_ready                 ), 
-        .std__pe34__oob_type           ( DownstreamStackBusOOB[34].cb_test.std__pe__oob_type          ), 
-        .std__pe34__oob_data           ( DownstreamStackBusOOB[34].cb_test.std__pe__oob_data          ), 
         // PE 34, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe34__std__lane0_strm0_ready         ( DownstreamStackBusLane[34][0].pe__std__lane_strm0_ready              ),      
@@ -15084,21 +14559,6 @@
         .std__pe34__lane31_strm1_data          ( DownstreamStackBusLane[34][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe34__lane31_strm1_data_valid    ( DownstreamStackBusLane[34][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe35__allSynchronized    ( DownstreamStackBusOOB[35].cb_test.sys__pe__allSynchronized   ), 
-        .pe35__sys__thisSynchronized   ( DownstreamStackBusOOB[35].pe__sys__thisSynchronized          ), 
-        .pe35__sys__ready              ( DownstreamStackBusOOB[35].pe__sys__ready                     ), 
-        .pe35__sys__complete           ( DownstreamStackBusOOB[35].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe35__oob_cntl           ( DownstreamStackBusOOB[35].cb_test.std__pe__oob_cntl          ), 
-        .std__pe35__oob_valid          ( DownstreamStackBusOOB[35].cb_test.std__pe__oob_valid         ), 
-        .pe35__std__oob_ready          ( DownstreamStackBusOOB[35].pe__std__oob_ready                 ), 
-        .std__pe35__oob_type           ( DownstreamStackBusOOB[35].cb_test.std__pe__oob_type          ), 
-        .std__pe35__oob_data           ( DownstreamStackBusOOB[35].cb_test.std__pe__oob_data          ), 
         // PE 35, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe35__std__lane0_strm0_ready         ( DownstreamStackBusLane[35][0].pe__std__lane_strm0_ready              ),      
@@ -15515,21 +14975,6 @@
         .std__pe35__lane31_strm1_data          ( DownstreamStackBusLane[35][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe35__lane31_strm1_data_valid    ( DownstreamStackBusLane[35][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe36__allSynchronized    ( DownstreamStackBusOOB[36].cb_test.sys__pe__allSynchronized   ), 
-        .pe36__sys__thisSynchronized   ( DownstreamStackBusOOB[36].pe__sys__thisSynchronized          ), 
-        .pe36__sys__ready              ( DownstreamStackBusOOB[36].pe__sys__ready                     ), 
-        .pe36__sys__complete           ( DownstreamStackBusOOB[36].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe36__oob_cntl           ( DownstreamStackBusOOB[36].cb_test.std__pe__oob_cntl          ), 
-        .std__pe36__oob_valid          ( DownstreamStackBusOOB[36].cb_test.std__pe__oob_valid         ), 
-        .pe36__std__oob_ready          ( DownstreamStackBusOOB[36].pe__std__oob_ready                 ), 
-        .std__pe36__oob_type           ( DownstreamStackBusOOB[36].cb_test.std__pe__oob_type          ), 
-        .std__pe36__oob_data           ( DownstreamStackBusOOB[36].cb_test.std__pe__oob_data          ), 
         // PE 36, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe36__std__lane0_strm0_ready         ( DownstreamStackBusLane[36][0].pe__std__lane_strm0_ready              ),      
@@ -15946,21 +15391,6 @@
         .std__pe36__lane31_strm1_data          ( DownstreamStackBusLane[36][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe36__lane31_strm1_data_valid    ( DownstreamStackBusLane[36][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe37__allSynchronized    ( DownstreamStackBusOOB[37].cb_test.sys__pe__allSynchronized   ), 
-        .pe37__sys__thisSynchronized   ( DownstreamStackBusOOB[37].pe__sys__thisSynchronized          ), 
-        .pe37__sys__ready              ( DownstreamStackBusOOB[37].pe__sys__ready                     ), 
-        .pe37__sys__complete           ( DownstreamStackBusOOB[37].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe37__oob_cntl           ( DownstreamStackBusOOB[37].cb_test.std__pe__oob_cntl          ), 
-        .std__pe37__oob_valid          ( DownstreamStackBusOOB[37].cb_test.std__pe__oob_valid         ), 
-        .pe37__std__oob_ready          ( DownstreamStackBusOOB[37].pe__std__oob_ready                 ), 
-        .std__pe37__oob_type           ( DownstreamStackBusOOB[37].cb_test.std__pe__oob_type          ), 
-        .std__pe37__oob_data           ( DownstreamStackBusOOB[37].cb_test.std__pe__oob_data          ), 
         // PE 37, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe37__std__lane0_strm0_ready         ( DownstreamStackBusLane[37][0].pe__std__lane_strm0_ready              ),      
@@ -16377,21 +15807,6 @@
         .std__pe37__lane31_strm1_data          ( DownstreamStackBusLane[37][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe37__lane31_strm1_data_valid    ( DownstreamStackBusLane[37][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe38__allSynchronized    ( DownstreamStackBusOOB[38].cb_test.sys__pe__allSynchronized   ), 
-        .pe38__sys__thisSynchronized   ( DownstreamStackBusOOB[38].pe__sys__thisSynchronized          ), 
-        .pe38__sys__ready              ( DownstreamStackBusOOB[38].pe__sys__ready                     ), 
-        .pe38__sys__complete           ( DownstreamStackBusOOB[38].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe38__oob_cntl           ( DownstreamStackBusOOB[38].cb_test.std__pe__oob_cntl          ), 
-        .std__pe38__oob_valid          ( DownstreamStackBusOOB[38].cb_test.std__pe__oob_valid         ), 
-        .pe38__std__oob_ready          ( DownstreamStackBusOOB[38].pe__std__oob_ready                 ), 
-        .std__pe38__oob_type           ( DownstreamStackBusOOB[38].cb_test.std__pe__oob_type          ), 
-        .std__pe38__oob_data           ( DownstreamStackBusOOB[38].cb_test.std__pe__oob_data          ), 
         // PE 38, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe38__std__lane0_strm0_ready         ( DownstreamStackBusLane[38][0].pe__std__lane_strm0_ready              ),      
@@ -16808,21 +16223,6 @@
         .std__pe38__lane31_strm1_data          ( DownstreamStackBusLane[38][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe38__lane31_strm1_data_valid    ( DownstreamStackBusLane[38][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe39__allSynchronized    ( DownstreamStackBusOOB[39].cb_test.sys__pe__allSynchronized   ), 
-        .pe39__sys__thisSynchronized   ( DownstreamStackBusOOB[39].pe__sys__thisSynchronized          ), 
-        .pe39__sys__ready              ( DownstreamStackBusOOB[39].pe__sys__ready                     ), 
-        .pe39__sys__complete           ( DownstreamStackBusOOB[39].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe39__oob_cntl           ( DownstreamStackBusOOB[39].cb_test.std__pe__oob_cntl          ), 
-        .std__pe39__oob_valid          ( DownstreamStackBusOOB[39].cb_test.std__pe__oob_valid         ), 
-        .pe39__std__oob_ready          ( DownstreamStackBusOOB[39].pe__std__oob_ready                 ), 
-        .std__pe39__oob_type           ( DownstreamStackBusOOB[39].cb_test.std__pe__oob_type          ), 
-        .std__pe39__oob_data           ( DownstreamStackBusOOB[39].cb_test.std__pe__oob_data          ), 
         // PE 39, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe39__std__lane0_strm0_ready         ( DownstreamStackBusLane[39][0].pe__std__lane_strm0_ready              ),      
@@ -17239,21 +16639,6 @@
         .std__pe39__lane31_strm1_data          ( DownstreamStackBusLane[39][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe39__lane31_strm1_data_valid    ( DownstreamStackBusLane[39][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe40__allSynchronized    ( DownstreamStackBusOOB[40].cb_test.sys__pe__allSynchronized   ), 
-        .pe40__sys__thisSynchronized   ( DownstreamStackBusOOB[40].pe__sys__thisSynchronized          ), 
-        .pe40__sys__ready              ( DownstreamStackBusOOB[40].pe__sys__ready                     ), 
-        .pe40__sys__complete           ( DownstreamStackBusOOB[40].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe40__oob_cntl           ( DownstreamStackBusOOB[40].cb_test.std__pe__oob_cntl          ), 
-        .std__pe40__oob_valid          ( DownstreamStackBusOOB[40].cb_test.std__pe__oob_valid         ), 
-        .pe40__std__oob_ready          ( DownstreamStackBusOOB[40].pe__std__oob_ready                 ), 
-        .std__pe40__oob_type           ( DownstreamStackBusOOB[40].cb_test.std__pe__oob_type          ), 
-        .std__pe40__oob_data           ( DownstreamStackBusOOB[40].cb_test.std__pe__oob_data          ), 
         // PE 40, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe40__std__lane0_strm0_ready         ( DownstreamStackBusLane[40][0].pe__std__lane_strm0_ready              ),      
@@ -17670,21 +17055,6 @@
         .std__pe40__lane31_strm1_data          ( DownstreamStackBusLane[40][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe40__lane31_strm1_data_valid    ( DownstreamStackBusLane[40][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe41__allSynchronized    ( DownstreamStackBusOOB[41].cb_test.sys__pe__allSynchronized   ), 
-        .pe41__sys__thisSynchronized   ( DownstreamStackBusOOB[41].pe__sys__thisSynchronized          ), 
-        .pe41__sys__ready              ( DownstreamStackBusOOB[41].pe__sys__ready                     ), 
-        .pe41__sys__complete           ( DownstreamStackBusOOB[41].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe41__oob_cntl           ( DownstreamStackBusOOB[41].cb_test.std__pe__oob_cntl          ), 
-        .std__pe41__oob_valid          ( DownstreamStackBusOOB[41].cb_test.std__pe__oob_valid         ), 
-        .pe41__std__oob_ready          ( DownstreamStackBusOOB[41].pe__std__oob_ready                 ), 
-        .std__pe41__oob_type           ( DownstreamStackBusOOB[41].cb_test.std__pe__oob_type          ), 
-        .std__pe41__oob_data           ( DownstreamStackBusOOB[41].cb_test.std__pe__oob_data          ), 
         // PE 41, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe41__std__lane0_strm0_ready         ( DownstreamStackBusLane[41][0].pe__std__lane_strm0_ready              ),      
@@ -18101,21 +17471,6 @@
         .std__pe41__lane31_strm1_data          ( DownstreamStackBusLane[41][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe41__lane31_strm1_data_valid    ( DownstreamStackBusLane[41][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe42__allSynchronized    ( DownstreamStackBusOOB[42].cb_test.sys__pe__allSynchronized   ), 
-        .pe42__sys__thisSynchronized   ( DownstreamStackBusOOB[42].pe__sys__thisSynchronized          ), 
-        .pe42__sys__ready              ( DownstreamStackBusOOB[42].pe__sys__ready                     ), 
-        .pe42__sys__complete           ( DownstreamStackBusOOB[42].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe42__oob_cntl           ( DownstreamStackBusOOB[42].cb_test.std__pe__oob_cntl          ), 
-        .std__pe42__oob_valid          ( DownstreamStackBusOOB[42].cb_test.std__pe__oob_valid         ), 
-        .pe42__std__oob_ready          ( DownstreamStackBusOOB[42].pe__std__oob_ready                 ), 
-        .std__pe42__oob_type           ( DownstreamStackBusOOB[42].cb_test.std__pe__oob_type          ), 
-        .std__pe42__oob_data           ( DownstreamStackBusOOB[42].cb_test.std__pe__oob_data          ), 
         // PE 42, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe42__std__lane0_strm0_ready         ( DownstreamStackBusLane[42][0].pe__std__lane_strm0_ready              ),      
@@ -18532,21 +17887,6 @@
         .std__pe42__lane31_strm1_data          ( DownstreamStackBusLane[42][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe42__lane31_strm1_data_valid    ( DownstreamStackBusLane[42][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe43__allSynchronized    ( DownstreamStackBusOOB[43].cb_test.sys__pe__allSynchronized   ), 
-        .pe43__sys__thisSynchronized   ( DownstreamStackBusOOB[43].pe__sys__thisSynchronized          ), 
-        .pe43__sys__ready              ( DownstreamStackBusOOB[43].pe__sys__ready                     ), 
-        .pe43__sys__complete           ( DownstreamStackBusOOB[43].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe43__oob_cntl           ( DownstreamStackBusOOB[43].cb_test.std__pe__oob_cntl          ), 
-        .std__pe43__oob_valid          ( DownstreamStackBusOOB[43].cb_test.std__pe__oob_valid         ), 
-        .pe43__std__oob_ready          ( DownstreamStackBusOOB[43].pe__std__oob_ready                 ), 
-        .std__pe43__oob_type           ( DownstreamStackBusOOB[43].cb_test.std__pe__oob_type          ), 
-        .std__pe43__oob_data           ( DownstreamStackBusOOB[43].cb_test.std__pe__oob_data          ), 
         // PE 43, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe43__std__lane0_strm0_ready         ( DownstreamStackBusLane[43][0].pe__std__lane_strm0_ready              ),      
@@ -18963,21 +18303,6 @@
         .std__pe43__lane31_strm1_data          ( DownstreamStackBusLane[43][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe43__lane31_strm1_data_valid    ( DownstreamStackBusLane[43][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe44__allSynchronized    ( DownstreamStackBusOOB[44].cb_test.sys__pe__allSynchronized   ), 
-        .pe44__sys__thisSynchronized   ( DownstreamStackBusOOB[44].pe__sys__thisSynchronized          ), 
-        .pe44__sys__ready              ( DownstreamStackBusOOB[44].pe__sys__ready                     ), 
-        .pe44__sys__complete           ( DownstreamStackBusOOB[44].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe44__oob_cntl           ( DownstreamStackBusOOB[44].cb_test.std__pe__oob_cntl          ), 
-        .std__pe44__oob_valid          ( DownstreamStackBusOOB[44].cb_test.std__pe__oob_valid         ), 
-        .pe44__std__oob_ready          ( DownstreamStackBusOOB[44].pe__std__oob_ready                 ), 
-        .std__pe44__oob_type           ( DownstreamStackBusOOB[44].cb_test.std__pe__oob_type          ), 
-        .std__pe44__oob_data           ( DownstreamStackBusOOB[44].cb_test.std__pe__oob_data          ), 
         // PE 44, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe44__std__lane0_strm0_ready         ( DownstreamStackBusLane[44][0].pe__std__lane_strm0_ready              ),      
@@ -19394,21 +18719,6 @@
         .std__pe44__lane31_strm1_data          ( DownstreamStackBusLane[44][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe44__lane31_strm1_data_valid    ( DownstreamStackBusLane[44][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe45__allSynchronized    ( DownstreamStackBusOOB[45].cb_test.sys__pe__allSynchronized   ), 
-        .pe45__sys__thisSynchronized   ( DownstreamStackBusOOB[45].pe__sys__thisSynchronized          ), 
-        .pe45__sys__ready              ( DownstreamStackBusOOB[45].pe__sys__ready                     ), 
-        .pe45__sys__complete           ( DownstreamStackBusOOB[45].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe45__oob_cntl           ( DownstreamStackBusOOB[45].cb_test.std__pe__oob_cntl          ), 
-        .std__pe45__oob_valid          ( DownstreamStackBusOOB[45].cb_test.std__pe__oob_valid         ), 
-        .pe45__std__oob_ready          ( DownstreamStackBusOOB[45].pe__std__oob_ready                 ), 
-        .std__pe45__oob_type           ( DownstreamStackBusOOB[45].cb_test.std__pe__oob_type          ), 
-        .std__pe45__oob_data           ( DownstreamStackBusOOB[45].cb_test.std__pe__oob_data          ), 
         // PE 45, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe45__std__lane0_strm0_ready         ( DownstreamStackBusLane[45][0].pe__std__lane_strm0_ready              ),      
@@ -19825,21 +19135,6 @@
         .std__pe45__lane31_strm1_data          ( DownstreamStackBusLane[45][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe45__lane31_strm1_data_valid    ( DownstreamStackBusLane[45][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe46__allSynchronized    ( DownstreamStackBusOOB[46].cb_test.sys__pe__allSynchronized   ), 
-        .pe46__sys__thisSynchronized   ( DownstreamStackBusOOB[46].pe__sys__thisSynchronized          ), 
-        .pe46__sys__ready              ( DownstreamStackBusOOB[46].pe__sys__ready                     ), 
-        .pe46__sys__complete           ( DownstreamStackBusOOB[46].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe46__oob_cntl           ( DownstreamStackBusOOB[46].cb_test.std__pe__oob_cntl          ), 
-        .std__pe46__oob_valid          ( DownstreamStackBusOOB[46].cb_test.std__pe__oob_valid         ), 
-        .pe46__std__oob_ready          ( DownstreamStackBusOOB[46].pe__std__oob_ready                 ), 
-        .std__pe46__oob_type           ( DownstreamStackBusOOB[46].cb_test.std__pe__oob_type          ), 
-        .std__pe46__oob_data           ( DownstreamStackBusOOB[46].cb_test.std__pe__oob_data          ), 
         // PE 46, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe46__std__lane0_strm0_ready         ( DownstreamStackBusLane[46][0].pe__std__lane_strm0_ready              ),      
@@ -20256,21 +19551,6 @@
         .std__pe46__lane31_strm1_data          ( DownstreamStackBusLane[46][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe46__lane31_strm1_data_valid    ( DownstreamStackBusLane[46][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe47__allSynchronized    ( DownstreamStackBusOOB[47].cb_test.sys__pe__allSynchronized   ), 
-        .pe47__sys__thisSynchronized   ( DownstreamStackBusOOB[47].pe__sys__thisSynchronized          ), 
-        .pe47__sys__ready              ( DownstreamStackBusOOB[47].pe__sys__ready                     ), 
-        .pe47__sys__complete           ( DownstreamStackBusOOB[47].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe47__oob_cntl           ( DownstreamStackBusOOB[47].cb_test.std__pe__oob_cntl          ), 
-        .std__pe47__oob_valid          ( DownstreamStackBusOOB[47].cb_test.std__pe__oob_valid         ), 
-        .pe47__std__oob_ready          ( DownstreamStackBusOOB[47].pe__std__oob_ready                 ), 
-        .std__pe47__oob_type           ( DownstreamStackBusOOB[47].cb_test.std__pe__oob_type          ), 
-        .std__pe47__oob_data           ( DownstreamStackBusOOB[47].cb_test.std__pe__oob_data          ), 
         // PE 47, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe47__std__lane0_strm0_ready         ( DownstreamStackBusLane[47][0].pe__std__lane_strm0_ready              ),      
@@ -20687,21 +19967,6 @@
         .std__pe47__lane31_strm1_data          ( DownstreamStackBusLane[47][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe47__lane31_strm1_data_valid    ( DownstreamStackBusLane[47][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe48__allSynchronized    ( DownstreamStackBusOOB[48].cb_test.sys__pe__allSynchronized   ), 
-        .pe48__sys__thisSynchronized   ( DownstreamStackBusOOB[48].pe__sys__thisSynchronized          ), 
-        .pe48__sys__ready              ( DownstreamStackBusOOB[48].pe__sys__ready                     ), 
-        .pe48__sys__complete           ( DownstreamStackBusOOB[48].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe48__oob_cntl           ( DownstreamStackBusOOB[48].cb_test.std__pe__oob_cntl          ), 
-        .std__pe48__oob_valid          ( DownstreamStackBusOOB[48].cb_test.std__pe__oob_valid         ), 
-        .pe48__std__oob_ready          ( DownstreamStackBusOOB[48].pe__std__oob_ready                 ), 
-        .std__pe48__oob_type           ( DownstreamStackBusOOB[48].cb_test.std__pe__oob_type          ), 
-        .std__pe48__oob_data           ( DownstreamStackBusOOB[48].cb_test.std__pe__oob_data          ), 
         // PE 48, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe48__std__lane0_strm0_ready         ( DownstreamStackBusLane[48][0].pe__std__lane_strm0_ready              ),      
@@ -21118,21 +20383,6 @@
         .std__pe48__lane31_strm1_data          ( DownstreamStackBusLane[48][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe48__lane31_strm1_data_valid    ( DownstreamStackBusLane[48][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe49__allSynchronized    ( DownstreamStackBusOOB[49].cb_test.sys__pe__allSynchronized   ), 
-        .pe49__sys__thisSynchronized   ( DownstreamStackBusOOB[49].pe__sys__thisSynchronized          ), 
-        .pe49__sys__ready              ( DownstreamStackBusOOB[49].pe__sys__ready                     ), 
-        .pe49__sys__complete           ( DownstreamStackBusOOB[49].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe49__oob_cntl           ( DownstreamStackBusOOB[49].cb_test.std__pe__oob_cntl          ), 
-        .std__pe49__oob_valid          ( DownstreamStackBusOOB[49].cb_test.std__pe__oob_valid         ), 
-        .pe49__std__oob_ready          ( DownstreamStackBusOOB[49].pe__std__oob_ready                 ), 
-        .std__pe49__oob_type           ( DownstreamStackBusOOB[49].cb_test.std__pe__oob_type          ), 
-        .std__pe49__oob_data           ( DownstreamStackBusOOB[49].cb_test.std__pe__oob_data          ), 
         // PE 49, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe49__std__lane0_strm0_ready         ( DownstreamStackBusLane[49][0].pe__std__lane_strm0_ready              ),      
@@ -21549,21 +20799,6 @@
         .std__pe49__lane31_strm1_data          ( DownstreamStackBusLane[49][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe49__lane31_strm1_data_valid    ( DownstreamStackBusLane[49][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe50__allSynchronized    ( DownstreamStackBusOOB[50].cb_test.sys__pe__allSynchronized   ), 
-        .pe50__sys__thisSynchronized   ( DownstreamStackBusOOB[50].pe__sys__thisSynchronized          ), 
-        .pe50__sys__ready              ( DownstreamStackBusOOB[50].pe__sys__ready                     ), 
-        .pe50__sys__complete           ( DownstreamStackBusOOB[50].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe50__oob_cntl           ( DownstreamStackBusOOB[50].cb_test.std__pe__oob_cntl          ), 
-        .std__pe50__oob_valid          ( DownstreamStackBusOOB[50].cb_test.std__pe__oob_valid         ), 
-        .pe50__std__oob_ready          ( DownstreamStackBusOOB[50].pe__std__oob_ready                 ), 
-        .std__pe50__oob_type           ( DownstreamStackBusOOB[50].cb_test.std__pe__oob_type          ), 
-        .std__pe50__oob_data           ( DownstreamStackBusOOB[50].cb_test.std__pe__oob_data          ), 
         // PE 50, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe50__std__lane0_strm0_ready         ( DownstreamStackBusLane[50][0].pe__std__lane_strm0_ready              ),      
@@ -21980,21 +21215,6 @@
         .std__pe50__lane31_strm1_data          ( DownstreamStackBusLane[50][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe50__lane31_strm1_data_valid    ( DownstreamStackBusLane[50][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe51__allSynchronized    ( DownstreamStackBusOOB[51].cb_test.sys__pe__allSynchronized   ), 
-        .pe51__sys__thisSynchronized   ( DownstreamStackBusOOB[51].pe__sys__thisSynchronized          ), 
-        .pe51__sys__ready              ( DownstreamStackBusOOB[51].pe__sys__ready                     ), 
-        .pe51__sys__complete           ( DownstreamStackBusOOB[51].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe51__oob_cntl           ( DownstreamStackBusOOB[51].cb_test.std__pe__oob_cntl          ), 
-        .std__pe51__oob_valid          ( DownstreamStackBusOOB[51].cb_test.std__pe__oob_valid         ), 
-        .pe51__std__oob_ready          ( DownstreamStackBusOOB[51].pe__std__oob_ready                 ), 
-        .std__pe51__oob_type           ( DownstreamStackBusOOB[51].cb_test.std__pe__oob_type          ), 
-        .std__pe51__oob_data           ( DownstreamStackBusOOB[51].cb_test.std__pe__oob_data          ), 
         // PE 51, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe51__std__lane0_strm0_ready         ( DownstreamStackBusLane[51][0].pe__std__lane_strm0_ready              ),      
@@ -22411,21 +21631,6 @@
         .std__pe51__lane31_strm1_data          ( DownstreamStackBusLane[51][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe51__lane31_strm1_data_valid    ( DownstreamStackBusLane[51][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe52__allSynchronized    ( DownstreamStackBusOOB[52].cb_test.sys__pe__allSynchronized   ), 
-        .pe52__sys__thisSynchronized   ( DownstreamStackBusOOB[52].pe__sys__thisSynchronized          ), 
-        .pe52__sys__ready              ( DownstreamStackBusOOB[52].pe__sys__ready                     ), 
-        .pe52__sys__complete           ( DownstreamStackBusOOB[52].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe52__oob_cntl           ( DownstreamStackBusOOB[52].cb_test.std__pe__oob_cntl          ), 
-        .std__pe52__oob_valid          ( DownstreamStackBusOOB[52].cb_test.std__pe__oob_valid         ), 
-        .pe52__std__oob_ready          ( DownstreamStackBusOOB[52].pe__std__oob_ready                 ), 
-        .std__pe52__oob_type           ( DownstreamStackBusOOB[52].cb_test.std__pe__oob_type          ), 
-        .std__pe52__oob_data           ( DownstreamStackBusOOB[52].cb_test.std__pe__oob_data          ), 
         // PE 52, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe52__std__lane0_strm0_ready         ( DownstreamStackBusLane[52][0].pe__std__lane_strm0_ready              ),      
@@ -22842,21 +22047,6 @@
         .std__pe52__lane31_strm1_data          ( DownstreamStackBusLane[52][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe52__lane31_strm1_data_valid    ( DownstreamStackBusLane[52][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe53__allSynchronized    ( DownstreamStackBusOOB[53].cb_test.sys__pe__allSynchronized   ), 
-        .pe53__sys__thisSynchronized   ( DownstreamStackBusOOB[53].pe__sys__thisSynchronized          ), 
-        .pe53__sys__ready              ( DownstreamStackBusOOB[53].pe__sys__ready                     ), 
-        .pe53__sys__complete           ( DownstreamStackBusOOB[53].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe53__oob_cntl           ( DownstreamStackBusOOB[53].cb_test.std__pe__oob_cntl          ), 
-        .std__pe53__oob_valid          ( DownstreamStackBusOOB[53].cb_test.std__pe__oob_valid         ), 
-        .pe53__std__oob_ready          ( DownstreamStackBusOOB[53].pe__std__oob_ready                 ), 
-        .std__pe53__oob_type           ( DownstreamStackBusOOB[53].cb_test.std__pe__oob_type          ), 
-        .std__pe53__oob_data           ( DownstreamStackBusOOB[53].cb_test.std__pe__oob_data          ), 
         // PE 53, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe53__std__lane0_strm0_ready         ( DownstreamStackBusLane[53][0].pe__std__lane_strm0_ready              ),      
@@ -23273,21 +22463,6 @@
         .std__pe53__lane31_strm1_data          ( DownstreamStackBusLane[53][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe53__lane31_strm1_data_valid    ( DownstreamStackBusLane[53][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe54__allSynchronized    ( DownstreamStackBusOOB[54].cb_test.sys__pe__allSynchronized   ), 
-        .pe54__sys__thisSynchronized   ( DownstreamStackBusOOB[54].pe__sys__thisSynchronized          ), 
-        .pe54__sys__ready              ( DownstreamStackBusOOB[54].pe__sys__ready                     ), 
-        .pe54__sys__complete           ( DownstreamStackBusOOB[54].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe54__oob_cntl           ( DownstreamStackBusOOB[54].cb_test.std__pe__oob_cntl          ), 
-        .std__pe54__oob_valid          ( DownstreamStackBusOOB[54].cb_test.std__pe__oob_valid         ), 
-        .pe54__std__oob_ready          ( DownstreamStackBusOOB[54].pe__std__oob_ready                 ), 
-        .std__pe54__oob_type           ( DownstreamStackBusOOB[54].cb_test.std__pe__oob_type          ), 
-        .std__pe54__oob_data           ( DownstreamStackBusOOB[54].cb_test.std__pe__oob_data          ), 
         // PE 54, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe54__std__lane0_strm0_ready         ( DownstreamStackBusLane[54][0].pe__std__lane_strm0_ready              ),      
@@ -23704,21 +22879,6 @@
         .std__pe54__lane31_strm1_data          ( DownstreamStackBusLane[54][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe54__lane31_strm1_data_valid    ( DownstreamStackBusLane[54][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe55__allSynchronized    ( DownstreamStackBusOOB[55].cb_test.sys__pe__allSynchronized   ), 
-        .pe55__sys__thisSynchronized   ( DownstreamStackBusOOB[55].pe__sys__thisSynchronized          ), 
-        .pe55__sys__ready              ( DownstreamStackBusOOB[55].pe__sys__ready                     ), 
-        .pe55__sys__complete           ( DownstreamStackBusOOB[55].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe55__oob_cntl           ( DownstreamStackBusOOB[55].cb_test.std__pe__oob_cntl          ), 
-        .std__pe55__oob_valid          ( DownstreamStackBusOOB[55].cb_test.std__pe__oob_valid         ), 
-        .pe55__std__oob_ready          ( DownstreamStackBusOOB[55].pe__std__oob_ready                 ), 
-        .std__pe55__oob_type           ( DownstreamStackBusOOB[55].cb_test.std__pe__oob_type          ), 
-        .std__pe55__oob_data           ( DownstreamStackBusOOB[55].cb_test.std__pe__oob_data          ), 
         // PE 55, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe55__std__lane0_strm0_ready         ( DownstreamStackBusLane[55][0].pe__std__lane_strm0_ready              ),      
@@ -24135,21 +23295,6 @@
         .std__pe55__lane31_strm1_data          ( DownstreamStackBusLane[55][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe55__lane31_strm1_data_valid    ( DownstreamStackBusLane[55][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe56__allSynchronized    ( DownstreamStackBusOOB[56].cb_test.sys__pe__allSynchronized   ), 
-        .pe56__sys__thisSynchronized   ( DownstreamStackBusOOB[56].pe__sys__thisSynchronized          ), 
-        .pe56__sys__ready              ( DownstreamStackBusOOB[56].pe__sys__ready                     ), 
-        .pe56__sys__complete           ( DownstreamStackBusOOB[56].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe56__oob_cntl           ( DownstreamStackBusOOB[56].cb_test.std__pe__oob_cntl          ), 
-        .std__pe56__oob_valid          ( DownstreamStackBusOOB[56].cb_test.std__pe__oob_valid         ), 
-        .pe56__std__oob_ready          ( DownstreamStackBusOOB[56].pe__std__oob_ready                 ), 
-        .std__pe56__oob_type           ( DownstreamStackBusOOB[56].cb_test.std__pe__oob_type          ), 
-        .std__pe56__oob_data           ( DownstreamStackBusOOB[56].cb_test.std__pe__oob_data          ), 
         // PE 56, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe56__std__lane0_strm0_ready         ( DownstreamStackBusLane[56][0].pe__std__lane_strm0_ready              ),      
@@ -24566,21 +23711,6 @@
         .std__pe56__lane31_strm1_data          ( DownstreamStackBusLane[56][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe56__lane31_strm1_data_valid    ( DownstreamStackBusLane[56][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe57__allSynchronized    ( DownstreamStackBusOOB[57].cb_test.sys__pe__allSynchronized   ), 
-        .pe57__sys__thisSynchronized   ( DownstreamStackBusOOB[57].pe__sys__thisSynchronized          ), 
-        .pe57__sys__ready              ( DownstreamStackBusOOB[57].pe__sys__ready                     ), 
-        .pe57__sys__complete           ( DownstreamStackBusOOB[57].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe57__oob_cntl           ( DownstreamStackBusOOB[57].cb_test.std__pe__oob_cntl          ), 
-        .std__pe57__oob_valid          ( DownstreamStackBusOOB[57].cb_test.std__pe__oob_valid         ), 
-        .pe57__std__oob_ready          ( DownstreamStackBusOOB[57].pe__std__oob_ready                 ), 
-        .std__pe57__oob_type           ( DownstreamStackBusOOB[57].cb_test.std__pe__oob_type          ), 
-        .std__pe57__oob_data           ( DownstreamStackBusOOB[57].cb_test.std__pe__oob_data          ), 
         // PE 57, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe57__std__lane0_strm0_ready         ( DownstreamStackBusLane[57][0].pe__std__lane_strm0_ready              ),      
@@ -24997,21 +24127,6 @@
         .std__pe57__lane31_strm1_data          ( DownstreamStackBusLane[57][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe57__lane31_strm1_data_valid    ( DownstreamStackBusLane[57][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe58__allSynchronized    ( DownstreamStackBusOOB[58].cb_test.sys__pe__allSynchronized   ), 
-        .pe58__sys__thisSynchronized   ( DownstreamStackBusOOB[58].pe__sys__thisSynchronized          ), 
-        .pe58__sys__ready              ( DownstreamStackBusOOB[58].pe__sys__ready                     ), 
-        .pe58__sys__complete           ( DownstreamStackBusOOB[58].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe58__oob_cntl           ( DownstreamStackBusOOB[58].cb_test.std__pe__oob_cntl          ), 
-        .std__pe58__oob_valid          ( DownstreamStackBusOOB[58].cb_test.std__pe__oob_valid         ), 
-        .pe58__std__oob_ready          ( DownstreamStackBusOOB[58].pe__std__oob_ready                 ), 
-        .std__pe58__oob_type           ( DownstreamStackBusOOB[58].cb_test.std__pe__oob_type          ), 
-        .std__pe58__oob_data           ( DownstreamStackBusOOB[58].cb_test.std__pe__oob_data          ), 
         // PE 58, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe58__std__lane0_strm0_ready         ( DownstreamStackBusLane[58][0].pe__std__lane_strm0_ready              ),      
@@ -25428,21 +24543,6 @@
         .std__pe58__lane31_strm1_data          ( DownstreamStackBusLane[58][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe58__lane31_strm1_data_valid    ( DownstreamStackBusLane[58][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe59__allSynchronized    ( DownstreamStackBusOOB[59].cb_test.sys__pe__allSynchronized   ), 
-        .pe59__sys__thisSynchronized   ( DownstreamStackBusOOB[59].pe__sys__thisSynchronized          ), 
-        .pe59__sys__ready              ( DownstreamStackBusOOB[59].pe__sys__ready                     ), 
-        .pe59__sys__complete           ( DownstreamStackBusOOB[59].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe59__oob_cntl           ( DownstreamStackBusOOB[59].cb_test.std__pe__oob_cntl          ), 
-        .std__pe59__oob_valid          ( DownstreamStackBusOOB[59].cb_test.std__pe__oob_valid         ), 
-        .pe59__std__oob_ready          ( DownstreamStackBusOOB[59].pe__std__oob_ready                 ), 
-        .std__pe59__oob_type           ( DownstreamStackBusOOB[59].cb_test.std__pe__oob_type          ), 
-        .std__pe59__oob_data           ( DownstreamStackBusOOB[59].cb_test.std__pe__oob_data          ), 
         // PE 59, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe59__std__lane0_strm0_ready         ( DownstreamStackBusLane[59][0].pe__std__lane_strm0_ready              ),      
@@ -25859,21 +24959,6 @@
         .std__pe59__lane31_strm1_data          ( DownstreamStackBusLane[59][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe59__lane31_strm1_data_valid    ( DownstreamStackBusLane[59][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe60__allSynchronized    ( DownstreamStackBusOOB[60].cb_test.sys__pe__allSynchronized   ), 
-        .pe60__sys__thisSynchronized   ( DownstreamStackBusOOB[60].pe__sys__thisSynchronized          ), 
-        .pe60__sys__ready              ( DownstreamStackBusOOB[60].pe__sys__ready                     ), 
-        .pe60__sys__complete           ( DownstreamStackBusOOB[60].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe60__oob_cntl           ( DownstreamStackBusOOB[60].cb_test.std__pe__oob_cntl          ), 
-        .std__pe60__oob_valid          ( DownstreamStackBusOOB[60].cb_test.std__pe__oob_valid         ), 
-        .pe60__std__oob_ready          ( DownstreamStackBusOOB[60].pe__std__oob_ready                 ), 
-        .std__pe60__oob_type           ( DownstreamStackBusOOB[60].cb_test.std__pe__oob_type          ), 
-        .std__pe60__oob_data           ( DownstreamStackBusOOB[60].cb_test.std__pe__oob_data          ), 
         // PE 60, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe60__std__lane0_strm0_ready         ( DownstreamStackBusLane[60][0].pe__std__lane_strm0_ready              ),      
@@ -26290,21 +25375,6 @@
         .std__pe60__lane31_strm1_data          ( DownstreamStackBusLane[60][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe60__lane31_strm1_data_valid    ( DownstreamStackBusLane[60][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe61__allSynchronized    ( DownstreamStackBusOOB[61].cb_test.sys__pe__allSynchronized   ), 
-        .pe61__sys__thisSynchronized   ( DownstreamStackBusOOB[61].pe__sys__thisSynchronized          ), 
-        .pe61__sys__ready              ( DownstreamStackBusOOB[61].pe__sys__ready                     ), 
-        .pe61__sys__complete           ( DownstreamStackBusOOB[61].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe61__oob_cntl           ( DownstreamStackBusOOB[61].cb_test.std__pe__oob_cntl          ), 
-        .std__pe61__oob_valid          ( DownstreamStackBusOOB[61].cb_test.std__pe__oob_valid         ), 
-        .pe61__std__oob_ready          ( DownstreamStackBusOOB[61].pe__std__oob_ready                 ), 
-        .std__pe61__oob_type           ( DownstreamStackBusOOB[61].cb_test.std__pe__oob_type          ), 
-        .std__pe61__oob_data           ( DownstreamStackBusOOB[61].cb_test.std__pe__oob_data          ), 
         // PE 61, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe61__std__lane0_strm0_ready         ( DownstreamStackBusLane[61][0].pe__std__lane_strm0_ready              ),      
@@ -26721,21 +25791,6 @@
         .std__pe61__lane31_strm1_data          ( DownstreamStackBusLane[61][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe61__lane31_strm1_data_valid    ( DownstreamStackBusLane[61][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe62__allSynchronized    ( DownstreamStackBusOOB[62].cb_test.sys__pe__allSynchronized   ), 
-        .pe62__sys__thisSynchronized   ( DownstreamStackBusOOB[62].pe__sys__thisSynchronized          ), 
-        .pe62__sys__ready              ( DownstreamStackBusOOB[62].pe__sys__ready                     ), 
-        .pe62__sys__complete           ( DownstreamStackBusOOB[62].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe62__oob_cntl           ( DownstreamStackBusOOB[62].cb_test.std__pe__oob_cntl          ), 
-        .std__pe62__oob_valid          ( DownstreamStackBusOOB[62].cb_test.std__pe__oob_valid         ), 
-        .pe62__std__oob_ready          ( DownstreamStackBusOOB[62].pe__std__oob_ready                 ), 
-        .std__pe62__oob_type           ( DownstreamStackBusOOB[62].cb_test.std__pe__oob_type          ), 
-        .std__pe62__oob_data           ( DownstreamStackBusOOB[62].cb_test.std__pe__oob_data          ), 
         // PE 62, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe62__std__lane0_strm0_ready         ( DownstreamStackBusLane[62][0].pe__std__lane_strm0_ready              ),      
@@ -27152,21 +26207,6 @@
         .std__pe62__lane31_strm1_data          ( DownstreamStackBusLane[62][31].cb_test.std__pe__lane_strm1_data       ),      
         .std__pe62__lane31_strm1_data_valid    ( DownstreamStackBusLane[62][31].cb_test.std__pe__lane_strm1_data_valid ),      
         
-  // General control and status                                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .sys__pe63__allSynchronized    ( DownstreamStackBusOOB[63].cb_test.sys__pe__allSynchronized   ), 
-        .pe63__sys__thisSynchronized   ( DownstreamStackBusOOB[63].pe__sys__thisSynchronized          ), 
-        .pe63__sys__ready              ( DownstreamStackBusOOB[63].pe__sys__ready                     ), 
-        .pe63__sys__complete           ( DownstreamStackBusOOB[63].pe__sys__complete                  ), 
-  // OOB controls how the lanes are interpreted                                                     
-  //  - doesnt seem to work if you use cb_test for observed signals                                 
-  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         
-        .std__pe63__oob_cntl           ( DownstreamStackBusOOB[63].cb_test.std__pe__oob_cntl          ), 
-        .std__pe63__oob_valid          ( DownstreamStackBusOOB[63].cb_test.std__pe__oob_valid         ), 
-        .pe63__std__oob_ready          ( DownstreamStackBusOOB[63].pe__std__oob_ready                 ), 
-        .std__pe63__oob_type           ( DownstreamStackBusOOB[63].cb_test.std__pe__oob_type          ), 
-        .std__pe63__oob_data           ( DownstreamStackBusOOB[63].cb_test.std__pe__oob_data          ), 
         // PE 63, Lane 0                 
         //  - doesnt seem to work if you use cb_test for observed signals                                                       
         .pe63__std__lane0_strm0_ready         ( DownstreamStackBusLane[63][0].pe__std__lane_strm0_ready              ),      

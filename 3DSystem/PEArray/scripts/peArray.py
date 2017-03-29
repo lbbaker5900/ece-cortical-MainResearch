@@ -291,8 +291,8 @@ if __name__ == "__main__":
     pLine = pLine + '\n            // NoCource controller has already read the header to determine the destination mask address, but it will still provide a "fromNoc_valid" signal when it starts transerring tbe entire external NoC packet'
     pLine = pLine + '\n            // When sending to the local in-queue, we need to drop the NoC header so waht for the first "fromNoc_valid" and ignore that transaction'
     pLine = pLine + '\n           `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{0}:'.format(port)
-    pLine = pLine + '\n             nc_local_inq_cntl_state_next = (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}  :'.format(port)
-    pLine = pLine + '\n                                                                                                                                                           `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{0}       ; '.format(port)
+    pLine = pLine + '\n             nc_local_inq_cntl_state_next = (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}      :'.format(port)
+    pLine = pLine + '\n                                                                                                                                                      `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{0}  ; '.format(port)
 
     if port != (numOfPorts-1):
       pLine = pLine + '\n' 
@@ -300,36 +300,36 @@ if __name__ == "__main__":
       pLine = pLine + '\n           `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}:'.format(port)
       pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
       for nextPort in range (port+1, numOfPorts):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}  :  // EOP so go to the next port'.format(port,nextPort)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
       for nextPort in range (0, port):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}  :  // EOP so go to the next port'.format(port,nextPort)
-      pLine = pLine + '\n                                             (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))                         ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT  :  // EOP so go to the next port'.format(port)
-      pLine = pLine + '\n                                                                                                                                                                                       `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}        ; '.format(port)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
+      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port)
+      pLine = pLine + '\n                                                                                                                                                                              `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}           ; '.format(port)
     else:
       pLine = pLine + '\n           `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}:'.format(port)
-      pLine = pLine + '\n             nc_local_inq_cntl_state_next =    (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))                         ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
+      pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
       for nextPort in range (0, numOfPorts-1):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && ((Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP)))  ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}  :  // EOP so go to the next port'.format(port,nextPort)
-      pLine = pLine + '\n                                             (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))                           ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT  :  // EOP so go to the next port'.format(port,nextPort)
-      pLine = pLine + '\n                                                                                                                                                                                         `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}        ; '.format(port)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
+      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port,nextPort)
+      pLine = pLine + '\n                                                                                                                                                                            `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}           ; '.format(port)
 
     if port != (numOfPorts-1):
       pLine = pLine + '\n' 
       pLine = pLine + '\n           `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}:'.format(port)
       pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
       for nextPort in range (port+1, numOfPorts):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}  :  // EOP so go to the next port'.format(port,nextPort)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
       for nextPort in range (0, port):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}  :  // EOP so go to the next port'.format(port,nextPort)
-      pLine = pLine + '\n                                             (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))                         ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT  :  // EOP so go to the next port'.format(port)
-      pLine = pLine + '\n                                                                                                                                                                                       `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}        ; '.format(port)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
+      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port)
+      pLine = pLine + '\n                                                                                                                                                                              `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  ; '.format(port)
     else:
       pLine = pLine + '\n           `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}:'.format(port)
-      pLine = pLine + '\n             nc_local_inq_cntl_state_next =    (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))                         ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
+      pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
       for nextPort in range (0, numOfPorts-1):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && ((Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP)))  ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}  :  // EOP so go to the next port'.format(port,nextPort)
-      pLine = pLine + '\n                                             (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))                           ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT  :  // EOP so go to the next port'.format(port,nextPort)
-      pLine = pLine + '\n                                                                                                                                                                                         `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}        ; '.format(port)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
+      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port,nextPort)
+      pLine = pLine + '\n                                                                                                                                                                            `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  ; '.format(port)
 
 
   f.write(pLine)

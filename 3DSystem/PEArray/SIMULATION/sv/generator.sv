@@ -228,7 +228,7 @@ class generator;
                         //sys_operation.displayOperation();
                         //@gen2drv_ack;
                         wait(gen2drv_ack.triggered);
-                        $display("@%0t:%s:%0d:LEE:{%0d,%0d} Driver ack", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        //$display("@%0t:%s:%0d:LEE:{%0d,%0d} Driver ack", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
 
 
                         //----------------------------------------------------------------------------------------------------

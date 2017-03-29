@@ -11,7 +11,7 @@
 
 `timescale 1ns/10ps
 
-`include "TB_common.vh"
+`include "../../../PEArray/SIMULATION/common/TB_common.vh"
 `include "common.vh"
 `include "stack_interface.vh"
 `include "streamingOps_cntl.vh"
@@ -66,22 +66,10 @@ module top;
     loadStore2memCntl_ifc       LoadStore2memCntl         [`PE_ARRAY_NUM_OF_PE]                        (clk);
 
     //----------------------------------------------------------------------------------------------------
-    // Processing layer
+    // System
     //
 
-    pe_array pe_array_inst (
-   
-         // General System Interface
-         `include "TB_system_general_instance_ports.vh"
-       
-         // Downstream Stack bus OOB Interface
-         `include "TB_system_stack_bus_downstream_oob_instance_ports.vh"
-       
-         // Downstream Stack bus Interface
-         `include "TB_system_stack_bus_downstream_instance_ports.vh"
-       
-         // Upstream Stack bus Interface
-         `include "TB_system_stack_bus_upstream_instance_ports.vh"
+    system system_inst (
        
         .clk               ( clk       ),
         .reset_poweron     ( reset_poweron     )
@@ -103,6 +91,23 @@ module top;
                    .reset                      ( reset_poweron             ) 
                   );
 
+
+    //----------------------------------------------------------------------------------------------------
+    // Connect interfaces
+    //
+      
+    // General System Interface
+    `include "TB_system_general_assignments.vh"
+    
+    // Downstream Stack bus OOB Interface
+    `include "TB_system_stack_bus_downstream_oob_assignments.vh"
+    
+    // Downstream Stack bus Interface
+    `include "TB_system_stack_bus_downstream_assignments.vh"
+    
+    // Upstream Stack bus Interface
+    `include "TB_system_stack_bus_upstream_assignments.vh"
+
     //----------------------------------------------------------------------------------------------------
     // Probes
     //
@@ -115,17 +120,17 @@ module top;
                for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
                    begin
                        // only observe stream 0
-                       assign Dma2Mem[pe][lane].dma__memc__write_valid      = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_valid0        ;
-                       assign Dma2Mem[pe][lane].dma__memc__write_address    = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_address0      ;
-                       assign Dma2Mem[pe][lane].dma__memc__write_data       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_data0         ;
-                       assign Dma2Mem[pe][lane].dma__memc__read_valid       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_valid0         ;
-                       assign Dma2Mem[pe][lane].dma__memc__read_address     = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_address0       ;
-                       assign Dma2Mem[pe][lane].dma__memc__read_pause       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_pause0         ;
+                       assign Dma2Mem[pe][lane].dma__memc__write_valid      = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_valid0        ;
+                       assign Dma2Mem[pe][lane].dma__memc__write_address    = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_address0      ;
+                       assign Dma2Mem[pe][lane].dma__memc__write_data       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_data0         ;
+                       assign Dma2Mem[pe][lane].dma__memc__read_valid       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_valid0         ;
+                       assign Dma2Mem[pe][lane].dma__memc__read_address     = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_address0       ;
+                       assign Dma2Mem[pe][lane].dma__memc__read_pause       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_pause0         ;
 
-                       assign Dma2Mem[pe][lane].memc__dma__write_ready      = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__write_ready0        ;
-                       assign Dma2Mem[pe][lane].memc__dma__read_data        = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data0          ;
-                       assign Dma2Mem[pe][lane].memc__dma__read_data_valid  = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data_valid0    ;
-                       assign Dma2Mem[pe][lane].memc__dma__read_ready       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_ready0         ;
+                       assign Dma2Mem[pe][lane].memc__dma__write_ready      = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__write_ready0        ;
+                       assign Dma2Mem[pe][lane].memc__dma__read_data        = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data0          ;
+                       assign Dma2Mem[pe][lane].memc__dma__read_data_valid  = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data_valid0    ;
+                       assign Dma2Mem[pe][lane].memc__dma__read_ready       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_ready0         ;
                    end
            end
     endgenerate
@@ -138,20 +143,20 @@ module top;
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
-               assign RegFileScalar2StOpCntl[pe].ready                  =  pe_array_inst.pe_inst[pe].pe.pe__sys__ready    ;  //.TB_regFileScalarDrv2stOpCntl
-               assign RegFileScalar2StOpCntl[pe].complete               =  pe_array_inst.pe_inst[pe].pe.pe__sys__complete ;  //.TB_regFileScalarDrv2stOpCntl
-               assign pe_array_inst.pe_inst[pe].pe.simd__cntl__rs0      =  RegFileScalar2StOpCntl[pe].rs0                 ;  //.TB_regFileScalarDrv2stOpCntl
-               assign pe_array_inst.pe_inst[pe].pe.simd__cntl__rs1      =  RegFileScalar2StOpCntl[pe].rs1                 ;  //.TB_regFileScalarDrv2stOpCntl
+               assign RegFileScalar2StOpCntl[pe].ready                  =  system_inst.pe_array_inst.pe_inst[pe].pe.pe__sys__ready    ;  //.TB_regFileScalarDrv2stOpCntl
+               assign RegFileScalar2StOpCntl[pe].complete               =  system_inst.pe_array_inst.pe_inst[pe].pe.pe__sys__complete ;  //.TB_regFileScalarDrv2stOpCntl
+               assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__rs0      =  RegFileScalar2StOpCntl[pe].rs0                 ;  //.TB_regFileScalarDrv2stOpCntl
+               assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__rs1      =  RegFileScalar2StOpCntl[pe].rs1                 ;  //.TB_regFileScalarDrv2stOpCntl
                for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
                    begin
-                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r128[lane] =   RegFileLane2StOpCntl[pe][lane].r128 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r129[lane] =   RegFileLane2StOpCntl[pe][lane].r129 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r130[lane] =   RegFileLane2StOpCntl[pe][lane].r130 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r131[lane] =   RegFileLane2StOpCntl[pe][lane].r131 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r132[lane] =   RegFileLane2StOpCntl[pe][lane].r132 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r133[lane] =   RegFileLane2StOpCntl[pe][lane].r133 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r134[lane] =   RegFileLane2StOpCntl[pe][lane].r134 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r135[lane] =   RegFileLane2StOpCntl[pe][lane].r135 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r128[lane] =   RegFileLane2StOpCntl[pe][lane].r128 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r129[lane] =   RegFileLane2StOpCntl[pe][lane].r129 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r130[lane] =   RegFileLane2StOpCntl[pe][lane].r130 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r131[lane] =   RegFileLane2StOpCntl[pe][lane].r131 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r132[lane] =   RegFileLane2StOpCntl[pe][lane].r132 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r133[lane] =   RegFileLane2StOpCntl[pe][lane].r133 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r134[lane] =   RegFileLane2StOpCntl[pe][lane].r134 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r135[lane] =   RegFileLane2StOpCntl[pe][lane].r135 ;  //.TB_regFileLaneDrv2stOpCntl
                    end
            end
     endgenerate
@@ -161,13 +166,13 @@ module top;
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
-               assign pe_array_inst.pe_inst[pe].pe.ldst__memc__request        =   LoadStore2memCntl [pe].ldst__memc__request       ;
-               assign pe_array_inst.pe_inst[pe].pe.ldst__memc__released       =   LoadStore2memCntl [pe].ldst__memc__released      ;
-               assign pe_array_inst.pe_inst[pe].pe.ldst__memc__write_address  =   LoadStore2memCntl [pe].ldst__memc__write_address ;
-               assign pe_array_inst.pe_inst[pe].pe.ldst__memc__write_data     =   LoadStore2memCntl [pe].ldst__memc__write_data    ;
-               assign pe_array_inst.pe_inst[pe].pe.ldst__memc__read_address   =   LoadStore2memCntl [pe].ldst__memc__read_address  ;
-               assign pe_array_inst.pe_inst[pe].pe.ldst__memc__write_valid    =   LoadStore2memCntl [pe].ldst__memc__write_valid   ;
-               assign pe_array_inst.pe_inst[pe].pe.ldst__memc__read_valid     =   LoadStore2memCntl [pe].ldst__memc__read_valid    ;
+               assign system_inst.pe_array_inst.pe_inst[pe].pe.ldst__memc__request        =   LoadStore2memCntl [pe].ldst__memc__request       ;
+               assign system_inst.pe_array_inst.pe_inst[pe].pe.ldst__memc__released       =   LoadStore2memCntl [pe].ldst__memc__released      ;
+               assign system_inst.pe_array_inst.pe_inst[pe].pe.ldst__memc__write_address  =   LoadStore2memCntl [pe].ldst__memc__write_address ;
+               assign system_inst.pe_array_inst.pe_inst[pe].pe.ldst__memc__write_data     =   LoadStore2memCntl [pe].ldst__memc__write_data    ;
+               assign system_inst.pe_array_inst.pe_inst[pe].pe.ldst__memc__read_address   =   LoadStore2memCntl [pe].ldst__memc__read_address  ;
+               assign system_inst.pe_array_inst.pe_inst[pe].pe.ldst__memc__write_valid    =   LoadStore2memCntl [pe].ldst__memc__write_valid   ;
+               assign system_inst.pe_array_inst.pe_inst[pe].pe.ldst__memc__read_valid     =   LoadStore2memCntl [pe].ldst__memc__read_valid    ;
            end
     endgenerate
 
@@ -176,10 +181,11 @@ module top;
            begin
              initial
                begin
-                 //force DownstreamStackBusOOB[pe].sys__pe__allSynchronized  = 1  ;
+                 force DownstreamStackBusOOB[pe].sys__pe__allSynchronized  = 1  ;
                end
            end
     endgenerate
+
 
     /*
     dut_probe_dma2mem probe_dma2mem(

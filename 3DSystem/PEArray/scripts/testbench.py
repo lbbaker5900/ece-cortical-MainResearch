@@ -148,9 +148,8 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../SIMULATION/common/TB_system_stack_bus_downstream_instance_ports.vh', 'w')
+  f = open('../SIMULATION/common/TB_system_general_instance_ports.vh', 'w')
   pLine = ""
-
   for pe in range (0, numOfPe):
     pLine = pLine + '\n  // General control and status                                                                     '.format(pe) 
     pLine = pLine + '\n  //  - doesnt seem to work if you use cb_test for observed signals                                 '.format(pe) 
@@ -159,6 +158,17 @@ if __name__ == "__main__":
     pLine = pLine + '\n        .pe{0}__sys__thisSynchronized   ( DownstreamStackBusOOB[{0}].pe__sys__thisSynchronized          ), '.format(pe) 
     pLine = pLine + '\n        .pe{0}__sys__ready              ( DownstreamStackBusOOB[{0}].pe__sys__ready                     ), '.format(pe) 
     pLine = pLine + '\n        .pe{0}__sys__complete           ( DownstreamStackBusOOB[{0}].pe__sys__complete                  ), '.format(pe) 
+    pLine = pLine + '\n'
+    #                                                                                                    
+                                             
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../SIMULATION/common/TB_system_stack_bus_downstream_oob_instance_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     #                                                                                                    
     pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                                     '.format(pe) 
     pLine = pLine + '\n  //  - doesnt seem to work if you use cb_test for observed signals                                 '.format(pe) 
@@ -169,6 +179,14 @@ if __name__ == "__main__":
     pLine = pLine + '\n        .std__pe{0}__oob_type           ( DownstreamStackBusOOB[{0}].cb_test.std__pe__oob_type          ), '.format(pe) 
     pLine = pLine + '\n        .std__pe{0}__oob_data           ( DownstreamStackBusOOB[{0}].cb_test.std__pe__oob_data          ), '.format(pe) 
     # 
+                                             
+  f.write(pLine)
+  f.close()
+
+  f = open('../SIMULATION/common/TB_system_stack_bus_downstream_instance_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n        // PE {1}, Lane {0}                 '.format(lane,pe)
       for strm in range (0, 2):

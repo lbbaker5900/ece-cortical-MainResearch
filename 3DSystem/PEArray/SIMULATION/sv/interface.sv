@@ -29,7 +29,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // Out of band interface
-interface std_pe_oob_ifc(
+interface std_oob_ifc(
                            input bit clk_oob   );
 
     // Stack Bus - downstream Out-of-band
@@ -88,12 +88,12 @@ interface std_pe_oob_ifc(
         clocking    cb_test  
     );
 
-endinterface : std_pe_oob_ifc
+endinterface : std_oob_ifc
 
-typedef virtual std_pe_oob_ifc vDownstreamStackBusOOB_T;
+typedef virtual std_oob_ifc vDownstreamStackBusOOB_T;
 
 
-interface std_pe_lane_ifc(
+interface std_lane_ifc(
                            input bit clk_lane   );
 
     // Stack Bus - downstream
@@ -148,12 +148,12 @@ interface std_pe_lane_ifc(
         clocking    cb_test  
     );
 
-endinterface : std_pe_lane_ifc
+endinterface : std_lane_ifc
 
-typedef virtual std_pe_lane_ifc vSysLane2PeArray_T;
+typedef virtual std_lane_ifc vSysLane2PeArray_T;
 
 
-interface stu_pe_ifc(
+interface stu_ifc(
                            input bit clk   );
 
     // Stack Bus - upstream
@@ -195,9 +195,9 @@ interface stu_pe_ifc(
         clocking    cb_mgr  
     );
 
-endinterface : stu_pe_ifc
+endinterface : stu_ifc
 
-typedef virtual stu_pe_ifc vUpstreamStackBus_T;
+typedef virtual stu_ifc vUpstreamStackBus_T;
 
 
 

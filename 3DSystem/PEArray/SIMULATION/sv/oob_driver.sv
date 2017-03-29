@@ -270,8 +270,8 @@ class oob_driver;
                             oob_option [1] = tmp_oob_option  ;
                             oob_value  [1] = operationNumber ;
                             // drive but these are conditioned on valid
+                            vDownstreamStackBusOOB.cb_test.sys__pe__allSynchronized  <= 1 ;
                             vDownstreamStackBusOOB.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM      ;  
-                            vDownstreamStackBusOOB.cb_test.sys__pe__allSynchronized  <= 1  ;
                             vDownstreamStackBusOOB.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
                             vDownstreamStackBusOOB.cb_test.std__pe__oob_data         <= {oob_value[1], oob_option[1],oob_value[0], oob_option[0]};
 
@@ -285,8 +285,8 @@ class oob_driver;
                             oob_option [1] = tmp_oob_option  ;
                             oob_value  [1] = oob_packet_mgr.numberOfLanes-1    ;  // for number of lanes, 0 - 1, 31 = 32 e.g. we only want to use 5 bits to set number of lanes and we assume at least one lane is active
                             // drive but these are conditioned on valid
+                            vDownstreamStackBusOOB.cb_test.sys__pe__allSynchronized  <= 1 ;
                             vDownstreamStackBusOOB.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_EOM      ;  
-                            vDownstreamStackBusOOB.cb_test.sys__pe__allSynchronized  <= 1  ;
                             vDownstreamStackBusOOB.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
                             vDownstreamStackBusOOB.cb_test.std__pe__oob_data         <= {oob_value[1], oob_option[1],oob_value[0], oob_option[0]};
 
