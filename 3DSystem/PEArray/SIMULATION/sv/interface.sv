@@ -55,7 +55,7 @@ interface std_oob_ifc(
         output       std__pe__oob_type         ;
         output       std__pe__oob_data         ;
     
-        output       sys__pe__allSynchronized  ;
+        //output       sys__pe__allSynchronized  ;
         //input        pe__sys__thisSynchronized ;
 
         //input        pe__sys__ready            ;
@@ -72,7 +72,7 @@ interface std_oob_ifc(
         input        std__pe__oob_type         ;
         input        std__pe__oob_data         ;
     
-        input        sys__pe__allSynchronized  ;
+        //input        sys__pe__allSynchronized  ;
         //output       pe__sys__thisSynchronized ;
 
         //output       pe__sys__ready            ;

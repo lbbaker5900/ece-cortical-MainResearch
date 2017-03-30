@@ -87,6 +87,11 @@ module top;
         .reset_poweron     ( reset_poweron     )
     );
 
+    //-------------------------------------------------------------------------------------------
+    // General system connectivity]
+    // FIXME: make these connections inside the manager
+    `include "pe_sys_general_connections.vh"
+
 
     
     //----------------------------------------------------------------------------------------------------

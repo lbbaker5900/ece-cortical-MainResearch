@@ -91,6 +91,10 @@ module top;
                    .reset                      ( reset_poweron             ) 
                   );
 
+    //-------------------------------------------------------------------------------------------
+    // General system connectivity]
+    //  - loop thisSync to allSync
+    `include "pe_sys_general_connections.vh"
 
     //----------------------------------------------------------------------------------------------------
     // Connect interfaces

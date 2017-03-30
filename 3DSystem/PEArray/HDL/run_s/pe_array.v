@@ -90,11 +90,6 @@ module pe_array (
   // Stack Bus - Upstream
   `include "system_pe_stack_bus_upstream_instance_wires.vh"
   
-  //-------------------------------------------------------------------------------------------
-  // General system connectivity]
-  // FIXME: make these connections inside the manager
-  `include "pe_sys_general_connections.vh"
-
   
  
   genvar gvi;

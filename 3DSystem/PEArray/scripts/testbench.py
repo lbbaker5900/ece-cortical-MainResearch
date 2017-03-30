@@ -154,7 +154,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  // General control and status                                                                     '.format(pe) 
     pLine = pLine + '\n  //  - doesnt seem to work if you use cb_test for observed signals                                 '.format(pe) 
     pLine = pLine + '\n  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         '.format(pe) 
-    pLine = pLine + '\n        .sys__pe{0}__allSynchronized    ( DownstreamStackBusOOB[{0}].cb_test.sys__pe__allSynchronized   ), '.format(pe) 
+    pLine = pLine + '\n        .sys__pe{0}__allSynchronized    ( DownstreamStackBusOOB[{0}].sys__pe__allSynchronized   ), '.format(pe) 
     pLine = pLine + '\n        .pe{0}__sys__thisSynchronized   ( DownstreamStackBusOOB[{0}].pe__sys__thisSynchronized          ), '.format(pe) 
     pLine = pLine + '\n        .pe{0}__sys__ready              ( DownstreamStackBusOOB[{0}].pe__sys__ready                     ), '.format(pe) 
     pLine = pLine + '\n        .pe{0}__sys__complete           ( DownstreamStackBusOOB[{0}].pe__sys__complete                  ), '.format(pe) 
