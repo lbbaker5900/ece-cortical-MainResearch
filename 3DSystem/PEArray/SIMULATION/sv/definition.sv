@@ -1,6 +1,7 @@
 package virtual_interface;
 `timescale 1ns/10ps
     // dont use ^&(&%$%%$^%g modports - FIXME do all below
+    typedef virtual st_gen_ifc                              vGenStackBus_T                ;
     typedef virtual std_oob_ifc                             vDownstreamStackBusOOB_T      ;
     typedef virtual std_oob_ifc                             vPeArray2SysOob_T             ;
     typedef virtual std_lane_ifc                            vDownstreamStackBusLane_T     ;

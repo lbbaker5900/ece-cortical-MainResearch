@@ -16,6 +16,7 @@
 
 program automatic test (
         // array of interfaces, one for each pe/lane/stream
+        st_gen_ifc                               GenStackBus              [`PE_ARRAY_NUM_OF_PE]                        ,
         std_oob_ifc                              DownstreamStackBusOOB    [`PE_ARRAY_NUM_OF_PE]                        ,
         std_lane_ifc                             DownstreamStackBusLane   [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
         stu_ifc                                  UpstreamStackBus         [`PE_ARRAY_NUM_OF_PE]                        ,
@@ -30,7 +31,7 @@ program automatic test (
     Environment env;
 
     initial begin
-        env = new ( DownstreamStackBusOOB, DownstreamStackBusLane, UpstreamStackBus, Dma2Mem, RegFileScalar2StOpCntl, RegFileLane2StOpCntl, LoadStore2memCntl    );
+        env = new ( GenStackBus, DownstreamStackBusOOB, DownstreamStackBusLane, UpstreamStackBus, Dma2Mem, RegFileScalar2StOpCntl, RegFileLane2StOpCntl, LoadStore2memCntl    );
         env.build();
         env.run();
         env.wrap_up();

@@ -79,9 +79,10 @@ class Environment;
     //event         gen2ldstP_ack    [`PE_ARRAY_NUM_OF_PE]                        ;
 
     // an array of all stream interfaces in the system
-    vDownstreamStackBusOOB_T      vDownstreamStackBusOOB           [`PE_ARRAY_NUM_OF_PE]                         ;
-    vDownstreamStackBusLane_T            vDownstreamStackBusLane                 [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
-    vUpstreamStackBus_T        vUpstreamStackBus             [`PE_ARRAY_NUM_OF_PE]                         ;
+    vGenStackBus_T                       vGenStackBus                  [`PE_ARRAY_NUM_OF_PE]                         ;
+    vDownstreamStackBusOOB_T             vDownstreamStackBusOOB        [`PE_ARRAY_NUM_OF_PE]                         ;
+    vDownstreamStackBusLane_T            vDownstreamStackBusLane       [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
+    vUpstreamStackBus_T                  vUpstreamStackBus             [`PE_ARRAY_NUM_OF_PE]                         ;
 
     // an array of all dma to memory interfaces in the system
     vDma2Mem_T             vDma2Mem                              [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
@@ -97,17 +98,19 @@ class Environment;
     // 
     function new (
                     // Retrieving the interface passed from the testbench in order to pass it to the required blocks.
+                    input vGenStackBus_T               vGenStackBus                    [`PE_ARRAY_NUM_OF_PE]                        ,
                     input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB          [`PE_ARRAY_NUM_OF_PE]                        ,
-                    input vDownstreamStackBusLane_T           vDownstreamStackBusLane                [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-                    input vUpstreamStackBus_T       vUpstreamStackBus            [`PE_ARRAY_NUM_OF_PE]                        ,
+                    input vDownstreamStackBusLane_T    vDownstreamStackBusLane         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
+                    input vUpstreamStackBus_T          vUpstreamStackBus               [`PE_ARRAY_NUM_OF_PE]                        ,
                     input vDma2Mem_T                   vDma2Mem                        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
                     input vRegFileScalarDrv2stOpCntl_T vRegFileScalarDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE]                        ,
                     input vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
                     input vLoadStoreDrv2memCntl_T      vLoadStoreDrv2memCntl           [`PE_ARRAY_NUM_OF_PE]                        
                 );
-        this.vDownstreamStackBusLane            =   vDownstreamStackBusLane            ;
-        this.vDownstreamStackBusOOB             =   vDownstreamStackBusOOB             ;
-        this.vUpstreamStackBus             =   vUpstreamStackBus             ;
+        this.vGenStackBus                =   vGenStackBus                ;
+        this.vDownstreamStackBusOOB      =   vDownstreamStackBusOOB      ;
+        this.vDownstreamStackBusLane     =   vDownstreamStackBusLane     ;
+        this.vUpstreamStackBus           =   vUpstreamStackBus           ;
         this.vDma2Mem                    =   vDma2Mem                    ;
         this.vRegFileScalarDrv2stOpCntl  =   vRegFileScalarDrv2stOpCntl  ;
         this.vRegFileLaneDrv2stOpCntl    =   vRegFileLaneDrv2stOpCntl    ;

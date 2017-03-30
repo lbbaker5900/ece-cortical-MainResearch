@@ -28,6 +28,21 @@
 // Downstream
 ///////////////////////////////////////////////////////////////////////////////
 
+// Stack general interface
+interface st_gen_ifc(
+                           input bit clk   );
+
+    logic                                       sys__pe__allSynchronized  ;
+    logic                                       pe__sys__thisSynchronized ;
+                                        
+    logic                                       pe__sys__ready            ;
+    logic                                       pe__sys__complete         ;
+
+endinterface : st_gen_ifc
+
+typedef virtual st_gen_ifc vGenStack_T;
+
+
 // Out of band interface
 interface std_oob_ifc(
                            input bit clk_oob   );

@@ -43,6 +43,7 @@ module top;
     // Instantiate an interface for every pe/lane/stream pair
     // Downstream
     //                              pe  lane
+    st_gen_ifc      GenStackBus            [`PE_ARRAY_NUM_OF_PE]                        (.clk                 ( clk           ));  
     std_lane_ifc    DownstreamStackBusLane [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (.clk_lane            ( clk           ));  // [64] shorthand for [0:63] ....
     std_oob_ifc     DownstreamStackBusOOB  [`PE_ARRAY_NUM_OF_PE]                        (.clk_oob             ( clk           ));  
     stu_ifc         UpstreamStackBus       [`PE_ARRAY_NUM_OF_PE]                        (.clk                 ( clk           ));  
@@ -98,6 +99,7 @@ module top;
     // Testbench
     //
         test  ti  (
+                   .GenStackBus                ( GenStackBus               ) ,  // array of general stack bus signals
                    .DownstreamStackBusOOB      ( DownstreamStackBusOOB     ) ,  // array of downstream stack bus OOB interfaces to each PE
                    .DownstreamStackBusLane     ( DownstreamStackBusLane    ) ,  // array of interfaces for each downstream pe/lane stack bus
                    .UpstreamStackBus           ( UpstreamStackBus          ) ,  // array of upstream stack bus OOB interfaces to each PE

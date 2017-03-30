@@ -43,8 +43,9 @@ module top;
     // Instantiate an interface for every pe/lane/stream pair
     // Downstream
     //                              pe  lane
-    std_lane_ifc    DownstreamStackBusLane [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (.clk_lane            ( clk           ));  // [64] shorthand for [0:63] ....
+    st_gen_ifc      GenStackBus            [`PE_ARRAY_NUM_OF_PE]                        (.clk                 ( clk           ));  
     std_oob_ifc     DownstreamStackBusOOB  [`PE_ARRAY_NUM_OF_PE]                        (.clk_oob             ( clk           ));  
+    std_lane_ifc    DownstreamStackBusLane [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (.clk_lane            ( clk           ));  // [64] shorthand for [0:63] ....
     stu_ifc         UpstreamStackBus       [`PE_ARRAY_NUM_OF_PE]                        (.clk                 ( clk           ));  
 
 
@@ -81,6 +82,7 @@ module top;
     // Testbench
     //
         test  ti  (
+                   .GenStackBus                ( GenStackBus               ) ,  // array of General Stack signals
                    .DownstreamStackBusOOB      ( DownstreamStackBusOOB     ) ,  // array of downstream stack bus OOB interfaces to each PE
                    .DownstreamStackBusLane     ( DownstreamStackBusLane    ) ,  // array of interfaces for each downstream pe/lane stack bus
                    .UpstreamStackBus           ( UpstreamStackBus          ) ,  // array of upstream stack bus OOB interfaces to each PE
@@ -92,8 +94,8 @@ module top;
                   );
 
     //-------------------------------------------------------------------------------------------
-    // General system connectivity]
-    //  - loop thisSync to allSync
+    // General system connectivity
+    //  - loop thisSync to allSync from st_gen_ifc
     `include "pe_sys_general_connections.vh"
 
     //----------------------------------------------------------------------------------------------------
@@ -101,15 +103,19 @@ module top;
     //
       
     // General System Interface
+    //  - connect general signals inside manager from st_gen_ifc
     `include "TB_system_general_assignments.vh"
     
     // Downstream Stack bus OOB Interface
+    //  - connect OOB signals inside manager from std_oob_ifc
     `include "TB_system_stack_bus_downstream_oob_assignments.vh"
     
     // Downstream Stack bus Interface
+    //  - connect Lane signals inside manager from std_lane_ifc
     `include "TB_system_stack_bus_downstream_assignments.vh"
     
     // Upstream Stack bus Interface
+    //  - connect upstream signals inside manager from stu_ifc
     `include "TB_system_stack_bus_upstream_assignments.vh"
 
     //----------------------------------------------------------------------------------------------------

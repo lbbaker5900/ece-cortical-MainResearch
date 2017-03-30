@@ -64,10 +64,10 @@ if __name__ == "__main__":
     pLine = pLine + '\n  // General control and status                                                                     '
     pLine = pLine + '\n  //  - doesnt seem to work if you use cb_test for observed signals                                 '
     pLine = pLine + '\n  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.   '
-    pLine = pLine + '\n  assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__sys__allSynchronized   =   DownstreamStackBusOOB[{0}].sys__pe__allSynchronized                      ; '.format(pe) 
-    pLine = pLine + '\n  assign DownstreamStackBusOOB[{0}].pe__sys__thisSynchronized                     =  system_inst.manager_array_inst.mgr_inst[{0}].sys__mgr__thisSynchronized   ; '.format(pe) 
-    pLine = pLine + '\n  assign DownstreamStackBusOOB[{0}].pe__sys__ready                                =  system_inst.manager_array_inst.mgr_inst[{0}].sys__mgr__ready              ; '.format(pe) 
-    pLine = pLine + '\n  assign DownstreamStackBusOOB[{0}].pe__sys__complete                             =  system_inst.manager_array_inst.mgr_inst[{0}].sys__mgr__complete           ; '.format(pe) 
+    pLine = pLine + '\n  assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__sys__allSynchronized   =  GenStackBus[{0}].sys__pe__allSynchronized                                ; '.format(pe) 
+    pLine = pLine + '\n  assign GenStackBus[{0}].pe__sys__thisSynchronized                               =  system_inst.manager_array_inst.mgr_inst[{0}].sys__mgr__thisSynchronized  ; '.format(pe) 
+    pLine = pLine + '\n  assign GenStackBus[{0}].pe__sys__ready                                          =  system_inst.manager_array_inst.mgr_inst[{0}].sys__mgr__ready             ; '.format(pe) 
+    pLine = pLine + '\n  assign GenStackBus[{0}].pe__sys__complete                                       =  system_inst.manager_array_inst.mgr_inst[{0}].sys__mgr__complete          ; '.format(pe) 
     pLine = pLine + '\n'
     #                                                                                                    
                                              

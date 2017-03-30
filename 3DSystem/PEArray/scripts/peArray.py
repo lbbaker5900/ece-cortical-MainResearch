@@ -3829,10 +3829,10 @@ if __name__ == "__main__":
   pLine = pLine + '\n  // pe__sys__thisSyncnronized basically means all the streams in a PE are complete'
   pLine = pLine + '\n  // The PE controller will move to a \'final\' state once it receives sys__pe__allSynchronized'
   for tgtPe in range (0, numOfPe):
-    pLine = pLine + '\n  assign  DownstreamStackBusOOB[{0}].sys__pe__allSynchronized = DownstreamStackBusOOB[0].pe__sys__thisSynchronized & '.format(tgtPe)
+    pLine = pLine + '\n  assign  GenStackBus[{0}].sys__pe__allSynchronized = GenStackBus[0].pe__sys__thisSynchronized & '.format(tgtPe)
     for pe in range (1, numOfPe-1):
-      pLine = pLine + '\n                                   DownstreamStackBusOOB[{0}].pe__sys__thisSynchronized & '.format(pe)
-    pLine = pLine + '\n                                   DownstreamStackBusOOB[{0}].pe__sys__thisSynchronized ; '.format(numOfPe-1)
+      pLine = pLine + '\n                                   GenStackBus[{0}].pe__sys__thisSynchronized & '.format(pe)
+    pLine = pLine + '\n                                   GenStackBus[{0}].pe__sys__thisSynchronized ; '.format(numOfPe-1)
     pLine = pLine + '\n'
 
   f.write(pLine)
