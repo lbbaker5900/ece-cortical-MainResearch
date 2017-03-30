@@ -41,6 +41,17 @@ module manager (
             //
             `include "manager_noc_cntl_noc_ports.vh"
  
+
+            //-------------------------------
+            // Stack Bus - OOB Downstream
+            //
+            // OOB controls how the lanes are interpreted
+            mgr__std__oob_cntl        , 
+            mgr__std__oob_valid       , 
+            std__mgr__oob_ready       , 
+            mgr__std__oob_type        , 
+            mgr__std__oob_data        , 
+
             //-------------------------------
             // Stack Bus - Downstream
             //
@@ -79,9 +90,22 @@ module manager (
   input                               sys__mgr__ready               ; 
   input                               sys__mgr__complete            ; 
 
+
+
+  //-------------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream
+
+  // OOB carries PE configuration    
+  output[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl            ; 
+  output                                        mgr__std__oob_valid           ; 
+  input                                         std__mgr__oob_ready           ; 
+  output[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr__std__oob_type            ; 
+  output[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr__std__oob_data            ; 
+
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
 
+  // carries lane arguments
   `include "manager_stack_bus_downstream_port_declarations.vh"
 
   //-------------------------------------------------------------------------------------------------
@@ -95,6 +119,10 @@ module manager (
   output  [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data    ;
  
 
+
+
+
+  //-------------------------------------------------------------------------------------------------
   //-------------------------------------------------------------------------------------------------
   // Regs and Wires
   
@@ -121,6 +149,16 @@ module manager (
 
   wire  [`MGR_WU_ADDRESS_RANGE    ]     wuf__wum__addr          ;
   wire  [`MGR_WU_ADDRESS_RANGE    ]     mcntl__wuf__start_addr  ;  // first WU address
+
+  //-------------------------------------------------------------------------------------------------
+
+
+
+
+  //-------------------------------------------------------------------------------------------------
+  //-------------------------------------------------------------------------------------------------
+  // Instances
+  //
 
   wu_fetch wu_fetch (
   

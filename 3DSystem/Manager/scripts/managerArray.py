@@ -580,13 +580,6 @@ if __name__ == "__main__":
   pLine = ""
 
   #
-  pLine = pLine + '\n  // OOB carries PE configuration                                           '
-  pLine = pLine + '\n  output[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl            ;' 
-  pLine = pLine + '\n  output                                        mgr__std__oob_valid           ;' 
-  pLine = pLine + '\n  input                                         std__mgr__oob_ready           ;' 
-  pLine = pLine + '\n  output[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr__std__oob_type            ;' 
-  pLine = pLine + '\n  output[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr__std__oob_data            ;' 
-  #
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  // Lane operand bus                 '.format(lane)
     pLine = pLine + '\n  input                                            std__mgr__lane{0}_strm0_ready       ;'.format(lane)
@@ -639,13 +632,6 @@ if __name__ == "__main__":
   f = open('../HDL/common/manager_stack_bus_downstream_ports.vh', 'w')
   pLine = ""
 
-  pLine = pLine + '\n            // OOB controls how the lanes are interpreted,' 
-  pLine = pLine + '\n            mgr__std__oob_cntl                           ,' 
-  pLine = pLine + '\n            mgr__std__oob_valid                          ,' 
-  pLine = pLine + '\n            std__mgr__oob_ready                          ,' 
-  pLine = pLine + '\n            mgr__std__oob_type                           ,' 
-  pLine = pLine + '\n            mgr__std__oob_data                           ,' 
-  #
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n            // Lane operand bus                  '.format(lane)
     pLine = pLine + '\n            std__mgr__lane{0}_strm0_ready       ,'.format(lane)
