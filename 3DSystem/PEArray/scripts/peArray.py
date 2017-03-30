@@ -3592,7 +3592,7 @@ if __name__ == "__main__":
   f.close()
 
 
-  f = open('../HDL/common/system_pe_stack_bus_downstream_ports.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_downstream_oob_ports.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3605,7 +3605,14 @@ if __name__ == "__main__":
     pLine = pLine + '\n            std__pe{0}__oob_type                           ,'.format(pe) 
     pLine = pLine + '\n            std__pe{0}__oob_data                           ,'.format(pe) 
     pLine = pLine + '\n'
-    #                                                             
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/system_pe_stack_bus_downstream_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n            // Downstream argument streams            '.format(pe) 
       for strm in range (0, 2):
@@ -3632,7 +3639,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_pe_stack_bus_downstream_port_declarations.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_downstream_oob_port_declarations.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3643,7 +3650,16 @@ if __name__ == "__main__":
     pLine = pLine + '\n  output                                        pe{0}__std__oob_ready           ;'.format(pe) 
     pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
     pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe{0}__oob_data            ;'.format(pe) 
-    #                                                             
+    pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../HDL/common/system_pe_stack_bus_downstream_port_declarations.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n  output                                          pe{0}__std__lane{1}_strm{2}_ready       ;'.format(pe,lane,strm)
@@ -3671,7 +3687,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_pe_stack_bus_downstream_instance_wires.vh', 'w')
+  f = open('../HDL/common/system_pe_stack_bus_downstream_oob_instance_wires.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3682,7 +3698,15 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire                                        pe{0}__std__oob_ready           ;'.format(pe) 
     pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe{0}__oob_type            ;'.format(pe) 
     pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe{0}__oob_data            ;'.format(pe) 
-    #                                                             
+    pLine = pLine + '\n'
+     
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/system_pe_stack_bus_downstream_instance_wires.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n  wire                                        pe{0}__std__lane{1}_strm{2}_ready       ;'.format(pe,lane,strm)
@@ -3693,7 +3717,7 @@ if __name__ == "__main__":
      
   f.write(pLine)
   f.close()
-
+  """
   f = open('../HDL/common/system_pe_stack_bus_downstream_instance_ports.vh', 'w')
   pLine = ""
 
@@ -3723,8 +3747,8 @@ if __name__ == "__main__":
                                              
   f.write(pLine)
   f.close()
-
-  f = open('../HDL/common/system_pe_stack_bus_downstream_instance_connections.vh', 'w')
+  """
+  f = open('../HDL/common/system_pe_stack_bus_downstream_oob_instance_connections.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -3740,7 +3764,15 @@ if __name__ == "__main__":
     pLine = pLine + '\n  assign   pe{0}__std__oob_ready                    =  pe_inst[{0}].pe__std__oob_ready            ;'.format(pe)
     pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__oob_type           =  std__pe{0}__oob_type                       ;'.format(pe) 
     pLine = pLine + '\n  assign   pe_inst[{0}].std__pe__oob_data           =  std__pe{0}__oob_data                       ;'.format(pe) 
-    #
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/system_pe_stack_bus_downstream_instance_connections.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n  assign   pe{0}__std__lane{1}_strm{2}_ready                 =  pe_inst[{0}].pe__std__lane{1}_strm{2}_ready  ;'.format(pe,lane,strm)
@@ -3840,7 +3872,7 @@ if __name__ == "__main__":
 
   # Generate pe datapath stack bus connections
 
-  f = open('../HDL/common/pe_stack_bus_downstream_ports.vh', 'w')
+  f = open('../HDL/common/pe_stack_bus_downstream_oob_ports.vh', 'w')
   pLine = ""
 
   #
@@ -3850,6 +3882,13 @@ if __name__ == "__main__":
   pLine = pLine + '\n            pe__std__oob_ready                          ,'.format(lane,pe,strm) 
   pLine = pLine + '\n            std__pe__oob_type                           ,'.format(lane,pe,strm) 
   pLine = pLine + '\n            std__pe__oob_data                           ,'.format(lane,pe,strm) 
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/pe_stack_bus_downstream_ports.vh', 'w')
+  pLine = ""
   #
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n            // Lane operand bus                 '.format(lane)
@@ -3866,7 +3905,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/pe_stack_bus_downstream_port_declarations.vh', 'w')
+  f = open('../HDL/common/pe_stack_bus_downstream_oob_port_declarations.vh', 'w')
   pLine = ""
 
   #
@@ -3876,7 +3915,14 @@ if __name__ == "__main__":
   pLine = pLine + '\n  output                                        pe__std__oob_ready           ;'.format(lane,pe,strm) 
   pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;'.format(lane,pe,strm) 
   pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe__oob_data            ;'.format(lane,pe,strm) 
-  #
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/pe_stack_bus_downstream_port_declarations.vh', 'w')
+  pLine = ""
+
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  // Lane operand bus                 '.format(lane)
     pLine = pLine + '\n  output                                           pe__std__lane{0}_strm0_ready       ;'.format(lane)
@@ -3892,7 +3938,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/pe_stack_bus_downstream_instance_wires.vh', 'w')
+  f = open('../HDL/common/pe_stack_bus_downstream_oob_instance_wires.vh', 'w')
   pLine = ""
 
   pLine = pLine + '\n  // OOB carries PE configuration                                           '
@@ -3901,7 +3947,12 @@ if __name__ == "__main__":
   pLine = pLine + '\n  wire                                        pe__std__oob_ready           ;' 
   pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;' 
   pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe__oob_data            ;' 
-  #
+
+  f.write(pLine)
+  f.close()
+  f = open('../HDL/common/pe_stack_bus_downstream_instance_wires.vh', 'w')
+  pLine = ""
+
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  // Lane operand bus                 '.format(lane)
     pLine = pLine + '\n  wire                                           pe__std__lane{0}_strm0_ready       ;'.format(lane)
@@ -3930,7 +3981,7 @@ if __name__ == "__main__":
 
 
 
-  f = open('../HDL/common/pe_stack_bus_downstream_instance_ports.vh', 'w')
+  f = open('../HDL/common/pe_stack_bus_downstream_oob_instance_ports.vh', 'w')
   pLine = ""
 
   pLine = pLine + '\n               // OOB carries PE configuration                                               '
@@ -3939,7 +3990,15 @@ if __name__ == "__main__":
   pLine = pLine + '\n               .pe__std__oob_ready                 ( pe__std__oob_ready              ),      '
   pLine = pLine + '\n               .std__pe__oob_type                  ( std__pe__oob_type               ),      '
   pLine = pLine + '\n               .std__pe__oob_data                  ( std__pe__oob_data               ),      '
-  #
+  pLine = pLine + '\n'
+                                             
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../HDL/common/pe_stack_bus_downstream_instance_ports.vh', 'w')
+  pLine = ""
+
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n               // Lane {0}                 '.format(lane)
     for strm in range (0, 2):
@@ -3947,6 +4006,9 @@ if __name__ == "__main__":
       pLine = pLine + '\n               .std__pe__lane{0}_strm{1}_cntl          ( std__pe__lane{0}_strm{1}_cntl       ),      '.format(lane,strm)
       pLine = pLine + '\n               .std__pe__lane{0}_strm{1}_data          ( std__pe__lane{0}_strm{1}_data       ),      '.format(lane,strm)
       pLine = pLine + '\n               .std__pe__lane{0}_strm{1}_data_valid    ( std__pe__lane{0}_strm{1}_data_valid ),      '.format(lane,strm)
+      pLine = pLine + '\n'
+    pLine = pLine + '\n'
+  pLine = pLine + '\n'
                                              
   f.write(pLine)
   f.close()

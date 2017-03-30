@@ -61,6 +61,9 @@ module system (
   
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
+  `include "system_manager_stack_bus_downstream_oob_instance_wires.vh"
+  `include "system_pe_stack_bus_downstream_oob_instance_wires.vh"
+
   `include "system_manager_stack_bus_downstream_instance_wires.vh"
   `include "system_pe_stack_bus_downstream_instance_wires.vh"
   
@@ -78,6 +81,10 @@ module system (
         //-------------------------------------------------------------------------------------------
         // Stack Bus - General
         `include "system_manager_array_sys_general_instance_ports.vh"
+
+        //-------------------------------------------------------------------------------------------
+        // Stack Bus - OOB Downstream
+        `include "system_manager_array_stack_bus_downstream_oob_instance_ports.vh"
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - Downstream
@@ -102,6 +109,10 @@ module system (
         //-------------------------------------------------------------------------------------------
         // Stack Bus - General
         `include "system_pe_array_sys_general_instance_ports.vh"
+
+        //-------------------------------------------------------------------------------------------
+        // Stack Bus - OOB Downstream
+        `include "system_pe_array_stack_bus_downstream_oob_instance_ports.vh"
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - Downstream
@@ -130,6 +141,9 @@ module system (
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - Downstream
+        `include "system_manager_array_stack_bus_downstream_oob_instance_ports.vh"
+        `include "system_pe_array_stack_bus_downstream_oob_instance_ports.vh"
+
         `include "system_manager_array_stack_bus_downstream_instance_ports.vh"
         `include "system_pe_array_stack_bus_downstream_instance_ports.vh"
 

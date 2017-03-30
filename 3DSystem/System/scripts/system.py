@@ -92,7 +92,7 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/system_stack_bus_downstream_port_declarations.vh', 'w')
+  f = open('../HDL/common/system_stack_bus_downstream_oob_port_declarations.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -111,6 +111,13 @@ if __name__ == "__main__":
     pLine = pLine + '\n  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe{0}__oob_data            ;'.format(pe) 
     pLine = pLine + '\n'
     #                                                             
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/system_stack_bus_downstream_port_declarations.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n  output                                            std__mgr{0}__lane{1}_strm{2}_ready       ;'.format(pe,lane,strm)
@@ -130,7 +137,7 @@ if __name__ == "__main__":
   #----------------------------------------------------------------------------------------------------
   # Connected Manager and PE ports 
 
-  f = open('../HDL/common/system_stack_bus_downstream_instance_connections.vh', 'w')
+  f = open('../HDL/common/system_stack_bus_downstream_oob_instance_connections.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -142,7 +149,15 @@ if __name__ == "__main__":
     pLine = pLine + '\n assign    std__pe{0}__oob_type    =    mgr{0}__std__oob_type            ;'.format(pe) 
     pLine = pLine + '\n assign    std__pe{0}__oob_data    =    mgr{0}__std__oob_data            ;'.format(pe) 
     pLine = pLine + '\n'
-    #                                                             
+
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../HDL/common/system_stack_bus_downstream_instance_connections.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n assign    std__mgr{0}__lane{1}_strm{2}_ready      =    pe{0}__std__lane{1}_strm{2}_ready        ;'.format(pe,lane,strm)
@@ -228,7 +243,7 @@ if __name__ == "__main__":
   f.close()
 
 
-  f = open('../HDL/common/system_manager_array_stack_bus_downstream_instance_ports.vh', 'w')
+  f = open('../HDL/common/system_manager_array_stack_bus_downstream_oob_instance_ports.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -241,7 +256,15 @@ if __name__ == "__main__":
     pLine = pLine + '\n            .mgr{0}__std__oob_type                         ( mgr{0}__std__oob_type   ),'.format(pe) 
     pLine = pLine + '\n            .mgr{0}__std__oob_data                         ( mgr{0}__std__oob_data   ),'.format(pe) 
     pLine = pLine + '\n'
-    #                                                             
+
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../HDL/common/system_manager_array_stack_bus_downstream_instance_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       for strm in range (0, 2):
         pLine = pLine + '\n            .std__mgr{0}__lane{1}_strm{2}_ready           ( std__mgr{0}__lane{1}_strm{2}_ready       ),'.format(pe,lane,strm)
@@ -290,7 +313,7 @@ if __name__ == "__main__":
   f.close()
 
 
-  f = open('../HDL/common/system_pe_array_stack_bus_downstream_instance_ports.vh', 'w')
+  f = open('../HDL/common/system_pe_array_stack_bus_downstream_oob_instance_ports.vh', 'w')
   pLine = ""
 
   for pe in range (0, numOfPe):
@@ -303,7 +326,15 @@ if __name__ == "__main__":
     pLine = pLine + '\n            .std__pe{0}__oob_type                         ( std__pe{0}__oob_type   ),'.format(pe) 
     pLine = pLine + '\n            .std__pe{0}__oob_data                         ( std__pe{0}__oob_data   ),'.format(pe) 
     pLine = pLine + '\n'
-    #                                                             
+    pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/system_pe_array_stack_bus_downstream_instance_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n            // Downstream argument streams            '.format(pe) 
       for strm in range (0, 2):

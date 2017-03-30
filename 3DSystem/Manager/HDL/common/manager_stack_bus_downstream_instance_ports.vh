@@ -1,10 +1,4 @@
 
-               // OOB carries PE configuration                                                 
-               .mgr__std__oob_cntl                  ( mgr__std__oob_cntl               ),      
-               .mgr__std__oob_valid                 ( mgr__std__oob_valid              ),      
-               .std__mgr__oob_ready                 ( std__mgr__oob_ready              ),      
-               .mgr__std__oob_type                  ( mgr__std__oob_type               ),      
-               .mgr__std__oob_data                  ( mgr__std__oob_data               ),      
                // Lane 0                 
                .std__mgr__lane0_strm0_ready         ( std__mgr__lane0_strm0_ready      ),      
                .mgr__std__lane0_strm0_cntl          ( mgr__std__lane0_strm0_cntl       ),      

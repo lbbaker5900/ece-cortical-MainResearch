@@ -27,6 +27,11 @@
 module stack_interface (
 
             //-------------------------------
+            // Stack Bus - OOB Downstream
+            //
+            `include "pe_stack_bus_downstream_oob_ports.vh"
+
+            //-------------------------------
             // Stack Bus - Downstream
             //
             `include "pe_stack_bus_downstream_ports.vh"
@@ -80,6 +85,11 @@ module stack_interface (
   `include "pe_stack_bus_downstream_port_declarations.vh"
 
   //---------------------------------------
+  // OOB interface to Stack Bus - downstream
+  //
+  `include "pe_stack_bus_downstream_oob_port_declarations.vh"
+
+  //---------------------------------------
   // interface to streaming Ops - downstream
   //
   `include "stack_interface_to_stOp_downstream_port_declarations.vh"
@@ -112,6 +122,11 @@ module stack_interface (
   //-------------------------------------------------------------------------------------------------
   // Regs and Wires
   
+  //---------------------------------------
+  // interface to Stack Bus - OOB downstream
+  //
+  `include "pe_stack_bus_downstream_oob_instance_wires.vh"
+
   //---------------------------------------
   // interface to Stack Bus - downstream
   //

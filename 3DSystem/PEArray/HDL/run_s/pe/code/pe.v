@@ -52,6 +52,11 @@ module pe (
             pe__sys__complete               , 
 
             //-------------------------------
+            // Stack Bus - OOB Downstream
+            //
+            `include "pe_stack_bus_downstream_oob_ports.vh"
+
+            //-------------------------------
             // Stack Bus - Downstream
             //
             `include "pe_stack_bus_downstream_ports.vh"
@@ -91,7 +96,7 @@ module pe (
 
 
   //-------------------------------------------------------------------------------------------------
-  // Stack Bus - Downstream
+  // Stack Bus - General
 
   // General control and status                                                
   input [`PE_PE_ID_RANGE                 ]      sys__pe__peId                ; 
@@ -99,6 +104,11 @@ module pe (
   output                                        pe__sys__thisSynchronized    ; 
   output                                        pe__sys__ready               ; 
   output                                        pe__sys__complete            ; 
+
+  //-------------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream
+
+  `include "pe_stack_bus_downstream_oob_port_declarations.vh"
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
@@ -194,6 +204,11 @@ module pe (
   wire   [`STACK_UP_INTF_OOB_DATA_RANGE ]        sui__sti__oob_data   ;
 
   stack_interface stack_interface (
+
+                        //---------------------------------------
+                        // OOB Downstream Stack bus
+                        //
+                        `include "pe_stack_bus_downstream_oob_instance_ports.vh"
 
                         //---------------------------------------
                         // Downstream Stack bus

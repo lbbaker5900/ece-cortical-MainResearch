@@ -1,10 +1,4 @@
 
-  // OOB carries PE configuration                                           
-  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl            ;
-  wire                                        mgr__std__oob_valid           ;
-  wire                                        std__mgr__oob_ready           ;
-  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr__std__oob_type            ;
-  wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr__std__oob_data            ;
   // Lane operand bus                 
   wire                                           std__mgr__lane0_strm0_ready       ;
   wire [`COMMON_STD_INTF_CNTL_RANGE       ]      mgr__std__lane0_strm0_cntl        ;

@@ -1,10 +1,4 @@
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr0__std__oob_cntl            ;
-  output                                          mgr0__std__oob_valid           ;
-  input                                           std__mgr0__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr0__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr0__std__oob_data            ;
   input                                         std__mgr0__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr0__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr0__std__lane0_strm0_data        ;
@@ -325,12 +319,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr0__std__lane31_strm1_data        ;
   output                                        mgr0__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr1__std__oob_cntl            ;
-  output                                          mgr1__std__oob_valid           ;
-  input                                           std__mgr1__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr1__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr1__std__oob_data            ;
   input                                         std__mgr1__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr1__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr1__std__lane0_strm0_data        ;
@@ -651,12 +639,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr1__std__lane31_strm1_data        ;
   output                                        mgr1__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr2__std__oob_cntl            ;
-  output                                          mgr2__std__oob_valid           ;
-  input                                           std__mgr2__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr2__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr2__std__oob_data            ;
   input                                         std__mgr2__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr2__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr2__std__lane0_strm0_data        ;
@@ -977,12 +959,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr2__std__lane31_strm1_data        ;
   output                                        mgr2__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr3__std__oob_cntl            ;
-  output                                          mgr3__std__oob_valid           ;
-  input                                           std__mgr3__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr3__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr3__std__oob_data            ;
   input                                         std__mgr3__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr3__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr3__std__lane0_strm0_data        ;
@@ -1303,12 +1279,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr3__std__lane31_strm1_data        ;
   output                                        mgr3__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr4__std__oob_cntl            ;
-  output                                          mgr4__std__oob_valid           ;
-  input                                           std__mgr4__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr4__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr4__std__oob_data            ;
   input                                         std__mgr4__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr4__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr4__std__lane0_strm0_data        ;
@@ -1629,12 +1599,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr4__std__lane31_strm1_data        ;
   output                                        mgr4__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr5__std__oob_cntl            ;
-  output                                          mgr5__std__oob_valid           ;
-  input                                           std__mgr5__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr5__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr5__std__oob_data            ;
   input                                         std__mgr5__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr5__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr5__std__lane0_strm0_data        ;
@@ -1955,12 +1919,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr5__std__lane31_strm1_data        ;
   output                                        mgr5__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr6__std__oob_cntl            ;
-  output                                          mgr6__std__oob_valid           ;
-  input                                           std__mgr6__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr6__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr6__std__oob_data            ;
   input                                         std__mgr6__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr6__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr6__std__lane0_strm0_data        ;
@@ -2281,12 +2239,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr6__std__lane31_strm1_data        ;
   output                                        mgr6__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr7__std__oob_cntl            ;
-  output                                          mgr7__std__oob_valid           ;
-  input                                           std__mgr7__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr7__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr7__std__oob_data            ;
   input                                         std__mgr7__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr7__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr7__std__lane0_strm0_data        ;
@@ -2607,12 +2559,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr7__std__lane31_strm1_data        ;
   output                                        mgr7__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr8__std__oob_cntl            ;
-  output                                          mgr8__std__oob_valid           ;
-  input                                           std__mgr8__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr8__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr8__std__oob_data            ;
   input                                         std__mgr8__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr8__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr8__std__lane0_strm0_data        ;
@@ -2933,12 +2879,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr8__std__lane31_strm1_data        ;
   output                                        mgr8__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr9__std__oob_cntl            ;
-  output                                          mgr9__std__oob_valid           ;
-  input                                           std__mgr9__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr9__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr9__std__oob_data            ;
   input                                         std__mgr9__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr9__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr9__std__lane0_strm0_data        ;
@@ -3259,12 +3199,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr9__std__lane31_strm1_data        ;
   output                                        mgr9__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr10__std__oob_cntl            ;
-  output                                          mgr10__std__oob_valid           ;
-  input                                           std__mgr10__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr10__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr10__std__oob_data            ;
   input                                         std__mgr10__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr10__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr10__std__lane0_strm0_data        ;
@@ -3585,12 +3519,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr10__std__lane31_strm1_data        ;
   output                                        mgr10__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr11__std__oob_cntl            ;
-  output                                          mgr11__std__oob_valid           ;
-  input                                           std__mgr11__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr11__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr11__std__oob_data            ;
   input                                         std__mgr11__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr11__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr11__std__lane0_strm0_data        ;
@@ -3911,12 +3839,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr11__std__lane31_strm1_data        ;
   output                                        mgr11__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr12__std__oob_cntl            ;
-  output                                          mgr12__std__oob_valid           ;
-  input                                           std__mgr12__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr12__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr12__std__oob_data            ;
   input                                         std__mgr12__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr12__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr12__std__lane0_strm0_data        ;
@@ -4237,12 +4159,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr12__std__lane31_strm1_data        ;
   output                                        mgr12__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr13__std__oob_cntl            ;
-  output                                          mgr13__std__oob_valid           ;
-  input                                           std__mgr13__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr13__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr13__std__oob_data            ;
   input                                         std__mgr13__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr13__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr13__std__lane0_strm0_data        ;
@@ -4563,12 +4479,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr13__std__lane31_strm1_data        ;
   output                                        mgr13__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr14__std__oob_cntl            ;
-  output                                          mgr14__std__oob_valid           ;
-  input                                           std__mgr14__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr14__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr14__std__oob_data            ;
   input                                         std__mgr14__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr14__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr14__std__lane0_strm0_data        ;
@@ -4889,12 +4799,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr14__std__lane31_strm1_data        ;
   output                                        mgr14__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr15__std__oob_cntl            ;
-  output                                          mgr15__std__oob_valid           ;
-  input                                           std__mgr15__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr15__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr15__std__oob_data            ;
   input                                         std__mgr15__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr15__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr15__std__lane0_strm0_data        ;
@@ -5215,12 +5119,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr15__std__lane31_strm1_data        ;
   output                                        mgr15__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr16__std__oob_cntl            ;
-  output                                          mgr16__std__oob_valid           ;
-  input                                           std__mgr16__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr16__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr16__std__oob_data            ;
   input                                         std__mgr16__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr16__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr16__std__lane0_strm0_data        ;
@@ -5541,12 +5439,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr16__std__lane31_strm1_data        ;
   output                                        mgr16__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr17__std__oob_cntl            ;
-  output                                          mgr17__std__oob_valid           ;
-  input                                           std__mgr17__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr17__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr17__std__oob_data            ;
   input                                         std__mgr17__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr17__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr17__std__lane0_strm0_data        ;
@@ -5867,12 +5759,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr17__std__lane31_strm1_data        ;
   output                                        mgr17__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr18__std__oob_cntl            ;
-  output                                          mgr18__std__oob_valid           ;
-  input                                           std__mgr18__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr18__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr18__std__oob_data            ;
   input                                         std__mgr18__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr18__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr18__std__lane0_strm0_data        ;
@@ -6193,12 +6079,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr18__std__lane31_strm1_data        ;
   output                                        mgr18__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr19__std__oob_cntl            ;
-  output                                          mgr19__std__oob_valid           ;
-  input                                           std__mgr19__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr19__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr19__std__oob_data            ;
   input                                         std__mgr19__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr19__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr19__std__lane0_strm0_data        ;
@@ -6519,12 +6399,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr19__std__lane31_strm1_data        ;
   output                                        mgr19__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr20__std__oob_cntl            ;
-  output                                          mgr20__std__oob_valid           ;
-  input                                           std__mgr20__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr20__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr20__std__oob_data            ;
   input                                         std__mgr20__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr20__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr20__std__lane0_strm0_data        ;
@@ -6845,12 +6719,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr20__std__lane31_strm1_data        ;
   output                                        mgr20__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr21__std__oob_cntl            ;
-  output                                          mgr21__std__oob_valid           ;
-  input                                           std__mgr21__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr21__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr21__std__oob_data            ;
   input                                         std__mgr21__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr21__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr21__std__lane0_strm0_data        ;
@@ -7171,12 +7039,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr21__std__lane31_strm1_data        ;
   output                                        mgr21__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr22__std__oob_cntl            ;
-  output                                          mgr22__std__oob_valid           ;
-  input                                           std__mgr22__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr22__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr22__std__oob_data            ;
   input                                         std__mgr22__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr22__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr22__std__lane0_strm0_data        ;
@@ -7497,12 +7359,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr22__std__lane31_strm1_data        ;
   output                                        mgr22__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr23__std__oob_cntl            ;
-  output                                          mgr23__std__oob_valid           ;
-  input                                           std__mgr23__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr23__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr23__std__oob_data            ;
   input                                         std__mgr23__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr23__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr23__std__lane0_strm0_data        ;
@@ -7823,12 +7679,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr23__std__lane31_strm1_data        ;
   output                                        mgr23__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr24__std__oob_cntl            ;
-  output                                          mgr24__std__oob_valid           ;
-  input                                           std__mgr24__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr24__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr24__std__oob_data            ;
   input                                         std__mgr24__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr24__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr24__std__lane0_strm0_data        ;
@@ -8149,12 +7999,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr24__std__lane31_strm1_data        ;
   output                                        mgr24__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr25__std__oob_cntl            ;
-  output                                          mgr25__std__oob_valid           ;
-  input                                           std__mgr25__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr25__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr25__std__oob_data            ;
   input                                         std__mgr25__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr25__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr25__std__lane0_strm0_data        ;
@@ -8475,12 +8319,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr25__std__lane31_strm1_data        ;
   output                                        mgr25__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr26__std__oob_cntl            ;
-  output                                          mgr26__std__oob_valid           ;
-  input                                           std__mgr26__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr26__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr26__std__oob_data            ;
   input                                         std__mgr26__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr26__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr26__std__lane0_strm0_data        ;
@@ -8801,12 +8639,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr26__std__lane31_strm1_data        ;
   output                                        mgr26__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr27__std__oob_cntl            ;
-  output                                          mgr27__std__oob_valid           ;
-  input                                           std__mgr27__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr27__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr27__std__oob_data            ;
   input                                         std__mgr27__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr27__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr27__std__lane0_strm0_data        ;
@@ -9127,12 +8959,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr27__std__lane31_strm1_data        ;
   output                                        mgr27__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr28__std__oob_cntl            ;
-  output                                          mgr28__std__oob_valid           ;
-  input                                           std__mgr28__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr28__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr28__std__oob_data            ;
   input                                         std__mgr28__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr28__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr28__std__lane0_strm0_data        ;
@@ -9453,12 +9279,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr28__std__lane31_strm1_data        ;
   output                                        mgr28__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr29__std__oob_cntl            ;
-  output                                          mgr29__std__oob_valid           ;
-  input                                           std__mgr29__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr29__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr29__std__oob_data            ;
   input                                         std__mgr29__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr29__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr29__std__lane0_strm0_data        ;
@@ -9779,12 +9599,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr29__std__lane31_strm1_data        ;
   output                                        mgr29__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr30__std__oob_cntl            ;
-  output                                          mgr30__std__oob_valid           ;
-  input                                           std__mgr30__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr30__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr30__std__oob_data            ;
   input                                         std__mgr30__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr30__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr30__std__lane0_strm0_data        ;
@@ -10105,12 +9919,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr30__std__lane31_strm1_data        ;
   output                                        mgr30__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr31__std__oob_cntl            ;
-  output                                          mgr31__std__oob_valid           ;
-  input                                           std__mgr31__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr31__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr31__std__oob_data            ;
   input                                         std__mgr31__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr31__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr31__std__lane0_strm0_data        ;
@@ -10431,12 +10239,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr31__std__lane31_strm1_data        ;
   output                                        mgr31__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr32__std__oob_cntl            ;
-  output                                          mgr32__std__oob_valid           ;
-  input                                           std__mgr32__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr32__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr32__std__oob_data            ;
   input                                         std__mgr32__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr32__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr32__std__lane0_strm0_data        ;
@@ -10757,12 +10559,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr32__std__lane31_strm1_data        ;
   output                                        mgr32__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr33__std__oob_cntl            ;
-  output                                          mgr33__std__oob_valid           ;
-  input                                           std__mgr33__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr33__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr33__std__oob_data            ;
   input                                         std__mgr33__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr33__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr33__std__lane0_strm0_data        ;
@@ -11083,12 +10879,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr33__std__lane31_strm1_data        ;
   output                                        mgr33__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr34__std__oob_cntl            ;
-  output                                          mgr34__std__oob_valid           ;
-  input                                           std__mgr34__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr34__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr34__std__oob_data            ;
   input                                         std__mgr34__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr34__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr34__std__lane0_strm0_data        ;
@@ -11409,12 +11199,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr34__std__lane31_strm1_data        ;
   output                                        mgr34__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr35__std__oob_cntl            ;
-  output                                          mgr35__std__oob_valid           ;
-  input                                           std__mgr35__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr35__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr35__std__oob_data            ;
   input                                         std__mgr35__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr35__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr35__std__lane0_strm0_data        ;
@@ -11735,12 +11519,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr35__std__lane31_strm1_data        ;
   output                                        mgr35__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr36__std__oob_cntl            ;
-  output                                          mgr36__std__oob_valid           ;
-  input                                           std__mgr36__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr36__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr36__std__oob_data            ;
   input                                         std__mgr36__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr36__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr36__std__lane0_strm0_data        ;
@@ -12061,12 +11839,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr36__std__lane31_strm1_data        ;
   output                                        mgr36__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr37__std__oob_cntl            ;
-  output                                          mgr37__std__oob_valid           ;
-  input                                           std__mgr37__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr37__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr37__std__oob_data            ;
   input                                         std__mgr37__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr37__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr37__std__lane0_strm0_data        ;
@@ -12387,12 +12159,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr37__std__lane31_strm1_data        ;
   output                                        mgr37__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr38__std__oob_cntl            ;
-  output                                          mgr38__std__oob_valid           ;
-  input                                           std__mgr38__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr38__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr38__std__oob_data            ;
   input                                         std__mgr38__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr38__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr38__std__lane0_strm0_data        ;
@@ -12713,12 +12479,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr38__std__lane31_strm1_data        ;
   output                                        mgr38__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr39__std__oob_cntl            ;
-  output                                          mgr39__std__oob_valid           ;
-  input                                           std__mgr39__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr39__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr39__std__oob_data            ;
   input                                         std__mgr39__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr39__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr39__std__lane0_strm0_data        ;
@@ -13039,12 +12799,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr39__std__lane31_strm1_data        ;
   output                                        mgr39__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr40__std__oob_cntl            ;
-  output                                          mgr40__std__oob_valid           ;
-  input                                           std__mgr40__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr40__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr40__std__oob_data            ;
   input                                         std__mgr40__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr40__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr40__std__lane0_strm0_data        ;
@@ -13365,12 +13119,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr40__std__lane31_strm1_data        ;
   output                                        mgr40__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr41__std__oob_cntl            ;
-  output                                          mgr41__std__oob_valid           ;
-  input                                           std__mgr41__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr41__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr41__std__oob_data            ;
   input                                         std__mgr41__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr41__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr41__std__lane0_strm0_data        ;
@@ -13691,12 +13439,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr41__std__lane31_strm1_data        ;
   output                                        mgr41__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr42__std__oob_cntl            ;
-  output                                          mgr42__std__oob_valid           ;
-  input                                           std__mgr42__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr42__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr42__std__oob_data            ;
   input                                         std__mgr42__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr42__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr42__std__lane0_strm0_data        ;
@@ -14017,12 +13759,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr42__std__lane31_strm1_data        ;
   output                                        mgr42__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr43__std__oob_cntl            ;
-  output                                          mgr43__std__oob_valid           ;
-  input                                           std__mgr43__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr43__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr43__std__oob_data            ;
   input                                         std__mgr43__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr43__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr43__std__lane0_strm0_data        ;
@@ -14343,12 +14079,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr43__std__lane31_strm1_data        ;
   output                                        mgr43__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr44__std__oob_cntl            ;
-  output                                          mgr44__std__oob_valid           ;
-  input                                           std__mgr44__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr44__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr44__std__oob_data            ;
   input                                         std__mgr44__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr44__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr44__std__lane0_strm0_data        ;
@@ -14669,12 +14399,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr44__std__lane31_strm1_data        ;
   output                                        mgr44__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr45__std__oob_cntl            ;
-  output                                          mgr45__std__oob_valid           ;
-  input                                           std__mgr45__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr45__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr45__std__oob_data            ;
   input                                         std__mgr45__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr45__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr45__std__lane0_strm0_data        ;
@@ -14995,12 +14719,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr45__std__lane31_strm1_data        ;
   output                                        mgr45__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr46__std__oob_cntl            ;
-  output                                          mgr46__std__oob_valid           ;
-  input                                           std__mgr46__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr46__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr46__std__oob_data            ;
   input                                         std__mgr46__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr46__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr46__std__lane0_strm0_data        ;
@@ -15321,12 +15039,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr46__std__lane31_strm1_data        ;
   output                                        mgr46__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr47__std__oob_cntl            ;
-  output                                          mgr47__std__oob_valid           ;
-  input                                           std__mgr47__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr47__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr47__std__oob_data            ;
   input                                         std__mgr47__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr47__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr47__std__lane0_strm0_data        ;
@@ -15647,12 +15359,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr47__std__lane31_strm1_data        ;
   output                                        mgr47__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr48__std__oob_cntl            ;
-  output                                          mgr48__std__oob_valid           ;
-  input                                           std__mgr48__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr48__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr48__std__oob_data            ;
   input                                         std__mgr48__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr48__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr48__std__lane0_strm0_data        ;
@@ -15973,12 +15679,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr48__std__lane31_strm1_data        ;
   output                                        mgr48__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr49__std__oob_cntl            ;
-  output                                          mgr49__std__oob_valid           ;
-  input                                           std__mgr49__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr49__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr49__std__oob_data            ;
   input                                         std__mgr49__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr49__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr49__std__lane0_strm0_data        ;
@@ -16299,12 +15999,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr49__std__lane31_strm1_data        ;
   output                                        mgr49__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr50__std__oob_cntl            ;
-  output                                          mgr50__std__oob_valid           ;
-  input                                           std__mgr50__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr50__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr50__std__oob_data            ;
   input                                         std__mgr50__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr50__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr50__std__lane0_strm0_data        ;
@@ -16625,12 +16319,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr50__std__lane31_strm1_data        ;
   output                                        mgr50__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr51__std__oob_cntl            ;
-  output                                          mgr51__std__oob_valid           ;
-  input                                           std__mgr51__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr51__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr51__std__oob_data            ;
   input                                         std__mgr51__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr51__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr51__std__lane0_strm0_data        ;
@@ -16951,12 +16639,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr51__std__lane31_strm1_data        ;
   output                                        mgr51__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr52__std__oob_cntl            ;
-  output                                          mgr52__std__oob_valid           ;
-  input                                           std__mgr52__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr52__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr52__std__oob_data            ;
   input                                         std__mgr52__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr52__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr52__std__lane0_strm0_data        ;
@@ -17277,12 +16959,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr52__std__lane31_strm1_data        ;
   output                                        mgr52__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr53__std__oob_cntl            ;
-  output                                          mgr53__std__oob_valid           ;
-  input                                           std__mgr53__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr53__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr53__std__oob_data            ;
   input                                         std__mgr53__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr53__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr53__std__lane0_strm0_data        ;
@@ -17603,12 +17279,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr53__std__lane31_strm1_data        ;
   output                                        mgr53__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr54__std__oob_cntl            ;
-  output                                          mgr54__std__oob_valid           ;
-  input                                           std__mgr54__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr54__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr54__std__oob_data            ;
   input                                         std__mgr54__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr54__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr54__std__lane0_strm0_data        ;
@@ -17929,12 +17599,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr54__std__lane31_strm1_data        ;
   output                                        mgr54__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr55__std__oob_cntl            ;
-  output                                          mgr55__std__oob_valid           ;
-  input                                           std__mgr55__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr55__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr55__std__oob_data            ;
   input                                         std__mgr55__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr55__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr55__std__lane0_strm0_data        ;
@@ -18255,12 +17919,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr55__std__lane31_strm1_data        ;
   output                                        mgr55__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr56__std__oob_cntl            ;
-  output                                          mgr56__std__oob_valid           ;
-  input                                           std__mgr56__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr56__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr56__std__oob_data            ;
   input                                         std__mgr56__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr56__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr56__std__lane0_strm0_data        ;
@@ -18581,12 +18239,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr56__std__lane31_strm1_data        ;
   output                                        mgr56__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr57__std__oob_cntl            ;
-  output                                          mgr57__std__oob_valid           ;
-  input                                           std__mgr57__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr57__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr57__std__oob_data            ;
   input                                         std__mgr57__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr57__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr57__std__lane0_strm0_data        ;
@@ -18907,12 +18559,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr57__std__lane31_strm1_data        ;
   output                                        mgr57__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr58__std__oob_cntl            ;
-  output                                          mgr58__std__oob_valid           ;
-  input                                           std__mgr58__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr58__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr58__std__oob_data            ;
   input                                         std__mgr58__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr58__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr58__std__lane0_strm0_data        ;
@@ -19233,12 +18879,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr58__std__lane31_strm1_data        ;
   output                                        mgr58__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr59__std__oob_cntl            ;
-  output                                          mgr59__std__oob_valid           ;
-  input                                           std__mgr59__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr59__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr59__std__oob_data            ;
   input                                         std__mgr59__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr59__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr59__std__lane0_strm0_data        ;
@@ -19559,12 +19199,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr59__std__lane31_strm1_data        ;
   output                                        mgr59__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr60__std__oob_cntl            ;
-  output                                          mgr60__std__oob_valid           ;
-  input                                           std__mgr60__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr60__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr60__std__oob_data            ;
   input                                         std__mgr60__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr60__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr60__std__lane0_strm0_data        ;
@@ -19885,12 +19519,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr60__std__lane31_strm1_data        ;
   output                                        mgr60__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr61__std__oob_cntl            ;
-  output                                          mgr61__std__oob_valid           ;
-  input                                           std__mgr61__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr61__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr61__std__oob_data            ;
   input                                         std__mgr61__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr61__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr61__std__lane0_strm0_data        ;
@@ -20211,12 +19839,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr61__std__lane31_strm1_data        ;
   output                                        mgr61__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr62__std__oob_cntl            ;
-  output                                          mgr62__std__oob_valid           ;
-  input                                           std__mgr62__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr62__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr62__std__oob_data            ;
   input                                         std__mgr62__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr62__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr62__std__lane0_strm0_data        ;
@@ -20537,12 +20159,6 @@
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr62__std__lane31_strm1_data        ;
   output                                        mgr62__std__lane31_strm1_data_valid  ;
 
-  // OOB controls how the lanes are interpreted                                  
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr63__std__oob_cntl            ;
-  output                                          mgr63__std__oob_valid           ;
-  input                                           std__mgr63__oob_ready           ;
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr63__std__oob_type            ;
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr63__std__oob_data            ;
   input                                         std__mgr63__lane0_strm0_ready       ;
   output  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr63__std__lane0_strm0_cntl        ;
   output  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr63__std__lane0_strm0_data        ;

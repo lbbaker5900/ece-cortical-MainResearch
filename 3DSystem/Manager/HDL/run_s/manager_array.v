@@ -35,6 +35,10 @@ module manager_array (
         `include "system_manager_sys_general_ports.vh"
 
         //-------------------------------------------------------------------------------------------
+        // Stack Bus - OOB Downstream
+        `include "system_manager_stack_bus_downstream_oob_ports.vh"
+
+        //-------------------------------------------------------------------------------------------
         // Stack Bus - Downstream
         `include "system_manager_stack_bus_downstream_ports.vh"
 
@@ -61,9 +65,12 @@ module manager_array (
   `include "system_manager_sys_general_port_declarations.vh"
 
   //-------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream
+  `include "system_manager_stack_bus_downstream_oob_port_declarations.vh"
+
+  //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
   `include "system_manager_stack_bus_downstream_port_declarations.vh"
-
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
@@ -83,17 +90,16 @@ module manager_array (
   `include "system_manager_sys_general_instance_wires.vh"
   
   //-------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream
+  `include "system_manager_stack_bus_downstream_oob_instance_wires.vh"
+  
+  //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
   `include "system_manager_stack_bus_downstream_instance_wires.vh"
   
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
   `include "system_manager_stack_bus_upstream_instance_wires.vh"
-  
-  //-------------------------------------------------------------------------------------------
-  // General system connectivity
-  `include "manager_sys_general_connections.vh"
-
   
  
   genvar gvi;
@@ -108,6 +114,15 @@ module manager_array (
         wire                                        sys__mgr__thisSynchronized    ; 
         wire                                        sys__mgr__ready               ; 
         wire                                        sys__mgr__complete            ; 
+
+        //-------------------------------------------------------------------------------------------------
+        // Stack Bus OOB downstream Interface
+        //  - OOB carries PE configuration  
+        wire[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl            ; 
+        wire                                        mgr__std__oob_valid           ; 
+        wire                                        std__mgr__oob_ready           ; 
+        wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr__std__oob_type            ; 
+        wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr__std__oob_data            ; 
 
         //-------------------------------------------------------------------------------------------------
         // Stack Bus downstream Interface
@@ -136,6 +151,15 @@ module manager_array (
                 `include "manager_noc_instance_ports.vh"
    
                 //-------------------------------
+                // Stack Bus OOB downstream Interface
+                //  - OOB carries PE configuration  
+                .mgr__std__oob_cntl     ( mgr__std__oob_cntl     ), 
+                .mgr__std__oob_valid    ( mgr__std__oob_valid    ), 
+                .std__mgr__oob_ready    ( std__mgr__oob_ready    ), 
+                .mgr__std__oob_type     ( mgr__std__oob_type     ), 
+                .mgr__std__oob_data     ( mgr__std__oob_data     ), 
+
+                //-------------------------------
                 // Stack Bus downstream Interface
                 `include "manager_stack_bus_downstream_instance_ports.vh"
    
@@ -163,12 +187,20 @@ module manager_array (
       end
   endgenerate
 
+  //-------------------------------------------------------------------------------------------
+  // General system connectivity
+  `include "manager_sys_general_connections.vh"
+  
   //-------------------------------------------------------------------------------------------------
-  // Stack Bus Downstream Interface
+  // Stack Bus OOB Downstream connections
+  `include "system_manager_stack_bus_downstream_oob_instance_connections.vh"
+
+  //-------------------------------------------------------------------------------------------------
+  // Stack Bus Downstream connections
   `include "system_manager_stack_bus_downstream_instance_connections.vh"
 
   //-------------------------------------------------------------------------------------------------
-  // Stack Bus Upstream Interface
+  // Stack Bus Upstream connections
   `include "system_manager_stack_bus_upstream_instance_connections.vh"
 
   //-------------------------------------------------------------------------------------------------

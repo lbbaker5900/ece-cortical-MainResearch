@@ -38,6 +38,9 @@ module stack_bus (
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - Downstream
+        `include "system_manager_stack_bus_downstream_oob_ports.vh"
+        `include "system_pe_stack_bus_downstream_oob_ports.vh"
+
         `include "system_manager_stack_bus_downstream_ports.vh"
         `include "system_pe_stack_bus_downstream_ports.vh"
 
@@ -65,6 +68,15 @@ module stack_bus (
   `include "system_sys_general_port_declarations.vh"
 
   //-------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream
+  `include "system_stack_bus_downstream_oob_port_declarations.vh"
+
+  //-------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream
+  `include "system_stack_bus_downstream_oob_port_declarations.vh"
+
+
+  //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
   `include "system_stack_bus_downstream_port_declarations.vh"
 
@@ -87,6 +99,9 @@ module stack_bus (
   
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
+  `include "system_manager_stack_bus_downstream_oob_instance_wires.vh"
+  `include "system_pe_stack_bus_downstream_oob_instance_wires.vh"
+
   `include "system_manager_stack_bus_downstream_instance_wires.vh"
   `include "system_pe_stack_bus_downstream_instance_wires.vh"
   
@@ -106,6 +121,10 @@ module stack_bus (
   //-------------------------------------------------------------------------------------------
   // Stack Bus - General
   `include "system_general_instance_connections.vh"
+  
+  //-------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream
+  `include "system_stack_bus_downstream_oob_instance_connections.vh"
   
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream

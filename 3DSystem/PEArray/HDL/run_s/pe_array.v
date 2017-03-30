@@ -39,8 +39,12 @@ module pe_array (
         `include "system_pe_sys_general_ports.vh"
 
         //-------------------------------------------------------------------------------------------
-        // Stack Bus - Downstream
+        // Stack Bus - OOB Downstream
         `include "system_pe_stack_bus_downstream_ports.vh"
+
+        //-------------------------------------------------------------------------------------------
+        // Stack Bus - Downstream
+        `include "system_pe_stack_bus_downstream_oob_ports.vh"
 
         //-------------------------------------------------------------------------------------------
         // Stack Bus - Upstream
@@ -65,6 +69,10 @@ module pe_array (
   `include "system_pe_sys_general_port_declarations.vh"
 
   //-------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream
+  `include "system_pe_stack_bus_downstream_oob_port_declarations.vh"
+
+  //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
   `include "system_pe_stack_bus_downstream_port_declarations.vh"
 
@@ -81,6 +89,10 @@ module pe_array (
   //-------------------------------------------------------------------------------------------
   // Stack Bus - General
   `include "system_pe_sys_general_instance_wires.vh"
+  
+  //-------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream
+  `include "system_pe_stack_bus_downstream_oob_instance_wires.vh"
   
   //-------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
@@ -105,6 +117,10 @@ module pe_array (
         wire                                        pe__sys__thisSynchronized    ; 
         wire                                        pe__sys__ready               ; 
         wire                                        pe__sys__complete            ; 
+
+        //-------------------------------------------------------------------------------------------------
+        // Stack Bus OOB downstream Interface
+        `include "pe_stack_bus_downstream_oob_instance_wires.vh"
 
         //-------------------------------------------------------------------------------------------------
         // Stack Bus downstream Interface
@@ -147,6 +163,10 @@ module pe_array (
                 //`include "pe_sys_general_instance_ports.vh"
    
                 //-------------------------------
+                // Stack Bus OOB downstream Interface
+                `include "pe_stack_bus_downstream_oob_instance_ports.vh"
+   
+                //-------------------------------
                 // Stack Bus downstream Interface
                 `include "pe_stack_bus_downstream_instance_ports.vh"
    
@@ -166,6 +186,10 @@ module pe_array (
               );
       end
   endgenerate
+
+  //-------------------------------------------------------------------------------------------------
+  // Stack Bus OOB Downstream Interface
+  `include "system_pe_stack_bus_downstream_oob_instance_connections.vh"
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus Downstream Interface
