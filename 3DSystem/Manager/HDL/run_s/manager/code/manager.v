@@ -111,12 +111,12 @@ module manager (
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
   //
-  output                                         stu__mgr__valid       ;
-  output  [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr__cntl        ;
-  input                                          mgr__stu__ready       ;
-  output  [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr__type        ;  // Control or Data, Vector or scalar
-  output  [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr__data        ;
-  output  [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data    ;
+  input                                          stu__mgr__valid       ;
+  input   [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr__cntl        ;
+  output                                         mgr__stu__ready       ;
+  input   [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr__type        ;  // Control or Data, Vector or scalar
+  input   [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr__data        ;
+  input   [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data    ;
  
 
 
@@ -214,6 +214,67 @@ module manager (
 
           .clk                     ( clk               )
         );
+
+  //-------------------------------------------------------------------------------------------------
+  // Stack Upstream Interface
+  // 
+  wire                                          stuc__rdp__valid       ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      stuc__rdp__cntl        ;
+  wire                                          rdp__stuc__ready       ;
+  wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      stuc__rdp__tag         ;  // tag size is the same as sent to PE
+  wire   [`STACK_UP_INTF_DATA_RANGE      ]      stuc__rdp__data        ;
+ 
+  //-------------------------------------------------------------------------------------------------
+  // Control Processor Interface
+  //
+  wire                                          stuc__rcp__valid       ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      stuc__rcp__cntl        ;
+  wire                                          rcp__stuc__ready       ;
+  wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      stuc__rcp__tag         ;  // tag size is the same as sent to PE
+  wire   [`STACK_UP_INTF_DATA_RANGE      ]      stuc__rcp__data        ;
+
+  stu_cntl stu_cntl (
+
+            //-------------------------------
+            // Stack Bus - Upstream
+            //
+            .stu__mgr__valid         ( stu__mgr__valid     ),
+            .stu__mgr__cntl          ( stu__mgr__cntl      ),
+            .mgr__stu__ready         ( mgr__stu__ready     ),
+            //.mgr__stu__ready         ( ),
+            .stu__mgr__type          ( stu__mgr__type      ),  
+            .stu__mgr__data          ( stu__mgr__data      ),
+            .stu__mgr__oob_data      ( stu__mgr__oob_data  ),
+ 
+            //-------------------------------
+            // Return data processor output
+            //
+            .stuc__rdp__valid         ( stuc__rdp__valid   ),
+            .stuc__rdp__cntl          ( stuc__rdp__cntl    ),  // used to delineate upstream packet data
+            .rdp__stuc__ready         ( rdp__stuc__ready   ),
+            .stuc__rdp__tag           ( stuc__rdp__tag     ),  // Use this to match with WU and take all the data 
+            .stuc__rdp__data          ( stuc__rdp__data    ),  // The data may vary so check for cntl=EOD when reading this interface
+
+            //-------------------------------
+            // Return Control packet processor output
+            //
+            .stuc__rcp__valid         ( stuc__rcp__valid   ),
+            .stuc__rcp__cntl          ( stuc__rcp__cntl    ),  // used to delineate upstream packet data
+            .rcp__stuc__ready         ( rcp__stuc__ready   ),
+            .stuc__rcp__tag           ( stuc__rcp__tag     ),  // Use this to match with WU and take all the data 
+            .stuc__rcp__data          ( stuc__rcp__data    ),  // The data may vary so check for cntl=EOD when reading this interface
+
+            //-------------------------------
+            // General
+            //
+            .clk                      ( clk                ),
+            .reset_poweron            ( reset_poweron      ) 
+ 
+    );
+
+  // FIXME
+  assign rcp__stuc__ready = 1;
+  assign rdp__stuc__ready = 1;
 
   //-------------------------------------------------------------------------------------------------
   // NoC Interface

@@ -117,7 +117,9 @@ if __name__ == "__main__":
         pLine = pLine + '\n        //  - doesnt seem to work if you use cb_test for observed signals '
         pLine = pLine + '\n        assign UpstreamStackBus[{0}].pe__stu__valid                                =   system_inst.manager_array_inst.mgr_inst[{0}].stu__mgr__valid    ;      '.format(pe)
         pLine = pLine + '\n        assign UpstreamStackBus[{0}].pe__stu__cntl                                 =   system_inst.manager_array_inst.mgr_inst[{0}].stu__mgr__cntl     ;      '.format(pe)
-        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__stu__ready        =   1\'b1                                                           ;      '.format(pe)
+        pLine = pLine + '\n        // manager module stu_cntl now driving ready, so just capture state of ready                                                                                                          '
+        pLine = pLine + '\n        //assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__stu__ready        =   1\'b1                                                           ;      '.format(pe)
+        pLine = pLine + '\n        assign UpstreamStackBus[{0}].stu__pe__ready                                =   system_inst.manager_array_inst.mgr_inst[{0}].mgr__stu__ready    ;      '.format(pe)
         pLine = pLine + '\n        assign UpstreamStackBus[{0}].pe__stu__type                                 =   system_inst.manager_array_inst.mgr_inst[{0}].stu__mgr__type     ;      '.format(pe)
         pLine = pLine + '\n        assign UpstreamStackBus[{0}].pe__stu__data                                 =   system_inst.manager_array_inst.mgr_inst[{0}].stu__mgr__data     ;      '.format(pe)
         pLine = pLine + '\n        assign UpstreamStackBus[{0}].pe__stu__oob_data                             =   system_inst.manager_array_inst.mgr_inst[{0}].stu__mgr__oob_data ;      '.format(pe)

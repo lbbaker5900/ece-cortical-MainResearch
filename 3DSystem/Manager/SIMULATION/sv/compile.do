@@ -35,12 +35,13 @@ pushd ../../scripts
 ./managerArray.py 2>&1   | tee -a ../SIMULATION/sv/$1
 popd
                                                                                                                                                                  
-vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../SIMULATION/common                   ../../../PEArray/HDL/run_s/common/code/generic_fifo.v       2>&1   | tee -a $1  
-vlog     +define+TESTING     +incdir+../../HDL/common +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../SIMULATION/common                   ../../../PEArray/HDL/run_s/pe/code/noc_cntl.v               2>&1   | tee -a $1  
-vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../SIMULATION/common                   ../../HDL/run_s/manager/code/wu_fetch.v                     2>&1   | tee -a $1  
-vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../SIMULATION/common                   ../../HDL/run_s/manager/code/wu_memory.v                    2>&1   | tee -a $1  
-vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../SIMULATION/common                   ../../HDL/run_s/manager/code/manager.v                      2>&1   | tee -a $1  
-vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../SIMULATION/common                   ../../HDL/run_s/manager_array.v                             2>&1   | tee -a $1  
+vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common                   ../../../PEArray/HDL/run_s/common/code/generic_fifo.v       2>&1   | tee -a $1  
+vlog     +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common                   ../../../PEArray/HDL/run_s/pe/code/noc_cntl.v               2>&1   | tee -a $1  
+vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common                   ../../HDL/run_s/manager/code/wu_fetch.v                     2>&1   | tee -a $1  
+vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common                   ../../HDL/run_s/manager/code/wu_memory.v                    2>&1   | tee -a $1  
+vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common                   ../../HDL/run_s/manager/code/stu_cntl.v                     2>&1   | tee -a $1  
+vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common                   ../../HDL/run_s/manager/code/manager.v                      2>&1   | tee -a $1  
+vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common                   ../../HDL/run_s/manager_array.v                             2>&1   | tee -a $1  
                                                                                                                                                                  
 
 
