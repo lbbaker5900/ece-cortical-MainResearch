@@ -49,7 +49,6 @@ module wu_fetch (
             //-------------------------------
             // General
             //
-            sys__mgr__mgrId                   ,
             clk                               ,
             reset_poweron    
  
@@ -61,7 +60,6 @@ module wu_fetch (
   input                                     clk                          ;
   input                                     reset_poweron                ;
 
-  input   [`MGR_MGR_ID_RANGE    ]           sys__mgr__mgrId              ;
   //----------------------------------------------------------------------------------------------------
   // Control
 
@@ -88,17 +86,92 @@ module wu_fetch (
   wire [`MGR_WU_ADDRESS_RANGE    ]          wuf__wum__addr_e1              ;
   wire                                      wuf__wum__read_e1              ;
 
+  reg                                       xxx__wuf__stall_d1             ;
+
+  reg  [`MGR_WU_ADDRESS_RANGE    ]          pc                             ;
+  wire                                      increment_pc                   ;
+  wire                                      stall                          ;
+
   //----------------------------------------------------------------------------------------------------
   // Registered Inputs and Outputs
 
   always @(posedge clk)
     begin
+      xxx__wuf__stall_d1        <= ( reset_poweron   ) ? 'd0  :  xxx__wuf__stall         ;
       mcntl__wuf__enable_d1     <= ( reset_poweron   ) ? 'd0  :  mcntl__wuf__enable      ;
       mcntl__wuf__start_addr_d1 <= ( reset_poweron   ) ? 'd0  :  mcntl__wuf__start_addr  ;
       wuf__wum__addr            <= ( reset_poweron   ) ? 'd0  :  wuf__wum__addr_e1       ;
       wuf__wum__read            <= ( reset_poweron   ) ? 'd0  :  wuf__wum__read_e1       ;
 
     end
+
+
+  //----------------------------------------------------------------------------------------------------
+  // Fetch FSM
+  //
+
+  reg [`WUF_CNTL_STATE_RANGE ] wuf_cntl_state      ; // state flop
+  reg [`WUF_CNTL_STATE_RANGE ] wuf_cntl_state_next ;
+  
+  
+
+  // State register 
+  always @(posedge clk)
+    begin
+      wuf_cntl_state <= ( reset_poweron ) ? `WUF_CNTL_WAIT       :
+                                            wuf_cntl_state_next  ;
+    end
+  
+ 
+  always @(*)
+    begin
+      case (wuf_cntl_state)
+        
+        `WUF_CNTL_WAIT: 
+          wuf_cntl_state_next =  (~stall ) ? `WUF_CNTL_START        :  // start WU read
+                                             `WUF_CNTL_WAIT         ;
+
+        `WUF_CNTL_START: 
+          wuf_cntl_state_next =  (~stall ) ? `WUF_CNTL_INC_PC       :  
+                                             `WUF_CNTL_START        ;
+
+        `WUF_CNTL_INC_PC: 
+          wuf_cntl_state_next =  ( stall ) ? `WUF_CNTL_STALL        :  
+                                             `WUF_CNTL_INC_PC       ;
+
+        `WUF_CNTL_STALL: 
+          wuf_cntl_state_next =  (~stall ) ? `WUF_CNTL_INC_PC       :  
+                                             `WUF_CNTL_STALL        ;
+
+        // Latch state on error
+        `WUF_CNTL_ERR:
+          wuf_cntl_state_next = `WUF_CNTL_ERR ;
+  
+        default:
+          wuf_cntl_state_next = `WUF_CNTL_WAIT ;
+    
+      endcase // case(so_cntl_state)
+    end // always @ (*)
+  
+
+  //----------------------------------------------------------------------------------------------------
+  // Assignments
+  //
+
+  assign stall                     = xxx__wuf__stall_d1   ;
+  assign wuf__wum__addr_e1         = pc                   ;
+  assign wuf__wum__read_e1         = increment_pc         ;
+
+  assign increment_pc              = (wuf_cntl_state == `WUF_CNTL_INC_PC) ;
+
+  always @(posedge clk)
+    begin
+      pc  <= ( reset_poweron       )  ? 'd0                       :
+             (~mcntl__wuf__enable  )  ? mcntl__wuf__start_addr_d1 :
+             ( increment_pc        )  ? pc + 1                    :
+                                        pc                        ;
+    end
+
 
 
 

@@ -342,14 +342,6 @@ module pe_cntl (
          
   assign cntl__sti__oob_ready_e1         = ~from_Sti_OOB_Fifo[0].almost_full ;
 
-/*
-  assign sui__sti__valid           = to_Stu_Fifo[0].pipe_read     ;
-  assign sui__sti__cntl            = to_Stu_Fifo[0].pipe_cntl     ;
-  assign sui__sti__type            = to_Stu_Fifo[0].pipe_type     ;
-  assign sui__sti__data            = to_Stu_Fifo[0].pipe_data     ;
-*/
-
-
 
 
 

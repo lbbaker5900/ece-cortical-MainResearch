@@ -183,7 +183,7 @@ interface stu_ifc(
     // cant get &^*&^$# inputs to work
     // modports are complete crap, basically, dont *&%*%^ use them
     clocking cb_pe @(posedge clk);
-        output      stu__pe__ready        ;
+        //output      stu__pe__ready        ;
         //input        pe__stu__valid       ;
         //input        pe__stu__cntl        ;
         //input        pe__stu__type        ;  // Control or Data, Vector or scalar

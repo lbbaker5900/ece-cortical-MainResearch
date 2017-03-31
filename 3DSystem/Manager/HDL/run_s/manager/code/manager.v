@@ -159,6 +159,8 @@ module manager (
   //-------------------------------------------------------------------------------------------------
   // Instances
   //
+  // FIXME
+  wire xxx__wuf__stall = 0;
 
   wu_fetch wu_fetch (
   
@@ -169,8 +171,8 @@ module manager (
  
           //-------------------------------
           // Control
-          .mcntl__wuf__enable      ( mcntl__wuf__enable       ),
-          .mcntl__wuf__start_addr  ( mcntl__wuf__start_addr   ),
+          .mcntl__wuf__enable      ( 1       ),
+          .mcntl__wuf__start_addr  ( 0       ),
 
           //-------------------------------
           // 
@@ -178,8 +180,6 @@ module manager (
  
           //-------------------------------
           // General
-          .sys__mgr__mgrId         ( sys__mgr__mgrId          ),
-
           .clk                     ( clk                      ),
           .reset_poweron           ( reset_poweron            )
         );
@@ -281,15 +281,26 @@ module manager (
   // 
   noc_cntl noc_cntl (
 
-                        // Aggregate Control-Path (cp) to NoC 
-                       .noc__scntl__cp_ready          ( noc__mcntl__cp_ready         ), 
-                       .scntl__noc__cp_cntl           ( mcntl__noc__cp_cntl          ), 
-                       .scntl__noc__cp_type           ( mcntl__noc__cp_type          ), 
-                       .scntl__noc__cp_data           ( mcntl__noc__cp_data          ), 
-                       .scntl__noc__cp_laneId         ( mcntl__noc__cp_laneId        ), 
-                       .scntl__noc__cp_strmId         ( mcntl__noc__cp_strmId        ), 
-                       .scntl__noc__cp_valid          ( mcntl__noc__cp_valid         ), 
-                        // Aggregate Data-Path (cp) from NoC 
+                        // Control-Path (cp) to NoC 
+                       .noc__scntl__cp_ready          ( noc__rdp__cp_ready           ), 
+                       .scntl__noc__cp_cntl           ( rdp__noc__cp_cntl            ), 
+                       .scntl__noc__cp_type           ( rdp__noc__cp_type            ), 
+                       .scntl__noc__cp_data           ( rdp__noc__cp_data            ), 
+                       .scntl__noc__cp_laneId         ( rdp__noc__cp_laneId          ), 
+                       .scntl__noc__cp_strmId         ( rdp__noc__cp_strmId          ), 
+                       .scntl__noc__cp_valid          ( rdp__noc__cp_valid           ), 
+                                                                                     
+                        // Data-Path (dp) to NoC                                     
+                       .noc__scntl__dp_ready          ( noc__rdp__dp_ready           ), 
+                       .scntl__noc__dp_type           ( rdp__noc__dp_type            ), 
+                       .scntl__noc__dp_cntl           ( rdp__noc__dp_cntl            ), 
+                       .scntl__noc__dp_peId           ( rdp__noc__dp_peId            ), 
+                       .scntl__noc__dp_laneId         ( rdp__noc__dp_laneId          ), 
+                       .scntl__noc__dp_strmId         ( rdp__noc__dp_strmId          ), 
+                       .scntl__noc__dp_data           ( rdp__noc__dp_data            ), 
+                       .scntl__noc__dp_valid          ( rdp__noc__dp_valid           ), 
+
+                        // Data-Path (cp) from NoC 
                        .scntl__noc__cp_ready          ( mcntl__noc__cp_ready         ), 
                        .noc__scntl__cp_cntl           ( noc__mcntl__cp_cntl          ), 
                        .noc__scntl__cp_type           ( noc__mcntl__cp_type          ), 
@@ -299,16 +310,7 @@ module manager (
                        .noc__scntl__cp_strmId         ( noc__mcntl__cp_strmId        ), 
                        .noc__scntl__cp_valid          ( noc__mcntl__cp_valid         ), 
                        
-                        // Aggregate Data-Path (dp) to NoC 
-                       .noc__scntl__dp_ready          ( noc__mcntl__dp_ready         ), 
-                       .scntl__noc__dp_type           ( mcntl__noc__dp_type          ), 
-                       .scntl__noc__dp_cntl           ( mcntl__noc__dp_cntl          ), 
-                       .scntl__noc__dp_peId           ( mcntl__noc__dp_peId          ), 
-                       .scntl__noc__dp_laneId         ( mcntl__noc__dp_laneId        ), 
-                       .scntl__noc__dp_strmId         ( mcntl__noc__dp_strmId        ), 
-                       .scntl__noc__dp_data           ( mcntl__noc__dp_data          ), 
-                       .scntl__noc__dp_valid          ( mcntl__noc__dp_valid         ), 
-                        // Aggregate Data-Path (dp) from NoC 
+                        // Data-Path (dp) from NoC 
                        .scntl__noc__dp_ready          ( mcntl__noc__dp_ready         ), 
                        .noc__scntl__dp_cntl           ( noc__mcntl__dp_cntl          ), 
                        .noc__scntl__dp_type           ( noc__mcntl__dp_type          ), 

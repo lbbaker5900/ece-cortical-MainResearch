@@ -51,6 +51,27 @@ module rdp_cntl (
             stuc__rdp__data          ,  // The data may vary so check for cntl=EOD when reading this interface
 
             //-------------------------------
+            // NoC interface
+            //
+            // Control-Path (cp) to NoC 
+            noc__rdp__cp_ready      , 
+            rdp__noc__cp_cntl       , 
+            rdp__noc__cp_type       , 
+            rdp__noc__cp_data       , 
+            rdp__noc__cp_laneId     , 
+            rdp__noc__cp_strmId     , 
+            rdp__noc__cp_valid      , 
+            // Data-Path (dp) to NoC 
+            noc__rdp__dp_ready      , 
+            rdp__noc__dp_cntl       , 
+            rdp__noc__dp_type       , 
+            rdp__noc__dp_peId       , 
+            rdp__noc__dp_laneId     , 
+            rdp__noc__dp_strmId     , 
+            rdp__noc__dp_data       , 
+            rdp__noc__dp_valid      , 
+
+            //-------------------------------
             // General
             //
             clk              ,
@@ -83,9 +104,31 @@ module rdp_cntl (
   output                                         rdp__wuc__ready         ;
   input   [`WU_CNTL_TYPE_RANGE            ]      wuc__rdp__type          ;  // e.g. memory write
   input   [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      wuc__rdp__tag           ;  // tag size is the same as sent to PE
-  input   [`WU_CNTL_MEMORY_PTR_RANGE      ]      wuc__rdp__mem_desc_ptr  ;  // memory descriptor pointer
+  input   [`WU_CNTL_MEMORY_PTR_RANGE      ]      wuc__rdp__mem_desc_ptr  ;  // memory descriptor pointer. All the memory descriptor pointers will be collected to form the local memory write and/or NoC packet
   input   [`WU_CNTL_NUM_WORDS_RANGE       ]      wuc__rdp__num_words     ;  // How many words in the upstream packet are valid
 
+
+  //-------------------------------------------------------------------------------------------------
+  // NoC interface
+  //
+  // Control-Path (cp) to NoC '
+  input                                             noc__rdp__cp_ready      ; 
+  output [`COMMON_STD_INTF_CNTL_RANGE             ] rdp__noc__cp_cntl       ; 
+  output [`NOC_CONT_NOC_PACKET_TYPE_RANGE         ] rdp__noc__cp_type       ; 
+  output [`PE_NOC_INTERNAL_DATA_RANGE             ] rdp__noc__cp_data       ; 
+  output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] rdp__noc__cp_laneId     ; 
+  output                                            rdp__noc__cp_strmId     ; 
+  output                                            rdp__noc__cp_valid      ; 
+  
+  // Data-Path (dp) to NoC '
+  input                                             noc__rdp__dp_ready      ; 
+  output [`COMMON_STD_INTF_CNTL_RANGE             ] rdp__noc__dp_cntl       ; 
+  output [`NOC_CONT_NOC_PACKET_TYPE_RANGE         ] rdp__noc__dp_type       ; 
+  output [`PE_PE_ID_RANGE                         ] rdp__noc__dp_peId       ; 
+  output [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] rdp__noc__dp_laneId     ; 
+  output                                            rdp__noc__dp_strmId     ; 
+  output [`STREAMING_OP_CNTL_DATA_RANGE           ] rdp__noc__dp_data       ; 
+  output                                            rdp__noc__dp_valid      ; 
 
 
   //----------------------------------------------------------------------------------------------------
@@ -128,6 +171,27 @@ module rdp_cntl (
   reg     [`WU_CNTL_NUM_WORDS_RANGE       ]      wuc__rdp__num_words_d1     ;  // How many words in the upstream packet are valid
 
 
+  //-------------------------------------------------------------------------------------------------
+  // NoC interface
+  //
+  // Control-Path (cp) to NoC '
+  wire                                            noc__rdp__cp_ready      ; 
+  wire [`COMMON_STD_INTF_CNTL_RANGE             ] rdp__noc__cp_cntl       ; 
+  wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE         ] rdp__noc__cp_type       ; 
+  wire [`PE_NOC_INTERNAL_DATA_RANGE             ] rdp__noc__cp_data       ; 
+  wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] rdp__noc__cp_laneId     ; 
+  wire                                            rdp__noc__cp_strmId     ; 
+  wire                                            rdp__noc__cp_valid      ; 
+  
+  // Data-Path (dp) to NoC '
+  wire                                            noc__rdp__dp_ready      ; 
+  wire [`COMMON_STD_INTF_CNTL_RANGE             ] rdp__noc__dp_cntl       ; 
+  wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE         ] rdp__noc__dp_type       ; 
+  wire [`PE_PE_ID_RANGE                         ] rdp__noc__dp_peId       ; 
+  wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] rdp__noc__dp_laneId     ; 
+  wire                                            rdp__noc__dp_strmId     ; 
+  wire [`STREAMING_OP_CNTL_DATA_RANGE           ] rdp__noc__dp_data       ; 
+  wire                                            rdp__noc__dp_valid      ; 
 
   //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
@@ -163,7 +227,7 @@ module rdp_cntl (
   genvar gvi;
   generate
     for (gvi=0; gvi<1; gvi=gvi+1) 
-      begin: from_Stuc_Fifo
+      begin: from_Wuc_Fifo
 
         // Write data
         reg    [`COMMON_STD_INTF_CNTL_RANGE     ]         write_cntl          ;
@@ -259,13 +323,6 @@ module rdp_cntl (
       end
   endgenerate
 
-/*
-  assign from_Stuc_Fifo[0].clear      = 1'b0                         ;
-  assign stuc__rdp__valid           = from_Stuc_Fifo[0].pipe_read     ;
-  assign stuc__rdp__cntl            = from_Stuc_Fifo[0].pipe_cntl     ;
-  assign stuc__rdp__data            = from_Stuc_Fifo[0].pipe_data     ;
-  assign stuc__rdp__oob_data        = from_Stuc_Fifo[0].pipe_tag      ;
-*/
 
   //----------------------------------------------------------------------------------------------------
   // Upstream Packet Processing FSM
