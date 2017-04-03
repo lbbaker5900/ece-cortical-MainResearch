@@ -185,8 +185,9 @@ module manager (
         );
 
 
-  wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__icntl                ;  // instruction delineator
-  wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__dcntl                ;  // descriptor delineator
+  wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__icntl       ;  // instruction delineator
+  wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__dcntl       ;  // descriptor delineator
+  wire  [`MGR_INST_TYPE_RANGE           ]    wum__wud__op          ;  // NOP, OP, MR, MW
   // WU Instruction option fields
   wire  [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type    [`MGR_WU_OPT_PER_INST ] ;  // 
   wire  [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value   [`MGR_WU_OPT_PER_INST ] ;  // 
@@ -205,6 +206,7 @@ module manager (
           .wum__wud__valid         ( wum__wud__valid          ),
           .wum__wud__icntl         ( wum__wud__icntl          ),
           .wum__wud__dcntl         ( wum__wud__dcntl          ),
+          .wum__wud__op            ( wum__wud__op             ),
           .wum__wud__option_type   ( wum__wud__option_type    ),
           .wum__wud__option_value  ( wum__wud__option_value   ),
 

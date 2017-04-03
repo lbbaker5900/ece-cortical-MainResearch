@@ -78,7 +78,7 @@
 // WU Memory
 
 // FIXME
-`define MGR_WU_ADDRESS_WIDTH                       20
+`define MGR_WU_ADDRESS_WIDTH                       24
 `define MGR_WU_ADDRESS_MSB                         `MGR_WU_ADDRESS_WIDTH-1
 `define MGR_WU_ADDRESS_LSB                         0
 `define MGR_WU_ADDRESS_SIZE                        (`MGR_WU_ADDRESS_MSB - `MGR_WU_ADDRESS_LSB +1)
@@ -146,6 +146,37 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 // DRAM Memory
+
+`define MGR_DRAM_NUM_CHANNELS                       2
+`define MGR_DRAM_NUM_BANKS                          32
+`define MGR_DRAM_NUM_PAGES                          4096
+`define MGR_DRAM_PAGE_SIZE                          4096
+`define MGR_DRAM_NUM_WORDS                          `MGR_DRAM_PAGE_SIZE/`MGR_EXEC_LANE_WIDTH
+
+`define MGR_DRAM_CHANNEL_ADDRESS_WIDTH                       (`CLOG2(`MGR_DRAM_NUM_CHANNELS ))
+`define MGR_DRAM_CHANNEL_ADDRESS_MSB                         `MGR_DRAM_CHANNEL_ADDRESS_WIDTH-1
+`define MGR_DRAM_CHANNEL_ADDRESS_LSB                         0
+`define MGR_DRAM_CHANNEL_ADDRESS_SIZE                        (`MGR_DRAM_CHANNEL_ADDRESS_MSB - `MGR_DRAM_CHANNEL_ADDRESS_LSB +1)
+`define MGR_DRAM_CHANNEL_ADDRESS_RANGE                        `MGR_DRAM_CHANNEL_ADDRESS_MSB : `MGR_DRAM_CHANNEL_ADDRESS_LSB
+
+`define MGR_DRAM_BANK_ADDRESS_WIDTH                       (`CLOG2(`MGR_DRAM_NUM_BANKS ))
+`define MGR_DRAM_BANK_ADDRESS_MSB                         `MGR_DRAM_BANK_ADDRESS_WIDTH-1
+`define MGR_DRAM_BANK_ADDRESS_LSB                         0
+`define MGR_DRAM_BANK_ADDRESS_SIZE                        (`MGR_DRAM_BANK_ADDRESS_MSB - `MGR_DRAM_BANK_ADDRESS_LSB +1)
+`define MGR_DRAM_BANK_ADDRESS_RANGE                        `MGR_DRAM_BANK_ADDRESS_MSB : `MGR_DRAM_BANK_ADDRESS_LSB
+
+`define MGR_DRAM_PAGE_ADDRESS_WIDTH                      (`CLOG2(`MGR_DRAM_NUM_PAGES ))
+`define MGR_DRAM_PAGE_ADDRESS_MSB                         `MGR_DRAM_PAGE_ADDRESS_WIDTH-1
+`define MGR_DRAM_PAGE_ADDRESS_LSB                         0
+`define MGR_DRAM_PAGE_ADDRESS_SIZE                        (`MGR_DRAM_PAGE_ADDRESS_MSB - `MGR_DRAM_PAGE_ADDRESS_LSB +1)
+`define MGR_DRAM_PAGE_ADDRESS_RANGE                        `MGR_DRAM_PAGE_ADDRESS_MSB : `MGR_DRAM_PAGE_ADDRESS_LSB
+
+`define MGR_DRAM_WORD_ADDRESS_WIDTH                       (`CLOG2(`MGR_DRAM_NUM_WORDS ))
+`define MGR_DRAM_WORD_ADDRESS_MSB                         `MGR_DRAM_WORD_ADDRESS_WIDTH-1
+`define MGR_DRAM_WORD_ADDRESS_LSB                         0
+`define MGR_DRAM_WORD_ADDRESS_SIZE                        (`MGR_DRAM_WORD_ADDRESS_MSB - `MGR_DRAM_WORD_ADDRESS_LSB +1)
+`define MGR_DRAM_WORD_ADDRESS_RANGE                        `MGR_DRAM_WORD_ADDRESS_MSB : `MGR_DRAM_WORD_ADDRESS_LSB
+
 
 
 //---------------------------------------------------------------------------------------------------------------------

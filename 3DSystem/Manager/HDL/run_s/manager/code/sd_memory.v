@@ -1,6 +1,6 @@
 /*********************************************************************************************
 
-    File name   : wu_memory.v
+    File name   : sd_memory.v
     Author      : Lee Baker
     Affiliation : North Carolina State University, Raleigh, NC
     Date        : Mar 2017
@@ -25,10 +25,10 @@
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
 `include "dma_cont.vh"
-`include "wu_memory.vh"
+`include "sd_memory.vh"
 
 
-module wu_memory (  
+module sd_memory (  
                            valid                       ,
                            sys__mgr__mgrId             ,
 
