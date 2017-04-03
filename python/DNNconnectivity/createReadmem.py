@@ -152,20 +152,6 @@ FoundDescPtrWidth = False
 
 descPtrWidth      = 17  # default if not found
 
-################################################################################
-## FIXME
-################################################################################
-"""
-searchFile = open("../../github/ece-cortical-MainResearch/3DSystem/Manager/HDL/common/descriptor.vh", "r")
-for line in searchFile:
-  if FoundDescPtrWidth == False:
-    data = re.split(r'\s{1,}', line)
-    # check define is in 2nd field
-    if "DESC_POINTER_WIDTH" in data[1]:
-      descPtrWidth      = int(data[2])
-      FoundDescPtrWidth = True
-searchFile.close()
-"""
 
 
 ## Extract class methods and fields for prints
@@ -186,20 +172,18 @@ def toHexPad(val, pad):
 ########################################################################################################################
 ## MAIN
 
-print 'LEE:' + __name__
+#print 'LEE:' + __name__
 
 def main():
     
   # to run within python
   # if True:
     
-  print 'LEE: Run main'
-    
   try:
-      reload(crm)
-      print  'crm reloaded'
+      reload(dc)
+      print  'dc reloaded'
   except Exception:
-      print 'crm not loaded yet'
+      print 'dc not loaded yet'
   
   ########################################################################################################################
   ## Globals
@@ -213,152 +197,264 @@ def main():
   ########################################################################################################################
 
   import numpy as np
-  import createReadmem as crm
   import dnnConnectivityAndMemoryAllocation as dc
  
-  inputFile = open("./outputFiles/latest/manager_0_0/manager_0_0_layer1_WUs.txt", "r")
-  descriptors = []
-  for line in inputFile:
+
+  dirStr = './outputFiles/'
+  if not os.path.exists(dirStr) :
+      print '{0}:{1}:ERROR: {2} doesnt exist '.format(__FILE__(), __LINE__(), dirStr)
+      raise
+  dirStr = dirStr + 'latest/'
+  if not os.path.exists(dirStr) :
+      print '{0}:{1}:ERROR: Latest link {2} doesnt exist '.format(__FILE__(), __LINE__(), dirStr)
+      raise
+  # Find manager array dimensions from network configuration
+  inputFile = dirStr + "network_configuration.txt"
+  iFile = open(inputFile, "r")
+  for line in iFile:
     line = re.sub('[\n ]', '', line)
     if line :
       if not line.startswith('#'):
-        descriptors.append(line.split('****'))
-  icntl = []
-  option = []
-  optionValue = []
-  for opts in range(optionsPerInst):
-      option.append([])
-      optionValue.append([])
-  op = []
-  dcntl = []
-  instNum = 0
-  pass
-  for listOfDesc in descriptors:
-    numOfDescriptors = len(listOfDesc)
-    descNum = 0
-    for desc in listOfDesc:
-      instTuples = desc.split(',')
-      # Remove SOD and EOD
-      del instTuples[0]
-      del instTuples[-1]
-      numTuples = len(instTuples)
-      print descNum, numOfDescriptors, numTuples
-      tupleNum = 0
-      tupInInstNum = 0
-      descComplete = False
-      descCycleNum = 0
-      #for t in range(numTuples):
-      while tupleNum < numTuples :
-        t = tupleNum
-        # Extract operation
-        optionAndValue = instTuples[t].split(':')
-        print optionAndValue
-        optType = int(optionAndValue[0])
-        # test where we are in the desc
-        isOp = False
-        lastTuple = False
-        # First tuple is the operation
-        if tupleNum == 0:
-          oper = optType
-          #op.append(optType)
-        elif getattr(dc.optionType, 'NOP') == optType:
-          lastTuple = True
-        elif len(optionAndValue)==2:
-          optVal = int(optionAndValue[1])
-        else :
-          print 'ERROR: single tuple but not op or EOD'
+        config = line.split(':')
+        if config[0] == 'arrayY':
+          arrayY = int(config[1])
+        elif config[0] == 'arrayX':
+          arrayX = int(config[1])
+  iFile.close()
+
+
+
+  for mgrY in range(arrayY):
+    for mgrX in range(arrayY):
+
+      managerFileExists = True
+      layerID = 1
+      mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+      if not os.path.exists(mgrDirStr) :
+          print '{0}:{1}:WARNING: Directory {2} doesnt exist '.format(__FILE__(), __LINE__(), mgrDirStr)
+          managerFileExists = False
+      inputFile = mgrDirStr + "manager_{0}_{1}_layer{2}_WUs.txt".format(mgrY, mgrX, layerID)
+      if not os.path.isfile(inputFile) :
+          print '{0}:{1}:WARNING: Manager file {2} doesnt exist '.format(__FILE__(), __LINE__(), inputFile)
+          managerFileExists = False
+  
+      if managerFileExists :
+
+        iFile = open(inputFile, "r")
+   
+        descriptors = []
+        for line in iFile:
+          line = re.sub('[\n ]', '', line)
+          if line :
+            if not line.startswith('#'):
+              descriptors.append(line.split('****'))
+        icntl = []
+        option = []
+        optionValue = []
+        for opts in range(optionsPerInst):
+            option.append([])
+            optionValue.append([])
+        op = []
+        dcntl = []
+        instNum = 0
+        pass
+        for listOfDesc in descriptors:
+          numOfDescriptors = len(listOfDesc)
+          descNum = 0
+          for desc in listOfDesc:
+            instTuples = desc.split(',')
+            # Remove SOD and EOD
+            del instTuples[0]
+            del instTuples[-1]
+            numTuples = len(instTuples)
+            #print descNum, numOfDescriptors, numTuples
+            tupleNum = 0
+            tupInInstNum = 0
+            descComplete = False
+            descCycleNum = 0
+            #for t in range(numTuples):
+            while tupleNum < numTuples :
+              t = tupleNum
+              # Extract operation
+              optionAndValue = instTuples[t].split(':')
+              #print optionAndValue
+              optType = int(optionAndValue[0])
+              # test where we are in the desc
+              isOp = False
+              lastTuple = False
+              # First tuple is the operation
+              if tupleNum == 0:
+                oper = optType
+                #op.append(optType)
+              elif getattr(dc.optionType, 'NOP') == optType:
+                lastTuple = True
+              elif len(optionAndValue)==2:
+                optVal = re.sub('[\n ]', '', optionAndValue[1])
+              else :
+                print '{0}:{1}:ERROR: single tuple but not op or EOD'.format(__FILE__(), __LINE__())
+              #
+              #
+              #if not lastTuple:
+              # First tuple is the operation, so ignore
+              if not tupleNum == 0:
+                if getattr(dc.optionType,'MEMORY') == optType :
+                  # Memory tuple takes 2 tuples, so make sure enough space in current inst
+                  #print '{0}:{1}:LEE:Memory tuple: {2} {3} {4}'.format(__FILE__(), __LINE__(), str(optionAndValue), str(tupInInstNum), str(lastTuple))
+                  # pad and split adderss into bytes
+                  memBytes = re.findall('.{1,2}', optVal.zfill(6))
+                  #print '{0}:{1}:LEE: {2}'.format(__FILE__(), __LINE__(), memBytes)
+                  if tupInInstNum < (optionsPerInst-1):
+                    option[tupInInstNum].append(optType)
+                    optionValue[tupInInstNum].append(memBytes[0])
+                    tupInInstNum += 1
+                    option[tupInInstNum].append(memBytes[1])
+                    optionValue[tupInInstNum].append(memBytes[2])
+                    tupInInstNum += 1
+                  else:
+                    # not enuff space in current instruction for memory option, so pad with NOP and jump to next instruction
+                    for pad in range(tupInInstNum, optionsPerInst):
+                      option[pad].append(getattr(dc.optionType, 'NOP'))
+                      # dont care about value
+                      optionValue[pad].append(getattr(dc.optionType, 'NOP'))
+                      tupInInstNum += 1
+                      tupleNum -= 1
+                else:
+                    # non-memory tuple
+                    option[tupInInstNum].append(optType)
+                    if not lastTuple:
+                      optionValue[tupInInstNum].append(optVal)
+                    else:
+                      optionValue[tupInInstNum].append(getattr(dc.optionType, 'NOP'))
+                    tupInInstNum += 1
+              if lastTuple:
+                # Last tuple
+                #print 'Descriptor complete'
+                descComplete = True
+                # Pad instruction
+                for pad in range(tupInInstNum, optionsPerInst):
+                  option[pad].append(getattr(dc.optionType, 'NOP'))
+                  # dont care about value
+                  optionValue[pad].append(getattr(dc.optionType, 'NOP'))
+                  tupInInstNum += 1
+              #----------------------------------------------------------------------------------------------------
+              #  Check if we have completed an instruction
+              if (tupInInstNum == optionsPerInst) :
+                #print 'instruction #{0}'.format(instNum)
+                #  Completedd an insruction, now set operation and delineators
+                tupInInstNum = 0
+                op.append(oper)
+                #--------------------------------------------------
+                # Instruction Delineation
+                if not lastTuple :
+                  # we have filled an instruction, set the operation and cntl fields 
+                  # Instruction delineation
+                  if instNum == 0:
+                    icntl.append(getattr(dc.descDelin, 'SOD'))
+                  else:
+                    icntl.append(getattr(dc.descDelin, 'MOD'))
+                else :
+                  # Last tuple
+                  if instNum == 0 and descNum == numOfDescriptors-1 :
+                    icntl.append(getattr(dc.descDelin, 'SOD_EOD'))
+                  elif instNum == 0 :
+                    icntl.append(getattr(dc.descDelin, 'SOD'))
+                  elif descNum == numOfDescriptors-1 :
+                    icntl.append(getattr(dc.descDelin, 'EOD'))
+                  else :
+                    icntl.append(getattr(dc.descDelin, 'MOD'))
+                #
+                #--------------------------------------------------
+                # Descriptor delineation
+                if not lastTuple :
+                  if descCycleNum == 0 :
+                    dcntl.append(getattr(dc.descDelin, 'SOD'))
+                  else:
+                    dcntl.append(getattr(dc.descDelin, 'MOD'))
+                else:
+                  if descCycleNum == 0 :
+                    dcntl.append(getattr(dc.descDelin, 'SOD_EOD'))
+                  else:
+                    dcntl.append(getattr(dc.descDelin, 'EOD'))
+                instNum += 1
+                descCycleNum += 1
+              # we have filled an instruction, set the operation and cntl fields 
+              tupleNum += 1
+            # end for t ...
+            descNum += 1
+            #getattr(dc.optionType, dc.optionType._fields[0])
+          #end for desc ...
+
+        """
+        # Create readmem-like ile with entire instruction
+        pLine = ''
+        for c in range(len(op)):
+          pLine = pLine + '{0:>4} {1:>4} {2:>4} '.format(icntl[c], dcntl[c], op[c])
+          for o in range(optionsPerInst):
+            pLine = pLine + '{0:>4} {1:>4} \n'.format(option[o][c], optionValue[o][c])
         #
-        #
-        #if not lastTuple:
-        # First tuple is the operation, so ignore
-        if not tupleNum == 0:
-          if getattr(dc.optionType,'MEMORY') == optType :
-            # Memory tuple takes 2 tuples, so make sure enough space in current inst
-            print 'Memory tuple: ' + str(optionAndValue) + str(tupInInstNum) + str(lastTuple)
-            if tupInInstNum < (optionsPerInst-1):
-              option[tupInInstNum].append(optType)
-              optionValue[tupInInstNum].append(optVal)
-              tupInInstNum += 1
-              option[tupInInstNum].append(optVal)
-              optionValue[tupInInstNum].append(optVal)
-              tupInInstNum += 1
-            else:
-              # not enuff space in current instruction for memory option, so pad with NOP and jump to next instruction
-              for pad in range(tupInInstNum, optionsPerInst):
-                option[pad].append(getattr(dc.optionType, 'NOP'))
-                # dont care about value
-                optionValue[pad].append(getattr(dc.optionType, 'NOP'))
-                tupInInstNum += 1
-                tupleNum -= 1
-          else:
-              # non-memory tuple
-              option[tupInInstNum].append(optType)
-              if not lastTuple:
-                optionValue[tupInInstNum].append(optVal)
-              else:
-                optionValue[tupInInstNum].append(getattr(dc.optionType, 'NOP'))
-              tupInInstNum += 1
-        if lastTuple:
-          # Last tuple
-          print 'Descriptor complete'
-          descComplete = True
-          # Pad instruction
-          for pad in range(tupInInstNum, optionsPerInst):
-            option[pad].append(getattr(dc.optionType, 'NOP'))
-            # dont care about value
-            optionValue[pad].append(getattr(dc.optionType, 'NOP'))
-            tupInInstNum += 1
-        #----------------------------------------------------------------------------------------------------
-        #  Check if we have completed an instruction
-        if (tupInInstNum == optionsPerInst) :
-          print 'instruction #{0}'.format(instNum)
-          #  Completed an insruction, now set operation and delineators
-          tupInInstNum = 0
-          op.append(oper)
-          #--------------------------------------------------
-          # Instruction Delineation
-          if not lastTuple :
-            # we have filled an instruction, set the operation and cntl fields 
-            # Instruction delineation
-            if instNum == 0:
-              icntl.append(getattr(dc.descDelin, 'SOD'))
-            else:
-              icntl.append(getattr(dc.descDelin, 'MOD'))
-          else :
-            # Last tuple
-            if instNum == 0 and descNum == numOfDescriptors-1 :
-              icntl.append(getattr(dc.descDelin, 'SOD_EOD'))
-            elif instNum == 0 :
-              icntl.append(getattr(dc.descDelin, 'SOD'))
-            elif descNum == numOfDescriptors-1 :
-              icntl.append(getattr(dc.descDelin, 'EOD'))
-            else :
-              icntl.append(getattr(dc.descDelin, 'MOD'))
-          #
-          #--------------------------------------------------
-          # Descriptor delineation
-          if not lastTuple :
-            if descCycleNum == 0 :
-              dcntl.append(getattr(dc.descDelin, 'SOD'))
-            else:
-              dcntl.append(getattr(dc.descDelin, 'MOD'))
-          else:
-            if descCycleNum == 0 :
-              dcntl.append(getattr(dc.descDelin, 'SOD_EOD'))
-            else:
-              dcntl.append(getattr(dc.descDelin, 'EOD'))
-          instNum += 1
-          descCycleNum += 1
-        # we have filled an instruction, set the operation and cntl fields 
-        tupleNum += 1
-      # end for t ...
-      descNum += 1
-      #getattr(dc.optionType, dc.optionType._fields[0])
-    #end for desc ...
-    pLine = ''
-    for c in range(len(op)):
-      pLine = pLine + '\n{0:4} {1:4} {2:4}'.format(icntl[c], dcntl[c], op[c])
-      for o in range(optionsPerInst):
-        pLine = pLine + '{0:4} {1:4} '.format(option[o][c], optionValue[o][c])
-    #
-    print pLine
+        mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+        outputFile = mgrDirStr + "manager_{0}_layer{1}_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+        oFile = open(outputFile, 'w')
+        oFile.write(pLine)
+        oFile.close()
+        """
+
+        # Create individual instruction readmem files
+
+        pLine = ''
+        mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+        outputFile = mgrDirStr + "manager_{0}_layer{1}_op_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+        oFile = open(outputFile, 'w')
+        for c in range(len(op)):
+          pLine = pLine + '@{0:>6} {1:>4} \n'.format(toHexPad(c, 6), op[c])
+        oFile.write(pLine)
+        oFile.close()
+
+
+        pLine = ''
+        mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+        outputFile = mgrDirStr + "manager_{0}_layer{1}_icntl_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+        oFile = open(outputFile, 'w')
+        for c in range(len(icntl)):
+          pLine = pLine + '@{0:>6} {1:>4} \n'.format(toHexPad(c, 6), icntl[c])
+        oFile.write(pLine)
+        oFile.close()
+
+        pLine = ''
+        mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+        outputFile = mgrDirStr + "manager_{0}_layer{1}_dcntl_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+        oFile = open(outputFile, 'w')
+        for c in range(len(dcntl)):
+          pLine = pLine + '@{0:>6} {1:>4} \n'.format(toHexPad(c, 6), dcntl[c])
+        oFile.write(pLine)
+        oFile.close()
+
+        pLine = ''
+        mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+        for o in range(optionsPerInst):
+          outputFile = mgrDirStr + "manager_{0}_layer{1}_optionType{2}_readmem.dat".format(mgrY*arrayX+mgrX, layerID, o)
+          oFile = open(outputFile, 'w')
+          for c in range(len(dcntl)):
+            pLine = pLine + '@{0:>6} {1:>4} \n'.format(toHexPad(c, 6), option[o][c])
+          oFile.write(pLine)
+          oFile.close()
+
+        mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+        for o in range(optionsPerInst):
+          outputFile = mgrDirStr + "manager_{0}_layer{1}_optionValue{2}_readmem.dat".format(mgrY*arrayX+mgrX, layerID, o)
+          oFile = open(outputFile, 'w')
+          for c in range(len(dcntl)):
+            pLine = pLine + '@{0:>6} {1:>4} \n'.format(toHexPad(c, 6), optionValue[o][c])
+          oFile.write(pLine)
+          oFile.close()
+
+        print '{0}:{1}:INFO: Created {2} '.format(__FILE__(), __LINE__(), outputFile)
+
+  #------------------------------------------------------------------------------------------------------------------------
+  # End main()
+  #------------------------------------------------------------------------------------------------------------------------
+
+    
+if __name__ == "__main__":main()
+
+

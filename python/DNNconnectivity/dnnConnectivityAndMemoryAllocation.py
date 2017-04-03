@@ -3454,6 +3454,21 @@ class Network():
         self.peX = peX
         #self.peArray = PEarray(self, peY, peX, self.maxNumberOfLayers)
 
+        # Save network configuration
+        dirStr = './outputFiles/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        dirStr = dirStr + timeStr + '/'
+        if not os.path.exists(dirStr) :
+            os.makedirs(dirStr)
+        outFile = dirStr + 'network_configuration.txt'
+        oFile = open(outFile, 'w')
+        pLine = '# Configuration'
+        pLine = pLine + '\narrayY:{0}'.format(self.peY)
+        pLine = pLine + '\narrayX:{0}'.format(self.peX)
+        oFile.write(pLine)
+        oFile.close()
+
     #----------------------------------------------------------------------------------------------------
     # print
 
