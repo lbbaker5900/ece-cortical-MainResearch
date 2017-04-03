@@ -41,6 +41,17 @@ module manager (
             //
             `include "manager_noc_cntl_noc_ports.vh"
  
+
+            //-------------------------------
+            // Stack Bus - OOB Downstream
+            //
+            // OOB controls how the lanes are interpreted
+            mgr__std__oob_cntl        , 
+            mgr__std__oob_valid       , 
+            std__mgr__oob_ready       , 
+            mgr__std__oob_type        , 
+            mgr__std__oob_data        , 
+
             //-------------------------------
             // Stack Bus - Downstream
             //
@@ -79,22 +90,39 @@ module manager (
   input                               sys__mgr__ready               ; 
   input                               sys__mgr__complete            ; 
 
+
+
+  //-------------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream
+
+  // OOB carries PE configuration    
+  output[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl            ; 
+  output                                        mgr__std__oob_valid           ; 
+  input                                         std__mgr__oob_ready           ; 
+  output[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr__std__oob_type            ; 
+  output[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr__std__oob_data            ; 
+
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
 
+  // carries lane arguments
   `include "manager_stack_bus_downstream_port_declarations.vh"
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
   //
-  output                                         stu__mgr__valid       ;
-  output  [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr__cntl        ;
-  input                                          mgr__stu__ready       ;
-  output  [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr__type        ;  // Control or Data, Vector or scalar
-  output  [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr__data        ;
-  output  [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data    ;
+  input                                          stu__mgr__valid       ;
+  input   [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr__cntl        ;
+  output                                         mgr__stu__ready       ;
+  input   [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr__type        ;  // Control or Data, Vector or scalar
+  input   [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr__data        ;
+  input   [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data    ;
  
 
+
+
+
+  //-------------------------------------------------------------------------------------------------
   //-------------------------------------------------------------------------------------------------
   // Regs and Wires
   
@@ -122,6 +150,18 @@ module manager (
   wire  [`MGR_WU_ADDRESS_RANGE    ]     wuf__wum__addr          ;
   wire  [`MGR_WU_ADDRESS_RANGE    ]     mcntl__wuf__start_addr  ;  // first WU address
 
+  //-------------------------------------------------------------------------------------------------
+
+
+
+
+  //-------------------------------------------------------------------------------------------------
+  //-------------------------------------------------------------------------------------------------
+  // Instances
+  //
+  // FIXME
+  wire xxx__wuf__stall = 0;
+
   wu_fetch wu_fetch (
   
           //-------------------------------
@@ -131,8 +171,8 @@ module manager (
  
           //-------------------------------
           // Control
-          .mcntl__wuf__enable      ( mcntl__wuf__enable       ),
-          .mcntl__wuf__start_addr  ( mcntl__wuf__start_addr   ),
+          .mcntl__wuf__enable      ( 1       ),
+          .mcntl__wuf__start_addr  ( 0       ),
 
           //-------------------------------
           // 
@@ -140,8 +180,6 @@ module manager (
  
           //-------------------------------
           // General
-          .sys__mgr__mgrId         ( sys__mgr__mgrId          ),
-
           .clk                     ( clk                      ),
           .reset_poweron           ( reset_poweron            )
         );
@@ -178,19 +216,91 @@ module manager (
         );
 
   //-------------------------------------------------------------------------------------------------
+  // Stack Upstream Interface
+  // 
+  wire                                          stuc__rdp__valid       ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      stuc__rdp__cntl        ;
+  wire                                          rdp__stuc__ready       ;
+  wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      stuc__rdp__tag         ;  // tag size is the same as sent to PE
+  wire   [`STACK_UP_INTF_DATA_RANGE      ]      stuc__rdp__data        ;
+ 
+  //-------------------------------------------------------------------------------------------------
+  // Control Processor Interface
+  //
+  wire                                          stuc__rcp__valid       ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      stuc__rcp__cntl        ;
+  wire                                          rcp__stuc__ready       ;
+  wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      stuc__rcp__tag         ;  // tag size is the same as sent to PE
+  wire   [`STACK_UP_INTF_DATA_RANGE      ]      stuc__rcp__data        ;
+
+  stu_cntl stu_cntl (
+
+            //-------------------------------
+            // Stack Bus - Upstream
+            //
+            .stu__mgr__valid         ( stu__mgr__valid     ),
+            .stu__mgr__cntl          ( stu__mgr__cntl      ),
+            .mgr__stu__ready         ( mgr__stu__ready     ),
+            //.mgr__stu__ready         ( ),
+            .stu__mgr__type          ( stu__mgr__type      ),  
+            .stu__mgr__data          ( stu__mgr__data      ),
+            .stu__mgr__oob_data      ( stu__mgr__oob_data  ),
+ 
+            //-------------------------------
+            // Return data processor output
+            //
+            .stuc__rdp__valid         ( stuc__rdp__valid   ),
+            .stuc__rdp__cntl          ( stuc__rdp__cntl    ),  // used to delineate upstream packet data
+            .rdp__stuc__ready         ( rdp__stuc__ready   ),
+            .stuc__rdp__tag           ( stuc__rdp__tag     ),  // Use this to match with WU and take all the data 
+            .stuc__rdp__data          ( stuc__rdp__data    ),  // The data may vary so check for cntl=EOD when reading this interface
+
+            //-------------------------------
+            // Return Control packet processor output
+            //
+            .stuc__rcp__valid         ( stuc__rcp__valid   ),
+            .stuc__rcp__cntl          ( stuc__rcp__cntl    ),  // used to delineate upstream packet data
+            .rcp__stuc__ready         ( rcp__stuc__ready   ),
+            .stuc__rcp__tag           ( stuc__rcp__tag     ),  // Use this to match with WU and take all the data 
+            .stuc__rcp__data          ( stuc__rcp__data    ),  // The data may vary so check for cntl=EOD when reading this interface
+
+            //-------------------------------
+            // General
+            //
+            .clk                      ( clk                ),
+            .reset_poweron            ( reset_poweron      ) 
+ 
+    );
+
+  // FIXME
+  assign rcp__stuc__ready = 1;
+  assign rdp__stuc__ready = 1;
+
+  //-------------------------------------------------------------------------------------------------
   // NoC Interface
   // 
   noc_cntl noc_cntl (
 
-                        // Aggregate Control-Path (cp) to NoC 
-                       .noc__scntl__cp_ready          ( noc__mcntl__cp_ready         ), 
-                       .scntl__noc__cp_cntl           ( mcntl__noc__cp_cntl          ), 
-                       .scntl__noc__cp_type           ( mcntl__noc__cp_type          ), 
-                       .scntl__noc__cp_data           ( mcntl__noc__cp_data          ), 
-                       .scntl__noc__cp_laneId         ( mcntl__noc__cp_laneId        ), 
-                       .scntl__noc__cp_strmId         ( mcntl__noc__cp_strmId        ), 
-                       .scntl__noc__cp_valid          ( mcntl__noc__cp_valid         ), 
-                        // Aggregate Data-Path (cp) from NoC 
+                        // Control-Path (cp) to NoC 
+                       .noc__scntl__cp_ready          ( noc__rdp__cp_ready           ), 
+                       .scntl__noc__cp_cntl           ( rdp__noc__cp_cntl            ), 
+                       .scntl__noc__cp_type           ( rdp__noc__cp_type            ), 
+                       .scntl__noc__cp_data           ( rdp__noc__cp_data            ), 
+                       .scntl__noc__cp_laneId         ( rdp__noc__cp_laneId          ), 
+                       .scntl__noc__cp_strmId         ( rdp__noc__cp_strmId          ), 
+                       .scntl__noc__cp_valid          ( rdp__noc__cp_valid           ), 
+                                                                                     
+                        // Data-Path (dp) to NoC                                     
+                       .noc__scntl__dp_ready          ( noc__rdp__dp_ready           ), 
+                       .scntl__noc__dp_type           ( rdp__noc__dp_type            ), 
+                       .scntl__noc__dp_cntl           ( rdp__noc__dp_cntl            ), 
+                       .scntl__noc__dp_peId           ( rdp__noc__dp_peId            ), 
+                       .scntl__noc__dp_laneId         ( rdp__noc__dp_laneId          ), 
+                       .scntl__noc__dp_strmId         ( rdp__noc__dp_strmId          ), 
+                       .scntl__noc__dp_data           ( rdp__noc__dp_data            ), 
+                       .scntl__noc__dp_valid          ( rdp__noc__dp_valid           ), 
+
+                        // Data-Path (cp) from NoC 
                        .scntl__noc__cp_ready          ( mcntl__noc__cp_ready         ), 
                        .noc__scntl__cp_cntl           ( noc__mcntl__cp_cntl          ), 
                        .noc__scntl__cp_type           ( noc__mcntl__cp_type          ), 
@@ -200,16 +310,7 @@ module manager (
                        .noc__scntl__cp_strmId         ( noc__mcntl__cp_strmId        ), 
                        .noc__scntl__cp_valid          ( noc__mcntl__cp_valid         ), 
                        
-                        // Aggregate Data-Path (dp) to NoC 
-                       .noc__scntl__dp_ready          ( noc__mcntl__dp_ready         ), 
-                       .scntl__noc__dp_type           ( mcntl__noc__dp_type          ), 
-                       .scntl__noc__dp_cntl           ( mcntl__noc__dp_cntl          ), 
-                       .scntl__noc__dp_peId           ( mcntl__noc__dp_peId          ), 
-                       .scntl__noc__dp_laneId         ( mcntl__noc__dp_laneId        ), 
-                       .scntl__noc__dp_strmId         ( mcntl__noc__dp_strmId        ), 
-                       .scntl__noc__dp_data           ( mcntl__noc__dp_data          ), 
-                       .scntl__noc__dp_valid          ( mcntl__noc__dp_valid         ), 
-                        // Aggregate Data-Path (dp) from NoC 
+                        // Data-Path (dp) from NoC 
                        .scntl__noc__dp_ready          ( mcntl__noc__dp_ready         ), 
                        .noc__scntl__dp_cntl           ( noc__mcntl__dp_cntl          ), 
                        .noc__scntl__dp_type           ( noc__mcntl__dp_type          ), 

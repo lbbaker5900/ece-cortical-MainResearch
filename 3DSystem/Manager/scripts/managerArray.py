@@ -279,41 +279,43 @@ if __name__ == "__main__":
   f = open('../HDL/common/manager_noc_connection_wires.vh', 'w')
   pLine = ""
 
-  pLine = pLine + '\n   // Aggregate Control-Path (cp) to NoC '
-  pLine = pLine + '\n   wire                                            noc__mcntl__cp_ready      ; '
-  pLine = pLine + '\n   wire [`COMMON_STD_INTF_CNTL_RANGE      ] mcntl__noc__cp_cntl       ; '
-  pLine = pLine + '\n   wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE           ] mcntl__noc__cp_type       ; '
-  pLine = pLine + '\n   wire [`PE_NOC_INTERNAL_DATA_RANGE             ] mcntl__noc__cp_data       ; '
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] mcntl__noc__cp_laneId     ; '
-  pLine = pLine + '\n   wire                                            mcntl__noc__cp_strmId     ; '
-  pLine = pLine + '\n   wire                                            mcntl__noc__cp_valid      ; '
-  pLine = pLine + '\n   // Aggregate Data-Path (cp) from NoC '
-  pLine = pLine + '\n   wire                                            mcntl__noc__cp_ready      ; '
-  pLine = pLine + '\n   wire [`COMMON_STD_INTF_CNTL_RANGE      ] noc__mcntl__cp_cntl       ; '
-  pLine = pLine + '\n   wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE           ] noc__mcntl__cp_type       ; '
-  pLine = pLine + '\n   wire [`PE_NOC_INTERNAL_DATA_RANGE             ] noc__mcntl__cp_data       ; '
-  pLine = pLine + '\n   wire [`PE_PE_ID_RANGE                         ] noc__mcntl__cp_peId       ; '
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__mcntl__cp_laneId     ; '
-  pLine = pLine + '\n   wire                                            noc__mcntl__cp_strmId     ; '
-  pLine = pLine + '\n   wire                                            noc__mcntl__cp_valid      ; '
+  pLine = pLine + '\n   // Control-Path (cp) to NoC '
+  pLine = pLine + '\n   wire                                            noc__rdp__cp_ready      ; '
+  pLine = pLine + '\n   wire [`COMMON_STD_INTF_CNTL_RANGE             ] rdp__noc__cp_cntl       ; '
+  pLine = pLine + '\n   wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE         ] rdp__noc__cp_type       ; '
+  pLine = pLine + '\n   wire [`PE_NOC_INTERNAL_DATA_RANGE             ] rdp__noc__cp_data       ; '
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] rdp__noc__cp_laneId     ; '
+  pLine = pLine + '\n   wire                                            rdp__noc__cp_strmId     ; '
+  pLine = pLine + '\n   wire                                            rdp__noc__cp_valid      ; '
   pLine = pLine + '\n'
-  pLine = pLine + '\n   // Aggregate Data-Path (dp) to NoC '
-  pLine = pLine + '\n   wire                                            noc__mcntl__dp_ready      ; '
-  pLine = pLine + '\n   wire [`COMMON_STD_INTF_CNTL_RANGE      ] mcntl__noc__dp_cntl       ; '
-  pLine = pLine + '\n   wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE           ] mcntl__noc__dp_type       ; '
-  pLine = pLine + '\n   wire [`PE_PE_ID_RANGE                         ] mcntl__noc__dp_peId       ; '
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] mcntl__noc__dp_laneId     ; '
-  pLine = pLine + '\n   wire                                            mcntl__noc__dp_strmId     ; '
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] mcntl__noc__dp_data       ; '
-  pLine = pLine + '\n   wire                                            mcntl__noc__dp_valid      ; '
-  pLine = pLine + '\n   // Aggregate Data-Path (dp) from NoC '
-  pLine = pLine + '\n   wire                                            mcntl__noc__dp_ready      ; '
-  pLine = pLine + '\n   wire [`COMMON_STD_INTF_CNTL_RANGE      ] noc__mcntl__dp_cntl       ; '
-  pLine = pLine + '\n   wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE           ] noc__mcntl__dp_type       ; '
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__mcntl__dp_laneId     ; '
-  pLine = pLine + '\n   wire                                            noc__mcntl__dp_strmId     ; '
-  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__mcntl__dp_data       ; '
-  pLine = pLine + '\n   wire                                            noc__mcntl__dp_valid      ; '
+  pLine = pLine + '\n   // Data-Path (dp) to NoC '
+  pLine = pLine + '\n   wire                                            noc__rdp__dp_ready      ; '
+  pLine = pLine + '\n   wire [`COMMON_STD_INTF_CNTL_RANGE             ] rdp__noc__dp_cntl       ; '
+  pLine = pLine + '\n   wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE         ] rdp__noc__dp_type       ; '
+  pLine = pLine + '\n   wire [`PE_PE_ID_RANGE                         ] rdp__noc__dp_peId       ; '
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] rdp__noc__dp_laneId     ; '
+  pLine = pLine + '\n   wire                                            rdp__noc__dp_strmId     ; '
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] rdp__noc__dp_data       ; '
+  pLine = pLine + '\n   wire                                            rdp__noc__dp_valid      ; '
+  pLine = pLine + '\n'
+  pLine = pLine + '\n   // Data-Path (cp) from NoC '
+  pLine = pLine + '\n   wire                                            mcntl__noc__cp_ready    ; '
+  pLine = pLine + '\n   wire [`COMMON_STD_INTF_CNTL_RANGE             ] noc__mcntl__cp_cntl     ; '
+  pLine = pLine + '\n   wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE         ] noc__mcntl__cp_type     ; '
+  pLine = pLine + '\n   wire [`PE_NOC_INTERNAL_DATA_RANGE             ] noc__mcntl__cp_data     ; '
+  pLine = pLine + '\n   wire [`PE_PE_ID_RANGE                         ] noc__mcntl__cp_peId     ; '
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__mcntl__cp_laneId   ; '
+  pLine = pLine + '\n   wire                                            noc__mcntl__cp_strmId   ; '
+  pLine = pLine + '\n   wire                                            noc__mcntl__cp_valid    ; '
+  pLine = pLine + '\n'
+  pLine = pLine + '\n   // Data-Path (dp) from NoC '
+  pLine = pLine + '\n   wire                                            mcntl__noc__dp_ready    ; '
+  pLine = pLine + '\n   wire [`COMMON_STD_INTF_CNTL_RANGE             ] noc__mcntl__dp_cntl     ; '
+  pLine = pLine + '\n   wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE         ] noc__mcntl__dp_type     ; '
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__mcntl__dp_laneId   ; '
+  pLine = pLine + '\n   wire                                            noc__mcntl__dp_strmId   ; '
+  pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_DATA_RANGE           ] noc__mcntl__dp_data     ; '
+  pLine = pLine + '\n   wire                                            noc__mcntl__dp_valid    ; '
   pLine = pLine + '\n'
 
   f.write(pLine)
@@ -580,13 +582,6 @@ if __name__ == "__main__":
   pLine = ""
 
   #
-  pLine = pLine + '\n  // OOB carries PE configuration                                           '
-  pLine = pLine + '\n  output[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl            ;' 
-  pLine = pLine + '\n  output                                        mgr__std__oob_valid           ;' 
-  pLine = pLine + '\n  input                                         std__mgr__oob_ready           ;' 
-  pLine = pLine + '\n  output[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr__std__oob_type            ;' 
-  pLine = pLine + '\n  output[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr__std__oob_data            ;' 
-  #
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  // Lane operand bus                 '.format(lane)
     pLine = pLine + '\n  input                                            std__mgr__lane{0}_strm0_ready       ;'.format(lane)
@@ -639,13 +634,6 @@ if __name__ == "__main__":
   f = open('../HDL/common/manager_stack_bus_downstream_ports.vh', 'w')
   pLine = ""
 
-  pLine = pLine + '\n            // OOB controls how the lanes are interpreted,' 
-  pLine = pLine + '\n            mgr__std__oob_cntl                           ,' 
-  pLine = pLine + '\n            mgr__std__oob_valid                          ,' 
-  pLine = pLine + '\n            std__mgr__oob_ready                          ,' 
-  pLine = pLine + '\n            mgr__std__oob_type                           ,' 
-  pLine = pLine + '\n            mgr__std__oob_data                           ,' 
-  #
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n            // Lane operand bus                  '.format(lane)
     pLine = pLine + '\n            std__mgr__lane{0}_strm0_ready       ,'.format(lane)

@@ -1,10 +1,4 @@
 
-            // OOB controls how the lanes are interpreted,
-            mgr__std__oob_cntl                           ,
-            mgr__std__oob_valid                          ,
-            std__mgr__oob_ready                          ,
-            mgr__std__oob_type                           ,
-            mgr__std__oob_data                           ,
             // Lane operand bus                  
             std__mgr__lane0_strm0_ready       ,
             mgr__std__lane0_strm0_cntl        ,
