@@ -2718,12 +2718,12 @@ class Manager():
         pLine = pLine + '\n# In the case of the Memory write, there may be more than one optionType=storage if the result has to be written to multiple managers'
         pLine = pLine + '\n# Address format = "Mgr, Local/Global, channel, bank, page, word"'
         pLine = pLine + '\n'
-        pLine = pLine + '\nField lengths:'
-        pLine = pLine + '\nDelineator      : {0:^{1}}, '.format(int(math.ceil(math.log(len(descDelin  )-1,2))), int(math.ceil(math.log(len(descDelin  )-1,10))))
-        pLine = pLine + '\nDescriptor Type : {0:^{1}}, '.format(int(math.ceil(math.log(len(descType   )-1,2))), int(math.ceil(math.log(len(descType   )-1,10))))
-        pLine = pLine + '\nOption Type     : {0:^{1}}, '.format(int(math.ceil(math.log(len(optionType )-1,2))), int(math.ceil(math.log(len(optionType )-1,10))))
+        pLine = pLine + '\n# Field lengths:'
+        pLine = pLine + '\n# Delineator      : {0:^{1}}, '.format(int(math.ceil(math.log(len(descDelin  )-1,2))), int(math.ceil(math.log(len(descDelin  )-1,10))))
+        pLine = pLine + '\n# Descriptor Type : {0:^{1}}, '.format(int(math.ceil(math.log(len(descType   )-1,2))), int(math.ceil(math.log(len(descType   )-1,10))))
+        pLine = pLine + '\n# Option Type     : {0:^{1}}, '.format(int(math.ceil(math.log(len(optionType )-1,2))), int(math.ceil(math.log(len(optionType )-1,10))))
         optValLen = max(len(stOpValues), len(simdValues), len(tgtValues), len(txferValues), len(orderValues))
-        pLine = pLine + '\nOption Value    : {0:^{1}}, '.format(int(math.ceil(math.log(    optValLen   -1,2))), int(math.ceil(math.log(    optValLen   -1,10))))
+        pLine = pLine + '\n# Option Value    : {0:^{1}}, '.format(int(math.ceil(math.log(    optValLen   -1,2))), int(math.ceil(math.log(    optValLen   -1,10))))
 
         WUs.append(pLine)
 
@@ -2946,7 +2946,7 @@ class Manager():
         dirStr = dirStr + 'manager_{0}_{1}/'.format(self.ID[0], self.ID[1])
         if not os.path.exists(dirStr) :
             os.makedirs(dirStr)
-        outFile = dirStr + 'manager_{0}_{1}_layer{2}_WUs'.format(self.ID[0], self.ID[1], layerID)
+        outFile = dirStr + 'manager_{0}_{1}_layer{2}_WUs.txt'.format(self.ID[0], self.ID[1], layerID)
 
         oFile = open(outFile, 'w')
 
@@ -3601,8 +3601,8 @@ class Network():
 
 def main():
     
-# to run within python
-# if True:
+    # to run within python
+    # if True:
     
     
     try:
