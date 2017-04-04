@@ -122,6 +122,10 @@ searchFile = open("../../github/ece-cortical-MainResearch/3DSystem/Manager/HDL/c
 FoundOptsPerInst  = False
 FoundOptWidth  = False
 FoundOptValWidth  = False
+FoundDramChans = False
+FoundDramBanks = False
+FoundDramPages = False
+FoundDramWords = False
 for line in searchFile:
   if FoundOptsPerInst == False:
     data = re.split(r'\s{1,}', line)
@@ -129,18 +133,49 @@ for line in searchFile:
     if "MGR_WU_OPT_PER_INST" in data[1]:
       optionsPerInst      = int(data[2])
       FoundOptsPerInst = True
+  #
   if FoundOptWidth == False:
     data = re.split(r'\s{1,}', line)
     # check define is in 2nd field
     if "MGR_WU_OPT_TYPE_WIDTH" in data[1]:
       optionWidth      = int(data[2])
       FoundOptWidth = True
+  #
   if FoundOptValWidth == False:
     data = re.split(r'\s{1,}', line)
     # check define is in 2nd field
     if "MGR_WU_OPT_VALUE_WIDTH" in data[1]:
       optionValueWidth      = int(data[2])
       FoundOptValueWidth = True
+  #
+  if FoundDramChans == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_DRAM_NUM_CHANNELS" in data[1]:
+      numOfDramChans = int(data[2])
+      FoundDramChans = True
+  #
+  if FoundDramBanks == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_DRAM_NUM_BANKS" in data[1]:
+      numOfDramBanks = int(data[2])
+      FoundDramBanks = True
+  #
+  if FoundDramPages == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_DRAM_NUM_PAGES" in data[1]:
+      numOfDramPages = int(data[2])
+      FoundDramPages = True
+  #
+  if FoundDramWords == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_DRAM_PAGE_SIZE" in data[1]:
+      numOfDramWords = int(data[2])/32
+      FoundDramWords = True
+
 searchFile.close()
 
 #print numOfPes, memorySize, numOfLanes, laneWidth
@@ -226,6 +261,9 @@ def main():
 
   for mgrY in range(arrayY):
     for mgrX in range(arrayY):
+
+      #----------------------------------------------------------------------------------------------------
+      # Create WU instruction memory
 
       managerFileExists = True
       layerID = 1
@@ -450,6 +488,148 @@ def main():
 
         print '{0}:{1}:INFO: Created {2} '.format(__FILE__(), __LINE__(), outputFile)
 
+
+
+      #----------------------------------------------------------------------------------------------------
+      # Create Storage Descriptor memory
+
+      #  - Three memories, one containing local start address, one with access order and one with a pointer to consequtive/jump memory
+      #  - Two memories, one with cntl delineator and another containing consequtive and jump values in orderA
+      #    with last entry being EOD, consequtive
+
+      dirStr = './outputFiles/latest/'
+      managerFileExists = True
+      layerID = 1
+      mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+      if not os.path.exists(mgrDirStr) :
+          print '{0}:{1}:WARNING: Directory {2} doesnt exist '.format(__FILE__(), __LINE__(), mgrDirStr)
+          managerFileExists = False
+      inputFile = mgrDirStr + "manager_{0}_{1}_layer{2}_storageDescriptors.txt".format(mgrY, mgrX, layerID)
+      if not os.path.isfile(inputFile) :
+          print '{0}:{1}:WARNING: Manager file {2} doesnt exist '.format(__FILE__(), __LINE__(), inputFile)
+          managerFileExists = False
+      #
+      if managerFileExists :
+        iFile = open(inputFile, "r")
+        storageDescriptors = []
+        for line in iFile:
+          line = re.sub('[\n]', '', line)
+          if line :
+            if not line.startswith('#'):
+              storageDescriptors.append(line.split(' '))
+      #
+      nextConsJumpPtr = 0
+      consJumpMemory = []
+      sdAddress = []
+      memAddress = []
+      accessOrder = []
+      consJumpPtr = []
+      cjCntl = []
+      for sd in storageDescriptors:
+        print '{0}:{1}:INFO: New storage descriptor {2} '.format(__FILE__(), __LINE__(), str(sd))
+        sdAddress.append(sd[0])
+        del(sd[0])
+        addressFields = sd[0].split("_")   
+        address = ''
+        peBits = math.log(numOfPes,2)
+        address = address + bin(int(addressFields[0], 16)).split('b')[1].zfill(int(peBits))
+        channelBits = math.log(numOfDramChans,2)
+        address = address + bin(int(addressFields[1], 16)).split('b')[1].zfill(int(channelBits))
+        bankBits = math.log(numOfDramBanks,2)
+        address = address + bin(int(addressFields[2], 16)).split('b')[1].zfill(int(bankBits))
+        pageBits = math.log(numOfDramPages,2)
+        address = address + bin(int(addressFields[3], 16)).split('b')[1].zfill(int(pageBits))
+        wordBits = math.log(numOfDramWords,2)
+        address = address + bin(int(addressFields[4], 16)).split('b')[1].zfill(int(wordBits))
+        # byte address
+        address = address + '00'
+
+        addressLength = peBits+channelBits+bankBits+pageBits+wordBits+2
+        memAddress.append(str(hex(int(address,2)).split('x')[1]).zfill(9))
+        print address, hex(int(address,2)), hex(int(address,2)).split('x')[1], memAddress[-1]
+        del(sd[0])
+        accessOrder.append(sd[0])
+        del(sd[0])
+        consJumpPtr.append(nextConsJumpPtr )
+        fieldNum = 0
+        # the first field is consequtive value
+        consequtiveField = True
+        jumpField = False
+        while fieldNum < len(sd) :
+          #print '{0}:{1}:INFO: processing field {2} of {3} '.format(__FILE__(), __LINE__(), fieldNum, str(sd))
+          consJumpMemory.append(sd[fieldNum])
+          if consequtiveField:
+            # if only one consequitive field
+            if fieldNum == 0 and int(sd[fieldNum+1]) == 0:
+              cjCntl.append(getattr(dc.descDelin, 'SOD_EOD'))
+            elif fieldNum == 0 :
+              cjCntl.append(getattr(dc.descDelin, 'SOD'))
+            elif int(sd[fieldNum+1]) == 0:
+              cjCntl.append(getattr(dc.descDelin, 'EOD'))
+            else:
+              cjCntl.append(getattr(dc.descDelin, 'MOD'))
+          else :
+            cjCntl.append(getattr(dc.descDelin, 'MOD'))
+          #
+          if consequtiveField:
+            consequtiveField = False
+            jumpField = True
+            # jump over valid, if next field is invalid, we'll drop out of the while loop
+            fieldNum += 2
+          else:
+            consequtiveField = True
+            jumpField = False
+            # jump over consequtive field
+            fieldNum += 1
+          nextConsJumpPtr += 1
+          
+      pLine = ''
+      mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+      outputFile = mgrDirStr + "manager_{0}_layer{1}_storageDescriptorAddress_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+      oFile = open(outputFile, 'w')
+      for c in range(len(sdAddress)):
+        pLine = pLine + '@{0:>6} {1:>9} \n'.format(sdAddress[c].zfill(8), memAddress[c].zfill(9))
+      oFile.write(pLine)
+      oFile.close()
+        
+      pLine = ''
+      mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+      outputFile = mgrDirStr + "manager_{0}_layer{1}_storageDescriptorAccessOrder_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+      oFile = open(outputFile, 'w')
+      for c in range(len(sdAddress)):
+        pLine = pLine + '@{0:>6} {1:>4} \n'.format(sdAddress[c].zfill(6), accessOrder[c])
+      oFile.write(pLine)
+      oFile.close()
+        
+      pLine = ''
+      mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+      outputFile = mgrDirStr + "manager_{0}_layer{1}_storageDescriptorPtr_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+      oFile = open(outputFile, 'w')
+      for c in range(len(sdAddress)):
+        pLine = pLine + '@{0:>6} {1:>4} \n'.format(sdAddress[c].zfill(6), consJumpPtr[c])
+      oFile.write(pLine)
+      oFile.close()
+        
+      pLine = ''
+      mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+      outputFile = mgrDirStr + "manager_{0}_layer{1}_storageDescriptorConsJumpCntl_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+      oFile = open(outputFile, 'w')
+      for c in range(len(cjCntl)):
+        pLine = pLine + '@{0:>6} {1:>4} \n'.format(toHexPad(c, 6), cjCntl[c])
+      oFile.write(pLine)
+      oFile.close()
+        
+      pLine = ''
+      mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+      outputFile = mgrDirStr + "manager_{0}_layer{1}_storageDescriptorConsJumpFields_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+      oFile = open(outputFile, 'w')
+      for c in range(len(cjCntl)):
+        pLine = pLine + '@{0:>6} {1:>4} \n'.format(toHexPad(c, 6), consJumpMemory[c])
+      oFile.write(pLine)
+      oFile.close()
+        
+        
+        
   #------------------------------------------------------------------------------------------------------------------------
   # End main()
   #------------------------------------------------------------------------------------------------------------------------

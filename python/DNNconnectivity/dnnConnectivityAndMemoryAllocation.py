@@ -224,6 +224,8 @@ DescriptorDelin.__new__.__defaults__ = (w, 1, 0, 2, 3)
 descDelin = DescriptorDelin()
 #descDelin  = DescriptorDelin._make([int(math.ceil(math.log(len(DescriptorDelin._fields)-1,16)))] + range(len(DescriptorDelin._fields)-1))
 
+# FIXME : VERILOG
+# must match manager_typedef.vh
 DescriptorType = namedtuple('DescriptorType',   \
                                      'WIDTH      \
                                       NOP        \
@@ -420,7 +422,6 @@ class Kernel():
         
 
     
-
 ########################################################################################################################
 ## MEMORY
 
@@ -2802,6 +2803,7 @@ class Manager():
             # Add descriptor to manager list
             descPtr = self.addStorageDescriptor(layerID, readDesc)  
             # add value to storage tuple
+            roiRowStr = roiRowStr + '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
             roiRowStr = roiRowStr + '{0:^{1}}, '    .format(toHexPad(descPtr, int(math.ceil(math.log(math.pow(descPtrWidth,2),16)))), int(math.ceil(math.log(math.pow(descPtrWidth,2),16))) )
 
             #roiRowStr = roiRowStr + '0, '
@@ -2857,6 +2859,7 @@ class Manager():
                     pass
             # Add descriptor to manager list
             descPtr = self.addStorageDescriptor(layerID, readDesc)  
+            kerRowStr = kerRowStr + '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
             kerRowStr = kerRowStr + '{0:^{1}}, '    .format(toHexPad(descPtr, int(math.ceil(math.log(math.pow(descPtrWidth,2),16)))), int(math.ceil(math.log(math.pow(descPtrWidth,2),16))) )
 
             #kerRowStr = kerRowStr + '0, '
@@ -2913,8 +2916,11 @@ class Manager():
                         writeDesc.jump.append(toHexPad(d['Jump'][c], 3))
                     except:
                         pass
-                # Add descriptor to manager list
-                descPtr = self.addStorageDescriptor(layerID, writeDesc)  
+                # Add descriptor to destination manager list
+                descPtr = d['Manager'].addStorageDescriptor(layerID, writeDesc)  
+                #descPtr = self.addStorageDescriptor(layerID, writeDesc)  
+                # Memory descriptor pointer is Mgr_localDescAddress
+                dRowStr = dRowStr + '{0:>{1}}_' .format(toHexPad(  d['Manager'].absID        , int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X  ,16))) ), int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X   ,16))))
                 dRowStr = dRowStr + '{0:^{1}}, '    .format(toHexPad(descPtr, int(math.ceil(math.log(math.pow(descPtrWidth,2),16)))), int(math.ceil(math.log(math.pow(descPtrWidth,2),16))) )
                 #dRowStr = dRowStr + '0, '
 
@@ -2971,7 +2977,7 @@ class Manager():
         dirStr = dirStr + 'manager_{0}_{1}/'.format(self.ID[0], self.ID[1])
         if not os.path.exists(dirStr) :
             os.makedirs(dirStr)
-        outFile = dirStr + 'manager_{0}_{1}_layer{2}_storageDescriptors'.format(self.ID[0], self.ID[1], layerID)
+        outFile = dirStr + 'manager_{0}_{1}_layer{2}_storageDescriptors.txt'.format(self.ID[0], self.ID[1], layerID)
 
         oFile = open(outFile, 'w')
 
