@@ -119,12 +119,53 @@
 
 // Instruction fields
 `define MGR_INST_TYPE_WIDTH               5
-`define MGR_INST_TYPE_MSB           `MGR_INST_TYPE_WIDTH-1
-`define MGR_INST_TYPE_LSB            0
-`define MGR_INST_TYPE_SIZE           (`MGR_INST_TYPE_MSB - `MGR_INST_TYPE_LSB +1)
-`define MGR_INST_TYPE_RANGE           `MGR_INST_TYPE_MSB : `MGR_INST_TYPE_LSB
+`define MGR_INST_TYPE_MSB                `MGR_INST_TYPE_WIDTH-1
+`define MGR_INST_TYPE_LSB                 0
+`define MGR_INST_TYPE_SIZE              (`MGR_INST_TYPE_MSB - `MGR_INST_TYPE_LSB +1)
+`define MGR_INST_TYPE_RANGE              `MGR_INST_TYPE_MSB : `MGR_INST_TYPE_LSB
 
-//---------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------
+// - FIXME : Must match python_typedef.vh python_desc_type
+`define MGR_INST_DESC_TYPE_NOP              0
+`define MGR_INST_DESC_TYPE_OP               1
+`define MGR_INST_DESC_TYPE_MR               2
+`define MGR_INST_DESC_TYPE_MW               3
+
+// - FIXME : Must match python_typedef.vh python_option_type
+`define MGR_INST_OPTION_TYPE_NOP            0
+`define MGR_INST_OPTION_TYPE_SRC            1
+`define MGR_INST_OPTION_TYPE_TGT            2
+`define MGR_INST_OPTION_TYPE_TXFER          3
+`define MGR_INST_OPTION_TYPE_NUM_OF_LANES   4
+`define MGR_INST_OPTION_TYPE_STOP           5
+`define MGR_INST_OPTION_TYPE_SIMDOP         6
+`define MGR_INST_OPTION_TYPE_MEMORY         7
+
+// - FIXME : Must match python_typedef.vh python_simd_type
+`define MGR_INST_OPTION_SIMD_TYPE_NOP       0
+`define MGR_INST_OPTION_SIMD_TYPE_RELU      1
+
+// - FIXME : Must match python_typedef.vh python_stOp_type
+`define MGR_INST_OPTION_STOP_TYPE_NOP                                                  0
+`define MGR_INST_OPTION_STOP_TYPE_STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM    1
+`define MGR_INST_OPTION_STOP_TYPE_STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM      2
+`define MGR_INST_OPTION_STOP_TYPE_STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM    3
+
+// - FIXME : Must match python_typedef.vh python_target_type
+`define MGR_INST_OPTION_TGT_TYPE_STACK_DN_ARG0   0
+`define MGR_INST_OPTION_TGT_TYPE_STACK_DN_ARG1   1
+`define MGR_INST_OPTION_TGT_TYPE_STACK_UP        2
+`define MGR_INST_OPTION_TGT_TYPE_NOP             3
+
+// - FIXME : Must match python_typedef.vh python_transfer_type
+`define MGR_INST_OPTION_TRANSFER_TYPE_BCAST    0  
+`define MGR_INST_OPTION_TRANSFER_TYPE_VECTOR   1  
+`define MGR_INST_OPTION_TRANSFER_TYPE_NOP      2  
+
+// - FIXME : Must match python_typedef.vh python_order_type
+`define MGR_INST_OPTION_ORDER_TYPE_CWBP    0      
+`define MGR_INST_OPTION_ORDER_TYPE_WCBP    1      
+`define MGR_INST_OPTION_ORDER_TYPE_NOP     2      
 
 //---------------------------------------------------------------------------------------------------------------------
 // Instruction Memory

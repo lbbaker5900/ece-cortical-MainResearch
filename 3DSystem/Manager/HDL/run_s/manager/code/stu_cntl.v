@@ -323,7 +323,6 @@ module stu_cntl (
   always @(*)
     begin
       case (stu_cntl_rx_cntl_state)
-
         
         `STU_CNTL_RX_CNTL_WAIT: 
           stu_cntl_rx_cntl_state_next =  ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_CONTROL) ) ? `STU_CNTL_RX_CNTL_CONTROL_SOM       :  // start processing control

@@ -44,6 +44,7 @@ module wu_fetch (
             
             //-------------------------------
             //
+            wum__wuf__stall                   ,
             xxx__wuf__stall                   ,
 
             //-------------------------------
@@ -72,6 +73,7 @@ module wu_fetch (
 
   output [`MGR_WU_ADDRESS_RANGE    ]        wuf__wum__addr                 ;
   output                                    wuf__wum__read                 ;
+  input                                     wum__wuf__stall                ;
 
 
   //----------------------------------------------------------------------------------------------------
@@ -87,6 +89,7 @@ module wu_fetch (
   wire                                      wuf__wum__read_e1              ;
 
   reg                                       xxx__wuf__stall_d1             ;
+  reg                                       wum__wuf__stall_d1             ;
 
   reg  [`MGR_WU_ADDRESS_RANGE    ]          pc                             ;
   wire                                      increment_pc                   ;
@@ -98,6 +101,7 @@ module wu_fetch (
   always @(posedge clk)
     begin
       xxx__wuf__stall_d1        <= ( reset_poweron   ) ? 'd0  :  xxx__wuf__stall         ;
+      wum__wuf__stall_d1        <= ( reset_poweron   ) ? 'd0  :  wum__wuf__stall         ;
       mcntl__wuf__enable_d1     <= ( reset_poweron   ) ? 'd0  :  mcntl__wuf__enable      ;
       mcntl__wuf__start_addr_d1 <= ( reset_poweron   ) ? 'd0  :  mcntl__wuf__start_addr  ;
       wuf__wum__addr            <= ( reset_poweron   ) ? 'd0  :  wuf__wum__addr_e1       ;
@@ -158,7 +162,7 @@ module wu_fetch (
   // Assignments
   //
 
-  assign stall                     = xxx__wuf__stall_d1   ;
+  assign stall                     = xxx__wuf__stall_d1 | wum__wuf__stall ;
   assign wuf__wum__addr_e1         = pc                   ;
   assign wuf__wum__read_e1         = increment_pc         ;
 

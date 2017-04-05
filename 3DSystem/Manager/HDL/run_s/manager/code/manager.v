@@ -17,7 +17,7 @@
 //--------------------------------------------------
 // test related defines
 `ifdef TESTING
-`include "TB_common.vh"
+//`include "TB_common.vh"
 `endif
 
 //--------------------------------------------------
@@ -147,7 +147,6 @@ module manager (
 
   `include "manager_noc_connection_wires.vh"
 
-  wire  [`MGR_WU_ADDRESS_RANGE    ]     wuf__wum__addr          ;
   wire  [`MGR_WU_ADDRESS_RANGE    ]     mcntl__wuf__start_addr  ;  // first WU address
   wire                                  mcntl__wuf__enable      ;
 
@@ -157,6 +156,7 @@ module manager (
   // FIXME
   assign  mcntl__wuf__start_addr  = 24'd0   ;
   assign  mcntl__wuf__enable      = 1'b1    ;
+  wire    xxx__wuf__stall         = 1'b0    ;
 
 
 
@@ -165,8 +165,14 @@ module manager (
   //-------------------------------------------------------------------------------------------------
   // Instances
   //
-  // FIXME
-  wire xxx__wuf__stall = 0;
+
+  //-------------------------------------------------------------------------------------------------
+  // WU Fetch
+  // 
+
+  wire  [`MGR_WU_ADDRESS_RANGE    ]     wuf__wum__addr       ;
+  wire                                  wuf__wum__read       ; 
+  wire                                  wum__wuf__stall      ; 
 
   wu_fetch wu_fetch (
   
@@ -174,6 +180,7 @@ module manager (
           // To WU memory
           .wuf__wum__read          ( wuf__wum__read           ),
           .wuf__wum__addr          ( wuf__wum__addr           ),
+          .wum__wuf__stall         ( wum__wuf__stall          ),
  
           //-------------------------------
           // Control
@@ -191,6 +198,11 @@ module manager (
         );
 
 
+  //-------------------------------------------------------------------------------------------------
+  // WU Memory
+  // 
+  wire                                       wum__wud__valid       ; 
+  wire                                       wud__wum__ready       ; 
   wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__icntl       ;  // instruction delineator
   wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__dcntl       ;  // descriptor delineator
   wire  [`MGR_INST_TYPE_RANGE           ]    wum__wud__op          ;  // NOP, OP, MR, MW
@@ -206,10 +218,12 @@ module manager (
           // From WU fetch 
           .wuf__wum__read          ( wuf__wum__read           ),
           .wuf__wum__addr          ( wuf__wum__addr           ),
+          .wum__wuf__stall         ( wum__wuf__stall          ),
  
           //-------------------------------
           // To WU decode
           .wum__wud__valid         ( wum__wud__valid          ),
+          .wud__wum__ready         ( wud__wum__ready          ),
           .wum__wud__icntl         ( wum__wud__icntl          ),
           .wum__wud__dcntl         ( wum__wud__dcntl          ),
           .wum__wud__op            ( wum__wud__op             ),
@@ -220,7 +234,42 @@ module manager (
           // General
           .sys__mgr__mgrId         ( sys__mgr__mgrId          ),
 
-          .clk                     ( clk               )
+          .clk                     ( clk                      ),
+          .reset_poweron           ( reset_poweron            )
+        );
+
+  //-------------------------------------------------------------------------------------------------
+  // WU decode
+  // 
+
+  wu_decode wu_decode (
+  
+          //-------------------------------
+          // from WU Memory
+          .wum__wud__valid         ( wum__wud__valid          ),
+          .wud__wum__ready         ( wud__wum__ready          ),
+          .wum__wud__icntl         ( wum__wud__icntl          ),
+          .wum__wud__dcntl         ( wum__wud__dcntl          ),
+          .wum__wud__op            ( wum__wud__op             ),
+          .wum__wud__option_type   ( wum__wud__option_type    ),
+          .wum__wud__option_value  ( wum__wud__option_value   ),
+
+          //-------------------------------
+          // Stack Down OOB driver
+          //
+          .wuc__odc__valid         ( wuc__odc__valid     ),
+          .wuc__odc__cntl          ( wuc__odc__cntl      ),  // used to delineate upstream packet data
+          .odc__wuc__ready         ( odc__wuc__ready     ),
+          .wuc__odc__tag           ( wuc__odc__tag       ),  // Use this to match with WU and take all the data 
+          .wuc__odc__num_lanes     ( wuc__odc__num_lanes ),  // The data may vary so check for cntl=EOD when reading this interface
+          .wuc__odc__stOp_cmd      ( wuc__odc__stOp_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
+          .wuc__odc__simd_cmd      ( wuc__odc__simd_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
+
+          //-------------------------------
+          // General
+          .sys__mgr__mgrId         ( sys__mgr__mgrId          ),
+          .clk                     ( clk                      ),
+          .reset_poweron           ( reset_poweron            ) 
         );
 
   //-------------------------------------------------------------------------------------------------

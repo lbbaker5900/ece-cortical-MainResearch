@@ -29,36 +29,49 @@
 
 
 module wu_memory (  
-                           valid                       ,
-                           sys__mgr__mgrId             ,
+            valid                       ,
+            sys__mgr__mgrId             ,
 
-                           // from WU fetch
-                           wuf__wum__addr              ,
-                           wuf__wum__read              ,
-                                                 
-                           // to WU decode
-                           wum__wud__valid             ,
-                           wum__wud__icntl             ,
-                           wum__wud__dcntl             ,
-                           wum__wud__op                ,
-                           wum__wud__option_type       ,
-                           wum__wud__option_value      ,
+            // from WU fetch
+            wum__wuf__stall             ,
+            wuf__wum__addr              ,
+            wuf__wum__read              ,
+                                  
+            // to WU decode
+            wum__wud__valid             ,
+            wud__wum__ready             ,
+            wum__wud__icntl             ,
+            wum__wud__dcntl             ,
+            wum__wud__op                ,
+            wum__wud__option_type       ,
+            wum__wud__option_value      ,
 
-                           clk
-                        );
+            //-------------------------------
+            // General
+            //
+            clk                               ,
+            reset_poweron    
+            );
 
+    //----------------------------------------------------------------------------------------------------
+    // General
+  
     input                                       clk                            ;
+    input                                       reset_poweron                  ;
+
     input                                       valid                          ;
     input   [`MGR_MGR_ID_RANGE    ]             sys__mgr__mgrId                ;
 
     // from WU fetch
     input  [`MGR_WU_ADDRESS_RANGE          ]    wuf__wum__addr                 ;
     input                                       wuf__wum__read                 ;
+    output                                      wum__wuf__stall                ;
 
     //----------------------------------------------------------------------------------------------------
     // to decode
     
     output                                      wum__wud__valid                ;
+    input                                       wud__wum__ready                ;
     // WU Instruction delineators
     output [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__icntl                ;  // instruction delineator
     output [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__dcntl                ;  // descriptor delineator
@@ -82,6 +95,7 @@ module wu_memory (
     reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
 
+    reg                                       wum__wuf__stall                ;
 
     wire                                      valid_e1                ;
     // Delineators
@@ -103,6 +117,11 @@ module wu_memory (
       begin
         wuf__wum__read_d1           <=  wuf__wum__read   ;
         wuf__wum__addr_d1           <=  wuf__wum__addr   ;
+      end
+
+    always @(posedge clk) 
+      begin
+        wum__wuf__stall        <= ( reset_poweron   ) ? 'd0  :  ~wud__wum__ready   ;
       end
 
     always @(posedge clk) 
