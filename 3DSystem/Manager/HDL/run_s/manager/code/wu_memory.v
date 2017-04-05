@@ -131,12 +131,12 @@ module wu_memory (
     //----------------------------------------------------------------------------------------------------
     // Memories 
 
-    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    icntl                                        [`MGR_STORAGE_DESC_MEMORY_RANGE ] ;  // instruction delineator
-    reg    [`MGR_INST_TYPE_RANGE           ]    op                                           [`MGR_STORAGE_DESC_MEMORY_RANGE ] ;  // 
+    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    icntl                                        [`MGR_INSTRUCTION_MEMORY_RANGE ] ;  // instruction delineator
+    reg    [`MGR_INST_TYPE_RANGE           ]    op                                           [`MGR_INSTRUCTION_MEMORY_RANGE ] ;  // 
     // WU Instruction option fields
-    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    option_type    [`MGR_WU_OPT_PER_INST_RANGE ] [`MGR_STORAGE_DESC_MEMORY_RANGE ] ;  // 
-    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    option_value   [`MGR_WU_OPT_PER_INST_RANGE ] [`MGR_STORAGE_DESC_MEMORY_RANGE ] ;  // 
-    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    dcntl                                        [`MGR_STORAGE_DESC_MEMORY_RANGE ] ;  // descriptor delineator
+    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    option_type    [`MGR_WU_OPT_PER_INST_RANGE ] [`MGR_INSTRUCTION_MEMORY_RANGE ] ;  // 
+    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    option_value   [`MGR_WU_OPT_PER_INST_RANGE ] [`MGR_INSTRUCTION_MEMORY_RANGE ] ;  // 
+    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    dcntl                                        [`MGR_INSTRUCTION_MEMORY_RANGE ] ;  // descriptor delineator
 
     
     // The memory is updated using the testbench, so everytime we see an option, reload the memory

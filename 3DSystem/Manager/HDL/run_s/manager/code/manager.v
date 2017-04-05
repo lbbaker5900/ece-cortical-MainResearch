@@ -149,8 +149,14 @@ module manager (
 
   wire  [`MGR_WU_ADDRESS_RANGE    ]     wuf__wum__addr          ;
   wire  [`MGR_WU_ADDRESS_RANGE    ]     mcntl__wuf__start_addr  ;  // first WU address
+  wire                                  mcntl__wuf__enable      ;
 
   //-------------------------------------------------------------------------------------------------
+  //-------------------------------------------------------------------------------------------------
+  // Temporary assignments
+  // FIXME
+  assign  mcntl__wuf__start_addr  = 24'd0   ;
+  assign  mcntl__wuf__enable      = 1'b1    ;
 
 
 
@@ -171,8 +177,8 @@ module manager (
  
           //-------------------------------
           // Control
-          .mcntl__wuf__enable      ( 1       ),
-          .mcntl__wuf__start_addr  ( 0       ),
+          .mcntl__wuf__enable      ( mcntl__wuf__enable       ),
+          .mcntl__wuf__start_addr  ( mcntl__wuf__start_addr   ),
 
           //-------------------------------
           // 

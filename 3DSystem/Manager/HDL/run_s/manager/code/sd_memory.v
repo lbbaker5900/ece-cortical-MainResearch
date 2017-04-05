@@ -32,17 +32,17 @@ module sd_memory (
                            valid                       ,
                            sys__mgr__mgrId             ,
 
-                           // from WU fetch
-                           wuf__wum__addr              ,
-                           wuf__wum__read              ,
+                           // from ???
+                           xx1__sdm__stor_desc_ptr     ,
+                           xx1__sdm__read              ,
                                                  
                            // to WU decode
-                           wum__wud__valid             ,
-                           wum__wud__icntl             ,
-                           wum__wud__dcntl             ,
-                           wum__wud__op                ,
-                           wum__wud__option_type       ,
-                           wum__wud__option_value      ,
+                           sdm__xx1__valid             ,
+                           sdm__xx1__icntl             ,
+                           sdm__xx1__dcntl             ,
+                           sdm__xx1__op                ,
+                           sdm__xx1__option_type       ,
+                           sdm__xx1__option_value      ,
 
                            clk
                         );
@@ -52,35 +52,35 @@ module sd_memory (
     input   [`MGR_MGR_ID_RANGE    ]             sys__mgr__mgrId                ;
 
     // from WU fetch
-    input  [`MGR_WU_ADDRESS_RANGE          ]    wuf__wum__addr                 ;
-    input                                       wuf__wum__read                 ;
+    input  [`MGR_WU_ADDRESS_RANGE          ]    xx1__sdm__addr                 ;
+    input                                       xx1__sdm__read                 ;
 
     //----------------------------------------------------------------------------------------------------
     // to decode
     
-    output                                      wum__wud__valid                ;
+    output                                      sdm__xx1__valid                ;
     // WU Instruction delineators
-    output [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__icntl                ;  // instruction delineator
-    output [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__dcntl                ;  // descriptor delineator
-    output [`MGR_INST_TYPE_RANGE           ]    wum__wud__op                   ;  // NOP, OP, MR, MW
+    output [`COMMON_STD_INTF_CNTL_RANGE    ]    sdm__xx1__icntl                ;  // instruction delineator
+    output [`COMMON_STD_INTF_CNTL_RANGE    ]    sdm__xx1__dcntl                ;  // descriptor delineator
+    output [`MGR_INST_TYPE_RANGE           ]    sdm__xx1__op                   ;  // NOP, OP, MR, MW
 
     // WU Instruction option fields
-    output [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type    [`MGR_WU_OPT_PER_INST ] ;  // 
-    output [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value   [`MGR_WU_OPT_PER_INST ] ;  // 
+    output [`MGR_WU_OPT_TYPE_RANGE         ]    sdm__xx1__option_type    [`MGR_WU_OPT_PER_INST ] ;  // 
+    output [`MGR_WU_OPT_VALUE_RANGE        ]    sdm__xx1__option_value   [`MGR_WU_OPT_PER_INST ] ;  // 
 
 
     //----------------------------------------------------------------------------------------------------
     // Registers and Wires
 
-    reg                                      wum__wud__valid                ;
+    reg                                      sdm__xx1__valid                ;
     // Delineators
-    reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__icntl               ;  // instruction delineator
-    reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__dcntl               ;  // descriptor delineator
-    reg  [`MGR_INST_TYPE_RANGE           ]    wum__wud__op                  ;  // NOP, OP, MR, MW
+    reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    sdm__xx1__icntl               ;  // instruction delineator
+    reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    sdm__xx1__dcntl               ;  // descriptor delineator
+    reg  [`MGR_INST_TYPE_RANGE           ]    sdm__xx1__op                  ;  // NOP, OP, MR, MW
 
     // WU Instruction option fields
-    reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
-    reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
+    reg  [`MGR_WU_OPT_TYPE_RANGE         ]    sdm__xx1__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
+    reg  [`MGR_WU_OPT_VALUE_RANGE        ]    sdm__xx1__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
 
 
     wire                                      valid_e1                ;
@@ -93,40 +93,40 @@ module sd_memory (
     reg  [`MGR_WU_OPT_TYPE_RANGE         ]    option_type_e1    [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]    option_value_e1   [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
 
-    reg  [`MGR_WU_ADDRESS_RANGE          ]    wuf__wum__addr_d1                ;
-    reg                                       wuf__wum__read_d1                ;
+    reg  [`MGR_WU_ADDRESS_RANGE          ]    xx1__sdm__addr_d1                ;
+    reg                                       xx1__sdm__read_d1                ;
 
     //----------------------------------------------------------------------------------------------------
     // Register inputs and outputs
 
     always @(posedge clk) 
       begin
-        wuf__wum__read_d1           <=  wuf__wum__read   ;
-        wuf__wum__addr_d1           <=  wuf__wum__addr   ;
+        xx1__sdm__read_d1           <=  xx1__sdm__read   ;
+        xx1__sdm__addr_d1           <=  xx1__sdm__addr   ;
       end
 
     always @(posedge clk) 
       begin
-        wum__wud__valid             <=  valid_e1         ;
+        sdm__xx1__valid             <=  valid_e1         ;
 
-        wum__wud__icntl             <=  icntl_e1         ;
-        wum__wud__dcntl             <=  dcntl_e1         ;
-        wum__wud__op                <=  op_e1            ;
+        sdm__xx1__icntl             <=  icntl_e1         ;
+        sdm__xx1__dcntl             <=  dcntl_e1         ;
+        sdm__xx1__op                <=  op_e1            ;
                                                            
         for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
           begin: option_out
-            wum__wud__option_type  [opt]  <=  option_type_e1  [opt]  ;
-            wum__wud__option_value [opt]  <=  option_value_e1 [opt]  ;
+            sdm__xx1__option_type  [opt]  <=  option_type_e1  [opt]  ;
+            sdm__xx1__option_value [opt]  <=  option_value_e1 [opt]  ;
           end
         /*
-        wum__wud__option_type  [0]  <=  option_type_e1  [0]  ;
-        wum__wud__option_value [0]  <=  option_value_e1 [0]  ;
-        wum__wud__option_type  [1]  <=  option_type_e1  [1]  ;
-        wum__wud__option_value [1]  <=  option_value_e1 [1]  ;
+        sdm__xx1__option_type  [0]  <=  option_type_e1  [0]  ;
+        sdm__xx1__option_value [0]  <=  option_value_e1 [0]  ;
+        sdm__xx1__option_type  [1]  <=  option_type_e1  [1]  ;
+        sdm__xx1__option_value [1]  <=  option_value_e1 [1]  ;
         */
       end
 
-    assign valid_e1 = wuf__wum__read_d1 ;
+    assign valid_e1 = xx1__sdm__read_d1 ;
 
     //----------------------------------------------------------------------------------------------------
     // Memories 
@@ -158,15 +158,15 @@ module sd_memory (
 
     always @(*) 
       begin 
-        #0.3   icntl_e1            =  (wuf__wum__read_d1) ? icntl [wuf__wum__addr_d1] : 'd0 ;
-        #0.3   op_e1               =  (wuf__wum__read_d1) ? op    [wuf__wum__addr_d1] : 'd0 ;
+        #0.3   icntl_e1            =  (xx1__sdm__read_d1) ? icntl [xx1__sdm__addr_d1] : 'd0 ;
+        #0.3   op_e1               =  (xx1__sdm__read_d1) ? op    [xx1__sdm__addr_d1] : 'd0 ;
                                 
         for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
           begin: option_mem
-            #0.3   option_type_e1  [opt] =  (wuf__wum__read_d1) ? option_type    [opt] [wuf__wum__addr_d1] : 'd0 ;
-            #0.3   option_value_e1 [opt] =  (wuf__wum__read_d1) ? option_value   [opt] [wuf__wum__addr_d1] : 'd0 ;
+            #0.3   option_type_e1  [opt] =  (xx1__sdm__read_d1) ? option_type    [opt] [xx1__sdm__addr_d1] : 'd0 ;
+            #0.3   option_value_e1 [opt] =  (xx1__sdm__read_d1) ? option_value   [opt] [xx1__sdm__addr_d1] : 'd0 ;
           end
-        #0.3   dcntl_e1            =  (wuf__wum__read_d1) ? dcntl              [wuf__wum__addr_d1] : 'd0 ;
+        #0.3   dcntl_e1            =  (xx1__sdm__read_d1) ? dcntl              [xx1__sdm__addr_d1] : 'd0 ;
 
       end
 

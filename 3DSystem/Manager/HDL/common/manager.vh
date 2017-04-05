@@ -127,6 +127,24 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------------------------------------------------
+// Instruction Memory
+
+// FIXME - need to check depth equirements (for sim, keep small)
+`define MGR_INSTRUCTION_MEMORY_DEPTH   1024
+`define MGR_INSTRUCTION_MEMORY_MSB     `MGR_INSTRUCTION_MEMORY_DEPTH-1
+`define MGR_INSTRUCTION_MEMORY_LSB     0
+`define MGR_INSTRUCTION_MEMORY_SIZE    (`MGR_INSTRUCTION_MEMORY_MSB - `MGR_INSTRUCTION_MEMORY_LSB +1)
+`define MGR_INSTRUCTION_MEMORY_RANGE    `MGR_INSTRUCTION_MEMORY_MSB : `MGR_INSTRUCTION_MEMORY_LSB
+
+
+`define MGR_INSTRUCTION_ADDRESS_WIDTH   (`CLOG2(`MGR_INSTRUCTION_MEMORY_DEPTH )) 
+`define MGR_INSTRUCTION_ADDRESS_MSB     `MGR_INSTRUCTION_ADDRESS_WIDTH-1
+`define MGR_INSTRUCTION_ADDRESS_LSB     0
+`define MGR_INSTRUCTION_ADDRESS_SIZE    (`MGR_INSTRUCTION_ADDRESS_MSB - `MGR_INSTRUCTION_ADDRESS_LSB +1)
+`define MGR_INSTRUCTION_ADDRESS_RANGE    `MGR_INSTRUCTION_ADDRESS_MSB : `MGR_INSTRUCTION_ADDRESS_LSB
+
+
+//---------------------------------------------------------------------------------------------------------------------
 // Storage Descriptor Memory
 
 // FIXME - need to check depth equirements (for sim, keep small)
