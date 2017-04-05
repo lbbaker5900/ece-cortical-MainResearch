@@ -2,3 +2,7 @@
 jupyter notebook
 
 python -i test.py
+
+scp outputFiles/latest/*/*.dat lbbaker@olympia.ece.ncsu.edu:/home/lbbaker/Cortical/MyResearch/3DSystem/System/SIMULATION/sv/inputFiles/.
+scp verilogFiles/latest/*.vh   lbbaker@olympia.ece.ncsu.edu:/home/lbbaker/Cortical/MyResearch/3DSystem/System/HDL/common/.
+

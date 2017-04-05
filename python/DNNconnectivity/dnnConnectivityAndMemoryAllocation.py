@@ -301,7 +301,7 @@ if not os.path.exists(dirStr) :
 dirStr = dirStr + timeStr + '/'
 if not os.path.exists(dirStr) :
     os.makedirs(dirStr)
-outFile = dirStr + 'python.vh'
+outFile = dirStr + 'python_typedef.vh'
 
 oFile = open(outFile, 'w')
 
