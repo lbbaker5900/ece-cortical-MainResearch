@@ -122,6 +122,7 @@ searchFile = open("../../github/ece-cortical-MainResearch/3DSystem/Manager/HDL/c
 FoundOptsPerInst  = False
 FoundOptWidth  = False
 FoundOptValWidth  = False
+FoundStorageDescMemoryDepth = False
 FoundDramChans = False
 FoundDramBanks = False
 FoundDramPages = False
@@ -175,6 +176,13 @@ for line in searchFile:
     if "MGR_DRAM_PAGE_SIZE" in data[1]:
       numOfDramWords = int(data[2])/32
       FoundDramWords = True
+  #
+  if FoundStorageDescMemoryDepth == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_STORAGE_DESC_MEMORY_DEPTH" in data[1]:
+      storageDescMemoryDepth = int(data[2])
+      FoundStorageDescMemoryDepth = True
 
 searchFile.close()
 
@@ -294,10 +302,10 @@ def main():
             optionValue.append([])
         op = []
         dcntl = []
-        instNum = 0
         pass
         for listOfDesc in descriptors:
           numOfDescriptors = len(listOfDesc)
+          instNum = 0
           descNum = 0
           for desc in listOfDesc:
             instTuples = desc.split(',')
@@ -339,8 +347,22 @@ def main():
                   # Memory tuple takes 2 tuples, so make sure enough space in current inst
                   #print '{0}:{1}:LEE:Memory tuple: {2} {3} {4}'.format(__FILE__(), __LINE__(), str(optionAndValue), str(tupInInstNum), str(lastTuple))
                   # pad and split adderss into bytes
-                  memBytes = re.findall('.{1,2}', optVal.zfill(6))
-                  #print '{0}:{1}:LEE: {2}'.format(__FILE__(), __LINE__(), memBytes)
+                  # The storage descriptor ptr is PE_Address, so create PE bits, ADdress bits, append and split into bytes
+                  # Check to ensure no longer than 24 bits
+                  descPtr = optVal.split("_")
+                  descPtrAddress = ''
+                  peBits = math.log(numOfPes,2)
+                  descPtrAddress = descPtrAddress + bin(int(descPtr[0], 16)).split('b')[1].zfill(int(peBits))
+                  descPtrAddrBits = math.log(storageDescMemoryDepth,2)
+                  descPtrAddress = descPtrAddress + bin(int(descPtr[1], 16)).split('b')[1].zfill(int(descPtrAddrBits))
+                  descPtrHexAddress=str(hex(int(descPtrAddress,2)).split('x')[1]).zfill(6)
+                  descPtrAddressBits = peBits + descPtrAddrBits
+                  # separate groups of 2 nibbles
+                  memBytes = re.findall('.{1,2}', descPtrHexAddress.zfill(6))
+                  if len(memBytes) > 3:
+                    print '{0}:{1}:ERROR: single tuple but not op or EOD'.format(__FILE__(), __LINE__())
+                    raise
+                  print '{0}:{1}:LEE: {2} {3}'.format(__FILE__(), __LINE__(), memBytes, descPtr)
                   if tupInInstNum < (optionsPerInst-1):
                     option[tupInInstNum].append(optType)
                     optionValue[tupInInstNum].append(memBytes[0])
@@ -467,9 +489,9 @@ def main():
         oFile.write(pLine)
         oFile.close()
 
-        pLine = ''
         mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
         for o in range(optionsPerInst):
+          pLine = ''
           outputFile = mgrDirStr + "manager_{0}_layer{1}_optionType{2}_readmem.dat".format(mgrY*arrayX+mgrX, layerID, o)
           oFile = open(outputFile, 'w')
           for c in range(len(dcntl)):
@@ -479,6 +501,7 @@ def main():
 
         mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
         for o in range(optionsPerInst):
+          pLine = ''
           outputFile = mgrDirStr + "manager_{0}_layer{1}_optionValue{2}_readmem.dat".format(mgrY*arrayX+mgrX, layerID, o)
           oFile = open(outputFile, 'w')
           for c in range(len(dcntl)):
@@ -486,7 +509,7 @@ def main():
           oFile.write(pLine)
           oFile.close()
 
-        print '{0}:{1}:INFO: Created {2} '.format(__FILE__(), __LINE__(), outputFile)
+        print '{0}:{1}:INFO: Created manager_{2}_{3} instruction readmem files'.format(__FILE__(), __LINE__(), mgrY, mgrX)
 
 
 
@@ -546,7 +569,7 @@ def main():
 
         addressLength = peBits+channelBits+bankBits+pageBits+wordBits+2
         memAddress.append(str(hex(int(address,2)).split('x')[1]).zfill(9))
-        print address, hex(int(address,2)), hex(int(address,2)).split('x')[1], memAddress[-1]
+        print '{0}:{1}:LEE: {2} {3} {4} {5}'.format(__FILE__(), __LINE__(), address, hex(int(address,2)), hex(int(address,2)).split('x')[1], memAddress[-1])
         del(sd[0])
         accessOrder.append(sd[0])
         del(sd[0])

@@ -3881,6 +3881,11 @@ def main():
                 for mgrX in range(network.managerArray.X):
                     print '{0}:{1}:INFO:Create Work Unit files for manager {2},{3} layer {4}'.format(__FILE__(), __LINE__(), mgrY, mgrX, l)
                     network.managerArray.manager[mgrY][mgrX].createWUfiles(l)
+        # Create WU's for all managers before creating storage descriptor files because managers create descriptors in other managers
+        for l in [1] :
+            for mgrY in range(network.managerArray.Y):
+                for mgrX in range(network.managerArray.X):
+                    print '{0}:{1}:INFO:Create Work Unit files for manager {2},{3} layer {4}'.format(__FILE__(), __LINE__(), mgrY, mgrX, l)
                     network.managerArray.manager[mgrY][mgrX].createStorageDescriptorFiles(l)
 
     #------------------------------------------------------------------------------------------------------------------------
