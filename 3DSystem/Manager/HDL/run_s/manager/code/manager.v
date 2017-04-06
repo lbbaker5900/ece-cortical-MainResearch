@@ -246,7 +246,7 @@ module manager (
   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ;
   wire                                          odc__wud__ready         ;
   wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag           ;
-  wire   [`MGR_NUM_OF_EXEC_LANES_RANGE   ]      wud__odc__num_lanes     ;
+  wire   [`MGR_EXEC_LANE_ID_RANGE        ]      wud__odc__num_lanes     ;
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
 

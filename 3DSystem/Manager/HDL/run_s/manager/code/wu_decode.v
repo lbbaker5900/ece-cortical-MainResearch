@@ -91,7 +91,7 @@ module wu_decode (
     output  [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ;
     input                                          odc__wud__ready         ;
     output  [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag           ;
-    output  [`MGR_EXEC_LANE_ID_RANGE   ]      wud__odc__num_lanes     ;
+    output  [`MGR_EXEC_LANE_ID_RANGE        ]      wud__odc__num_lanes     ;
     output  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
     output  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
  
@@ -126,7 +126,7 @@ module wu_decode (
     reg  [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ;
     wire                                        odc__wud__ready         ;
     reg  [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag           ;
-    reg  [`MGR_EXEC_LANE_ID_RANGE   ]      wud__odc__num_lanes     ;
+    reg  [`MGR_EXEC_LANE_ID_RANGE        ]      wud__odc__num_lanes     ;
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
  
@@ -136,7 +136,7 @@ module wu_decode (
     reg  [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl_e1          ;
     reg                                         odc__wud__ready_d1         ;
     reg  [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag_e1           ;
-    reg  [`MGR_EXEC_LANE_ID_RANGE   ]      wud__odc__num_lanes_e1     ;
+    reg  [`MGR_EXEC_LANE_ID_RANGE        ]      wud__odc__num_lanes_e1     ;
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd_e1      ;
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd_e1      ;
  
