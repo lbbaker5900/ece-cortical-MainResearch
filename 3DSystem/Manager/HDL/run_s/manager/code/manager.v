@@ -96,11 +96,11 @@ module manager (
   // Stack Bus - OOB Downstream
 
   // OOB carries PE configuration    
-  output[`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl            ; 
-  output                                        mgr__std__oob_valid           ; 
-  input                                         std__mgr__oob_ready           ; 
-  output[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr__std__oob_type            ; 
-  output[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr__std__oob_data            ; 
+  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl            ; 
+  output                                          mgr__std__oob_valid           ; 
+  input                                           std__mgr__oob_ready           ; 
+  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr__std__oob_type            ; 
+  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr__std__oob_data            ; 
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Downstream

@@ -31,15 +31,23 @@
 module rdp_cntl (
 
             //-------------------------------
-            // Input from Work Unit controller
+            // Input from Work Unit Decoder
             //
             wuc__rdp__valid         ,
             wuc__rdp__cntl          ,  // used to delineate WU packet
             rdp__wuc__ready         ,
             wuc__rdp__type          ,  // e.g. memory write
-            wuc__rdp__tag           ,  // Use this to match with WU and take all the data 
+            //wuc__rdp__tag           ,  // Use this to match with WU and take all the data 
             wuc__rdp__mem_desc_ptr  ,  // memory descriptor pointer
             wuc__rdp__num_words     ,  // How many words in the upstream packet are valid
+
+            //-------------------------------
+            // Input from OOB downstream controller
+            //
+            odc__rdp__valid         ,
+            odc__rdp__cntl          ,  // used to delineate WU packet
+            rdp__odc__ready         ,
+            odc__rdp__tag           ,  // ODC generates tag once packet sent
 
             //-------------------------------
             // Input from Upstream Stack Bus 
@@ -109,6 +117,16 @@ module rdp_cntl (
 
 
   //-------------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream controller
+  //
+  input                                          odc__rdp__valid       ;
+  input   [`COMMON_STD_INTF_CNTL_RANGE    ]      odc__rdp__cntl        ;
+  output                                         rdp__odc__ready       ;
+  input   [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      odc__rdp__tag         ;  // tag size is the same as sent to PE
+ 
+
+
+  //-------------------------------------------------------------------------------------------------
   // NoC interface
   //
   // Control-Path (cp) to NoC '
@@ -172,6 +190,19 @@ module rdp_cntl (
 
 
   //-------------------------------------------------------------------------------------------------
+  // Stack Bus - OOB Downstream controller
+  //
+  wire                                           odc__rdp__valid       ;
+  wire    [`COMMON_STD_INTF_CNTL_RANGE    ]      odc__rdp__cntl        ;
+  wire                                           rdp__odc__ready       ;
+  wire    [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      odc__rdp__tag         ;  // tag size is the same as sent to PE
+ 
+  reg                                            odc__rdp__valid_d1       ;
+  reg     [`COMMON_STD_INTF_CNTL_RANGE    ]      odc__rdp__cntl_d1        ;
+  wire                                           rdp__odc__ready_e1       ;
+  reg     [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      odc__rdp__tag_d1         ;  // tag size is the same as sent to PE
+ 
+  //-------------------------------------------------------------------------------------------------
   // NoC interface
   //
   // Control-Path (cp) to NoC '
@@ -217,6 +248,13 @@ module rdp_cntl (
     end
 
 
+  always @(posedge clk)
+    begin
+      odc__rdp__valid_d1         <= ( reset_poweron   ) ? 'd0  :  odc__rdp__valid        ;
+      odc__rdp__cntl_d1          <= ( reset_poweron   ) ? 'd0  :  odc__rdp__cntl         ;
+      rdp__odc__ready            <= ( reset_poweron   ) ? 'd0  :  rdp__odc__ready_e1     ;
+      odc__rdp__tag_d1           <= ( reset_poweron   ) ? 'd0  :  odc__rdp__tag          ;
+    end
 
   //----------------------------------------------------------------------------------------------------
   // Upstream Input FIFO
