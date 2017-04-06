@@ -242,6 +242,17 @@ module manager (
   // WU decode
   // 
 
+  wire                                          wud__odc__valid         ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ;
+  wire                                          odc__wud__ready         ;
+  wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag           ;
+  wire   [`MGR_NUM_OF_EXEC_LANES_RANGE   ]      wud__odc__num_lanes     ;
+  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
+  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
+
+  // FIXME
+  assign odc__wud__ready = 1'b1 ;
+ 
   wu_decode wu_decode (
   
           //-------------------------------
@@ -257,13 +268,13 @@ module manager (
           //-------------------------------
           // Stack Down OOB driver
           //
-          .wuc__odc__valid         ( wuc__odc__valid     ),
-          .wuc__odc__cntl          ( wuc__odc__cntl      ),  // used to delineate upstream packet data
-          .odc__wuc__ready         ( odc__wuc__ready     ),
-          .wuc__odc__tag           ( wuc__odc__tag       ),  // Use this to match with WU and take all the data 
-          .wuc__odc__num_lanes     ( wuc__odc__num_lanes ),  // The data may vary so check for cntl=EOD when reading this interface
-          .wuc__odc__stOp_cmd      ( wuc__odc__stOp_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
-          .wuc__odc__simd_cmd      ( wuc__odc__simd_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
+          .wud__odc__valid         ( wud__odc__valid     ),
+          .wud__odc__cntl          ( wud__odc__cntl      ),  // used to delineate upstream packet data
+          .odc__wud__ready         ( odc__wud__ready     ),
+          .wud__odc__tag           ( wud__odc__tag       ),  // Use this to match with WU and take all the data 
+          .wud__odc__num_lanes     ( wud__odc__num_lanes ),  // The data may vary so check for cntl=EOD when reading this interface
+          .wud__odc__stOp_cmd      ( wud__odc__stOp_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
+          .wud__odc__simd_cmd      ( wud__odc__simd_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
 
           //-------------------------------
           // General

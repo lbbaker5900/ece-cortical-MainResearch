@@ -19,7 +19,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 // OOB Downstream interface
 
-`define STACK_DOWN_OOB_INTF_TAG_SIZE           8
+`define STACK_DOWN_OOB_INTF_TAG_SIZE           `PE_STD_OOB_TAG_WIDTH   
 `define STACK_DOWN_OOB_INTF_TAG_WIDTH          `STACK_DOWN_OOB_INTF_TAG_SIZE
 `define STACK_DOWN_OOB_INTF_TAG_MSB            `STACK_DOWN_OOB_INTF_TAG_WIDTH-1
 `define STACK_DOWN_OOB_INTF_TAG_LSB            0

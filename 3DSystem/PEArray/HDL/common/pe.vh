@@ -17,7 +17,7 @@
 //------------------------------------------------
 
 // we will carry a tag to track result (to possibly support multiple operations before first result is returned)
-`define PE_STD_OOB_TAG_WIDTH          10
+`define PE_STD_OOB_TAG_WIDTH          8
 `define PE_STD_OOB_TAG_MSB            `PE_STD_OOB_TAG_WIDTH-1
 `define PE_STD_OOB_TAG_LSB            0
 `define PE_STD_OOB_TAG_RANGE          `PE_STD_OOB_TAG_MSB : `PE_STD_OOB_TAG_LSB

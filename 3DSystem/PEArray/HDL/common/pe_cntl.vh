@@ -49,16 +49,21 @@
 `define PE_CNTL_OOB_OPTION1_DATA_RANGE      `PE_CNTL_OOB_OPTION1_DATA_MSB : `PE_CNTL_OOB_OPTION1_DATA_LSB
 
 
+//------------------------------------------------
+// MEMORY
+//------------------------------------------------
+
 // PE stOp option memory size
 `define PE_CNTL_STOP_OPTION_MEMORY_DEPTH   256
 `define PE_CNTL_STOP_OPTION_MEMORY_RANGE    `PE_CNTL_STOP_OPTION_MEMORY_DEPTH-1 : 0
+`define PE_CNTL_STOP_PTR_MEMORY_RANGE       `PE_CNTL_STOP_OPTION_MEMORY_DEPTH-1 : 0
+
+// PE stOp option memory size
+`define PE_CNTL_SIMD_OPTION_MEMORY_DEPTH   256
+`define PE_CNTL_SIMD_OPTION_MEMORY_RANGE    `PE_CNTL_SIMD_OPTION_MEMORY_DEPTH-1 : 0
+`define PE_CNTL_SIMD_PTR_MEMORY_RANGE       `PE_CNTL_SIMD_OPTION_MEMORY_DEPTH-1 : 0
 
 
-
-// OOB options - FIXME
-`define PE_CNTL_OOB_OPTION_TAG    4
-`define PE_CNTL_OOB_OPTION_STOP   5
-`define PE_CNTL_OOB_OPTION_SIMD   6
 
 
 //------------------------------------------------
