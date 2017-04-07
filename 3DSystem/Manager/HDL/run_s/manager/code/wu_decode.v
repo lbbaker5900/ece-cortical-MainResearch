@@ -56,12 +56,12 @@ module wu_decode (
             //-------------------------------
             // Return Data Processor
             // - send write descriptor
-            wud__rdc__valid             ,  // send tag and MR tuples
-            rdc__wud__ready             ,
-            wud__rdc__dcntl             ,
-            wud__rdc__tag               ,
-            wud__rdc__option_type       ,
-            wud__rdc__option_value      ,
+            wud__rdp__valid             ,  // send tag and MR tuples
+            rdp__wud__ready             ,
+            wud__rdp__dcntl             ,
+            wud__rdp__tag               ,
+            wud__rdp__option_type       ,
+            wud__rdp__option_value      ,
 
             //-------------------------------
             // Read memory Controllers
@@ -115,12 +115,12 @@ module wu_decode (
     //----------------------------------------------------------------------------------------------------
     // Return Data Processor
     
-    output                                      wud__rdc__valid                ;
-    input                                       rdc__wud__ready                ;
-    output [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdc__dcntl                ;  // descriptor delineator
-    output [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdc__tag                  ;  // decoder generates tag for Return data proc and Downstream OOB
-    output [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdc__option_type    [`MGR_WU_OPT_PER_INST ] ;  // WU Instruction option fields
-    output [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdc__option_value   [`MGR_WU_OPT_PER_INST ] ;  
+    output                                      wud__rdp__valid                ;
+    input                                       rdp__wud__ready                ;
+    output [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl                ;  // descriptor delineator
+    output [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag                  ;  // decoder generates tag for Return data proc and Downstream OOB
+    output [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type    [`MGR_WU_OPT_PER_INST ] ;  // WU Instruction option fields
+    output [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ;  
 
 
     //----------------------------------------------------------------------------------------------------
@@ -182,19 +182,19 @@ module wu_decode (
     //--------------------------------------------------
     // Return Data Processor
     
-    reg                                         wud__rdc__valid                ;
-    wire                                        rdc__wud__ready                ;
-    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdc__dcntl                ;  // descriptor delineator
-    reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdc__tag                  ;  // decoder generates tag for Return data proc and Downstream OOB
-    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdc__option_type    [`MGR_WU_OPT_PER_INST ] ;
-    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdc__option_value   [`MGR_WU_OPT_PER_INST ] ; 
+    reg                                         wud__rdp__valid                ;
+    wire                                        rdp__wud__ready                ;
+    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl                ;  // descriptor delineator
+    reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag                  ;  // decoder generates tag for Return data proc and Downstream OOB
+    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type    [`MGR_WU_OPT_PER_INST ] ;
+    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ; 
 
-    reg                                         wud__rdc__valid_e1             ;
-    reg                                         rdc__wud__ready_d1             ;
-    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdc__dcntl_e1             ;  
-    reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdc__tag_e1               ;
-    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdc__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;
-    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdc__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;
+    reg                                         wud__rdp__valid_e1             ;
+    reg                                         rdp__wud__ready_d1             ;
+    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl_e1             ;  
+    reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag_e1               ;
+    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;
+    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;
 
     //--------------------------------------------------
     // Read Memory Controllers
@@ -259,14 +259,14 @@ module wu_decode (
 
     always @(posedge clk) 
       begin
-        rdc__wud__ready_d1     <=   ( reset_poweron   ) ? 'd0  :  rdc__wud__ready           ;
-        wud__rdc__valid        <=   ( reset_poweron   ) ? 'd0  :  wud__rdc__valid_e1        ;
-        wud__rdc__dcntl        <=   ( reset_poweron   ) ? 'd0  :  wud__rdc__dcntl_e1        ;
-        wud__rdc__tag          <=   ( reset_poweron   ) ? 'd0  :  wud__rdc__tag_e1          ;
+        rdp__wud__ready_d1     <=   ( reset_poweron   ) ? 'd0  :  rdp__wud__ready           ;
+        wud__rdp__valid        <=   ( reset_poweron   ) ? 'd0  :  wud__rdp__valid_e1        ;
+        wud__rdp__dcntl        <=   ( reset_poweron   ) ? 'd0  :  wud__rdp__dcntl_e1        ;
+        wud__rdp__tag          <=   ( reset_poweron   ) ? 'd0  :  wud__rdp__tag_e1          ;
         for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
           begin: option_in
-            wud__rdc__option_type  [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__rdc__option_type_e1  [opt]  ;
-            wud__rdc__option_value [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__rdc__option_value_e1 [opt]  ;
+            wud__rdp__option_type  [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__rdp__option_type_e1  [opt]  ;
+            wud__rdp__option_value [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__rdp__option_value_e1 [opt]  ;
           end
       end
 
@@ -588,7 +588,7 @@ module wu_decode (
                                               (instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR) | 
                                               (instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR) | 
                                               send_info_to_oob_downstream   & ~odc__wud__ready_d1                              |   
-                                              send_info_to_return_proc      & ~rdc__wud__ready_d1                              |   
+                                              send_info_to_return_proc      & ~rdp__wud__ready_d1                              |   
                                               send_info_to_arg0_mem_cntl    & ~mrc0__wud__ready_d1                             |   
                                               send_info_to_arg1_mem_cntl    & ~mrc1__wud__ready_d1                             |   
                                               ~from_WuMemory_Fifo[0].pipe_valid                                                 )
@@ -696,13 +696,13 @@ module wu_decode (
   // Remember, once we start a transfer from the Wumemory FIFO we assume it will complete e.g. we ignore ready during the transfer
   always @(*)
     begin
-        wud__rdc__valid_e1        =   (send_info_to_return_proc & from_WuMemory_Fifo[0].pipe_read) | sending_to_return_proc  ;
-        wud__rdc__dcntl_e1        =   from_WuMemory_Fifo[0].pipe_dcntl  ;
-        wud__rdc__tag_e1          =   tag ;
+        wud__rdp__valid_e1        =   (send_info_to_return_proc & from_WuMemory_Fifo[0].pipe_read) | sending_to_return_proc  ;
+        wud__rdp__dcntl_e1        =   from_WuMemory_Fifo[0].pipe_dcntl  ;
+        wud__rdp__tag_e1          =   tag ;
         for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
           begin: rdc_option_out
-            wud__rdc__option_type_e1  [opt]  <=  from_WuMemory_Fifo[0].pipe_option_type  [opt]  ;
-            wud__rdc__option_value_e1 [opt]  <=  from_WuMemory_Fifo[0].pipe_option_value [opt]  ;
+            wud__rdp__option_type_e1  [opt]  <=  from_WuMemory_Fifo[0].pipe_option_type  [opt]  ;
+            wud__rdp__option_value_e1 [opt]  <=  from_WuMemory_Fifo[0].pipe_option_value [opt]  ;
           end
 
     end

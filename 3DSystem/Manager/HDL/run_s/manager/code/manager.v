@@ -250,15 +250,15 @@ module manager (
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
 
-  wire                                          wud__rdc__valid         ;
-  wire                                          rdc__wud__ready         ;
-  wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__rdc__dcntl         ; 
-  wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__rdc__tag           ;
-  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__rdc__option_type    [`MGR_WU_OPT_PER_INST ] ;
-  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__rdc__option_value   [`MGR_WU_OPT_PER_INST ] ;
+  wire                                          wud__rdp__valid         ;
+  wire                                          rdp__wud__ready         ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__rdp__dcntl         ; 
+  wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__rdp__tag           ;
+  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__rdp__option_type    [`MGR_WU_OPT_PER_INST ] ;
+  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ;
 
   // FIXME
-  assign rdc__wud__ready  = 1'b1 ;
+  assign rdp__wud__ready  = 1'b1 ;
   assign mrc0__wud__ready = 1'b1 ;
   assign mrc1__wud__ready = 1'b1 ;
 
@@ -288,12 +288,12 @@ module manager (
           //-------------------------------
           // Return Data Processor
           //
-          .wud__rdc__valid         ( wud__rdc__valid         ),
-          .wud__rdc__dcntl         ( wud__rdc__dcntl         ),  // used to delineate descriptor
-          .rdc__wud__ready         ( rdc__wud__ready         ),
-          .wud__rdc__tag           ( wud__rdc__tag           ),  // Use this to match with WU and take all the data 
-          .wud__rdc__option_type   ( wud__rdc__option_type   ),  // Only send tuples
-          .wud__rdc__option_value  ( wud__rdc__option_value  ),
+          .wud__rdp__valid         ( wud__rdp__valid         ),
+          .wud__rdp__dcntl         ( wud__rdp__dcntl         ),  // used to delineate descriptor
+          .rdp__wud__ready         ( rdp__wud__ready         ),
+          .wud__rdp__tag           ( wud__rdp__tag           ),  // Use this to match with WU and take all the data 
+          .wud__rdp__option_type   ( wud__rdp__option_type   ),  // Only send tuples
+          .wud__rdp__option_value  ( wud__rdp__option_value  ),
 
           //-------------------------------
           // Memory Read Controller
