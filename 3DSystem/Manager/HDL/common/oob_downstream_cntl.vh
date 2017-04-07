@@ -1,12 +1,12 @@
-`ifndef _wu_decode_vh
-`define _wu_decode_vh
+`ifndef _oob_downstream_cntl_vh
+`define _oob_downstream_cntl_vh
 
 /*****************************************************************
 
-    File name   : wu_decode.vh
+    File name   : oob_downstream_cntl.vh
     Author      : Lee Baker
     Affiliation : North Carolina State University, Raleigh, NC
-    Date        : Mar 2017
+    Date        : Apr 2017
     email       : lbbaker@ncsu.edu
 
 *****************************************************************/
@@ -16,31 +16,27 @@
 // FIFO's
 //------------------------------------------------
 
-`define WU_DEC_INSTR_FIFO_DEPTH          16
-`define WU_DEC_INSTR_FIFO_THRESHOLD      2
+`define OOB_DOWN_FIFO_DEPTH          16
+`define OOB_DOWN_FIFO_THRESHOLD      2
 
 //--------------------------------------------------------
   
 //--------------------------------------------------------
 // WU Instruction Decode
 
-`define WU_DEC_INSTR_DECODE_WAIT                8'b0000_0001
+`define OOB_DOWNSTREAM_CNTL_WAIT                5'b0_0001
 
-`define WU_DEC_INSTR_DECODE_OP                  8'b0000_0010
-`define WU_DEC_INSTR_DECODE_MR                  8'b0000_0100
-`define WU_DEC_INSTR_DECODE_MW                  8'b0000_1000
-`define WU_DEC_INSTR_DECODE_INSTR_RUNNING       8'b0001_0000
+`define OOB_DOWNSTREAM_CNTL_START_PKT                5'b0_0010
+`define OOB_DOWNSTREAM_CNTL_2ND_CYCLE                5'b0_0100
+`define OOB_DOWNSTREAM_CNTL_INITIATED_INSTR     5'b0_1000
 
-`define WU_DEC_INSTR_DECODE_INSTR_COMPLETE      8'b0010_0000
-`define WU_DEC_INSTR_DECODE_INITIATED_INSTR      8'b0100_0000
+`define OOB_DOWNSTREAM_CNTL_ERR                 5'b1_0000
 
-`define WU_DEC_INSTR_DECODE_ERR                 8'b1000_0000
-
-`define WU_DEC_INSTR_DECODE_STATE_WIDTH         8
-`define WU_DEC_INSTR_DECODE_STATE_MSB           `WU_DEC_INSTR_DECODE_STATE_WIDTH-1
-`define WU_DEC_INSTR_DECODE_STATE_LSB           0
-`define WU_DEC_INSTR_DECODE_STATE_SIZE          (`WU_DEC_INSTR_DECODE_STATE_MSB - `WU_DEC_INSTR_DECODE_STATE_LSB +1)
-`define WU_DEC_INSTR_DECODE_STATE_RANGE          `WU_DEC_INSTR_DECODE_STATE_MSB : `WU_DEC_INSTR_DECODE_STATE_LSB
+`define OOB_DOWNSTREAM_CNTL_STATE_WIDTH         5
+`define OOB_DOWNSTREAM_CNTL_STATE_MSB           `OOB_DOWNSTREAM_CNTL_STATE_WIDTH-1
+`define OOB_DOWNSTREAM_CNTL_STATE_LSB           0
+`define OOB_DOWNSTREAM_CNTL_STATE_SIZE          (`OOB_DOWNSTREAM_CNTL_STATE_MSB - `OOB_DOWNSTREAM_CNTL_STATE_LSB +1)
+`define OOB_DOWNSTREAM_CNTL_STATE_RANGE          `OOB_DOWNSTREAM_CNTL_STATE_MSB : `OOB_DOWNSTREAM_CNTL_STATE_LSB
 
 //------------------------------------------------------------------------------------------------------------
 

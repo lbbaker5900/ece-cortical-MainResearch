@@ -250,9 +250,6 @@ module manager (
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
 
-  // FIXME
-  assign odc__wud__ready = 1'b1 ;
- 
   wu_decode wu_decode (
   
           //-------------------------------
@@ -275,6 +272,38 @@ module manager (
           .wud__odc__num_lanes     ( wud__odc__num_lanes ),  // The data may vary so check for cntl=EOD when reading this interface
           .wud__odc__stOp_cmd      ( wud__odc__stOp_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
           .wud__odc__simd_cmd      ( wud__odc__simd_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
+
+          //-------------------------------
+          // General
+          .sys__mgr__mgrId         ( sys__mgr__mgrId          ),
+          .clk                     ( clk                      ),
+          .reset_poweron           ( reset_poweron            ) 
+        );
+
+  //-------------------------------------------------------------------------------------------------
+  // OOB Downstream Transmitter
+  // 
+
+  oob_downstream_cntl oob_downstream_cntl (
+  
+          //-------------------------------
+          // From WU Decoder
+          //
+          .wud__odc__valid         ( wud__odc__valid     ),
+          .wud__odc__cntl          ( wud__odc__cntl      ),  // used to delineate upstream packet data
+          .odc__wud__ready         ( odc__wud__ready     ),
+          .wud__odc__tag           ( wud__odc__tag       ),  // Use this to match with WU and take all the data 
+          .wud__odc__num_lanes     ( wud__odc__num_lanes ),  // The data may vary so check for cntl=EOD when reading this interface
+          .wud__odc__stOp_cmd      ( wud__odc__stOp_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
+          .wud__odc__simd_cmd      ( wud__odc__simd_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
+
+          //-------------------------------
+          // Stack Bus - OOB Downstream
+          .mgr__std__oob_cntl       (  ), 
+          .mgr__std__oob_valid      (  ), 
+          .std__mgr__oob_ready      ( std__mgr__oob_ready       ), 
+          .mgr__std__oob_type       (  ), 
+          .mgr__std__oob_data       (  ), 
 
           //-------------------------------
           // General
