@@ -250,6 +250,18 @@ module manager (
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
 
+  wire                                          wud__rdc__valid         ;
+  wire                                          rdc__wud__ready         ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__rdc__dcntl         ; 
+  wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__rdc__tag           ;
+  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__rdc__option_type    [`MGR_WU_OPT_PER_INST ] ;
+  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__rdc__option_value   [`MGR_WU_OPT_PER_INST ] ;
+
+  // FIXME
+  assign rdc__wud__ready  = 1'b1 ;
+  assign mrc0__wud__ready = 1'b1 ;
+  assign mrc1__wud__ready = 1'b1 ;
+
   wu_decode wu_decode (
   
           //-------------------------------
@@ -272,6 +284,22 @@ module manager (
           .wud__odc__num_lanes     ( wud__odc__num_lanes ),  // The data may vary so check for cntl=EOD when reading this interface
           .wud__odc__stOp_cmd      ( wud__odc__stOp_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
           .wud__odc__simd_cmd      ( wud__odc__simd_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
+
+          //-------------------------------
+          // Return Data Processor
+          //
+          .wud__rdc__valid         ( wud__rdc__valid         ),
+          .wud__rdc__dcntl         ( wud__rdc__dcntl         ),  // used to delineate descriptor
+          .rdc__wud__ready         ( rdc__wud__ready         ),
+          .wud__rdc__tag           ( wud__rdc__tag           ),  // Use this to match with WU and take all the data 
+          .wud__rdc__option_type   ( wud__rdc__option_type   ),  // Only send tuples
+          .wud__rdc__option_value  ( wud__rdc__option_value  ),
+
+          //-------------------------------
+          // Memory Read Controller
+          //
+          .mrc0__wud__ready        ( mrc0__wud__ready        ),
+          .mrc1__wud__ready        ( mrc1__wud__ready        ),
 
           //-------------------------------
           // General

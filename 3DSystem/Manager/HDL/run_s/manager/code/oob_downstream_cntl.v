@@ -346,20 +346,20 @@ module oob_downstream_cntl (
                                                                                             STD_PACKET_OOB_TYPE_NA         ;
 
   assign mgr__std__oob_data_e1 [`STACK_DOWN_OOB_INTF_OPTION0_RANGE] = (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_START_PKT) ?  STD_PACKET_OOB_OPT_STOP_CMD      :
-                                                                      (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_2ND_CYCLE) ?  STD_PACKET_OOB_OPT_SIMD_RELU_CMD :
+                                                                      (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_2ND_CYCLE) ?  STD_PACKET_OOB_OPT_TAG           :
                                                                                                                                  STD_PACKET_OOB_OPT_NOP           ;
 
   assign mgr__std__oob_data_e1 [`STACK_DOWN_OOB_INTF_VALUE0_RANGE]  = (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_START_PKT) ?  from_WuDecoder_Fifo[0].pipe_stOp_cmd  :
-                                                                      (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_2ND_CYCLE) ?  from_WuDecoder_Fifo[0].pipe_simd_cmd  :
-                                                                                                                                 'd0            ;
+                                                                      (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_2ND_CYCLE) ?  from_WuDecoder_Fifo[0].pipe_tag       :
+                                                                                                                                 'd0                                   ;
 
-  assign mgr__std__oob_data_e1 [`STACK_DOWN_OOB_INTF_OPTION1_RANGE] = (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_START_PKT) ?  STD_PACKET_OOB_OPT_TAG         :
-                                                                      (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_2ND_CYCLE) ?  STD_PACKET_OOB_OPT_NUM_LANES   :
-                                                                                                                                 STD_PACKET_OOB_OPT_NOP         ;
+  assign mgr__std__oob_data_e1 [`STACK_DOWN_OOB_INTF_OPTION1_RANGE] = (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_START_PKT) ?  STD_PACKET_OOB_OPT_SIMD_RELU_CMD :
+                                                                      (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_2ND_CYCLE) ?  STD_PACKET_OOB_OPT_NUM_LANES     :
+                                                                                                                                 STD_PACKET_OOB_OPT_NOP           ;
 
-  assign mgr__std__oob_data_e1 [`STACK_DOWN_OOB_INTF_VALUE1_RANGE]  = (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_START_PKT) ?  from_WuDecoder_Fifo[0].pipe_tag       :
+  assign mgr__std__oob_data_e1 [`STACK_DOWN_OOB_INTF_VALUE1_RANGE]  = (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_START_PKT) ?  from_WuDecoder_Fifo[0].pipe_simd_cmd  :
                                                                       (oob_down_cntl_state == `OOB_DOWNSTREAM_CNTL_2ND_CYCLE) ?  from_WuDecoder_Fifo[0].pipe_num_lanes :
-                                                                                                                                 'd0            ;
+                                                                                                                                 'd0                                   ;
 
 
 endmodule

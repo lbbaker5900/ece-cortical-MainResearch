@@ -54,6 +54,23 @@ module wu_decode (
             wud__odc__simd_cmd          ,
 
             //-------------------------------
+            // Return Data Processor
+            // - send write descriptor
+            wud__rdc__valid             ,  // send tag and MR tuples
+            rdc__wud__ready             ,
+            wud__rdc__dcntl             ,
+            wud__rdc__tag               ,
+            wud__rdc__option_type       ,
+            wud__rdc__option_value      ,
+
+            //-------------------------------
+            // Read memory Controllers
+            // - arg and arg1 to stack bus
+            mrc0__wud__ready            ,
+            mrc1__wud__ready            ,
+           
+            
+            //-------------------------------
             // General
             //
             sys__mgr__mgrId             ,
@@ -95,6 +112,24 @@ module wu_decode (
     output  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
     output  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
  
+    //----------------------------------------------------------------------------------------------------
+    // Return Data Processor
+    
+    output                                      wud__rdc__valid                ;
+    input                                       rdc__wud__ready                ;
+    output [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdc__dcntl                ;  // descriptor delineator
+    output [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdc__tag                  ;  // decoder generates tag for Return data proc and Downstream OOB
+    output [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdc__option_type    [`MGR_WU_OPT_PER_INST ] ;  // WU Instruction option fields
+    output [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdc__option_value   [`MGR_WU_OPT_PER_INST ] ;  
+
+
+    //----------------------------------------------------------------------------------------------------
+    // Memory Read Controllers
+    
+    input                                       mrc0__wud__ready               ;
+    input                                       mrc1__wud__ready               ;
+
+    //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
     // Registers and Wires
 
@@ -143,14 +178,47 @@ module wu_decode (
     reg  [`PE_CNTL_OOB_OPTION_RANGE      ]      tag                        ; 
 
     wire                                        initiate_instruction       ;
-    /*
-    reg  [`PE_CNTL_OOB_OPTION_RANGE      ]      stOp_cmd             ; 
-    reg  [`PE_CNTL_OOB_OPTION_RANGE      ]      simd_cmd             ; 
-    reg  [`PE_CNTL_OOB_OPTION_RANGE      ]      num_lanes                  ; 
-    reg                                         contained_stOp_cmd             ;  // the WU option contained a stOp operation pointer
-    reg                                         contained_simd_cmd             ;  // the WU option contained a simd operation pointer
-    reg                                         contained_num_lanes        ;  // the WU tag for the PE operation(s)
-    */
+ 
+    //--------------------------------------------------
+    // Return Data Processor
+    
+    reg                                         wud__rdc__valid                ;
+    wire                                        rdc__wud__ready                ;
+    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdc__dcntl                ;  // descriptor delineator
+    reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdc__tag                  ;  // decoder generates tag for Return data proc and Downstream OOB
+    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdc__option_type    [`MGR_WU_OPT_PER_INST ] ;
+    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdc__option_value   [`MGR_WU_OPT_PER_INST ] ; 
+
+    reg                                         wud__rdc__valid_e1             ;
+    reg                                         rdc__wud__ready_d1             ;
+    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdc__dcntl_e1             ;  
+    reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdc__tag_e1               ;
+    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdc__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;
+    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdc__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;
+
+    //--------------------------------------------------
+    // Read Memory Controllers
+    
+    wire                                        mrc0__wud__ready               ;
+    wire                                        mrc1__wud__ready               ;
+
+    reg                                         mrc0__wud__ready_d1            ;
+    reg                                         mrc1__wud__ready_d1            ;
+
+
+    //--------------------------------------------------
+    // Decode which modules will receive descriptor information
+    reg                                         send_info_to_oob_downstream    ;  // flag at beginning of received descriptor
+    reg                                         send_info_to_return_proc       ;
+    reg                                         send_info_to_arg0_mem_cntl     ;
+    reg                                         send_info_to_arg1_mem_cntl     ;
+    reg                                         sending_to_oob_downstream      ;  // latched flag held until EOD
+    reg                                         sending_to_return_proc         ;
+    reg                                         sending_to_arg0_mem_cntl       ;
+    reg                                         sending_to_arg1_mem_cntl       ;
+
+
+    //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
     // Register inputs and outputs
 
@@ -180,6 +248,26 @@ module wu_decode (
         wud__odc__stOp_cmd    <=   ( reset_poweron   ) ? 'd0  :  wud__odc__stOp_cmd_e1   ;
         wud__odc__simd_cmd    <=   ( reset_poweron   ) ? 'd0  :  wud__odc__simd_cmd_e1   ;
                                                            
+      end
+
+    always @(posedge clk) 
+      begin
+        mrc0__wud__ready_d1    <=   ( reset_poweron   ) ? 'd0  :  mrc0__wud__ready       ;
+        mrc1__wud__ready_d1    <=   ( reset_poweron   ) ? 'd0  :  mrc1__wud__ready       ;
+                                                           
+      end
+
+    always @(posedge clk) 
+      begin
+        rdc__wud__ready_d1     <=   ( reset_poweron   ) ? 'd0  :  rdc__wud__ready           ;
+        wud__rdc__valid        <=   ( reset_poweron   ) ? 'd0  :  wud__rdc__valid_e1        ;
+        wud__rdc__dcntl        <=   ( reset_poweron   ) ? 'd0  :  wud__rdc__dcntl_e1        ;
+        wud__rdc__tag          <=   ( reset_poweron   ) ? 'd0  :  wud__rdc__tag_e1          ;
+        for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
+          begin: option_in
+            wud__rdc__option_type  [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__rdc__option_type_e1  [opt]  ;
+            wud__rdc__option_value [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__rdc__option_value_e1 [opt]  ;
+          end
       end
 
   //----------------------------------------------------------------------------------------------------
@@ -326,12 +414,19 @@ module wu_decode (
     for (decNum=0; decNum<`MGR_WU_OPT_PER_INST; decNum=decNum+1) 
       begin: instr_decode
 
-        reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    stOp_cmd             ; 
-        reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    simd_cmd             ; 
-        reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    num_lanes                  ; 
+        reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    stOp_cmd                       ; 
+        reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    simd_cmd                       ; 
+        reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    num_lanes                      ; 
         reg                                             contained_stOp_cmd             ;  // the WU option contained a stOp operation pointer
         reg                                             contained_simd_cmd             ;  // the WU option contained a simd operation pointer
-        reg                                             contained_num_lanes        ;  // the WU tag for the PE operation(s)
+        reg                                             contained_num_lanes            ;  // the WU tag for the PE operation(s)
+        //--------------------------------------------------
+        // Decode which modules will receive descriptor information
+        reg                                             send_info_to_oob_downstream    ;
+        reg                                             send_info_to_return_proc       ;
+        reg                                             send_info_to_arg0_mem_cntl     ;
+        reg                                             send_info_to_arg1_mem_cntl     ;
+
 
         reg [`WU_DEC_INSTR_DECODE_STATE_RANGE ] wu_dec_instr_dec_state      ; // state flop
         reg [`WU_DEC_INSTR_DECODE_STATE_RANGE ] wu_dec_instr_dec_state_next ;
@@ -345,12 +440,16 @@ module wu_decode (
                                                           wu_dec_instr_dec_state_next  ;
           end
         
-        // Extract the tag from the oob_data in the first cycle
+        //--------------------------------------------------
+        // Assumptions:
+        //  - destination blocks can absorb entire transaction if they are ready e.g. we wont flow control during the transfer but once all destinations are ready
+        //    the transfer(s) will run to completion
        
         always @(*)
           begin
             case (wu_dec_instr_dec_state)
               
+              // Note: the pipe will not be read unless all affected destination modules are ready
               `WU_DEC_INSTR_DECODE_WAIT: 
                 wu_dec_instr_dec_state_next =  ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_OP ) ) ? `WU_DEC_INSTR_DECODE_OP             :  // Instruction starts with operation descriptor
                                                ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_OP ) ) ? `WU_DEC_INSTR_DECODE_INSTR_RUNNING  :  // Instruction started with 1-cycle OP but instruction still valid
@@ -368,6 +467,7 @@ module wu_decode (
               `WU_DEC_INSTR_DECODE_INSTR_RUNNING: 
                 wu_dec_instr_dec_state_next =  ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_MOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_OP ) ) ? `WU_DEC_INSTR_DECODE_OP             :  // Instruction starts with operation descriptor                     
                                                ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_MOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_OP ) ) ? `WU_DEC_INSTR_DECODE_INSTR_RUNNING  :  // Instruction started with 1-cycle OP but instruction still valid
+                                               ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_EOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_OP ) ) ? `WU_DEC_INSTR_DECODE_INSTR_COMPLETE :  // Instruction finish with 1-cycle OP 
                                                ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_MOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_MR ) ) ? `WU_DEC_INSTR_DECODE_MR             :  // a one cycle instruction and descriptor???
                                                ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_MOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_MR ) ) ? `WU_DEC_INSTR_DECODE_INSTR_RUNNING  :  // instruction starts with MR 
                                                ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_MOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_MW ) ) ? `WU_DEC_INSTR_DECODE_MW             :  
@@ -400,7 +500,7 @@ module wu_decode (
               // when instruction complete, intiate all affected modules
               `WU_DEC_INSTR_DECODE_INSTR_COMPLETE: 
                 wu_dec_instr_dec_state_next =  ( initiate_instruction ) ? `WU_DEC_INSTR_DECODE_INITIATED_INSTR :  
-                                                                                          `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ;
+                                                                          `WU_DEC_INSTR_DECODE_INSTR_COMPLETE  ;
         
               `WU_DEC_INSTR_DECODE_INITIATED_INSTR: 
                 wu_dec_instr_dec_state_next =    `WU_DEC_INSTR_DECODE_WAIT           ;
@@ -426,47 +526,73 @@ module wu_decode (
         //  - this module creates the tag
         always @(posedge clk)
           begin
-            contained_stOp_cmd           <=  ( reset_poweron                                                                                            ) ? 1'b0           :
-                                         ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR                                            ) ? 1'b0           :  // clear when packet and operation complete
-                                         ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_STOP )) ? 1'b1           :
-                                                                                                                                                        contained_stOp_cmd ;
+            contained_stOp_cmd       <=  ( reset_poweron                                                                                                     ) ? 1'b0               :
+                                         ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR                                                    ) ? 1'b0               :  // clear when packet and operation complete
+                                         ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_STOP )) ? 1'b1               :
+                                                                                                                                                                 contained_stOp_cmd ;
             // pointer to stOp operation control memory
-            stOp_cmd           <=  ( reset_poweron                                                                                            ) ?  'd0                                            :
+            stOp_cmd                 <=  ( reset_poweron                                                                                                     ) ?  'd0                                            :
                                          ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_STOP )) ? from_WuMemory_Fifo[0].pipe_option_value[decNum] :
-                                                                                                                                                        stOp_cmd                                  ;
+                                                                                                                                                                 stOp_cmd                                        ;
         
-            contained_simd_cmd           <=  ( reset_poweron                                                                                            ) ? 1'b0           :
-                                         ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR                                            ) ? 1'b0           :  // clear when packet and operation complete
-                                         ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_SIMDOP )) ? 1'b1           :
-                                                                                                                                                        contained_simd_cmd ;
+            contained_simd_cmd       <=  ( reset_poweron                                                                                                       ) ? 1'b0               :
+                                         ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR                                                      ) ? 1'b0               :  // clear when packet and operation complete
+                                         ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_SIMDOP )) ? 1'b1               :
+                                                                                                                                                                   contained_simd_cmd ;
             // pointer to simd operation control memory
-            simd_cmd           <=  ( reset_poweron                                                                                            ) ?  'd0                                            :
+            simd_cmd                 <=  ( reset_poweron                                                                                                       ) ?  'd0                                            :
                                          ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_SIMDOP )) ? from_WuMemory_Fifo[0].pipe_option_value[decNum] :
-                                                                                                                                                        simd_cmd                                  ;
+                                                                                                                                                                   simd_cmd                                        ;
         
-            contained_num_lanes      <=  ( reset_poweron                                                                                            ) ? 1'b0           :
-                                         ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR                                            ) ? 1'b0           :  // clear when packet and operation complete
-                                         ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES )) ? 1'b1           :
-                                                                                                                                                        contained_num_lanes ;
+            contained_num_lanes      <=  ( reset_poweron                                                                                                             ) ? 1'b0                :
+                                         ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR                                                            ) ? 1'b0                :  // clear when packet and operation complete
+                                         ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES )) ? 1'b1                :
+                                                                                                                                                                         contained_num_lanes ;
             // pointer to simd operation control memory
-            num_lanes                <=  ( reset_poweron                                                                                            ) ?  'd0                                            :
+            num_lanes                <=  ( reset_poweron                                                                                                             ) ?  'd0                                            :
                                          ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES )) ? from_WuMemory_Fifo[0].pipe_option_value[decNum] :
-                                                                                                                                                        num_lanes                                  ;
+                                                                                                                                                                         num_lanes                                       ;
         
+          end
+
+        always @(*)
+          begin
+            // Determine which modules the instruction impacts
+            // Assumption is everything we need to determine affected modules is in 1st cycle of descriptor
+            send_info_to_oob_downstream    =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                   == `MGR_INST_DESC_TYPE_OP           )) ;
+                                                                                                                                                                        
+            send_info_to_return_proc       =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                   == `MGR_INST_DESC_TYPE_MW           ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_type [decNum] == PY_WU_INST_OPT_TYPE_SRC          ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_value[decNum] == PY_WU_INST_SRC_TYPE_STACK_UP     )) ;
+           
+            send_info_to_arg0_mem_cntl     =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                   == `MGR_INST_DESC_TYPE_MR           ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_type [decNum] == PY_WU_INST_OPT_TYPE_TGT          ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_value[decNum] == PY_WU_INST_TGT_TYPE_STACK_DN_ARG0)) ;
+           
+            send_info_to_arg1_mem_cntl     =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                   == `MGR_INST_DESC_TYPE_MR           ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_type [decNum] == PY_WU_INST_OPT_TYPE_TGT          ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_value[decNum] == PY_WU_INST_TGT_TYPE_STACK_DN_ARG1)) ;
           end
 
       end
   endgenerate
 
 
-  // ALl decoder FSM's should follow the same path
-  assign from_WuMemory_Fifo[0].pipe_read = (((instr_decode[0].wu_dec_instr_dec_state != `WU_DEC_INSTR_DECODE_INSTR_COMPLETE) & 
-                                             (instr_decode[1].wu_dec_instr_dec_state != `WU_DEC_INSTR_DECODE_INSTR_COMPLETE) & 
-                                             (instr_decode[2].wu_dec_instr_dec_state != `WU_DEC_INSTR_DECODE_INSTR_COMPLETE)) & 
-                                            ((instr_decode[0].wu_dec_instr_dec_state != `WU_DEC_INSTR_DECODE_INITIATED_INSTR) & 
-                                             (instr_decode[1].wu_dec_instr_dec_state != `WU_DEC_INSTR_DECODE_INITIATED_INSTR) & 
-                                             (instr_decode[2].wu_dec_instr_dec_state != `WU_DEC_INSTR_DECODE_INITIATED_INSTR)))& 
-                                             from_WuMemory_Fifo[0].pipe_valid ;
+  // All decoder FSM's should follow the same path
+  // We read the FIFO unless the instruction is complete and we are starting to process OR
+  // the destination modules that require info from the instruction are not ready
+  assign from_WuMemory_Fifo[0].pipe_read = (~((instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ) | 
+                                              (instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ) | 
+                                              (instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ) | 
+                                              (instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR) | 
+                                              (instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR) | 
+                                              (instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR) | 
+                                              send_info_to_oob_downstream   & ~odc__wud__ready_d1                              |   
+                                              send_info_to_return_proc      & ~rdc__wud__ready_d1                              |   
+                                              send_info_to_arg0_mem_cntl    & ~mrc0__wud__ready_d1                             |   
+                                              send_info_to_arg1_mem_cntl    & ~mrc1__wud__ready_d1                             |   
+                                              ~from_WuMemory_Fifo[0].pipe_valid                                                 )
+                                           ) ;
 
   assign initiate_instruction            = (instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE) & 
                                            (instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE) & 
@@ -475,37 +601,112 @@ module wu_decode (
   always @(posedge clk)
     begin
       // If a packet is sent to oob driver, increment tag
-      tag                     <=  ( reset_poweron                                                                                                    ) ? 'd0      :
+      tag                     <=  ( reset_poweron                                                                                                         ) ? 'd0      :
                                   ((instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[0].contained_simd_cmd ) ? tag+1    :
                                   ((instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[1].contained_simd_cmd ) ? tag+1    :
                                   ((instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[2].contained_simd_cmd ) ? tag+1    :
-                                                                                                                                                         tag      ;
+                                                                                                                                                              tag      ;
         
     end
 
   //----------------------------------------------------------------------------------------------------
   // OOB Downstream control starts when all decoders initiate the instruction
+  //  - 1-cycle transfer, so send at end of instruction
   always @(*)
     begin
-        wud__odc__valid_e1       =   ( instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[0].contained_simd_cmd |
-                                     ( instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[1].contained_simd_cmd |
-                                     ( instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[2].contained_simd_cmd ;
+      wud__odc__valid_e1       =   ( instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[0].contained_simd_cmd |
+                                   ( instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[1].contained_simd_cmd |
+                                   ( instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[2].contained_simd_cmd ;
 
-        wud__odc__cntl_e1        =   `COMMON_STD_INTF_CNTL_SOM_EOM ;  // for now, wud__odc packets are single cycle
-        wud__odc__tag_e1         =   tag ;
-        wud__odc__stOp_cmd_e1    =   ( instr_decode[0].contained_stOp_cmd  ) ? instr_decode[0].stOp_cmd   :
-                                     ( instr_decode[1].contained_stOp_cmd  ) ? instr_decode[1].stOp_cmd   :
-                                     ( instr_decode[2].contained_stOp_cmd  ) ? instr_decode[2].stOp_cmd   :
-                                                                               'd0                        ;
-        wud__odc__simd_cmd_e1    =   ( instr_decode[0].contained_simd_cmd  ) ? instr_decode[0].simd_cmd   :
-                                     ( instr_decode[1].contained_simd_cmd  ) ? instr_decode[1].simd_cmd   :
-                                     ( instr_decode[2].contained_simd_cmd  ) ? instr_decode[2].simd_cmd   :
-                                                                               'd0                        ;
-        wud__odc__num_lanes_e1   =   ( instr_decode[0].contained_num_lanes ) ? instr_decode[0].num_lanes  :
-                                     ( instr_decode[1].contained_num_lanes ) ? instr_decode[1].num_lanes  :
-                                     ( instr_decode[2].contained_num_lanes ) ? instr_decode[2].num_lanes  :
-                                                                               'd0                        ;
+      wud__odc__cntl_e1        =   `COMMON_STD_INTF_CNTL_SOM_EOM ;  // for now, wud__odc packets are single cycle
+      wud__odc__tag_e1         =   tag ;
+      wud__odc__stOp_cmd_e1    =   ( instr_decode[0].contained_stOp_cmd  ) ? instr_decode[0].stOp_cmd   :
+                                   ( instr_decode[1].contained_stOp_cmd  ) ? instr_decode[1].stOp_cmd   :
+                                   ( instr_decode[2].contained_stOp_cmd  ) ? instr_decode[2].stOp_cmd   :
+                                                                             'd0                        ;
+      wud__odc__simd_cmd_e1    =   ( instr_decode[0].contained_simd_cmd  ) ? instr_decode[0].simd_cmd   :
+                                   ( instr_decode[1].contained_simd_cmd  ) ? instr_decode[1].simd_cmd   :
+                                   ( instr_decode[2].contained_simd_cmd  ) ? instr_decode[2].simd_cmd   :
+                                                                             'd0                        ;
+      wud__odc__num_lanes_e1   =   ( instr_decode[0].contained_num_lanes ) ? instr_decode[0].num_lanes  :
+                                   ( instr_decode[1].contained_num_lanes ) ? instr_decode[1].num_lanes  :
+                                   ( instr_decode[2].contained_num_lanes ) ? instr_decode[2].num_lanes  :
+                                                                             'd0                        ;
     end
+
+  //----------------------------------------------------------------------------------------------------
+  // Determine which modules the instruction impacts
+  // Assumption is everything we need to determine affected modules is in 1st cycle of descriptor
+  //
+  always @(*)
+    begin
+
+      send_info_to_oob_downstream  =  ( instr_decode[0].send_info_to_oob_downstream  ) | 
+                                      ( instr_decode[1].send_info_to_oob_downstream  ) | 
+                                      ( instr_decode[2].send_info_to_oob_downstream  ) ; 
+                                                                                         
+                                         
+      send_info_to_return_proc     =  ( instr_decode[0].send_info_to_return_proc     ) | 
+                                      ( instr_decode[1].send_info_to_return_proc     ) | 
+                                      ( instr_decode[2].send_info_to_return_proc     ) ; 
+                                                                                         
+                                                                                     
+      send_info_to_arg0_mem_cntl   =  ( instr_decode[0].send_info_to_arg0_mem_cntl   ) | 
+                                      ( instr_decode[1].send_info_to_arg0_mem_cntl   ) | 
+                                      ( instr_decode[2].send_info_to_arg0_mem_cntl   ) ; 
+                                                                                         
+                                                                                     
+      send_info_to_arg1_mem_cntl   =  ( instr_decode[0].send_info_to_arg1_mem_cntl   ) | 
+                                      ( instr_decode[1].send_info_to_arg1_mem_cntl   ) | 
+                                      ( instr_decode[2].send_info_to_arg1_mem_cntl   ) ; 
+    end
+
+  always @(posedge clk)
+    begin
+
+      // if SOM_EOM, then dont assert sending and valid will condition on
+      // send_info.. only
+      sending_to_oob_downstream  <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
+                                     ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_EOM    ) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
+                                     ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
+                                     ( send_info_to_oob_downstream                                        && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
+                                                                                                                                                   sending_to_oob_downstream ;
+                                      
+      sending_to_return_proc  <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
+                                     ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_EOM    ) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
+                                     ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
+                                     ( send_info_to_return_proc                                        && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
+                                                                                                                                                   sending_to_return_proc ;
+                                      
+      sending_to_arg0_mem_cntl  <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
+                                     ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_EOM    ) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
+                                     ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
+                                     ( send_info_to_arg0_mem_cntl                                        && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
+                                                                                                                                                   sending_to_arg0_mem_cntl ;
+                                      
+      sending_to_arg1_mem_cntl  <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
+                                     ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_EOM    ) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
+                                     ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
+                                     ( send_info_to_arg1_mem_cntl                                        && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
+                                                                                                                                                   sending_to_arg1_mem_cntl ;
+                                      
+    end
+
+  // Drive to return Data processor conditioned on the send_info and sending flags
+  // Remember, once we start a transfer from the Wumemory FIFO we assume it will complete e.g. we ignore ready during the transfer
+  always @(*)
+    begin
+        wud__rdc__valid_e1        =   (send_info_to_return_proc & from_WuMemory_Fifo[0].pipe_read) | sending_to_return_proc  ;
+        wud__rdc__dcntl_e1        =   from_WuMemory_Fifo[0].pipe_dcntl  ;
+        wud__rdc__tag_e1          =   tag ;
+        for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
+          begin: rdc_option_out
+            wud__rdc__option_type_e1  [opt]  <=  from_WuMemory_Fifo[0].pipe_option_type  [opt]  ;
+            wud__rdc__option_value_e1 [opt]  <=  from_WuMemory_Fifo[0].pipe_option_value [opt]  ;
+          end
+
+    end
+
 
 endmodule
 

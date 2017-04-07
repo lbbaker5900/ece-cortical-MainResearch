@@ -162,7 +162,7 @@ module wu_fetch (
   // Assignments
   //
 
-  assign stall                     = xxx__wuf__stall_d1 | wum__wuf__stall ;
+  assign stall                     = xxx__wuf__stall_d1 | wum__wuf__stall_d1 ;
   assign wuf__wum__addr_e1         = pc                   ;
   assign wuf__wum__read_e1         = increment_pc         ;
 

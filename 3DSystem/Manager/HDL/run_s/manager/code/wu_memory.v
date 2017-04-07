@@ -121,7 +121,7 @@ module wu_memory (
 
     always @(posedge clk) 
       begin
-        wum__wuf__stall        <= ( reset_poweron   ) ? 'd0  :  ~wud__wum__ready   ;
+        wum__wuf__stall        <= ( reset_poweron   ) ? 'd1  :  ~wud__wum__ready   ;  // stall asserted out of reset
       end
 
     always @(posedge clk) 

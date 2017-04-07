@@ -76,6 +76,9 @@ module generic_fifo (
   reg  [GENERIC_FIFO_ADDR_WIDTH-1 :0  ]       depth                                    ; 
   wire                                        empty                                    ; 
   wire                                        almost_full                              ; 
+  //`ifdef TESTING
+  reg                                         full                                     ;   // latch the fall condition for debug
+  // `endif
   wire                                        read                                     ; 
   reg  [GENERIC_FIFO_DATA_WIDTH-1 :0  ]       read_data                                ;
   wire [GENERIC_FIFO_DATA_WIDTH-1 :0  ]       write_data                               ;
@@ -101,6 +104,11 @@ module generic_fifo (
                             (  read & ~write  ) ? depth - 'd1   :
                             ( ~read &  write  ) ? depth + 'd1   :
                                                   depth         ;
+  
+      // latch the exception - FIXME - not a port yet - maybe add port `ifdef TESTING
+      full               <= ( reset_poweron               ) ? 1'b0 : 
+                            ( depth == GENERIC_FIFO_DEPTH ) ? 1'b1 :
+                                                              full ;
   
     end
 

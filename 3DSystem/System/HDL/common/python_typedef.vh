@@ -43,6 +43,14 @@ typedef enum logic [1 :0] {
 
 
 typedef enum logic [1 :0] { 
+                   PY_WU_INST_SRC_TYPE_STACK_DN_ARG0 =  0, 
+                   PY_WU_INST_SRC_TYPE_STACK_DN_ARG1 =  1, 
+                   PY_WU_INST_SRC_TYPE_STACK_UP =  2, 
+                   PY_WU_INST_SRC_TYPE_NOP      =  3 
+                           } python_source_type ; 
+
+
+typedef enum logic [1 :0] { 
                    PY_WU_INST_TXFER_TYPE_BCAST    =  0, 
                    PY_WU_INST_TXFER_TYPE_VECTOR   =  1, 
                    PY_WU_INST_TXFER_TYPE_NOP      =  2 
