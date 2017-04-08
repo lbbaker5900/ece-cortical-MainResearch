@@ -21,8 +21,10 @@
 `include "manager.vh"
 `include "stack_interface.vh"
 `include "stack_interface_typedef.vh"
+`include "noc_cntl.vh"
+`include "streamingOps_cntl.vh"
 `include "wu_fetch.vh"
-`include "wu_cntl.vh"
+`include "wu_decode.vh"
 `include "rdp_cntl.vh"
 
 
@@ -73,7 +75,8 @@ module rdp_cntl (
             //-------------------------------
             // General
             //
-            clk              ,
+            sys__mgr__mgrId         ,
+            clk                     ,
             reset_poweron    
  
     );
@@ -81,8 +84,9 @@ module rdp_cntl (
   //----------------------------------------------------------------------------------------------------
   // General
 
-  input                                           clk                          ;
-  input                                           reset_poweron                ;
+  input                                     clk                          ;
+  input                                     reset_poweron                ;
+  input   [`MGR_MGR_ID_RANGE    ]           sys__mgr__mgrId              ;
 
 
   //-------------------------------------------------------------------------------------------------
@@ -91,7 +95,7 @@ module rdp_cntl (
   input                                          stuc__rdp__valid       ;
   input   [`COMMON_STD_INTF_CNTL_RANGE    ]      stuc__rdp__cntl        ;
   output                                         rdp__stuc__ready       ;
-  input   [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      stuc__rdp__tag         ;  // tag size is the same as sent to PE
+  input   [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      stuc__rdp__tag         ;  // Match Tag with tag from wu_decoder
   input   [`STACK_UP_INTF_DATA_RANGE      ]      stuc__rdp__data        ;
  
 
@@ -173,7 +177,7 @@ module rdp_cntl (
   //-------------------------------------------------------------------------------------------------
   // NoC interface
   //
-  // Control-Path (cp) to NoC '
+  // Control-Path (cp) to NoC 
   wire                                            noc__rdp__cp_ready      ; 
   wire [`COMMON_STD_INTF_CNTL_RANGE             ] rdp__noc__cp_cntl       ; 
   wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE         ] rdp__noc__cp_type       ; 
@@ -182,7 +186,7 @@ module rdp_cntl (
   wire                                            rdp__noc__cp_strmId     ; 
   wire                                            rdp__noc__cp_valid      ; 
   
-  // Data-Path (dp) to NoC '
+  // Data-Path (dp) to NoC
   wire                                            noc__rdp__dp_ready      ; 
   wire [`COMMON_STD_INTF_CNTL_RANGE             ] rdp__noc__dp_cntl       ; 
   wire [`NOC_CONT_NOC_PACKET_TYPE_RANGE         ] rdp__noc__dp_type       ; 
@@ -198,25 +202,29 @@ module rdp_cntl (
 
   always @(posedge clk)
     begin
-
       stuc__rdp__valid_d1        <= ( reset_poweron   ) ? 'd0  :  stuc__rdp__valid       ;
       stuc__rdp__cntl_d1         <= ( reset_poweron   ) ? 'd0  :  stuc__rdp__cntl        ;
       rdp__stuc__ready           <= ( reset_poweron   ) ? 'd0  :  rdp__stuc__ready_e1    ;
       stuc__rdp__tag_d1          <= ( reset_poweron   ) ? 'd0  :  stuc__rdp__tag         ;
       stuc__rdp__data_d1         <= ( reset_poweron   ) ? 'd0  :  stuc__rdp__data        ;
-                                                                                         
-      wud__rdp__valid_d1         <= ( reset_poweron   ) ? 'd0  :  wud__rdp__valid        ;
-      wud__rdp__cntl_d1          <= ( reset_poweron   ) ? 'd0  :  wud__rdp__cntl         ;
-      rdp__wud__ready            <= ( reset_poweron   ) ? 'd0  :  rdp__wud__ready_e1     ;
-      wud__rdp__type_d1          <= ( reset_poweron   ) ? 'd0  :  wud__rdp__type         ;
-      wud__rdp__tag_d1           <= ( reset_poweron   ) ? 'd0  :  wud__rdp__tag          ;
-      wud__rdp__mem_desc_ptr_d1  <= ( reset_poweron   ) ? 'd0  :  wud__rdp__mem_desc_ptr ;
-      wud__rdp__num_words_d1     <= ( reset_poweron   ) ? 'd0  :  wud__rdp__num_words    ;
-
     end
 
+    always @(posedge clk) 
+      begin
+        rdp__wud__ready     <=   ( reset_poweron   ) ? 'd0  :  rdp__wud__ready_e1           ;
+        wud__rdp__valid_d1        <=   ( reset_poweron   ) ? 'd0  :  wud__rdp__valid        ;
+        wud__rdp__dcntl_d1        <=   ( reset_poweron   ) ? 'd0  :  wud__rdp__dcntl        ;
+        wud__rdp__tag_d1          <=   ( reset_poweron   ) ? 'd0  :  wud__rdp__tag          ;
+        for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
+          begin: option_in
+            wud__rdp__option_type_d1  [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__rdp__option_type  [opt]  ;
+            wud__rdp__option_value_d1 [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__rdp__option_value [opt]  ;
+          end
+      end
 
 
+  assign rdp__wud__ready_e1  = 1'b1 ;
+  assign rdp__stuc__ready_e1 = 1'b1 ;
 
 endmodule
 

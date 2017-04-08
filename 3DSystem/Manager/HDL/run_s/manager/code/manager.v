@@ -349,9 +349,6 @@ module manager (
   wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      stuc__rdp__tag         ;  // tag size is the same as sent to PE
   wire   [`STACK_UP_INTF_DATA_RANGE      ]      stuc__rdp__data        ;
  
-  //-------------------------------------------------------------------------------------------------
-  // Control Processor Interface
-  //
   wire                                          stuc__rcp__valid       ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      stuc__rcp__cntl        ;
   wire                                          rcp__stuc__ready       ;
@@ -382,6 +379,7 @@ module manager (
 
             //-------------------------------
             // Return Control packet processor output
+            //  - TBD - may not use
             //
             .stuc__rcp__valid         ( stuc__rcp__valid   ),
             .stuc__rcp__cntl          ( stuc__rcp__cntl    ),  // used to delineate upstream packet data
@@ -397,9 +395,64 @@ module manager (
  
     );
 
+  //-------------------------------------------------------------------------------------------------
+  // Response Data Processor
+  // 
+  rdp_cntl rdp_cntl (
+
+            //-------------------------------
+            // From Stack Upstream
+            //
+            .stuc__rdp__valid         ( stuc__rdp__valid   ),
+            .stuc__rdp__cntl          ( stuc__rdp__cntl    ),  // used to delineate upstream packet data
+            .rdp__stuc__ready         ( rdp__stuc__ready   ),
+            .stuc__rdp__tag           ( stuc__rdp__tag     ),  // Use this to match with WU and take all the data 
+            .stuc__rdp__data          ( stuc__rdp__data    ),  // The data may vary so check for cntl=EOD when reading this interface
+
+
+            //-------------------------------
+            // from WU Decoder
+            //
+            .wud__rdp__valid         ( wud__rdp__valid         ),
+            .wud__rdp__dcntl         ( wud__rdp__dcntl         ),  // used to delineate descriptor
+            .rdp__wud__ready         ( rdp__wud__ready         ),
+            .wud__rdp__tag           ( wud__rdp__tag           ),  // Use this to match with WU and take all the data 
+            .wud__rdp__option_type   ( wud__rdp__option_type   ),  // Only send tuples
+            .wud__rdp__option_value  ( wud__rdp__option_value  ),
+
+            //-------------------------------
+            // to NoC
+            //
+            // Control-Path (cp) to NoC 
+            .noc__rdp__cp_ready          ( noc__rdp__cp_ready           ), 
+            .rdp__noc__cp_cntl           ( rdp__noc__cp_cntl            ), 
+            .rdp__noc__cp_type           ( rdp__noc__cp_type            ), 
+            .rdp__noc__cp_data           ( rdp__noc__cp_data            ), 
+            .rdp__noc__cp_laneId         ( rdp__noc__cp_laneId          ), 
+            .rdp__noc__cp_strmId         ( rdp__noc__cp_strmId          ), 
+            .rdp__noc__cp_valid          ( rdp__noc__cp_valid           ), 
+                                                                          
+             // Data-Path (dp) to NoC                                     
+            .noc__rdp__dp_ready          ( noc__rdp__dp_ready           ), 
+            .rdp__noc__dp_type           ( rdp__noc__dp_type            ), 
+            .rdp__noc__dp_cntl           ( rdp__noc__dp_cntl            ), 
+            .rdp__noc__dp_peId           ( rdp__noc__dp_peId            ), 
+            .rdp__noc__dp_laneId         ( rdp__noc__dp_laneId          ), 
+            .rdp__noc__dp_strmId         ( rdp__noc__dp_strmId          ), 
+            .rdp__noc__dp_data           ( rdp__noc__dp_data            ), 
+            .rdp__noc__dp_valid          ( rdp__noc__dp_valid           ), 
+
+            //-------------------------------
+            // General
+            //
+            .sys__mgr__mgrId          ( sys__mgr__mgrId    ),
+            .clk                      ( clk                ),
+            .reset_poweron            ( reset_poweron      ) 
+ 
+    );
+
   // FIXME
   assign rcp__stuc__ready = 1;
-  assign rdp__stuc__ready = 1;
 
   //-------------------------------------------------------------------------------------------------
   // NoC Interface
