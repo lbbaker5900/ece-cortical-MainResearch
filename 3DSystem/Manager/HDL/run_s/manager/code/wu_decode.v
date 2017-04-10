@@ -524,6 +524,8 @@ module wu_decode (
         // Only send info to oob driver once we have received: simd_ptr, stOp_ptr and num_lanes
         //  - the simd and stop local commands contain operation, addresses etc.
         //  - this module creates the tag
+        //  Note: When checking option for MW, be careful of extended tuples
+        //  e.g. we have tuples 0..2, the option field of tuple 2 may be the 2nd byte of a Write pointer from tuple 1
         always @(posedge clk)
           begin
             contained_stOp_cmd       <=  ( reset_poweron                                                                                                     ) ? 1'b0               :
@@ -601,7 +603,7 @@ module wu_decode (
   always @(posedge clk)
     begin
       // If a packet is sent to oob driver, increment tag
-      tag                     <=  ( reset_poweron                                                                                                         ) ? 'd0      :
+      tag                     <=  ( reset_poweron                                                                                                         ) ? 'h81     :  // start with a number that is easy to see in simulation
                                   ((instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[0].contained_simd_cmd ) ? tag+1    :
                                   ((instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[1].contained_simd_cmd ) ? tag+1    :
                                   ((instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[2].contained_simd_cmd ) ? tag+1    :

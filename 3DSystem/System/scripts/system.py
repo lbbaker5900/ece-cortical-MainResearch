@@ -43,6 +43,18 @@ if __name__ == "__main__":
         FoundLanes = True
   searchFile.close()
 
+  # extract number of tuples per instruction
+  FoundNumOfTuplesPerInst = False
+  searchFile = open("../../Manager/HDL/common/manager.vh", "r")
+  for line in searchFile:
+    if FoundNumOfTuplesPerInst == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "MGR_WU_OPT_PER_INST" in data[1]:
+        numOfTuplesPerInst = int(data[2])
+        FoundNumOfTuplesPerInst = True
+  searchFile.close()
+
 
   #----------------------------------------------------------------------------------------------------
   # Declare Manager and PE ports

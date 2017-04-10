@@ -165,8 +165,11 @@ module wu_fetch (
   assign stall                     = xxx__wuf__stall_d1 | wum__wuf__stall_d1 ;
   assign wuf__wum__addr_e1         = pc                   ;
   assign wuf__wum__read_e1         = increment_pc         ;
-
+  `ifdef TESTING
+  assign increment_pc              = (wuf_cntl_state == `WUF_CNTL_INC_PC)  && (pc < 'd50) ;
+  `else
   assign increment_pc              = (wuf_cntl_state == `WUF_CNTL_INC_PC) ;
+  `endif
 
   always @(posedge clk)
     begin
