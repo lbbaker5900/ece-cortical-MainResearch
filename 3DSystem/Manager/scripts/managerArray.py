@@ -668,28 +668,38 @@ if __name__ == "__main__":
   pLine = ""
 
   #
-  pLine = pLine + '\n  // Search for MW storage tuple in option type fields'
-  pLine = pLine + '\n  assign storagePtr_LocalFifo[0].write    = from_WuDecode_Fifo[0].pipe_read & ((from_WuDecode_Fifo[0].pipe_option_type[0] == PY_WU_INST_OPT_TYPE_MEMORY) | '
-  for tple in range (1, numOfTuplesPerInst-2 ):
-    pLine = pLine + '\n                                                                               (from_WuDecode_Fifo[0].pipe_option_type[{0}] == PY_WU_INST_OPT_TYPE_MEMORY) |'.format(tple)
-  pLine = pLine + '\n                                                                               (from_WuDecode_Fifo[0].pipe_option_type[{0}] == PY_WU_INST_OPT_TYPE_MEMORY)); // '.format(numOfTuplesPerInst-2)
+  #pLine = pLine + '\n  // Search for MW storage tuple in option type fields'
+  #pLine = pLine + '\n  assign storagePtr_LocalFifo[0].write    = from_WuDecode_Fifo[0].pipe_read & ((from_WuDecode_Fifo[0].pipe_option_type[0] == PY_WU_INST_OPT_TYPE_MEMORY) | '
+  #for tple in range (1, numOfTuplesPerInst-2 ):
+  #  pLine = pLine + '\n                                                                               (from_WuDecode_Fifo[0].pipe_option_type[{0}] == PY_WU_INST_OPT_TYPE_MEMORY) |'.format(tple)
+  #pLine = pLine + '\n                                                                               (from_WuDecode_Fifo[0].pipe_option_type[{0}] == PY_WU_INST_OPT_TYPE_MEMORY)); // '.format(numOfTuplesPerInst-2)
 
   #
-  pLine = pLine + '\n  // Extract storage ptr'
-  pLine = pLine + '\n  assign storagePtr_LocalFifo[0].write_storage_ptr     = (from_WuDecode_Fifo[0].pipe_option_type[0] == PY_WU_INST_OPT_TYPE_MEMORY) ? {from_WuDecode_Fifo[0].pipe_option_value[0], from_WuDecode_Fifo[0].pipe_option_type[1], from_WuDecode_Fifo[0].pipe_option_value[1]} : '
+  pLine = pLine + '\n  // Extract storage ptr - wr_ptrs can only exist in first two tuples because they are extended tuples'
+  pLine = pLine + '\n  assign wud_fifo_contains_wr_ptr =   from_WuDecode_Fifo[0].pipe_valid & '
+  pLine = pLine + '\n                                    ((from_WuDecode_Fifo[0].pipe_option_type[0] == PY_WU_INST_OPT_TYPE_MEMORY) | '
   for tple in range (1, numOfTuplesPerInst-2 ):
-    pLine = pLine + '\n                                                         (from_WuDecode_Fifo[0].pipe_option_type[0] == PY_WU_INST_OPT_TYPE_MEMORY) ? {{from_WuDecode_Fifo[0].pipe_option_value[0], from_WuDecode_Fifo[0].pipe_option_type[1], from_WuDecode_Fifo[0].pipe_option_value[1]}} : '.format(tple)
-  pLine = pLine + '\n                                                                                                                                     {{from_WuDecode_Fifo[0].pipe_option_value[{0}], from_WuDecode_Fifo[0].pipe_option_type[{1}], from_WuDecode_Fifo[0].pipe_option_value[{1}]}} ; // '.format(numOfTuplesPerInst-2, numOfTuplesPerInst-1)
+    pLine = pLine + '\n                             (from_WuDecode_Fifo[0].pipe_option_type[{{0}}] == PY_WU_INST_OPT_TYPE_MEMORY) | : '.format(tple)
+  pLine = pLine + '\n                                     (from_WuDecode_Fifo[0].pipe_option_type[{0}] == PY_WU_INST_OPT_TYPE_MEMORY)); // '.format(numOfTuplesPerInst-2)
+
+  pLine = pLine + '\n  always @(posedge clk)'
+  pLine = pLine + '\n    begin'
+  pLine = pLine + '\n      write_storage_ptr_tmp    <= (from_WuDecode_Fifo[0].pipe_read  && (from_WuDecode_Fifo[0].pipe_option_type[0] == PY_WU_INST_OPT_TYPE_MEMORY)) ? {from_WuDecode_Fifo[0].pipe_option_value[0], from_WuDecode_Fifo[0].pipe_option_type[1], from_WuDecode_Fifo[0].pipe_option_value[1]} : '
+  for tple in range (1, numOfTuplesPerInst-2 ):
+    pLine = pLine + '\n                                  (from_WuDecode_Fifo[0].pipe_read  && (from_WuDecode_Fifo[0].pipe_option_type[{0}] == PY_WU_INST_OPT_TYPE_MEMORY)) ? {{from_WuDecode_Fifo[0].pipe_option_value[0], from_WuDecode_Fifo[0].pipe_option_type[1], from_WuDecode_Fifo[0].pipe_option_value[1]}} : '.format(tple)
+  pLine = pLine + '\n                                  (from_WuDecode_Fifo[0].pipe_read  && (from_WuDecode_Fifo[0].pipe_option_type[{0}] == PY_WU_INST_OPT_TYPE_MEMORY)) ? {{from_WuDecode_Fifo[0].pipe_option_value[{0}], from_WuDecode_Fifo[0].pipe_option_type[{1}], from_WuDecode_Fifo[0].pipe_option_value[{1}]}} : '.format(numOfTuplesPerInst-2, numOfTuplesPerInst-1)
+  pLine = pLine + '\n                                                                                                                                                     write_storage_ptr_tmp ; '
+  pLine = pLine + '\n    end'
                                                                                                                                      
 
   pLine = pLine + '\n  // Extract Number of valid lanes'
   pLine = pLine + '\n  always @(posedge clk)'
   pLine = pLine + '\n    begin'
-  pLine = pLine + '\n      num_of_valid_lanes   <= ( reset_poweron                                                                                                                                              ) ? \'d0                                       :'
-  pLine = pLine + '\n                              ( from_WuDecode_Fifo[0].pipe_option_type[0] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES                                                                              ) ? from_WuDecode_Fifo[0].pipe_option_value[0] : '
+  pLine = pLine + '\n      num_of_valid_lanes   <= ( reset_poweron                                                                                                                                                                                    ) ? \'d0                                       :'
+  pLine = pLine + '\n                              (from_WuDecode_Fifo[0].pipe_read  && ( from_WuDecode_Fifo[0].pipe_option_type[0] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES)                                                                              ) ? from_WuDecode_Fifo[0].pipe_option_value[0] : '
   for tple in range (1, numOfTuplesPerInst ):
-    pLine = pLine + '\n                              ((from_WuDecode_Fifo[0].pipe_option_type[{0}] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES) && (from_WuDecode_Fifo[0].pipe_option_type[{1}] != PY_WU_INST_OPT_TYPE_MEMORY)) ? from_WuDecode_Fifo[0].pipe_option_value[{0}] : '.format(tple, tple-1)
-  pLine = pLine + '\n                                                                                                                                                                                               num_of_valid_lanes ; // '.format(numOfTuplesPerInst-2, numOfTuplesPerInst-1)
+    pLine = pLine + '\n                              (from_WuDecode_Fifo[0].pipe_read  && ((from_WuDecode_Fifo[0].pipe_option_type[{0}] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES) && (from_WuDecode_Fifo[0].pipe_option_type[{1}] != PY_WU_INST_OPT_TYPE_MEMORY))) ? from_WuDecode_Fifo[0].pipe_option_value[{0}] : '.format(tple, tple-1)
+  pLine = pLine + '\n                                                                                                                                                                                                                                     num_of_valid_lanes ; // '.format(numOfTuplesPerInst-2, numOfTuplesPerInst-1)
   pLine = pLine + '\n    end'
                                                                                                                                      
 

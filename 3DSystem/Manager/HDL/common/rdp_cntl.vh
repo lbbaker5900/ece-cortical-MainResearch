@@ -29,15 +29,22 @@
 //--------------------------------------------------------
 // Transfer from Stack bus
 
-`define RDP_CNTL_TAG_DATA_COMBINE_WAIT                            8'b0000_0001
-`define RDP_CNTL_TAG_DATA_COMBINE_START                           8'b0000_0010
-`define RDP_CNTL_TAG_DATA_COMBINE_PREPARE_FOR_DATA                8'b0000_0100
-`define RDP_CNTL_TAG_DATA_COMBINE_WAIT_NOC_DATA_READY                8'b0000_1000
-`define RDP_CNTL_TAG_DATA_COMBINE_COMPLETE                8'b0001_0000
+`define RDP_CNTL_TAG_DATA_COMBINE_WAIT                          12'b0000_0000_0001
+`define RDP_CNTL_TAG_DATA_COMBINE_PREPARE_FOR_DATA              12'b0000_0000_0010
+`define RDP_CNTL_TAG_DATA_COMBINE_FIRST_WR_PTR                  12'b0000_0000_0100
+`define RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR                   12'b0000_0000_1000
+`define RDP_CNTL_TAG_DATA_COMBINE_WAIT_FOR_WR_PTR               12'b0000_0001_0000
+`define RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE              12'b0000_0010_0000
+`define RDP_CNTL_TAG_DATA_COMBINE_BUILD_NOC_PKT                 12'b0000_0100_0000
+`define RDP_CNTL_TAG_DATA_COMBINE_SEND_BITFIELD                 12'b0000_1000_0000
+`define RDP_CNTL_TAG_DATA_COMBINE_SEND_WR_PTRS                  12'b0001_0000_0000
+`define RDP_CNTL_TAG_DATA_COMBINE_SEND_DATA                     12'b0010_0000_0000
+                                                                        
+`define RDP_CNTL_TAG_DATA_COMBINE_COMPLETE                      12'b0100_0000_0000
+                                                                        
+`define RDP_CNTL_TAG_DATA_COMBINE_ERR                           12'b1000_0000_0000
 
-`define RDP_CNTL_TAG_DATA_COMBINE_ERR                             8'b1000_0000
-
-`define RDP_CNTL_TAG_DATA_COMBINE_STATE_WIDTH         8
+`define RDP_CNTL_TAG_DATA_COMBINE_STATE_WIDTH         12
 `define RDP_CNTL_TAG_DATA_COMBINE_STATE_MSB           `RDP_CNTL_TAG_DATA_COMBINE_STATE_WIDTH-1
 `define RDP_CNTL_TAG_DATA_COMBINE_STATE_LSB           0
 `define RDP_CNTL_TAG_DATA_COMBINE_STATE_SIZE          (`RDP_CNTL_TAG_DATA_COMBINE_STATE_MSB - `RDP_CNTL_TAG_DATA_COMBINE_STATE_LSB +1)

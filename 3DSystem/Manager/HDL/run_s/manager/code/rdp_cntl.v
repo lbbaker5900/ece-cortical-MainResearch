@@ -178,11 +178,18 @@ module rdp_cntl (
   //-------------------------------------------------------------------------------------------------
   // WU Decode and Stuc combine
   //
-  wire  wud_stuc_data_available ;
-  wire  wud_data_available      ;
-  wire  stuc_data_available     ;
-  wire  wud_stuc_both_pipe_read ;
-  reg  [`MGR_EXEC_LANE_ID_RANGE     ]      num_of_valid_lanes     ;  // how many words are valid from stack upstream packet
+  wire                                     wud_data_available          ;
+  wire                                     stuc_data_available         ;
+  reg  [`MGR_EXEC_LANE_ID_RANGE       ]    num_of_valid_lanes          ;  // how many words are valid from stack upstream packet
+  reg                                      write_storage_ptr_tmp_valid ;
+  reg  [`COMMON_STD_INTF_CNTL_RANGE   ]    write_storage_ptr_tmp_cntl  ;
+  reg  [`MGR_WU_EXTD_OPT_VALUE_RANGE  ]    write_storage_ptr_tmp       ;
+  wire                                     wud_fifo_contains_wr_ptr    ;
+  wire                                     wr_ptrs_all_sent            ;
+  wire                                     data_all_sent               ;
+  wire                                     start_of_wu_descriptor      ;  // dcntl == SOM
+  wire                                     middle_of_wu_descriptor     ;  // dcntl == MOM
+  wire                                     end_of_wu_descriptor        ;  // dcntl == EOM
 
   //-------------------------------------------------------------------------------------------------
   // NoC interface
@@ -383,6 +390,9 @@ module rdp_cntl (
         end
     end
          
+  assign start_of_wu_descriptor          = from_WuDecode_Fifo[0].pipe_valid & (from_WuDecode_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM) ;
+  assign middle_of_wu_descriptor         = from_WuDecode_Fifo[0].pipe_valid & (from_WuDecode_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_MOM) ;
+  assign end_of_wu_descriptor            = from_WuDecode_Fifo[0].pipe_valid & (from_WuDecode_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_EOM) ;
   assign rdp__wud__ready_e1              = ~from_WuDecode_Fifo[0].almost_full  ;
 
 
@@ -509,9 +519,6 @@ module rdp_cntl (
   reg [`RDP_CNTL_TAG_DATA_COMBINE_STATE_RANGE ] rdp_cntl_tag_data_combine_state_next ;
   
   
-  //wud_stuc_data_available ;
-  //wud_stuc_both_pipe_read ;
-
   // State register 
   always @(posedge clk)
     begin
@@ -530,21 +537,64 @@ module rdp_cntl (
         
         // Note: the pipe will not be read unless all affected destination modules are ready
         // Right now, inputs from WUD are expected to be at least 2 cycles, so only check for SOM, SOM_EOM will flag an error
+        // As soon as we get a descriptor from WUD, start extracting wr_ptrs to determine destination bit-field and to save wr_ptr for NoC packet
+        // The first read will place any wr_ptr in the write_storage_ptr_tmp register
         
         `RDP_CNTL_TAG_DATA_COMBINE_WAIT: 
-          rdp_cntl_tag_data_combine_state_next =  ( wud_data_available && (from_WuDecode_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM         ) ) ? `RDP_CNTL_TAG_DATA_COMBINE_PREPARE_FOR_DATA  :  // Instruction starts with operation descriptor
-                                                  ( wud_stuc_data_available && (from_Stuc_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuDecode_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM    ) ) ? `RDP_CNTL_TAG_DATA_COMBINE_WAIT_NOC_DATA_READY  :  // Instruction starts with operation descriptor
-                                                  ( wud_stuc_data_available                                                                                                                                          ) ? `RDP_CNTL_TAG_DATA_COMBINE_ERR                  :  // if both available, both must be SOM
-                                                                                                                                                                                                                         `RDP_CNTL_TAG_DATA_COMBINE_WAIT                 ;
+          rdp_cntl_tag_data_combine_state_next =  ( wud_fifo_contains_wr_ptr && start_of_wu_descriptor) ? `RDP_CNTL_TAG_DATA_COMBINE_FIRST_WR_PTR      :  // First cycle contains wr_ptr
+                                                  ( wud_data_available       && start_of_wu_descriptor) ? `RDP_CNTL_TAG_DATA_COMBINE_PREPARE_FOR_DATA  :  // First cycle doesnt contain wr_ptr
+                                                  ( wud_data_available                                ) ? `RDP_CNTL_TAG_DATA_COMBINE_ERR               :  // wu descriptor always more than 1-cycle
+                                                                                                          `RDP_CNTL_TAG_DATA_COMBINE_WAIT              ;
+
         // Read the {option, value} tuples from the WU Decoder so we can form a destination bitfield for the NoC and prepare for stack upstream data
         // FIXME: We will likely have to save a MW pointer for each PE, so assume we need to remove 64 storage pointers from the WU decode FIFO and store locally
+        // if tuple contains wr_ptr and dcntl==EOM, then store wr_ptr in local fifo with cntl=SOM_EOM
         `RDP_CNTL_TAG_DATA_COMBINE_PREPARE_FOR_DATA: 
-          rdp_cntl_tag_data_combine_state_next =  ( noc__rdp__dp_ready_d1 ) ? `RDP_CNTL_TAG_DATA_COMBINE_START          :
-                                                                              `RDP_CNTL_TAG_DATA_COMBINE_WAIT           ;
+          rdp_cntl_tag_data_combine_state_next =  ( wud_fifo_contains_wr_ptr && end_of_wu_descriptor   ) ? `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE :  // There is only one wr_ptr, put tmp ptr into local FIFO
+                                                  ( wud_fifo_contains_wr_ptr                           ) ? `RDP_CNTL_TAG_DATA_COMBINE_FIRST_WR_PTR     :
+                                                  ( wud_data_available                                 ) ? `RDP_CNTL_TAG_DATA_COMBINE_WAIT_FOR_WR_PTR  :  // data available but no wr_ptr
+                                                                                                           `RDP_CNTL_TAG_DATA_COMBINE_WAIT             ;
+
+        `RDP_CNTL_TAG_DATA_COMBINE_FIRST_WR_PTR: 
+          rdp_cntl_tag_data_combine_state_next =  ( wud_fifo_contains_wr_ptr && end_of_wu_descriptor   ) ? `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE :  // There is only one wr_ptr, put tmp ptr into local FIFO
+                                                  ( wud_fifo_contains_wr_ptr                           ) ? `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      :
+                                                  ( wud_data_available                                 ) ? `RDP_CNTL_TAG_DATA_COMBINE_WAIT_FOR_WR_PTR  :  // data available but no wr_ptr
+                                                                                                           `RDP_CNTL_TAG_DATA_COMBINE_WAIT             ;
+
+        // Hold wr_ptr, if we dont get another wr_ptr, write to local fifo with cntl=SOM_EOM, if we see another wr_ptr with dcntl=EOM, save held wr_ptr
+        // with cntl=SOM and then store current wr_ptr with cntl=EOM. If we get another wr_ptr without dcntl=EOM, store held wr_ptr and hold current wr_ptr
+        `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR: 
+          rdp_cntl_tag_data_combine_state_next =  ( wud_fifo_contains_wr_ptr && end_of_wu_descriptor    ) ? `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE :
+                                                  ( wud_fifo_contains_wr_ptr && middle_of_wu_descriptor ) ? `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      :
+                                                  ( wud_data_available       && end_of_wu_descriptor    ) ? `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE :  // EOD and no wr_ptr
+                                                  ( wud_data_available       && middle_of_wu_descriptor ) ? `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      :  // MOD and no wr_ptr
+                                                                                                            `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      ;
+        `RDP_CNTL_TAG_DATA_COMBINE_WAIT_FOR_WR_PTR: 
+          rdp_cntl_tag_data_combine_state_next =  ( wud_fifo_contains_wr_ptr && end_of_wu_descriptor    ) ? `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE :  // EOD and has wr_ptr
+                                                  ( wud_fifo_contains_wr_ptr && middle_of_wu_descriptor ) ? `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      :  // MOD and has wr_ptr
+                                                  ( wud_data_available       && end_of_wu_descriptor    ) ? `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE :  // EOD and no wr_ptr
+                                                  ( wud_data_available       && middle_of_wu_descriptor ) ? `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      :  // MOD and no wr_ptr
+                                                                                                            `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      ;
+        // need to find num_lanes and all write pointers
+        //  - the write pointers will be written to a local fifo. We dont know how many there are so pause on each mem ptr so we can check if another is coming before writing the CNTL field
+        //  - in this state, we write the final ptr if the tmp storage is valid
+        `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE: 
+          rdp_cntl_tag_data_combine_state_next =   `RDP_CNTL_TAG_DATA_COMBINE_BUILD_NOC_PKT ;
         
-        `RDP_CNTL_TAG_DATA_COMBINE_START: 
-          rdp_cntl_tag_data_combine_state_next =  ( noc__rdp__dp_ready_d1 ) ? `RDP_CNTL_TAG_DATA_COMBINE_COMPLETE       :
-                                                                              `RDP_CNTL_TAG_DATA_COMBINE_WAIT           ;
+        `RDP_CNTL_TAG_DATA_COMBINE_BUILD_NOC_PKT: 
+          rdp_cntl_tag_data_combine_state_next =  ( noc__rdp__dp_ready_d1 ) ? `RDP_CNTL_TAG_DATA_COMBINE_SEND_BITFIELD  :
+                                                                              `RDP_CNTL_TAG_DATA_COMBINE_BUILD_NOC_PKT  ;
+        
+        `RDP_CNTL_TAG_DATA_COMBINE_SEND_BITFIELD: 
+          rdp_cntl_tag_data_combine_state_next =  `RDP_CNTL_TAG_DATA_COMBINE_SEND_WR_PTRS           ;
+        
+        `RDP_CNTL_TAG_DATA_COMBINE_SEND_WR_PTRS: 
+          rdp_cntl_tag_data_combine_state_next =  ( wr_ptrs_all_sent )  ? `RDP_CNTL_TAG_DATA_COMBINE_SEND_DATA     :
+                                                                          `RDP_CNTL_TAG_DATA_COMBINE_SEND_WR_PTRS  ;
+        
+        `RDP_CNTL_TAG_DATA_COMBINE_SEND_DATA: 
+          rdp_cntl_tag_data_combine_state_next =  ( data_all_sent )  ? `RDP_CNTL_TAG_DATA_COMBINE_COMPLETE   :
+                                                                       `RDP_CNTL_TAG_DATA_COMBINE_SEND_DATA  ;
         
         `RDP_CNTL_TAG_DATA_COMBINE_COMPLETE: 
           rdp_cntl_tag_data_combine_state_next =  `RDP_CNTL_TAG_DATA_COMBINE_WAIT           ;
@@ -564,14 +614,32 @@ module rdp_cntl (
   //
 
 
-  
+  assign from_WuDecode_Fifo[0].pipe_read =   wud_data_available && (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_WAIT            ) |  
+                                             wud_data_available && (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_PREPARE_FOR_DATA) |  
+                                             wud_data_available && (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_WAIT_FOR_WR_PTR ) |  
+                                             wud_data_available && (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR     ) ;  
+
+  always @(posedge clk)
+    begin
+      write_storage_ptr_tmp_valid <=  ( reset_poweron                                                                                          ) ? 1'b0                        :
+                                      ( wud_fifo_contains_wr_ptr && from_WuDecode_Fifo[0].pipe_read                                            ) ? 1'b1                        :
+                                      (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE                          ) ? 1'b0                        :
+                                                                                                                                                   write_storage_ptr_tmp_valid ;
+
+      write_storage_ptr_tmp_cntl  <=  ( reset_poweron                                                                                                                      ) ? `COMMON_STD_INTF_CNTL_SOM      :  
+                                      ( wud_fifo_contains_wr_ptr &&                          (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_WAIT           )) ? `COMMON_STD_INTF_CNTL_SOM     :
+                                      ( wud_fifo_contains_wr_ptr &&  end_of_wu_descriptor && (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_FIRST_WR_PTR   )) ? `COMMON_STD_INTF_CNTL_EOM     :
+                                      ( wud_data_available       &&  end_of_wu_descriptor && (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_FIRST_WR_PTR   )) ? `COMMON_STD_INTF_CNTL_SOM_EOM :
+                                      ( wud_fifo_contains_wr_ptr &&  end_of_wu_descriptor && (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR    )) ? `COMMON_STD_INTF_CNTL_EOM     :
+                                      ( wud_fifo_contains_wr_ptr && ~end_of_wu_descriptor && (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR    )) ? `COMMON_STD_INTF_CNTL_MOM     :
+                                                                                                                                                                                 write_storage_ptr_tmp_cntl   ;
+    end
 
 
-  assign from_Stuc_Fifo[0].pipe_read     = from_Stuc_Fifo[0].pipe_valid     & from_WuDecode_Fifo[0].pipe_valid ;
-  assign from_WuDecode_Fifo[0].pipe_read = from_WuDecode_Fifo[0].pipe_valid & from_Stuc_Fifo[0].pipe_valid     ;
+
+  assign from_Stuc_Fifo[0].pipe_read     = stuc_data_available              ;
 
 
-  assign wud_stuc_data_available         = from_Stuc_Fifo[0].pipe_valid     & from_WuDecode_Fifo[0].pipe_valid ;
   assign wud_data_available              = from_WuDecode_Fifo[0].pipe_valid ;
   assign stuc_data_available             = from_Stuc_Fifo[0].pipe_valid     ;
 
@@ -664,6 +732,14 @@ module rdp_cntl (
 
       end
   endgenerate
+
+  // write to the local ptr fifo if the tmp reg is valid and we are about to reload the tmp reg
+  assign storagePtr_LocalFifo[0].write   =   write_storage_ptr_tmp_valid  & wud_fifo_contains_wr_ptr                                                                                    |
+                                             write_storage_ptr_tmp_valid  &                          & (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE) ;
+
+  assign storagePtr_LocalFifo[0].write_cntl         = write_storage_ptr_tmp_cntl ;
+  assign storagePtr_LocalFifo[0].write_storage_ptr  = write_storage_ptr_tmp      ;
+  
 
   // Write to local storage pointer FIFO
   `include "rdp_cntl_option_tuple_extract.vh"
