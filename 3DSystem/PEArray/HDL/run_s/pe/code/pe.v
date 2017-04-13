@@ -161,7 +161,7 @@ module pe (
   `include "pe_dma_memc_connection_wires.vh"
   `include "pe_std_to_stOp_connection_wires.vh"
 
-  `include "pe__noc_to_peArray_connection_wires.vh"
+  `include "pe_noc_to_peArray_connection_wires.vh"
 
   `include "pe_cntl_noc_connection_wires.vh"
   `include "pe_cntl_to_stOp_connection_wires.vh"

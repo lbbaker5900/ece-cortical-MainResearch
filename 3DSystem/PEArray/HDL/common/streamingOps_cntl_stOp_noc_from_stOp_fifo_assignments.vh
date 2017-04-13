@@ -1929,9 +1929,9 @@
       case(toNocSelectedLane)
         'd0:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane0_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane0_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane0_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane0_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane0_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane0_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane0_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -1942,9 +1942,9 @@
         end
         'd1:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane1_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane1_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane1_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane1_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane1_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane1_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane1_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -1955,9 +1955,9 @@
         end
         'd2:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane2_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane2_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane2_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane2_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane2_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane2_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane2_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -1968,9 +1968,9 @@
         end
         'd3:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane3_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane3_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane3_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane3_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane3_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane3_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane3_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -1981,9 +1981,9 @@
         end
         'd4:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane4_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane4_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane4_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane4_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane4_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane4_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane4_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -1994,9 +1994,9 @@
         end
         'd5:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane5_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane5_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane5_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane5_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane5_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane5_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane5_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2007,9 +2007,9 @@
         end
         'd6:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane6_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane6_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane6_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane6_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane6_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane6_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane6_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2020,9 +2020,9 @@
         end
         'd7:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane7_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane7_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane7_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane7_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane7_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane7_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane7_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2033,9 +2033,9 @@
         end
         'd8:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane8_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane8_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane8_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane8_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane8_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane8_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane8_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2046,9 +2046,9 @@
         end
         'd9:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane9_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane9_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane9_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane9_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane9_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane9_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane9_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2059,9 +2059,9 @@
         end
         'd10:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane10_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane10_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane10_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane10_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane10_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane10_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane10_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2072,9 +2072,9 @@
         end
         'd11:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane11_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane11_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane11_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane11_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane11_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane11_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane11_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2085,9 +2085,9 @@
         end
         'd12:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane12_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane12_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane12_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane12_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane12_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane12_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane12_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2098,9 +2098,9 @@
         end
         'd13:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane13_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane13_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane13_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane13_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane13_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane13_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane13_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2111,9 +2111,9 @@
         end
         'd14:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane14_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane14_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane14_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane14_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane14_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane14_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane14_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2124,9 +2124,9 @@
         end
         'd15:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane15_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane15_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane15_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane15_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane15_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane15_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane15_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2137,9 +2137,9 @@
         end
         'd16:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane16_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane16_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane16_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane16_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane16_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane16_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane16_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2150,9 +2150,9 @@
         end
         'd17:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane17_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane17_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane17_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane17_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane17_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane17_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane17_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2163,9 +2163,9 @@
         end
         'd18:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane18_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane18_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane18_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane18_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane18_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane18_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane18_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2176,9 +2176,9 @@
         end
         'd19:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane19_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane19_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane19_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane19_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane19_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane19_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane19_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2189,9 +2189,9 @@
         end
         'd20:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane20_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane20_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane20_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane20_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane20_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane20_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane20_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2202,9 +2202,9 @@
         end
         'd21:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane21_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane21_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane21_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane21_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane21_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane21_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane21_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2215,9 +2215,9 @@
         end
         'd22:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane22_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane22_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane22_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane22_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane22_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane22_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane22_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2228,9 +2228,9 @@
         end
         'd23:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane23_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane23_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane23_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane23_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane23_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane23_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane23_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2241,9 +2241,9 @@
         end
         'd24:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane24_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane24_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane24_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane24_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane24_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane24_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane24_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2254,9 +2254,9 @@
         end
         'd25:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane25_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane25_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane25_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane25_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane25_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane25_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane25_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2267,9 +2267,9 @@
         end
         'd26:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane26_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane26_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane26_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane26_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane26_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane26_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane26_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2280,9 +2280,9 @@
         end
         'd27:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane27_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane27_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane27_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane27_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane27_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane27_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane27_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2293,9 +2293,9 @@
         end
         'd28:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane28_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane28_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane28_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane28_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane28_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane28_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane28_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2306,9 +2306,9 @@
         end
         'd29:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane29_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane29_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane29_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane29_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane29_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane29_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane29_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2319,9 +2319,9 @@
         end
         'd30:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane30_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane30_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane30_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane30_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane30_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane30_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane30_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller
@@ -2332,9 +2332,9 @@
         end
         'd31:
         begin
-          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane31_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane31_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC
-                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane31_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : 
+          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane31_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane31_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC
+                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane31_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : 
                                                                                                                 lane31_fromStOp_strm_fifo_read_cntl                                        ; 
           scntl__noc__dp_type_p1   = toNoc_dp_type                        ; 
           // We need to use the info from the requesting PE that was captured in the stream controller

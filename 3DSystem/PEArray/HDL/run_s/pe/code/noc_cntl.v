@@ -251,7 +251,6 @@ module noc_cntl (
   //--------------------------------------------------------------------------------------------
   //  wires
   
-  `include "noc_cntl_noc_local_outq_control_wires.vh"
 
   wire                                        local_toNoc_valid    ;  // when valid, destination port(s) must write local output data to their output fifo's
   wire [`NOC_CONT_NOC_PORT_CNTL_RANGE      ]  local_cntl_toNoc     ;  // local output cntl to destination port to be sent directly to butterfly network
@@ -305,7 +304,7 @@ module noc_cntl (
   
         // read head of fifo
         `NOC_CONT_LOCAL_OUTQ_CNTL_CP_FIFO_READ:
-          nc_local_outq_cntl_state_next = ( (to_NoC_control_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP) || (to_NoC_control_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP))  ? `NOC_CONT_LOCAL_OUTQ_CNTL_CP_PORT_REQ  :
+          nc_local_outq_cntl_state_next = ( (to_NoC_control_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM) || (to_NoC_control_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM))  ? `NOC_CONT_LOCAL_OUTQ_CNTL_CP_PORT_REQ  :
                                                                                                                                                                                                              `NOC_CONT_LOCAL_OUTQ_CNTL_ERROR        ;  // put addressed peId bitmask as the destination
         // we have to identify the destination PE from the address, create a destination bitMask and put it out there to be accepted by one of
         // the output ports.
@@ -322,7 +321,7 @@ module noc_cntl (
           nc_local_outq_cntl_state_next = `NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2 ;
 
         `NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2:
-          nc_local_outq_cntl_state_next = ( ((to_NoC_control_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) || (to_NoC_control_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)))  ? `NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE3  :
+          nc_local_outq_cntl_state_next = ( ((to_NoC_control_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM) || (to_NoC_control_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE3  :
                                                                                                                                                                                                              `NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2  ;
 
         `NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE3:
@@ -334,7 +333,7 @@ module noc_cntl (
   
         // read head of fifo
         `NOC_CONT_LOCAL_OUTQ_CNTL_DP_FIFO_READ:
-          nc_local_outq_cntl_state_next = ( (to_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP) || (to_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP))  ? `NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ  :
+          nc_local_outq_cntl_state_next = ( (to_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM) || (to_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM))  ? `NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ  :
                                                                                                                                                                                                              `NOC_CONT_LOCAL_OUTQ_CNTL_ERROR        ;  // put addressed peId bitmask as the destination
         // we have to identify the destination PE from the address, create
         // a destination bitMask and put it out there to be accepted by one of
@@ -345,12 +344,12 @@ module noc_cntl (
                                                                                                                        `NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ     ;
 
         `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER:
-          nc_local_outq_cntl_state_next = ((to_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) && (local_destinationAck_d1 == (local_destinationReady & local_destinationAck_d1))) ? `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE3  :  // if there is only one piece of data
+          nc_local_outq_cntl_state_next = ((to_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (local_destinationAck_d1 == (local_destinationReady & local_destinationAck_d1))) ? `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE3  :  // if there is only one piece of data
                                           (local_destinationAck_d1 == (local_destinationReady & local_destinationAck_d1)) ? `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2  :  // if there is only one piece of data
                                                                                                                          `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER ;
 
         `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2:
-          nc_local_outq_cntl_state_next = ( ((to_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) || (to_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)))  ? `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE3  :
+          nc_local_outq_cntl_state_next = ( ((to_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM) || (to_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE3  :
                                                                                                                                                                                                        `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2  ;
 
         `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE3:
@@ -419,11 +418,11 @@ module noc_cntl (
                                 ((nc_local_outq_cntl_state_next == `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2) & local_destinationReady_d1) |  // if data is read, then send it. Flow control affects read
                                 ((nc_local_outq_cntl_state_next == `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE3) ) ;
                                    
-  assign local_cntl_toNoc     = (nc_local_outq_cntl_state_next == `NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_HEADER) ?  `NOC_CONT_NOC_PROTOCOL_CNTL_SOP   :
-                                (nc_local_outq_cntl_state_next == `NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2) ?  `NOC_CONT_NOC_PROTOCOL_CNTL_DATA  : 
-                                (nc_local_outq_cntl_state_next == `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER) ?  `NOC_CONT_NOC_PROTOCOL_CNTL_SOP   :
-                                (nc_local_outq_cntl_state_next == `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2) ?  `NOC_CONT_NOC_PROTOCOL_CNTL_DATA  : 
-                                                                                                               `NOC_CONT_NOC_PROTOCOL_CNTL_EOP   ;
+  assign local_cntl_toNoc     = (nc_local_outq_cntl_state_next == `NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_HEADER) ?  `COMMON_STD_INTF_CNTL_SOM   :
+                                (nc_local_outq_cntl_state_next == `NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2) ?  `COMMON_STD_INTF_CNTL_MOM  : 
+                                (nc_local_outq_cntl_state_next == `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER) ?  `COMMON_STD_INTF_CNTL_SOM   :
+                                (nc_local_outq_cntl_state_next == `NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2) ?  `COMMON_STD_INTF_CNTL_MOM  : 
+                                                                                                               `COMMON_STD_INTF_CNTL_EOM   ;
   always @(*)
     begin
       case (nc_local_outq_cntl_state_next)
@@ -543,7 +542,10 @@ module noc_cntl (
       end
   endgenerate
 
-  `include "noc_cntl_noc_port_output_control_assignments.vh"
+  `include "noc_cntl_noc_port_output_control_mask_assignments.vh"
+  `include "noc_cntl_noc_port_output_control_request_assignments.vh"
+  `include "noc_cntl_noc_port_output_control_header_field_assignments.vh"
+  `include "noc_cntl_noc_port_output_control_transfer_assignments.vh"
 
   //--------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------
@@ -563,7 +565,8 @@ module noc_cntl (
   // Local Input Control
   //
 
-  `include "noc_cntl_noc_local_inq_control_wires.vh"
+  reg  [`NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc     ;  // latch as we need type to know whether to add EOD at end of current apcket transfer
+  reg  [`NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc_p1  ; 
 
 
   //--------------------------------------------------------------------------------------------
@@ -597,7 +600,7 @@ module noc_cntl (
   //--------------------------------------------------------------------------------------------
   // Port Input Control
   //
-  `include "noc_cntl_port_input_control_wires.vh"
+  wire [`NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] InPortRequestVector    ;
 
   generate
     for (gvi=0; gvi<`NOC_CONT_NOC_NUM_OF_PORTS; gvi=gvi+1) 
@@ -660,7 +663,7 @@ module noc_cntl (
     
               // read head of fifo
               `NOC_CONT_NOC_PORT_INPUT_CNTL_FIFO_READ:
-                nc_port_fromNoc_state_next = ( (fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP) || (fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP))  ? `NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  :  // put addressed peId bitmask as the destination
+                nc_port_fromNoc_state_next = ( (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM) || (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM))  ? `NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  :  // put addressed peId bitmask as the destination
                                                                                                                                                                   `NOC_CONT_NOC_PORT_INPUT_CNTL_ERROR            ;
               // we have to identify the destination PE from the incoming pe mask address
               // put it out there to be accepted by an output port(s) and/or local input queue
@@ -673,7 +676,7 @@ module noc_cntl (
                 nc_port_fromNoc_state_next = `NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET ;
             
               `NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET:
-                nc_port_fromNoc_state_next = ( fifo_read_data_valid && ((fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) || (fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)))  ? `NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE        :
+                nc_port_fromNoc_state_next = ( fifo_read_data_valid && ((fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM) || (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE        :
                                                                                                                                                                                  `NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET ;
             
               `NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE:

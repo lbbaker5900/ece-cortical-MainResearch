@@ -12,7 +12,7 @@
 
 *****************************************************************/
 
-`define NOC_CONT_EXTERNAL_DATA_WIDTH         42
+`define NOC_CONT_EXTERNAL_DATA_WIDTH         `PE_NOC_EXTERNAL_DATA_WIDTH
 `define NOC_CONT_EXTERNAL_DATA_MSB           `NOC_CONT_EXTERNAL_DATA_WIDTH-1
 `define NOC_CONT_EXTERNAL_DATA_LSB           0
 `define NOC_CONT_EXTERNAL_DATA_RANGE         `NOC_CONT_EXTERNAL_DATA_MSB : `NOC_CONT_EXTERNAL_DATA_LSB
@@ -37,17 +37,8 @@
 `define NOC_CONT_NOC_NUM_OF_PORTS_SIZE    (`NOC_CONT_NOC_NUM_OF_PORTS_MSB - `NOC_CONT_NOC_NUM_OF_PORTS_LSB +1)
 `define NOC_CONT_NOC_NUM_OF_PORTS_RANGE    `NOC_CONT_NOC_NUM_OF_PORTS_MSB : `NOC_CONT_NOC_NUM_OF_PORTS_LSB
 
-`define NOC_CONT_NOC_PROTOCOL_CNTL_SOP            1
-`define NOC_CONT_NOC_PROTOCOL_CNTL_DATA           0
-`define NOC_CONT_NOC_PROTOCOL_CNTL_EOP            2
-`define NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP        3
-
-`define NOC_CONT_NOC_PROTOCOL_CNTL_SOD            1
-`define NOC_CONT_NOC_PROTOCOL_CNTL_EOD            2
-`define NOC_CONT_NOC_PROTOCOL_CNTL_SOD_EOD        3
-
 // Port signalling
-`define NOC_CONT_NOC_PORT_CNTL_WIDTH               2
+`define NOC_CONT_NOC_PORT_CNTL_WIDTH               `COMMON_STD_INTF_CNTL_WIDTH
 `define NOC_CONT_NOC_PORT_CNTL_MSB                 `NOC_CONT_NOC_PORT_CNTL_WIDTH-1
 `define NOC_CONT_NOC_PORT_CNTL_LSB                 0
 `define NOC_CONT_NOC_PORT_CNTL_RANGE               `NOC_CONT_NOC_PORT_CNTL_MSB : `NOC_CONT_NOC_PORT_CNTL_LSB
@@ -451,10 +442,10 @@
 \
             fifo_eop_count          <= ( reset_poweron                                                                                                                       )  ? 'd0                  : \
                                        ( clear                                                                                                                               )  ? 'd0                  : \
-                                       ((((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid ) &&                       \
-                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )) ? fifo_eop_count       : \
-                                       (((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid )  ? fifo_eop_count - 'd1 : \
-                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )  ? fifo_eop_count + 'd1 : \
+                                       ((((fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && fifo_read_data_valid ) &&                       \
+                                       (((          cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & fifo_write )) ? fifo_eop_count       : \
+                                       (((fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && fifo_read_data_valid )  ? fifo_eop_count - 'd1 : \
+                                       (((          cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & fifo_write )  ? fifo_eop_count + 'd1 : \
                                                                                                                                                                                   fifo_eop_count       ; \
 \
             fifo_depth              <= ( reset_poweron                   ) ? 'd0              : \
@@ -550,10 +541,10 @@
 \
             fifo_eop_count          <= ( reset_poweron                                                                                                                       )  ? 'd0                  : \
                                        ( clear                                                                                                                               )  ? 'd0                  : \
-                                       ((((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid ) &&                       \
-                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )) ? fifo_eop_count       : \
-                                       (((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid )  ? fifo_eop_count - 'd1 : \
-                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )  ? fifo_eop_count + 'd1 : \
+                                       ((((fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && fifo_read_data_valid ) &&                       \
+                                       (((          cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & fifo_write )) ? fifo_eop_count       : \
+                                       (((fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && fifo_read_data_valid )  ? fifo_eop_count - 'd1 : \
+                                       (((          cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & fifo_write )  ? fifo_eop_count + 'd1 : \
                                                                                                                                                                                   fifo_eop_count       ; \
 \
             fifo_depth              <= ( reset_poweron                   ) ? 'd0              : \
@@ -624,10 +615,10 @@
 \
             fifo_eop_count          <= ( reset_poweron                                                                                                                       )  ? 'd0                  : \
                                        ( clear                                                                                                                               )  ? 'd0                  : \
-                                       ((((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid ) &&                       \
-                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )) ? fifo_eop_count       : \
-                                       (((fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (fifo_read_cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) && fifo_read_data_valid )  ? fifo_eop_count - 'd1 : \
-                                       (((          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_EOP) | (          cntl ==  'd`NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) & fifo_write )  ? fifo_eop_count + 'd1 : \
+                                       ((((fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && fifo_read_data_valid ) &&                       \
+                                       (((          cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & fifo_write )) ? fifo_eop_count       : \
+                                       (((fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && fifo_read_data_valid )  ? fifo_eop_count - 'd1 : \
+                                       (((          cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & fifo_write )  ? fifo_eop_count + 'd1 : \
                                                                                                                                                                                   fifo_eop_count       ; \
 \
             fifo_depth              <= ( reset_poweron                   ) ? 'd0              : \

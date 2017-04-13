@@ -28,7 +28,7 @@
 `include "manager_array.vh"
 `include "manager.vh"
 `include "stack_interface.vh"
-`include "noc_cntl.vh"
+`include "mgr_noc_cntl.vh"
 `include "mem_acc_cont.vh"
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
@@ -424,23 +424,24 @@ module manager (
             // to NoC
             //
             // Control-Path (cp) to NoC 
-            .noc__rdp__cp_ready          ( noc__rdp__cp_ready           ), 
-            .rdp__noc__cp_cntl           ( rdp__noc__cp_cntl            ), 
-            .rdp__noc__cp_type           ( rdp__noc__cp_type            ), 
-            .rdp__noc__cp_data           ( rdp__noc__cp_data            ), 
-            .rdp__noc__cp_laneId         ( rdp__noc__cp_laneId          ), 
-            .rdp__noc__cp_strmId         ( rdp__noc__cp_strmId          ), 
-            .rdp__noc__cp_valid          ( rdp__noc__cp_valid           ), 
+            .rdp__noc__cp_valid      ( rdp__noc__cp_valid      ), 
+            .noc__rdp__cp_ready      ( noc__rdp__cp_ready      ), 
+            .rdp__noc__cp_cntl       ( rdp__noc__cp_cntl       ), 
+            .rdp__noc__cp_type       ( rdp__noc__cp_type       ), 
+            .rdp__noc__cp_ptype      ( rdp__noc__cp_ptype      ), 
+            .rdp__noc__cp_desttype   ( rdp__noc__cp_desttype   ), 
+            .rdp__noc__cp_pvalid     ( rdp__noc__cp_pvalid     ), 
+            .rdp__noc__cp_data       ( rdp__noc__cp_data       ), 
                                                                           
              // Data-Path (dp) to NoC                                     
-            .noc__rdp__dp_ready          ( noc__rdp__dp_ready           ), 
-            .rdp__noc__dp_type           ( rdp__noc__dp_type            ), 
-            .rdp__noc__dp_cntl           ( rdp__noc__dp_cntl            ), 
-            .rdp__noc__dp_peId           ( rdp__noc__dp_peId            ), 
-            .rdp__noc__dp_laneId         ( rdp__noc__dp_laneId          ), 
-            .rdp__noc__dp_strmId         ( rdp__noc__dp_strmId          ), 
-            .rdp__noc__dp_data           ( rdp__noc__dp_data            ), 
-            .rdp__noc__dp_valid          ( rdp__noc__dp_valid           ), 
+            .rdp__noc__dp_valid      ( rdp__noc__dp_valid      ), 
+            .noc__rdp__dp_ready      ( noc__rdp__dp_ready      ), 
+            .rdp__noc__dp_cntl       ( rdp__noc__dp_cntl       ), 
+            .rdp__noc__dp_type       ( rdp__noc__dp_type       ), 
+            .rdp__noc__dp_ptype      ( rdp__noc__dp_ptype      ), 
+            .rdp__noc__dp_desttype   ( rdp__noc__dp_desttype   ), 
+            .rdp__noc__dp_pvalid     ( rdp__noc__dp_pvalid     ), 
+            .rdp__noc__dp_data       ( rdp__noc__dp_data       ), 
 
             //-------------------------------
             // General
@@ -457,50 +458,50 @@ module manager (
   //-------------------------------------------------------------------------------------------------
   // NoC Interface
   // 
-  noc_cntl noc_cntl (
+  mgr_noc_cntl mgr_noc_cntl (
 
                         // Control-Path (cp) to NoC 
-                       .noc__scntl__cp_ready          ( noc__rdp__cp_ready           ), 
-                       .scntl__noc__cp_cntl           ( rdp__noc__cp_cntl            ), 
-                       .scntl__noc__cp_type           ( rdp__noc__cp_type            ), 
-                       .scntl__noc__cp_data           ( rdp__noc__cp_data            ), 
-                       .scntl__noc__cp_laneId         ( rdp__noc__cp_laneId          ), 
-                       .scntl__noc__cp_strmId         ( rdp__noc__cp_strmId          ), 
-                       .scntl__noc__cp_valid          ( rdp__noc__cp_valid           ), 
+                       .locl__noc__cp_valid          ( rdp__noc__cp_valid           ), 
+                       .noc__locl__cp_ready          ( noc__rdp__cp_ready           ), 
+                       .locl__noc__cp_cntl           ( rdp__noc__cp_cntl            ), 
+                       .locl__noc__cp_type           ( rdp__noc__cp_type            ), 
+                       .locl__noc__cp_ptype          ( rdp__noc__cp_ptype           ), 
+                       .locl__noc__cp_desttype       ( rdp__noc__cp_desttype        ), 
+                       .locl__noc__cp_pvalid         ( rdp__noc__cp_pvalid          ), 
+                       .locl__noc__cp_data           ( rdp__noc__cp_data            ), 
                                                                                      
                         // Data-Path (dp) to NoC                                     
-                       .noc__scntl__dp_ready          ( noc__rdp__dp_ready           ), 
-                       .scntl__noc__dp_type           ( rdp__noc__dp_type            ), 
-                       .scntl__noc__dp_cntl           ( rdp__noc__dp_cntl            ), 
-                       .scntl__noc__dp_peId           ( rdp__noc__dp_peId            ), 
-                       .scntl__noc__dp_laneId         ( rdp__noc__dp_laneId          ), 
-                       .scntl__noc__dp_strmId         ( rdp__noc__dp_strmId          ), 
-                       .scntl__noc__dp_data           ( rdp__noc__dp_data            ), 
-                       .scntl__noc__dp_valid          ( rdp__noc__dp_valid           ), 
+                       .locl__noc__dp_valid          ( rdp__noc__dp_valid           ), 
+                       .noc__locl__dp_ready          ( noc__rdp__dp_ready           ), 
+                       .locl__noc__dp_cntl           ( rdp__noc__dp_cntl            ), 
+                       .locl__noc__dp_type           ( rdp__noc__dp_type            ), 
+                       .locl__noc__dp_ptype          ( rdp__noc__dp_ptype           ), 
+                       .locl__noc__dp_desttype       ( rdp__noc__dp_desttype        ), 
+                       .locl__noc__dp_pvalid         ( rdp__noc__dp_pvalid          ), 
+                       .locl__noc__dp_data           ( rdp__noc__dp_data            ), 
 
                         // Data-Path (cp) from NoC 
-                       .scntl__noc__cp_ready          ( mcntl__noc__cp_ready         ), 
-                       .noc__scntl__cp_cntl           ( noc__mcntl__cp_cntl          ), 
-                       .noc__scntl__cp_type           ( noc__mcntl__cp_type          ), 
-                       .noc__scntl__cp_data           ( noc__mcntl__cp_data          ), 
-                       .noc__scntl__cp_peId           ( noc__mcntl__cp_peId          ), 
-                       .noc__scntl__cp_laneId         ( noc__mcntl__cp_laneId        ), 
-                       .noc__scntl__cp_strmId         ( noc__mcntl__cp_strmId        ), 
-                       .noc__scntl__cp_valid          ( noc__mcntl__cp_valid         ), 
+                       .noc__locl__cp_valid          ( noc__mcntl__cp_valid         ), 
+                       .locl__noc__cp_ready          ( mcntl__noc__cp_ready         ), 
+                       .noc__locl__cp_cntl           ( noc__mcntl__cp_cntl          ), 
+                       .noc__locl__cp_type           ( noc__mcntl__cp_type          ), 
+                       .noc__locl__cp_ptype          ( noc__mcntl__cp_ptype         ), 
+                       .noc__locl__cp_data           ( noc__mcntl__cp_data          ), 
+                       .noc__locl__cp_mgrId          ( noc__mcntl__cp_mgrId         ), 
                        
                         // Data-Path (dp) from NoC 
-                       .scntl__noc__dp_ready          ( mcntl__noc__dp_ready         ), 
-                       .noc__scntl__dp_cntl           ( noc__mcntl__dp_cntl          ), 
-                       .noc__scntl__dp_type           ( noc__mcntl__dp_type          ), 
-                       .noc__scntl__dp_laneId         ( noc__mcntl__dp_laneId        ), 
-                       .noc__scntl__dp_strmId         ( noc__mcntl__dp_strmId        ), 
-                       .noc__scntl__dp_data           ( noc__mcntl__dp_data          ), 
-                       .noc__scntl__dp_valid          ( noc__mcntl__dp_valid         ), 
+                       .noc__locl__dp_valid          ( noc__mcntl__dp_valid         ), 
+                       .locl__noc__dp_ready          ( mcntl__noc__dp_ready         ), 
+                       .noc__locl__dp_cntl           ( noc__mcntl__dp_cntl          ), 
+                       .noc__locl__dp_type           ( noc__mcntl__dp_type          ), 
+                       .noc__locl__dp_ptype          ( noc__mcntl__dp_ptype         ), 
+                       .noc__locl__dp_data           ( noc__mcntl__dp_data          ), 
+                       .noc__locl__dp_mgrId          ( noc__mcntl__dp_mgrId         ), 
 
                         // Connections to external NoC
                         `include "manager_noc_cntl_noc_ports_instance_ports.vh"
 
-                       .peId                         ( sys__mgr__mgrId             ),
+                       .sys__mgr__mgrId              ( sys__mgr__mgrId             ), // FIXME: make localId
                        .clk                          ( clk                         ),
                        .reset_poweron                ( reset_poweron               )
                           

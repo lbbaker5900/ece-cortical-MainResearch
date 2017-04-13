@@ -270,9 +270,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane0_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane0_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane0_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane0_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -283,9 +283,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane1_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane1_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane1_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane1_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -296,9 +296,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane2_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane2_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane2_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane2_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -309,9 +309,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane3_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane3_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane3_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane3_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -322,9 +322,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane4_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane4_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane4_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane4_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -335,9 +335,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane5_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane5_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane5_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane5_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -348,9 +348,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane6_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane6_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane6_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane6_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -361,9 +361,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane7_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane7_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane7_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane7_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -374,9 +374,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane8_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane8_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane8_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane8_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -387,9 +387,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane9_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane9_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane9_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane9_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -400,9 +400,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane10_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane10_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane10_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane10_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -413,9 +413,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane11_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane11_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane11_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane11_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -426,9 +426,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane12_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane12_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane12_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane12_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -439,9 +439,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane13_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane13_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane13_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane13_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -452,9 +452,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane14_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane14_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane14_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane14_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -465,9 +465,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane15_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane15_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane15_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane15_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -478,9 +478,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane16_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane16_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane16_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane16_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -491,9 +491,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane17_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane17_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane17_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane17_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -504,9 +504,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane18_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane18_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane18_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane18_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -517,9 +517,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane19_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane19_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane19_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane19_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -530,9 +530,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane20_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane20_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane20_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane20_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -543,9 +543,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane21_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane21_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane21_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane21_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -556,9 +556,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane22_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane22_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane22_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane22_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -569,9 +569,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane23_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane23_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane23_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane23_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -582,9 +582,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane24_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane24_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane24_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane24_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -595,9 +595,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane25_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane25_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane25_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane25_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -608,9 +608,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane26_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane26_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane26_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane26_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -621,9 +621,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane27_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane27_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane27_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane27_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -634,9 +634,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane28_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane28_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane28_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane28_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -647,9 +647,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane29_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane29_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane29_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane29_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -660,9 +660,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane30_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane30_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane30_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane30_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;
@@ -673,9 +673,9 @@
           // there is only one data fifo from the NoC
           // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD
           // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately
-          lane31_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
-                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
-                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+          lane31_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : 
+                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
+                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : 
                                                                                                                                                                                                  `STREAMING_OP_CNTL_STRM_CNTL_DATA ; 
           lane31_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;
           lane31_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;

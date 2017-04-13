@@ -18,7 +18,7 @@
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
 `include "dma_cont.vh"
-`include "noc_cntl.vh"
+`include "mgr_noc_cntl.vh"
 `include "mem_acc_cont.vh"
 `include "pe.vh"
 `include "pe_array.vh"

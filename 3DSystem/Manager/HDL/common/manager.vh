@@ -239,6 +239,19 @@
 `define MGR_DRAM_WORD_ADDRESS_RANGE                        `MGR_DRAM_WORD_ADDRESS_MSB : `MGR_DRAM_WORD_ADDRESS_LSB
 
 
+//---------------------------------------------------------------------------------------------------------------------
+// NoC
+
+`define MGR_NOC_INTERNAL_DATA_WIDTH        `MGR_ARRAY_NOC_INTERNAL_DATA_WIDTH
+`define MGR_NOC_INTERNAL_DATA_MSB          `MGR_NOC_INTERNAL_DATA_WIDTH-1
+`define MGR_NOC_INTERNAL_DATA_LSB          0
+`define MGR_NOC_INTERNAL_DATA_RANGE        `MGR_NOC_INTERNAL_DATA_MSB : `MGR_NOC_INTERNAL_DATA_LSB
+
+`define MGR_NOC_EXTERNAL_DATA_WIDTH        `MGR_ARRAY_NOC_EXTERNAL_DATA_WIDTH 
+`define MGR_NOC_EXTERNAL_DATA_MSB          `MGR_NOC_EXTERNAL_DATA_WIDTH-1
+`define MGR_NOC_EXTERNAL_DATA_LSB          0
+`define MGR_NOC_EXTERNAL_DATA_RANGE        `MGR_NOC_EXTERNAL_DATA_MSB : `MGR_NOC_EXTERNAL_DATA_LSB
+
 
 //---------------------------------------------------------------------------------------------------------------------
 

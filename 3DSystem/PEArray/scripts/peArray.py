@@ -58,11 +58,11 @@ if __name__ == "__main__":
   for port in range (0, numOfPorts):
     pLine = pLine + '\n  // NoC port {0}'.format(port)
     pLine = pLine + '\n  output                                   pe__noc__port{0}_valid           ;'.format(port)
-    pLine = pLine + '\n  output [`NOC_CONT_NOC_PORT_CNTL_RANGE ]  pe__noc__port{0}_cntl            ;'.format(port)
+    pLine = pLine + '\n  output [`COMMON_STD_INTF_CNTL_RANGE ]  pe__noc__port{0}_cntl            ;'.format(port)
     pLine = pLine + '\n  output [`NOC_CONT_NOC_PORT_DATA_RANGE ]  pe__noc__port{0}_data            ;'.format(port)
     pLine = pLine + '\n  input                                    noc__pe__port{0}_fc              ;'.format(port)
     pLine = pLine + '\n  input                                    noc__pe__port{0}_valid           ;'.format(port)
-    pLine = pLine + '\n  input  [`NOC_CONT_NOC_PORT_CNTL_RANGE ]  noc__pe__port{0}_cntl            ;'.format(port)
+    pLine = pLine + '\n  input  [`COMMON_STD_INTF_CNTL_RANGE ]  noc__pe__port{0}_cntl            ;'.format(port)
     pLine = pLine + '\n  input  [`NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__pe__port{0}_data            ;'.format(port)
     pLine = pLine + '\n  output                                   pe__noc__port{0}_fc              ;'.format(port)
     pLine = pLine + '\n  input  [`PE_PE_ID_BITMASK_RANGE       ]  sys__pe__port{0}_destinationMask ;'.format(port)
@@ -78,11 +78,11 @@ if __name__ == "__main__":
   for port in range (0, numOfPorts):
     pLine = pLine + '\n  // NoC port {0}'.format(port)
     pLine = pLine + '\n  reg                                      pe__noc__port{0}_valid           ;'.format(port)
-    pLine = pLine + '\n  wire   [`NOC_CONT_NOC_PORT_CNTL_RANGE ]  pe__noc__port{0}_cntl            ;'.format(port)
+    pLine = pLine + '\n  wire   [`COMMON_STD_INTF_CNTL_RANGE ]  pe__noc__port{0}_cntl            ;'.format(port)
     pLine = pLine + '\n  wire   [`NOC_CONT_NOC_PORT_DATA_RANGE ]  pe__noc__port{0}_data            ;'.format(port)
     pLine = pLine + '\n  wire                                     noc__pe__port{0}_fc              ;'.format(port)
     pLine = pLine + '\n  wire                                     noc__pe__port{0}_valid           ;'.format(port)
-    pLine = pLine + '\n  wire   [`NOC_CONT_NOC_PORT_CNTL_RANGE ]  noc__pe__port{0}_cntl            ;'.format(port)
+    pLine = pLine + '\n  wire   [`COMMON_STD_INTF_CNTL_RANGE ]  noc__pe__port{0}_cntl            ;'.format(port)
     pLine = pLine + '\n  wire   [`NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__pe__port{0}_data            ;'.format(port)
     pLine = pLine + '\n  wire                                     pe__noc__port{0}_fc              ;'.format(port)
     pLine = pLine + '\n  wire   [`PE_PE_ID_BITMASK_RANGE       ]  sys__pe__port{0}_destinationMask ;'.format(port)
@@ -92,17 +92,17 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/pe__noc_to_peArray_connection_wires.vh', 'w')
+  f = open('../HDL/common/pe_noc_to_peArray_connection_wires.vh', 'w')
   pLine = ""
 
   for port in range (0, numOfPorts):
     pLine = pLine + '\n  // NoC port {0}'.format(port)
     pLine = pLine + '\n  wire                                     pe__noc__port{0}_valid ;'.format(port)
-    pLine = pLine + '\n  wire   [`NOC_CONT_NOC_PORT_CNTL_RANGE ]  pe__noc__port{0}_cntl  ;'.format(port)
+    pLine = pLine + '\n  wire   [`COMMON_STD_INTF_CNTL_RANGE ]  pe__noc__port{0}_cntl  ;'.format(port)
     pLine = pLine + '\n  wire   [`NOC_CONT_NOC_PORT_DATA_RANGE ]  pe__noc__port{0}_data  ;'.format(port)
     pLine = pLine + '\n  wire                                     noc__pe__port{0}_fc    ;'.format(port)
     pLine = pLine + '\n  wire                                     noc__pe__port{0}_valid ;'.format(port)
-    pLine = pLine + '\n  wire   [`NOC_CONT_NOC_PORT_CNTL_RANGE ]  noc__pe__port{0}_cntl  ;'.format(port)
+    pLine = pLine + '\n  wire   [`COMMON_STD_INTF_CNTL_RANGE ]  noc__pe__port{0}_cntl  ;'.format(port)
     pLine = pLine + '\n  wire   [`NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__pe__port{0}_data  ;'.format(port)
     pLine = pLine + '\n  wire                                     pe__noc__port{0}_fc    ;'.format(port)
     pLine = pLine + '\n'        
@@ -195,14 +195,6 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/noc_cntl_port_input_control_wires.vh', 'w')
-  pLine = ""
-
-  pLine = pLine + '\n  wire [`NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] InPortRequestVector    ;'
-
-  f.write(pLine)
-  f.close()
-
 
   f = open('../HDL/common/noc_cntl_port_input_control_assignments.vh', 'w')
   pLine = ""
@@ -227,15 +219,6 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-
-  f = open('../HDL/common/noc_cntl_noc_local_inq_control_wires.vh', 'w')
-  pLine = ""
-
-  pLine = pLine + '\n  reg  [`NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc     ;  // latch as we need type to know whether to add EOD at end of current apcket transfer'
-  pLine = pLine + '\n  reg  [`NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc_p1  ; '
-
-  f.write(pLine)
-  f.close()
 
 
   #-------------------------------
@@ -291,44 +274,44 @@ if __name__ == "__main__":
     pLine = pLine + '\n            // NoCource controller has already read the header to determine the destination mask address, but it will still provide a "fromNoc_valid" signal when it starts transerring tbe entire external NoC packet'
     pLine = pLine + '\n            // When sending to the local in-queue, we need to drop the NoC header so waht for the first "fromNoc_valid" and ignore that transaction'
     pLine = pLine + '\n           `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{0}:'.format(port)
-    pLine = pLine + '\n             nc_local_inq_cntl_state_next = (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}      :'.format(port)
+    pLine = pLine + '\n             nc_local_inq_cntl_state_next = (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_SOM))  ? `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}      :'.format(port)
     pLine = pLine + '\n                                                                                                                                                      `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{0}  ; '.format(port)
 
     if port != (numOfPorts-1):
       pLine = pLine + '\n' 
       pLine = pLine + '\n           // when we transfer a packet between a Port and the In-queue, we will pass the packet to the CNTL block. But we need to strip the external header, this means we need to re-add the SOP indicator ' 
       pLine = pLine + '\n           `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}:'.format(port)
-      pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
+      pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `COMMON_STD_INTF_CNTL_EOM))    ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
       for nextPort in range (port+1, numOfPorts):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
       for nextPort in range (0, port):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
-      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
+      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM))    ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port)
       pLine = pLine + '\n                                                                                                                                                                              `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}           ; '.format(port)
     else:
       pLine = pLine + '\n           `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}:'.format(port)
-      pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
+      pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `COMMON_STD_INTF_CNTL_EOM))  ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
       for nextPort in range (0, numOfPorts-1):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
-      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port,nextPort)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM))  ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
+      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM))  ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port,nextPort)
       pLine = pLine + '\n                                                                                                                                                                            `NOC_CONT_LOCAL_INQ_CNTL_ADD_SOP{0}           ; '.format(port)
 
     if port != (numOfPorts-1):
       pLine = pLine + '\n' 
       pLine = pLine + '\n           `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}:'.format(port)
-      pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
+      pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `COMMON_STD_INTF_CNTL_EOM))    ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
       for nextPort in range (port+1, numOfPorts):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
       for nextPort in range (0, port):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
-      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))    ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM))    ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
+      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM))    ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port)
       pLine = pLine + '\n                                                                                                                                                                              `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  ; '.format(port)
     else:
       pLine = pLine + '\n           `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}:'.format(port)
-      pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
+      pLine = pLine + '\n             nc_local_inq_cntl_state_next =  (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc != `COMMON_STD_INTF_CNTL_EOM))  ? `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  :'.format(port)
       for nextPort in range (0, numOfPorts-1):
-        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
-      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP))  ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port,nextPort)
+        pLine = pLine + '\n                                             (port{1}_localInqReq && Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM))  ? `NOC_CONT_LOCAL_INQ_CNTL_DROP_HEADER{1}       :  // EOP so go to the next port'.format(port,nextPort)
+      pLine = pLine + '\n                                             (                     Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM))  ? `NOC_CONT_LOCAL_INQ_CNTL_WAIT               :  // EOP so go to the next port'.format(port,nextPort)
       pLine = pLine + '\n                                                                                                                                                                            `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}  ; '.format(port)
 
 
@@ -443,21 +426,21 @@ if __name__ == "__main__":
     pLine = pLine + '\n          begin'
     pLine = pLine + '\n            local_inq_type_fromNoc_p1                                                       = Port_from_NoC[{0}].type_fromNoc   ; '.format(port)
     pLine = pLine + '\n      '
-    pLine = pLine + '\n            noc__scntl__cp_cntl_p1                                                        = (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) ? `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP             : '.format(port)
-    pLine = pLine + '\n                                                                                                                                                                     `NOC_CONT_NOC_PROTOCOL_CNTL_SOP                 ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__cp_cntl_p1                                                        = (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM) ? `COMMON_STD_INTF_CNTL_SOM_EOM             : '.format(port)
+    pLine = pLine + '\n                                                                                                                                                                     `COMMON_STD_INTF_CNTL_SOM                 ; '.format(port)
     pLine = pLine + '\n            noc__scntl__cp_type_p1                                                        = Port_from_NoC[{0}].type_fromNoc                                                                                        ; '.format(port)
     pLine = pLine + '\n            noc__scntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_ADDRESS_RANGE ]                                   ; '.format(port)
     pLine = pLine + '\n            noc__scntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_STAGGER_RANGE ]                                   ; '.format(port)
     pLine = pLine + '\n            noc__scntl__cp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_CP)                                       ? \'d0                           :'.format(port)
-    pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
+    pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_SOM))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
     pLine = pLine + '\n                                                                                                                                                                                                             Port_from_NoC[{0}].fromNoc_valid ; '.format(port)
     pLine = pLine + '\n'           
-    pLine = pLine + '\n            noc__scntl__dp_cntl_p1                                                        = (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) ? `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP             : '.format(port)
-    pLine = pLine + '\n                                                                                                                                                                     `NOC_CONT_NOC_PROTOCOL_CNTL_SOP                 ; '.format(port)
+    pLine = pLine + '\n            noc__scntl__dp_cntl_p1                                                        = (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_EOM) ? `COMMON_STD_INTF_CNTL_SOM_EOM             : '.format(port)
+    pLine = pLine + '\n                                                                                                                                                                     `COMMON_STD_INTF_CNTL_SOM                 ; '.format(port)
     pLine = pLine + '\n            noc__scntl__dp_type_p1                                                        = Port_from_NoC[{0}].type_fromNoc                                                                                        ; '.format(port)
     pLine = pLine + '\n            noc__scntl__dp_data_p1                                                        = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXT_DATA_TO_INT_DATA_RANGE ]                                   ; '.format(port)
     pLine = pLine + '\n            noc__scntl__dp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_DP)                                       ? \'d0                           :'.format(port)
-    pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
+    pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_SOM))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
     pLine = pLine + '\n                                                                                                                                                                                                             Port_from_NoC[{0}].fromNoc_valid ; '.format(port)
     pLine = pLine + '\n          end'
     pLine = pLine + '\n        `NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}:'.format(port)
@@ -466,14 +449,14 @@ if __name__ == "__main__":
     pLine = pLine + '\n            noc__scntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_3RD_CYCLE_PAYLOAD_TYPE_RANGE ]                                   ; '.format(port)
     pLine = pLine + '\n            noc__scntl__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE  ]  = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXTERNAL_DMA_REQ_3RD_CYCLE_NUM_OF_WORDS_RANGE ]                                   ; '.format(port)
     pLine = pLine + '\n            noc__scntl__cp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_CP)                                       ? \'d0                           :'.format(port)
-    pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
+    pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_SOM))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
     pLine = pLine + '\n                                                                                                                                                                                                             Port_from_NoC[{0}].fromNoc_valid ; '.format(port)
     pLine = pLine + '\n            noc__scntl__cp_type_p1                                                        = local_inq_type_fromNoc     ;  // maintain type value through packet transfer '.format(port)
     pLine = pLine + '\n'           
     pLine = pLine + '\n            noc__scntl__dp_cntl_p1                                                        = Port_from_NoC[{0}].cntl_fromNoc                                    ; '.format(port)
     pLine = pLine + '\n            noc__scntl__dp_data_p1                                                        = Port_from_NoC[{0}].data_fromNoc[`NOC_CONT_EXT_DATA_TO_INT_DATA_RANGE ]                                   ; '.format(port)
     pLine = pLine + '\n            noc__scntl__dp_valid_p1                                                       = (port{0}_localInqPriority != `NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_DP)                                       ? \'d0                           :'.format(port)
-    pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
+    pLine = pLine + '\n                                                                                              (Port_from_NoC[{0}].fromNoc_valid && (Port_from_NoC[{0}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_SOM))  ? \'d0                           :  // packets from NoC always more than one transaction'.format(port)
     pLine = pLine + '\n                                                                                                                                                                                                             Port_from_NoC[{0}].fromNoc_valid ; '.format(port)
     pLine = pLine + '\n            noc__scntl__dp_type_p1                                                        = local_inq_type_fromNoc     ;  // maintain type value through packet transfer '.format(port)
     pLine = pLine + '\n          end'
@@ -495,12 +478,6 @@ if __name__ == "__main__":
   pLine = pLine + '\n      endcase'
   pLine = pLine + '\n    end'
   pLine = pLine + '\n'
-
-  f.write(pLine)
-  f.close()
-
-  f = open('../HDL/common/noc_cntl_noc_local_outq_control_wires.vh', 'w')
-  pLine = ""
 
   f.write(pLine)
   f.close()
@@ -569,7 +546,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  // This is the packet bus from the 3 possible sources that will be muxed into the output fifo when the source has been acknowledged'
     pLine = pLine + '\n  // The local packet bus is common but the 3 sources vary based on \"this\" port id'
     pLine = pLine + '\n  wire                                        src{0}_toNoc_valid    ;  // data from source is valid'.format(port)
-    pLine = pLine + '\n  wire [`NOC_CONT_NOC_PORT_CNTL_RANGE      ]  src{0}_cntl_toNoc     ;'.format(port)
+    pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE        ]  src{0}_cntl_toNoc     ;'.format(port)
     pLine = pLine + '\n  wire [`NOC_CONT_NOC_PORT_DATA_RANGE      ]  src{0}_data_toNoc     ;'.format(port)
 
 
@@ -643,9 +620,9 @@ if __name__ == "__main__":
       pLine = pLine + '\n           `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT{0}:'.format(port-1)
 
     if port == 0:
-      pLine = pLine + '\n             nc_port_toNoc_state_next = (local_toNoc_valid && ((local_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) || (local_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_LOCAL  :'.format(port-1,numOfPorts)
+      pLine = pLine + '\n             nc_port_toNoc_state_next = (local_toNoc_valid && ((local_cntl_toNoc == `COMMON_STD_INTF_CNTL_EOM) || (local_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_LOCAL  :'.format(port-1,numOfPorts)
     else:
-      pLine = pLine + '\n             nc_port_toNoc_state_next = (src{0}_toNoc_valid && ((src{0}_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) || (src{0}_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT{0}  :'.format(port-1, port-2)
+      pLine = pLine + '\n             nc_port_toNoc_state_next = (src{0}_toNoc_valid && ((src{0}_cntl_toNoc == `COMMON_STD_INTF_CNTL_EOM) || (src{0}_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT{0}  :'.format(port-1, port-2)
 
     if port == 0:
       pLine = pLine + '\n                                                             `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_LOCAL   ; '.format(port-1)
@@ -683,80 +660,6 @@ if __name__ == "__main__":
         pLine = pLine + '\n                                        ( src{0}_OutqReq                       )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT{0}     :'.format(port-1, port-2)
       pLine = pLine + '\n                                                                                   `NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT           ; '
 
-  # Crude attempt at having both HP and LP requests
-  # WAIT
-  #  pLine = pLine + '\n           `NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT:'
-  #  pLine = pLine + '\n             nc_port_toNoc_state_next = ( local_OutqReq )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_HP_LOCAL  :'
-  #  for port in range (1, numOfPorts):
-  #    pLine = pLine + '\n                                        ( src{0}_OutqReq )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_HP_PORT{0}  :'.format(port,)
-  #  for port in range (0, numOfPorts):
-  #    if port == 0:
-  #      pLine = pLine + '\n                                        ( local_OutqLpReq )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_LP_LOCAL  :'.format(port,numOfPorts-1)
-  #    else:
-  #      pLine = pLine + '\n                                        ( src{0}_OutqLpReq )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_LP_PORT{0}  :'.format(port, port-1)
-  #  pLine = pLine + '\n                                                               `NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT           ; '
-  #
-  #
-  #  for port in range (0, numOfPorts):
-  #
-  #    # READ HP
-  #    pLine = pLine + '\n' 
-  #    if port == 0:
-  #      pLine = pLine + '\n           `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_HP_LOCAL:'.format(port)
-  #    else:
-  #      pLine = pLine + '\n           `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_HP_PORT{0}:'.format(port)
-  #
-  #    if port == 0:
-  #      pLine = pLine + '\n             nc_port_toNoc_state_next = ( local_OutqHpReq )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_HP_LOCAL  :'.format(port,numOfPorts-1)
-  #    else:
-  #      pLine = pLine + '\n             nc_port_toNoc_state_next = ( src{0}_OutqHpReq )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_HP_PORT{0}  :'.format(port, port-1)
-  #
-  #    if port == 0:
-  #      pLine = pLine + '\n                                                               `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_HP_LOCAL   ; '.format(port)
-  #    else:
-  #      pLine = pLine + '\n                                                               `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_HP_PORT{0}   ; '.format(port)
-  #
-  #    # ACK 
-  #    if port != (numOfPorts-1):
-  #      pLine = pLine + '\n' 
-  #      if port == 0:
-  #        pLine = pLine + '\n           `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_HP_LOCAL:'.format(port)
-  #        pLine = pLine + '\n             nc_port_toNoc_state_next = ( Port1_OutqHpReq                       )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT1     :'.format(port+1, numOfPorts-1)
-  #      else:
-  #        pLine = pLine + '\n           `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_HP_PORT{0}:'.format(port)
-  #        pLine = pLine + '\n             nc_port_toNoc_state_next = ( src{0}_OutqHpReq                       )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT{0}     :'.format(port+1, port)
-  #
-  #      for nextPort in range (port+2, numOfPorts):
-  #        pLine = pLine + '\n                                        ( src{0}_OutqHpReq                       )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT{0}     :'.format(nextPort, nextPort-1)
-  #      for nextPort in range (0, port+1):
-  #        if nextPort == 0:
-  #          pLine = pLine + '\n                                        ( local_OutqHpReq                       )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_LOCAL     :'.format(nextPort, nextPort-1)
-  #        else:
-  #          pLine = pLine + '\n                                        ( src{0}_OutqHpReq                       )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT{0}     :'.format(nextPort, nextPort-1)
-  #
-  #      for nextPort in range (0, numOfPorts):
-  #        if nextPort == 0:
-  #          pLine = pLine + '\n                                        ( local_OutqLpReq && (lastLpOutq == \'d3))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_LP_LOCAL  :'.format(nextPort, nextPort-1)
-  #        else:
-  #          pLine = pLine + '\n                                        ( src{0}_OutqLpReq && (lastLpOutq == \'d{1}))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_LP_PORT{0}  :'.format(nextPort, nextPort-1)
-  #
-  #      pLine = pLine + '\n                                                                                     `NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT           ; '
-  #    else:
-  #      pLine = pLine + '\n' 
-  #      if port == 0:
-  #        pLine = pLine + '\n           `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_HP_LOCAL:'.format(port)
-  #      else:                                                                 
-  #        pLine = pLine + '\n           `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_HP_PORT{0}:'.format(port)
-  #      pLine = pLine + '\n             nc_port_toNoc_state_next = ( local_OutqHpReq                       )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_LOCAL     :'.format(port, numOfPorts-1)
-  #      for port in range (1, numOfPorts):
-  #        pLine = pLine + '\n                                        ( src{0}_OutqHpReq                       )  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT{0}     :'.format(port, port-1)
-  #      for nextPort in range (0, numOfPorts):
-  #        if nextPort == 0:
-  #          pLine = pLine + '\n                                        ( local_OutqLpReq && (lastLpOutq == \'d3))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_LP_LOCAL  :'.format(nextPort, nextPort-1)
-  #        else:
-  #          pLine = pLine + '\n                                        ( src{0}_OutqLpReq && (lastLpOutq == \'d{1}))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_READ_LP_PORT{0}  :'.format(nextPort, nextPort-1)
-  #      pLine = pLine + '\n                                                                                     `NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT           ; '
-  #
   f.write(pLine)
   f.close()
 
@@ -888,14 +791,21 @@ if __name__ == "__main__":
   f.close()
 
 
-
-  f = open('../HDL/common/noc_cntl_noc_port_output_control_assignments.vh', 'w')
+  f = open('../HDL/common/noc_cntl_noc_port_output_control_mask_assignments.vh', 'w')
   pLine = ""
 
   # Got from butterly simulations
   pLine = pLine + '\n  // Hard-code which nodes can be accessed via this output port'
   for port in range (0, numOfPorts):
     pLine = pLine + '\n  assign Port_to_NoC[{0}].thisPort_destinationMask = sys__pe__port{0}_destinationMask ; // bitmask indicating which nodes accessed out of this port'.format(port)
+
+
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../HDL/common/noc_cntl_noc_port_output_control_request_assignments.vh', 'w')
+  pLine = ""
 
   pLine = pLine + '\n  //--------------------------------------------------'
   pLine = pLine + '\n  // Outgoing requests to all ports'
@@ -938,6 +848,13 @@ if __name__ == "__main__":
       pLine = pLine + '\n  assign Port_from_NoC[{0}].destinationReady[{2}]   =  Port_to_NoC[{1}].src{0}_OutqReady   ;'.format(port,otherPort,otherPort+1)
     pLine = pLine + '\n '
 
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/noc_cntl_noc_port_output_control_header_field_assignments.vh', 'w')
+  pLine = ""
+
   pLine = pLine + '\n  //---------------------------------------------------'
   pLine = pLine + '\n  // Outgoing Port source data '
   pLine = pLine + '\n '
@@ -947,18 +864,26 @@ if __name__ == "__main__":
     for otherPort in range (0, numOfPorts):
       pLine = pLine + '\n  // Port{0}, source{1}'.format(port,otherPort)
       pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_cntl_toNoc          = Port_from_NoC[{1}].cntl_fromNoc  ;'.format(port,otherPort)
-      pLine = pLine + '\n  // remember to gate the destinationMaskAddr with the ports mask address - e.g. bits can only be set if a PE can bereached from this port'
+      pLine = pLine + '\n  // remember to gate the destinationMaskAddr with the ports mask address - e.g. bits can only be set if a PE can be reached from this port'
       pLine = pLine + '\n  // destination bit field is in the header, so condition on sop'
       pLine = pLine + '\n  // We are changing the addr field in the header, so change that conditioned on SOP then leave all cycles alone'
       pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_data_toNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_PAD_RANGE                  ] = Port_from_NoC[{1}].data_fromNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_PAD_RANGE]                                              ;'.format(port,otherPort)
       pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_data_toNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_RANGE             ] = Port_from_NoC[{1}].data_fromNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_RANGE]                                              ;'.format(port,otherPort)
-      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_data_toNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_RANGE     ] = (Port_from_NoC[{1}].cntl_fromNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP) ? (Port_from_NoC[{1}].data_fromNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_RANGE] & Port_to_NoC[{0}].thisPort_destinationMask) :'.format(port,otherPort)
+      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_data_toNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_RANGE     ] = (Port_from_NoC[{1}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_SOM) ? (Port_from_NoC[{1}].data_fromNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_RANGE] & Port_to_NoC[{0}].thisPort_destinationMask) :'.format(port,otherPort)
       pLine = pLine + '\n                                                                                                                                                                          Port_from_NoC[{1}].data_fromNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_RANGE]                                              ;'.format(port,otherPort)
       pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_data_toNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_TYPE_RANGE] = Port_from_NoC[{1}].data_fromNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_TYPE_RANGE]                                              ;'.format(port,otherPort)
       pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_data_toNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_SOURCE_PE_RANGE            ] = Port_from_NoC[{1}].data_fromNoc[`NOC_CONT_EXTERNAL_1ST_CYCLE_SOURCE_PE_RANGE]                                              ;'.format(port,otherPort)
       pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_toNoc_valid                                                          = Port_from_NoC[{1}].fromNoc_valid ;'.format(port,otherPort)
       pLine = pLine + '\n '
     pLine = pLine + '\n '
+
+
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../HDL/common/noc_cntl_noc_port_output_control_transfer_assignments.vh', 'w')
+  pLine = ""
 
 
   # Port output controller fifo outputs to NoC
@@ -980,7 +905,6 @@ if __name__ == "__main__":
   # Only when all destinations have asserted their enable will the source start transferring the packet.
   # The destination will monitor the cntl bits for the EOP indication and deassert ack and enable when EOP is passing
 
-
   f.write(pLine)
   f.close()
 
@@ -995,11 +919,11 @@ if __name__ == "__main__":
   for port in range (0, numOfPorts):
     pLine = pLine + '\n  // NoC port {0}'.format(port)
     pLine = pLine + '\n  wire                                     pe__noc__port{0}_valid ;'.format(port)
-    pLine = pLine + '\n  wire  [`NOC_CONT_NOC_PORT_CNTL_RANGE ]   pe__noc__port{0}_cntl  ;'.format(port)
+    pLine = pLine + '\n  wire  [`COMMON_STD_INTF_CNTL_RANGE   ]   pe__noc__port{0}_cntl  ;'.format(port)
     pLine = pLine + '\n  wire  [`NOC_CONT_NOC_PORT_DATA_RANGE ]   pe__noc__port{0}_data  ;'.format(port)
     pLine = pLine + '\n  wire                                     noc__pe__port{0}_fc    ;'.format(port)
     pLine = pLine + '\n  wire                                     noc__pe__port{0}_valid ;'.format(port)
-    pLine = pLine + '\n  wire  [`NOC_CONT_NOC_PORT_CNTL_RANGE ]   noc__pe__port{0}_cntl  ;'.format(port)
+    pLine = pLine + '\n  wire  [`COMMON_STD_INTF_CNTL_RANGE   ]   noc__pe__port{0}_cntl  ;'.format(port)
     pLine = pLine + '\n  wire  [`NOC_CONT_NOC_PORT_DATA_RANGE ]   noc__pe__port{0}_data  ;'.format(port)
     pLine = pLine + '\n  wire                                     pe__noc__port{0}_fc    ;'.format(port)
     pLine = pLine + '\n  wire  [`PE_PE_ID_BITMASK_RANGE       ]   sys__pe__port{0}_destinationMask ;'.format(port)
@@ -2824,9 +2748,9 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n        \'d{0}:'.format(lane)
     pLine = pLine + '\n        begin'
-    pLine = pLine + '\n          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane{0}_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP) : // delineate using SOP/EOP for NoC'.format(lane)
-    pLine = pLine + '\n                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane{0}_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    ) : // delineate using SOP/EOP for NoC'.format(lane)
-    pLine = pLine + '\n                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane{0}_fromStOp_strm_fifo_read_cntl | `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    ) : '.format(lane)
+    pLine = pLine + '\n          scntl__noc__dp_cntl_p1   = (toNoc_dp_first_transaction_in_pkt && toNoc_dp_last_transaction_in_pkt ) ? (lane{0}_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM_EOM) : // delineate using SOP/EOP for NoC'.format(lane)
+    pLine = pLine + '\n                                    (toNoc_dp_first_transaction_in_pkt                                     ) ? (lane{0}_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_SOM    ) : // delineate using SOP/EOP for NoC'.format(lane)
+    pLine = pLine + '\n                                    (toNoc_dp_last_transaction_in_pkt                                      ) ? (lane{0}_fromStOp_strm_fifo_read_cntl | `COMMON_STD_INTF_CNTL_EOM    ) : '.format(lane)
     pLine = pLine + '\n                                                                                                                lane{0}_fromStOp_strm_fifo_read_cntl                                        ; '.format(lane)
     pLine = pLine + '\n          scntl__noc__dp_type_p1   = toNoc_dp_type                        ; '.format(lane)
     pLine = pLine + '\n          // We need to use the info from the requesting PE that was captured in the stream controller'
@@ -2937,9 +2861,9 @@ if __name__ == "__main__":
     pLine = pLine + '\n          // there is only one data fifo from the NoC'
     pLine = pLine + '\n          // We need to convert from a packet interface to a streaming interface by removing SOP/EOP and adding SOD/EOD'
     pLine = pLine + '\n          // For multi-packet tarnsfers, we need to detect the packet type and add SOD and EOD appropriately'
-    pLine = pLine + '\n          lane{1}_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : '.format(fifo,lane)
-    pLine = pLine + '\n                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : '.format(fifo,lane)
-    pLine = pLine + '\n                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : '.format(fifo,lane)
+    pLine = pLine + '\n          lane{1}_toStOp_strm_cntl       = ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_SOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_SOD  : '.format(fifo,lane)
+    pLine = pLine + '\n                                           ((fromNocDataPktType_p1 == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : '.format(fifo,lane)
+    pLine = pLine + '\n                                           ((fromNocDataPktType    == `STREAMING_OP_CNTL_TYPE_DMA_DATA_EOD) && (from_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM    )) ?  `STREAMING_OP_CNTL_STRM_CNTL_EOD  : '.format(fifo,lane)
     pLine = pLine + '\n                                                                                                                                                                                                 `STREAMING_OP_CNTL_STRM_CNTL_DATA ; '.format(fifo,lane)
     pLine = pLine + '\n          lane{1}_toStOp_strm_id         = from_NoC_data_fifo[0].fifo_read_strmId  ;'.format(fifo,lane)
     pLine = pLine + '\n          lane{1}_toStOp_strm_data       = from_NoC_data_fifo[0].fifo_read_data[`NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE] ;'.format(fifo,lane)

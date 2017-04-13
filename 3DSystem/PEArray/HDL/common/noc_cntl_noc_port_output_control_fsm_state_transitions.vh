@@ -19,7 +19,7 @@
                                                                `NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT           ; 
 
            `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_LOCAL:
-             nc_port_toNoc_state_next = (local_toNoc_valid && ((local_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) || (local_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_LOCAL  :
+             nc_port_toNoc_state_next = (local_toNoc_valid && ((local_cntl_toNoc == `COMMON_STD_INTF_CNTL_EOM) || (local_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_LOCAL  :
                                                              `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_LOCAL   ; 
 
            `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_LOCAL:
@@ -31,7 +31,7 @@
                                                                                    `NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT           ; 
 
            `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT0:
-             nc_port_toNoc_state_next = (src0_toNoc_valid && ((src0_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) || (src0_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT0  :
+             nc_port_toNoc_state_next = (src0_toNoc_valid && ((src0_cntl_toNoc == `COMMON_STD_INTF_CNTL_EOM) || (src0_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT0  :
                                                              `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT0   ; 
 
            `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT0:
@@ -43,7 +43,7 @@
                                                                                    `NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT           ; 
 
            `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT1:
-             nc_port_toNoc_state_next = (src1_toNoc_valid && ((src1_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) || (src1_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT1  :
+             nc_port_toNoc_state_next = (src1_toNoc_valid && ((src1_cntl_toNoc == `COMMON_STD_INTF_CNTL_EOM) || (src1_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT1  :
                                                              `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT1   ; 
 
            `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT1:
@@ -55,7 +55,7 @@
                                                                                    `NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT           ; 
 
            `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT2:
-             nc_port_toNoc_state_next = (src2_toNoc_valid && ((src2_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) || (src2_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT2  :
+             nc_port_toNoc_state_next = (src2_toNoc_valid && ((src2_cntl_toNoc == `COMMON_STD_INTF_CNTL_EOM) || (src2_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT2  :
                                                              `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT2   ; 
 
            `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT2:
@@ -67,7 +67,7 @@
                                                                                    `NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT           ; 
 
            `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT3:
-             nc_port_toNoc_state_next = (src3_toNoc_valid && ((src3_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_EOP) || (src3_cntl_toNoc == `NOC_CONT_NOC_PROTOCOL_CNTL_SOP_EOP)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT3  :
+             nc_port_toNoc_state_next = (src3_toNoc_valid && ((src3_cntl_toNoc == `COMMON_STD_INTF_CNTL_EOM) || (src3_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT3  :
                                                              `NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT3   ; 
 
            `NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT3:
