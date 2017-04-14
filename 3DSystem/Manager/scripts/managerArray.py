@@ -1412,3 +1412,35 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../HDL/common/rdp_cntl_create_noc_bitmask_address.vh', 'w')
+  pLine = ""
+
+  # Convert mgrId from mgrId bits in descriptor write pointer to a bit field
+  pLine = pLine + '\n'
+  numOfMgrIdBits = int(math.log(numOfMgr,2))
+  pLine = pLine + '\n  // Convert the mgrId of the pointer to a bit mask'
+  pLine = pLine + '\n  always @(*)'
+  pLine = pLine + '\n    begin'
+  pLine = pLine + '\n      case(currPtrManager)'
+  for mgr in range (0, numOfMgr):
+    pLine = pLine + '\n      {2}\'d{0} :'.format(mgr,numOfMgr,numOfMgrIdBits)
+    pLine = pLine + '\n        begin'
+    pLine = pLine + '\n          currPtrDestBitMaskAddr = {1}\'b'.format(mgr,numOfMgr)
+    for bit in range (0, numOfMgr-1-mgr):
+      pLine = pLine + '0'
+    pLine = pLine + '1'
+    for bit in range (numOfMgr-mgr, numOfMgr):
+      pLine = pLine + '0'
+    pLine = pLine + '  ; '
+    pLine = pLine + '\n        end'
+  pLine = pLine + '\n      default:'
+  pLine = pLine + '\n        begin'
+  pLine = pLine + '\n          currPtrDestBitMaskAddr = {0}\'d0 ; '.format(numOfMgr)
+  pLine = pLine + '\n        end'
+  pLine = pLine + '\n      endcase'
+  pLine = pLine + '\n    end'
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
