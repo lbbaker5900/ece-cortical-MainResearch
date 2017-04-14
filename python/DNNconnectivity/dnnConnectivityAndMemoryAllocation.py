@@ -310,9 +310,9 @@ pLine = '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(descType)-1,2))-1)))
 for i in range(1,len(descType)-1) :
   pass
-  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(descType._fields[i], str(getattr(descType, descType._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_DESC_TYPE_{0:<8} = {1:>2}, '.format(descType._fields[i].upper(), str(getattr(descType, descType._fields[i])))
 i += 1
-pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(descType._fields[i], str(getattr(descType, descType._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_DESC_TYPE_{0:<8} = {1:>2} '.format(descType._fields[i].upper(), str(getattr(descType, descType._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_desc_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -320,9 +320,9 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(optionType)-1,2))-1)))
 for i in range(1,len(optionType)-1) :
   pass
-  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(optionType._fields[i], str(getattr(optionType, optionType._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_OPT_TYPE_{0:<8} = {1:>2}, '.format(optionType._fields[i].upper(), str(getattr(optionType, optionType._fields[i])))
 i += 1
-pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(optionType._fields[i], str(getattr(optionType, optionType._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_OPT_TYPE_{0:<8} = {1:>2} '.format(optionType._fields[i].upper(), str(getattr(optionType, optionType._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_option_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -330,9 +330,9 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(stOpValues)-1,2))-1)))
 for i in range(1,len(stOpValues)-1) :
   pass
-  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(stOpValues._fields[i], str(getattr(stOpValues, stOpValues._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_STOP_CMD_{0:<8} = {1:>2}, '.format(stOpValues._fields[i].upper(), str(getattr(stOpValues, stOpValues._fields[i])))
 i += 1
-pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(stOpValues._fields[i], str(getattr(stOpValues, stOpValues._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_STOP_CMD_{0:<8} = {1:>2} '.format(stOpValues._fields[i].upper(), str(getattr(stOpValues, stOpValues._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_stOp_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -340,9 +340,9 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(simdValues)-1,2))-1)))
 for i in range(1,len(simdValues)-1) :
   pass
-  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(simdValues._fields[i], str(getattr(simdValues, simdValues._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_SIMD_CMD_{0:<8} = {1:>2}, '.format(simdValues._fields[i].upper(), str(getattr(simdValues, simdValues._fields[i])))
 i += 1
-pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(simdValues._fields[i], str(getattr(simdValues, simdValues._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_SIMD_CMD_{0:<8} = {1:>2} '.format(simdValues._fields[i].upper(), str(getattr(simdValues, simdValues._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_simd_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -350,19 +350,30 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(tgtValues)-1,2))-1)))
 for i in range(1,len(tgtValues)-1) :
   pass
-  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(tgtValues._fields[i], str(getattr(tgtValues, tgtValues._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_TGT_TYPE_{0:<8} = {1:>2}, '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
 i += 1
-pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(tgtValues._fields[i], str(getattr(tgtValues, tgtValues._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_TGT_TYPE_{0:<8} = {1:>2} '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_target_type')
+pLine = pLine + '\n'
+pLine = pLine + '\n'
+
+# Source values same as target
+pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(tgtValues)-1,2))-1)))
+for i in range(1,len(tgtValues)-1) :
+  pass
+  pLine = pLine + '\n                   PY_WU_INST_SRC_TYPE_{0:<8} = {1:>2}, '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
+i += 1
+pLine = pLine + '\n                   PY_WU_INST_SRC_TYPE_{0:<8} = {1:>2} '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
+pLine = pLine + '\n                           }} {0} ; '.format('python_source_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
 
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(txferValues)-1,2))-1)))
 for i in range(1,len(txferValues)-1) :
   pass
-  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(txferValues._fields[i], str(getattr(txferValues, txferValues._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_TXFER_TYPE_{0:<8} = {1:>2}, '.format(txferValues._fields[i].upper(), str(getattr(txferValues, txferValues._fields[i])))
 i += 1
-pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(txferValues._fields[i], str(getattr(txferValues, txferValues._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_TXFER_TYPE_{0:<8} = {1:>2} '.format(txferValues._fields[i].upper(), str(getattr(txferValues, txferValues._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_transfer_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -370,9 +381,9 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(orderValues)-1,2))-1)))
 for i in range(1,len(orderValues)-1) :
   pass
-  pLine = pLine + '\n                   {0:>8} = {1:>2}, '.format(orderValues._fields[i], str(getattr(orderValues, orderValues._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_ORDER_TYPE_{0:<8} = {1:>2}, '.format(orderValues._fields[i].upper(), str(getattr(orderValues, orderValues._fields[i])))
 i += 1
-pLine = pLine + '\n                   {0:>8} = {1:>2} '.format(orderValues._fields[i], str(getattr(orderValues, orderValues._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_ORDER_TYPE_{0:<8} = {1:>2} '.format(orderValues._fields[i].upper(), str(getattr(orderValues, orderValues._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_order_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -2880,7 +2891,7 @@ class Manager():
             dRowStr =   dRowStr + '{0:^{1}}, '.format(toHexPad(descDelin.SOD           , descDelin .WIDTH ), descDelin .WIDTH ) 
             dRowStr =   dRowStr + '{0:^{1}}, '.format(toHexPad(descType.MW             , descType  .WIDTH ), descType  .WIDTH )         
             # option tuples
-            dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TGT          , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(srcValues.STACK_DN_ARG1  , srcValues  .WIDTH), srcValues  .WIDTH )
+            dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.SRC          , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(srcValues.STACK_UP       , srcValues  .WIDTH), srcValues  .WIDTH )
             dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TXFER        , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(txferValues.VECTOR       , txferValues.WIDTH), txferValues.WIDTH )
             dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_LANES , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(dest[0]['NumberOfCells'] , 2                ), txferValues.WIDTH )
 

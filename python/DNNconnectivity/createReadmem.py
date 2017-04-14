@@ -180,7 +180,7 @@ for line in searchFile:
   if FoundStorageDescMemoryDepth == False:
     data = re.split(r'\s{1,}', line)
     # check define is in 2nd field
-    if "MGR_STORAGE_DESC_MEMORY_DEPTH" in data[1]:
+    if "MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH" in data[1]:
       storageDescMemoryDepth = int(data[2])
       FoundStorageDescMemoryDepth = True
 
