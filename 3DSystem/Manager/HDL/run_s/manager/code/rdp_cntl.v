@@ -625,11 +625,11 @@ module rdp_cntl (
         //  - the write pointers will be written to a local fifo. We dont know how many there are so pause on each mem ptr so we can check if another is coming before writing the CNTL field
         //  - in this state, we write the final ptr if the tmp storage is valid
         `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE: 
-          rdp_cntl_tag_data_combine_state_next =   `RDP_CNTL_TAG_DATA_COMBINE_BUILD_NOC_PKT ;
+          rdp_cntl_tag_data_combine_state_next =   `RDP_CNTL_TAG_DATA_COMBINE_START_BUILD_NOC_PKT ;
         
-        `RDP_CNTL_TAG_DATA_COMBINE_BUILD_NOC_PKT: 
+        `RDP_CNTL_TAG_DATA_COMBINE_START_BUILD_NOC_PKT: 
           rdp_cntl_tag_data_combine_state_next =  ( noc__rdp__dp_ready_d1 ) ? `RDP_CNTL_TAG_DATA_COMBINE_SEND_BITFIELD  :
-                                                                              `RDP_CNTL_TAG_DATA_COMBINE_BUILD_NOC_PKT  ;
+                                                                              `RDP_CNTL_TAG_DATA_COMBINE_START_BUILD_NOC_PKT  ;
         
         `RDP_CNTL_TAG_DATA_COMBINE_SEND_BITFIELD: 
           rdp_cntl_tag_data_combine_state_next =  `RDP_CNTL_TAG_DATA_COMBINE_SEND_WR_PTRS           ;
@@ -948,11 +948,60 @@ module rdp_cntl (
   assign destAddr_localFifo_write                    = wr_ptrs_all_stored_d1         ;
   assign storageDestAddr_LocalFifo[0].write          = destAddr_localFifo_write      ;
   assign storageDestAddr_LocalFifo[0].write_cntl     = `COMMON_STD_INTF_CNTL_SOM_EOM ;
+  assign storageDestAddr_LocalFifo[0].write_numLanes = num_of_valid_lanes            ;
   assign storageDestAddr_LocalFifo[0].write_destAddr = aggregateNocDestBitMaskAddr   ;
-
 
   assign storagePtr_LocalFifo[0].pipe_read          = storagePtr_LocalFifo[0].pipe_valid      ;
   assign storageDestAddr_LocalFifo[0].pipe_read     = storageDestAddr_LocalFifo[0].pipe_valid ;
+
+
+  //----------------------------------------------------------------------------------------------------
+  // NoC Memory Write Packet Generator
+  //  - generate NoC packet using contents of:
+  //    * Data from from_Stuc_Fifo
+  //    * Destination bitfield and number of valid words from storageDestAddr_LocalFifo
+  //    * Memory Write pointers from storagePtr_LocalFifo
+  //
+
+  reg [`RDP_CNTL_NOC_PKT_GEN_STATE_RANGE ] rdp_cntl_noc_data_packet_gen_state      ; // state flop
+  reg [`RDP_CNTL_NOC_PKT_GEN_STATE_RANGE ] rdp_cntl_noc_data_packet_gen_state_next ;
+  
+  
+  // State register 
+  always @(posedge clk)
+    begin
+      rdp_cntl_noc_data_packet_gen_state <= ( reset_poweron ) ? `RDP_CNTL_NOC_PKT_GEN_WAIT               :
+                                                                rdp_cntl_noc_data_packet_gen_state_next  ;
+    end
+  
+  //--------------------------------------------------
+  // Assumptions:
+  //  - destination blocks can absorb entire transaction if they are ready e.g. we wont flow control during the transfer but once all destinations are ready
+  //    the transfer(s) will run to completion
+  
+  always @(*)
+    begin
+      case (rdp_cntl_noc_data_packet_gen_state)
+        
+        
+        `RDP_CNTL_NOC_PKT_GEN_WAIT: 
+          rdp_cntl_noc_data_packet_gen_state_next =  `RDP_CNTL_NOC_PKT_GEN_COMPLETE              ;
+
+        `RDP_CNTL_NOC_PKT_GEN_COMPLETE: 
+          rdp_cntl_noc_data_packet_gen_state_next =  `RDP_CNTL_NOC_PKT_GEN_WAIT              ;
+
+        // Latch state on error
+        `RDP_CNTL_NOC_PKT_GEN_ERR:
+          rdp_cntl_noc_data_packet_gen_state_next = `RDP_CNTL_NOC_PKT_GEN_ERR ;
+  
+        default:
+          rdp_cntl_noc_data_packet_gen_state_next = `RDP_CNTL_NOC_PKT_GEN_WAIT ;
+    
+      endcase // case (rdp_cntl_noc_data_packet_gen_state)
+    end // always @ (*)
+  
+
+
 
 
   assign  rdp__noc__cp_valid_e1 = 1'b0      ; 
