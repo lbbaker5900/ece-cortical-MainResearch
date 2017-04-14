@@ -53,33 +53,43 @@ module rdp_cntl (
             stuc__rdp__data          ,  // The data may vary so check for cntl=EOD when reading this interface
 
             //-------------------------------
+            // Memory Write Combine/Cache Interface
+            //
+            rdp__mwc__valid          , 
+            rdp__mwc__cntl           , 
+            mwc__rdp__ready          , 
+            rdp__mwc__ptype          , 
+            rdp__mwc__pvalid         , 
+            rdp__mwc__data           , 
+
+            //-------------------------------
             // NoC interface
             //
             // Control-Path (cp) to NoC 
-            rdp__noc__cp_valid      , 
-            rdp__noc__cp_cntl       , 
-            noc__rdp__cp_ready      , 
-            rdp__noc__cp_type       , 
-            rdp__noc__cp_ptype      , 
-            rdp__noc__cp_desttype   , 
-            rdp__noc__cp_pvalid     , 
-            rdp__noc__cp_data       , 
+            rdp__noc__cp_valid       , 
+            rdp__noc__cp_cntl        , 
+            noc__rdp__cp_ready       , 
+            rdp__noc__cp_type        , 
+            rdp__noc__cp_ptype       , 
+            rdp__noc__cp_desttype    , 
+            rdp__noc__cp_pvalid      , 
+            rdp__noc__cp_data        , 
 
             // Data-Path (dp) to NoC 
-            rdp__noc__dp_valid      , 
-            rdp__noc__dp_cntl       , 
-            noc__rdp__dp_ready      , 
-            rdp__noc__dp_type       , 
-            rdp__noc__dp_ptype      , 
-            rdp__noc__dp_desttype   , 
-            rdp__noc__dp_pvalid     , 
-            rdp__noc__dp_data       , 
+            rdp__noc__dp_valid       , 
+            rdp__noc__dp_cntl        , 
+            noc__rdp__dp_ready       , 
+            rdp__noc__dp_type        , 
+            rdp__noc__dp_ptype       , 
+            rdp__noc__dp_desttype    , 
+            rdp__noc__dp_pvalid      , 
+            rdp__noc__dp_data        , 
 
             //-------------------------------
             // General
             //
-            sys__mgr__mgrId         ,
-            clk                     ,
+            sys__mgr__mgrId          ,
+            clk                      ,
             reset_poweron    
  
     );
@@ -116,6 +126,17 @@ module rdp_cntl (
 
 
 
+  //-------------------------------------------------------------------------------------------------
+  // Memory Write Combine/Cache Interface
+  //
+  // - Data and memory write descriptors
+  output                                              rdp__mwc__valid      ; 
+  output  [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl       ; 
+  input                                               mwc__rdp__ready      ; 
+  output  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype      ; 
+  output                                              rdp__mwc__pvalid     ; 
+  output  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data       ; 
+  
   //-------------------------------------------------------------------------------------------------
   // NoC interface
   //
@@ -200,6 +221,26 @@ module rdp_cntl (
   wire                                     middle_of_wu_descriptor     ;  // dcntl == MOM
   wire                                     end_of_wu_descriptor        ;  // dcntl == EOM
   reg  [`MGR_STD_OOB_TAG_RANGE          ]  current_tag                 ;  // waiting for this tag's return data
+
+
+  //-------------------------------------------------------------------------------------------------
+  // Memory Write Combine/Cache Interface
+  //
+  // - Data and memory write descriptors
+  reg                                                 rdp__mwc__valid      ; 
+  reg     [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl       ; 
+  wire                                                mwc__rdp__ready      ; 
+  reg     [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype      ; 
+  reg                                                 rdp__mwc__pvalid     ; 
+  reg     [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data       ; 
+  
+  wire                                                rdp__mwc__valid_e1   ; 
+  wire    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl_e1    ; 
+  reg                                                 mwc__rdp__ready_d1   ; 
+  wire    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype_e1   ; 
+  wire                                                rdp__mwc__pvalid_e1  ; 
+  wire    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data_e1    ; 
+  
 
   //-------------------------------------------------------------------------------------------------
   // NoC interface
@@ -590,15 +631,7 @@ module rdp_cntl (
                                                   ( wud_fifo_read &&  wud_fifo_contains_wr_ptr                           ) ? `RDP_CNTL_TAG_DATA_COMBINE_FIRST_WR_PTR     :  // might be more than one, so leave cntl=SOD for now
                                                   ( wud_fifo_read && ~wud_fifo_contains_wr_ptr && end_of_wu_descriptor   ) ? `RDP_CNTL_TAG_DATA_COMBINE_ERR              :  // didnt see any wr ptr's
                                                                                                                              `RDP_CNTL_TAG_DATA_COMBINE_PREPARE_FOR_PTR  ;  // just wait reading any descriptor info that isnt a wr ptr
-/*
-        // Note: do not write local ptr fifo in this state
-        `RDP_CNTL_TAG_DATA_COMBINE_WAIT_FOR_WR_PTR: 
-          rdp_cntl_tag_data_combine_state_next =  ( wud_fifo_read && wud_fifo_contains_wr_ptr && end_of_wu_descriptor    ) ? `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE :  // EOD and has wr_ptr
-                                                  ( wud_fifo_read && wud_fifo_contains_wr_ptr && middle_of_wu_descriptor ) ? `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      :  // MOD and has wr_ptr
-                                                  ( wud_fifo_read                             && end_of_wu_descriptor    ) ? `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE :  // EOD and no wr_ptr
-                                                  ( wud_fifo_read                             && middle_of_wu_descriptor ) ? `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      :  // MOD and no wr_ptr
-                                                                                                                             `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      ;
-*/
+
         // This state has a tmp ptr with cntl=SOM
         // 1) If we get end-of-desc and no wr_ptr, then dont write current but set cntl=SOM_EOM and store this single ptr in state==WR_PTRS_COMPLETE. 
         // 2) If we get end-of-desc and we do see another wr_ptr, then write current with its cntl=SOM and set cntl=EOM to store last ptr in state==WR_PTRS_COMPLETE. 
@@ -827,6 +860,8 @@ module rdp_cntl (
   // FIFO for single entry per NoC packet
   //  - destination address
   //  - number of lanes
+  //  - tag
+  //  - flag to indicate a local pointer is in the descriptor
   // As we write the write pointers into the fifo, use the manager address field from the pointer address to add a bit to the desination bit mask. When the
   // last write pointer is written, write the destination address into its fifo.
   //
@@ -834,6 +869,8 @@ module rdp_cntl (
   reg    [`MGR_MGR_ID_BITMASK_RANGE       ]         aggregateNocDestBitMaskAddr     ;  // accumulate address bits here
   reg    [`MGR_MGR_ID_BITMASK_RANGE       ]         currPtrDestBitMaskAddr          ;  // bit mask of ptr being written into fifo
   wire   [`MGR_MGR_ID_RANGE               ]         currPtrManager                  ;  // manager ID of ptr being written into fifo
+  reg                                               onePtrIsLocal                   ;  // one of the ptr's being written into fifo is for this manager
+  reg                                               onePtrIsNotLocal                ;  // one of the ptr's being written into fifo is for another manager
   
   assign currPtrManager = write_storage_ptr_tmp [`MGR_STORAGE_DESC_MGR_ID_FIELD_RANGE ]  ;  // extract manager ID from pointer
 
@@ -841,10 +878,20 @@ module rdp_cntl (
 
   always @(posedge clk)
     begin
-      aggregateNocDestBitMaskAddr = ( reset_poweron                 ) ? 'd0                                                    :
-                                    ( destAddr_localFifo_write      ) ? 'd0                                                    :
-                                    ( storagePtr_LocalFifo[0].write ) ? (aggregateNocDestBitMaskAddr | currPtrDestBitMaskAddr) :
-                                                                        aggregateNocDestBitMaskAddr                            ;
+      onePtrIsLocal               <= ( reset_poweron                 ) ? 'd0                                                   :
+                                     ( destAddr_localFifo_write      ) ? 'd0                                                   :  // clear after write
+                                     ( storagePtr_LocalFifo[0].write ) ? (onePtrIsLocal | (currPtrManager == sys__mgr__mgrId)) :
+                                                                         onePtrIsLocal                                         ;
+
+      onePtrIsNotLocal            <= ( reset_poweron                 ) ? 'd0                                                      :
+                                     ( destAddr_localFifo_write      ) ? 'd0                                                      :  // clear after write
+                                     ( storagePtr_LocalFifo[0].write ) ? (onePtrIsNotLocal | (currPtrManager != sys__mgr__mgrId)) :
+                                                                         onePtrIsNotLocal                                         ;
+
+      aggregateNocDestBitMaskAddr <= ( reset_poweron                 ) ? 'd0                                                    :
+                                     ( destAddr_localFifo_write      ) ? 'd0                                                    :  // clear after write
+                                     ( storagePtr_LocalFifo[0].write ) ? (aggregateNocDestBitMaskAddr | currPtrDestBitMaskAddr) :
+                                                                         aggregateNocDestBitMaskAddr                            ;
     end
 
   generate
@@ -854,11 +901,17 @@ module rdp_cntl (
         // Write data
         // Dont really need cntl as there is one destination address per NoC packet
         reg    [`COMMON_STD_INTF_CNTL_RANGE     ]         write_cntl         ;
+        reg    [`MGR_STD_OOB_TAG_RANGE          ]         write_tag          ;  // this tag should match the tag from the stuc FIFO
+        reg                                               write_oneIsLocal   ;  // at least one of the pointers is for this manager
+        reg                                               write_oneIsNotLocal;  // at least one of the pointers is for another manager
         reg    [`MGR_EXEC_LANE_ID_RANGE         ]         write_numLanes     ;
         reg    [`MGR_MGR_ID_BITMASK_RANGE       ]         write_destAddr     ;
                                                                              
         // Read data                                                         
         wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         read_cntl          ;
+        wire   [`MGR_STD_OOB_TAG_RANGE          ]         read_tag           ;
+        wire                                              read_oneIsLocal    ; 
+        wire                                              read_oneIsNotLocal ; 
         wire   [`MGR_EXEC_LANE_ID_RANGE         ]         read_numLanes      ;
         wire   [`MGR_MGR_ID_BITMASK_RANGE       ]         read_destAddr      ;
                                                                              
@@ -873,17 +926,17 @@ module rdp_cntl (
         // FIXME: Combine FIFO's for synthesis
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_THRESHOLD ),
-                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_EXEC_LANE_ID_WIDTH+`MGR_MGR_ID_BITMASK_WIDTH)
+                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+1+1+`MGR_STD_OOB_TAG_WIDTH+`MGR_EXEC_LANE_ID_WIDTH+`MGR_MGR_ID_BITMASK_WIDTH)
                         ) destAddr_fifo (
                                           // Status
                                          .empty            ( empty                      ),
                                          .almost_full      ( almost_full                ),
                                           // Write                                      
                                          .write            ( write                      ),
-                                         .write_data       ( {write_cntl, write_numLanes, write_destAddr }), 
-                                          // Read                                       
-                                         .read             ( read                       ),
-                                         .read_data        ( { read_cntl,  read_numLanes,  read_destAddr }), 
+                                         .write_data       ( {write_cntl, write_tag, write_oneIsLocal, write_oneIsNotLocal, write_numLanes, write_destAddr }), 
+                                          // Read                                                         
+                                         .read             ( read                       ), 
+                                         .read_data        ( { read_cntl,  read_tag,  read_oneIsLocal,  read_oneIsNotLocal,  read_numLanes,  read_destAddr }), 
 
                                          // General
                                          .clear            ( clear                      ),
@@ -898,6 +951,9 @@ module rdp_cntl (
         // pipe stage
         reg                                                  pipe_valid        ;
         reg    [`COMMON_STD_INTF_CNTL_RANGE     ]            pipe_cntl         ;
+        reg    [`MGR_STD_OOB_TAG_RANGE          ]            pipe_tag          ;
+        reg                                                  pipe_oneIsLocal   ;
+        reg                                                  pipe_oneIsNotLocal;
         reg    [`MGR_EXEC_LANE_ID_RANGE         ]            pipe_numLanes     ;
         reg    [`MGR_MGR_ID_BITMASK_RANGE       ]            pipe_destAddr     ;
         wire                                                 pipe_read         ;
@@ -928,6 +984,12 @@ module rdp_cntl (
             // if we are reading, transfer from previous pipe stage. 
             pipe_cntl           <= ( fifo_pipe_read     ) ? read_cntl          :
                                                             pipe_cntl          ;
+            pipe_tag            <= ( fifo_pipe_read     ) ? read_tag           :
+                                                            pipe_tag           ;
+            pipe_oneIsLocal     <= ( fifo_pipe_read     ) ? read_oneIsLocal    :
+                                                            pipe_oneIsLocal    ;
+            pipe_oneIsNotLocal  <= ( fifo_pipe_read     ) ? read_oneIsNotLocal :
+                                                            pipe_oneIsNotLocal ;
             pipe_numLanes       <= ( fifo_pipe_read     ) ? read_numLanes      :
                                                             pipe_numLanes      ;
             pipe_destAddr       <= ( fifo_pipe_read     ) ? read_destAddr      :
@@ -945,16 +1007,20 @@ module rdp_cntl (
     begin
       wr_ptrs_all_stored_d1 <= wr_ptrs_all_stored ;
     end
-  assign destAddr_localFifo_write                    = wr_ptrs_all_stored_d1         ;
-  assign storageDestAddr_LocalFifo[0].write          = destAddr_localFifo_write      ;
-  assign storageDestAddr_LocalFifo[0].write_cntl     = `COMMON_STD_INTF_CNTL_SOM_EOM ;
-  assign storageDestAddr_LocalFifo[0].write_numLanes = num_of_valid_lanes            ;
-  assign storageDestAddr_LocalFifo[0].write_destAddr = aggregateNocDestBitMaskAddr   ;
+  assign destAddr_localFifo_write                            = wr_ptrs_all_stored_d1         ;
+  assign storageDestAddr_LocalFifo[0].write                  = destAddr_localFifo_write      ;
+  assign storageDestAddr_LocalFifo[0].write_cntl             = `COMMON_STD_INTF_CNTL_SOM_EOM ;
+  assign storageDestAddr_LocalFifo[0].write_tag              = current_tag                   ;
+  assign storageDestAddr_LocalFifo[0].write_oneIsLocal       = onePtrIsLocal                 ;
+  assign storageDestAddr_LocalFifo[0].write_oneIsNotLocal    = onePtrIsNotLocal              ;
+  assign storageDestAddr_LocalFifo[0].write_numLanes         = num_of_valid_lanes            ;
+  assign storageDestAddr_LocalFifo[0].write_destAddr         = aggregateNocDestBitMaskAddr   ;
 
   assign storagePtr_LocalFifo[0].pipe_read          = storagePtr_LocalFifo[0].pipe_valid      ;
   assign storageDestAddr_LocalFifo[0].pipe_read     = storageDestAddr_LocalFifo[0].pipe_valid ;
 
 
+  //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
   // NoC Memory Write Packet Generator
   //  - generate NoC packet using contents of:
@@ -974,6 +1040,31 @@ module rdp_cntl (
                                                                 rdp_cntl_noc_data_packet_gen_state_next  ;
     end
   
+  //------------------------------------------------------------------------------------------
+  // FSM Regs and Wires
+
+  // Create wires for source of data for NoC packets and local memory write
+  wire                                              from_Stuc_valid                       =  from_Stuc_Fifo[0].pipe_valid                      ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         from_Stuc_cntl                        =  from_Stuc_Fifo[0].pipe_cntl                       ;
+  wire   [`MGR_STD_OOB_TAG_RANGE          ]         from_Stuc_tag                         =  from_Stuc_Fifo[0].pipe_tag                        ;
+  wire   [`STACK_UP_INTF_DATA_RANGE       ]         from_Stuc_data                        =  from_Stuc_Fifo[0].pipe_data                       ;
+                                                                                                                                               
+  wire                                              from_wrPtrFifo_valid                  =  storagePtr_LocalFifo[0].pipe_valid                ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         from_wrPtrFifo_cntl                   =  storagePtr_LocalFifo[0].pipe_cntl                 ;
+  wire   [`MGR_STORAGE_DESC_ADDRESS_RANGE ]         from_WrPtrFifo_wrPtr                  =  storagePtr_LocalFifo[0].pipe_storage_ptr          ;
+  wire                                              from_wrPtrFifo_eom                    =  (from_wrPtrFifo_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (from_wrPtrFifo_cntl == `COMMON_STD_INTF_CNTL_EOM) ;
+                                                                                          
+  wire                                              from_NocInfoFifo_valid                =  storageDestAddr_LocalFifo[0].pipe_valid           ; 
+  wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         from_NocInfoFifo_cntl                 =  storageDestAddr_LocalFifo[0].pipe_cntl            ;
+  wire   [`MGR_STD_OOB_TAG_RANGE          ]         from_NocInfoFifo_tag                  =  storageDestAddr_LocalFifo[0].pipe_tag             ; 
+  wire                                              from_NocInfoFifo_oneIsLocal           =  storageDestAddr_LocalFifo[0].pipe_oneIsLocal      ; 
+  wire                                              from_NocInfoFifo_oneIsNotLocal        =  storageDestAddr_LocalFifo[0].pipe_oneIsNotLocal   ; 
+  wire   [`MGR_EXEC_LANE_ID_RANGE         ]         from_NocInfoFifo_numLanes             =  storageDestAddr_LocalFifo[0].pipe_numLanes        ;
+  wire   [`MGR_MGR_ID_BITMASK_RANGE       ]         from_NocInfoFifo_destAddr             =  storageDestAddr_LocalFifo[0].pipe_destAddr        ;
+
+  // check if the pointer include a local pointer and/or a pointer destined for another manager and test the local ready flag and/or NoC ready flag
+  wire                                              wr_destinations_ready                 = (~from_NocInfoFifo_oneIsLocal | mwc__rdp__ready_d1) & (~from_NocInfoFifo_oneIsNotLocal | noc__rdp__dp_ready_d1) ;
+
   //--------------------------------------------------
   // Assumptions:
   //  - destination blocks can absorb entire transaction if they are ready e.g. we wont flow control during the transfer but once all destinations are ready
@@ -983,9 +1074,42 @@ module rdp_cntl (
     begin
       case (rdp_cntl_noc_data_packet_gen_state)
         
-        
+        // Wait for data from all the sources before transferring to NoC
         `RDP_CNTL_NOC_PKT_GEN_WAIT: 
-          rdp_cntl_noc_data_packet_gen_state_next =  `RDP_CNTL_NOC_PKT_GEN_COMPLETE              ;
+          rdp_cntl_noc_data_packet_gen_state_next =  ( from_Stuc_valid && from_NocInfoFifo_valid && (from_Stuc_tag != from_NocInfoFifo_tag) ) ?   `RDP_CNTL_NOC_PKT_GEN_ERR    :  // check tags
+                                                     ( from_Stuc_valid && from_wrPtrFifo_valid   && from_NocInfoFifo_valid                  ) ?   `RDP_CNTL_NOC_PKT_GEN_START  :
+                                                                                                                                                  `RDP_CNTL_NOC_PKT_GEN_WAIT   ;
+
+        // The destination bus is wide enough for extended tuples, so hold one in a register before sending two tuples
+
+        // grab first ptr: 
+        // a) if theres only one, then copy into output register and goto state=PAD_NOP to add 2nd NOP tuple and output the data
+        // b) if theres more than one, then copy current into output register and goto state=APPEND_PTR to add another ptr and output the data
+        `RDP_CNTL_NOC_PKT_GEN_START: 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_PAD_NOP    :  // odd number of tuples so transfer will need to include NOP tuple type
+                                                     ( wr_destinations_ready && ~from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR  :  // odd number of tuples so transfer will need to include NOP tuple type
+                                                                                                          `RDP_CNTL_NOC_PKT_GEN_START       ;
+
+        // need to check for EOM 
+        `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR: 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA    :  // odd number of tuples so transfer will need to include NOP tuple type
+                                                     ( wr_destinations_ready && ~from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS    :  // odd number of tuples so transfer will need to include NOP tuple type
+                                                                                                          `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR       ;
+
+        // The write pointer FIFO has individual ptrs and the output bus is wide enough for two ptrs, so append before transferring
+        `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS: 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_PAD_NOP      :  // odd number of tuples so transfer will need to include NOP tuple type
+                                                     ( wr_destinations_ready && ~from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR    :  // odd number of tuples so transfer will need to include NOP tuple type
+                                                                                                          `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS ;
+        // Add an extra NOP tuple to pad wide bus
+        `RDP_CNTL_NOC_PKT_GEN_PAD_NOP: 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready  ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA  : 
+                                                                                    `RDP_CNTL_NOC_PKT_GEN_PAD_NOP        ;
+
+        `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA:
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready      ) ?   `RDP_CNTL_NOC_PKT_GEN_COMPLETE :
+                                                                                        `RDP_CNTL_NOC_PKT_GEN_START    ;
+
 
         `RDP_CNTL_NOC_PKT_GEN_COMPLETE: 
           rdp_cntl_noc_data_packet_gen_state_next =  `RDP_CNTL_NOC_PKT_GEN_WAIT              ;

@@ -398,6 +398,15 @@ module manager (
   //-------------------------------------------------------------------------------------------------
   // Response Data Processor
   // 
+
+  // Memory Write Combine/Cache Interface
+  wire                                                rdp__mwc__valid      ; 
+  wire    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl       ; 
+  wire                                                mwc__rdp__ready      ; 
+  wire    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype      ; 
+  wire                                                rdp__mwc__pvalid     ; 
+  wire    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data       ; 
+
   rdp_cntl rdp_cntl (
 
             //-------------------------------
@@ -419,6 +428,16 @@ module manager (
             .wud__rdp__tag           ( wud__rdp__tag           ),  // Use this to match with WU and take all the data 
             .wud__rdp__option_type   ( wud__rdp__option_type   ),  // Only send tuples
             .wud__rdp__option_value  ( wud__rdp__option_value  ),
+
+            //-------------------------------
+            // to Memory Write Combine
+            //   - make interface same/similar to NoC interface because memory write combine module will have to deal with NoC packets anyway
+            .rdp__mwc__valid         ( rdp__mwc__valid         ), 
+            .mwc__rdp__ready         ( mwc__rdp__ready         ), 
+            .rdp__mwc__cntl          ( rdp__mwc__cntl          ), 
+            .rdp__mwc__ptype         ( rdp__mwc__ptype         ), 
+            .rdp__mwc__pvalid        ( rdp__mwc__pvalid        ), 
+            .rdp__mwc__data          ( rdp__mwc__data          ), 
 
             //-------------------------------
             // to NoC
