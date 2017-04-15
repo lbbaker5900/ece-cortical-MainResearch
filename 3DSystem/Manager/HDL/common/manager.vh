@@ -74,6 +74,8 @@
 `define MGR_EXEC_LANE_WIDTH_RANGE           `MGR_EXEC_LANE_WIDTH_MSB : `MGR_EXEC_LANE_WIDTH_LSB
 
 `define MGR_EXEC_LANE_ID_WIDTH            `PE_EXEC_LANE_ID_WIDTH   
+`define MGR_EXEC_LANE_ID_MSB              `PE_EXEC_LANE_ID_MSB     
+`define MGR_EXEC_LANE_ID_LSB              `PE_EXEC_LANE_ID_LSB     
 `define MGR_EXEC_LANE_ID_RANGE            `PE_EXEC_LANE_ID_RANGE   
 //---------------------------------------------------------------------------------------------------------------------
 // Memory

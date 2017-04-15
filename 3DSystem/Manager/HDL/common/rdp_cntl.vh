@@ -57,18 +57,23 @@
 //--------------------------------------------------------
 // Memory Write Pointer/Data packet generator
 
-`define RDP_CNTL_NOC_PKT_GEN_WAIT                             11'b000_0000_0001
-`define RDP_CNTL_NOC_PKT_GEN_START                            11'b000_0000_0010
-`define RDP_CNTL_NOC_PKT_GEN_APPEND_PTR                       11'b000_0000_0100
-`define RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS                    11'b000_0000_1000
-`define RDP_CNTL_NOC_PKT_GEN_PAD_NOP                          11'b000_0001_0000
-`define RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA                    11'b000_0010_0000
-                                                                       
-`define RDP_CNTL_NOC_PKT_GEN_COMPLETE                      11'b010_0000_0000
-                                                                       
-`define RDP_CNTL_NOC_PKT_GEN_ERR                           11'b100_0000_0000
+`define RDP_CNTL_NOC_PKT_GEN_WAIT                             13'b0_0000_0000_0001
+`define RDP_CNTL_NOC_PKT_GEN_SEND_ADDR                        13'b0_0000_0000_0010
+`define RDP_CNTL_NOC_PKT_GEN_START_PTR                        13'b0_0000_0000_0100
+`define RDP_CNTL_NOC_PKT_GEN_APPEND_PTR                       13'b0_0000_0000_1000
+`define RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS                    13'b0_0000_0001_0000
+`define RDP_CNTL_NOC_PKT_GEN_PAD_NOP                          13'b0_0000_0010_0000
 
-`define RDP_CNTL_NOC_PKT_GEN_STATE_WIDTH         11
+`define RDP_CNTL_NOC_PKT_GEN_START_DATA                       13'b0_0000_0100_0000
+`define RDP_CNTL_NOC_PKT_GEN_APPEND_DATA                      13'b0_0000_1000_0000
+`define RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA                    13'b0_0001_0000_0000
+`define RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC                       13'b0_0010_0000_0000
+                                                                       
+`define RDP_CNTL_NOC_PKT_GEN_COMPLETE                         13'b0_1000_0000_0000
+                                                                       
+`define RDP_CNTL_NOC_PKT_GEN_ERR                              13'b1_0000_0000_0000
+
+`define RDP_CNTL_NOC_PKT_GEN_STATE_WIDTH         13
 `define RDP_CNTL_NOC_PKT_GEN_STATE_MSB           `RDP_CNTL_NOC_PKT_GEN_STATE_WIDTH-1
 `define RDP_CNTL_NOC_PKT_GEN_STATE_LSB           0
 `define RDP_CNTL_NOC_PKT_GEN_STATE_SIZE          (`RDP_CNTL_NOC_PKT_GEN_STATE_MSB - `RDP_CNTL_NOC_PKT_GEN_STATE_LSB +1)

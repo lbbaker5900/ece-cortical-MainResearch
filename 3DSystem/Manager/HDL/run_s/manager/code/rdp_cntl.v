@@ -331,6 +331,15 @@ module rdp_cntl (
       rdp__noc__dp_data          <= ( reset_poweron   ) ? 'd0  :  rdp__noc__dp_data_e1      ;
     end
 
+  always @(posedge clk)
+    begin
+      rdp__mwc__valid     <= ( reset_poweron   ) ? 'd0  :  rdp__mwc__valid_e1  ;
+      rdp__mwc__cntl      <= ( reset_poweron   ) ? 'd0  :  rdp__mwc__cntl_e1   ;
+      mwc__rdp__ready_d1  <= ( reset_poweron   ) ? 'd0  :  mwc__rdp__ready     ;
+      rdp__mwc__ptype     <= ( reset_poweron   ) ? 'd0  :  rdp__mwc__ptype_e1  ;
+      rdp__mwc__pvalid    <= ( reset_poweron   ) ? 'd0  :  rdp__mwc__pvalid_e1 ;
+      rdp__mwc__data      <= ( reset_poweron   ) ? 'd0  :  rdp__mwc__data_e1   ;
+    end
   //----------------------------------------------------------------------------------------------------
   // From WU Decode
   //   - Storage descriptor
@@ -734,7 +743,7 @@ module rdp_cntl (
     end
 
 
-  assign from_Stuc_Fifo[0].pipe_read     = stuc_data_available              ;
+  //assign from_Stuc_Fifo[0].pipe_read     = stuc_data_available              ;
 
 
   assign wud_data_available              = from_WuDecode_Fifo[0].pipe_valid ;
@@ -1016,8 +1025,8 @@ module rdp_cntl (
   assign storageDestAddr_LocalFifo[0].write_numLanes         = num_of_valid_lanes            ;
   assign storageDestAddr_LocalFifo[0].write_destAddr         = aggregateNocDestBitMaskAddr   ;
 
-  assign storagePtr_LocalFifo[0].pipe_read          = storagePtr_LocalFifo[0].pipe_valid      ;
-  assign storageDestAddr_LocalFifo[0].pipe_read     = storageDestAddr_LocalFifo[0].pipe_valid ;
+  //assign storagePtr_LocalFifo[0].pipe_read          = storagePtr_LocalFifo[0].pipe_valid      ;
+  //assign storageDestAddr_LocalFifo[0].pipe_read     = storageDestAddr_LocalFifo[0].pipe_valid ;
 
 
   //----------------------------------------------------------------------------------------------------
@@ -1048,6 +1057,7 @@ module rdp_cntl (
   wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         from_Stuc_cntl                        =  from_Stuc_Fifo[0].pipe_cntl                       ;
   wire   [`MGR_STD_OOB_TAG_RANGE          ]         from_Stuc_tag                         =  from_Stuc_Fifo[0].pipe_tag                        ;
   wire   [`STACK_UP_INTF_DATA_RANGE       ]         from_Stuc_data                        =  from_Stuc_Fifo[0].pipe_data                       ;
+  wire                                              from_Stuc_eom                         =  (from_Stuc_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (from_Stuc_cntl == `COMMON_STD_INTF_CNTL_EOM) ;
                                                                                                                                                
   wire                                              from_wrPtrFifo_valid                  =  storagePtr_LocalFifo[0].pipe_valid                ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         from_wrPtrFifo_cntl                   =  storagePtr_LocalFifo[0].pipe_cntl                 ;
@@ -1065,6 +1075,20 @@ module rdp_cntl (
   // check if the pointer include a local pointer and/or a pointer destined for another manager and test the local ready flag and/or NoC ready flag
   wire                                              wr_destinations_ready                 = (~from_NocInfoFifo_oneIsLocal | mwc__rdp__ready_d1) & (~from_NocInfoFifo_oneIsNotLocal | noc__rdp__dp_ready_d1) ;
 
+  // we need to transfer the required number of words to satisfy the write descriptor. We transfer two words, so set our counter to numLanes[.:1] and use numLanes[0] to set payLoad valid to show
+  // whether both words are valid in the transfer (the mem wr descriptor will know but lets capture pValid for completeness.
+  reg  [`MGR_EXEC_LANE_ID_MSB : `MGR_EXEC_LANE_ID_LSB+1 ]  dataCount                                                                                  ;  // count by pairs of lanes
+  wire [`MGR_EXEC_LANE_ID_MSB : `MGR_EXEC_LANE_ID_LSB+1 ]  numLanesDiv2 = from_NocInfoFifo_numLanes[`MGR_EXEC_LANE_ID_MSB : `MGR_EXEC_LANE_ID_LSB+1 ] ;  // set threshold
+  wire                                                     dataCountOdd = from_NocInfoFifo_numLanes[0]                                                ;  // use to set pValid in last transfer
+  always @(posedge clk)
+    begin
+      dataCount <= ( reset_poweron                                                                                     ) ? 'd0                                       :
+//                   ( rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_WAIT                                  ) ? `MGR_EXEC_LANE_ID_WIDTH-1 'd0             :  
+//                   ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA) && wr_destinations_ready ) ? dataCount + `MGR_EXEC_LANE_ID_WIDTH-1 'd1 :  // increment after we have transferred two words
+                   ( rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_WAIT                                  ) ? 'd0             :  
+                   ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA) && wr_destinations_ready ) ? dataCount +  'd1 :  // increment after we have transferred two words
+                                                                                                                           dataCount                                 ;
+    end
   //--------------------------------------------------
   // Assumptions:
   //  - destination blocks can absorb entire transaction if they are ready e.g. we wont flow control during the transfer but once all destinations are ready
@@ -1077,40 +1101,75 @@ module rdp_cntl (
         // Wait for data from all the sources before transferring to NoC
         `RDP_CNTL_NOC_PKT_GEN_WAIT: 
           rdp_cntl_noc_data_packet_gen_state_next =  ( from_Stuc_valid && from_NocInfoFifo_valid && (from_Stuc_tag != from_NocInfoFifo_tag) ) ?   `RDP_CNTL_NOC_PKT_GEN_ERR    :  // check tags
-                                                     ( from_Stuc_valid && from_wrPtrFifo_valid   && from_NocInfoFifo_valid                  ) ?   `RDP_CNTL_NOC_PKT_GEN_START  :
+                                                     ( from_Stuc_valid && from_wrPtrFifo_valid   && from_NocInfoFifo_valid                  ) ?   `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR  :
                                                                                                                                                   `RDP_CNTL_NOC_PKT_GEN_WAIT   ;
+
+        // Transfer Header. Assert out_valid, set headerFields: {cntl=SOM, src=this.mgrId, prio=data, outDestType=bitfield, output=destAddr}, dont read addr pipe yet.
+        `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR: 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready ) ?   `RDP_CNTL_NOC_PKT_GEN_START_PTR  : // transfer header of packet
+                                                                                   `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR  ;
+
 
         // The destination bus is wide enough for extended tuples, so hold one in a register before sending two tuples
 
         // grab first ptr: 
-        // a) if theres only one, then copy into output register and goto state=PAD_NOP to add 2nd NOP tuple and output the data
-        // b) if theres more than one, then copy current into output register and goto state=APPEND_PTR to add another ptr and output the data
-        `RDP_CNTL_NOC_PKT_GEN_START: 
-          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_PAD_NOP    :  // odd number of tuples so transfer will need to include NOP tuple type
+        // a) if theres only one, then copy into output register and goto state=PAD_NOP to add 2nd NOP tuple and output the data.                Deassert out_valid, set fields: {cntl=MOM, type=descWrData, pType=tuples, prio=data, optionType0=storage, extdValue0=wrPtr}, read wrPtr pipe.
+        // b) if theres more than one, then copy current into output register and goto state=APPEND_PTR to add another ptr and output the data.  Deassert out_valid, set fields: {cntl=MOM, type=descWrData, pType=tuples, prio=data, optionType0=storage, extdValue0=wrPtr}, read wrPtr pipe.
+        `RDP_CNTL_NOC_PKT_GEN_START_PTR: 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_PAD_NOP     :  // odd number of tuples so transfer will need to include NOP tuple type
                                                      ( wr_destinations_ready && ~from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR  :  // odd number of tuples so transfer will need to include NOP tuple type
-                                                                                                          `RDP_CNTL_NOC_PKT_GEN_START       ;
+                                                                                                          `RDP_CNTL_NOC_PKT_GEN_START_PTR   ;
 
-        // need to check for EOM 
+        // Assert out_valid, set fields: {optionType1=storage, extdValue1=wr_ptr}, read wrPtr pipe.
         `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR: 
-          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA    :  // odd number of tuples so transfer will need to include NOP tuple type
-                                                     ( wr_destinations_ready && ~from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS    :  // odd number of tuples so transfer will need to include NOP tuple type
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_START_DATA       :
+                                                     ( wr_destinations_ready && ~from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS    : 
                                                                                                           `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR       ;
 
-        // The write pointer FIFO has individual ptrs and the output bus is wide enough for two ptrs, so append before transferring
+        // grab addtional ptr: 
+        // a) if its the last one, then copy into output register and goto state=PAD_NOP to add 2nd NOP tuple and output the data.               Deassert out_valid, set fields: {cntl=MOM, type=descWrData, pType=tuples, prio=data, optionType0=storage, extdValue0=wrPtr}, read wrPtr pipe.
+        // b) if theres more to come, then copy current into output register and goto state=APPEND_PTR to add another ptr and output the data.   Deassert out_valid, set fields: {cntl=MOM, type=descWrData, pType=tuples, prio=data, optionType0=storage, extdValue0=wrPtr}, read wrPtr pipe.
         `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS: 
-          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_PAD_NOP      :  // odd number of tuples so transfer will need to include NOP tuple type
-                                                     ( wr_destinations_ready && ~from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR    :  // odd number of tuples so transfer will need to include NOP tuple type
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_PAD_NOP       :  // odd number of tuples so transfer will need to include NOP tuple type
+                                                     ( wr_destinations_ready && ~from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR    : 
                                                                                                           `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS ;
-        // Add an extra NOP tuple to pad wide bus
+        // Add an extra NOP tuple to pad wide bus. Assert out_valid, set fields: {optionType1=NOP, extdValue1=0}.
         `RDP_CNTL_NOC_PKT_GEN_PAD_NOP: 
-          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready  ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA  : 
-                                                                                    `RDP_CNTL_NOC_PKT_GEN_PAD_NOP        ;
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready  ) ?   `RDP_CNTL_NOC_PKT_GEN_START_DATA    :   // assume first chunk of data transferred on this transition
+                                                                                    `RDP_CNTL_NOC_PKT_GEN_PAD_NOP       ;
 
-        `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA:
-          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready      ) ?   `RDP_CNTL_NOC_PKT_GEN_COMPLETE :
-                                                                                        `RDP_CNTL_NOC_PKT_GEN_START    ;
+        // All states prior set dataCount=1. End-of-Data when dataCount=numLanes. We increment dataCount by 2 because there are two words per transfer, but use the lsb of numLanes to set pValid (e.g. if numLanes is odd, set last pValid=0 (~numLanes[0])
+        // This is the drive first bus half so dont worry about stuc EOM yet
+        // a) if we only need this transfer: Assert out_valid, set fields: {cntl=EOM, pValid=~numLanes[0], data=stucData[0], pType=data, prio=data}, DO NOT read stucData pipe
+        // b) if we need more transfers    : Assert out_valid, set fields: {cntl=MOM, pValid=1,            data=stucData[0], pType=data, prio=data}, DO NOT read stucData pipe
+        `RDP_CNTL_NOC_PKT_GEN_START_DATA: 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  (dataCount == from_NocInfoFifo_numLanes)) ?   `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC  : // if we are at stuc eom or not, let flush state deal with the reads
+                                                     ( wr_destinations_ready &&  (dataCount != from_NocInfoFifo_numLanes)) ?   `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA : 
+                                                                                                                               `RDP_CNTL_NOC_PKT_GEN_START_DATA  ;
+        // use the 2nd half of the stuc data
+        // a) if we only need this transfer: Assert out_valid, set fields: {cntl=EOM, pValid=~numLanes[0], data=stucData[0], pType=data, prio=data}, read stucData pipe
+        // b) if we need more transfers    : Assert out_valid, set fields: {cntl=MOM, pValid=1,            data=stucData[0], pType=data, prio=data}, read stucData pipe
+        `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA: 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready && (dataCount == from_NocInfoFifo_numLanes) &&  from_Stuc_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_COMPLETE      :  // transferred enuff data and no more stuc data
+                                                     ( wr_destinations_ready && (dataCount == from_NocInfoFifo_numLanes) && ~from_Stuc_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC    :  // transferred enuff data and still more stuc data  (assume PE could send back more than we need)
+                                                     ( wr_destinations_ready && (dataCount != from_NocInfoFifo_numLanes) &&  from_Stuc_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_ERR           :  // not enuff data yet and no more stuc data
+                                                     ( wr_destinations_ready && (dataCount != from_NocInfoFifo_numLanes) && ~from_Stuc_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA :  // not enuff data 
+                                                                                                                                                 `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA   ;
 
+        // use the 1st half of the stuc data
+        // a) if we only need this transfer: Assert out_valid, set fields: {cntl=EOM, pValid=~numLanes[0], data=stucData[0], pType=data, prio=data}, read stucData pipe
+        // b) if we need more transfers    : Assert out_valid, set fields: {cntl=MOM, pValid=1,            data=stucData[0], pType=data, prio=data}, read stucData pipe
+        `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA: 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  (dataCount == from_NocInfoFifo_numLanes)) ?   `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC     : // if we are at stuc eom or not, let flush state deal with the reads
+                                                     ( wr_destinations_ready &&  (dataCount != from_NocInfoFifo_numLanes)) ?   `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA    : 
+                                                                                                                               `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA  ;
 
+        // We have completed transferring packet so just loop reading stuc pipe
+        `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC: 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( from_Stuc_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_COMPLETE   :  
+                                                                           `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC ;
+
+        // read from_NocInfoFifo 
         `RDP_CNTL_NOC_PKT_GEN_COMPLETE: 
           rdp_cntl_noc_data_packet_gen_state_next =  `RDP_CNTL_NOC_PKT_GEN_WAIT              ;
 
@@ -1125,6 +1184,14 @@ module rdp_cntl (
     end // always @ (*)
   
 
+  assign  storagePtr_LocalFifo[0].pipe_read       = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_START_PTR    ) & wr_destinations_ready |
+                                                    (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR   ) & wr_destinations_ready |
+                                                    (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS) & wr_destinations_ready ;
+                                                                                                    
+  assign  from_Stuc_Fifo[0].pipe_read             = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA  ) & wr_destinations_ready |
+                                                    (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC   )                         ;  // if we are in FLUSH_STUC, we know the pipe is valid
+                                                                                                    
+  assign  storageDestAddr_LocalFifo[0].pipe_read  = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_COMPLETE     )                         ;  // all done, clear info FIFO
 
 
 

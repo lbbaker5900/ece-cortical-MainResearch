@@ -433,7 +433,8 @@ module manager (
             // to Memory Write Combine
             //   - make interface same/similar to NoC interface because memory write combine module will have to deal with NoC packets anyway
             .rdp__mwc__valid         ( rdp__mwc__valid         ), 
-            .mwc__rdp__ready         ( mwc__rdp__ready         ), 
+            .mwc__rdp__ready         ( 1'b1         ), // FIXME
+            //.mwc__rdp__ready         ( mwc__rdp__ready         ), 
             .rdp__mwc__cntl          ( rdp__mwc__cntl          ), 
             .rdp__mwc__ptype         ( rdp__mwc__ptype         ), 
             .rdp__mwc__pvalid        ( rdp__mwc__pvalid        ), 
