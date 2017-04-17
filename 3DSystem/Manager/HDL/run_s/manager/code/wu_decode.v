@@ -56,7 +56,7 @@ module wu_decode (
             //-------------------------------
             // Return Data Processor
             // - send write descriptor
-            wud__rdp__valid             ,  // send tag and MR tuples
+            wud__rdp__valid             ,  // send tag and MW descriptors
             rdp__wud__ready             ,
             wud__rdp__dcntl             ,
             wud__rdp__tag               ,

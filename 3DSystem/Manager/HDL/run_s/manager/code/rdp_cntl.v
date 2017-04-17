@@ -86,6 +86,11 @@ module rdp_cntl (
             rdp__noc__dp_data        , 
 
             //-------------------------------
+            // Config
+            //
+            cfg__rdp__check_tag      ,
+
+            //-------------------------------
             // General
             //
             sys__mgr__mgrId          ,
@@ -101,6 +106,11 @@ module rdp_cntl (
   input                                     reset_poweron                ;
   input   [`MGR_MGR_ID_RANGE    ]           sys__mgr__mgrId              ;
 
+
+  //----------------------------------------------------------------------------------------------------
+  // Config
+
+  input                                     cfg__rdp__check_tag          ;
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
@@ -755,9 +765,6 @@ module rdp_cntl (
     end
 
 
-  //assign from_Stuc_Fifo[0].pipe_read     = stuc_data_available              ;
-
-
   assign wud_data_available              = from_WuDecode_Fifo[0].pipe_valid ;
   assign stuc_data_available             = from_Stuc_Fifo[0].pipe_valid     ;
 
@@ -1118,9 +1125,9 @@ module rdp_cntl (
         
         // Wait for data from all the sources before transferring to NoC
         `RDP_CNTL_NOC_PKT_GEN_WAIT: 
-          rdp_cntl_noc_data_packet_gen_state_next =  // FIXME ( from_Stuc_valid && from_NocInfoFifo_valid && (from_Stuc_tag != from_NocInfoFifo_tag) ) ?   `RDP_CNTL_NOC_PKT_GEN_TAG_ERR:  // check tags
-                                                     ( from_Stuc_valid && from_wrPtrFifo_valid   && from_NocInfoFifo_valid                  ) ?   `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR  :
-                                                                                                                                                  `RDP_CNTL_NOC_PKT_GEN_WAIT   ;
+          rdp_cntl_noc_data_packet_gen_state_next =  ( from_Stuc_valid && from_NocInfoFifo_valid && (from_Stuc_tag != from_NocInfoFifo_tag) && cfg__rdp__check_tag) ?   `RDP_CNTL_NOC_PKT_GEN_TAG_ERR    :  // check tags
+                                                     ( from_Stuc_valid && from_wrPtrFifo_valid   && from_NocInfoFifo_valid                                        ) ?   `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR  :
+                                                                                                                                                                        `RDP_CNTL_NOC_PKT_GEN_WAIT       ;
 
         // Transfer Header. Assert out_valid, set headerFields: {cntl=SOM, src=this.mgrId, prio=data, outDestType=bitfield, output=destAddr}, dont read addr pipe yet.
         `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR: 
@@ -1299,8 +1306,17 @@ module rdp_cntl (
 
 
 
+  //------------------------------------------------------------------------------------------------------------------------
+  // Temporary - FIXME
+  //
+  assign      rdp__noc__cp_valid_e1      = 'd0     ; 
+  assign      rdp__noc__cp_cntl_e1       = 'd0     ;   
+  assign      rdp__noc__cp_type_e1       = 'd0     ;   
+  assign      rdp__noc__cp_desttype_e1   = 'd0     ;   
+  assign      rdp__noc__cp_ptype_e1      = 'd0     ;   
+  assign      rdp__noc__cp_pvalid_e1     = 'd0     ;   
+  assign      rdp__noc__cp_data_e1       = 'd0     ;   
 
-  assign  rdp__noc__cp_valid_e1 = 1'b0      ; 
 
 
 

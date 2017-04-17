@@ -464,11 +464,16 @@ module manager (
             .rdp__noc__dp_data       ( rdp__noc__dp_data       ), 
 
             //-------------------------------
+            // Config
+            //
+            .cfg__rdp__check_tag     ( 1'b0                    ),  // FIXME: current sim environment doesn enfore tag order
+
+            //-------------------------------
             // General
             //
-            .sys__mgr__mgrId          ( sys__mgr__mgrId    ),
-            .clk                      ( clk                ),
-            .reset_poweron            ( reset_poweron      ) 
+            .sys__mgr__mgrId         ( sys__mgr__mgrId    ),
+            .clk                     ( clk                ),
+            .reset_poweron           ( reset_poweron      ) 
  
     );
 
