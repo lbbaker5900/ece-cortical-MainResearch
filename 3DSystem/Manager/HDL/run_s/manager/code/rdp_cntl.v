@@ -204,7 +204,7 @@ module rdp_cntl (
   //
   wire                                     wud_data_available          ;
   wire                                     stuc_data_available         ;
-  reg  [`MGR_EXEC_LANE_ID_RANGE         ]  num_of_valid_lanes          ;  // how many words are valid from stack upstream packet
+  reg  [`RDP_CNTL_NUM_LANES_RANGE       ]  num_of_valid_lanes          ;  // how many words are valid from stack upstream packet
   reg                                      write_storage_ptr_tmp_valid ;
   reg  [`COMMON_STD_INTF_CNTL_RANGE     ]  write_storage_ptr_tmp_cntl  ;
   reg  [`MGR_STORAGE_DESC_ADDRESS_RANGE ]  write_storage_ptr_tmp       ;
@@ -283,6 +283,18 @@ module rdp_cntl (
   wire                                                rdp__noc__dp_pvalid_e1   ; 
   wire    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__noc__dp_data_e1     ; 
   
+
+  //-------------------------------------------------------------------------------------------------
+  // Memory Write Descriptor Packet Output
+  //  - create the packet output then steer to NoC and MWC based on pointer destination local and/or notlocal
+  wire                                                wrDescOutputPkt_valid_e1     ; 
+  wire    [`COMMON_STD_INTF_CNTL_RANGE             ]  wrDescOutputPkt_cntl_e1      ; 
+  reg     [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  wrDescOutputPkt_type_e1      ; 
+  wire    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  wrDescOutputPkt_ptype_e1     ; 
+  reg     [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  wrDescOutputPkt_desttype_e1  ;  
+  wire                                                wrDescOutputPkt_pvalid_e1    ; 
+  wire    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  wrDescOutputPkt_data_e1      ; 
+
 
   //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
@@ -913,7 +925,7 @@ module rdp_cntl (
         reg    [`MGR_STD_OOB_TAG_RANGE          ]         write_tag          ;  // this tag should match the tag from the stuc FIFO
         reg                                               write_oneIsLocal   ;  // at least one of the pointers is for this manager
         reg                                               write_oneIsNotLocal;  // at least one of the pointers is for another manager
-        reg    [`MGR_EXEC_LANE_ID_RANGE         ]         write_numLanes     ;
+        reg    [`RDP_CNTL_NUM_LANES_RANGE       ]         write_numLanes     ;
         reg    [`MGR_MGR_ID_BITMASK_RANGE       ]         write_destAddr     ;
                                                                              
         // Read data                                                         
@@ -921,7 +933,7 @@ module rdp_cntl (
         wire   [`MGR_STD_OOB_TAG_RANGE          ]         read_tag           ;
         wire                                              read_oneIsLocal    ; 
         wire                                              read_oneIsNotLocal ; 
-        wire   [`MGR_EXEC_LANE_ID_RANGE         ]         read_numLanes      ;
+        wire   [`RDP_CNTL_NUM_LANES_RANGE       ]         read_numLanes      ;
         wire   [`MGR_MGR_ID_BITMASK_RANGE       ]         read_destAddr      ;
                                                                              
         // Control                                                           
@@ -935,7 +947,7 @@ module rdp_cntl (
         // FIXME: Combine FIFO's for synthesis
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_THRESHOLD ),
-                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+1+1+`MGR_STD_OOB_TAG_WIDTH+`MGR_EXEC_LANE_ID_WIDTH+`MGR_MGR_ID_BITMASK_WIDTH)
+                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+1+1+`MGR_STD_OOB_TAG_WIDTH+`RDP_CNTL_NUM_LANES_WIDTH+`MGR_MGR_ID_BITMASK_WIDTH)
                         ) destAddr_fifo (
                                           // Status
                                          .empty            ( empty                      ),
@@ -963,7 +975,7 @@ module rdp_cntl (
         reg    [`MGR_STD_OOB_TAG_RANGE          ]            pipe_tag          ;
         reg                                                  pipe_oneIsLocal   ;
         reg                                                  pipe_oneIsNotLocal;
-        reg    [`MGR_EXEC_LANE_ID_RANGE         ]            pipe_numLanes     ;
+        reg    [`RDP_CNTL_NUM_LANES_RANGE       ]            pipe_numLanes     ;
         reg    [`MGR_MGR_ID_BITMASK_RANGE       ]            pipe_destAddr     ;
         wire                                                 pipe_read         ;
 
@@ -1069,7 +1081,7 @@ module rdp_cntl (
   wire   [`MGR_STD_OOB_TAG_RANGE          ]         from_NocInfoFifo_tag                  =  storageDestAddr_LocalFifo[0].pipe_tag             ; 
   wire                                              from_NocInfoFifo_oneIsLocal           =  storageDestAddr_LocalFifo[0].pipe_oneIsLocal      ; 
   wire                                              from_NocInfoFifo_oneIsNotLocal        =  storageDestAddr_LocalFifo[0].pipe_oneIsNotLocal   ; 
-  wire   [`MGR_EXEC_LANE_ID_RANGE         ]         from_NocInfoFifo_numLanes             =  storageDestAddr_LocalFifo[0].pipe_numLanes        ;
+  wire   [`RDP_CNTL_NUM_LANES_RANGE       ]         from_NocInfoFifo_numLanes             =  storageDestAddr_LocalFifo[0].pipe_numLanes        ;
   wire   [`MGR_MGR_ID_BITMASK_RANGE       ]         from_NocInfoFifo_destAddr             =  storageDestAddr_LocalFifo[0].pipe_destAddr        ;
 
   // check if the pointer include a local pointer and/or a pointer destined for another manager and test the local ready flag and/or NoC ready flag
@@ -1077,17 +1089,23 @@ module rdp_cntl (
 
   // we need to transfer the required number of words to satisfy the write descriptor. We transfer two words, so set our counter to numLanes[.:1] and use numLanes[0] to set payLoad valid to show
   // whether both words are valid in the transfer (the mem wr descriptor will know but lets capture pValid for completeness.
-  reg  [`MGR_EXEC_LANE_ID_MSB : `MGR_EXEC_LANE_ID_LSB+1 ]  dataCount                                                                                  ;  // count by pairs of lanes
-  wire [`MGR_EXEC_LANE_ID_MSB : `MGR_EXEC_LANE_ID_LSB+1 ]  numLanesDiv2 = from_NocInfoFifo_numLanes[`MGR_EXEC_LANE_ID_MSB : `MGR_EXEC_LANE_ID_LSB+1 ] ;  // set threshold
-  wire                                                     dataCountOdd = from_NocInfoFifo_numLanes[0]                                                ;  // use to set pValid in last transfer
+  reg  [`RDP_CNTL_NUM_LANES_MSB: `RDP_CNTL_NUM_LANES_LSB+1  ]  dataCount                                                                                    ;  // decrement by pairs of lanes
+  wire [`RDP_CNTL_NUM_LANES_MSB: `RDP_CNTL_NUM_LANES_LSB+1  ]  numLanesDiv2  = from_NocInfoFifo_numLanes[`RDP_CNTL_NUM_LANES_MSB: `RDP_CNTL_NUM_LANES_LSB+1 ]  ;  // set initial count
+  wire                                                         dataCountOdd  = from_NocInfoFifo_numLanes[0]                                                 ;  // use to set pValid in last transfer
+  wire                                                         lastDataCycle = ((dataCount == 'd1) && ~dataCountOdd)|| ((dataCount == 'd0) && dataCountOdd) ;  // last cycle will be 1 or 2 words
   always @(posedge clk)
     begin
-      dataCount <= ( reset_poweron                                                                                     ) ? 'd0                                       :
+      dataCount <= ( reset_poweron                                                                                                              ) ? 'd0                                       :
 //                   ( rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_WAIT                                  ) ? `MGR_EXEC_LANE_ID_WIDTH-1 'd0             :  
-//                   ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA) && wr_destinations_ready ) ? dataCount + `MGR_EXEC_LANE_ID_WIDTH-1 'd1 :  // increment after we have transferred two words
-                   ( rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_WAIT                                  ) ? 'd0             :  
-                   ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA) && wr_destinations_ready ) ? dataCount +  'd1 :  // increment after we have transferred two words
-                                                                                                                           dataCount                                 ;
+//                   ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_READ_DATA  ) && wr_destinations_ready ) ? dataCount + `MGR_EXEC_LANE_ID_WIDTH-1 'd1 :  // increment after we have transferred two words
+                   ( rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_WAIT                                                           ) ? numLanesDiv2     :  
+                   ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR    ) && wr_destinations_ready && from_wrPtrFifo_eom ) ? dataCount -  'd1 :  // starting data
+                   ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_PAD_NOP       ) && wr_destinations_ready                       ) ? dataCount -  'd1 :  // starting data
+                   ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_START_DATA    ) && wr_destinations_ready                       ) ? dataCount -  'd1 :  // increment after we have transferred two words
+                   ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_READ_DATA     ) && wr_destinations_ready                       ) ? dataCount -  'd1 :  // increment after we have transferred two words
+                   ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA ) && wr_destinations_ready                       ) ? dataCount -  'd1 :  // increment after we have transferred two words
+                   ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_LAST_DATA     ) && wr_destinations_ready                       ) ? dataCount -  'd1 :  // increment after we have transferred two words
+                                                                                                                                                    dataCount                                 ;
     end
   //--------------------------------------------------
   // Assumptions:
@@ -1100,7 +1118,7 @@ module rdp_cntl (
         
         // Wait for data from all the sources before transferring to NoC
         `RDP_CNTL_NOC_PKT_GEN_WAIT: 
-          rdp_cntl_noc_data_packet_gen_state_next =  ( from_Stuc_valid && from_NocInfoFifo_valid && (from_Stuc_tag != from_NocInfoFifo_tag) ) ?   `RDP_CNTL_NOC_PKT_GEN_ERR    :  // check tags
+          rdp_cntl_noc_data_packet_gen_state_next =  // FIXME ( from_Stuc_valid && from_NocInfoFifo_valid && (from_Stuc_tag != from_NocInfoFifo_tag) ) ?   `RDP_CNTL_NOC_PKT_GEN_TAG_ERR:  // check tags
                                                      ( from_Stuc_valid && from_wrPtrFifo_valid   && from_NocInfoFifo_valid                  ) ?   `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR  :
                                                                                                                                                   `RDP_CNTL_NOC_PKT_GEN_WAIT   ;
 
@@ -1122,9 +1140,11 @@ module rdp_cntl (
 
         // Assert out_valid, set fields: {optionType1=storage, extdValue1=wr_ptr}, read wrPtr pipe.
         `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR: 
-          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_START_DATA       :
-                                                     ( wr_destinations_ready && ~from_wrPtrFifo_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS    : 
-                                                                                                          `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR       ;
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom && (from_NocInfoFifo_numLanes == 'd0) ) ?   `RDP_CNTL_NOC_PKT_GEN_DATA_ERR      :   // no data??
+                                                     ( wr_destinations_ready &&  from_wrPtrFifo_eom && lastDataCycle                      ) ?   `RDP_CNTL_NOC_PKT_GEN_LAST_DATA     :   // last cycle
+                                                     ( wr_destinations_ready &&  from_wrPtrFifo_eom                                       ) ?   `RDP_CNTL_NOC_PKT_GEN_START_DATA    :
+                                                     ( wr_destinations_ready && ~from_wrPtrFifo_eom                                       ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS : 
+                                                                                                                                                `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR    ;
 
         // grab addtional ptr: 
         // a) if its the last one, then copy into output register and goto state=PAD_NOP to add 2nd NOP tuple and output the data.               Deassert out_valid, set fields: {cntl=MOM, type=descWrData, pType=tuples, prio=data, optionType0=storage, extdValue0=wrPtr}, read wrPtr pipe.
@@ -1135,34 +1155,40 @@ module rdp_cntl (
                                                                                                           `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS ;
         // Add an extra NOP tuple to pad wide bus. Assert out_valid, set fields: {optionType1=NOP, extdValue1=0}.
         `RDP_CNTL_NOC_PKT_GEN_PAD_NOP: 
-          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready  ) ?   `RDP_CNTL_NOC_PKT_GEN_START_DATA    :   // assume first chunk of data transferred on this transition
-                                                                                    `RDP_CNTL_NOC_PKT_GEN_PAD_NOP       ;
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  from_wrPtrFifo_eom && (from_NocInfoFifo_numLanes == 'd0) ) ?   `RDP_CNTL_NOC_PKT_GEN_DATA_ERR      :   // no data??
+                                                     ( wr_destinations_ready &&  from_wrPtrFifo_eom && lastDataCycle                      ) ?   `RDP_CNTL_NOC_PKT_GEN_LAST_DATA     :   // last cycle
+                                                     ( wr_destinations_ready                                                              ) ?   `RDP_CNTL_NOC_PKT_GEN_START_DATA :   // assume first chunk of data transferred on this transition
+                                                                                                                                                `RDP_CNTL_NOC_PKT_GEN_PAD_NOP    ;
 
         // All states prior set dataCount=1. End-of-Data when dataCount=numLanes. We increment dataCount by 2 because there are two words per transfer, but use the lsb of numLanes to set pValid (e.g. if numLanes is odd, set last pValid=0 (~numLanes[0])
         // This is the drive first bus half so dont worry about stuc EOM yet
         // a) if we only need this transfer: Assert out_valid, set fields: {cntl=EOM, pValid=~numLanes[0], data=stucData[0], pType=data, prio=data}, DO NOT read stucData pipe
         // b) if we need more transfers    : Assert out_valid, set fields: {cntl=MOM, pValid=1,            data=stucData[0], pType=data, prio=data}, DO NOT read stucData pipe
         `RDP_CNTL_NOC_PKT_GEN_START_DATA: 
-          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  (dataCount == from_NocInfoFifo_numLanes)) ?   `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC  : // if we are at stuc eom or not, let flush state deal with the reads
-                                                     ( wr_destinations_ready &&  (dataCount != from_NocInfoFifo_numLanes)) ?   `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA : 
-                                                                                                                               `RDP_CNTL_NOC_PKT_GEN_START_DATA  ;
-        // use the 2nd half of the stuc data
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  lastDataCycle      ) ?   `RDP_CNTL_NOC_PKT_GEN_LAST_DATA  : // if we are at stuc eom or not, let flush state deal with the reads
+                                                     ( wr_destinations_ready                        ) ?   `RDP_CNTL_NOC_PKT_GEN_READ_DATA   : 
+                                                                                                          `RDP_CNTL_NOC_PKT_GEN_START_DATA  ;
+        // use the 2nd half of the stuc data and read next double word from the stuc fifo
         // a) if we only need this transfer: Assert out_valid, set fields: {cntl=EOM, pValid=~numLanes[0], data=stucData[0], pType=data, prio=data}, read stucData pipe
         // b) if we need more transfers    : Assert out_valid, set fields: {cntl=MOM, pValid=1,            data=stucData[0], pType=data, prio=data}, read stucData pipe
-        `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA: 
-          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready && (dataCount == from_NocInfoFifo_numLanes) &&  from_Stuc_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_COMPLETE      :  // transferred enuff data and no more stuc data
-                                                     ( wr_destinations_ready && (dataCount == from_NocInfoFifo_numLanes) && ~from_Stuc_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC    :  // transferred enuff data and still more stuc data  (assume PE could send back more than we need)
-                                                     ( wr_destinations_ready && (dataCount != from_NocInfoFifo_numLanes) &&  from_Stuc_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_ERR           :  // not enuff data yet and no more stuc data
-                                                     ( wr_destinations_ready && (dataCount != from_NocInfoFifo_numLanes) && ~from_Stuc_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA :  // not enuff data 
-                                                                                                                                                 `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA   ;
+        `RDP_CNTL_NOC_PKT_GEN_READ_DATA  : 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready && lastDataCycle  && ~from_Stuc_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_LAST_DATA     :  // transferred enuff data and no more stuc data
+                                                     ( wr_destinations_ready &&                    from_Stuc_eom ) ?   `RDP_CNTL_NOC_PKT_GEN_DATA_ERR      :  // not enuff data yet and no more stuc data
+                                                     ( wr_destinations_ready                                     ) ?   `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA : 
+                                                                                                                       `RDP_CNTL_NOC_PKT_GEN_READ_DATA     ;
 
         // use the 1st half of the stuc data
         // a) if we only need this transfer: Assert out_valid, set fields: {cntl=EOM, pValid=~numLanes[0], data=stucData[0], pType=data, prio=data}, read stucData pipe
         // b) if we need more transfers    : Assert out_valid, set fields: {cntl=MOM, pValid=1,            data=stucData[0], pType=data, prio=data}, read stucData pipe
         `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA: 
-          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  (dataCount == from_NocInfoFifo_numLanes)) ?   `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC     : // if we are at stuc eom or not, let flush state deal with the reads
-                                                     ( wr_destinations_ready &&  (dataCount != from_NocInfoFifo_numLanes)) ?   `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA    : 
-                                                                                                                               `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA  ;
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready &&  lastDataCycle      ) ?   `RDP_CNTL_NOC_PKT_GEN_LAST_DATA  : // if we are at stuc eom or not, let flush state deal with the reads
+                                                     ( wr_destinations_ready                        ) ?   `RDP_CNTL_NOC_PKT_GEN_READ_DATA   : 
+                                                                                                          `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA  ;
+
+        // Last cycle
+        `RDP_CNTL_NOC_PKT_GEN_LAST_DATA: 
+          rdp_cntl_noc_data_packet_gen_state_next =  ( wr_destinations_ready ) ?   `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC  : // if we are at stuc eom or not, let flush state deal with the reads
+                                                                                   `RDP_CNTL_NOC_PKT_GEN_LAST_DATA  ;
 
         // We have completed transferring packet so just loop reading stuc pipe
         `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC: 
@@ -1174,8 +1200,10 @@ module rdp_cntl (
           rdp_cntl_noc_data_packet_gen_state_next =  `RDP_CNTL_NOC_PKT_GEN_WAIT              ;
 
         // Latch state on error
-        `RDP_CNTL_NOC_PKT_GEN_ERR:
-          rdp_cntl_noc_data_packet_gen_state_next = `RDP_CNTL_NOC_PKT_GEN_ERR ;
+        `RDP_CNTL_NOC_PKT_GEN_TAG_ERR:
+          rdp_cntl_noc_data_packet_gen_state_next = `RDP_CNTL_NOC_PKT_GEN_TAG_ERR ;
+        `RDP_CNTL_NOC_PKT_GEN_DATA_ERR:
+          rdp_cntl_noc_data_packet_gen_state_next = `RDP_CNTL_NOC_PKT_GEN_DATA_ERR ;
   
         default:
           rdp_cntl_noc_data_packet_gen_state_next = `RDP_CNTL_NOC_PKT_GEN_WAIT ;
@@ -1188,15 +1216,93 @@ module rdp_cntl (
                                                     (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR   ) & wr_destinations_ready |
                                                     (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS) & wr_destinations_ready ;
                                                                                                     
-  assign  from_Stuc_Fifo[0].pipe_read             = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_DATA  ) & wr_destinations_ready |
+  assign  from_Stuc_Fifo[0].pipe_read             = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_READ_DATA    ) & wr_destinations_ready |
                                                     (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC   )                         ;  // if we are in FLUSH_STUC, we know the pipe is valid
                                                                                                     
   assign  storageDestAddr_LocalFifo[0].pipe_read  = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_COMPLETE     )                         ;  // all done, clear info FIFO
 
+  assign  wrDescOutputPkt_valid_e1             = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR     ) & wr_destinations_ready |  
+                                                    (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR    ) & wr_destinations_ready |  
+                                                    (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_PAD_NOP       ) & wr_destinations_ready |
+                                                    (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_START_DATA    ) & wr_destinations_ready |
+                                                    (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_READ_DATA     ) & wr_destinations_ready |
+                                                    (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA ) & wr_destinations_ready |
+                                                    (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_LAST_DATA     ) & wr_destinations_ready ;
+
+  assign  wrDescOutputPkt_cntl_e1              = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR     )  ? `COMMON_STD_INTF_CNTL_SOM  :   
+                                                    (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_LAST_DATA     )  ? `COMMON_STD_INTF_CNTL_EOM  :   
+                                                                                                                                    `COMMON_STD_INTF_CNTL_MOM  ;
+
+  reg      [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ] tuple_cycle_val0   ; // store lower tuple before reading second write pointer
+  always @(posedge clk)
+    begin
+      tuple_cycle_val0   <= ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_START_PTR     ) & wr_destinations_ready ) ? from_WrPtrFifo_wrPtr :
+                            ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS ) & wr_destinations_ready ) ? from_WrPtrFifo_wrPtr :
+                                                                                                                                      tuple_cycle_val0     ;
+    end
+
+  wire     [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  header_cycle_data_fields = from_NocInfoFifo_destAddr   ;
+  wire     [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  tuple_cycle_data_fields  ;
+  assign  tuple_cycle_data_fields [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE    ]  =  PY_WU_INST_OPT_TYPE_MEMORY ;
+  assign  tuple_cycle_data_fields [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE  ]  =  tuple_cycle_val0     ;
+  assign  tuple_cycle_data_fields [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE    ]  =  (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_PAD_NOP) ? PY_WU_INST_OPT_TYPE_NOP    :  // there was an odd number of wr_ptr's
+                                                                                                                                                                     PY_WU_INST_OPT_TYPE_MEMORY ;
+  assign  tuple_cycle_data_fields [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE  ]  =  (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_PAD_NOP) ? 'd0                        :  // there was an odd number of wr_ptr's
+                                                                                                                                                                     from_WrPtrFifo_wrPtr       ;
+
+  // When we are in the last data cycle, take the upper or lower of the 4 words based on the 2 LSB of numLanes
+  // e.g. 001 -> lower, 010 -> lower, 011 -> upper, 100 -> upper  Note: 000 is invalid
+  wire   [`STACK_UP_INTF_DATA_RANGE ]    from_Stuc_last_data  =  (from_NocInfoFifo_numLanes[1:0] == 'd1) ? from_Stuc_data[`STACK_UP_INTF_DATA_LOWER_HALF_RANGE ] :  // 1
+                                                                 (from_NocInfoFifo_numLanes[1:0] == 'd2) ? from_Stuc_data[`STACK_UP_INTF_DATA_LOWER_HALF_RANGE ] :  // 2
+                                                                 (from_NocInfoFifo_numLanes[1:0] == 'd3) ? from_Stuc_data[`STACK_UP_INTF_DATA_UPPER_HALF_RANGE ] :  // 3
+                                                                                                           from_Stuc_data[`STACK_UP_INTF_DATA_UPPER_HALF_RANGE ] ;  // 4
+                                                                                                    
+  assign  wrDescOutputPkt_data_e1  = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR     ) ? header_cycle_data_fields :
+                                        (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR    ) ? tuple_cycle_data_fields  :
+                                        (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_PAD_NOP       ) ? tuple_cycle_data_fields  :
+                                        (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_START_DATA    ) ? from_Stuc_data[`STACK_UP_INTF_DATA_LOWER_HALF_RANGE ] :
+                                        (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_READ_DATA     ) ? from_Stuc_data[`STACK_UP_INTF_DATA_UPPER_HALF_RANGE ] :
+                                        (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA ) ? from_Stuc_data[`STACK_UP_INTF_DATA_LOWER_HALF_RANGE ] :
+                                        (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_LAST_DATA     ) ? from_Stuc_last_data                                       :
+                                                                                                                       {`MGR_NOC_CONT_INTERNAL_DATA_WIDTH {1'b1}}                ;
+
+  assign  wrDescOutputPkt_pvalid_e1  = ((wrDescOutputPkt_cntl_e1 == `COMMON_STD_INTF_CNTL_EOM) && dataCountOdd ) ? `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_ONE  :
+                                                                                                                      `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH ;                                                                                           
+
+  assign  wrDescOutputPkt_type_e1     = `MGR_NOC_CONT_TYPE_DESC_WRITE_DATA   ; 
+  assign  wrDescOutputPkt_desttype_e1 = `MGR_NOC_CONT_DESTINATION_ADDR_TYPE_BITMASK           ; 
+
+  assign  wrDescOutputPkt_ptype_e1   = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR     ) ? `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_HEADER :
+                                       (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_START_PTR     ) ? `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES :
+                                       (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR    ) ? `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES :
+                                       (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS ) ? `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES :
+                                       (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_PAD_NOP       ) ? `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES :
+                                                                                                                      `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_DATA   ;
+
+  //--------------------------------------------------
+  // Connect to MWC and NoC based on whether there is a write pointer destined
+  // for the local manager and/or another manager
+  assign      rdp__mwc__valid_e1         =  wrDescOutputPkt_valid_e1 & from_NocInfoFifo_oneIsLocal   ; 
+  assign      rdp__mwc__cntl_e1          =  wrDescOutputPkt_cntl_e1   ; 
+  assign      rdp__mwc__ptype_e1         =  wrDescOutputPkt_ptype_e1  ; 
+  assign      rdp__mwc__pvalid_e1        =  wrDescOutputPkt_pvalid_e1 ; 
+  assign      rdp__mwc__data_e1          =  wrDescOutputPkt_data_e1   ; 
+                                         
+  assign      rdp__noc__dp_valid_e1      =  wrDescOutputPkt_valid_e1 & from_NocInfoFifo_oneIsNotLocal   ; 
+  assign      rdp__noc__dp_cntl_e1       =  wrDescOutputPkt_cntl_e1   ; 
+  assign      rdp__noc__dp_type_e1       =  wrDescOutputPkt_type_e1   ; 
+  assign      rdp__noc__dp_desttype_e1   =  wrDescOutputPkt_desttype_e1  ; 
+  assign      rdp__noc__dp_ptype_e1      =  wrDescOutputPkt_ptype_e1  ; 
+  assign      rdp__noc__dp_pvalid_e1     =  wrDescOutputPkt_pvalid_e1 ; 
+  assign      rdp__noc__dp_data_e1       =  wrDescOutputPkt_data_e1   ; 
+
+
+
 
 
   assign  rdp__noc__cp_valid_e1 = 1'b0      ; 
-  assign  rdp__noc__dp_valid_e1 = 1'b0      ; 
+
+
 
 endmodule
 

@@ -22,7 +22,8 @@
 //---------------------------------------------------------------------------------------------------------------------
 // NoC
 
-`define MGR_ARRAY_NOC_INTERNAL_DATA_WIDTH         74
+// The internal NoC is separated into fields so the data is just the data field     
+`define MGR_ARRAY_NOC_INTERNAL_DATA_WIDTH         64
 `define MGR_ARRAY_NOC_INTERNAL_DATA_MSB          `MGR_ARRAY_NOC_INTERNAL_DATA_WIDTH-1
 `define MGR_ARRAY_NOC_INTERNAL_DATA_LSB          0
 `define MGR_ARRAY_NOC_INTERNAL_DATA_RANGE        `MGR_ARRAY_NOC_INTERNAL_DATA_MSB : `MGR_ARRAY_NOC_INTERNAL_DATA_LSB

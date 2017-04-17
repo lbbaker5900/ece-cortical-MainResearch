@@ -445,7 +445,7 @@ module manager (
             //
             // Control-Path (cp) to NoC 
             .rdp__noc__cp_valid      ( rdp__noc__cp_valid      ), 
-            .noc__rdp__cp_ready      ( noc__rdp__cp_ready      ), 
+            .noc__rdp__cp_ready      ( 1'b1      ), // FIXME
             .rdp__noc__cp_cntl       ( rdp__noc__cp_cntl       ), 
             .rdp__noc__cp_type       ( rdp__noc__cp_type       ), 
             .rdp__noc__cp_ptype      ( rdp__noc__cp_ptype      ), 
@@ -455,7 +455,7 @@ module manager (
                                                                           
              // Data-Path (dp) to NoC                                     
             .rdp__noc__dp_valid      ( rdp__noc__dp_valid      ), 
-            .noc__rdp__dp_ready      ( noc__rdp__dp_ready      ), 
+            .noc__rdp__dp_ready      ( 1'b1      ), // FIXME
             .rdp__noc__dp_cntl       ( rdp__noc__dp_cntl       ), 
             .rdp__noc__dp_type       ( rdp__noc__dp_type       ), 
             .rdp__noc__dp_ptype      ( rdp__noc__dp_ptype      ), 

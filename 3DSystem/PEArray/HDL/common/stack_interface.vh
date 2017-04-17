@@ -87,6 +87,17 @@
 `define STACK_UP_INTF_DATA_LSB                     0
 `define STACK_UP_INTF_DATA_RANGE                   `STACK_UP_INTF_DATA_MSB : `STACK_UP_INTF_DATA_LSB
 
+// define ranges for upper and lower half of 128 bit bus
+`define STACK_UP_INTF_DATA_LOWER_HALF_WIDTH                   `STACK_UP_INTF_DATA_WIDTH/2
+`define STACK_UP_INTF_DATA_LOWER_HALF_MSB                     `STACK_UP_INTF_DATA_LOWER_HALF_WIDTH-1
+`define STACK_UP_INTF_DATA_LOWER_HALF_LSB                     0
+`define STACK_UP_INTF_DATA_LOWER_HALF_RANGE                   `STACK_UP_INTF_DATA_LOWER_HALF_MSB : `STACK_UP_INTF_DATA_LOWER_HALF_LSB
+
+`define STACK_UP_INTF_DATA_UPPER_HALF_WIDTH                   `STACK_UP_INTF_DATA_WIDTH/2
+`define STACK_UP_INTF_DATA_UPPER_HALF_MSB                     `STACK_UP_INTF_DATA_UPPER_HALF_LSB+(`STACK_UP_INTF_DATA_UPPER_HALF_WIDTH-1)
+`define STACK_UP_INTF_DATA_UPPER_HALF_LSB                     `STACK_UP_INTF_DATA_LOWER_HALF_MSB+1
+`define STACK_UP_INTF_DATA_UPPER_HALF_RANGE                   `STACK_UP_INTF_DATA_UPPER_HALF_MSB : `STACK_UP_INTF_DATA_UPPER_HALF_LSB
+
 // EOM/SOM codes for cntl signal for the "standard" inter-module interface
 `define STACK_UP_INTF_TYPE_WIDTH                   4
 `define STACK_UP_INTF_TYPE_MSB                     `STACK_UP_INTF_TYPE_WIDTH-1

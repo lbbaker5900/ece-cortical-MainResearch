@@ -57,23 +57,26 @@
 //--------------------------------------------------------
 // Memory Write Pointer/Data packet generator
 
-`define RDP_CNTL_NOC_PKT_GEN_WAIT                             13'b0_0000_0000_0001
-`define RDP_CNTL_NOC_PKT_GEN_SEND_ADDR                        13'b0_0000_0000_0010
-`define RDP_CNTL_NOC_PKT_GEN_START_PTR                        13'b0_0000_0000_0100
-`define RDP_CNTL_NOC_PKT_GEN_APPEND_PTR                       13'b0_0000_0000_1000
-`define RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS                    13'b0_0000_0001_0000
-`define RDP_CNTL_NOC_PKT_GEN_PAD_NOP                          13'b0_0000_0010_0000
+`define RDP_CNTL_NOC_PKT_GEN_WAIT                             14'b00_0000_0000_0001
+`define RDP_CNTL_NOC_PKT_GEN_SEND_ADDR                        14'b00_0000_0000_0010
+`define RDP_CNTL_NOC_PKT_GEN_START_PTR                        14'b00_0000_0000_0100
+`define RDP_CNTL_NOC_PKT_GEN_APPEND_PTR                       14'b00_0000_0000_1000
+`define RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS                    14'b00_0000_0001_0000
+`define RDP_CNTL_NOC_PKT_GEN_PAD_NOP                          14'b00_0000_0010_0000
 
-`define RDP_CNTL_NOC_PKT_GEN_START_DATA                       13'b0_0000_0100_0000
-`define RDP_CNTL_NOC_PKT_GEN_APPEND_DATA                      13'b0_0000_1000_0000
-`define RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA                    13'b0_0001_0000_0000
-`define RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC                       13'b0_0010_0000_0000
-                                                                       
-`define RDP_CNTL_NOC_PKT_GEN_COMPLETE                         13'b0_1000_0000_0000
-                                                                       
-`define RDP_CNTL_NOC_PKT_GEN_ERR                              13'b1_0000_0000_0000
+`define RDP_CNTL_NOC_PKT_GEN_START_DATA                       14'b00_0000_0100_0000
+`define RDP_CNTL_NOC_PKT_GEN_READ_DATA                        14'b00_0000_1000_0000
+`define RDP_CNTL_NOC_PKT_GEN_TRANSFER_DATA                    14'b00_0001_0000_0000
+`define RDP_CNTL_NOC_PKT_GEN_LAST_DATA                        14'b00_0010_0000_0000
 
-`define RDP_CNTL_NOC_PKT_GEN_STATE_WIDTH         13
+`define RDP_CNTL_NOC_PKT_GEN_FLUSH_STUC                       14'b00_0100_0000_0000
+                                                                       
+`define RDP_CNTL_NOC_PKT_GEN_COMPLETE                         14'b00_1000_0000_0000
+                                                                       
+`define RDP_CNTL_NOC_PKT_GEN_TAG_ERR                          14'b01_0000_0000_0000
+`define RDP_CNTL_NOC_PKT_GEN_DATA_ERR                         14'b10_0000_0000_0000
+
+`define RDP_CNTL_NOC_PKT_GEN_STATE_WIDTH         14
 `define RDP_CNTL_NOC_PKT_GEN_STATE_MSB           `RDP_CNTL_NOC_PKT_GEN_STATE_WIDTH-1
 `define RDP_CNTL_NOC_PKT_GEN_STATE_LSB           0
 `define RDP_CNTL_NOC_PKT_GEN_STATE_SIZE          (`RDP_CNTL_NOC_PKT_GEN_STATE_MSB - `RDP_CNTL_NOC_PKT_GEN_STATE_LSB +1)
@@ -92,7 +95,16 @@
 
 `define RDP_CNTL_STU_NUM_OF_TRANSFERS_M1       `RDP_CNTL_STU_NUM_OF_TRANSFERS-1  // to make comparison easy
 
+//--------------------------------------------------------
+// Number of active lanes is 1..32, so need 6 bits
   
+`define RDP_CNTL_NUM_LANES_WIDTH               (`CLOG2(`PE_NUM_OF_EXEC_LANES))+1
+`define RDP_CNTL_NUM_LANES_MSB           `RDP_CNTL_NUM_LANES_WIDTH-1
+`define RDP_CNTL_NUM_LANES_LSB            0
+`define RDP_CNTL_NUM_LANES_SIZE           (`RDP_CNTL_NUM_LANES_MSB - `RDP_CNTL_NUM_LANES_LSB +1)
+`define RDP_CNTL_NUM_LANES_RANGE           `RDP_CNTL_NUM_LANES_MSB : `RDP_CNTL_NUM_LANES_LSB
+
+
 //------------------------------------------------------------------------------------------------------------
 
 
