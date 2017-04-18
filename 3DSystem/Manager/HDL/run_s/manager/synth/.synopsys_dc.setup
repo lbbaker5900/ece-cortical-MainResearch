@@ -1,0 +1,25 @@
+# rename as .synopsys_dc.setup 
+
+# Search Path variables  
+#set MGR_SIM_COM_DIR  "../../../../../Manager/SIMULATION/common"
+set MGR_COM_DIR       "../../../../../Manager/HDL/common"
+set PE_COM_DIR        "../../../../../PEArray/HDL/common"
+set PE_RTL_COM_DIR    "../../../../../PEArray/HDL/run_s/common/code"
+set SYS_RTL_COM_DIR   "../../../../../System/HDL/common"
+
+#set path1 "/afs/eos.ncsu.edu/lockers/research/ece/wdavis/tech/nangate/NangateOpenCellLibrary_PDKv1_2_v2008_10/liberty/520"
+set LIB_PATH "/afs/eos.ncsu.edu/lockers/research/ece/wdavis/tech/synopsys/SAED32/SAED32_EDK/lib/stdcell_lvt/db_ccs"
+
+set search_path "$MGR_COM_DIR $PE_COM_DIR $PE_RTL_COM_DIR $SYS_RTL_COM_DIR $LIB_PATH $search_path";
+
+set search_path [concat  $search_path [list [format "%s%s"  $synopsys_root "/libraries/syn"]]]
+set search_path [concat  $search_path [list "." [format "%s%s"  $synopsys_root "/dw/sim_ver"]]]
+
+# Library Variables 
+set synthetic_library [list dw_foundation.sldb]
+#set target_library NangateOpenCellLibrary_PDKv1_2_v2008_10_slow_nldm.db
+set target_library saed32lvt_ss0p95v125c.db
+set link_library   [concat  $target_library $synthetic_library]
+
+set verilogout_no_tri "true"
+

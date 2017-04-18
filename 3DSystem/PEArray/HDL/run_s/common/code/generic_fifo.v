@@ -21,49 +21,43 @@
 `timescale 1ns/10ps
 
 
-module generic_fifo (
-                  // Write
-                  empty             ,
-                  almost_full       ,
-                  write             ,
-                  write_data        ,
-                  // Read
-                  read              ,
-                  read_data         ,
+module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
+                      parameter GENERIC_FIFO_THRESHOLD   = 32  ,
+                      parameter GENERIC_FIFO_DATA_WIDTH  = 4   )
+                 (
 
-                  // General
-                  clk               ,
-                  clear             ,
-                  reset_poweron     
+          //---------------------------------------------------------------
+          // General
+          input   wire                       clk            ,
+          input   wire                       reset_poweron  ,
+          input   wire                       clear          ,
+          
+          
+          //---------------------------------------------------------------
+          // Input
+          input   wire                                      write       , 
+          input   wire  [GENERIC_FIFO_DATA_WIDTH-1 :0  ]    write_data  ,
+          
+          //---------------------------------------------------------------
+          // Output
+          input   wire                                      read        , 
+          output  reg   [GENERIC_FIFO_DATA_WIDTH-1 :0  ]    read_data   ,
+          
+          //---------------------------------------------------------------
+          // Status
+          output  wire                                      empty       , 
+          output  wire                                      almost_full         
+
              );
 
-
+/*
   parameter GENERIC_FIFO_DEPTH            = 8                          ;
   parameter GENERIC_FIFO_DATA_WIDTH       = 32                         ;
   parameter GENERIC_FIFO_THRESHOLD        = 4                          ; 
-
+*/
   // 
-  parameter GENERIC_FIFO_ADDR_WIDTH       = $clog2(GENERIC_FIFO_DEPTH) ;
+  localparam GENERIC_FIFO_ADDR_WIDTH       = $clog2(GENERIC_FIFO_DEPTH) ;
 
-  input                       clk            ;
-  input                       reset_poweron  ;
-  input                       clear          ;
-  
-
-  //----------------------------------------------------------------------------------------------------
-  // Input
-  input                                        write                           ; 
-  input  [GENERIC_FIFO_DATA_WIDTH-1 :0  ]      write_data                      ;
-
-  //----------------------------------------------------------------------------------------------------
-  // Output
-  input                                        read                            ; 
-  output [GENERIC_FIFO_DATA_WIDTH-1 :0  ]      read_data                       ;
-
-  //----------------------------------------------------------------------------------------------------
-  // Status
-  output                                       empty                           ; 
-  output                                       almost_full                     ; 
 
 
   //--------------------------------------------------------
@@ -74,15 +68,9 @@ module generic_fifo (
   reg  [GENERIC_FIFO_ADDR_WIDTH-1 :0  ]       wp                                       ; 
   reg  [GENERIC_FIFO_ADDR_WIDTH-1 :0  ]       rp                                       ; 
   reg  [GENERIC_FIFO_ADDR_WIDTH-1 :0  ]       depth                                    ; 
-  wire                                        empty                                    ; 
-  wire                                        almost_full                              ; 
   //`ifdef TESTING
   reg                                         full                                     ;   // latch the fall condition for debug
   // `endif
-  wire                                        read                                     ; 
-  reg  [GENERIC_FIFO_DATA_WIDTH-1 :0  ]       read_data                                ;
-  wire [GENERIC_FIFO_DATA_WIDTH-1 :0  ]       write_data                               ;
-  wire                                        write                                    ; 
   
   always @(posedge clk)
     begin
@@ -131,3 +119,5 @@ module generic_fifo (
 
 
 endmodule
+
+

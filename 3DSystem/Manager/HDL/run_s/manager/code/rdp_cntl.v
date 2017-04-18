@@ -29,7 +29,14 @@
 `include "rdp_cntl.vh"
 
 
+package rdp_cntl_types;
 
+  typedef logic  [`MGR_WU_OPT_TYPE_RANGE    ]    d_wud__rdp__option_type_t    [`MGR_WU_OPT_PER_INST ] ;  // WU Instruction option fields
+  typedef logic  [`MGR_WU_OPT_VALUE_RANGE   ]    d_wud__rdp__option_value_t   [`MGR_WU_OPT_PER_INST ] ;  
+
+endpackage: rdp_cntl_types
+
+import rdp_cntl_types::*;
 
 module rdp_cntl (
 
@@ -131,6 +138,8 @@ module rdp_cntl (
   input  [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag                  ;  // decoder generates tag for Return data proc and Downstream OOB
   input  [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type    [`MGR_WU_OPT_PER_INST ] ;  // WU Instruction option fields
   input  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ;  
+  //input     d_wud__rdp__option_type_t  wud__rdp__option_type     ;  // WU Instruction option fields
+  //input     d_wud__rdp__option_value_t wud__rdp__option_value    ;  
 
 
 
