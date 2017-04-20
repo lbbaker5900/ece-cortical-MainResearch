@@ -1273,7 +1273,7 @@ module rdp_cntl (
                                                                  (from_NocInfoFifo_numLanes[1:0] == 'd3) ? from_Stuc_data[`STACK_UP_INTF_DATA_UPPER_HALF_RANGE ] :  // 3
                                                                                                            from_Stuc_data[`STACK_UP_INTF_DATA_UPPER_HALF_RANGE ] ;  // 4
                                                                                                     
-  assign  wrDescOutputPkt_data_e1  = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR     ) ? header_cycle_data_fields :
+  assign  wrDescOutputPkt_data_e1  =    (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR     ) ? header_cycle_data_fields :
                                         (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_APPEND_PTR    ) ? tuple_cycle_data_fields  :
                                         (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_PAD_NOP       ) ? tuple_cycle_data_fields  :
                                         (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_START_DATA    ) ? from_Stuc_data[`STACK_UP_INTF_DATA_LOWER_HALF_RANGE ] :
@@ -1299,6 +1299,11 @@ module rdp_cntl (
   //--------------------------------------------------
   // Connect to MWC and NoC based on whether there is a write pointer destined
   // for the local manager and/or another manager
+  //
+  // Remember for the packet to the NoC, deassert the bit that refers to this manager
+  reg [`MGR_MGR_ID_BITMASK_RANGE      ] thisMgrBitMask       ; 
+  `include "mgr_noc_cntl_create_thisMgr_bitmask_address.vh"
+
   assign      rdp__mwc__valid_e1         =  wrDescOutputPkt_valid_e1 & from_NocInfoFifo_oneIsLocal   ; 
   assign      rdp__mwc__cntl_e1          =  wrDescOutputPkt_cntl_e1   ; 
   assign      rdp__mwc__ptype_e1         =  wrDescOutputPkt_ptype_e1  ; 
@@ -1311,7 +1316,7 @@ module rdp_cntl (
   assign      rdp__noc__dp_desttype_e1   =  wrDescOutputPkt_desttype_e1  ; 
   assign      rdp__noc__dp_ptype_e1      =  wrDescOutputPkt_ptype_e1  ; 
   assign      rdp__noc__dp_pvalid_e1     =  wrDescOutputPkt_pvalid_e1 ; 
-  assign      rdp__noc__dp_data_e1       =  wrDescOutputPkt_data_e1   ; 
+  assign      rdp__noc__dp_data_e1       =  wrDescOutputPkt_data_e1  & ~thisMgrBitMask  ; 
 
 
 

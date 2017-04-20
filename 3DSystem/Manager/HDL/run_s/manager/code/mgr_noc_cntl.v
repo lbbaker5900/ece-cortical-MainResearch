@@ -152,7 +152,8 @@ module mgr_noc_cntl (
   reg                                               noc__locl__dp_ready      ; 
 
   `include "mgr_noc_cntl_noc_ports_wires.vh"
-  `include "mgr_noc_cntl_noc_wires.vh"
+
+  reg [`MGR_MGR_ID_BITMASK_RANGE              ]   thisMgrBitMask           ;  // bit field used to mask off bits associated with this manager
 
   reg                                             noc__locl__cp_valid      ; 
   reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__cp_cntl       ; 
@@ -228,6 +229,7 @@ module mgr_noc_cntl (
   // General use assignments
   //
 
+  `include "mgr_noc_cntl_create_thisMgr_bitmask_address.vh"
   `include "mgr_noc_cntl_noc_general_assignments.vh"
 
 
@@ -723,7 +725,10 @@ module mgr_noc_cntl (
 
   
         default:
-          local_data_toNoc = 'd0;
+          begin
+            local_cntl_toNoc = 'd0;
+            local_data_toNoc = 'd0;
+          end
     
       endcase 
     end 

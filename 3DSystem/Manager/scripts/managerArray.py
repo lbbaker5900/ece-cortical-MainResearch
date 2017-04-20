@@ -388,15 +388,8 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/mgr_noc_cntl_noc_wires.vh', 'w')
 
-  pLine = ""
-  pLine = pLine + '\n   reg [`MGR_MGR_ID_BITMASK_RANGE      ] thisMgrBitMask       ; '
-
-  f.write(pLine)
-  f.close()
-
-  f = open('../HDL/common/mgr_noc_cntl_noc_general_assignments.vh', 'w')
+  f = open('../HDL/common/mgr_noc_cntl_create_thisMgr_bitmask_address.vh', 'w')
   pLine = ""
 
   # Convert sys__mgr__mgrId to a bit field
@@ -427,6 +420,13 @@ if __name__ == "__main__":
   pLine = pLine + '\n    end'
   pLine = pLine + '\n'
   
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/mgr_noc_cntl_noc_general_assignments.vh', 'w')
+  pLine = ""
+
   for port in range (0, numOfPorts):
     pLine = pLine + '\n    wire  port{0}_localInqReq          ; // Request from an input port after being gated with local bitMask'.format(port)
     pLine = pLine + '\n    reg   port{0}_localInqPriority     ; // Indicate whether packet is Control or Data'.format(port)
