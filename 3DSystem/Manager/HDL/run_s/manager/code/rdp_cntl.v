@@ -392,7 +392,7 @@ module rdp_cntl (
                                                                            
         // Read data                                                       
         wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         read_dcntl          ;
-        reg    [`MGR_STD_OOB_TAG_RANGE          ]         read_tag            ;
+        wire   [`MGR_STD_OOB_TAG_RANGE          ]         read_tag            ;
         wire   [`MGR_WU_OPT_TYPE_RANGE          ]         read_option_type     [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
         wire   [`MGR_WU_OPT_VALUE_RANGE         ]         read_option_value    [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
 
@@ -527,8 +527,8 @@ module rdp_cntl (
                                                                            
         // Read data                                                       
         wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         read_cntl          ;
-        reg    [`MGR_STD_OOB_TAG_RANGE          ]         read_tag           ;
-        reg    [`STACK_UP_INTF_DATA_RANGE       ]         read_data          ;
+        wire   [`MGR_STD_OOB_TAG_RANGE          ]         read_tag           ;
+        wire   [`STACK_UP_INTF_DATA_RANGE       ]         read_data          ;
 
         // Control
         wire                                              clear            ; 
@@ -542,7 +542,7 @@ module rdp_cntl (
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`RDP_CNTL_STUC_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`RDP_CNTL_STUC_FIFO_THRESHOLD ),
                        .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_STD_OOB_TAG_WIDTH+`STACK_UP_INTF_DATA_WIDTH)
-                        ) instr_fifo (
+                        ) gfifo (
                                           // Status
                                          .empty            ( empty                                     ),
                                          .almost_full      ( almost_full                               ),

@@ -404,6 +404,7 @@ if __name__ == "__main__":
   #pLine = pLine + '\nDEBUG NUMOFPE= {0}'.format(numOfMgr)
   numOfMgrIdBits = int(math.log(numOfMgr,2))
   pLine = pLine + '\n  // Convert the sys__mgr__mgrId to a bit mask'
+  pLine = pLine + '\n  // This bitMask is used to determine if any incoming NoC packets are addressing the local port'
   pLine = pLine + '\n  always @(*)'
   pLine = pLine + '\n    begin'
   pLine = pLine + '\n      case(sys__mgr__mgrId)'

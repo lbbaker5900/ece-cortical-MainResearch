@@ -1,6 +1,7 @@
 
 
   // Convert the sys__mgr__mgrId to a bit mask
+  // This bitMask is used to determine if any incoming NoC packets are addressing the local port
   always @(*)
     begin
       case(sys__mgr__mgrId)

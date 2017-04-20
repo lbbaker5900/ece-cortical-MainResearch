@@ -155,155 +155,235 @@ module mgr_noc_cntl (
   `include "mgr_noc_cntl_noc_wires.vh"
 
   reg                                             noc__locl__cp_valid      ; 
-  reg  [`COMMON_STD_INTF_CNTL_RANGE             ] noc__locl__cp_cntl       ; 
-  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ] noc__locl__cp_type       ; 
-  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ] noc__locl__cp_ptype      ; 
-  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] noc__locl__cp_data       ; 
-  reg  [`MGR_MGR_ID_RANGE                       ] noc__locl__cp_mgrId      ; 
-  //reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__locl__cp_laneId     ; 
-  //reg                                             noc__locl__cp_strmId     ; 
-  
+  reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__cp_cntl       ; 
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__cp_type       ; 
+  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__cp_ptype      ; 
+  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__cp_data       ; 
+  reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__cp_mgrId      ; 
+                                                 
   reg                                             noc__locl__cp_valid_p1   ; 
-  reg  [`COMMON_STD_INTF_CNTL_RANGE             ] noc__locl__cp_cntl_p1    ; 
-  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ] noc__locl__cp_type_p1    ; 
-  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ] noc__locl__cp_ptype_p1   ; 
-  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] noc__locl__cp_data_p1    ; 
-
-
+  reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__cp_cntl_p1    ; 
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__cp_type_p1    ; 
+  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__cp_ptype_p1   ; 
+  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__cp_data_p1    ; 
+                                                 
+                                                 
   reg                                             noc__locl__dp_valid      ; 
-  reg  [`COMMON_STD_INTF_CNTL_RANGE             ] noc__locl__dp_cntl       ; 
-                                            
-  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ] noc__locl__dp_type       ; 
-  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ] noc__locl__dp_ptype      ; 
-  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] noc__locl__dp_data       ; 
-  //reg  [`STREAMING_OP_CNTL_EXEC_LANE_ID_RANGE   ] noc__locl__dp_laneId     ; 
-  //reg                                             noc__locl__dp_strmId     ; 
-  
+  reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__dp_cntl       ; 
+                                                 
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__dp_type       ; 
+  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__dp_ptype      ; 
+  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__dp_data       ; 
+                                                 
   reg                                             noc__locl__dp_valid_p1   ; 
-  reg  [`COMMON_STD_INTF_CNTL_RANGE             ] noc__locl__dp_cntl_p1    ; 
-                                            
-  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ] noc__locl__dp_type_p1    ; 
-  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ] noc__locl__dp_ptype_p1   ; 
-  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] noc__locl__dp_data_p1    ; 
+  reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__dp_cntl_p1    ; 
+                                                 
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__dp_type_p1    ; 
+  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__dp_ptype_p1   ; 
+  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__dp_data_p1    ; 
   
+  reg                                               locl__noc__cp_valid_d1      ; 
+  reg    [`COMMON_STD_INTF_CNTL_RANGE          ]    locl__noc__cp_cntl_d1       ; 
+  wire                                              noc__locl__cp_ready_p1      ; 
+  reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    locl__noc__cp_type_d1       ; 
+  reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    locl__noc__cp_ptype_d1      ; 
+  reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    locl__noc__cp_desttype_d1   ; 
+  reg                                               locl__noc__cp_pvalid_d1     ; 
+  reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    locl__noc__cp_data_d1       ; 
+                                                   
+  // Aggregate Data-path (dp) to NoC               
+  reg                                               locl__noc__dp_valid_d1      ; 
+  reg    [`COMMON_STD_INTF_CNTL_RANGE          ]    locl__noc__dp_cntl_d1       ; 
+  wire                                              noc__locl__dp_ready_p1      ; 
+  reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    locl__noc__dp_type_d1       ; 
+  reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    locl__noc__dp_ptype_d1      ; 
+  reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    locl__noc__dp_desttype_d1   ; 
+  reg                                               locl__noc__dp_pvalid_d1     ; 
+  reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    locl__noc__dp_data_d1       ; 
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  // Registered Inputs and Outputs
+  always @(posedge clk)
+    begin
+      locl__noc__cp_valid_d1       <= ( reset_poweron   ) ? 'd0  :  locl__noc__cp_valid       ;
+      locl__noc__cp_cntl_d1        <= ( reset_poweron   ) ? 'd0  :  locl__noc__cp_cntl        ;
+      noc__locl__cp_ready          <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_ready_p1    ;
+      locl__noc__cp_type_d1        <= ( reset_poweron   ) ? 'd0  :  locl__noc__cp_type        ;
+      locl__noc__cp_ptype_d1       <= ( reset_poweron   ) ? 'd0  :  locl__noc__cp_ptype       ;
+      locl__noc__cp_desttype_d1    <= ( reset_poweron   ) ? 'd0  :  locl__noc__cp_desttype    ;
+      locl__noc__cp_pvalid_d1      <= ( reset_poweron   ) ? 'd0  :  locl__noc__cp_pvalid      ;
+      locl__noc__cp_data_d1        <= ( reset_poweron   ) ? 'd0  :  locl__noc__cp_data        ;
+                                                                    
+      locl__noc__dp_valid_d1       <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_valid       ;
+      locl__noc__dp_cntl_d1        <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_cntl        ;
+      noc__locl__dp_ready          <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_ready_p1    ;
+      locl__noc__dp_type_d1        <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_type        ;
+      locl__noc__dp_ptype_d1       <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_ptype       ;
+      locl__noc__dp_desttype_d1    <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_desttype    ;
+      locl__noc__dp_pvalid_d1      <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_pvalid      ;
+      locl__noc__dp_data_d1        <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_data        ;
+    end
+
   //-------------------------------------------------------------------------------------------
   // General use assignments
   //
 
   `include "mgr_noc_cntl_noc_general_assignments.vh"
 
-  //------------------------------------------
-  // FIFO to NoC has enough space to contain a DMA packet before it is
-  // transferred to the NoC
+
+  //------------------------------------------------------------
+  // Control and Data to NoC FIFO(s)
   //
-  // Control to NoC FIFO
-  //
+
   genvar gvi;
   generate
-    for (gvi=0; gvi<1; gvi=gvi+1) 
-      begin: to_NoC_control_fifo
-        `Control_to_NoC_FIFO
+    for (gvi=0; gvi<2; gvi=gvi+1) 
+      begin: from_local_fifo
+
+        // Write data
+        reg    [`COMMON_STD_INTF_CNTL_RANGE          ]    write_cntl       ;
+        reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    write_type       ; 
+        reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    write_ptype      ; 
+        reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    write_desttype   ; 
+        reg                                               write_pvalid     ; 
+        reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    write_data       ; 
+
+        // Read data                                                       
+        wire   [`COMMON_STD_INTF_CNTL_RANGE          ]    read_cntl        ;
+        wire   [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    read_type        ; 
+        wire   [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    read_ptype       ; 
+        wire   [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    read_desttype    ; 
+        wire                                              read_pvalid      ; 
+        wire   [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    read_data        ; 
+
+        // Control
+        wire                                              clear            ; 
+        wire                                              empty            ; 
+        wire                                              almost_full      ; 
+        wire                                              read             ; 
+        wire                                              write            ; 
+ 
+
+        // Combine FIFO bits
+        generic_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_DEPTH                 ), 
+                       .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_ALMOST_FULL_THRESHOLD ),
+                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_NOC_CONT_NOC_PACKET_TYPE_WIDTH+`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_WIDTH+`MGR_NOC_CONT_NOC_DEST_TYPE_WIDTH+1+`MGR_NOC_CONT_INTERNAL_DATA_WIDTH)
+                        ) fromLocal_fifo (
+                                          // Status
+                                         .empty            ( empty                                     ),
+                                         .almost_full      ( almost_full                               ),
+                                          // Write                                                     
+                                         .write            ( write                                     ),
+                                         .write_data       ( {write_cntl, write_type, write_ptype, write_desttype, write_pvalid, write_data}),
+                                          // Read                                                
+                                         .read             ( read                                      ),
+                                         .read_data        ( { read_cntl,  read_type,  read_ptype,  read_desttype,  read_pvalid,  read_data}),
+
+                                         // General
+                                         .clear            ( clear                                     ),
+                                         .reset_poweron    ( reset_poweron                             ),
+                                         .clk              ( clk                                       )
+                                         );
+        // Note: First stage of pipeline is inside FIFO
+        // fifo output stage
+        reg                                                  fifo_pipe_valid   ;
+        wire                                                 fifo_pipe_read    ;
+        // pipe stage
+        reg                                                  pipe_valid        ;
+        reg    [`COMMON_STD_INTF_CNTL_RANGE          ]       pipe_cntl         ;
+        reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]       pipe_type         ; 
+        reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]       pipe_ptype        ; 
+        reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]       pipe_desttype     ; 
+        reg                                                  pipe_pvalid       ; 
+        reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]       pipe_data         ; 
+
+        wire                                                 pipe_read         ;
+
+
+        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
+        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
+
+        // If we are reading the fifo, then this stage will be valid
+        // If we are not reading the fifo but the next stage is reading this stage, then this stage will not be valid
+        always @(posedge clk)
+          begin
+            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
+                               ( read               ) ? 'b1               :
+                               ( fifo_pipe_read     ) ? 'b0               :
+                                                         fifo_pipe_valid  ;
+          end
+
+        always @(posedge clk)
+          begin
+            // If we are reading the previous stage, then this stage will be valid
+            // otherwise if we are reading this stage this stage will not be valid
+            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
+                               ( fifo_pipe_read     ) ? 'b1              :
+                               ( pipe_read          ) ? 'b0              :
+                                                         pipe_valid      ;
+        
+            // if we are reading, transfer from previous pipe stage. 
+            pipe_cntl           <= ( fifo_pipe_read     ) ? read_cntl            :
+                                                            pipe_cntl            ;
+            pipe_type           <= ( fifo_pipe_read     ) ? read_type            :
+                                                            pipe_type            ;
+            pipe_ptype          <= ( fifo_pipe_read     ) ? read_ptype           :
+                                                            pipe_ptype           ;
+            pipe_desttype       <= ( fifo_pipe_read     ) ? read_desttype        :
+                                                            pipe_desttype        ;
+            pipe_pvalid         <= ( fifo_pipe_read     ) ? read_pvalid          :
+                                                            pipe_pvalid          ;
+            pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
+                                                            pipe_data            ;
+          end
+
+        reg    [`MGR_NOC_CONT_TO_INTF_DATA_FIFO_PKT_CNT_RANGE ]    pkt_count       ;
+        always @(posedge clk)
+          begin
+            pkt_count  <=  ( reset_poweron || clear                                                                                        ) ? 'd0             :
+                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_EOM)) && ( pipe_read && pipe_cntl != `COMMON_STD_INTF_CNTL_EOM)) ? pkt_count + 'd1 :
+                           (( write && (write_cntl != `COMMON_STD_INTF_CNTL_EOM)) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_EOM)) ? pkt_count - 'd1 :
+                                                                                                                                               pkt_count       ;
+          end
+
+        assign clear   =   1'b0                ;
+
       end
   endgenerate
 
-  assign to_NoC_control_fifo[0].clear      = 1'b0                   ;
-  assign to_NoC_control_fifo[0].cntl       = locl__noc__cp_cntl     ;
-  assign to_NoC_control_fifo[0].type       = locl__noc__cp_type     ;
-  assign to_NoC_control_fifo[0].ptype      = locl__noc__cp_ptype    ;
-  assign to_NoC_control_fifo[0].desttype   = locl__noc__cp_desttype ;
-  assign to_NoC_control_fifo[0].pvalid     = locl__noc__cp_pvalid   ;
-  assign to_NoC_control_fifo[0].data       = locl__noc__cp_data     ;
-  //assign to_NoC_control_fifo[0].laneId     = locl__noc__cp_laneId   ;
+  //--------------------------------------------------
+  // Control
+  assign from_local_fifo[0].write         =   locl__noc__cp_valid_d1  ;
+  always @(*)
+    begin
+      from_local_fifo[0].write_cntl       =   locl__noc__cp_cntl_d1     ;
+      from_local_fifo[0].write_type       =   locl__noc__cp_type_d1     ;
+      from_local_fifo[0].write_ptype      =   locl__noc__cp_ptype_d1    ;
+      from_local_fifo[0].write_desttype   =   locl__noc__cp_desttype_d1 ;
+      from_local_fifo[0].write_pvalid     =   locl__noc__cp_pvalid_d1   ;
+      from_local_fifo[0].write_data       =   locl__noc__cp_data_d1     ;
+    end
+         
+  assign noc__locl__cp_ready_p1              = ~from_local_fifo[0].almost_full  ;
 
-  assign to_NoC_control_fifo[0].fifo_write = locl__noc__cp_valid    ;
-
-  always @(posedge clk)
-    noc__locl__cp_ready  <= ~to_NoC_control_fifo[0].fifo_almost_full ;
-
-  //------------------------------------------------------------
-  // Data to NoC FIFO
-  //
-  generate
-    for (gvi=0; gvi<1; gvi=gvi+1) 
-      begin: to_NoC_data_fifo
-        `NoC_to_NoC_data_intf
-      end
-  endgenerate
-
-  assign to_NoC_data_fifo[0].clear        = 1'b0                     ; 
-  assign to_NoC_data_fifo[0].cntl         = locl__noc__dp_cntl       ; 
-  assign to_NoC_data_fifo[0].type         = locl__noc__dp_type       ; 
-  assign to_NoC_data_fifo[0].ptype        = locl__noc__dp_ptype      ;
-  assign to_NoC_data_fifo[0].desttype     = locl__noc__dp_desttype   ;
-  assign to_NoC_data_fifo[0].pvalid       = locl__noc__dp_pvalid     ;
-  assign to_NoC_data_fifo[0].data         = locl__noc__dp_data       ; 
-
-  //assign to_NoC_data_fifo[0].mgrId        = locl__noc__dp_mgrId      ; 
-  //assign to_NoC_data_fifo[0].laneId       = locl__noc__dp_laneId     ; 
-  //assign to_NoC_data_fifo[0].strmId       = locl__noc__dp_strmId     ; 
-
-  assign to_NoC_data_fifo[0].fifo_write   = locl__noc__dp_valid      ;
-  always @(posedge clk)
-    noc__locl__dp_ready                   <= ~to_NoC_data_fifo[0].fifo_almost_full ;
-
-  assign to_NoC_data_fifo[0].fifo_write   =   locl__noc__dp_valid    ; 
+  //--------------------------------------------------
+  // Data
+  assign from_local_fifo[1].write         =   locl__noc__dp_valid_d1  ;
+  always @(*)
+    begin
+      from_local_fifo[1].write_cntl       =   locl__noc__dp_cntl_d1     ;
+      from_local_fifo[1].write_type       =   locl__noc__dp_type_d1     ;
+      from_local_fifo[1].write_ptype      =   locl__noc__dp_ptype_d1    ;
+      from_local_fifo[1].write_desttype   =   locl__noc__dp_desttype_d1 ;
+      from_local_fifo[1].write_pvalid     =   locl__noc__dp_pvalid_d1   ;
+      from_local_fifo[1].write_data       =   locl__noc__dp_data_d1     ;
+    end
+         
+  assign noc__locl__dp_ready_p1              = ~from_local_fifo[1].almost_full  ;
 
   //--------------------------------------------------------------------------
-  //----------------------------- START OF DEBUG -----------------------------
-  //------------------------------------------------------------
-  // FIXME - Debug - Loop requests back 
-  //
-  //
-`ifdef DEBUG_NOC_LOOPBACK
-  reg noc__locl__cp_valid_d1 ;
-  always @(posedge clk)
-    noc__locl__cp_valid_d1  <=  to_NoC_control_fifo[0].fifo_read            ; 
-
-  assign to_NoC_control_fifo[0].fifo_read  = locl__noc__cp_ready & ~to_NoC_control_fifo[0].fifo_empty    ;
-  assign  noc__locl__cp_cntl    =  to_NoC_control_fifo[0].fifo_read_cntl       ; 
-  assign  noc__locl__cp_type    =  to_NoC_control_fifo[0].fifo_read_type       ; 
-  assign  noc__locl__cp_data    =  to_NoC_control_fifo[0].fifo_read_data       ; 
-  assign  noc__locl__cp_mgrId   =  sys__mgr__mgrId                             ; 
-  assign  noc__locl__cp_laneId  =  to_NoC_control_fifo[0].fifo_read_laneId     ; 
-  assign  noc__locl__cp_strmId  =  to_NoC_control_fifo[0].fifo_read_strmId     ; 
-  assign  noc__locl__cp_valid   =  noc__locl__cp_valid_d1                      ; 
 
 
-  // FIXME - Debug - Loop Data back 
-  assign to_NoC_data_fifo[0].fifo_read =  locl__noc__dp_ready & ~to_NoC_data_fifo[0].fifo_empty  ; 
-  assign  noc__locl__dp_cntl           =  to_NoC_data_fifo[0].fifo_read_cntl   ; 
-  assign  noc__locl__dp_type           =  to_NoC_data_fifo[0].fifo_read_type   ; 
-  assign  noc__locl__dp_laneId         =  to_NoC_data_fifo[0].fifo_read_laneId ;
-  assign  noc__locl__dp_strmId         =  to_NoC_data_fifo[0].fifo_read_strmId ; 
-  assign  noc__locl__dp_data           =  to_NoC_data_fifo[0].fifo_read_data   ;
-  assign  noc__locl__dp_valid          =  to_NoC_data_fifo[0].fifo_read_data_valid        ; 
-
-  //------------------------------ END OF DEBUG ------------------------------
-  //--------------------------------------------------------------------------
-  //
-`else
-
-
-  //------------------------------------------------------------
-  // FIXME 
-  // DEBUG : loop back until we have completed debug
-  // Read controlled by Local outq controller
-  /*
-  assign  noc__locl__cp_cntl   =  to_NoC_control_fifo[0].fifo_read_cntl       ; 
-  assign  noc__locl__cp_type   =  to_NoC_control_fifo[0].fifo_read_type       ; 
-  assign  noc__locl__cp_data   =  to_NoC_control_fifo[0].fifo_read_data       ; 
-  assign  noc__locl__cp_mgrId   =  sys__mgr__mgrId                                        ; 
-  assign  noc__locl__cp_laneId =  to_NoC_control_fifo[0].fifo_read_laneId     ; 
-  assign  noc__locl__cp_strmId =  to_NoC_control_fifo[0].fifo_read_strmId     ; 
-  assign  noc__locl__cp_valid  =  to_NoC_control_fifo[0].fifo_read_data_valid ; 
-
-  assign  noc__locl__dp_cntl    =  to_NoC_data_fifo[0].fifo_read_cntl          ; 
-  assign  noc__locl__dp_type    =  to_NoC_data_fifo[0].fifo_read_type          ; 
-  assign  noc__locl__dp_laneId  =  to_NoC_data_fifo[0].fifo_read_laneId        ;
-  assign  noc__locl__dp_strmId  =  to_NoC_data_fifo[0].fifo_read_strmId        ; 
-  assign  noc__locl__dp_data    =  to_NoC_data_fifo[0].fifo_read_data          ;
-  assign  noc__locl__dp_valid   =  to_NoC_data_fifo[0].fifo_read_data_valid    ; 
-*/
 
   //--------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------
@@ -319,17 +399,26 @@ module mgr_noc_cntl (
   //--------------------------------------------------------------------------------------------
   //  wires
   
+  // from local FIFO flags for FSM
+  wire from_local_cp_fifo_som           = (from_local_fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM) | (from_local_fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) ;
+  wire from_local_cp_fifo_eom           = (from_local_fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_EOM) | (from_local_fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) ;
+  wire from_local_cp_fifo_mom           = (from_local_fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_MOM) ;
+  wire from_local_cp_fifo_pkt_available = (from_local_fifo[0].pkt_count > 0) ;
 
-  wire                                        local_toNoc_valid    ;  // when valid, destination port(s) must write local output data to their output fifo's
-  wire [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE      ]  local_cntl_toNoc     ;  // local output cntl to destination port to be sent directly to butterfly network
-  reg  [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE      ]  local_data_toNoc     ;  // local output data to destination port to be sent directly to butterfly network
+  wire from_local_dp_fifo_som           = (from_local_fifo[1].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM) | (from_local_fifo[1].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) ;
+  wire from_local_dp_fifo_eom           = (from_local_fifo[1].pipe_cntl == `COMMON_STD_INTF_CNTL_EOM) | (from_local_fifo[1].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) ;
+  wire from_local_dp_fifo_mom           = (from_local_fifo[1].pipe_cntl == `COMMON_STD_INTF_CNTL_MOM) ;
+  wire from_local_dp_fifo_pkt_available = (from_local_fifo[1].pkt_count > 0) ;
 
-  wire [`MGR_MGR_ID_RANGE                 ]  local_destinationPeId    ;  // destination mgrId from dma request address
-  wire [`PE_ARRAY_CHIPLET_ADDRESS_RANGE   ]  local_dmaRequestAddress  ;  // full chiplet address from dma request at output of cp output queue
-
-  wire                             local_destinationReq        ; // Destination accepts the request and this fsm doesnt know who
-  reg [`MGR_MGR_ID_BITMASK_RANGE ] local_destinationReqAddr    ; // bitmask address from header of packet
-  reg [`MGR_MGR_ID_BITMASK_RANGE ] local_destinationReqAddr_d1 ; // Keep a registered version for transfer
+  wire                                       local_toNoc_valid           ;  // when valid, destination port(s) must write local output data to their output fifo's
+  reg  [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE ]  local_cntl_toNoc            ;  // local output cntl to destination port to be sent directly to network
+  reg  [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  local_data_toNoc            ;  // local output data to destination port to be sent directly to network
+                                                                         
+  wire                                       local_destinationReq        ; // Destination accepts the request and this fsm doesnt know who
+  wire [`MGR_MGR_ID_BITMASK_RANGE         ]  local_destinationCpReqAddr  ; // bitmask address from header of packet
+  wire [`MGR_MGR_ID_BITMASK_RANGE         ]  local_destinationDpReqAddr  ; // bitmask address from header of packet
+  wire [`MGR_MGR_ID_BITMASK_RANGE         ]  local_destinationReqAddr    ; // destination address of selected either Control or Data packet
+  reg  [`MGR_MGR_ID_BITMASK_RANGE         ]  local_destinationReqAddr_d1 ; // Keep a registered version for transfer
 
   // all destinations 'AND' with their bitmask and 'ack' if it matches
   // Input controller waits until all ACK vector matches READY vector (e.g. all destinations are ready)
@@ -344,11 +433,11 @@ module mgr_noc_cntl (
   // All possible destinations may ack the request if its a multicast.
   // The Port input controller must wait for all relavant enables to be asserted before starting transfer (reading fifo)
   wire  [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ]  local_destinationReady    ;  // Start reading input fifo, destination handles directing the information
-  wire                                              local_destinationReady_d1 ;  // Destination ready gated with ack vector
+  wire                                                  local_destinationReady_d1 ;  // Destination ready gated with ack vector
   wire  [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ]  local_destinationAck      ;  // input from CP local InQ fsm
   reg   [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ]  local_destinationAck_d1   ;  // Register the acking destinations so we can keep track of each destinations ready signal
   //--------------------------------------------------------------------------------------------
-  // Port Control from NoC FSM
+  // Local Port outputing to NoC FSM
   //
 
   reg [`MGR_NOC_CONT_LOCAL_OUTQ_CNTL_STATE_RANGE] nc_local_outq_cntl_state;          // state flop
@@ -366,17 +455,14 @@ module mgr_noc_cntl (
     begin
       case (nc_local_outq_cntl_state)
         `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_WAIT: 
-          nc_local_outq_cntl_state_next = ( to_NoC_control_fifo[0].fifo_eop_count > 0 )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_FIFO_READ :  // only request transmission when we have a packets worth
-                                          ( to_NoC_data_fifo[0].fifo_eop_count > 0    )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_FIFO_READ :
-                                                                                           `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_WAIT         ;
+          nc_local_outq_cntl_state_next = (( from_local_cp_fifo_pkt_available ) && ~from_local_cp_fifo_som )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_ERROR :  // DEBUG: Check for SOM to make sure we havent got out of sync
+                                          (( from_local_dp_fifo_pkt_available ) && ~from_local_dp_fifo_som )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_ERROR :  // 
+                                          (  from_local_cp_fifo_pkt_available                              )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_PORT_REQ :  // only request transmission when we have a packets worth
+                                          (  from_local_dp_fifo_pkt_available                              )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ :
+                                                                                                                `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_WAIT        ;
   
-        // read head of fifo
-        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_FIFO_READ:
-          nc_local_outq_cntl_state_next = ( (to_NoC_control_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM) || (to_NoC_control_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM))  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_PORT_REQ  :
-                                                                                                                                                                                                             `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_ERROR        ;  // put addressed mgrId bitmask as the destination
-        // we have to identify the destination PE from the address, create a destination bitMask and put it out there to be accepted by one of
-        // the output ports.
-        // The output port has to acknowledge even if it isnt erady but the outq controller will only transfer if the destination is erady.
+        // Put the destination bitfield out there to be accepted by one of the output ports
+        // The output port has to acknowledge even if it isnt ready but the outq controller will only transfer once the destination is ready.
         // Note: Request set if "next" state is PORT_REQ
         // Note: The destination keeps the Ack asserted until the request is deasserted. The request is asserted all the time the next state is PORT_REQ.
         
@@ -386,42 +472,41 @@ module mgr_noc_cntl (
                                                                                                                         `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_PORT_REQ     ;
 
         `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_HEADER:
-          nc_local_outq_cntl_state_next = `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2 ;
+          nc_local_outq_cntl_state_next = `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_TUPLE ;
 
-        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2:
-          nc_local_outq_cntl_state_next = ( ((to_NoC_control_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM) || (to_NoC_control_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE3  :
-                                                                                                                                                                                                             `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2  ;
+        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_TUPLE:
+          nc_local_outq_cntl_state_next = ( (from_local_fifo[0].write_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_DATA) &&  from_local_cp_fifo_eom )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_COMPLETE    :
+                                          ( (from_local_fifo[0].write_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_DATA) && ~from_local_cp_fifo_eom )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_DATA   :
+                                                                                                                                                                     `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_TUPLE  ;
 
-        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE3:
-          nc_local_outq_cntl_state_next = `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_COMPLETE ;
+        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_DATA:
+          nc_local_outq_cntl_state_next = ( from_local_cp_fifo_eom           )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_COMPLETE   :
+                                                                                  `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_DATA  ;
 
   
         `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_COMPLETE:
           nc_local_outq_cntl_state_next = `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_WAIT ;
   
-        // read head of fifo
-        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_FIFO_READ:
-          nc_local_outq_cntl_state_next = ( (to_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM) || (to_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM))  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ  :
-                                                                                                                                                                                                             `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_ERROR        ;  // put addressed mgrId bitmask as the destination
-        // we have to identify the destination PE from the address, create
-        // a destination bitMask and put it out there to be accepted by one of
-        // the output ports
+        // Put the destination bitfield out there to be accepted by one of the output ports
+        // The output port has to acknowledge even if it isnt ready but the outq controller will only transfer once the destination is ready.
+        // Note: Request set if "next" state is PORT_REQ
+        // Note: The destination keeps the Ack asserted until the request is deasserted. The request is asserted all the time the next state is PORT_REQ.
         `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ:
           nc_local_outq_cntl_state_next = ( ~|local_destinationAck                                                 ) ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ     :
-                                          ( local_destinationAck == (local_destinationReady & local_destinationAck)) ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER  :  // output port has acked and all ports ready
+                                          ( local_destinationAck == (local_destinationReady & local_destinationAck)) ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER  :  // all output ports have acked and all the ports are ready
                                                                                                                        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ     ;
 
         `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER:
-          nc_local_outq_cntl_state_next = ((to_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (local_destinationAck_d1 == (local_destinationReady & local_destinationAck_d1))) ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE3  :  // if there is only one piece of data
-                                          (local_destinationAck_d1 == (local_destinationReady & local_destinationAck_d1)) ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2  :  // if there is only one piece of data
-                                                                                                                         `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER ;
+          nc_local_outq_cntl_state_next = `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_TUPLE ;
 
-        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2:
-          nc_local_outq_cntl_state_next = ( ((to_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM) || (to_NoC_data_fifo[0].fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE3  :
-                                                                                                                                                                                                       `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2  ;
+        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_TUPLE:
+          nc_local_outq_cntl_state_next = ( (from_local_fifo[0].write_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_DATA) &&  from_local_dp_fifo_eom )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_COMPLETE    :
+                                          ( (from_local_fifo[0].write_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_DATA) && ~from_local_dp_fifo_eom )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_DATA   :
+                                                                                                                                                                     `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_TUPLE  ;
 
-        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE3:
-          nc_local_outq_cntl_state_next = `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_COMPLETE ;
+        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_DATA:
+          nc_local_outq_cntl_state_next = ( from_local_dp_fifo_eom           )  ? `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_COMPLETE   :
+                                                                                  `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_DATA  ;
 
   
         `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_COMPLETE:
@@ -439,20 +524,31 @@ module mgr_noc_cntl (
   //-------------------------------------------------------------------------------------------------
   // Internal signals
   
+  //`include "noc_cntl_noc_local_outq_control_assignments.vh"
+
+  assign  local_destinationCpReqAddr  = from_local_fifo[0].pipe_data[`MGR_NOC_CONT_INTERNAL_HEADER_DESTINATION_ADDR_RANGE ];
+  assign  local_destinationDpReqAddr  = from_local_fifo[1].pipe_data[`MGR_NOC_CONT_INTERNAL_HEADER_DESTINATION_ADDR_RANGE ];
+
+  // send the address mask from the local packet to NoC output ports during state==PORT_REQ
+  assign local_destinationReqAddr      = ( from_local_cp_fifo_pkt_available && (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_WAIT )) ? local_destinationCpReqAddr :  // we are going to service a control packet
+                                                                                                                                                    local_destinationDpReqAddr ;                    
+
+  assign local_destinationReq          = ( (from_local_cp_fifo_pkt_available | from_local_dp_fifo_pkt_available) && (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_WAIT )) ;
+
   always @(posedge clk)
     begin
   
-      local_destinationReqAddr_d1   <= (reset_poweron                                                      ) ? 'd0                          :
-                                       (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_FIFO_READ ) ? local_destinationReqAddr     :
-                                       (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_FIFO_READ ) ? local_destinationReqAddr     :
-                                                                                                               local_destinationReqAddr_d1  ;
+      local_destinationReqAddr_d1   <= (reset_poweron                                                                                         ) ? 'd0                          :
+                                       ( from_local_cp_fifo_pkt_available && (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_WAIT )) ? local_destinationCpReqAddr   :
+                                       ( from_local_dp_fifo_pkt_available && (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_WAIT )) ? local_destinationCpReqAddr   :
+                                                                                                                                                  local_destinationReqAddr_d1  ;
 
       // the ack from each destination is only active the cycle after the request is deasserted, so latch who acked so we can flow
       // control the transfer using the destinationReady vector
-      local_destinationAck_d1 <= (reset_poweron                                                    )  ? 'd0               :
+      local_destinationAck_d1 <= (reset_poweron                                                        )  ? 'd0                     :
                                  (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_PORT_REQ)  ? local_destinationAck    :
                                  (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ)  ? local_destinationAck    :
-                                                                                                        local_destinationAck_d1 ;
+                                                                                                            local_destinationAck_d1 ;
 
       //local_destinationReady_d1 <= ~reset_poweron & (local_destinationAck_d1 == (local_destinationReady & local_destinationAck_d1)) ;
 
@@ -460,61 +556,92 @@ module mgr_noc_cntl (
 
   assign local_destinationReady_d1 = (local_destinationAck_d1 == (local_destinationReady & local_destinationAck_d1)) ;
 
-  // extract destination mgrId from the dma address
-  assign local_dmaRequestAddress = to_NoC_control_fifo[0].fifo_read_data[`MGR_NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE] ;
-  assign local_destinationPeId   = (nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_PORT_REQ ) ? local_dmaRequestAddress[`PE_PE_DECODE_ADDRESS_RANGE]  :
-                                   (nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ ) ? to_NoC_data_fifo[0].fifo_read_mgrId                    :
-                                                                                                               'd0                                                   ;
 
-  `include "noc_cntl_noc_local_outq_control_assignments.vh"
+  assign from_local_fifo[0].pipe_read  = ((nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_PORT_REQ   ) | // read head of packet to determine destination bitmask
+                                          (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_HEADER) |
+                                          (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_TUPLE ) |
+                                          (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_DATA  )) &  
+                                          (local_destinationAck_d1 == (local_destinationReady & local_destinationAck_d1)) ;
 
-  assign to_NoC_control_fifo[0].fifo_read  = (nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_FIFO_READ   ) | // read head of packet to determine destination bitmask
-                                             (nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2 ) ; // send balance of control packet. Dont bother with ready because fifo can always take cp once it says ready
+  assign from_local_fifo[1].pipe_read  = ((nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ   ) | // read head of packet to determine destination bitmask
+                                          (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER) |
+                                          (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_TUPLE ) |
+                                          (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_DATA  )) &  
+                                          (local_destinationAck_d1 == (local_destinationReady & local_destinationAck_d1)) ;
 
-  assign to_NoC_data_fifo[0].fifo_read     = (nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_FIFO_READ   ) | // read head of packet to determine destination bitmask
-                                            ((nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2 ) & (local_destinationAck_d1 == (local_destinationReady & local_destinationAck_d1))); // send balance of data packet
 
-  assign local_destinationReq              = (nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_PORT_REQ ) | // destination bitmask set, now request outport
-                                             (nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ ) ; // destination bitmask set, now request outport
-
-  assign local_toNoc_valid    = ((nc_local_outq_cntl_state      == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_PORT_REQ   ) & ( local_destinationAck == (local_destinationReady & local_destinationAck) )) |
-                                ((nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_HEADER) & local_destinationReady_d1) | // first construct header and send when destination first says ready
-                                ((nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2) & local_destinationReady_d1) | // if data is read, then send it. Flow control affects read
-                                ((nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE3) ) |
-                                ((nc_local_outq_cntl_state      == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ   ) & ( local_destinationAck == (local_destinationReady & local_destinationAck) )) |
-                                ((nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER) & local_destinationReady_d1) | // first construct header and send when destination first says ready
-                                ((nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2) & local_destinationReady_d1) |  // if data is read, then send it. Flow control affects read
-                                ((nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE3) ) ;
+  assign local_toNoc_valid    = from_local_fifo[0].pipe_read | from_local_fifo[1].pipe_read ;
                                    
-  assign local_cntl_toNoc     = (nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_HEADER) ?  `COMMON_STD_INTF_CNTL_SOM   :
-                                (nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2) ?  `COMMON_STD_INTF_CNTL_MOM  : 
-                                (nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER) ?  `COMMON_STD_INTF_CNTL_SOM   :
-                                (nc_local_outq_cntl_state_next == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2) ?  `COMMON_STD_INTF_CNTL_MOM  : 
-                                                                                                               `COMMON_STD_INTF_CNTL_EOM   ;
+
   always @(*)
     begin
       case (nc_local_outq_cntl_state_next)
 
         `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_HEADER:
           begin
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_RANGE         ] = 'd`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_CP  ; 
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_SOURCE_PE_RANGE        ] = sys__mgr__mgrId                                        ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_RANGE ] = local_destinationReqAddr_d1                 ;
+            local_cntl_toNoc                                                              = from_local_fifo[0].pipe_cntl                 ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE       ] = from_local_fifo[0].pipe_data                 ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE               ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_CP  ; 
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = from_local_fifo[0].pipe_type                 ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE              ] = sys__mgr__mgrId                              ;
           end
 
-        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE2:
+        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_TUPLE:
           begin
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_ADDRESS_RANGE  ] = to_NoC_control_fifo[0].fifo_read_data[`MGR_NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE ];
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_STAGGER_RANGE  ] = to_NoC_control_fifo[0].fifo_read_data[`MGR_NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE ];
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_TYPE_RANGE     ] = to_NoC_control_fifo[0].fifo_read_type                                                     ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_LANE_ID_RANGE  ] = to_NoC_control_fifo[0].fifo_read_laneId                                                   ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_STRM_ID_RANGE  ] = to_NoC_control_fifo[0].fifo_read_strmId                                                   ;
+            local_cntl_toNoc                                                              = from_local_fifo[0].pipe_cntl                                                       ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE         ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE           ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION0_RANGE   ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE         ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE           ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION1_RANGE   ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE     ] = from_local_fifo[0].pipe_pvalid                                                     ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAD0_RANGE              ] = 'd0                                                                                ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE      ] = from_local_fifo[0].pipe_ptype                                                      ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE       ] = from_local_fifo[0].pipe_type                                                       ;
           end
 
-        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_CYCLE3:
+        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_CP_SEND_DATA:
           begin
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_REQ_3RD_CYCLE_NUM_OF_WORDS_RANGE  ] = to_NoC_control_fifo[0].fifo_read_data[`MGR_NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE ];
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_REQ_3RD_CYCLE_PAYLOAD_TYPE_RANGE  ] = to_NoC_control_fifo[0].fifo_read_data[`MGR_NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE ];
+            local_cntl_toNoc                                                              = from_local_fifo[0].pipe_cntl                                                       ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE              ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE      ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD1_RANGE              ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE      ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_RANGE      ] = from_local_fifo[0].pipe_pvalid                                                     ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD0_RANGE               ] = 'd0                                                                                ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_TYPE_RANGE       ] = from_local_fifo[0].pipe_ptype                                                      ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD1_RANGE               ] = 'd0                                                                                ;
+
+          end
+        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER:
+          begin
+            local_cntl_toNoc                                                              = from_local_fifo[0].pipe_cntl                 ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE       ] = from_local_fifo[0].pipe_data                 ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE               ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_DP  ; 
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = from_local_fifo[0].pipe_type                 ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE              ] = sys__mgr__mgrId                              ;
+          end
+
+        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_TUPLE:
+          begin
+            local_cntl_toNoc                                                              = from_local_fifo[0].pipe_cntl                                                       ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE         ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE           ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION0_RANGE   ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE         ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE           ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION1_RANGE   ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE     ] = from_local_fifo[0].pipe_pvalid                                                     ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAD0_RANGE              ] = 'd0                                                                                ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE      ] = from_local_fifo[0].pipe_ptype                                                      ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE       ] = from_local_fifo[0].pipe_type                                                       ;
+          end
+
+        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_DATA:
+          begin
+            local_cntl_toNoc                                                              = from_local_fifo[0].pipe_cntl                                                       ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE              ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE      ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD1_RANGE              ] = from_local_fifo[0].pipe_data [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE      ] ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_RANGE      ] = from_local_fifo[0].pipe_pvalid                                                     ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD0_RANGE               ] = 'd0                                                                                ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_TYPE_RANGE       ] = from_local_fifo[0].pipe_ptype                                                      ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD1_RANGE               ] = 'd0                                                                                ;
+
           end
 
         `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_HEADER:
@@ -522,24 +649,6 @@ module mgr_noc_cntl (
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_RANGE         ] = 'd`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_DP  ; 
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_SOURCE_PE_RANGE        ] = sys__mgr__mgrId                                        ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_RANGE ] = local_destinationReqAddr_d1                 ;
-          end
-
-        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE2:
-          begin
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_DATA_2ND_CYCLE_DATA_RANGE     ] = to_NoC_data_fifo[0].fifo_read_data[`MGR_NOC_CONT_INTERNAL_DMA_DATA_1ST_CYCLE_DATA_RANGE ] ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_DATA_2ND_CYCLE_4OR8_RANGE     ] = to_NoC_data_fifo[0].fifo_read_data[`MGR_NOC_CONT_INTERNAL_DMA_DATA_1ST_CYCLE_4OR8_RANGE ] ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_DATA_2ND_CYCLE_TYPE_RANGE     ] = to_NoC_data_fifo[0].fifo_read_type                                                    ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_DATA_2ND_CYCLE_LANE_ID_RANGE  ] = to_NoC_data_fifo[0].fifo_read_laneId                                                  ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_DATA_2ND_CYCLE_STRM_ID_RANGE  ] = to_NoC_data_fifo[0].fifo_read_strmId                                                  ;
-          end
-
-        `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_SEND_CYCLE3:
-          begin
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE     ] = to_NoC_data_fifo[0].fifo_read_data[`MGR_NOC_CONT_INTERNAL_DMA_DATA_ALL_CYCLE_DATA_RANGE ] ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_DATA_2ND_CYCLE_4OR8_RANGE     ] = to_NoC_data_fifo[0].fifo_read_data[`MGR_NOC_CONT_INTERNAL_DMA_DATA_1ST_CYCLE_4OR8_RANGE ] ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_DATA_2ND_CYCLE_TYPE_RANGE     ] = to_NoC_data_fifo[0].fifo_read_type                                                    ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_DATA_2ND_CYCLE_LANE_ID_RANGE  ] = to_NoC_data_fifo[0].fifo_read_laneId                                                  ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DMA_DATA_2ND_CYCLE_STRM_ID_RANGE  ] = to_NoC_data_fifo[0].fifo_read_strmId                                                  ;
           end
 
   
@@ -803,7 +912,6 @@ module mgr_noc_cntl (
   //--------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------
 
-`endif
 
 endmodule
 

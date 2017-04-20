@@ -92,7 +92,7 @@
 
  set target_library $target_library
  #set link_library   saed32lvt_ss0p95v125c.db
- set link_library   [concat  $target_library dw_foundation.sldb]
+ set link_library   [concat  "*" $target_library dw_foundation.sldb]
  translate
  report_timing  > timing_max_slow_holdfixed_${type}.rpt
 # report_timing -delay min  > timing_min_slow_holdfixed_${type}.rpt
@@ -103,14 +103,14 @@
 #---------------------------------------------------------
  set target_library $target_library
  #set link_library   saed32lvt_ff1p16v25c.db
- set link_library   [concat  $target_library dw_foundation.sldb]
+ set link_library   [concat  "*" $target_library dw_foundation.sldb]
  translate
  report_timing  > timing_max_fast_holdfixed_${type}.rpt
 # report_timing -delay min  > timing_min_fast_holdfixed_${type}.rpt
 
  set target_library $target_library
  #set link_library   saed32lvt_tt1p05v25c.db
- set link_library   [concat  $target_library dw_foundation.sldb]
+ set link_library   [concat  "*" $target_library dw_foundation.sldb]
  translate
  report_timing  > timing_max_typ_holdfixed_${type}.rpt
 # report_timing -delay min  > timing_min_typ_holdfixed_${type}.rpt

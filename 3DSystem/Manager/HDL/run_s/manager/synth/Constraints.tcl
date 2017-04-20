@@ -34,14 +34,14 @@
 # of the target and the synthetic library
 #---------------------------------------------------------
  set target_library $target_library
- set link_library   [concat  $target_library $synthetic_library]
+ set link_library   [concat  "*" $target_library $synthetic_library]
 
 #---------------------------------------------------------
 # Specify a 5000ps clock period with 50% duty cycle     
 # and a skew of 50ps                                 
 #---------------------------------------------------------
  #set CLK_PER  5
- set CLK_SKEW 0.05
+ set CLK_SKEW 0.005
  create_clock -name $clkname -period $CLK_PER -waveform "0 [expr $CLK_PER / 2]" $clkname
  set_clock_uncertainty $CLK_SKEW $clkname
 
@@ -66,7 +66,7 @@
 # NOTE: THESE ARE INITIAL ASSUMPTIONS ONLY             
 #---------------------------------------------------------
 #
- set DFF_CKQ 0.638
+ set DFF_CKQ 0.05
  set IP_DELAY [expr 0.01 + $DFF_CKQ]
  set_input_delay $IP_DELAY -clock $clkname [remove_from_collection [all_inputs] $clkname]
 
@@ -76,7 +76,7 @@
 # Same wire delay as mentioned above           
 # NOTE: THESE ARE INITIAL ASSUMPTIONS ONLY             
 #---------------------------------------------------------
- set DFF_SETUP 0.546
+ set DFF_SETUP 0.05
  set OP_DELAY [expr 0.01 + $DFF_SETUP]
  set_output_delay $OP_DELAY -clock $clkname [all_outputs]
 
@@ -142,5 +142,13 @@ check_design
 # components (either library unit or other designs within the
 # heirarchy) are present in the search path and connects all 
 # of the disparate components logically to the present design
-#---------------------------------------------------------
+#---------------------------------------------------------i
+
+#uniquify
+
 link 
+
+
+
+
+set_false_path -from sys__mgr__mgrId

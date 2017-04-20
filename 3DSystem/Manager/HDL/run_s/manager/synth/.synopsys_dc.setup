@@ -19,7 +19,7 @@ set search_path [concat  $search_path [list "." [format "%s%s"  $synopsys_root "
 set synthetic_library [list dw_foundation.sldb]
 #set target_library NangateOpenCellLibrary_PDKv1_2_v2008_10_slow_nldm.db
 set target_library saed32lvt_ss0p95v125c.db
-set link_library   [concat  $target_library $synthetic_library]
+set link_library   [concat  "*" $target_library $synthetic_library]
 
 set verilogout_no_tri "true"
 

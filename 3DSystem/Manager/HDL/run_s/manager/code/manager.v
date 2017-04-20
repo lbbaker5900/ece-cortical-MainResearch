@@ -531,5 +531,13 @@ module manager (
                        .reset_poweron                ( reset_poweron               )
                           
   );
+
+  // FIXME
+  assign locl__noc__cp_ready = 1;
+  assign locl__noc__dp_ready = 1;
+
+
+
+
 endmodule
 

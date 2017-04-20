@@ -94,9 +94,9 @@ module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
                                                   depth         ;
   
       // latch the exception - FIXME - not a port yet - maybe add port `ifdef TESTING
-      full               <= ( reset_poweron               ) ? 1'b0 : 
-                            ( depth == GENERIC_FIFO_DEPTH ) ? 1'b1 :
-                                                              full ;
+      full               <= ( reset_poweron || clear        ) ? 1'b0 : 
+                            ( depth == GENERIC_FIFO_DEPTH-1 ) ? 1'b1 :
+                                                                full ;
   
     end
 
