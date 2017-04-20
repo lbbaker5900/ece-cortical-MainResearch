@@ -408,7 +408,7 @@ module rdp_cntl (
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`RDP_CNTL_WU_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`RDP_CNTL_WU_FIFO_THRESHOLD ),
                        .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_STD_OOB_TAG_WIDTH+`MGR_WU_OPT_PER_INST*`MGR_WU_OPT_TYPE_WIDTH+`MGR_WU_OPT_PER_INST*`MGR_WU_OPT_VALUE_WIDTH )
-                        ) desc_fifo (
+                        ) gfifo (
                                           // Status
                                          .empty            ( empty                                                ),
                                          .almost_full      ( almost_full                                          ),
@@ -811,7 +811,7 @@ module rdp_cntl (
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`RDP_CNTL_MW_PTR_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`RDP_CNTL_MW_PTR_FIFO_THRESHOLD ),
                        .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_STORAGE_DESC_ADDRESS_WIDTH)
-                        ) wrptr_fifo (
+                        ) gfifo (
                                           // Status
                                          .empty            ( empty                      ),
                                          .almost_full      ( almost_full                ),
@@ -964,7 +964,7 @@ module rdp_cntl (
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_THRESHOLD ),
                        .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+1+1+`MGR_STD_OOB_TAG_WIDTH+`RDP_CNTL_NUM_LANES_WIDTH+`MGR_MGR_ID_BITMASK_WIDTH)
-                        ) destAddr_fifo (
+                        ) gfifo (
                                           // Status
                                          .empty            ( empty                      ),
                                          .almost_full      ( almost_full                ),
@@ -1282,8 +1282,9 @@ module rdp_cntl (
                                         (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_LAST_DATA     ) ? from_Stuc_last_data                                       :
                                                                                                                        {`MGR_NOC_CONT_INTERNAL_DATA_WIDTH {1'b1}}                ;
 
-  assign  wrDescOutputPkt_pvalid_e1  = ((wrDescOutputPkt_cntl_e1 == `COMMON_STD_INTF_CNTL_EOM) && dataCountOdd ) ? `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_ONE  :
-                                                                                                                      `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH ;                                                                                           
+  assign  wrDescOutputPkt_pvalid_e1  = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_PAD_NOP    ) ? `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_ONE  :  // there was an odd number of wr_ptr's
+                                       ((wrDescOutputPkt_cntl_e1 == `COMMON_STD_INTF_CNTL_EOM) && dataCountOdd ) ? `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_ONE  :  // there was an odd number of lanes activated
+                                                                                                                   `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH ;                                                                                           
 
   assign  wrDescOutputPkt_type_e1     = `MGR_NOC_CONT_TYPE_DESC_WRITE_DATA   ; 
   assign  wrDescOutputPkt_desttype_e1 = `MGR_NOC_CONT_DESTINATION_ADDR_TYPE_BITMASK           ; 

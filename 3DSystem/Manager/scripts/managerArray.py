@@ -448,20 +448,16 @@ if __name__ == "__main__":
   pLine = pLine + '\n  // Outgoing Port source data '
   pLine = pLine + '\n '
   for port in range (0, numOfPorts):
-    pLine = pLine + '\n  // Connect Port {0}\'s "other" ports "to Noc" packet data requests to 0,1,2,3 of the output port controller'.format(port)
+    pLine = pLine + '\n  // Connect Port {0}\'s "other" ports "to Noc" packet data requests to 0,1,2,3 of the output port controller'
+    pLine = pLine + '\n  // The fields in the bus from the source have been set at the requestor, so simply pass the data from the requestor directly to the output FIFO'
     pLine = pLine + '\n '
     for otherPort in range (0, numOfPorts):
       pLine = pLine + '\n  // Port{0}, source{1}'.format(port,otherPort)
-      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_cntl_toNoc          = Port_from_NoC[{1}].cntl_fromNoc  ;'.format(port,otherPort)
-      pLine = pLine + '\n  // remember to gate the destinationMaskAddr with the ports mask address - e.g. bits can only be set if a PE can be reached from this port'
-      pLine = pLine + '\n  // destination bit field is in the header, so condition on sop'
-      pLine = pLine + '\n  // We are changing the addr field in the header, so change that conditioned on SOP then leave all cycles alone'
-      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_RANGE             ] = Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_RANGE]                                              ;'.format(port,otherPort)
-      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_RANGE     ] = (Port_from_NoC[{1}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_SOM) ? (Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_RANGE] & Port_to_NoC[{0}].thisPort_destinationMask) :'.format(port,otherPort)
-      pLine = pLine + '\n                                                                                                                                                                          Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_RANGE]                                              ;'.format(port,otherPort)
-      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_TYPE_RANGE] = Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_TYPE_RANGE]                                              ;'.format(port,otherPort)
-      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_SOURCE_PE_RANGE            ] = Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_SOURCE_PE_RANGE]                                              ;'.format(port,otherPort)
-      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_toNoc_valid                                                          = Port_from_NoC[{1}].fromNoc_valid ;'.format(port,otherPort)
+      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_cntl_toNoc    =  Port_from_NoC[{1}].cntl_fromNoc  ;'.format(port,otherPort)
+      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_data_toNoc    = (Port_from_NoC[{1}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_SOM    ) ? {{Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE], Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE], Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE], (Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & Port_to_NoC[{0}].thisPort_destinationMask)}}  :'.format(port,otherPort)
+      pLine = pLine + '\n                                             (Port_from_NoC[{1}].cntl_fromNoc == `COMMON_STD_INTF_CNTL_SOM_EOM) ? {{Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE], Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE], Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE], (Port_from_NoC[{1}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & Port_to_NoC[{0}].thisPort_destinationMask)}}  :'.format(port,otherPort)
+      pLine = pLine + '\n                                                                                                                 Port_from_NoC[{1}].data_fromNoc                       ;'.format(port,otherPort)
+      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_toNoc_valid   = Port_from_NoC[{1}].fromNoc_valid ;'.format(port,otherPort)
       pLine = pLine + '\n '
     pLine = pLine + '\n '
 
