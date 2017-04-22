@@ -533,8 +533,8 @@ module manager (
   );
 
   // FIXME
-  assign locl__noc__cp_ready = 1;
-  assign locl__noc__dp_ready = 1;
+  assign mcntl__noc__cp_ready = 1;
+  assign mcntl__noc__dp_ready = 1;
 
 
 

@@ -1,4 +1,4 @@
-/*********************************************************************************************
+/***********************************************************************************************************************************************
 
     File name   : mgr_noc_cntl.v
     Author      : Lee Baker
@@ -11,7 +11,35 @@
                   as a packet can be directed out any one of the four NoC ports.
                   FIXME: maybe provide interfaces for each exec lane via the stOp_cntl
 
-*********************************************************************************************/
+             We use a consistent method for directing a packet to a destination port. The source waits for all destinations to be ready 
+             before sending and all destinations grab the transfer simultaneously.
+               a) The source asserts Req along with the address bit field
+               b) The destinations 'AND' the address with their bitfield mask.
+               c) Each destination asserts their Ack immediately whether they are ready or not forming an Ack vector
+               d) When each destination is ready, the source latches the Ack vector.
+             The transfer starts and stalls whenever the Ready vector does not equal the Ack vector
+
+                          ______        ______        ______        ______        ______        ______        ______        ______        ____
+                    _____|      |______|      |______|      |______|      |______|      |______|      |______|      |______|      |______|    
+                               ______________       _______________                                   
+            Req     __________|               ......               |___________________________________________________________________________
+                    
+                               __________           _______________
+           Address  ----------|__________bit address_______________|---------------------------------------------------------------------------
+                    
+                               __________             _____________
+            Ack     ----------|__________ AckBitField _____________|--------------------------------------------------------------------------- 
+      
+                                                      ___________      __________ ___        ______________      __________
+            Ready   ---------------------------------|___________ready __________|__not ready__|___________ready __________|-------------------
+                    
+                                        _____________               _______________________________________________________
+       Latched Ack  -------------------|_____________AckBitField_d1 _______________________________________________________|-------------------
+                    
+                                                                   ^             ^             X             ^             ^
+                                                                 Start    Each cycle continues if destinationReady == AckBitField_d1
+
+***********************************************************************************************************************************************/
     
 
 `timescale 1ns/10ps
@@ -157,6 +185,7 @@ module mgr_noc_cntl (
 
   reg                                             noc__locl__cp_valid      ; 
   reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__cp_cntl       ; 
+
   reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__cp_type       ; 
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__cp_ptype      ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__cp_data       ; 
@@ -164,9 +193,12 @@ module mgr_noc_cntl (
                                                  
   reg                                             noc__locl__cp_valid_p1   ; 
   reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__cp_cntl_p1    ; 
+
   reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__cp_type_p1    ; 
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__cp_ptype_p1   ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__cp_data_p1    ; 
+  reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__cp_mgrId_p1   ; 
+  reg                                             locl__noc__cp_ready_d1   ; 
                                                  
                                                  
   reg                                             noc__locl__dp_valid      ; 
@@ -175,6 +207,7 @@ module mgr_noc_cntl (
   reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__dp_type       ; 
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__dp_ptype      ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__dp_data       ; 
+  reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__dp_mgrId      ; 
                                                  
   reg                                             noc__locl__dp_valid_p1   ; 
   reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__dp_cntl_p1    ; 
@@ -182,6 +215,8 @@ module mgr_noc_cntl (
   reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__dp_type_p1    ; 
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__dp_ptype_p1   ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__dp_data_p1    ; 
+  reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__dp_mgrId_p1   ; 
+  reg                                             locl__noc__dp_ready_d1   ; 
   
   reg                                               locl__noc__cp_valid_d1      ; 
   reg    [`COMMON_STD_INTF_CNTL_RANGE          ]    locl__noc__cp_cntl_d1       ; 
@@ -204,6 +239,7 @@ module mgr_noc_cntl (
   //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
   // Registered Inputs and Outputs
+  
   always @(posedge clk)
     begin
       locl__noc__cp_valid_d1       <= ( reset_poweron   ) ? 'd0  :  locl__noc__cp_valid       ;
@@ -223,6 +259,20 @@ module mgr_noc_cntl (
       locl__noc__dp_desttype_d1    <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_desttype    ;
       locl__noc__dp_pvalid_d1      <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_pvalid      ;
       locl__noc__dp_data_d1        <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_data        ;
+
+      noc__locl__cp_valid          <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_valid_p1    ;
+      noc__locl__cp_cntl           <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_cntl_p1     ;
+      locl__noc__cp_ready_d1       <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_ready       ;
+      noc__locl__cp_type           <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_type_p1     ;
+      noc__locl__cp_ptype          <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_ptype_p1    ;
+      noc__locl__cp_data           <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_data_p1     ;
+                                                                    
+      noc__locl__dp_valid          <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_valid_p1    ;
+      noc__locl__dp_cntl           <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_cntl_p1     ;
+      locl__noc__dp_ready_d1       <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_ready       ;
+      noc__locl__dp_type           <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_type_p1     ;
+      noc__locl__dp_ptype          <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_ptype_p1    ;
+      noc__locl__dp_data           <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_data_p1     ;
     end
 
   //-------------------------------------------------------------------------------------------
@@ -444,9 +494,9 @@ module mgr_noc_cntl (
   wire                                                  local_destinationReady_d1 ;  // Destination ready gated with ack vector
   wire  [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ]  local_destinationAck      ;  // input from CP local InQ fsm
   reg   [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ]  local_destinationAck_d1   ;  // Register the acking destinations so we can keep track of each destinations ready signal
-
-
-  // wires to mke fsm easier to read
+ 
+  //
+  // wires to make fsm easier to read
   wire  local_allDestinationsInitiallyReady  = ( local_destinationAck    == (local_destinationReady & local_destinationAck   ) );  // Used for the first ack and ready are asserted
   wire  local_allDestinationsStillReady      = ( local_destinationAck_d1 == (local_destinationReady & local_destinationAck_d1) );  // Used after the intial ack and ready
                                                                                                                                    // We stored which destination(s) and make sure all ready's are asserted when transferring when destination is ready
@@ -797,7 +847,7 @@ module mgr_noc_cntl (
   endgenerate
 
   `include "mgr_noc_cntl_noc_port_output_control_mask_assignments.vh"          // which destinations nodes does this support. Based on input from top level
-  `include "noc_cntl_noc_port_output_control_request_assignments.vh"           // set {local, src0..3}_OutqReq based on ReqAddr  from each of those requestors
+  `include "mgr_noc_cntl_noc_port_output_control_request_assignments.vh"           // set {local, src0..3}_OutqReq based on ReqAddr  from each of those requestors
                                                                                // send the OutqAck and OutqReady to the requestors (local, port0..3)
   `include "mgr_noc_cntl_noc_port_output_control_header_field_assignments.vh"  // Format of packet defined at source, just pass the packet over but deassert the ports in the address bitfield not accessible via this output port
   `include "mgr_noc_cntl_noc_port_output_control_transfer_assignments.vh"      // Connect output of FIFO to external NoC ports
@@ -820,10 +870,14 @@ module mgr_noc_cntl (
   // Local Input Control
   //
 
-  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc     ;  // latch as we need type to know whether to add EOD at end of current apcket transfer
-  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc_p1  ; 
-  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE   ]  local_inq_ptype_fromNoc    ;  // latch as we need type to know whether to add EOD at end of current apcket transfer
-  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE   ]  local_inq_ptype_fromNoc_p1 ; 
+  reg                                             local_inq_priority_fromNoc     ; 
+  reg                                             local_inq_priority_fromNoc_p1  ; 
+  reg  [`MGR_MGR_ID_RANGE                      ]  local_inq_mgr_fromNoc          ;  
+  reg  [`MGR_MGR_ID_RANGE                      ]  local_inq_mgr_fromNoc_p1       ; 
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc         ;  // latch as we need type to know whether to add EOD at end of current apcket transfer
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc_p1      ; 
+  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE   ]  local_inq_ptype_fromNoc        ;  // latch as we need type to know whether to add EOD at end of current apcket transfer
+  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE   ]  local_inq_ptype_fromNoc_p1     ; 
 
 
   //--------------------------------------------------------------------------------------------
@@ -857,11 +911,122 @@ module mgr_noc_cntl (
   //--------------------------------------------------------------------------------------------
   // Port Input Control
   //
+
+  //--------------------------------------------------
+  // FIFO's
+  
+  generate
+    for (gvi=0; gvi<`MGR_NOC_CONT_NOC_NUM_OF_PORTS; gvi=gvi+1) 
+      begin: Port_from_NoC_fifo
+
+        // Write data
+        reg    [`COMMON_STD_INTF_CNTL_RANGE          ]    write_cntl       ;
+        reg    [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE    ]    write_data       ; 
+
+        // Read data                                                       
+        wire   [`COMMON_STD_INTF_CNTL_RANGE          ]    read_cntl        ;
+        wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE    ]    read_data        ; 
+
+        // Control
+        wire                                              clear            ; 
+        wire                                              empty            ; 
+        wire                                              almost_full      ; 
+        wire                                              read             ; 
+        reg                                               write            ; 
+ 
+
+        // Combine FIFO bits
+        generic_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH), 
+                       .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_ALMOST_FULL_THRESHOLD),
+                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_NOC_CONT_NOC_PORT_DATA_WIDTH)
+                        ) fromLocal_fifo (
+                                          // Status
+                                         .empty            ( empty                      ),
+                                         .almost_full      ( almost_full                ),
+                                          // Write                                      
+                                         .write            ( write                      ),
+                                         .write_data       ( {write_cntl,    write_data}),
+                                          // Read                                                
+                                         .read             ( read                       ),
+                                         .read_data        ( { read_cntl,     read_data}),
+
+                                         // General
+                                         .clear            ( clear                      ),
+                                         .reset_poweron    ( reset_poweron              ),
+                                         .clk              ( clk                        )
+                                         );
+        // Note: First stage of pipeline is inside FIFO
+        // fifo output stage
+        reg                                                  fifo_pipe_valid   ;
+        wire                                                 fifo_pipe_read    ;
+        // pipe stage
+        reg                                                  pipe_valid        ;
+        reg    [`COMMON_STD_INTF_CNTL_RANGE          ]       pipe_cntl         ;
+        reg    [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE    ]       pipe_data         ; 
+
+        wire                                                 pipe_read         ;
+
+
+        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
+        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
+
+        // If we are reading the fifo, then this stage will be valid
+        // If we are not reading the fifo but the next stage is reading this stage, then this stage will not be valid
+        always @(posedge clk)
+          begin
+            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
+                               ( read               ) ? 'b1               :
+                               ( fifo_pipe_read     ) ? 'b0               :
+                                                         fifo_pipe_valid  ;
+          end
+
+        always @(posedge clk)
+          begin
+            // If we are reading the previous stage, then this stage will be valid
+            // otherwise if we are reading this stage this stage will not be valid
+            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
+                               ( fifo_pipe_read     ) ? 'b1              :
+                               ( pipe_read          ) ? 'b0              :
+                                                         pipe_valid      ;
+        
+            // if we are reading, transfer from previous pipe stage. 
+            pipe_cntl           <= ( fifo_pipe_read     ) ? read_cntl            :
+                                                            pipe_cntl            ;
+            pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
+                                                            pipe_data            ;
+          end
+
+        reg    [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_PKT_CNT_RANGE ]    pkt_count       ;
+        always @(posedge clk)
+          begin
+            pkt_count  <=  ( reset_poweron || clear                                                                                                ) ? 'd0             :
+                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_EOM    )) && (~pipe_read                                              )) ? pkt_count + 'd1 :
+                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_EOM    )) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ? pkt_count       :
+                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_EOM    )) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ? pkt_count       :
+                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) && (~pipe_read                                              )) ? pkt_count + 'd1 :
+                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ? pkt_count       :
+                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ? pkt_count       :
+                           ((~write                                                 ) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ? pkt_count - 'd1 :
+                           ((~write                                                 ) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ? pkt_count - 'd1 :
+                                                                                                                                                       pkt_count       ;
+          end
+
+        assign clear   =   1'b0                ;
+
+      end
+  endgenerate
+
+
+
+  //--------------------------------------------------
+  // Control
+  
+
   wire [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] InPortRequestVector    ;
 
   generate
     for (gvi=0; gvi<`MGR_NOC_CONT_NOC_NUM_OF_PORTS; gvi=gvi+1) 
-      begin: Port_from_NoC
+      begin: Port_from_NoC_Control
 
         //--------------------------------------------------------------------------------------------
         // Port Control from NoC FIFO
@@ -870,9 +1035,10 @@ module mgr_noc_cntl (
         assign clear = 0;  // FIXME
 
         //--------------------------------------------------------------------------------------------
-        wire                            destinationReq       ; // request to all destinations, one (or more) will accept.
+        wire                              destinationReq       ; // request to all destinations, one (or more) will accept.
         wire [`MGR_MGR_ID_BITMASK_RANGE ] destinationReqAddr   ; // bitmask address from header of packet
-        wire                            destinationPriority  ; // local input queue needs this to direct packet
+        wire                              destinationPriority  ; // local input queue needs this to direct packet
+
         // all destinations 'AND' with their bitmask and 'ack' if it matches
         // Input controller waits until all acked bits have been enabled (e.g. all destinations are ready)
                                                             
@@ -885,18 +1051,32 @@ module mgr_noc_cntl (
         //
         // All possible destinations may ack the request if its a multicast.
         // The Port input controller must wait for all relavant enables to be asserted before starting transfer (reading fifo)
-        // This vector needs bits for the local inq and port 0-3 outputs
+        // This vector needs bits for the local inq and port 0-3 outputs e.g. "number of destinations" for a packet is 5
         wire [`MGR_NOC_CONT_NOC_NUM_OF_PKT_DEST_VECTOR_RANGE ]  destinationReady    ;  // Start reading input fifo, destination handles directing the information
         wire [`MGR_NOC_CONT_NOC_NUM_OF_PKT_DEST_VECTOR_RANGE ]  destinationAck      ;  // input from local InQ fsm
         reg  [`MGR_NOC_CONT_NOC_NUM_OF_PKT_DEST_VECTOR_RANGE ]  destinationAck_d1   ;  // Register the acking destinations so we can keep track of each destinations ready signal
-        reg                                                 destinationReady_d1 ;  // Destination ready gated with ack vector
+        //reg                                                     destinationReady_d1 ;  // Destination ready gated with ack vector
+        
+        // wires to make fsm easier to read
+        wire  allDestinationsInitiallyReady  = ( destinationAck    == (destinationReady & destinationAck   ) );  // Used for the first ack and ready are asserted
+        wire  allDestinationsStillReady      = ( destinationAck_d1 == (destinationReady & destinationAck_d1) );  // Used after the intial ack and ready
 
         // the following are to NoC packet bus from the input controller
-        wire                                        fromNoc_valid    ;  // when valid, the destination port(s) must write to their output fifo's
+        wire                                            fromNoc_valid    ;  // when valid, the destination port(s) must write to their output fifo's
+        wire [`MGR_MGR_ID_RANGE                      ]  mgr_fromNoc      ;  // grap during header cycle
+        reg  [`MGR_MGR_ID_RANGE                      ]  mgr_fromNoc_d1   ;  // grap during header cycle
         wire [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE      ]  cntl_fromNoc     ;  // 
+        reg  [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE      ]  cntl_fromNoc_d1  ;  // latch for entire transaction
+        wire                                            priority_fromNoc ;  // valid only during header cycle of external NoC packet       
+        wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  type_fromNoc     ;  // valid only during 2nd cycle or tuple cycle of external NoC packet (assume valid only during 1st tuple cycle)
+        reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  type_fromNoc_d1  ;  // latch for entire transaction
+        wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE   ]  ptype_fromNoc    ;  // payload type valid during tuple and data cycles
         wire [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE      ]  data_fromNoc     ;  //
-        wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  type_fromNoc     ;  // valid only during 2nd cycle of external NoC packet       
-        wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE   ]  ptype_fromNoc    ;  // valid only during 2nd cycle of external NoC packet       
+
+        wire                                            fromNoc_som      ;
+        wire                                            fromNoc_mom      ;
+        wire                                            fromNoc_eom      ;
+
         //--------------------------------------------------------------------------------------------
         // Port Control from NoC FSM
         //
@@ -916,26 +1096,23 @@ module mgr_noc_cntl (
           begin
             case (nc_port_fromNoc_state)
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT: 
-                nc_port_fromNoc_state_next = ( ~fifo_empty && (fifo_eop_count > 0) )  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_FIFO_READ :
-                                                                                        `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT      ;
+                nc_port_fromNoc_state_next = ( ~fifo_empty && (fifo_eop_count > 0) )  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ :
+                                                                                        `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT            ;
     
-              // read head of fifo
-              `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_FIFO_READ:
-                nc_port_fromNoc_state_next = ( (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM) || (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM))  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  :  // put addressed mgrId bitmask as the destination
-                                                                                                                                                                  `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_ERROR            ;
+
               // we have to identify the destination PE from the incoming pe mask address
               // put it out there to be accepted by an output port(s) and/or local input queue
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ:
-                nc_port_fromNoc_state_next = ( ~|destinationAck                                         ) ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  :  // no destination has acked yet
-                                                ( destinationAck == (destinationReady & destinationAck) ) ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER  :  // output port has acked and all destinations ready
-                                                                                                            `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  ;
+                nc_port_fromNoc_state_next = ( ~|destinationAck               ) ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  :  // no destination has acked yet
+                                             ( allDestinationsInitiallyReady  ) ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER  :  // output port has acked and all destinations ready
+                                                                                  `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  ;
             
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER:
                 nc_port_fromNoc_state_next = `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET ;
             
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET:
-                nc_port_fromNoc_state_next = ( fifo_read_data_valid && ((fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM) || (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)))  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE        :
-                                                                                                                                                                                 `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET ;
+                nc_port_fromNoc_state_next = ( fifo_read_data_valid && fromNoc_eom)  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE        :
+                                                                                       `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET ;
             
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE:
                 nc_port_fromNoc_state_next = `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT ;
@@ -951,31 +1128,47 @@ module mgr_noc_cntl (
     
         //-------------------------------------------------------------------------------------------------
         // Internal signals
-    
-        assign fifo_read  = (nc_port_fromNoc_state_next == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_FIFO_READ      ) | // read head of packet to determine destination bitmask
-                            ((destinationAck_d1 == (destinationReady & destinationAck_d1)) & (nc_port_fromNoc_state_next == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ; // send balance of control packet
+
+        assign  fromNoc_som  = (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM) || (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
+        assign  fromNoc_mom  = (fifo_read_cntl == `COMMON_STD_INTF_CNTL_MOM)                                                       ;
+        assign  fromNoc_eom  = (fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM) || (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
+
+        assign fifo_read  = ( (fifo_eop_count > 0)      & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
+                            //( allDestinationsStillReady & (nc_port_fromNoc_state_next == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER))|  // send header of control packet
+                            //( allDestinationsStillReady & (nc_port_fromNoc_state_next == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ; // send balance of control packet
+                            (                             (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER))|  // send header of control packet
+                            ( ~fromNoc_eom              & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ; // send balance of control packet
+                              
+        assign destinationReq  = //((fifo_eop_count > 0) & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
+                                 (                       (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ)) ; // destination bitmask set, now request outport
+
+        // valid only during destinationReq	
+        assign destinationReqAddr   = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE ] ;
+        assign destinationPriority  = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE         ] ;
    
-        assign destinationReq       = (nc_port_fromNoc_state_next == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ ) ; // destination bitmask set, now request outport
-        assign destinationReqAddr   = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_DESTINATION_ADDR_RANGE ] ;
-        assign destinationPriority  = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_1ST_CYCLE_PRIORITY_RANGE         ] ;
-   
-        assign fromNoc_valid    = (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER) |  destinationReady_d1 ;// header was read to provide address to destinations, now transter
-//                                 (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET) ; // transfer rest of packet until EOP
+        assign fromNoc_valid    = ((nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER) |
+                                   (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ;  
+
         assign cntl_fromNoc     = fifo_read_cntl ;  // 
         assign data_fromNoc     = fifo_read_data ;  //
-        assign type_fromNoc     = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_DMA_REQ_2ND_CYCLE_TYPE_RANGE ];  // valid only during 2nd cycle of external NoC packet       
+        assign mgr_fromNoc      = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE         ] ;  // valid only during header cycle of NoC packet       
+        assign priority_fromNoc = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE          ] ;  // valid only during header cycle of NoC packet       
+        assign type_fromNoc     = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE  ] ;  // valid only during 1st tuple cycle of NoC packet       
+        assign ptype_fromNoc    = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE ] ;  // valid during tuple and data cycles of NoC packet       
+                                                                                   
+
    
         always @(posedge clk)
           begin
         
             // the ack from each destinatio  is only active the cycle after the request is deasserted, so latch who acked so we can flow
             // control the transfer using the destinationReady vector
-            destinationAck_d1 <= (reset_poweron                                                         )  ? 'd0               :
-                                 (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ)  ? destinationAck    :
-                                                                                                             destinationAck_d1 ;
+            destinationAck_d1 <= (reset_poweron                                                              )  ? 'd0               :
+                                 (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ )  ? destinationAck    :
+                                                                                                                  destinationAck_d1 ;
 
-            destinationReady_d1 <= (reset_poweron       )  ? 'd0               :
-                                                         ((destinationAck_d1 == (destinationReady & destinationAck_d1)) & (nc_port_fromNoc_state_next == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ; // send balance of control packet
+            //destinationReady_d1 <= (reset_poweron       )  ? 'd0               :
+            //                                             ((destinationAck_d1 == (destinationReady & destinationAck_d1)) & (nc_port_fromNoc_state_next == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ; // send balance of control packet
 
           end
 
