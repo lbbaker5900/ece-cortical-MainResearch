@@ -809,7 +809,7 @@ module mgr_noc_cntl (
         //--------------------------------------------------------------------------------------------
         // Port Control to NoC FSM
         //
-        // Each source (local, port0..3) provide an OutqReq and OutqReqAddr and receive an OutqAck and OutqReady
+        // Each source (local, port0..3) provide an OutqReq and receive an OutqAck and OutqReady
         `include "noc_cntl_noc_port_output_control_wires.vh"
 
         // Once a source has been Ack'ed, the Outqready to that source is based on the output FIFO almost_full
@@ -847,7 +847,7 @@ module mgr_noc_cntl (
   endgenerate
 
   `include "mgr_noc_cntl_noc_port_output_control_mask_assignments.vh"          // which destinations nodes does this support. Based on input from top level
-  `include "mgr_noc_cntl_noc_port_output_control_request_assignments.vh"           // set {local, src0..3}_OutqReq based on ReqAddr  from each of those requestors
+  `include "mgr_noc_cntl_noc_port_output_control_request_assignments.vh"       // set {local, src0..3}_OutqReq based on ReqAddr  from each of those requestors
                                                                                // send the OutqAck and OutqReady to the requestors (local, port0..3)
   `include "mgr_noc_cntl_noc_port_output_control_header_field_assignments.vh"  // Format of packet defined at source, just pass the packet over but deassert the ports in the address bitfield not accessible via this output port
   `include "mgr_noc_cntl_noc_port_output_control_transfer_assignments.vh"      // Connect output of FIFO to external NoC ports
@@ -870,14 +870,11 @@ module mgr_noc_cntl (
   // Local Input Control
   //
 
+  // The source port will send the entire NoC packet data and its up to the local port to decode fields
+  // Latch stuff that is only valid during certain cycles of the NoC packet
   reg                                             local_inq_priority_fromNoc     ; 
-  reg                                             local_inq_priority_fromNoc_p1  ; 
   reg  [`MGR_MGR_ID_RANGE                      ]  local_inq_mgr_fromNoc          ;  
-  reg  [`MGR_MGR_ID_RANGE                      ]  local_inq_mgr_fromNoc_p1       ; 
   reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc         ;  // latch as we need type to know whether to add EOD at end of current apcket transfer
-  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc_p1      ; 
-  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE   ]  local_inq_ptype_fromNoc        ;  // latch as we need type to know whether to add EOD at end of current apcket transfer
-  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE   ]  local_inq_ptype_fromNoc_p1     ; 
 
 
   //--------------------------------------------------------------------------------------------
@@ -1022,7 +1019,7 @@ module mgr_noc_cntl (
   // Control
   
 
-  wire [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] InPortRequestVector    ;
+  //wire [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE ] InPortRequestVector    ;
 
   generate
     for (gvi=0; gvi<`MGR_NOC_CONT_NOC_NUM_OF_PORTS; gvi=gvi+1) 
@@ -1036,6 +1033,8 @@ module mgr_noc_cntl (
 
         //--------------------------------------------------------------------------------------------
         wire                              destinationReq       ; // request to all destinations, one (or more) will accept.
+                                                                 // Output Ports: rename to src<n>_OutqReq after and'ing with destinationReqAddr and the ports destination mask
+                                                                 // Local input : rename to port<n>_localInqReq after and'ing with destinationReqAddr and the local manager mask/ID
         wire [`MGR_MGR_ID_BITMASK_RANGE ] destinationReqAddr   ; // bitmask address from header of packet
         wire                              destinationPriority  ; // local input queue needs this to direct packet
 
@@ -1045,33 +1044,42 @@ module mgr_noc_cntl (
         // The Port  input controller must provide the priority of the packet
         // to allow appropriate directing of the packet. Right now only local
         // distinguishes between CP and DP.
-        // The priority of the packet does not affect destination arbitration but simply the transfer.
-        //reg                        destinationHpReq    ;  // output hi-priority request to CP local InQ fsm
-        //reg                        destinationLpReq    ;  // output lo-priority request to CP local InQ fsm
         //
         // All possible destinations may ack the request if its a multicast.
         // The Port input controller must wait for all relavant enables to be asserted before starting transfer (reading fifo)
         // This vector needs bits for the local inq and port 0-3 outputs e.g. "number of destinations" for a packet is 5
         wire [`MGR_NOC_CONT_NOC_NUM_OF_PKT_DEST_VECTOR_RANGE ]  destinationReady    ;  // Start reading input fifo, destination handles directing the information
-        wire [`MGR_NOC_CONT_NOC_NUM_OF_PKT_DEST_VECTOR_RANGE ]  destinationAck      ;  // input from local InQ fsm
+                                                                                       // This is a 5 element vector. 
+                                                                                       // Bit 0 is the local inq and is driven by local_port<in>_OutqReady. This is the locl__noc__[cp]d_ready
+                                                                                       // Bits 1..4 (in=this) are driven by the output ports (out=0..3): Port_to_NoC[<out>].src<this>_OutqReady. This is the output fifo almost full.
+                                                                                       
+        wire [`MGR_NOC_CONT_NOC_NUM_OF_PKT_DEST_VECTOR_RANGE ]  destinationAck      ;  // This is the destinationReq above masked and registered and fed back
+                                                                                       // For the input port, this is the port<this>_localInqReq (derived from masked destinationReq) registered and fed back
+                                                                                       // For the output ports, this is the src<n>_OutqReq (derived from masked destinationReq) registered and fed back
+                                                                                       // This is a 5 element vector. 
+                                                                                       // Bit 0 is the local inq and is driven by local_port<in=this>_OutqAck
+                                                                                       // Bits 1..4 (in=this)  are driven by the output ports (out=0..3): Port_to_NoC[<out>].src<this>_OutqAck
+
         reg  [`MGR_NOC_CONT_NOC_NUM_OF_PKT_DEST_VECTOR_RANGE ]  destinationAck_d1   ;  // Register the acking destinations so we can keep track of each destinations ready signal
-        //reg                                                     destinationReady_d1 ;  // Destination ready gated with ack vector
+
         
         // wires to make fsm easier to read
         wire  allDestinationsInitiallyReady  = ( destinationAck    == (destinationReady & destinationAck   ) );  // Used for the first ack and ready are asserted
         wire  allDestinationsStillReady      = ( destinationAck_d1 == (destinationReady & destinationAck_d1) );  // Used after the intial ack and ready
 
         // the following are to NoC packet bus from the input controller
-        wire                                            fromNoc_valid    ;  // when valid, the destination port(s) must write to their output fifo's
+        wire                                            valid_fromNoc    ;  // when valid, the destination port(s) must write to their output fifo's
+/*
         wire [`MGR_MGR_ID_RANGE                      ]  mgr_fromNoc      ;  // grap during header cycle
         reg  [`MGR_MGR_ID_RANGE                      ]  mgr_fromNoc_d1   ;  // grap during header cycle
-        wire [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE      ]  cntl_fromNoc     ;  // 
         reg  [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE      ]  cntl_fromNoc_d1  ;  // latch for entire transaction
         wire                                            priority_fromNoc ;  // valid only during header cycle of external NoC packet       
         wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  type_fromNoc     ;  // valid only during 2nd cycle or tuple cycle of external NoC packet (assume valid only during 1st tuple cycle)
         reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  type_fromNoc_d1  ;  // latch for entire transaction
         wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE   ]  ptype_fromNoc    ;  // payload type valid during tuple and data cycles
-        wire [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE      ]  data_fromNoc     ;  //
+*/
+        wire [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE      ]  cntl_fromNoc     ;
+        wire [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE      ]  data_fromNoc     ;
 
         wire                                            fromNoc_som      ;
         wire                                            fromNoc_mom      ;
@@ -1103,7 +1111,7 @@ module mgr_noc_cntl (
               // we have to identify the destination PE from the incoming pe mask address
               // put it out there to be accepted by an output port(s) and/or local input queue
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ:
-                nc_port_fromNoc_state_next = ( ~|destinationAck               ) ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  :  // no destination has acked yet
+                nc_port_fromNoc_state_next = ( ~|destinationAck               ) ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  :  // Need at least one to ack
                                              ( allDestinationsInitiallyReady  ) ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER  :  // output port has acked and all destinations ready
                                                                                   `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  ;
             
@@ -1146,22 +1154,24 @@ module mgr_noc_cntl (
         assign destinationReqAddr   = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE ] ;
         assign destinationPriority  = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE         ] ;
    
-        assign fromNoc_valid    = ((nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER) |
+        assign valid_fromNoc    = ((nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER) |
                                    (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ;  
 
         assign cntl_fromNoc     = fifo_read_cntl ;  // 
         assign data_fromNoc     = fifo_read_data ;  //
+/*
         assign mgr_fromNoc      = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE         ] ;  // valid only during header cycle of NoC packet       
         assign priority_fromNoc = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE          ] ;  // valid only during header cycle of NoC packet       
         assign type_fromNoc     = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE  ] ;  // valid only during 1st tuple cycle of NoC packet       
         assign ptype_fromNoc    = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE ] ;  // valid during tuple and data cycles of NoC packet       
+*/
                                                                                    
 
    
         always @(posedge clk)
           begin
         
-            // the ack from each destinatio  is only active the cycle after the request is deasserted, so latch who acked so we can flow
+            // the ack from each destination is only active the cycle after the request is deasserted, so latch who acked so we can flow
             // control the transfer using the destinationReady vector
             destinationAck_d1 <= (reset_poweron                                                              )  ? 'd0               :
                                  (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ )  ? destinationAck    :
@@ -1175,6 +1185,7 @@ module mgr_noc_cntl (
       end
   endgenerate
 
+  // Connect incoming NoC packets to input FIFO(s)
   `include "mgr_noc_cntl_port_input_control_assignments.vh"
 
   //--------------------------------------------------------------------------------------------

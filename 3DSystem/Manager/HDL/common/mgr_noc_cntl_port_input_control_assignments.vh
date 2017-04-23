@@ -1,9 +1,4 @@
 
-  assign InPortRequestVector[0]       = Port_from_NoC_Control[0].destinationReq ;
-  assign InPortRequestVector[1]       = Port_from_NoC_Control[1].destinationReq ;
-  assign InPortRequestVector[2]       = Port_from_NoC_Control[2].destinationReq ;
-  assign InPortRequestVector[3]       = Port_from_NoC_Control[3].destinationReq ;
-
   // Port inputs from NoC
   // NoC port 0
   assign    mgr__noc__port0_fc      = Port_from_NoC_Control[0].fifo_almost_full ;

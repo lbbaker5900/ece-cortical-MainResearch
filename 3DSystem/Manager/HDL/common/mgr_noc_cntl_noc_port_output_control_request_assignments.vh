@@ -5,83 +5,63 @@
   // Local output queue requests goes to all output ports
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[0].local_OutqReq          = local_destinationReq & |(local_destinationReqAddr & Port_to_NoC[0].thisPort_destinationMask)    ;
-  assign Port_to_NoC[0].local_OutqReqAddr      = local_destinationReqAddr ;
  
   // Local output queue requests goes to all output ports
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[1].local_OutqReq          = local_destinationReq & |(local_destinationReqAddr & Port_to_NoC[1].thisPort_destinationMask)    ;
-  assign Port_to_NoC[1].local_OutqReqAddr      = local_destinationReqAddr ;
  
   // Local output queue requests goes to all output ports
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[2].local_OutqReq          = local_destinationReq & |(local_destinationReqAddr & Port_to_NoC[2].thisPort_destinationMask)    ;
-  assign Port_to_NoC[2].local_OutqReqAddr      = local_destinationReqAddr ;
  
   // Local output queue requests goes to all output ports
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[3].local_OutqReq          = local_destinationReq & |(local_destinationReqAddr & Port_to_NoC[3].thisPort_destinationMask)    ;
-  assign Port_to_NoC[3].local_OutqReqAddr      = local_destinationReqAddr ;
  
  
   // Remember, a packet coming in a port can be output the same port as some are not symmetrical
   // Connect Port 0's port requests to all other ports (including its own input port)
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[0].src0_OutqReq          = Port_from_NoC_Control[0].destinationReq & |(Port_from_NoC_Control[0].destinationReqAddr & Port_to_NoC[0].thisPort_destinationMask)   ;
-  assign Port_to_NoC[0].src0_OutqReqAddr      = Port_from_NoC_Control[0].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[0].src1_OutqReq          = Port_from_NoC_Control[1].destinationReq & |(Port_from_NoC_Control[1].destinationReqAddr & Port_to_NoC[0].thisPort_destinationMask)   ;
-  assign Port_to_NoC[0].src1_OutqReqAddr      = Port_from_NoC_Control[1].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[0].src2_OutqReq          = Port_from_NoC_Control[2].destinationReq & |(Port_from_NoC_Control[2].destinationReqAddr & Port_to_NoC[0].thisPort_destinationMask)   ;
-  assign Port_to_NoC[0].src2_OutqReqAddr      = Port_from_NoC_Control[2].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[0].src3_OutqReq          = Port_from_NoC_Control[3].destinationReq & |(Port_from_NoC_Control[3].destinationReqAddr & Port_to_NoC[0].thisPort_destinationMask)   ;
-  assign Port_to_NoC[0].src3_OutqReqAddr      = Port_from_NoC_Control[3].destinationReqAddr ;
  
   // Remember, a packet coming in a port can be output the same port as some are not symmetrical
   // Connect Port 1's port requests to all other ports (including its own input port)
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[1].src0_OutqReq          = Port_from_NoC_Control[0].destinationReq & |(Port_from_NoC_Control[0].destinationReqAddr & Port_to_NoC[1].thisPort_destinationMask)   ;
-  assign Port_to_NoC[1].src0_OutqReqAddr      = Port_from_NoC_Control[0].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[1].src1_OutqReq          = Port_from_NoC_Control[1].destinationReq & |(Port_from_NoC_Control[1].destinationReqAddr & Port_to_NoC[1].thisPort_destinationMask)   ;
-  assign Port_to_NoC[1].src1_OutqReqAddr      = Port_from_NoC_Control[1].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[1].src2_OutqReq          = Port_from_NoC_Control[2].destinationReq & |(Port_from_NoC_Control[2].destinationReqAddr & Port_to_NoC[1].thisPort_destinationMask)   ;
-  assign Port_to_NoC[1].src2_OutqReqAddr      = Port_from_NoC_Control[2].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[1].src3_OutqReq          = Port_from_NoC_Control[3].destinationReq & |(Port_from_NoC_Control[3].destinationReqAddr & Port_to_NoC[1].thisPort_destinationMask)   ;
-  assign Port_to_NoC[1].src3_OutqReqAddr      = Port_from_NoC_Control[3].destinationReqAddr ;
  
   // Remember, a packet coming in a port can be output the same port as some are not symmetrical
   // Connect Port 2's port requests to all other ports (including its own input port)
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[2].src0_OutqReq          = Port_from_NoC_Control[0].destinationReq & |(Port_from_NoC_Control[0].destinationReqAddr & Port_to_NoC[2].thisPort_destinationMask)   ;
-  assign Port_to_NoC[2].src0_OutqReqAddr      = Port_from_NoC_Control[0].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[2].src1_OutqReq          = Port_from_NoC_Control[1].destinationReq & |(Port_from_NoC_Control[1].destinationReqAddr & Port_to_NoC[2].thisPort_destinationMask)   ;
-  assign Port_to_NoC[2].src1_OutqReqAddr      = Port_from_NoC_Control[1].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[2].src2_OutqReq          = Port_from_NoC_Control[2].destinationReq & |(Port_from_NoC_Control[2].destinationReqAddr & Port_to_NoC[2].thisPort_destinationMask)   ;
-  assign Port_to_NoC[2].src2_OutqReqAddr      = Port_from_NoC_Control[2].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[2].src3_OutqReq          = Port_from_NoC_Control[3].destinationReq & |(Port_from_NoC_Control[3].destinationReqAddr & Port_to_NoC[2].thisPort_destinationMask)   ;
-  assign Port_to_NoC[2].src3_OutqReqAddr      = Port_from_NoC_Control[3].destinationReqAddr ;
  
   // Remember, a packet coming in a port can be output the same port as some are not symmetrical
   // Connect Port 3's port requests to all other ports (including its own input port)
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[3].src0_OutqReq          = Port_from_NoC_Control[0].destinationReq & |(Port_from_NoC_Control[0].destinationReqAddr & Port_to_NoC[3].thisPort_destinationMask)   ;
-  assign Port_to_NoC[3].src0_OutqReqAddr      = Port_from_NoC_Control[0].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[3].src1_OutqReq          = Port_from_NoC_Control[1].destinationReq & |(Port_from_NoC_Control[1].destinationReqAddr & Port_to_NoC[3].thisPort_destinationMask)   ;
-  assign Port_to_NoC[3].src1_OutqReqAddr      = Port_from_NoC_Control[1].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[3].src2_OutqReq          = Port_from_NoC_Control[2].destinationReq & |(Port_from_NoC_Control[2].destinationReqAddr & Port_to_NoC[3].thisPort_destinationMask)   ;
-  assign Port_to_NoC[3].src2_OutqReqAddr      = Port_from_NoC_Control[2].destinationReqAddr ;
   // Use destination mask to determine if this request goes out this port
   assign Port_to_NoC[3].src3_OutqReq          = Port_from_NoC_Control[3].destinationReq & |(Port_from_NoC_Control[3].destinationReqAddr & Port_to_NoC[3].thisPort_destinationMask)   ;
-  assign Port_to_NoC[3].src3_OutqReqAddr      = Port_from_NoC_Control[3].destinationReqAddr ;
  
   //---------------------------------------------------
   // Outgoing Port acknowledge back to requesting ports

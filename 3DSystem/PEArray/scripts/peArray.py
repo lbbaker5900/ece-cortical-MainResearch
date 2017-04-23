@@ -179,12 +179,12 @@ if __name__ == "__main__":
 
   pLine = pLine + '\n    //------------------------------------------------'
   pLine = pLine + '\n    //wire                            local_OutqReq     ;'
-  pLine = pLine + '\n    //wire [`PE_PE_ID_BITMASK_RANGE ] local_OutqReqAddr ; // bitmask address from header of packet'
+  #pLine = pLine + '\n    //wire [`PE_PE_ID_BITMASK_RANGE ] local_OutqReqAddr ; // bitmask address from header of packet'
   pLine = pLine + '\n    //reg                             local_OutqAck     ;'
   pLine = pLine + '\n    //reg                             local_OutqEnable  ;'
   for port in range (1, numOfPorts):
     pLine = pLine + '\n    //wire                            port{0}_OutqReq     ;'.format(port)
-    pLine = pLine + '\n    //wire [`PE_PE_ID_BITMASK_RANGE ] port{0}_OutqReqAddr ; // bitmask address from header of packet'.format(port)
+    #pLine = pLine + '\n    //wire [`PE_PE_ID_BITMASK_RANGE ] port{0}_OutqReqAddr ; // bitmask address from header of packet'.format(port)
     pLine = pLine + '\n    //reg                             port{0}_OutqAck     ;'.format(port)
     pLine = pLine + '\n    //reg                             port{0}_OutqEnable  ;'.format(port)
   
@@ -533,14 +533,14 @@ if __name__ == "__main__":
   pLine = pLine + '\n  wire [`PE_PE_ID_BITMASK_RANGE ] thisPort_destinationMask  ; // bitmask indicating which nodes accessed out of this port'
   pLine = pLine + '\n'
   pLine = pLine + '\n  wire                            local_OutqReq             ;  // request from local putput queue controller'
-  pLine = pLine + '\n  wire [`PE_PE_ID_BITMASK_RANGE ] local_OutqReqAddr         ;  // bitmask address of requestor'
+  #pLine = pLine + '\n  wire [`PE_PE_ID_BITMASK_RANGE ] local_OutqReqAddr         ;  // bitmask address of requestor'
   pLine = pLine + '\n  reg                             local_OutqAck             ;'
   pLine = pLine + '\n  reg                             local_OutqReady           ;'
   for port in range (0, numOfPorts):
     pLine = pLine + '\n  // These 3 sources are the 3 sources not the 3 actual ports'
     pLine = pLine + '\n  // e.g. if this instance is port 2, 1=port0, 2=port1, 3=port3 etc.'
     pLine = pLine + '\n  wire                            src{0}_OutqReq             ;  // request from source (port) {0}'.format(port)
-    pLine = pLine + '\n  wire [`PE_PE_ID_BITMASK_RANGE ] src{0}_OutqReqAddr         ;  // bitmask address of requestor'.format(port)
+    #pLine = pLine + '\n  wire [`PE_PE_ID_BITMASK_RANGE ] src{0}_OutqReqAddr         ;  // bitmask address of requestor'.format(port)
     pLine = pLine + '\n  reg                             src{0}_OutqAck             ;  // ack back to source (port) input controller'.format(port)
     pLine = pLine + '\n  reg                             src{0}_OutqReady           ;'.format(port)
     pLine = pLine + '\n  // This is the packet bus from the 3 possible sources that will be muxed into the output fifo when the source has been acknowledged'
@@ -814,7 +814,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  // Local output queue requests goes to all output ports'
     pLine = pLine + '\n  // Use destination mask to determine if this request goes out this port'
     pLine = pLine + '\n  assign Port_to_NoC[{0}].local_OutqReq          = local_destinationReq & |(local_destinationReqAddr & Port_to_NoC[{0}].thisPort_destinationMask)    ;'.format(port)
-    pLine = pLine + '\n  assign Port_to_NoC[{0}].local_OutqReqAddr      = local_destinationReqAddr ;'.format(port)
+    #pLine = pLine + '\n  assign Port_to_NoC[{0}].local_OutqReqAddr      = local_destinationReqAddr ;'.format(port)
     pLine = pLine + '\n '
   pLine = pLine + '\n '
   for port in range (0, numOfPorts):
@@ -824,7 +824,7 @@ if __name__ == "__main__":
     for otherPort in range (0, numOfPorts):
       pLine = pLine + '\n  // Use destination mask to determine if this request goes out this port'
       pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_OutqReq          = Port_from_NoC[{1}].destinationReq & |(Port_from_NoC[{1}].destinationReqAddr & Port_to_NoC[{0}].thisPort_destinationMask)   ;'.format(port,otherPort)
-      pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_OutqReqAddr      = Port_from_NoC[{1}].destinationReqAddr ;'.format(port,otherPort)
+      #pLine = pLine + '\n  assign Port_to_NoC[{0}].src{1}_OutqReqAddr      = Port_from_NoC[{1}].destinationReqAddr ;'.format(port,otherPort)
     pLine = pLine + '\n '
 
   pLine = pLine + '\n  //---------------------------------------------------'

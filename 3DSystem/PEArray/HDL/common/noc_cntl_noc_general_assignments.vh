@@ -286,19 +286,15 @@
 
     //------------------------------------------------
     //wire                            local_OutqReq     ;
-    //wire [`PE_PE_ID_BITMASK_RANGE ] local_OutqReqAddr ; // bitmask address from header of packet
     //reg                             local_OutqAck     ;
     //reg                             local_OutqEnable  ;
     //wire                            port1_OutqReq     ;
-    //wire [`PE_PE_ID_BITMASK_RANGE ] port1_OutqReqAddr ; // bitmask address from header of packet
     //reg                             port1_OutqAck     ;
     //reg                             port1_OutqEnable  ;
     //wire                            port2_OutqReq     ;
-    //wire [`PE_PE_ID_BITMASK_RANGE ] port2_OutqReqAddr ; // bitmask address from header of packet
     //reg                             port2_OutqAck     ;
     //reg                             port2_OutqEnable  ;
     //wire                            port3_OutqReq     ;
-    //wire [`PE_PE_ID_BITMASK_RANGE ] port3_OutqReqAddr ; // bitmask address from header of packet
     //reg                             port3_OutqAck     ;
     //reg                             port3_OutqEnable  ;
   reg  local_port0_OutqAck   ;  // the local input queue is actually an output for the port input controllers
