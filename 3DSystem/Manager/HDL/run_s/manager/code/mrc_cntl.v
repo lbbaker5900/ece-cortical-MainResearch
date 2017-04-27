@@ -39,17 +39,17 @@ module mrc_cntl (
             //
             input   wire                                           wud__mrc__valid                                 ,  // send MR descriptors
             output  reg                                            mrc__wud__ready                                 ,
-            input   wire [`COMMON_STD_INTF_CNTL_RANGE    ]         wud__mrc__cntl                                  ,  // descriptor delineator
-            input   wire [`MGR_WU_OPT_TYPE_RANGE         ]         wud__mrc__option_type   [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
-            input   wire [`MGR_WU_OPT_VALUE_RANGE        ]         wud__mrc__option_value  [`MGR_WU_OPT_PER_INST ] ,  
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE    ]        wud__mrc__cntl                                  ,  // descriptor delineator
+            input   wire  [`MGR_WU_OPT_TYPE_RANGE         ]        wud__mrc__option_type   [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
+            input   wire  [`MGR_WU_OPT_VALUE_RANGE        ]        wud__mrc__option_value  [`MGR_WU_OPT_PER_INST ] ,  
             
             //-------------------------------
             // Stack Bus - Downstream arguments
             //
             output  reg                                            mrc__std__lane_valid    [`MGR_NUM_OF_EXEC_LANES_RANGE ],
-            output  reg  [`COMMON_STD_INTF_CNTL_RANGE      ]       mrc__std__lane_cntl     [`MGR_NUM_OF_EXEC_LANES_RANGE ],
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__std__lane_cntl     [`MGR_NUM_OF_EXEC_LANES_RANGE ],
             input   wire                                           std__mrc__lane_ready    [`MGR_NUM_OF_EXEC_LANES_RANGE ],
-            output  reg  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mrc__std__lane_data     [`MGR_NUM_OF_EXEC_LANES_RANGE ],
+            output  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]      mrc__std__lane_data     [`MGR_NUM_OF_EXEC_LANES_RANGE ],
 
             //-------------------------------
             // General

@@ -362,7 +362,6 @@ module manager (
         );
 
 
-/*
   //-------------------------------------------------------------------------------------------------
   // Memory Read Controller 
   //  - instance for each argument
@@ -370,13 +369,19 @@ module manager (
   genvar gvi;
   generate
     for (gvi=0; gvi<`MGR_NUM_OF_STREAMS; gvi=gvi+1) 
-      begin: mrc_cntl_inst
+      begin: mrc_cntl_strm_inst
 
-        wire                                        std__mrc__lane_ready_d1  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
-        wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__std__lane_cntl_e1   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
-        wire  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mrc__std__lane_data_e1   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
-        wire                                        mrc__std__lane_valid_e1  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+        wire                                        std__mrc__lane_ready  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+        wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__std__lane_cntl   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+        wire  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mrc__std__lane_data   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+        wire                                        mrc__std__lane_valid  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
       
+        wire                                        wud__mrc__valid                                      ;  // send MR descriptors
+        wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   wud__mrc__cntl                                       ;  // descriptor delineator
+        wire                                        mrc__wud__ready                                      ;
+        wire  [`MGR_WU_OPT_TYPE_RANGE           ]   wud__mrc__option_type   [`MGR_WU_OPT_PER_INST ]      ;  // WU Instruction option fields
+        wire  [`MGR_WU_OPT_VALUE_RANGE          ]   wud__mrc__option_value  [`MGR_WU_OPT_PER_INST ]      ;  
+
         mrc_cntl mrc_cntl (
         
                 //-------------------------------
@@ -389,9 +394,12 @@ module manager (
                 .wud__mrc__option_value  ( wud__mrc__option_value  ),
       
                 //-------------------------------
-                // to Stack Downstream lane 0 WU Decoder
+                // to Stack Downstream lanes
                 //
-                .wud__mrc__valid         ( wud__mrc__valid         ),
+                .std__mrc__lane_ready    ( std__mrc__lane_ready    ),
+                .mrc__std__lane_cntl     ( mrc__std__lane_cntl     ),
+                .mrc__std__lane_data     ( mrc__std__lane_data     ),
+                .mrc__std__lane_valid    ( mrc__std__lane_valid    ),
       
                 //-------------------------------
                 // General
@@ -403,8 +411,12 @@ module manager (
 
       end
   endgenerate
-*/
 
+  // Connect packed array port of MRC(s) to WU Decoder
+  `include "manager_mrc_cntl_wud_connections.vh"
+  
+  // Connect packed array port of MRC(s) to individual stack downstream wires
+  `include "manager_mrc_cntl_stack_bus_downstream_connections.vh"
 
 
   //-------------------------------------------------------------------------------------------------

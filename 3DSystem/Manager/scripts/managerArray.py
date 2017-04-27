@@ -1441,6 +1441,43 @@ if __name__ == "__main__":
   f.close()
 
 
+  # MRC
+
+  f = open('../HDL/common/manager_mrc_cntl_stack_bus_downstream_connections.vh', 'w')
+  pLine = ""
+
+  #
+  for lane in range (numOfExecLanes):
+    pLine = pLine + '\n      //------------------------------------------------------------------------------------------------------------------------'
+    pLine = pLine + '\n      // Lane {0}                 '.format(lane)
+    pLine = pLine + '\n      // '
+    for strm in range (2):
+      pLine = pLine + '\n      // Stream {0}                 '.format(strm)
+      pLine = pLine + '\n      assign mrc_cntl_strm_inst[{1}].std__mrc__lane_ready [{0}] =   std__mgr__lane{0}_strm{1}_ready                 ;   '.format(lane,strm)
+      pLine = pLine + '\n      assign mgr__std__lane{0}_strm{1}_cntl                     =   mrc_cntl_strm_inst[{1}].mrc__std__lane_cntl  [{0}]; '.format(lane,strm)
+      pLine = pLine + '\n      assign mgr__std__lane{0}_strm{1}_data                     =   mrc_cntl_strm_inst[{1}].mrc__std__lane_data  [{0}]; '.format(lane,strm)
+      pLine = pLine + '\n      assign mgr__std__lane{0}_strm{1}_data_valid               =   mrc_cntl_strm_inst[{1}].mrc__std__lane_valid [{0}]; '.format(lane,strm)
+      pLine = pLine + '\n'
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../HDL/common/manager_mrc_cntl_wud_connections.vh', 'w')
+  pLine = ""
+
+  #
+  for strm in range (2):
+    pLine = pLine + '\n      // Stream {0}                 '.format(strm)
+    pLine = pLine + '\n      assign  mrc_cntl_strm_inst[{0}].wud__mrc__valid        =  wud__mrc{0}__valid                      ; '.format(strm)
+    pLine = pLine + '\n      assign  mrc_cntl_strm_inst[{0}].wud__mrc__cntl         =  wud__mrc{0}__cntl                       ; '.format(strm)
+    pLine = pLine + '\n      assign  mrc{0}__wud__ready                             =  mrc_cntl_strm_inst[{0}].mrc__wud__ready ; '.format(strm)
+    pLine = pLine + '\n      assign  mrc_cntl_strm_inst[{0}].wud__mrc__option_type  =  wud__mrc{0}__option_type                ; '.format(strm)
+    pLine = pLine + '\n      assign  mrc_cntl_strm_inst[{0}].wud__mrc__option_value =  wud__mrc{0}__option_value               ; '.format(strm)
+    pLine = pLine + '\n'
+  f.write(pLine)
+  f.close()
+
+
   # RDP
 
   f = open('../HDL/common/rdp_cntl_option_tuple_extract.vh', 'w')
