@@ -2552,18 +2552,18 @@ if __name__ == "__main__":
   f = open('../HDL/common/pe_cntl_lane_enable_assignments.vh', 'w')
   pLine = ""
 
-  # In this case, '0' means one active lane
+  # In this case, '1' means one active lane
   pLine = pLine + '\n'
   numOfExecLaneIdBits = int(math.log(numOfExecLanes,2))
   pLine = pLine + '\n  // Set bit in rs1 for each enabled lane'
-  pLine = pLine + '\n  // In this case, \'0\' means one active lane e.g. always at least one active'
-  for activeLanes in range (numOfExecLanes-1, -1, -1 ):
+  pLine = pLine + '\n  // In this case, \'1\' means one active lane. We accommodate no active lanes but not sure that will ever be used'
+  for activeLanes in range (numOfExecLanes, 0, -1 ):
     pLine = pLine + '\n      {2}\'d{0} :'.format(activeLanes, numOfExecLanes, numOfExecLaneIdBits)
     pLine = pLine + '\n        begin'
     pLine = pLine + '\n          execLanesActive = {1}\'b'.format(activeLanes, numOfExecLanes, numOfExecLaneIdBits)
-    for bit in range (numOfExecLanes -1 - activeLanes) :
+    for bit in range (numOfExecLanes - activeLanes) :
       pLine = pLine + '0'
-    for bit in range (activeLanes+1) :
+    for bit in range (activeLanes) :
       pLine = pLine + '1'
     pLine = pLine + '  ; '
     pLine = pLine + '\n        end'

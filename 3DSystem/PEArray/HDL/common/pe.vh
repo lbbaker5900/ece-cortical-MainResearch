@@ -66,6 +66,15 @@
 `define PE_EXEC_LANE_WIDTH_SIZE           (`PE_EXEC_LANE_WIDTH_MSB - `PE_EXEC_LANE_WIDTH_LSB +1)
 `define PE_EXEC_LANE_WIDTH_RANGE           `PE_EXEC_LANE_WIDTH_MSB : `PE_EXEC_LANE_WIDTH_LSB
 
+//--------------------------------------------------------
+// In cases where we set number of active lanes, Number of active lanes is 1..32, so need 6 bits
+  
+`define PE_NUM_LANES_WIDTH               (`CLOG2(`PE_NUM_OF_EXEC_LANES))+1
+`define PE_NUM_LANES_MSB           `PE_NUM_LANES_WIDTH-1
+`define PE_NUM_LANES_LSB            0
+`define PE_NUM_LANES_SIZE           (`PE_NUM_LANES_MSB - `PE_NUM_LANES_LSB +1)
+`define PE_NUM_LANES_RANGE           `PE_NUM_LANES_MSB : `PE_NUM_LANES_LSB
+
 //---------------------------------------------------------------------------------------------------------------------
 // Memory
 

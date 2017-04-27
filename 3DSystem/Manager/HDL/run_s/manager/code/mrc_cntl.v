@@ -37,24 +37,25 @@ module mrc_cntl (
             // From WU Decoder
             // - receiver MR descriptorss
             //
-            input   wire                                      wud__mrc__valid                ,  // send MR descriptors
-            output  reg                                       mrc__wud__ready                ,
-            input   wire [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc__cntl                 ,  // descriptor delineator
-            input   wire [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
-            input   wire [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc__option_value   [`MGR_WU_OPT_PER_INST ] ,  
+            input   wire                                           wud__mrc__valid                                 ,  // send MR descriptors
+            output  reg                                            mrc__wud__ready                                 ,
+            input   wire [`COMMON_STD_INTF_CNTL_RANGE    ]         wud__mrc__cntl                                  ,  // descriptor delineator
+            input   wire [`MGR_WU_OPT_TYPE_RANGE         ]         wud__mrc__option_type   [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
+            input   wire [`MGR_WU_OPT_VALUE_RANGE        ]         wud__mrc__option_value  [`MGR_WU_OPT_PER_INST ] ,  
             
             //-------------------------------
             // Stack Bus - Downstream arguments
             //
-            mgr__std__oob_cntl          , 
-            mgr__std__oob_valid         , 
-            std__mgr__oob_ready         , 
-            mgr__std__oob_type          , 
-            mgr__std__oob_data          , 
+            output  reg                                            mrc__std__lane_valid    [`MGR_NUM_OF_EXEC_LANES_RANGE ],
+            output  reg  [`COMMON_STD_INTF_CNTL_RANGE      ]       mrc__std__lane_cntl     [`MGR_NUM_OF_EXEC_LANES_RANGE ],
+            input   wire                                           std__mrc__lane_ready    [`MGR_NUM_OF_EXEC_LANES_RANGE ],
+            output  reg  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]       mrc__std__lane_data     [`MGR_NUM_OF_EXEC_LANES_RANGE ],
 
             //-------------------------------
             // General
             //
+            input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
+
             input  wire                           clk             ,
             input  wire                           reset_poweron  
                         );
@@ -63,6 +64,14 @@ module mrc_cntl (
     //----------------------------------------------------------------------------------------------------
     // Registers and Wires
  
+    //-------------------------------
+    // Stack Bus - Downstream arguments
+    //
+    reg                                         std__mrc__lane_ready_d1  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+    wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__std__lane_cntl_e1   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+    wire  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mrc__std__lane_data_e1   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+    wire                                        mrc__std__lane_valid_e1  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+
     //--------------------------------------------------
     // Memory Read Controller(s)
     
@@ -77,6 +86,22 @@ module mrc_cntl (
     //----------------------------------------------------------------------------------------------------
     // Register inputs and outputs
 
+    //--------------------------------------------------
+    // Stack Bus - Downstream arguments
+    //  - we have an output for each execution lane
+    
+    always @(posedge clk) 
+      begin
+        for (int lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
+          begin: lane_drive
+            mrc__std__lane_valid    [lane]  <=   ( reset_poweron   ) ? 'd0  :  mrc__std__lane_valid_e1 [lane]  ; 
+            mrc__std__lane_cntl     [lane]  <=   ( reset_poweron   ) ? 'd0  :  mrc__std__lane_cntl_e1  [lane]  ;
+            mrc__std__lane_data     [lane]  <=   ( reset_poweron   ) ? 'd0  :  mrc__std__lane_data_e1  [lane]  ;
+            std__mrc__lane_ready_d1 [lane]  <=   ( reset_poweron   ) ? 'd0  :  std__mrc__lane_ready    [lane]  ;
+          end
+
+
+      end
     //--------------------------------------------------
     // from WU Decoder
     

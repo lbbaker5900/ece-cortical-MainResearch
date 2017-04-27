@@ -109,7 +109,7 @@ module pe_cntl (
   wire   [`PE_MAX_NUM_OF_TYPES_RANGE         ]    numberOfOperands           ;
 
   reg    [`PE_NUM_OF_EXEC_LANES_RANGE        ]    execLanesActive            ;
-  reg    [`PE_EXEC_LANE_ID_RANGE             ]    numberOfActiveLanes        ;
+  reg    [`PE_NUM_LANES_RANGE                ]    numberOfActiveLanes        ;  // between 0-32, so 6 bits
 
 
   //----------------------------------------------------------------------------------------------------
@@ -201,7 +201,7 @@ module pe_cntl (
                                                                                                                                                                                                          
       cntl__simd__rs0_e1[0]             <= (reset_poweron ) ? 1'b0                    : ( start_stOp_operation ) ? 1'b1             : ( stop_stOp_operation ) ? 1'b0   : cntl__simd__rs0_e1[0]             ;
       cntl__simd__rs0_e1[31:1]          <= (reset_poweron ) ? 31'd0                   : ( start_stOp_operation ) ? stOp_operation                                      : cntl__simd__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
-      cntl__simd__rs1_e1                <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? {32{1'b1}}                                          : cntl__simd__rs1_e1                ;
+      cntl__simd__rs1_e1                <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? {32{1'b1}}                                          : cntl__simd__rs1_e1                ;  // FIXME: Need to use numLanes from OOB packet
     end
 
 
@@ -473,8 +473,8 @@ module pe_cntl (
                                                                                                                                                                      tag                                                             ;
 
       // if we dont get a number of active lanes, assume all are active, set all active at begining of oob packet
-      numberOfActiveLanes      <=  ( reset_poweron                                                                                                                     ) ?  { `PE_NUM_OF_EXEC_LANES {1'b1}}                                :
-                                   ( oob_packet_starting                                                                                                               ) ?  { `PE_NUM_OF_EXEC_LANES {1'b1}}                                :
+      numberOfActiveLanes      <=  ( reset_poweron                                                                                                                     ) ?  'd `PE_NUM_OF_EXEC_LANES                                       : 
+                                   ( oob_packet_starting                                                                                                               ) ?  'd `PE_NUM_OF_EXEC_LANES                                       :
                                    ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_RANGE] == STD_PACKET_OOB_OPT_NUM_LANES  )) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
                                    ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_RANGE] == STD_PACKET_OOB_OPT_NUM_LANES  )) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
                                                                                                                                                                            numberOfActiveLanes                                             ;

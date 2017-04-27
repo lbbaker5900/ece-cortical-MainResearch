@@ -283,7 +283,7 @@ class oob_driver;
                             oob_value  [0] = oob_packet_mgr.tag ;
                             tmp_oob_option = STD_PACKET_OOB_OPT_NUM_LANES      ;
                             oob_option [1] = tmp_oob_option  ;
-                            oob_value  [1] = oob_packet_mgr.numberOfLanes-1    ;  // for number of lanes, 0 - 1, 31 = 32 e.g. we only want to use 5 bits to set number of lanes and we assume at least one lane is active
+                            oob_value  [1] = oob_packet_mgr.numberOfLanes    ;  // for number of lanes, this will be 6-bits wide to accommodate 32. Note: previously used 5 bits
                             // drive but these are conditioned on valid
                             //vDownstreamStackBusOOB.cb_test.sys__pe__allSynchronized  <= 1 ;
                             vDownstreamStackBusOOB.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_EOM      ;  

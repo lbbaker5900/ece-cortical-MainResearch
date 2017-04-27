@@ -88,7 +88,7 @@ module oob_downstream_cntl (
     input   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ;
     output                                         odc__wud__ready         ;
     input   [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag           ;
-    input   [`MGR_EXEC_LANE_ID_RANGE        ]      wud__odc__num_lanes     ;
+    input   [`MGR_NUM_LANES_RANGE           ]      wud__odc__num_lanes     ;
     input   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
     input   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
  
@@ -101,7 +101,7 @@ module oob_downstream_cntl (
     wire [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ;
     reg                                         odc__wud__ready         ;
     wire [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag           ;
-    wire [`MGR_EXEC_LANE_ID_RANGE        ]      wud__odc__num_lanes     ;
+    wire [`MGR_NUM_LANES_RANGE           ]      wud__odc__num_lanes     ;
     wire [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
     wire [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
  
@@ -111,7 +111,7 @@ module oob_downstream_cntl (
     reg  [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl_d1          ;
     wire                                        odc__wud__ready_e1         ;
     reg  [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag_d1           ;
-    reg  [`MGR_EXEC_LANE_ID_RANGE        ]      wud__odc__num_lanes_d1     ;
+    reg  [`MGR_NUM_LANES_RANGE           ]      wud__odc__num_lanes_d1     ;
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd_d1      ;
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd_d1      ;
  
@@ -173,14 +173,14 @@ module oob_downstream_cntl (
         // Write data
         reg  [`COMMON_STD_INTF_CNTL_RANGE       ]         write_cntl          ;
         reg  [`MGR_STD_OOB_TAG_RANGE            ]         write_tag           ;
-        reg  [`MGR_EXEC_LANE_ID_RANGE           ]         write_num_lanes     ;
+        reg  [`MGR_NUM_LANES_RANGE              ]         write_num_lanes     ;
         reg  [`MGR_WU_OPT_VALUE_RANGE           ]         write_stOp_cmd      ;
         reg  [`MGR_WU_OPT_VALUE_RANGE           ]         write_simd_cmd      ;
  
         // Read data                                                       
         reg  [`COMMON_STD_INTF_CNTL_RANGE       ]         read_cntl           ;
         reg  [`MGR_STD_OOB_TAG_RANGE            ]         read_tag            ;
-        reg  [`MGR_EXEC_LANE_ID_RANGE           ]         read_num_lanes      ;
+        reg  [`MGR_NUM_LANES_RANGE              ]         read_num_lanes      ;
         reg  [`MGR_WU_OPT_VALUE_RANGE           ]         read_stOp_cmd       ;
         reg  [`MGR_WU_OPT_VALUE_RANGE           ]         read_simd_cmd       ;
  
@@ -195,7 +195,7 @@ module oob_downstream_cntl (
         // FIXME: Combine FIFO's for synthesis
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`OOB_DOWN_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`OOB_DOWN_FIFO_THRESHOLD ),
-                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_STD_OOB_TAG_WIDTH+`MGR_EXEC_LANE_ID_WIDTH+`MGR_WU_OPT_VALUE_WIDTH+`MGR_WU_OPT_VALUE_WIDTH)
+                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_STD_OOB_TAG_WIDTH+`MGR_NUM_LANES_WIDTH+`MGR_WU_OPT_VALUE_WIDTH+`MGR_WU_OPT_VALUE_WIDTH)
                         ) instr_fifo (
                                           // Status
                                          .empty            ( empty                                                ),
@@ -222,7 +222,7 @@ module oob_downstream_cntl (
         reg                                                  pipe_valid        ;
         reg     [`COMMON_STD_INTF_CNTL_RANGE       ]         pipe_cntl         ;
         reg     [`MGR_STD_OOB_TAG_RANGE            ]         pipe_tag          ;
-        reg     [`MGR_EXEC_LANE_ID_RANGE           ]         pipe_num_lanes    ;
+        reg     [`MGR_NUM_LANES_RANGE              ]         pipe_num_lanes    ;
         reg     [`MGR_WU_OPT_VALUE_RANGE           ]         pipe_stOp_cmd     ;
         reg     [`MGR_WU_OPT_VALUE_RANGE           ]         pipe_simd_cmd     ;
         wire                                                 pipe_read         ;
@@ -285,12 +285,14 @@ module oob_downstream_cntl (
   // OOB Downstream packet generator FSM
   //
 
+  /*
   reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    stOp_cmd             ; 
   reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    simd_cmd             ; 
   reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    num_lanes                  ; 
   reg                                             contained_stOp_cmd             ;  // the WU option contained a stOp operation pointer
   reg                                             contained_simd_cmd             ;  // the WU option contained a simd operation pointer
   reg                                             contained_num_lanes        ;  // the WU tag for the PE operation(s)
+  */
 
   reg [`OOB_DOWNSTREAM_CNTL_STATE_RANGE ] oob_down_cntl_state      ; // state flop
   reg [`OOB_DOWNSTREAM_CNTL_STATE_RANGE ] oob_down_cntl_state_next ;
@@ -312,7 +314,7 @@ module oob_downstream_cntl (
         
         `OOB_DOWNSTREAM_CNTL_WAIT: 
           oob_down_cntl_state_next =  ( from_WuDecoder_Fifo[0].pipe_valid && (from_WuDecoder_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && std__mgr__oob_ready_d1) ? `OOB_DOWNSTREAM_CNTL_START_PKT :  // Dont read FIFO until packet is sent
-                                      ( from_WuDecoder_Fifo[0].pipe_valid                                                                                                 ) ? `OOB_DOWNSTREAM_CNTL_ERR       :  // for now expecting 1-cycle commands from the decoder
+                                      ( from_WuDecoder_Fifo[0].pipe_valid                                                                        && std__mgr__oob_ready_d1) ? `OOB_DOWNSTREAM_CNTL_ERR       :  // for now expecting 1-cycle commands from the decoder
                                                                                                                                                                               `OOB_DOWNSTREAM_CNTL_WAIT      ;
   
         `OOB_DOWNSTREAM_CNTL_START_PKT: 

@@ -42,6 +42,14 @@
 `define WU_DEC_INSTR_DECODE_STATE_SIZE          (`WU_DEC_INSTR_DECODE_STATE_MSB - `WU_DEC_INSTR_DECODE_STATE_LSB +1)
 `define WU_DEC_INSTR_DECODE_STATE_RANGE          `WU_DEC_INSTR_DECODE_STATE_MSB : `WU_DEC_INSTR_DECODE_STATE_LSB
 
+//--------------------------------------------------------
+// Number of active lanes is 1..32, so need 6 bits
+  
+`define WU_DEC_NUM_LANES_WIDTH               (`CLOG2(`PE_NUM_OF_EXEC_LANES))+1
+`define WU_DEC_NUM_LANES_MSB           `WU_DEC_NUM_LANES_WIDTH-1
+`define WU_DEC_NUM_LANES_LSB            0
+`define WU_DEC_NUM_LANES_SIZE           (`WU_DEC_NUM_LANES_MSB - `WU_DEC_NUM_LANES_LSB +1)
+`define WU_DEC_NUM_LANES_RANGE           `WU_DEC_NUM_LANES_MSB : `WU_DEC_NUM_LANES_LSB
 //------------------------------------------------------------------------------------------------------------
 
 

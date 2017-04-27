@@ -34,116 +34,70 @@ module wu_decode (
 
             //-------------------------------
             // from WU Memory
-            wum__wud__valid             ,
-            wud__wum__ready             ,
-            wum__wud__icntl             ,
-            wum__wud__dcntl             ,
-            wum__wud__op                ,
-            wum__wud__option_type       ,
-            wum__wud__option_value      ,
+            input   wire                                      wum__wud__valid               ,
+            output  reg                                       wud__wum__ready               ,
+            // Delineators
+            input   wire [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__icntl               ,  // instruction delineator
+            input   wire [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__dcntl               ,  // descriptor delineator
+            input   wire [`MGR_INST_TYPE_RANGE           ]    wum__wud__op                  ,  // NOP, OP, MR, MW
+                  
+            // WU Instruction option fields
+            input   wire [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ,  // 
+            input   wire [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ,  // 
+
 
             //-------------------------------
             // Stack Down OOB driver
             //
-            wud__odc__valid             ,
-            wud__odc__cntl              ,  // used to delineate OOB control tuples
-            odc__wud__ready             ,
-            wud__odc__tag               ,
-            wud__odc__num_lanes         ,
-            wud__odc__stOp_cmd          ,
-            wud__odc__simd_cmd          ,
+            output  reg                                         wud__odc__valid         ,
+            output  reg  [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ,
+            input   wire                                        odc__wud__ready         ,
+            output  reg  [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag           ,
+            output  reg  [`WU_DEC_NUM_LANES_RANGE        ]      wud__odc__num_lanes     ,  // 0-32 so need 6 bits
+            output  reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ,
+            output  reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ,
 
             //-------------------------------
             // Return Data Processor
             // - send write descriptor
-            wud__rdp__valid             ,  // send tag and MW descriptors
-            rdp__wud__ready             ,
-            wud__rdp__dcntl             ,
-            wud__rdp__tag               ,
-            wud__rdp__option_type       ,
-            wud__rdp__option_value      ,
+            output  reg                                       wud__rdp__valid                ,
+            input   wire                                      rdp__wud__ready                ,
+            output  reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl                ,  // descriptor delineator
+            output  reg  [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag                  ,  // decoder generates tag for Return data proc and Downstream OOB
+            output  reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
+            output  reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ,  
+
 
             //-------------------------------
             // Read memory Controllers
             // - arg and arg1 to stack bus
-            mrc0__wud__ready            ,
-            mrc1__wud__ready            ,
-           
+            // - send MR descriptorss
+            output  reg                                      wud__mrc0__valid                ,  // send MR descriptors
+            input   wire                                     mrc0__wud__ready                ,
+            output  reg [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc0__cntl                 ,  // descriptor delineator
+            output  reg [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc0__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
+            output  reg [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc0__option_value   [`MGR_WU_OPT_PER_INST ] ,  
+            
+            output  reg                                      wud__mrc1__valid                ,
+            output  reg [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc1__cntl                 ,  // descriptor delineator
+            input   wire                                     mrc1__wud__ready                ,
+            output  reg [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc1__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
+            output  reg [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc1__option_value   [`MGR_WU_OPT_PER_INST ] ,  
+
             
             //-------------------------------
             // General
             //
-            sys__mgr__mgrId             ,
-            clk                         ,
-            reset_poweron    
+            input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
+
+            input  wire                           clk             ,
+            input  wire                           reset_poweron  
                         );
 
-    //----------------------------------------------------------------------------------------------------
-    // General
-    
-    input                                     clk                          ;
-    input                                     reset_poweron                ;
-    input   [`MGR_MGR_ID_RANGE    ]           sys__mgr__mgrId              ;
-
-
-    //----------------------------------------------------------------------------------------------------
-    // from memory
-    
-    input                                      wum__wud__valid                ;
-    output                                     wud__wum__ready                ;
-    // WU Instruction delineators
-    input [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__icntl                ;  // instruction delineator
-    input [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__dcntl                ;  // descriptor delineator
-    input [`MGR_INST_TYPE_RANGE           ]    wum__wud__op                   ;  // NOP, OP, MR, MW
-
-    // WU Instruction option fields
-    input [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type    [`MGR_WU_OPT_PER_INST ] ;  // 
-    input [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value   [`MGR_WU_OPT_PER_INST ] ;  // 
-
-
-    //-------------------------------------------------------------------------------------------------
-    // Stack Down OOB driver
-    //
-    output                                         wud__odc__valid         ;
-    output  [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ;
-    input                                          odc__wud__ready         ;
-    output  [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag           ;
-    output  [`MGR_EXEC_LANE_ID_RANGE        ]      wud__odc__num_lanes     ;
-    output  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
-    output  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
- 
-    //----------------------------------------------------------------------------------------------------
-    // Return Data Processor
-    
-    output                                      wud__rdp__valid                ;
-    input                                       rdp__wud__ready                ;
-    output [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl                ;  // descriptor delineator
-    output [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag                  ;  // decoder generates tag for Return data proc and Downstream OOB
-    output [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type    [`MGR_WU_OPT_PER_INST ] ;  // WU Instruction option fields
-    output [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ;  
-
-
-    //----------------------------------------------------------------------------------------------------
-    // Memory Read Controllers
-    
-    input                                       mrc0__wud__ready               ;
-    input                                       mrc1__wud__ready               ;
 
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
     // Registers and Wires
-
-    wire                                      wum__wud__valid               ;
-    reg                                       wud__wum__ready               ;
-    // Delineators
-    wire [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__icntl               ;  // instruction delineator
-    wire [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__dcntl               ;  // descriptor delineator
-    wire [`MGR_INST_TYPE_RANGE           ]    wum__wud__op                  ;  // NOP, OP, MR, MW
-
-    // WU Instruction option fields
-    wire [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
-    wire [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
-
 
     reg                                       wum__wud__valid_d1                ;
     wire                                      wud__wum__ready_e1                ;
@@ -157,21 +111,13 @@ module wu_decode (
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value_d1   [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
 
 
-    reg                                         wud__odc__valid         ;
-    reg  [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ;
-    wire                                        odc__wud__ready         ;
-    reg  [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag           ;
-    reg  [`MGR_EXEC_LANE_ID_RANGE        ]      wud__odc__num_lanes     ;
-    reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
-    reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
- 
     //--------------------------------------------------
     // WUD to OOB downstream control
     reg                                         wud__odc__valid_e1         ;
     reg  [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl_e1          ;
     reg                                         odc__wud__ready_d1         ;
     reg  [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag_e1           ;
-    reg  [`MGR_EXEC_LANE_ID_RANGE        ]      wud__odc__num_lanes_e1     ;
+    reg  [`WU_DEC_NUM_LANES_RANGE        ]      wud__odc__num_lanes_e1     ;  // 0-32 so need 6 bits
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd_e1      ;
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd_e1      ;
  
@@ -180,31 +126,29 @@ module wu_decode (
     wire                                        initiate_instruction       ;
  
     //--------------------------------------------------
+    // Memory Read Controller(s)
+    
+    reg                                         wud__mrc0__valid_e1             ;
+    reg                                         mrc0__wud__ready_d1             ;
+    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc0__cntl_e1              ;  
+    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc0__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;
+    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc0__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;
+
+    reg                                         wud__mrc1__valid_e1             ;
+    reg                                         mrc1__wud__ready_d1             ;
+    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc1__cntl_e1              ;  
+    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc1__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;
+    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc1__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;
+
+    //--------------------------------------------------
     // Return Data Processor
     
-    reg                                         wud__rdp__valid                ;
-    wire                                        rdp__wud__ready                ;
-    reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl                ;  // descriptor delineator
-    reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag                  ;  // decoder generates tag for Return data proc and Downstream OOB
-    reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type    [`MGR_WU_OPT_PER_INST ] ;
-    reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ; 
-
     reg                                         wud__rdp__valid_e1             ;
     reg                                         rdp__wud__ready_d1             ;
     reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl_e1             ;  
     reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag_e1               ;
     reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;
     reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;
-
-    //--------------------------------------------------
-    // Read Memory Controllers
-    
-    wire                                        mrc0__wud__ready               ;
-    wire                                        mrc1__wud__ready               ;
-
-    reg                                         mrc0__wud__ready_d1            ;
-    reg                                         mrc1__wud__ready_d1            ;
-
 
     //--------------------------------------------------
     // Decode which modules will receive descriptor information
@@ -223,6 +167,9 @@ module wu_decode (
     // Register inputs and outputs
 
 
+    //--------------------------------------------------
+    // WU Memory
+    
     always @(posedge clk) 
       begin
         wum__wud__valid_d1             <=   ( reset_poweron   ) ? 'd0  :    wum__wud__valid    ;
@@ -238,6 +185,10 @@ module wu_decode (
           end
       end
 
+
+    //--------------------------------------------------
+    // WUD to OOB downstream control
+
     always @(posedge clk) 
       begin
         wud__odc__valid       <=   ( reset_poweron   ) ? 'd0  :  wud__odc__valid_e1      ;
@@ -250,13 +201,41 @@ module wu_decode (
                                                            
       end
 
+
+    //--------------------------------------------------
+    // Read Memory Controllers
+    
     always @(posedge clk) 
       begin
-        mrc0__wud__ready_d1    <=   ( reset_poweron   ) ? 'd0  :  mrc0__wud__ready       ;
-        mrc1__wud__ready_d1    <=   ( reset_poweron   ) ? 'd0  :  mrc1__wud__ready       ;
-                                                           
+        // MRC0
+        wud__mrc0__valid        <=   ( reset_poweron   ) ? 'd0  :  wud__mrc0__valid_e1        ;
+        wud__mrc0__cntl         <=   ( reset_poweron   ) ? 'd0  :  wud__mrc0__cntl_e1        ;
+
+        for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
+          begin: option_in
+            wud__mrc0__option_type  [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__mrc0__option_type_e1  [opt]  ;
+            wud__mrc0__option_value [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__mrc0__option_value_e1 [opt]  ;
+          end
+
+        mrc0__wud__ready_d1     <=   ( reset_poweron   ) ? 'd0  :  mrc0__wud__ready       ;
+
+        // MRC1
+        wud__mrc1__valid        <=   ( reset_poweron   ) ? 'd0  :  wud__mrc1__valid_e1        ;
+        wud__mrc1__cntl         <=   ( reset_poweron   ) ? 'd0  :  wud__mrc1__cntl_e1        ;
+
+        for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
+          begin: option_in
+            wud__mrc1__option_type  [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__mrc1__option_type_e1  [opt]  ;
+            wud__mrc1__option_value [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__mrc1__option_value_e1 [opt]  ;
+          end
+
+        mrc1__wud__ready_d1     <=   ( reset_poweron   ) ? 'd0  :  mrc1__wud__ready       ;
       end
 
+
+    //--------------------------------------------------
+    // Return Data Processor
+    
     always @(posedge clk) 
       begin
         rdp__wud__ready_d1     <=   ( reset_poweron   ) ? 'd0  :  rdp__wud__ready           ;
@@ -270,6 +249,9 @@ module wu_decode (
           end
       end
 
+
+
+  //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
   // WU Instruction FIFO
   //
@@ -497,7 +479,7 @@ module wu_decode (
                                                ( from_WuMemory_Fifo[0].pipe_read                                                                                                                                                                                                              ) ? `WU_DEC_INSTR_DECODE_ERR            :  // anything other than above is illegal                     
                                                                                                                                                                                                                                                                                                   `WU_DEC_INSTR_DECODE_MW  ;
 
-              // when instruction complete, intiate all affected modules
+              // when instruction complete and all decoder are in their COMPLETE state, initiate all affected modules
               `WU_DEC_INSTR_DECODE_INSTR_COMPLETE: 
                 wu_dec_instr_dec_state_next =  ( initiate_instruction ) ? `WU_DEC_INSTR_DECODE_INITIATED_INSTR :  
                                                                           `WU_DEC_INSTR_DECODE_INSTR_COMPLETE  ;
@@ -557,6 +539,8 @@ module wu_decode (
         
           end
 
+       // These signals direct the instruction info to specific modules
+       // Remember the pipe_op field is valid for the entire intruction transfer from WU memory
         always @(*)
           begin
             // Determine which modules the instruction impacts
@@ -674,23 +658,23 @@ module wu_decode (
                                      ( send_info_to_oob_downstream                                        && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
                                                                                                                                                    sending_to_oob_downstream ;
                                       
-      sending_to_return_proc  <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
+      sending_to_return_proc     <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
                                      ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_EOM    ) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
                                      ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
-                                     ( send_info_to_return_proc                                        && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
-                                                                                                                                                   sending_to_return_proc ;
+                                     ( send_info_to_return_proc                                           && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
+                                                                                                                                                   sending_to_return_proc    ;
                                       
-      sending_to_arg0_mem_cntl  <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
+      sending_to_arg0_mem_cntl   <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
                                      ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_EOM    ) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
                                      ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
-                                     ( send_info_to_arg0_mem_cntl                                        && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
-                                                                                                                                                   sending_to_arg0_mem_cntl ;
+                                     ( send_info_to_arg0_mem_cntl                                         && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
+                                                                                                                                                   sending_to_arg0_mem_cntl  ;
                                       
-      sending_to_arg1_mem_cntl  <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
+      sending_to_arg1_mem_cntl   <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
                                      ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_EOM    ) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
                                      ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
-                                     ( send_info_to_arg1_mem_cntl                                        && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
-                                                                                                                                                   sending_to_arg1_mem_cntl ;
+                                     ( send_info_to_arg1_mem_cntl                                         && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
+                                                                                                                                                   sending_to_arg1_mem_cntl  ;
                                       
     end
 

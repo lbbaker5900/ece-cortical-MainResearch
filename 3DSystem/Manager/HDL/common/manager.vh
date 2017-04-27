@@ -77,6 +77,15 @@
 `define MGR_EXEC_LANE_ID_MSB              `PE_EXEC_LANE_ID_MSB     
 `define MGR_EXEC_LANE_ID_LSB              `PE_EXEC_LANE_ID_LSB     
 `define MGR_EXEC_LANE_ID_RANGE            `PE_EXEC_LANE_ID_RANGE   
+
+//--------------------------------------------------------
+// In cases where we set number of active lanes, Number of active lanes is 1..32, so need 6 bits
+  
+`define MGR_NUM_LANES_WIDTH               (`CLOG2(`PE_NUM_OF_EXEC_LANES))+1
+`define MGR_NUM_LANES_MSB           `MGR_NUM_LANES_WIDTH-1
+`define MGR_NUM_LANES_LSB            0
+`define MGR_NUM_LANES_SIZE           (`MGR_NUM_LANES_MSB - `MGR_NUM_LANES_LSB +1)
+`define MGR_NUM_LANES_RANGE           `MGR_NUM_LANES_MSB : `MGR_NUM_LANES_LSB
 //---------------------------------------------------------------------------------------------------------------------
 // Memory
 

@@ -89,7 +89,7 @@ vlog -sv +define+TESTING                                                        
                                                                                                                                                                                                              
 
 
-vlog +define+TESTING -sv +incdir+../../HDL/common     +incdir+../../SIMULATION/common                                                                                                                        +incdir+../../../PEArray/HDL/common                                                                          top.sv                                                                         2>&1   | tee -a $1  
+vlog +define+TESTING -sv     +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                                                                        +incdir+../../../PEArray/HDL/common                                                                          top.sv                                                                         2>&1   | tee -a $1  
 
 
 

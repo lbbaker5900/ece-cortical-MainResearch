@@ -246,9 +246,21 @@ module manager (
   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ;
   wire                                          odc__wud__ready         ;
   wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__odc__tag           ;
-  wire   [`MGR_EXEC_LANE_ID_RANGE        ]      wud__odc__num_lanes     ;
+  wire   [`MGR_NUM_LANES_RANGE           ]      wud__odc__num_lanes     ;
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ;
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ;
+
+  wire                                          wud__mrc0__valid         ;
+  wire                                          mrc0__wud__ready         ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__mrc0__cntl          ; 
+  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__mrc0__option_type    [`MGR_WU_OPT_PER_INST ] ;
+  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__mrc0__option_value   [`MGR_WU_OPT_PER_INST ] ;
+
+  wire                                          wud__mrc1__valid         ;
+  wire                                          mrc1__wud__ready         ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__mrc1__cntl          ; 
+  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__mrc1__option_type    [`MGR_WU_OPT_PER_INST ] ;
+  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__mrc1__option_value   [`MGR_WU_OPT_PER_INST ] ;
 
   wire                                          wud__rdp__valid         ;
   wire                                          rdp__wud__ready         ;
@@ -258,7 +270,6 @@ module manager (
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ;
 
   // FIXME
-  assign rdp__wud__ready  = 1'b1 ;
   assign mrc0__wud__ready = 1'b1 ;
   assign mrc1__wud__ready = 1'b1 ;
 
@@ -298,8 +309,17 @@ module manager (
           //-------------------------------
           // Memory Read Controller
           //
-          .mrc0__wud__ready        ( mrc0__wud__ready        ),
-          .mrc1__wud__ready        ( mrc1__wud__ready        ),
+          .wud__mrc0__valid         ( wud__mrc0__valid         ),
+          .wud__mrc0__cntl          ( wud__mrc0__cntl          ),  // used to delineate descriptor
+          .mrc0__wud__ready         ( mrc0__wud__ready         ),
+          .wud__mrc0__option_type   ( wud__mrc0__option_type   ),  // Only send tuples
+          .wud__mrc0__option_value  ( wud__mrc0__option_value  ),
+
+          .wud__mrc1__valid         ( wud__mrc1__valid         ),
+          .wud__mrc1__cntl          ( wud__mrc1__cntl          ),  // used to delineate descriptor
+          .mrc1__wud__ready         ( mrc1__wud__ready         ),
+          .wud__mrc1__option_type   ( wud__mrc1__option_type   ),  // Only send tuples
+          .wud__mrc1__option_value  ( wud__mrc1__option_value  ),
 
           //-------------------------------
           // General
@@ -327,6 +347,7 @@ module manager (
 
           //-------------------------------
           // Stack Bus - OOB Downstream
+          // FIXME: currently driven by testbench
           .mgr__std__oob_cntl       (  ), 
           .mgr__std__oob_valid      (  ), 
           .std__mgr__oob_ready      ( std__mgr__oob_ready       ), 
@@ -339,6 +360,52 @@ module manager (
           .clk                     ( clk                      ),
           .reset_poweron           ( reset_poweron            ) 
         );
+
+
+/*
+  //-------------------------------------------------------------------------------------------------
+  // Memory Read Controller 
+  //  - instance for each argument
+
+  genvar gvi;
+  generate
+    for (gvi=0; gvi<`MGR_NUM_OF_STREAMS; gvi=gvi+1) 
+      begin: mrc_cntl_inst
+
+        wire                                        std__mrc__lane_ready_d1  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+        wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__std__lane_cntl_e1   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+        wire  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mrc__std__lane_data_e1   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+        wire                                        mrc__std__lane_valid_e1  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+      
+        mrc_cntl mrc_cntl (
+        
+                //-------------------------------
+                // from WU Decoder
+                //
+                .wud__mrc__valid         ( wud__mrc__valid         ),
+                .wud__mrc__cntl          ( wud__mrc__cntl          ),  // used to delineate descriptor
+                .mrc__wud__ready         ( mrc__wud__ready         ),
+                .wud__mrc__option_type   ( wud__mrc__option_type   ),  // Only send tuples
+                .wud__mrc__option_value  ( wud__mrc__option_value  ),
+      
+                //-------------------------------
+                // to Stack Downstream lane 0 WU Decoder
+                //
+                .wud__mrc__valid         ( wud__mrc__valid         ),
+      
+                //-------------------------------
+                // General
+                //
+                .sys__mgr__mgrId         ( sys__mgr__mgrId          ),
+                .clk                     ( clk                      ),
+                .reset_poweron           ( reset_poweron            ) 
+              );
+
+      end
+  endgenerate
+*/
+
+
 
   //-------------------------------------------------------------------------------------------------
   // Stack Upstream Interface
