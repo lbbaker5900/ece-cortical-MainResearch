@@ -72,6 +72,7 @@ module wu_decode (
             // Read memory Controllers
             // - arg and arg1 to stack bus
             // - send MR descriptorss
+
             output  reg                                      wud__mrc0__valid                ,  // send MR descriptors
             input   wire                                     mrc0__wud__ready                ,
             output  reg [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc0__cntl                 ,  // descriptor delineator
@@ -128,13 +129,13 @@ module wu_decode (
     //--------------------------------------------------
     // Memory Read Controller(s)
     
-    reg                                         wud__mrc0__valid_e1             ;
+    wire                                        wud__mrc0__valid_e1             ;
     reg                                         mrc0__wud__ready_d1             ;
     reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc0__cntl_e1              ;  
     reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc0__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;
     reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc0__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;
 
-    reg                                         wud__mrc1__valid_e1             ;
+    wire                                        wud__mrc1__valid_e1             ;
     reg                                         mrc1__wud__ready_d1             ;
     reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc1__cntl_e1              ;  
     reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc1__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;
@@ -143,7 +144,7 @@ module wu_decode (
     //--------------------------------------------------
     // Return Data Processor
     
-    reg                                         wud__rdp__valid_e1             ;
+    wire                                        wud__rdp__valid_e1             ;
     reg                                         rdp__wud__ready_d1             ;
     reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl_e1             ;  
     reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag_e1               ;
@@ -208,7 +209,7 @@ module wu_decode (
     always @(posedge clk) 
       begin
         // MRC0
-        wud__mrc0__valid        <=   ( reset_poweron   ) ? 'd0  :  wud__mrc0__valid_e1        ;
+        wud__mrc0__valid        <=   ( reset_poweron   ) ? 'd0  :  wud__mrc0__valid_e1       ;
         wud__mrc0__cntl         <=   ( reset_poweron   ) ? 'd0  :  wud__mrc0__cntl_e1        ;
 
         for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
@@ -220,8 +221,8 @@ module wu_decode (
         mrc0__wud__ready_d1     <=   ( reset_poweron   ) ? 'd0  :  mrc0__wud__ready       ;
 
         // MRC1
-        wud__mrc1__valid        <=   ( reset_poweron   ) ? 'd0  :  wud__mrc1__valid_e1        ;
-        wud__mrc1__cntl         <=   ( reset_poweron   ) ? 'd0  :  wud__mrc1__cntl_e1        ;
+        wud__mrc1__valid        <=   ( reset_poweron   ) ? 'd0  :  wud__mrc1__valid_e1    ;
+        wud__mrc1__cntl         <=   ( reset_poweron   ) ? 'd0  :  wud__mrc1__cntl_e1     ;
 
         for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
           begin: option_in
@@ -678,19 +679,44 @@ module wu_decode (
                                       
     end
 
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Extract descriptors from the instruction and send to affected blocks
+  // FIXME: Beware that right now we assume the affected blocks are
+  // highlighted during the first cycle of the descriptor. If thats not the case, we will have to adjust the SOD/EOD
+ 
   // Drive to return Data processor conditioned on the send_info and sending flags
-  // Remember, once we start a transfer from the Wumemory FIFO we assume it will complete e.g. we ignore ready during the transfer
+  // Note: Used assign for valid because during debug we set valid = 0 and that doest work if you use a procedure because I assume not event actually occurs to stimulate the assign.
+  assign wud__rdp__valid_e1        =   (send_info_to_return_proc & from_WuMemory_Fifo[0].pipe_read) | sending_to_return_proc  ;
   always @(*)
     begin
-        wud__rdp__valid_e1        =   (send_info_to_return_proc & from_WuMemory_Fifo[0].pipe_read) | sending_to_return_proc  ;
         wud__rdp__dcntl_e1        =   from_WuMemory_Fifo[0].pipe_dcntl  ;
         wud__rdp__tag_e1          =   tag ;
         for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
           begin: rdc_option_out
-            wud__rdp__option_type_e1  [opt]  <=  from_WuMemory_Fifo[0].pipe_option_type  [opt]  ;
-            wud__rdp__option_value_e1 [opt]  <=  from_WuMemory_Fifo[0].pipe_option_value [opt]  ;
+            wud__rdp__option_type_e1  [opt]  =  from_WuMemory_Fifo[0].pipe_option_type  [opt]  ;
+            wud__rdp__option_value_e1 [opt]  =  from_WuMemory_Fifo[0].pipe_option_value [opt]  ;
           end
+    end
 
+  // Drive to return Data processor conditioned on the send_info and sending flags
+  // Note: Used assign for valid because during debug we set valid = 0 and that doest work if you use a procedure because I assume not event actually occurs to stimulate the assign.
+  assign wud__mrc0__valid_e1      =  (send_info_to_arg0_mem_cntl & from_WuMemory_Fifo[0].pipe_read) | sending_to_arg0_mem_cntl ;
+  assign wud__mrc1__valid_e1      =  (send_info_to_arg1_mem_cntl & from_WuMemory_Fifo[0].pipe_read) | sending_to_arg1_mem_cntl ;
+  always @(*)
+    begin
+        wud__mrc0__cntl_e1              =  from_WuMemory_Fifo[0].pipe_dcntl  ;
+        for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
+          begin: mrc0_option_out
+            wud__mrc0__option_type_e1 [opt]      =  from_WuMemory_Fifo[0].pipe_option_type  [opt]  ;
+            wud__mrc0__option_value_e1[opt]      =  from_WuMemory_Fifo[0].pipe_option_value [opt]  ;
+          end
+    
+        wud__mrc1__cntl_e1              =  from_WuMemory_Fifo[0].pipe_dcntl  ;
+        for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
+          begin: mrc1_option_out
+            wud__mrc1__option_type_e1 [opt]      =  from_WuMemory_Fifo[0].pipe_option_type  [opt]  ;
+            wud__mrc1__option_value_e1[opt]      =  from_WuMemory_Fifo[0].pipe_option_value [opt]  ;
+          end
     end
 
 

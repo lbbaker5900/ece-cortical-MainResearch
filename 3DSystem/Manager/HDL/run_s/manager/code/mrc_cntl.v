@@ -187,7 +187,6 @@ module mrc_cntl (
         reg    [`MGR_WU_OPT_VALUE_RANGE         ]            pipe_option_value [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
         wire                                                 pipe_read         ;
 
-
         assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
         assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
 
@@ -227,6 +226,12 @@ module mrc_cntl (
                                                             pipe_option_value[2] ;
           end
 
+        // wires to make FSM decodes look cleaner
+        wire   pipe_som     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    );  // use with pipe_valid
+        //wire   pipe_mom     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_MOM    );  // use with pipe_valid
+        wire   pipe_eom     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_EOM    );  // use with pipe_valid
+        //wire   pipe_som_eom =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM);  // use with pipe_valid
+
       end
   endgenerate
 
@@ -246,45 +251,107 @@ module mrc_cntl (
   assign mrc__wud__ready_e1              = ~from_Wud_Fifo[0].almost_full  ;
 
 
+
   //----------------------------------------------------------------------------------------------------
   // Process Descriptor FSM
   //
       
   // State register 
-  reg [`MRC_CNTL_DESC_DECODE_STATE_RANGE ] mrc_cntl_desc_dec_state      ; // state flop
-  reg [`MRC_CNTL_DESC_DECODE_STATE_RANGE ] mrc_cntl_desc_dec_state_next ;
+  reg [`MRC_CNTL_STATE_RANGE ] mrc_cntl_desc_state      ; // state flop
+  reg [`MRC_CNTL_STATE_RANGE ] mrc_cntl_desc_state_next ;
 
   always @(posedge clk)
     begin
-      mrc_cntl_desc_dec_state <= ( reset_poweron ) ? `MRC_CNTL_DESC_DECODE_WAIT    :
-                                                    mrc_cntl_desc_dec_state_next  ;
+      mrc_cntl_desc_state <= ( reset_poweron ) ? `MRC_CNTL_DESC_WAIT             :
+                                                  mrc_cntl_desc_state_next  ;
     end
   
+  //----------------------------------------------------------------------------------------------------
+  // Examine all the options in each tuple
+  //
+
+  reg  [`MGR_NUM_LANES_RANGE            ]      num_lanes         ;  // 0-32 so need 6 bits
+  // for memory reads, we assume one storage descriptor pointer
+  reg  [`MGR_STORAGE_DESC_ADDRESS_RANGE ]      storage_desc_ptr  ;  // pointer to local storage descriptor although msb's contain manager ID, so remove
+
+  genvar optNum;
+  generate
+    for (optNum=0; optNum<`MGR_WU_OPT_PER_INST; optNum=optNum+1) 
+      begin: option
+
+        // create a pulse when the tuples contain what we are looking for
+        wire   contains_num_lanes    ;  
+        wire   contains_storage_ptr  ;  
+
+        assign contains_num_lanes   = from_Wud_Fifo[0].pipe_valid  && (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES ) ;
+        assign contains_storage_ptr = from_Wud_Fifo[0].pipe_valid  && (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_MEMORY       ) ;
+
+      end
+  endgenerate
+
+  always @(posedge clk)
+    begin
+      num_lanes        <=  ( reset_poweron                                                                                                                     ) ?  'd0                                  :
+                           ( option[0].contains_num_lanes &&((mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT ) || (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT ))) ? from_Wud_Fifo[0].pipe_option_value[0] :
+                           ( option[1].contains_num_lanes &&((mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT ) || (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT ))) ? from_Wud_Fifo[0].pipe_option_value[1] :
+                           ( option[2].contains_num_lanes &&((mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT ) || (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT ))) ? from_Wud_Fifo[0].pipe_option_value[2] :
+                           ( mrc_cntl_desc_state == `MRC_CNTL_COMPLETE                                                                                         ) ? 'd0                                   :
+                                                                                                                                                                   num_lanes                             ;
+
+      // storage descriptor option type will always be in tuple 0  or tuple 1 because its an extended tuple
+      storage_desc_ptr <=  ( reset_poweron                                                                                                                       ) ?  'd0                                                                                                                :
+                           ( option[0].contains_storage_ptr &&((mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT ) || (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT ))) ? {from_Wud_Fifo[0].pipe_option_value[0], from_Wud_Fifo[0].pipe_option_type[1],from_Wud_Fifo[0].pipe_option_value[1]} :
+                           ( option[1].contains_storage_ptr &&((mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT ) || (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT ))) ? {from_Wud_Fifo[0].pipe_option_value[1], from_Wud_Fifo[0].pipe_option_type[2],from_Wud_Fifo[0].pipe_option_value[2]} :
+                           ( mrc_cntl_desc_state == `MRC_CNTL_COMPLETE                                                                                           ) ? 'd0                                                                                                                 :
+                                                                                                                                                                     storage_desc_ptr                                                                                                    ;
+
+    end
+
+  // the storage pointers are array wide and include manager ID in MSB's, so remove for address to local storage pointer memory
+  wire  [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE ]      local_storage_desc_ptr =  storage_desc_ptr [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE] ;  // remove manager ID msb's
+
   //--------------------------------------------------
-  // Assumptions:
+  // State Transitions
   
   always @(*)
     begin
-      case (mrc_cntl_desc_dec_state)
+      case (mrc_cntl_desc_state)
         
-        `MRC_CNTL_DESC_DECODE_WAIT: 
-          mrc_cntl_desc_dec_state_next =    `MRC_CNTL_DESC_DECODE_WAIT           ;
+        `MRC_CNTL_DESC_WAIT: 
+          mrc_cntl_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid && ~from_Wud_Fifo[0].pipe_som ) ? `MRC_CNTL_ERR      :  // right now assume MR desciptors are multi-cycle
+                                       ( from_Wud_Fifo[0].pipe_valid                               ) ? `MRC_CNTL_DESC_EXTRACT  :  // pull all we need from the descriptor then start memory access
+                                                                                                       `MRC_CNTL_DESC_WAIT     ;
+  
+        `MRC_CNTL_DESC_EXTRACT: 
+          mrc_cntl_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid &&  from_Wud_Fifo[0].pipe_eom ) ? `MRC_CNTL_START_MEMORY_ACCESS :  // start the memory access
+                                                                                                       `MRC_CNTL_DESC_EXTRACT       ;
+  
+// FIXME
+        `MRC_CNTL_START_MEMORY_ACCESS: 
+          mrc_cntl_desc_state_next =  `MRC_CNTL_COMPLETE ;
+                                      
+
+
+
+
+        `MRC_CNTL_COMPLETE: 
+          mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_WAIT ;
+                                      
   
         // May not need all these states, but it will help with debug
         // Latch state on error
-        `MRC_CNTL_DESC_DECODE_ERR:
-          mrc_cntl_desc_dec_state_next = `MRC_CNTL_DESC_DECODE_ERR ;
+        `MRC_CNTL_ERR:
+          mrc_cntl_desc_state_next = `MRC_CNTL_ERR ;
   
         default:
-          mrc_cntl_desc_dec_state_next = `MRC_CNTL_DESC_DECODE_WAIT ;
+          mrc_cntl_desc_state_next = `MRC_CNTL_DESC_WAIT ;
     
-      endcase // case (mrc_cntl_desc_dec_state)
+      endcase // case (mrc_cntl_desc_state)
     end // always @ (*)
   
   //----------------------------------------------------------------------------------------------------
   // Assignments
   //
-
 
 
 

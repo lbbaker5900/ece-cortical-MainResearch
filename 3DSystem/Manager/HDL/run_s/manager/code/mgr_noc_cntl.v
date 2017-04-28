@@ -53,7 +53,6 @@
 `include "streamingOps_cntl.vh"
 `include "dma_cont.vh"
 `include "streamingOps.vh"
-`include "temp.vh"
 
 
 module mgr_noc_cntl (

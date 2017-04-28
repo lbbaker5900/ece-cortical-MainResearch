@@ -269,9 +269,6 @@ module manager (
   wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__rdp__option_type    [`MGR_WU_OPT_PER_INST ] ;
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ;
 
-  // FIXME
-  assign mrc0__wud__ready = 1'b1 ;
-  assign mrc1__wud__ready = 1'b1 ;
 
   wu_decode wu_decode (
   
@@ -320,6 +317,7 @@ module manager (
           .mrc1__wud__ready         ( mrc1__wud__ready         ),
           .wud__mrc1__option_type   ( wud__mrc1__option_type   ),  // Only send tuples
           .wud__mrc1__option_value  ( wud__mrc1__option_value  ),
+
 
           //-------------------------------
           // General

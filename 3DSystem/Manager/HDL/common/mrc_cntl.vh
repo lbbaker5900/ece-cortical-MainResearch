@@ -24,23 +24,20 @@
 //--------------------------------------------------------
 // WU Instruction Decode
 
-`define MRC_CNTL_DESC_DECODE_WAIT                8'b0000_0001
+`define MRC_CNTL_DESC_WAIT               8'b0000_0001
 
-`define MRC_CNTL_DESC_DECODE_OP                  8'b0000_0010
-`define MRC_CNTL_DESC_DECODE_MR                  8'b0000_0100
-`define MRC_CNTL_DESC_DECODE_MW                  8'b0000_1000
-`define MRC_CNTL_DESC_DECODE_DESC_RUNNING       8'b0001_0000
+`define MRC_CNTL_DESC_EXTRACT            8'b0000_0010
+`define MRC_CNTL_START_MEMORY_ACCESS     8'b0000_0100
 
-`define MRC_CNTL_DESC_DECODE_DESC_COMPLETE      8'b0010_0000
-`define MRC_CNTL_DESC_DECODE_INITIATED_DESC      8'b0100_0000
+`define MRC_CNTL_COMPLETE                8'b0000_1000
 
-`define MRC_CNTL_DESC_DECODE_ERR                 8'b1000_0000
+`define MRC_CNTL_ERR                     8'b1000_0000
 
-`define MRC_CNTL_DESC_DECODE_STATE_WIDTH         8
-`define MRC_CNTL_DESC_DECODE_STATE_MSB           `MRC_CNTL_DESC_DECODE_STATE_WIDTH-1
-`define MRC_CNTL_DESC_DECODE_STATE_LSB           0
-`define MRC_CNTL_DESC_DECODE_STATE_SIZE          (`MRC_CNTL_DESC_DECODE_STATE_MSB - `MRC_CNTL_DESC_DECODE_STATE_LSB +1)
-`define MRC_CNTL_DESC_DECODE_STATE_RANGE          `MRC_CNTL_DESC_DECODE_STATE_MSB : `MRC_CNTL_DESC_DECODE_STATE_LSB
+`define MRC_CNTL_STATE_WIDTH         8
+`define MRC_CNTL_STATE_MSB           `MRC_CNTL_STATE_WIDTH-1
+`define MRC_CNTL_STATE_LSB           0
+`define MRC_CNTL_STATE_SIZE          (`MRC_CNTL_STATE_MSB - `MRC_CNTL_STATE_LSB +1)
+`define MRC_CNTL_STATE_RANGE          `MRC_CNTL_STATE_MSB : `MRC_CNTL_STATE_LSB
 
 //--------------------------------------------------------
 // Number of active lanes is 1..32, so need 6 bits
