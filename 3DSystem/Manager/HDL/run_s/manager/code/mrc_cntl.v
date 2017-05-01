@@ -273,6 +273,9 @@ module mrc_cntl (
   reg  [`MGR_NUM_LANES_RANGE            ]      num_lanes         ;  // 0-32 so need 6 bits
   // for memory reads, we assume one storage descriptor pointer
   reg  [`MGR_STORAGE_DESC_ADDRESS_RANGE ]      storage_desc_ptr  ;  // pointer to local storage descriptor although msb's contain manager ID, so remove
+  // use option tuple range
+  reg  [`MGR_WU_OPT_VALUE_RANGE         ]      txfer_type        ;  // FIXME: wastes bits by using option_value for range
+  reg  [`MGR_WU_OPT_VALUE_RANGE         ]      target            ;
 
   genvar optNum;
   generate
@@ -282,9 +285,13 @@ module mrc_cntl (
         // create a pulse when the tuples contain what we are looking for
         wire   contains_num_lanes    ;  
         wire   contains_storage_ptr  ;  
+        wire   contains_txfer_type   ;  
+        wire   contains_target       ;  
 
         assign contains_num_lanes   = from_Wud_Fifo[0].pipe_valid  && (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES ) ;
         assign contains_storage_ptr = from_Wud_Fifo[0].pipe_valid  && (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_MEMORY       ) ;
+        assign contains_target      = from_Wud_Fifo[0].pipe_valid  && (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_TGT          ) ;  // arg0 or arg1 
+        assign contains_txfer_type  = from_Wud_Fifo[0].pipe_valid  && (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_TXFER        ) ;  // bcast or vector
 
       end
   endgenerate
@@ -305,10 +312,27 @@ module mrc_cntl (
                            ( mrc_cntl_desc_state == `MRC_CNTL_COMPLETE                                                                                           ) ? 'd0                                                                                                                 :
                                                                                                                                                                      storage_desc_ptr                                                                                                    ;
 
+      txfer_type       <=  ( reset_poweron                                                                                                                      ) ?  'd0                                  :
+                           ( option[0].contains_txfer_type &&((mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT ) || (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT ))) ? from_Wud_Fifo[0].pipe_option_value[0] :
+                           ( option[1].contains_txfer_type &&((mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT ) || (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT ))) ? from_Wud_Fifo[0].pipe_option_value[1] :
+                           ( option[2].contains_txfer_type &&((mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT ) || (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT ))) ? from_Wud_Fifo[0].pipe_option_value[2] :
+                           ( mrc_cntl_desc_state == `MRC_CNTL_COMPLETE                                                                                          ) ? 'd0                                   :
+                                                                                                                                                                    txfer_type                            ;
+
+      target           <=  ( reset_poweron                                                                                                                  ) ?  'd0                                  :
+                           ( option[0].contains_target &&((mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT ) || (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT ))) ? from_Wud_Fifo[0].pipe_option_value[0] :
+                           ( option[1].contains_target &&((mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT ) || (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT ))) ? from_Wud_Fifo[0].pipe_option_value[1] :
+                           ( option[2].contains_target &&((mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT ) || (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT ))) ? from_Wud_Fifo[0].pipe_option_value[2] :
+                           ( mrc_cntl_desc_state == `MRC_CNTL_COMPLETE                                                                                      ) ? 'd0                                   :
+                                                                                                                                                                target                                ;
+
     end
 
   // the storage pointers are array wide and include manager ID in MSB's, so remove for address to local storage pointer memory
   wire  [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE ]      local_storage_desc_ptr =  storage_desc_ptr [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE] ;  // remove manager ID msb's
+
+  // need to loop thru all consequtive jump fields until we hit EOM
+  reg   [`COMMON_STD_INTF_CNTL_RANGE           ]  consJumpMemory_cntl  ;  // cons/jump delineator
 
   //--------------------------------------------------
   // State Transitions
@@ -323,15 +347,22 @@ module mrc_cntl (
                                                                                                        `MRC_CNTL_DESC_WAIT     ;
   
         `MRC_CNTL_DESC_EXTRACT: 
-          mrc_cntl_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid &&  from_Wud_Fifo[0].pipe_eom ) ? `MRC_CNTL_START_MEMORY_ACCESS :  // start the memory access
+          mrc_cntl_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid &&  from_Wud_Fifo[0].pipe_eom ) ? `MRC_CNTL_DESC_READ    :  // read the descriptor
                                                                                                        `MRC_CNTL_DESC_EXTRACT       ;
   
-// FIXME
-        `MRC_CNTL_START_MEMORY_ACCESS: 
-          mrc_cntl_desc_state_next =  `MRC_CNTL_COMPLETE ;
+        // Wait one clk for output of descriptor to be valid
+        `MRC_CNTL_DESC_READ: 
+          mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_MEM_OUT_VALID ;
                                       
-
-
+        // Pointer to cons/jump memory will be valid, now wait one clk for output of consequtive/jump memory to be valid
+        `MRC_CNTL_DESC_MEM_OUT_VALID: 
+          mrc_cntl_desc_state_next =  `MRC_CNTL_CONS_JUMP_MEM_OUT_VALID;
+                                      
+        // Cycle thru all cons/jump fields
+        `MRC_CNTL_CONS_JUMP_MEM_OUT_VALID: 
+          mrc_cntl_desc_state_next =  (consJumpMemory_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) ? `MRC_CNTL_COMPLETE                :
+                                      (consJumpMemory_cntl == `COMMON_STD_INTF_CNTL_EOM    ) ? `MRC_CNTL_COMPLETE                :
+                                                                                               `MRC_CNTL_CONS_JUMP_MEM_OUT_VALID ;
 
 
         `MRC_CNTL_COMPLETE: 
@@ -353,10 +384,119 @@ module mrc_cntl (
   // Assignments
   //
 
+          
+
+  assign from_Wud_Fifo[0].pipe_read = (from_Wud_Fifo[0].pipe_valid && (mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT   ) && ~from_Wud_Fifo[0].pipe_som ) |
+                                      (from_Wud_Fifo[0].pipe_valid && (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT)                               ) ;
 
 
-  assign from_Wud_Fifo[0].pipe_read = from_Wud_Fifo[0].pipe_valid ;  // FIXME
 
+  //----------------------------------------------------------------------------------------------------
+  // Storage Descriptor Memory Control
+  //
+
+  wire read_storage_desc_memory ; 
+
+  assign read_storage_desc_memory = 1'b1 ;
+
+
+
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  // Memories
+  //----------------------------------------------------------------------------------------------------
+  //
+
+
+
+  reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  Address         [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
+  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  AccessOrder     [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
+  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  consJumpPtr     [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
+
+  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  consJumpCntl    [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_RANGE ] ;  // cons/jump delineator
+  reg   [`MGR_INST_CONS_JUMP_RANGE                      ]  consJump        [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_RANGE ] ;  
+
+  
+  // The memory is updated using the testbench, so everytime we see an read, reload the memory
+  always @(posedge read_storage_desc_memory) 
+    begin
+
+      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAddress_readmem.dat"        , sys__mgr__mgrId) , Address      );
+      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAccessOrder_readmem.dat"    , sys__mgr__mgrId) , AccessOrder  );
+      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorPtr_readmem.dat"            , sys__mgr__mgrId) , consJumpPtr  );
+      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpCntl_readmem.dat"   , sys__mgr__mgrId) , consJumpCntl );
+      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpFields_readmem.dat" , sys__mgr__mgrId) , consJump     );
+    end
+  
+  reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address       , sdmem_Address_e1       ;  
+  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder   , sdmem_AccessOrder_e1   ;
+  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr   , sdmem_consJumpPtr_e1   ;  
+                                                                                
+  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  sdmem_consJumpCntl  , sdmem_consJumpCntl_e1  ;  // cons/jump delineator
+  reg   [`MGR_INST_CONS_JUMP_RANGE                      ]  sdmem_consJump      , sdmem_consJump_e1      ;  
+
+
+    //----------------------------------------------------------------------------------------------------
+    // Storage Descriptor Memory
+    
+    //--------------------------------------------------
+    // Main Storage Descriptor memory
+    
+    always @(*) 
+      begin 
+        #0.3    sdmem_Address_e1             =  Address      [local_storage_desc_ptr ] ;
+        #0.3    sdmem_AccessOrder_e1         =  AccessOrder  [local_storage_desc_ptr ] ;
+        #0.3    sdmem_consJumpPtr_e1         =  consJumpPtr  [local_storage_desc_ptr ] ;
+      end
+
+    always @(posedge clk) 
+      begin 
+        sdmem_Address             <=  sdmem_Address_e1        ;
+        sdmem_AccessOrder         <=  sdmem_AccessOrder_e1    ;
+        sdmem_consJumpPtr         <=  sdmem_consJumpPtr_e1    ;
+      end
+
+  reg [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  tmp_consJumpPtr, tmp_consJumpPtr_d1 ;
+  always @(posedge clk)
+    begin
+      tmp_consJumpPtr_d1 <= (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ? tmp_consJumpPtr+1    : //point to the next location in case there are multiple cons/jump fields
+                                                                                    tmp_consJumpPtr_d1+1 ;
+         
+    end
+  // address the cons/jump memory as soon as the pointer from the main storage
+  // desc memory is valid but then use address from fsm
+  always @(*)
+    begin
+      tmp_consJumpPtr = (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ? sdmem_consJumpPtr  :
+                                                                                tmp_consJumpPtr_d1 ;
+    end
+
+    //--------------------------------------------------
+    // Consequitve/Jump Memory
+   
+    always @(*) 
+      begin 
+        #0.3    sdmem_consJumpCntl_e1        =  consJumpCntl [tmp_consJumpPtr   ] ;
+        #0.3    sdmem_consJump_e1            =  consJump     [tmp_consJumpPtr   ] ;
+      end
+
+    always @(posedge clk) 
+      begin 
+        sdmem_consJumpCntl        <=  sdmem_consJumpCntl_e1   ;
+        sdmem_consJump            <=  sdmem_consJump_e1       ;
+      end
+
+        
+  //----------------------------------------------------------------------------------------------------
+  // end memories
+  //----------------------------------------------------------------------------------------------------
+
+  assign consJumpMemory_cntl  = sdmem_consJumpCntl  ;  // cons/jump delineator for fsm
+
+  //----------------------------------------------------------------------------------------------------
+  //
+  //
+  //
 
 endmodule
 

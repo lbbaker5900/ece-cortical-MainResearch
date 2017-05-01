@@ -163,12 +163,15 @@
 `define MGR_INST_TYPE_RANGE              `MGR_INST_TYPE_MSB : `MGR_INST_TYPE_LSB
 
 //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 // - FIXME : Must match python_typedef.vh python_desc_type
 `define MGR_INST_DESC_TYPE_NOP              0
 `define MGR_INST_DESC_TYPE_OP               1
 `define MGR_INST_DESC_TYPE_MR               2
 `define MGR_INST_DESC_TYPE_MW               3
 
+//-------------------------------------------------------------
 // - FIXME : Must match python_typedef.vh python_option_type
 `define MGR_INST_OPTION_TYPE_NOP            0
 `define MGR_INST_OPTION_TYPE_SRC            1
@@ -179,31 +182,43 @@
 `define MGR_INST_OPTION_TYPE_SIMDOP         6
 `define MGR_INST_OPTION_TYPE_MEMORY         7
 
+//-------------------------------------------------------------
 // - FIXME : Must match python_typedef.vh python_simd_type
 `define MGR_INST_OPTION_SIMD_TYPE_NOP       0
 `define MGR_INST_OPTION_SIMD_TYPE_RELU      1
 
+//-------------------------------------------------------------
 // - FIXME : Must match python_typedef.vh python_stOp_type
 `define MGR_INST_OPTION_STOP_TYPE_NOP                                                  0
 `define MGR_INST_OPTION_STOP_TYPE_STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM    1
 `define MGR_INST_OPTION_STOP_TYPE_STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM      2
 `define MGR_INST_OPTION_STOP_TYPE_STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM    3
 
+//-------------------------------------------------------------
 // - FIXME : Must match python_typedef.vh python_target_type
 `define MGR_INST_OPTION_TGT_TYPE_STACK_DN_ARG0   0
 `define MGR_INST_OPTION_TGT_TYPE_STACK_DN_ARG1   1
 `define MGR_INST_OPTION_TGT_TYPE_STACK_UP        2
 `define MGR_INST_OPTION_TGT_TYPE_NOP             3
 
+//-------------------------------------------------------------
 // - FIXME : Must match python_typedef.vh python_transfer_type
 `define MGR_INST_OPTION_TRANSFER_TYPE_BCAST    0  
 `define MGR_INST_OPTION_TRANSFER_TYPE_VECTOR   1  
 `define MGR_INST_OPTION_TRANSFER_TYPE_NOP      2  
 
+//-------------------------------------------------------------
 // - FIXME : Must match python_typedef.vh python_order_type
 `define MGR_INST_OPTION_ORDER_TYPE_CWBP    0      
 `define MGR_INST_OPTION_ORDER_TYPE_WCBP    1      
 `define MGR_INST_OPTION_ORDER_TYPE_NOP     2      
+
+`define MGR_INST_OPTION_ORDER_WIDTH        3
+`define MGR_INST_OPTION_ORDER_MSB          `MGR_INST_OPTION_ORDER_WIDTH-1
+`define MGR_INST_OPTION_ORDER_LSB          0
+`define MGR_INST_OPTION_ORDER_SIZE         (`MGR_INST_OPTION_ORDER_MSB - `MGR_INST_OPTION_ORDER_LSB +1)
+`define MGR_INST_OPTION_ORDER_RANGE         `MGR_INST_OPTION_ORDER_MSB : `MGR_INST_OPTION_ORDER_LSB
+
 
 //---------------------------------------------------------------------------------------------------------------------
 // Instruction Memory
@@ -243,6 +258,29 @@
 `define MGR_LOCAL_STORAGE_DESC_ADDRESS_SIZE    (`MGR_LOCAL_STORAGE_DESC_ADDRESS_MSB - `MGR_LOCAL_STORAGE_DESC_ADDRESS_LSB +1)
 `define MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE    `MGR_LOCAL_STORAGE_DESC_ADDRESS_MSB : `MGR_LOCAL_STORAGE_DESC_ADDRESS_LSB
 
+// Average number of consequtive/jump fields per storage descriptor
+`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_PER_DESC   8
+
+`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH   `MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH*`MGR_LOCAL_STORAGE_DESC_CONSJUMP_PER_DESC*2   // 2 ~jump,consequtive
+`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_MSB     `MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH-1
+`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_LSB     0
+`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_SIZE    (`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_MSB - `MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_LSB +1)
+`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_RANGE    `MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_MSB : `MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_LSB
+
+
+`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_WIDTH   (`CLOG2(`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH )) 
+`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_MSB     `MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_WIDTH-1
+`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_LSB     0
+`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_SIZE    (`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_MSB - `MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_LSB +1)
+`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE    `MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_MSB : `MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_LSB
+
+// size of consequtive and jump field - FIXME : TBD
+`define MGR_INST_CONS_JUMP_WIDTH        10
+`define MGR_INST_CONS_JUMP_MSB          `MGR_INST_CONS_JUMP_WIDTH-1
+`define MGR_INST_CONS_JUMP_LSB          0
+`define MGR_INST_CONS_JUMP_SIZE         (`MGR_INST_CONS_JUMP_MSB - `MGR_INST_CONS_JUMP_LSB +1)
+`define MGR_INST_CONS_JUMP_RANGE         `MGR_INST_CONS_JUMP_MSB : `MGR_INST_CONS_JUMP_LSB
+
 // This is an array wide pointer address which has the manager id pre-pended
 // Note: The pointers in the instructions are array wide pointer addresses
 //
@@ -263,7 +301,16 @@
 `define MGR_DRAM_NUM_BANKS                          32
 `define MGR_DRAM_NUM_PAGES                          4096
 `define MGR_DRAM_PAGE_SIZE                          4096
-`define MGR_DRAM_NUM_WORDS                          `MGR_DRAM_PAGE_SIZE/`MGR_EXEC_LANE_WIDTH
+`define MGR_DRAM_NUM_WORDS                          `MGR_DRAM_PAGE_SIZE/32
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+// HOW MANY BITS TO ADDRESS A 64Gb MEMORY WITH 64 PORTS
+//  - use byte address
+//  - need to address 8GB
+//  pow(2,33) = 8589934592 ~ 8G
+//  we need 33 bits to address 8G e.g. 2^32 ~ 4G, + 2^31 ~ 2G + ....... + 2^0 ~ 1  ~= 8G
+//  = 1
 
 `define MGR_DRAM_CHANNEL_ADDRESS_WIDTH                       (`CLOG2(`MGR_DRAM_NUM_CHANNELS ))
 `define MGR_DRAM_CHANNEL_ADDRESS_MSB                         `MGR_DRAM_CHANNEL_ADDRESS_WIDTH-1
@@ -289,6 +336,12 @@
 `define MGR_DRAM_WORD_ADDRESS_SIZE                        (`MGR_DRAM_WORD_ADDRESS_MSB - `MGR_DRAM_WORD_ADDRESS_LSB +1)
 `define MGR_DRAM_WORD_ADDRESS_RANGE                        `MGR_DRAM_WORD_ADDRESS_MSB : `MGR_DRAM_WORD_ADDRESS_LSB
 
+// DRAM has 64 interface, 2 channels,  32 banks, 4096 pages and 4096 bits per page
+`define MGR_DRAM_ADDRESS_WIDTH             `MGR_MGR_ID_WIDTH+`MGR_DRAM_CHANNEL_ADDRESS_WIDTH+`MGR_DRAM_BANK_ADDRESS_WIDTH+`MGR_DRAM_PAGE_ADDRESS_WIDTH+`MGR_DRAM_WORD_ADDRESS_WIDTH+2  // byte address
+`define MGR_DRAM_ADDRESS_MSB               `MGR_DRAM_ADDRESS_WIDTH-1
+`define MGR_DRAM_ADDRESS_LSB               0
+`define MGR_DRAM_ADDRESS_SIZE              (`MGR_DRAM_ADDRESS_MSB - `MGR_DRAM_ADDRESS_LSB +1)
+`define MGR_DRAM_ADDRESS_RANGE              `MGR_DRAM_ADDRESS_MSB : `MGR_DRAM_ADDRESS_LSB
 
 //---------------------------------------------------------------------------------------------------------------------
 // NoC

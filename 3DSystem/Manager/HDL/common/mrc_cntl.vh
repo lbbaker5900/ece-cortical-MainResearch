@@ -27,9 +27,12 @@
 `define MRC_CNTL_DESC_WAIT               8'b0000_0001
 
 `define MRC_CNTL_DESC_EXTRACT            8'b0000_0010
-`define MRC_CNTL_START_MEMORY_ACCESS     8'b0000_0100
+`define MRC_CNTL_DESC_READ               8'b0000_0100
+`define MRC_CNTL_DESC_MEM_OUT_VALID      8'b0000_1000
+`define MRC_CNTL_CONS_JUMP_MEM_OUT_VALID 8'b0001_0000
+//`define MRC_CNTL_DESC_READ               8'b0010_0000
 
-`define MRC_CNTL_COMPLETE                8'b0000_1000
+`define MRC_CNTL_COMPLETE                8'b0100_0000
 
 `define MRC_CNTL_ERR                     8'b1000_0000
 
