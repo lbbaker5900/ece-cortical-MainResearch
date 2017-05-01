@@ -2805,7 +2805,7 @@ class Manager():
             # descriptor access order added during descriptor creation
             for c in range(len(roi['Consequtive'])) :
                 #roiRowStr = roiRowStr + '{0:>4} '.format(toHexPad(roi['Consequtive'][c],4))
-                readDesc.consequtive.append(toHexPad(roi['Consequtive'][c],4))
+                readDesc.consequtive.append(toHexPad(roi['Consequtive'][c],3))
                 try :
                     #roiRowStr = roiRowStr + '1 {0:>3} '.format(toHexPad(roi['Jump'][c], 3))
                     readDesc.jump.append(toHexPad(roi['Jump'][c], 3))
@@ -2862,7 +2862,7 @@ class Manager():
             #kerRowStr = kerRowStr + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  ker['Order'])), orderValues.WIDTH)
             for c in range(len(ker['Consequtive'])) :
                 #kerRowStr = kerRowStr + '{0:>4} '.format(toHexPad(ker['Consequtive'][c],4))
-                readDesc.consequtive.append(toHexPad(ker['Consequtive'][c],4))
+                readDesc.consequtive.append(toHexPad(ker['Consequtive'][c],3))
                 try :
                     #kerRowStr = kerRowStr + '1 {0:>3} '.format(toHexPad(ker['Jump'][c], 3))
                     readDesc.jump.append(toHexPad(ker['Jump'][c], 3))
@@ -2921,7 +2921,7 @@ class Manager():
                 #dRowStr =   dRowStr + '{0:>4} '.format(toHexPad(orderValues.''.join(d['Order']), orderValues.WIDTH))
                 for c in range(len(d['Consequtive'])) :
                     #dRowStr = dRowStr + '{0:>4} '.format(toHexPad(d['Consequtive'][c],4))
-                    writeDesc.consequtive.append(toHexPad(d['Consequtive'][c],4))
+                    writeDesc.consequtive.append(toHexPad(d['Consequtive'][c],3))
                     try :
                         #dRowStr = dRowStr + '1 {0:>3} '.format(toHexPad(d['Jump'][c], 3))
                         writeDesc.jump.append(toHexPad(d['Jump'][c], 3))
@@ -2999,7 +2999,7 @@ class Manager():
           pLine = pLine + storageDesc.address + ' ' 
           pLine = pLine + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  storageDesc.accessOrder)), orderValues.WIDTH)
           for c in range(len(storageDesc.consequtive)) :
-              pLine = pLine + '{0:>4} '.format(storageDesc.consequtive[c])
+              pLine = pLine + '{0:>3} '.format(storageDesc.consequtive[c])
               try :
                   pLine = pLine + '1 {0:>3} '.format(storageDesc.jump[c])
               except:

@@ -556,16 +556,26 @@ def main():
         address = ''
         peBits = math.log(numOfPes,2)
         address = address + bin(int(addressFields[0], 16)).split('b')[1].zfill(int(peBits))
+        print address
         channelBits = math.log(numOfDramChans,2)
         address = address + bin(int(addressFields[1], 16)).split('b')[1].zfill(int(channelBits))
+        print address
         bankBits = math.log(numOfDramBanks,2)
         address = address + bin(int(addressFields[2], 16)).split('b')[1].zfill(int(bankBits))
+        print address
         pageBits = math.log(numOfDramPages,2)
         address = address + bin(int(addressFields[3], 16)).split('b')[1].zfill(int(pageBits))
+        print address
         wordBits = math.log(numOfDramWords,2)
         address = address + bin(int(addressFields[4], 16)).split('b')[1].zfill(int(wordBits))
+        print address
         # byte address
         address = address + '00'
+        print address
+
+        print 'number of address bits {0} {1} {2} {3} {4}'.format(int(peBits), int(channelBits), int(bankBits), int(pageBits), int(wordBits))
+        print 'number of address bits {0} {1} {2} {3} {4} {5}'.format(bin(int(addressFields[0], 16)).split('b')[1].zfill(int(peBits)), bin(int(addressFields[1], 16)).split('b')[1].zfill(int(channelBits)), bin(int(addressFields[2], 16)).split('b')[1].zfill(int(bankBits)), bin(int(addressFields[3], 16)).split('b')[1].zfill(int(pageBits)), bin(int(addressFields[4], 16)).split('b')[1].zfill(int(wordBits)), '00')
+        print re.findall('....', address)
 
         addressLength = peBits+channelBits+bankBits+pageBits+wordBits+2
         memAddress.append(str(hex(int(address,2)).split('x')[1]).zfill(9))
@@ -573,7 +583,7 @@ def main():
         del(sd[0])
         accessOrder.append(sd[0])
         del(sd[0])
-        consJumpPtr.append(nextConsJumpPtr )
+        consJumpPtr.append(str(hex(int(nextConsJumpPtr)).split('x')[1]))
         fieldNum = 0
         # the first field is consequtive value
         consequtiveField = True
@@ -647,7 +657,7 @@ def main():
       outputFile = mgrDirStr + "manager_{0}_layer{1}_storageDescriptorConsJumpFields_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
       oFile = open(outputFile, 'w')
       for c in range(len(cjCntl)):
-        pLine = pLine + '@{0:>6} {1:>4} \n'.format(toHexPad(c, 6), consJumpMemory[c])
+        pLine = pLine + '@{0:>6} {1:>3} \n'.format(toHexPad(c, 6), consJumpMemory[c])
       oFile.write(pLine)
       oFile.close()
         
