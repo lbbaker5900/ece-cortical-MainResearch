@@ -1,3 +1,12 @@
 
 Note:
  - wu_fetch.v - stop when pc >=50
+ -  clock cycle is $time=1000
+
+grep ERROR transcript ; grep PASS transcript | wc -l
+20480
+
+grep 'Packet.*sent.*from' transcript  | wc -l ; grep 'Received.*expected packet' transcript  | wc -l
+395
+395
+

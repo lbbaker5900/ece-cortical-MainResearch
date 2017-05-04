@@ -589,6 +589,7 @@ module manager (
                        .noc__locl__cp_type           ( noc__mcntl__cp_type          ), 
                        .noc__locl__cp_ptype          ( noc__mcntl__cp_ptype         ), 
                        .noc__locl__cp_data           ( noc__mcntl__cp_data          ), 
+                       .noc__locl__cp_pvalid         ( noc__mcntl__cp_pvalid        ), 
                        .noc__locl__cp_mgrId          ( noc__mcntl__cp_mgrId         ), 
                        
                         // Data-Path (dp) from NoC 
@@ -598,6 +599,7 @@ module manager (
                        .noc__locl__dp_type           ( noc__mcntl__dp_type          ), 
                        .noc__locl__dp_ptype          ( noc__mcntl__dp_ptype         ), 
                        .noc__locl__dp_data           ( noc__mcntl__dp_data          ), 
+                       .noc__locl__dp_pvalid         ( noc__mcntl__dp_pvalid        ), 
                        .noc__locl__dp_mgrId          ( noc__mcntl__dp_mgrId         ), 
 
                         // Connections to external NoC

@@ -49,7 +49,9 @@ program automatic test (
         env.build();
         env.run();
         env.wrap_up();
-
+        
+        #5000;  // 5us
+        env.wrap_up();
 	$finish;
     end
 endprogram // test

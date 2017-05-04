@@ -30,28 +30,30 @@ import operation::*;
 
 class noc_checker;
     
-    mailbox   mgr2noc_p  [`MGR_ARRAY_NUM_OF_MGR]  ;  // system told this packet was sent
-    mailbox   noc2mgr_p  [`MGR_ARRAY_NUM_OF_MGR]  ;  // system told this packet was received
+    mailbox   mgr2noc_p        [`MGR_ARRAY_NUM_OF_MGR]  ;  // system told this packet was sent
+    mailbox   noc2mgr_p        [`MGR_ARRAY_NUM_OF_MGR]  ;  // system told this packet was received
+    event     noc2env_mbxEmpty                          ;  // keep simulation running until all NoC packets accounted for
 
     vLocalToNoC_T     vLocalToNoC          [`MGR_ARRAY_NUM_OF_MGR]      ;
     vLocalFromNoC_T   vLocalFromNoC        [`MGR_ARRAY_NUM_OF_MGR]      ;
-    //vLocalToNoC_T     tmp_vLocalToNoC                                   ;  // to avoid dereference *&^%$@ SV virtual interface &^%$# bs
-    //vLocalFromNoC_T   tmp_vLocalFromNoC                                 ;
+    //
+    bit  [`MGR_MGR_ID_BITMASK_RANGE ]  noc_sent_packet_complete    ;  // flag so we can do a while loop capturing the entire packet
+    bit  [`MGR_MGR_ID_BITMASK_RANGE ]  noc_rcvd_packet_complete    ;  // flag so we can do a while loop capturing the entire packet
 
     //----------------------------------------------------------------------------------------------------
     //
     function new (
-                  input vLocalToNoC_T           vLocalToNoC   [`MGR_ARRAY_NUM_OF_MGR] ,
-                  input vLocalFromNoC_T         vLocalFromNoC [`MGR_ARRAY_NUM_OF_MGR] 
+                  input vLocalToNoC_T           vLocalToNoC      [`MGR_ARRAY_NUM_OF_MGR] ,
+                  input vLocalFromNoC_T         vLocalFromNoC    [`MGR_ARRAY_NUM_OF_MGR] ,
+                  input event                   noc2env_mbxEmpty            
                   //input mailbox                 mgr2noc_p     [`MGR_ARRAY_NUM_OF_MGR] ,
                   //input mailbox                 noc2mgr_p     [`MGR_ARRAY_NUM_OF_MGR]
                     );
 
-        this.vLocalToNoC      = vLocalToNoC    ;
-        this.vLocalFromNoC    = vLocalFromNoC  ;
+        this.vLocalToNoC      = vLocalToNoC      ;
+        this.vLocalFromNoC    = vLocalFromNoC    ;
+        this.noc2env_mbxEmpty = noc2env_mbxEmpty ;
 
-        //this.mgr2noc_p        = mgr2noc_p      ;
-        //this.noc2mgr_p        = noc2mgr_p      ;
         for (int m=0; m<`MGR_ARRAY_NUM_OF_MGR; m++)
           begin
             this.mgr2noc_p [m] = new() ;
@@ -65,6 +67,9 @@ class noc_checker;
       local_noc_packet local_noc_pkt_rcvd  [`MGR_ARRAY_NUM_OF_MGR] ;
       local_noc_packet local_noc_pkt_sent_from_mbx  ;
       local_noc_packet local_noc_pkt_rcvd_from_mbx  ;
+      bit  [`MGR_WU_OPT_TYPE_RANGE                      ]   payload_tuple_type       [`MGR_ARRAY_NUM_OF_MGR]    ;
+      bit  [`MGR_WU_EXTD_OPT_VALUE_RANGE                ]   payload_tuple_extd_value [`MGR_ARRAY_NUM_OF_MGR]    ;
+      bit [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD_RANGE ]   payload_data             [`MGR_ARRAY_NUM_OF_MGR]    ;
 
       // grab sent and received NoC packets and place in per manager mailboxes
       fork
@@ -100,7 +105,7 @@ class noc_checker;
                             end
                           else
                             begin
-                              $display ("@%0t::%s:%0d:: INFO: Received expected packet to manager {%0d} from {%0d}", $time, `__FILE__, `__LINE__, m, local_noc_pkt_sent_from_mbx.header_source);
+                              $display ("@%0t::%s:%0d:: INFO: Received expected packet to manager {%0d} from {%0d}. Transition time = %0t.", $time, `__FILE__, `__LINE__, m, local_noc_pkt_sent_from_mbx.header_source, local_noc_pkt_rcvd_from_mbx.timeTag-local_noc_pkt_sent_from_mbx.timeTag);
                               break;
                               // FIXME : Display transit time
                             end

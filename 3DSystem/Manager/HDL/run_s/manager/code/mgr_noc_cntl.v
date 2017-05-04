@@ -75,6 +75,7 @@ module mgr_noc_cntl (
                   noc__locl__cp_type       , 
                   noc__locl__cp_ptype      , 
                   noc__locl__cp_data       , 
+                  noc__locl__cp_pvalid     , 
                   noc__locl__cp_mgrId      ,   // source Manager ID
                   //noc__locl__cp_laneId     , 
                   //noc__locl__cp_strmId     , 
@@ -96,6 +97,7 @@ module mgr_noc_cntl (
                   noc__locl__dp_type       , 
                   noc__locl__dp_ptype      , 
                   noc__locl__dp_data       , 
+                  noc__locl__dp_pvalid     , 
                   noc__locl__dp_mgrId      ,   // source Manager ID
                   //noc__locl__dp_laneId     , 
                   //noc__locl__dp_strmId     , 
@@ -152,6 +154,7 @@ module mgr_noc_cntl (
   output [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ] noc__locl__cp_type       ; 
   output [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ] noc__locl__cp_ptype      ; 
   output [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] noc__locl__cp_data       ; 
+  output                                            noc__locl__cp_pvalid     ; 
   output [`MGR_MGR_ID_RANGE                       ] noc__locl__cp_mgrId      ; 
   //output [`PE_EXEC_LANE_ID_RANGE                  ] noc__locl__cp_laneId     ; 
   //output                                            noc__locl__cp_strmId     ; 
@@ -163,6 +166,7 @@ module mgr_noc_cntl (
   output [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ] noc__locl__dp_type       ; 
   output [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ] noc__locl__dp_ptype      ; 
   output [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] noc__locl__dp_data       ; 
+  output                                            noc__locl__dp_pvalid     ; 
   output [`MGR_MGR_ID_RANGE                       ] noc__locl__dp_mgrId      ; 
   //output [`PE_EXEC_LANE_ID_RANGE                  ] noc__locl__dp_laneId     ; 
   //output                                            noc__locl__dp_strmId     ; 
@@ -188,14 +192,17 @@ module mgr_noc_cntl (
   reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__cp_type       ; 
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__cp_ptype      ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__cp_data       ; 
+  reg                                             noc__locl__cp_pvalid     ; 
   reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__cp_mgrId      ; 
                                                  
   reg                                             noc__locl__cp_valid_p1   ; 
   reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__cp_cntl_p1    ; 
 
+  // FIXME: not sure we use these - see managerArray.py
   reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__cp_type_p1    ; 
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__cp_ptype_p1   ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__cp_data_p1    ; 
+  reg                                             noc__locl__cp_pvalid_p1  ; 
   reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__cp_mgrId_p1   ; 
   reg                                             locl__noc__cp_ready_d1   ; 
                                                  
@@ -206,14 +213,17 @@ module mgr_noc_cntl (
   reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__dp_type       ; 
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__dp_ptype      ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__dp_data       ; 
+  reg                                             noc__locl__dp_pvalid     ; 
   reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__dp_mgrId      ; 
                                                  
   reg                                             noc__locl__dp_valid_p1   ; 
   reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__dp_cntl_p1    ; 
                                                  
+  // FIXME: not sure we use these - see managerArray.py
   reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]   noc__locl__dp_type_p1    ; 
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__dp_ptype_p1   ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__dp_data_p1    ; 
+  reg                                             noc__locl__dp_pvalid_p1  ; 
   reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__dp_mgrId_p1   ; 
   reg                                             locl__noc__dp_ready_d1   ; 
   
@@ -258,20 +268,27 @@ module mgr_noc_cntl (
       locl__noc__dp_desttype_d1    <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_desttype    ;
       locl__noc__dp_pvalid_d1      <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_pvalid      ;
       locl__noc__dp_data_d1        <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_data        ;
-
+/*
       noc__locl__cp_valid          <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_valid_p1    ;
       noc__locl__cp_cntl           <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_cntl_p1     ;
+*/
       locl__noc__cp_ready_d1       <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_ready       ;
+/*
       noc__locl__cp_type           <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_type_p1     ;
       noc__locl__cp_ptype          <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_ptype_p1    ;
       noc__locl__cp_data           <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_data_p1     ;
+      noc__locl__cp_pvalid         <= ( reset_poweron   ) ? 'd0  :  noc__locl__cp_pvalid_p1   ;
                                                                     
       noc__locl__dp_valid          <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_valid_p1    ;
       noc__locl__dp_cntl           <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_cntl_p1     ;
+*/
       locl__noc__dp_ready_d1       <= ( reset_poweron   ) ? 'd0  :  locl__noc__dp_ready       ;
+/*
       noc__locl__dp_type           <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_type_p1     ;
       noc__locl__dp_ptype          <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_ptype_p1    ;
       noc__locl__dp_data           <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_data_p1     ;
+      noc__locl__dp_pvalid         <= ( reset_poweron   ) ? 'd0  :  noc__locl__dp_pvalid_p1   ;
+*/
     end
 
   //-------------------------------------------------------------------------------------------

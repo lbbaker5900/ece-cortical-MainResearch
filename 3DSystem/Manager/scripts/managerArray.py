@@ -330,6 +330,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n   wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  noc__mcntl__cp_type     ; '
   pLine = pLine + '\n   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  noc__mcntl__cp_ptype    ; '
   pLine = pLine + '\n   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  noc__mcntl__cp_data     ; '
+  pLine = pLine + '\n   wire                                             noc__mcntl__cp_pvalid   ; '
   pLine = pLine + '\n   wire [`MGR_MGR_ID_RANGE                       ]  noc__mcntl__cp_mgrId    ; '
   pLine = pLine + '\n'
   pLine = pLine + '\n   // Data-Path (dp) from NoC '
@@ -339,6 +340,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n   wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  noc__mcntl__dp_type     ; '
   pLine = pLine + '\n   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  noc__mcntl__dp_ptype    ; '
   pLine = pLine + '\n   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  noc__mcntl__dp_data     ; '
+  pLine = pLine + '\n   wire                                             noc__mcntl__dp_pvalid   ; '
   pLine = pLine + '\n   wire [`MGR_MGR_ID_RANGE                       ]  noc__mcntl__dp_mgrId    ; '
   pLine = pLine + '\n'
 
@@ -1013,6 +1015,8 @@ if __name__ == "__main__":
     pLine = pLine + '\n            noc__locl__dp_type          <=  \'d0    ; '.format(port)
     pLine = pLine + '\n            noc__locl__cp_ptype         <=  \'d0    ; '.format(port)
     pLine = pLine + '\n            noc__locl__dp_ptype         <=  \'d0    ; '.format(port)
+    pLine = pLine + '\n            noc__locl__cp_pvalid        <=  \'d0    ; '.format(port)
+    pLine = pLine + '\n            noc__locl__dp_pvalid        <=  \'d0    ; '.format(port)
     pLine = pLine + '\n'                                                                    
     pLine = pLine + '\n          end'
     pLine = pLine + '\n'                                                                    
@@ -1034,18 +1038,20 @@ if __name__ == "__main__":
     pLine = pLine + '\n            noc__locl__dp_mgrId         <= (reset_poweron ) ? \'d0 :   local_inq_mgr_fromNoc      ; '.format(port)
     pLine = pLine + '\n'                                                                    
     pLine = pLine + '\n            // Fields valid during this cycle'
-    pLine = pLine + '\n            noc__locl__cp_type          <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE ]; '.format(port)
-    pLine = pLine + '\n            noc__locl__dp_type          <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE ]; '.format(port)
-    pLine = pLine + '\n            noc__locl__cp_ptype         <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; '.format(port)
-    pLine = pLine + '\n            noc__locl__dp_ptype         <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; '.format(port)
-    pLine = pLine + '\n            noc__locl__cp_data          <= (reset_poweron ) ? \'d0 : {{Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE     ],  '.format(port)
-    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE   ],  '.format(port)
-    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE     ],  '.format(port)
-    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE   ]}};'.format(port)
-    pLine = pLine + '\n            noc__locl__dp_data          <= (reset_poweron ) ? \'d0 : {{Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE     ],  '.format(port)
-    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE   ],  '.format(port)
-    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE     ],  '.format(port)
-    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE   ]}};'.format(port)
+    pLine = pLine + '\n            noc__locl__cp_type          <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE   ]; '.format(port)
+    pLine = pLine + '\n            noc__locl__dp_type          <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE   ]; '.format(port)
+    pLine = pLine + '\n            noc__locl__cp_ptype         <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE  ]; '.format(port)
+    pLine = pLine + '\n            noc__locl__dp_ptype         <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE  ]; '.format(port)
+    pLine = pLine + '\n            noc__locl__cp_data          <= (reset_poweron ) ? \'d0 : {{Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE       ],  '.format(port)
+    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE     ],  '.format(port)
+    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE       ],  '.format(port)
+    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE     ]}};'.format(port)
+    pLine = pLine + '\n            noc__locl__dp_data          <= (reset_poweron ) ? \'d0 : {{Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE       ],  '.format(port)
+    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE     ],  '.format(port)
+    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE       ],  '.format(port)
+    pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE     ]}};'.format(port)
+    pLine = pLine + '\n            noc__locl__cp_pvalid        <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; '.format(port)
+    pLine = pLine + '\n            noc__locl__dp_pvalid        <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; '.format(port)
     pLine = pLine + '\n          end'
     pLine = pLine + '\n'                                                                    
     pLine = pLine + '\n        `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD{0}:'.format(port)
@@ -1072,6 +1078,8 @@ if __name__ == "__main__":
     pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE]}}      ; '.format(port)
     pLine = pLine + '\n            noc__locl__dp_data          <= (reset_poweron ) ? \'d0 : {{Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD1_RANGE],         '.format(port)
     pLine = pLine + '\n                                                                       Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE]}}      ; '.format(port)
+    pLine = pLine + '\n            noc__locl__cp_pvalid        <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; '.format(port)
+    pLine = pLine + '\n            noc__locl__dp_pvalid        <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; '.format(port)
     pLine = pLine + '\n'                                                                    
     pLine = pLine + '\n'                                                                    
     pLine = pLine + '\n          end'
@@ -1089,6 +1097,8 @@ if __name__ == "__main__":
   pLine = pLine + '\n            noc__locl__dp_mgrId         <=  \'d0    ; '.format(port)
   pLine = pLine + '\n            noc__locl__cp_data          <=  \'d0    ; '.format(port)
   pLine = pLine + '\n            noc__locl__dp_data          <=  \'d0    ; '.format(port)
+  pLine = pLine + '\n            noc__locl__cp_pvalid        <=  \'d0    ; '.format(port)
+  pLine = pLine + '\n            noc__locl__dp_pvalid        <=  \'d0    ; '.format(port)
   pLine = pLine + '\n          end'
   pLine = pLine + '\n'
   pLine = pLine + '\n      endcase'

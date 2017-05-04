@@ -700,12 +700,10 @@ package operation;
         bit [`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE              ]      header_priority            ;
 
 
-        bit [`MGR_WU_OPT_TYPE_RANGE                  ]      payload_tuple_type []       ;
-        bit [`MGR_WU_OPT_VALUE_RANGE                 ]      payload_tuple_value []      ;
-        bit [`MGR_WU_OPT_TYPE_RANGE                  ]      payload_tuple_extd_type []  ;
-        bit [`MGR_WU_EXTD_OPT_VALUE_RANGE            ]      payload_tuple_extd_value [] ;
+        bit [`MGR_WU_OPT_TYPE_RANGE                        ]      payload_tuple_type       [$] ;  // queues
+        bit [`MGR_WU_EXTD_OPT_VALUE_RANGE                  ]      payload_tuple_extd_value [$] ;
 
-        bit [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE  ]      payload_data []       ;
+        bit [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD_RANGE  ]      payload_data             [$] ;
 
         function new ();
             this.timeTag = $time ;

@@ -28,6 +28,8 @@
             noc__locl__dp_type          <=  'd0    ; 
             noc__locl__cp_ptype         <=  'd0    ; 
             noc__locl__dp_ptype         <=  'd0    ; 
+            noc__locl__cp_pvalid        <=  'd0    ; 
+            noc__locl__dp_pvalid        <=  'd0    ; 
 
           end
 
@@ -49,18 +51,20 @@
             noc__locl__dp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
 
             // Fields valid during this cycle
-            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE ]; 
-            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE ]; 
-            noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
-            noc__locl__dp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
-            noc__locl__cp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE     ],  
-                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE   ],  
-                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE     ],  
-                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE   ]};
-            noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE     ],  
-                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE   ],  
-                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE     ],  
-                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE   ]};
+            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE  ]; 
+            noc__locl__dp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE  ]; 
+            noc__locl__cp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE       ],  
+                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE     ],  
+                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE       ],  
+                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE     ]};
+            noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE       ],  
+                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE     ],  
+                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE       ],  
+                                                                       Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE     ]};
+            noc__locl__cp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
+            noc__locl__dp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
           end
 
         `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD0:
@@ -87,6 +91,8 @@
                                                                        Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE]}      ; 
             noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD1_RANGE],         
                                                                        Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE]}      ; 
+            noc__locl__cp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
+            noc__locl__dp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
 
 
           end
@@ -114,6 +120,8 @@
             noc__locl__dp_type          <=  'd0    ; 
             noc__locl__cp_ptype         <=  'd0    ; 
             noc__locl__dp_ptype         <=  'd0    ; 
+            noc__locl__cp_pvalid        <=  'd0    ; 
+            noc__locl__dp_pvalid        <=  'd0    ; 
 
           end
 
@@ -135,18 +143,20 @@
             noc__locl__dp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
 
             // Fields valid during this cycle
-            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE ]; 
-            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE ]; 
-            noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
-            noc__locl__dp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
-            noc__locl__cp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE     ],  
-                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE   ],  
-                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE     ],  
-                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE   ]};
-            noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE     ],  
-                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE   ],  
-                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE     ],  
-                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE   ]};
+            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE  ]; 
+            noc__locl__dp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE  ]; 
+            noc__locl__cp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE       ],  
+                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE     ],  
+                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE       ],  
+                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE     ]};
+            noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE       ],  
+                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE     ],  
+                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE       ],  
+                                                                       Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE     ]};
+            noc__locl__cp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
+            noc__locl__dp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
           end
 
         `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD1:
@@ -173,6 +183,8 @@
                                                                        Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE]}      ; 
             noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD1_RANGE],         
                                                                        Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE]}      ; 
+            noc__locl__cp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
+            noc__locl__dp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
 
 
           end
@@ -200,6 +212,8 @@
             noc__locl__dp_type          <=  'd0    ; 
             noc__locl__cp_ptype         <=  'd0    ; 
             noc__locl__dp_ptype         <=  'd0    ; 
+            noc__locl__cp_pvalid        <=  'd0    ; 
+            noc__locl__dp_pvalid        <=  'd0    ; 
 
           end
 
@@ -221,18 +235,20 @@
             noc__locl__dp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
 
             // Fields valid during this cycle
-            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE ]; 
-            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE ]; 
-            noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
-            noc__locl__dp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
-            noc__locl__cp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE     ],  
-                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE   ],  
-                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE     ],  
-                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE   ]};
-            noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE     ],  
-                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE   ],  
-                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE     ],  
-                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE   ]};
+            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE  ]; 
+            noc__locl__dp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE  ]; 
+            noc__locl__cp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE       ],  
+                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE     ],  
+                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE       ],  
+                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE     ]};
+            noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE       ],  
+                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE     ],  
+                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE       ],  
+                                                                       Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE     ]};
+            noc__locl__cp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
+            noc__locl__dp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
           end
 
         `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD2:
@@ -259,6 +275,8 @@
                                                                        Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE]}      ; 
             noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD1_RANGE],         
                                                                        Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE]}      ; 
+            noc__locl__cp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
+            noc__locl__dp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
 
 
           end
@@ -286,6 +304,8 @@
             noc__locl__dp_type          <=  'd0    ; 
             noc__locl__cp_ptype         <=  'd0    ; 
             noc__locl__dp_ptype         <=  'd0    ; 
+            noc__locl__cp_pvalid        <=  'd0    ; 
+            noc__locl__dp_pvalid        <=  'd0    ; 
 
           end
 
@@ -307,18 +327,20 @@
             noc__locl__dp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
 
             // Fields valid during this cycle
-            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE ]; 
-            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE ]; 
-            noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
-            noc__locl__dp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
-            noc__locl__cp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE     ],  
-                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE   ],  
-                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE     ],  
-                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE   ]};
-            noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE     ],  
-                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE   ],  
-                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE     ],  
-                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE   ]};
+            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE  ]; 
+            noc__locl__dp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE  ]; 
+            noc__locl__cp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE       ],  
+                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE     ],  
+                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE       ],  
+                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE     ]};
+            noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE       ],  
+                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE     ],  
+                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE       ],  
+                                                                       Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE     ]};
+            noc__locl__cp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
+            noc__locl__dp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
           end
 
         `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_PAYLOAD3:
@@ -345,6 +367,8 @@
                                                                        Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE]}      ; 
             noc__locl__dp_data          <= (reset_poweron ) ? 'd0 : {Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD1_RANGE],         
                                                                        Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORD0_RANGE]}      ; 
+            noc__locl__cp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
+            noc__locl__dp_pvalid        <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE ]; 
 
 
           end
@@ -362,6 +386,8 @@
             noc__locl__dp_mgrId         <=  'd0    ; 
             noc__locl__cp_data          <=  'd0    ; 
             noc__locl__dp_data          <=  'd0    ; 
+            noc__locl__cp_pvalid        <=  'd0    ; 
+            noc__locl__dp_pvalid        <=  'd0    ; 
           end
 
       endcase

@@ -103,6 +103,7 @@ class Environment;
     //mailbox           noc2mgr_p            [`MGR_ARRAY_NUM_OF_MGR]      ;  // capture packets received by manager from NoC
     vLocalToNoC_T     vLocalToNoC          [`MGR_ARRAY_NUM_OF_MGR]      ;
     vLocalFromNoC_T   vLocalFromNoC        [`MGR_ARRAY_NUM_OF_MGR]      ;
+    event             noc2env_mbxEmpty                                  ;
 
     //----------------------------------------------------------------------------------------------------
     // 
@@ -168,7 +169,7 @@ class Environment;
                 oob_drv     [pe]  = new ( pe, mgr2oob[pe],  mgr2oob_ack[pe], gen2oob[pe],  gen2oob_ack[pe],                       vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe] );
                 up_check    [pe]  = new ( pe, vUpstreamStackBus [pe],  mgr2up [pe], gen2up [pe] ) ;
             end
-          noc_check    = new ( vLocalToNoC,  vLocalFromNoC);                              
+          noc_check    = new ( vLocalToNoC,  vLocalFromNoC, noc2env_mbxEmpty );
 
 
     endtask
