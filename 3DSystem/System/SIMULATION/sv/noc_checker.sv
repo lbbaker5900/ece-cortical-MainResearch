@@ -63,13 +63,54 @@ class noc_checker;
 
       local_noc_packet local_noc_pkt_sent  [`MGR_ARRAY_NUM_OF_MGR] ;
       local_noc_packet local_noc_pkt_rcvd  [`MGR_ARRAY_NUM_OF_MGR] ;
+      local_noc_packet local_noc_pkt_sent_from_mbx  ;
+      local_noc_packet local_noc_pkt_rcvd_from_mbx  ;
 
+      // grab sent and received NoC packets and place in per manager mailboxes
       fork
         `include "TB_system_local_toNoc_checker_packet_grab.vh"
       join_none
       fork
         `include "TB_system_local_fromNoc_checker_packet_grab.vh"
       join_none
+
+      // Take packets from the per manager mailbox and check against the to NoC mailbox
+      fork
+        begin
+          forever
+            begin
+              @(vLocalFromNoC[0].cb_p);
+              for (int m=0; m<`MGR_ARRAY_NUM_OF_MGR; m++) 
+                begin
+                  if (noc2mgr_p[m].num() != 0)
+                    begin
+                      if (mgr2noc_p[m].num() == 0)
+                        begin
+                          $display ("@%0t::%s:%0d:: ERROR: Expected packet queue empty for manager {%0d}", $time, `__FILE__, `__LINE__, m);
+                        end
+                      noc2mgr_p[m].get(local_noc_pkt_rcvd_from_mbx);
+                      // the packet has to be there, so loop thru all current packets and ERROR if not found
+                      for (int msg=0; msg<mgr2noc_p[m].num(); msg++) 
+                        begin
+                          mgr2noc_p[m].get(local_noc_pkt_sent_from_mbx);
+                          if (local_noc_pkt_sent_from_mbx.header_source != local_noc_pkt_rcvd_from_mbx.header_source)
+                            begin
+                              // put unmatched packet back in mailbox
+                              mgr2noc_p[m].put(local_noc_pkt_sent_from_mbx);
+                            end
+                          else
+                            begin
+                              $display ("@%0t::%s:%0d:: INFO: Received expected packet to manager {%0d} from {%0d}", $time, `__FILE__, `__LINE__, m, local_noc_pkt_sent_from_mbx.header_source);
+                              break;
+                              // FIXME : Display transit time
+                            end
+                        end
+                    end
+                end
+            end
+        end
+      join_none
+
       wait fork;
 /*
       fork
