@@ -20,6 +20,7 @@
 `include "mem_acc_cont.vh"
 `include "pe.vh"
 `include "pe_array.vh"
+`include "manager_array.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
 import virtual_interface::*;
@@ -53,8 +54,19 @@ module top;
     //----------------------------------------------------------------------------------------------------
     // Probe interface(s)
     //
+    //----------------------------------------------------------------------------------------------------
     // Write Memory probe
     pe_dma2mem_ifc    Dma2Mem      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk);  // shorthand for [0:63] ....
+
+    //
+    //----------------------------------------------------------------------------------------------------
+    // local NoC interfaces
+    locl_to_noc_ifc   LocalToNocIfc        [`MGR_ARRAY_NUM_OF_MGR] (clk); 
+    locl_from_noc_ifc LocalFromNocIfc      [`MGR_ARRAY_NUM_OF_MGR] (clk); 
+/*
+    mailbox           mgr2noc_p            [`MGR_ARRAY_NUM_OF_MGR]      ;  // capture packets sent by manager to NoC
+    mailbox           noc2mgr_p            [`MGR_ARRAY_NUM_OF_MGR]      ;  // capture packets received by manager from NoC
+*/
 
     //----------------------------------------------------------------------------------------------------
     // Probe interface(s) for forcing
@@ -86,10 +98,18 @@ module top;
                    .DownstreamStackBusOOB      ( DownstreamStackBusOOB     ) ,  // array of downstream stack bus OOB interfaces to each PE
                    .DownstreamStackBusLane     ( DownstreamStackBusLane    ) ,  // array of interfaces for each downstream pe/lane stack bus
                    .UpstreamStackBus           ( UpstreamStackBus          ) ,  // array of upstream stack bus OOB interfaces to each PE
+
                    .Dma2Mem                    ( Dma2Mem                   ) ,  // array of monitor probes for the DMA to Memory interface for each PE/Lane
+                   .LocalToNocIfc              ( LocalToNocIfc             ) ,  // array of probes to monitor Manager NoC packets sent to NoC and received from NoC
+                   .LocalFromNocIfc            ( LocalFromNocIfc           ) ,  // 
+                   // to debug the NoC, we will predict what packets should be received and sent to the NoC
+                   //.mgr2noc_p                  ( mgr2noc_p                 ) ,  // What NoC packets has a manager sent to the NoC
+                   //.noc2mgr_p                  ( noc2mgr_p                 ) ,  // What NoC packets has a manager received from the NoC
+
                    .RegFileScalar2StOpCntl     ( RegFileScalar2StOpCntl    ) ,  // array of driver probes for the RegFile Scalar registers to stOp Controller for each PE
                    .RegFileLane2StOpCntl       ( RegFileLane2StOpCntl      ) ,  // array of driver probes for the RegFile Vector registers to stOp Controller for each PE/Lane
                    .LoadStore2memCntl          ( LoadStore2memCntl         ) ,  // array of driver probes for the Load/Store from SIMD to memory controller for each PE
+
                    .reset                      ( reset_poweron             ) 
                   );
 
@@ -142,6 +162,30 @@ module top;
                        assign Dma2Mem[pe][lane].memc__dma__read_data_valid  = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data_valid0    ;
                        assign Dma2Mem[pe][lane].memc__dma__read_ready       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_ready0         ;
                    end
+           end
+    endgenerate
+
+    genvar mgr;
+    generate
+       for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+           begin
+             // only observe stream 0
+             assign LocalToNocIfc[mgr].locl__noc__dp_valid      = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.locl__noc__dp_valid   ;
+             assign LocalToNocIfc[mgr].noc__locl__dp_ready      = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_ready   ;
+             assign LocalToNocIfc[mgr].locl__noc__dp_cntl       = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.locl__noc__dp_cntl    ;
+             assign LocalToNocIfc[mgr].locl__noc__dp_type       = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.locl__noc__dp_type    ;
+             assign LocalToNocIfc[mgr].locl__noc__dp_ptype      = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.locl__noc__dp_ptype   ;
+             assign LocalToNocIfc[mgr].locl__noc__dp_desttype   = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.locl__noc__dp_desttype;
+             assign LocalToNocIfc[mgr].locl__noc__dp_pvalid     = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.locl__noc__dp_pvalid  ;
+             assign LocalToNocIfc[mgr].locl__noc__dp_data       = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.locl__noc__dp_data    ;
+
+             assign LocalFromNocIfc[mgr].noc__locl__dp_valid    = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_valid   ;
+             assign LocalFromNocIfc[mgr].locl__noc__dp_ready    = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.locl__noc__dp_ready   ;
+             assign LocalFromNocIfc[mgr].noc__locl__dp_cntl     = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_cntl    ;
+             assign LocalFromNocIfc[mgr].noc__locl__dp_type     = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_type    ;
+             assign LocalFromNocIfc[mgr].noc__locl__dp_ptype    = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_ptype   ;
+             assign LocalFromNocIfc[mgr].noc__locl__dp_data     = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_data    ;
+             assign LocalFromNocIfc[mgr].noc__locl__dp_mgrId    = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_mgrId   ;
            end
     endgenerate
 

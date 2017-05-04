@@ -268,6 +268,11 @@ module mrc_cntl (
   
   //----------------------------------------------------------------------------------------------------
   // Examine all the options in each tuple
+  // Extract:
+  //   - number of lanes
+  //   - pointer to the storage descriptor
+  //   - memory to target transfer type (vector or broadcast)
+  //   - the target (arg0 or arg1 downstream)
   //
 
   reg  [`MGR_NUM_LANES_RANGE            ]      num_lanes         ;  // 0-32 so need 6 bits
@@ -333,6 +338,7 @@ module mrc_cntl (
 
   // need to loop thru all consequtive jump fields until we hit EOM
   reg   [`COMMON_STD_INTF_CNTL_RANGE           ]  consJumpMemory_cntl  ;  // cons/jump delineator
+  reg   [`MGR_DRAM_ADDRESS_RANGE               ]  storage_desc_address ;  // main memory address in storage descriptor
 
   //--------------------------------------------------
   // State Transitions
@@ -342,15 +348,17 @@ module mrc_cntl (
       case (mrc_cntl_desc_state)
         
         `MRC_CNTL_DESC_WAIT: 
-          mrc_cntl_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid && ~from_Wud_Fifo[0].pipe_som ) ? `MRC_CNTL_ERR      :  // right now assume MR desciptors are multi-cycle
+          mrc_cntl_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid && ~from_Wud_Fifo[0].pipe_som ) ? `MRC_CNTL_ERR           :  // right now assume MR desciptors are multi-cycle
                                        ( from_Wud_Fifo[0].pipe_valid                               ) ? `MRC_CNTL_DESC_EXTRACT  :  // pull all we need from the descriptor then start memory access
                                                                                                        `MRC_CNTL_DESC_WAIT     ;
   
+        // Cycle thru memory descriptor grabing num_lanes, txfer_type, target and storage descriptor pointer
         `MRC_CNTL_DESC_EXTRACT: 
           mrc_cntl_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid &&  from_Wud_Fifo[0].pipe_eom ) ? `MRC_CNTL_DESC_READ    :  // read the descriptor
-                                                                                                       `MRC_CNTL_DESC_EXTRACT       ;
+                                                                                                       `MRC_CNTL_DESC_EXTRACT ;
   
-        // Wait one clk for output of descriptor to be valid
+        // The storage descriptor pointer is valid in this state, the memory is registered so it will be valid next state
+        // - send the storage descriptor address field to the main system memory (DRAM)
         `MRC_CNTL_DESC_READ: 
           mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_MEM_OUT_VALID ;
                                       
@@ -382,8 +390,23 @@ module mrc_cntl (
   
   //----------------------------------------------------------------------------------------------------
   // Assignments
-  //
+  
+  // Extract address fields from storage pointer address
+  //  - for debug right now
 
+  reg  [ `MGR_MGR_ID_RANGE              ]    storage_desc_mgr     ;
+  reg  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE]    storage_desc_channel ;
+  reg  [ `MGR_DRAM_BANK_ADDRESS_RANGE   ]    storage_desc_bank    ;
+  reg  [ `MGR_DRAM_PAGE_ADDRESS_RANGE   ]    storage_desc_page    ;
+  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE   ]    storage_desc_word    ;
+  always @(posedge clk)
+    begin
+      storage_desc_mgr     <=  ( reset_poweron )  ? 'd0  :  (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ? storage_desc_address[`MGR_DRAM_ADDRESS_MGR_FIELD_RANGE  ]  : storage_desc_mgr     ;
+      storage_desc_channel <=  ( reset_poweron )  ? 'd0  :  (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ? storage_desc_address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ]  : storage_desc_channel ;
+      storage_desc_bank    <=  ( reset_poweron )  ? 'd0  :  (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ? storage_desc_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ]  : storage_desc_bank    ;
+      storage_desc_page    <=  ( reset_poweron )  ? 'd0  :  (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ? storage_desc_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ]  : storage_desc_page    ;
+      storage_desc_word    <=  ( reset_poweron )  ? 'd0  :  (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ? storage_desc_address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ]  : storage_desc_word    ;
+    end
           
 
   assign from_Wud_Fifo[0].pipe_read = (from_Wud_Fifo[0].pipe_valid && (mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT   ) && ~from_Wud_Fifo[0].pipe_som ) |
@@ -492,6 +515,7 @@ module mrc_cntl (
   //----------------------------------------------------------------------------------------------------
 
   assign consJumpMemory_cntl  = sdmem_consJumpCntl  ;  // cons/jump delineator for fsm
+  assign storage_desc_address = sdmem_Address       ;  // main memory address in storage descriptor
 
   //----------------------------------------------------------------------------------------------------
   //

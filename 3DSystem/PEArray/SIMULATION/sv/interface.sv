@@ -1,5 +1,5 @@
 /*********************************************************************************************
-    File name   : stack_bus_interface.sv
+    File name   : interface.sv
     Author      : Lee Baker
     Affiliation : North Carolina State University, Raleigh, NC
     Date        : Nov 2016

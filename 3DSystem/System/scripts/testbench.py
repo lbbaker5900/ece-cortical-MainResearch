@@ -8,6 +8,8 @@ if __name__ == "__main__":
   import random
   import re
 
+  # extract number of mgr's
+
   # extract number of pe's
   FoundPe = False
   searchFile = open("../../PEArray/HDL/common/pe_array.vh", "r")
@@ -19,6 +21,7 @@ if __name__ == "__main__":
         numOfPe = int(data[2])
         FoundPe = True
   searchFile.close()
+  numOfMgr = numOfPe
 
   # Number of execution lanes in a PE
   FoundLane = False
@@ -124,6 +127,65 @@ if __name__ == "__main__":
         pLine = pLine + '\n        assign UpstreamStackBus[{0}].pe__stu__data                                 =   system_inst.manager_array_inst.mgr_inst[{0}].stu__mgr__data     ;      '.format(pe)
         pLine = pLine + '\n        assign UpstreamStackBus[{0}].pe__stu__oob_data                             =   system_inst.manager_array_inst.mgr_inst[{0}].stu__mgr__oob_data ;      '.format(pe)
         pLine = pLine + '\n        '
+                                             
+  f.write(pLine)
+  f.close()
+
+  f = open('../SIMULATION/common/TB_system_local_toNoc_checker_packet_grab.vh', 'w')
+  pLine = ""
+  for mgr in range (0, numOfMgr):
+    pLine = pLine + '\n        begin'
+    pLine = pLine + '\n          forever'
+    pLine = pLine + '\n            begin'
+    pLine = pLine + '\n              // Observe NoC packets sent from manager {0}'.format(mgr)
+    pLine = pLine + '\n              @(vLocalToNoC[{0}].cb_p);'.format(mgr)
+    pLine = pLine + '\n              if ((vLocalToNoC[{0}].locl__noc__dp_valid == 1\'b1) && (vLocalToNoC[{0}].locl__noc__dp_cntl == 2\'b01))'.format(mgr)
+    pLine = pLine + '\n                begin'
+    pLine = pLine + '\n                  //$display ("@%0t::%s:%0d:: INFO: Packet being sent from {{%0d}}", $time, `__FILE__, `__LINE__, {0});'.format(mgr)
+    pLine = pLine + '\n                  local_noc_pkt_sent [{0}] = new();'.format(mgr)
+    pLine = pLine + '\n                  local_noc_pkt_sent [{0}].header_destination_address  = vLocalToNoC[{0}].locl__noc__dp_data     ;'.format(mgr)
+    pLine = pLine + '\n                  local_noc_pkt_sent [{0}].header_source               = {0}                                     ;'.format(mgr)
+    pLine = pLine + '\n                  local_noc_pkt_sent [{0}].header_address_type         = vLocalToNoC[{0}].locl__noc__dp_desttype ;'.format(mgr)
+    pLine = pLine + '\n                  local_noc_pkt_sent [{0}].header_priority             = 1\'b1                                   ;  // _dp is hi-priority'.format(mgr)
+    pLine = pLine + '\n                  // determine all destination and place packet in their mailbox'
+    pLine = pLine + '\n                  for (int dm=0; dm<`MGR_ARRAY_NUM_OF_MGR; dm++) '
+    pLine = pLine + '\n                    begin'
+    pLine = pLine + '\n                      if (local_noc_pkt_sent [{0}].header_destination_address[dm] == 1\'b1)'.format(mgr)
+    pLine = pLine + '\n                        begin'
+    pLine = pLine + '\n                          $display ("@%0t::%s:%0d:: INFO: Packet sent from {{%0d}} to {{%0d}}", $time, `__FILE__, `__LINE__, {0}, dm);'.format(mgr)
+    pLine = pLine + '\n                          mgr2noc_p [dm].put(local_noc_pkt_sent [{0}]);'.format(mgr)
+    pLine = pLine + '\n                        end'
+    pLine = pLine + '\n                    end'
+    pLine = pLine + '\n                end'
+    pLine = pLine + '\n            end'
+    pLine = pLine + '\n        end'
+    pLine = pLine + '\n    '
+    #                                                                                                    
+                                             
+  f.write(pLine)
+  f.close()
+
+  f = open('../SIMULATION/common/TB_system_local_fromNoc_checker_packet_grab.vh', 'w')
+  pLine = ""
+  for mgr in range (0, numOfMgr):
+    pLine = pLine + '\n        begin'
+    pLine = pLine + '\n          forever'
+    pLine = pLine + '\n            begin'
+    pLine = pLine + '\n              // Observe NoC packets received by manager {0}'.format(mgr)
+    pLine = pLine + '\n              @(vLocalFromNoC[{0}].cb_p);'.format(mgr)
+    pLine = pLine + '\n              if ((vLocalFromNoC[{0}].noc__locl__dp_valid == 1\'b1) && (vLocalFromNoC[{0}].noc__locl__dp_cntl == 2\'b01))'.format(mgr)
+    pLine = pLine + '\n                begin'
+    pLine = pLine + '\n                  local_noc_pkt_rcvd [{0}] = new();'.format(mgr)
+    pLine = pLine + '\n                  local_noc_pkt_rcvd [{0}].header_destination_address  = vLocalFromNoC[{0}].noc__locl__dp_data     ;'.format(mgr)
+    pLine = pLine + '\n                  local_noc_pkt_rcvd [{0}].header_source               = vLocalFromNoC[{0}].noc__locl__dp_mgrId    ;'.format(mgr)
+    pLine = pLine + '\n                  local_noc_pkt_rcvd [{0}].header_priority             = 1\'b1                                   ;  // _dp is hi-priority'.format(mgr)
+    pLine = pLine + '\n                  $display ("@%0t::%s:%0d:: INFO: Packet being received by {{%0d}} from {{%0d}}", $time, `__FILE__, `__LINE__, {0}, vLocalFromNoC[{0}].noc__locl__dp_mgrId);'.format(mgr)
+    pLine = pLine + '\n                  noc2mgr_p [{0}].put(local_noc_pkt_rcvd [{0}]);'.format(mgr)
+    pLine = pLine + '\n                end'
+    pLine = pLine + '\n            end'
+    pLine = pLine + '\n        end'
+    pLine = pLine + '\n    '
+    #                                                                                                    
                                              
   f.write(pLine)
   f.close()
