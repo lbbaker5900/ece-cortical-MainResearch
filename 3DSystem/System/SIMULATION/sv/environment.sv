@@ -106,19 +106,24 @@ class Environment;
     event             noc2env_mbxEmpty                                  ;
 
     //----------------------------------------------------------------------------------------------------
+    // WU Decoder to Memory Read Interfaces
+    vWudToMrc_T       vWudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] ; 
+
+    //----------------------------------------------------------------------------------------------------
     // 
     function new (
                     // Retrieving the interface passed from the testbench in order to pass it to the required blocks.
-                    input vGenStackBus_T               vGenStackBus                    [`PE_ARRAY_NUM_OF_PE]                        ,
-                    input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB          [`PE_ARRAY_NUM_OF_PE]                        ,
-                    input vDownstreamStackBusLane_T    vDownstreamStackBusLane         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-                    input vUpstreamStackBus_T          vUpstreamStackBus               [`PE_ARRAY_NUM_OF_PE]                        ,
-                    input vLocalToNoC_T                vLocalToNoC                     [`MGR_ARRAY_NUM_OF_MGR]                      ,
-                    input vLocalFromNoC_T              vLocalFromNoC                   [`MGR_ARRAY_NUM_OF_MGR]                      ,
-                    input vDma2Mem_T                   vDma2Mem                        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-                    input vRegFileScalarDrv2stOpCntl_T vRegFileScalarDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE]                        ,
-                    input vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-                    input vLoadStoreDrv2memCntl_T      vLoadStoreDrv2memCntl           [`PE_ARRAY_NUM_OF_PE]                        
+                    input vGenStackBus_T               vGenStackBus                    [`PE_ARRAY_NUM_OF_PE  ]                         ,
+                    input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB          [`PE_ARRAY_NUM_OF_PE  ]                         ,
+                    input vDownstreamStackBusLane_T    vDownstreamStackBusLane         [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES] ,
+                    input vUpstreamStackBus_T          vUpstreamStackBus               [`PE_ARRAY_NUM_OF_PE  ]                         ,
+                    input vLocalToNoC_T                vLocalToNoC                     [`MGR_ARRAY_NUM_OF_MGR]                         ,
+                    input vLocalFromNoC_T              vLocalFromNoC                   [`MGR_ARRAY_NUM_OF_MGR]                         ,
+                    input vWudToMrc_T                  vWudToMrcIfc                    [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS  ] ,
+                    input vDma2Mem_T                   vDma2Mem                        [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES] ,
+                    input vRegFileScalarDrv2stOpCntl_T vRegFileScalarDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE  ]                         ,
+                    input vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES] ,
+                    input vLoadStoreDrv2memCntl_T      vLoadStoreDrv2memCntl           [`PE_ARRAY_NUM_OF_PE  ]                        
                 );
         this.vGenStackBus                =   vGenStackBus                ;
         this.vDownstreamStackBusOOB      =   vDownstreamStackBusOOB      ;
@@ -127,6 +132,8 @@ class Environment;
 
         this.vLocalToNoC                 =   vLocalToNoC                 ;
         this.vLocalFromNoC               =   vLocalFromNoC               ;
+
+        this.vWudToMrcIfc                =   vWudToMrcIfc                ;
 
         this.vDma2Mem                    =   vDma2Mem                    ;
         this.vRegFileScalarDrv2stOpCntl  =   vRegFileScalarDrv2stOpCntl  ;
@@ -165,7 +172,7 @@ class Environment;
                         rf_driver   [pe][lane]  = new ( Id,                                                                                      vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP[pe][lane],   gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
                     end
                  
-                mgr         [pe]  = new ( pe, mgr2oob[pe] , mgr2oob_ack[pe], mgr2gen[pe] , mgr2gen_ack[pe],  final_operation[pe], vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe] , mgr2up [pe]);
+                mgr         [pe]  = new ( pe, mgr2oob[pe] , mgr2oob_ack[pe], mgr2gen[pe] , mgr2gen_ack[pe],  final_operation[pe], vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe] , mgr2up [pe], vWudToMrcIfc[pe]   );
                 oob_drv     [pe]  = new ( pe, mgr2oob[pe],  mgr2oob_ack[pe], gen2oob[pe],  gen2oob_ack[pe],                       vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe] );
                 up_check    [pe]  = new ( pe, vUpstreamStackBus [pe],  mgr2up [pe], gen2up [pe] ) ;
             end

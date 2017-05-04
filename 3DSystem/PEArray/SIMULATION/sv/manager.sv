@@ -28,6 +28,8 @@
 `include "pe_array.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
+`include "manager.vh"
+`include "manager_array.vh"
 
 import virtual_interface::*;
 import operation::*;
@@ -92,6 +94,9 @@ class manager;
     vDownstreamStackBusOOB_T    vDownstreamStackBusOOB                            ;  // FIXME OOB interface is a per PE i/f where generator is per lane
     vDownstreamStackBusLane_T   vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES]  ;  // manager communicates will lane generators
 
+    // WU Decoder to Memory Read Interfaces
+    vWudToMrc_T       vWudToMrcIfc        [`MGR_NUM_OF_STREAMS] ; 
+
     base_operation    sys_operation                              ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_mgr                          ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_oob                          ;  // need to make sure OOB oepration matches lane
@@ -104,18 +109,16 @@ class manager;
     base_operation    priorOperations[$]; //Queue to hold previous operations
 
     function new (
-                  input int                   Id                                       , 
-                  input mailbox               mgr2oob                                  ,
-                  input event                 mgr2oob_ack                              ,
-                  input mailbox               mgr2gen          [`PE_NUM_OF_EXEC_LANES] ,
-                  input event                 mgr2gen_ack      [`PE_NUM_OF_EXEC_LANES] ,
-                  //input event                 new_operation                            ,
-                  input event                 final_operation                          ,
+                  input int                          Id                                              , 
+                  input mailbox                      mgr2oob                                         ,
+                  input event                        mgr2oob_ack                                     ,
+                  input mailbox                      mgr2gen                 [`PE_NUM_OF_EXEC_LANES] ,
+                  input event                        mgr2gen_ack             [`PE_NUM_OF_EXEC_LANES] ,
+                  input event                        final_operation                                 ,
                   input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB                          ,
                   input vDownstreamStackBusLane_T    vDownstreamStackBusLane [`PE_NUM_OF_EXEC_LANES] ,
-                  input mailbox               mgr2up                                      // send operation to upstream checker
-                  //input mailbox               mgr2rfP                                  ,
-                  //input event                 mgr2rfP_ack       
+                  input mailbox                      mgr2up                                          , // send operation to upstream checker
+                  input vWudToMrc_T                  vWudToMrcIfc            [`MGR_NUM_OF_STREAMS  ] 
                  );
 
         this.Id                     = Id                 ;
@@ -127,9 +130,8 @@ class manager;
         this.final_operation        = final_operation    ;
         this.vDownstreamStackBusOOB        = vDownstreamStackBusOOB    ;
         this.vDownstreamStackBusLane       = vDownstreamStackBusLane   ;
+        this.vWudToMrcIfc           = vWudToMrcIfc        ;
         this.mgr2up                 = mgr2up             ;
-        //this.mgr2rfP                = mgr2rfP            ;
-        //this.mgr2rfP_ack            = mgr2rfP_ack        ;
 
     endfunction
 

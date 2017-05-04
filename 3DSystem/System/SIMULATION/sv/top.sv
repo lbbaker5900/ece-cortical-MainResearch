@@ -20,6 +20,7 @@
 `include "mem_acc_cont.vh"
 `include "pe.vh"
 `include "pe_array.vh"
+`include "manager.vh"
 `include "manager_array.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
@@ -68,12 +69,17 @@ module top;
     mailbox           noc2mgr_p            [`MGR_ARRAY_NUM_OF_MGR]      ;  // capture packets received by manager from NoC
 */
 
+    //
+    //----------------------------------------------------------------------------------------------------
+    // WU Decoder to Memory Read Interfaces
+    wud_to_mrc_ifc  WudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] (clk); 
+
     //----------------------------------------------------------------------------------------------------
     // Probe interface(s) for forcing
     //
     // Regfile interface from SIMD
     regFileScalar2stOpCntl_ifc  RegFileScalar2StOpCntl    [`PE_ARRAY_NUM_OF_PE]                        (clk);
-    regFileLane2stOpCntl_ifc    RegFileLane2StOpCntl      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] (clk);
+    regFileLane2stOpCntl_ifc    RegFileLane2StOpCntl      [`PE_ARRAY_NUM_OF_PE] [`PE_NUM_OF_EXEC_LANES] (clk);
 
     // Load/Store interface from SIMD
     loadStore2memCntl_ifc       LoadStore2memCntl         [`PE_ARRAY_NUM_OF_PE]                        (clk);
@@ -99,12 +105,15 @@ module top;
                    .DownstreamStackBusLane     ( DownstreamStackBusLane    ) ,  // array of interfaces for each downstream pe/lane stack bus
                    .UpstreamStackBus           ( UpstreamStackBus          ) ,  // array of upstream stack bus OOB interfaces to each PE
 
+                   //
                    .Dma2Mem                    ( Dma2Mem                   ) ,  // array of monitor probes for the DMA to Memory interface for each PE/Lane
+
+                   // Local NoC Interfaces
                    .LocalToNocIfc              ( LocalToNocIfc             ) ,  // array of probes to monitor Manager NoC packets sent to NoC and received from NoC
                    .LocalFromNocIfc            ( LocalFromNocIfc           ) ,  // 
-                   // to debug the NoC, we will predict what packets should be received and sent to the NoC
-                   //.mgr2noc_p                  ( mgr2noc_p                 ) ,  // What NoC packets has a manager sent to the NoC
-                   //.noc2mgr_p                  ( noc2mgr_p                 ) ,  // What NoC packets has a manager received from the NoC
+
+                   // WU Decoder to Memory Read Interfaces
+                   .WudToMrcIfc                ( WudToMrcIfc               ),
 
                    .RegFileScalar2StOpCntl     ( RegFileScalar2StOpCntl    ) ,  // array of driver probes for the RegFile Scalar registers to stOp Controller for each PE
                    .RegFileLane2StOpCntl       ( RegFileLane2StOpCntl      ) ,  // array of driver probes for the RegFile Vector registers to stOp Controller for each PE/Lane
@@ -165,6 +174,7 @@ module top;
            end
     endgenerate
 
+    // Local NoC Interfaces
     genvar mgr;
     generate
        for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
@@ -185,8 +195,43 @@ module top;
              assign LocalFromNocIfc[mgr].noc__locl__dp_type     = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_type    ;
              assign LocalFromNocIfc[mgr].noc__locl__dp_ptype    = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_ptype   ;
              assign LocalFromNocIfc[mgr].noc__locl__dp_data     = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_data    ;
+             assign LocalFromNocIfc[mgr].noc__locl__dp_pvalid   = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_pvalid  ;
              assign LocalFromNocIfc[mgr].noc__locl__dp_mgrId    = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_mgrId   ;
            end
+    endgenerate
+
+    // WU Decoder to memory Read Interfaces
+    genvar memIfc;
+    genvar opt;
+    generate
+      for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+        begin
+          for (memIfc=0; memIfc<`MGR_NUM_OF_STREAMS; memIfc=memIfc+1)
+            begin
+              if (memIfc == 0)
+                begin
+                  assign WudToMrcIfc[mgr][memIfc].wud__mrc__valid       = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc0__valid   ;
+                  assign WudToMrcIfc[mgr][memIfc].mrc__wud__ready       = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.mrc0__wud__ready   ;
+                  assign WudToMrcIfc[mgr][memIfc].wud__mrc__cntl        = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc0__cntl    ;
+                  for (opt=0; opt<`MGR_WU_OPT_PER_INST; opt=opt+1)
+                    begin
+                      assign WudToMrcIfc[mgr][memIfc].wud__mrc__option_type  [opt]     = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc0__option_type  [opt];
+                      assign WudToMrcIfc[mgr][memIfc].wud__mrc__option_value [opt]     = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc0__option_value [opt];
+                    end
+                end
+              else
+                begin
+                  assign WudToMrcIfc[mgr][memIfc].wud__mrc__valid       = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc1__valid   ;
+                  assign WudToMrcIfc[mgr][memIfc].mrc__wud__ready       = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.mrc1__wud__ready   ;
+                  assign WudToMrcIfc[mgr][memIfc].wud__mrc__cntl        = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc1__cntl    ;
+                  for (opt=0; opt<`MGR_WU_OPT_PER_INST; opt=opt+1)
+                    begin
+                      assign WudToMrcIfc[mgr][memIfc].wud__mrc__option_type  [opt]     = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc1__option_type  [opt];
+                      assign WudToMrcIfc[mgr][memIfc].wud__mrc__option_value [opt]     = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc1__option_value [opt];
+                    end
+                end
+            end
+        end
     endgenerate
 
     //----------------------------------------------------------------------------------------------------

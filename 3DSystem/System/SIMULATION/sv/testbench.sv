@@ -16,19 +16,21 @@
 
 program automatic test (
         // array of interfaces, one for each pe/lane/stream
-        st_gen_ifc                               GenStackBus              [`PE_ARRAY_NUM_OF_PE]                        ,
-        std_oob_ifc                              DownstreamStackBusOOB    [`PE_ARRAY_NUM_OF_PE]                        ,
-        std_lane_ifc                             DownstreamStackBusLane   [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-        stu_ifc                                  UpstreamStackBus         [`PE_ARRAY_NUM_OF_PE]                        ,
+        st_gen_ifc                               GenStackBus              [`PE_ARRAY_NUM_OF_PE]                         ,
+        std_oob_ifc                              DownstreamStackBusOOB    [`PE_ARRAY_NUM_OF_PE]                         ,
+        std_lane_ifc                             DownstreamStackBusLane   [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ,
+        stu_ifc                                  UpstreamStackBus         [`PE_ARRAY_NUM_OF_PE]                         ,
+                                                                                                                        
+        // probe interfaces                                                                                             
+        locl_to_noc_ifc                          LocalToNocIfc            [`MGR_ARRAY_NUM_OF_MGR]                       ,
+        locl_from_noc_ifc                        LocalFromNocIfc          [`MGR_ARRAY_NUM_OF_MGR]                       ,
 
-        // probe interfaces
-        locl_to_noc_ifc                          LocalToNocIfc            [`MGR_ARRAY_NUM_OF_MGR]                      ,
-        locl_from_noc_ifc                        LocalFromNocIfc          [`MGR_ARRAY_NUM_OF_MGR]                      ,
+        wud_to_mrc_ifc                           WudToMrcIfc              [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] , 
 
-        pe_dma2mem_ifc                           Dma2Mem                  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-        regFileScalar2stOpCntl_ifc               RegFileScalar2StOpCntl   [`PE_ARRAY_NUM_OF_PE]                        ,
-        regFileLane2stOpCntl_ifc                 RegFileLane2StOpCntl     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-        loadStore2memCntl_ifc                    LoadStore2memCntl        [`PE_ARRAY_NUM_OF_PE]                        ,
+        pe_dma2mem_ifc                           Dma2Mem                  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ,
+        regFileScalar2stOpCntl_ifc               RegFileScalar2StOpCntl   [`PE_ARRAY_NUM_OF_PE]                         ,
+        regFileLane2stOpCntl_ifc                 RegFileLane2StOpCntl     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ,
+        loadStore2memCntl_ifc                    LoadStore2memCntl        [`PE_ARRAY_NUM_OF_PE]                         ,
         
         input logic reset
         );
@@ -42,6 +44,7 @@ program automatic test (
                     UpstreamStackBus       , 
                     LocalToNocIfc          , 
                     LocalFromNocIfc        , 
+                    WudToMrcIfc            ,
                     Dma2Mem                , 
                     RegFileScalar2StOpCntl , 
                     RegFileLane2StOpCntl   , 
