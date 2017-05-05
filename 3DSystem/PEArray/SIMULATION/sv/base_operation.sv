@@ -609,7 +609,7 @@ package operation;
     endclass
 
     //------------------------------------------------------------------------------------------------------
-    // Class
+    // Stream Classes
     //
     // Contains information required to drive the downstream operands for one stream
     //
@@ -630,7 +630,7 @@ package operation;
 
 
     //------------------------------------------------------------------------------------------------------
-    // Class
+    // OOB Classes
     //
     // Contains Out-of-Band (OOB)information 
     //
@@ -684,7 +684,7 @@ package operation;
 
 
     //------------------------------------------------------------------------------------------------------
-    // Class
+    // NoC Classes
     //
     // 
     //
@@ -709,33 +709,64 @@ package operation;
             this.timeTag = $time ;
         endfunction
     
-/*
-        function void createFromOperation(int tag, base_operation operation);
-            
-            this.tag                =   tag                                       ;
-            this.Id                 =   operation.Id                              ;
-            this.numberOfLanes      =   operation.numberOfLanes                   ;
-            this.stOp_operation     =   operation.stOp_operation                  ;
-            this.sourceAddress      =   operation.sourceAddress                   ;
-            this.destinationAddress =   operation.destinationAddress              ;
-            this.src_data_type      =   operation.pe_stOp_stream_src_data_type    ;
-            this.dest_data_type     =   operation.pe_stOp_stream_dest_data_type   ;
-            this.numberOfOperands   =   operation.numberOfOperands                ;  // FIXME
+        function logic compare(local_noc_packet cp);
+          // assume compares, search for miscompare
+          logic compared = 1;
+
+          if (this.header_source != cp.header_source)
+            compared = 0;
+          if (this.header_priority != cp.header_priority)
+            compared = 0;
+
+          if (this.payload_tuple_type.size() != cp.payload_tuple_type.size())
+            compared = 0;
+          if (this.payload_tuple_extd_value.size() != cp.payload_tuple_extd_value.size())
+            compared = 0;
+          if (this.payload_data.size() != cp.payload_data.size())
+            compared = 0;
+
+          for (int i=0; i<this.payload_tuple_type.size(); i++)
+            begin
+              if (this.payload_tuple_type[i] != cp.payload_tuple_type[i])
+                compared = 0;
+            end
+
+          for (int i=0; i<this.payload_tuple_extd_value.size(); i++)
+            begin
+              if (this.payload_tuple_extd_value[i] != cp.payload_tuple_extd_value[i])
+                compared = 0;
+            end
+
+          for (int i=0; i<this.payload_data.size(); i++)
+            begin
+              if (this.payload_data[i] != cp.payload_data[i])
+                compared = 0;
+            end
+
+            return compared ;
 
         endfunction
     
         function void displayPacket();
             $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
-            $display("@%0t :%s:%0d:INFO: OOB Packet for {PE,Lane,tId,tag} = {%0d,%0d,%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], tId, tag);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: stOp_operation : %b", $time, `__FILE__, `__LINE__, Id[0], Id[1], stOp_operation);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: srcType{0,1},destType{0,1} : {%0b,%0b},{%0b,%0b}", $time, `__FILE__, `__LINE__, Id[0], Id[1], src_data_type[0], src_data_type[1], dest_data_type[0], dest_data_type[1]);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:      Source Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], sourceAddress[0], sourceAddress[1]);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Destination Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], destinationAddress[0], destinationAddress[1]);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: {numberOfOperands} = {%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], numberOfOperands);
-            $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
+            $display("@%0t :%s:%0d:INFO: NoC Packet from manager {%0d}", $time, `__FILE__, `__LINE__, header_source);
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+            $display("@%0t :%s:%0d:INFO:  Destination Address : %64b", $time, `__FILE__, `__LINE__, header_destination_address);
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+            //$display("@%0t :%s:%0d:INFO:  Tuples", $time, `__FILE__, `__LINE__);
+            for (int i=0; i<payload_tuple_type.size(); i++)
+              begin
+                $display("@%0t :%s:%0d:INFO:Tuple %0d:  {%h,%h}", $time, `__FILE__, `__LINE__, i, payload_tuple_type[i], payload_tuple_extd_value[i]);
+              end
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+            //$display("@%0t :%s:%0d:INFO:  Data", $time, `__FILE__, `__LINE__);
+            for (int i=0; i<payload_data.size(); i++)
+              begin
+                $display("@%0t :%s:%0d:INFO:Data %0d:  {%h}", $time, `__FILE__, `__LINE__, i, payload_data[i]);
+              end
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
 
         endfunction
-*/
 
     endclass
 

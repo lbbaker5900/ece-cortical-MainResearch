@@ -14,7 +14,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 0);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[0].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[0].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[0].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [0].timeTag              = $time;
                           local_noc_pkt_sent [0].header_destination_address  = vLocalToNoC[0].locl__noc__dp_data     ;
@@ -56,7 +56,7 @@
                               if (vLocalToNoC[0].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [0] = vLocalToNoC[0].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [0] = vLocalToNoC[0].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [0].payload_data.push_back (payload_data      [0])    ;
                                 end
                             end
@@ -97,7 +97,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 1);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[1].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[1].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[1].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [1].timeTag              = $time;
                           local_noc_pkt_sent [1].header_destination_address  = vLocalToNoC[1].locl__noc__dp_data     ;
@@ -139,7 +139,7 @@
                               if (vLocalToNoC[1].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [1] = vLocalToNoC[1].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [1] = vLocalToNoC[1].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [1].payload_data.push_back (payload_data      [1])    ;
                                 end
                             end
@@ -180,7 +180,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 2);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[2].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[2].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[2].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [2].timeTag              = $time;
                           local_noc_pkt_sent [2].header_destination_address  = vLocalToNoC[2].locl__noc__dp_data     ;
@@ -222,7 +222,7 @@
                               if (vLocalToNoC[2].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [2] = vLocalToNoC[2].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [2] = vLocalToNoC[2].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [2].payload_data.push_back (payload_data      [2])    ;
                                 end
                             end
@@ -263,7 +263,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 3);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[3].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[3].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[3].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [3].timeTag              = $time;
                           local_noc_pkt_sent [3].header_destination_address  = vLocalToNoC[3].locl__noc__dp_data     ;
@@ -305,7 +305,7 @@
                               if (vLocalToNoC[3].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [3] = vLocalToNoC[3].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [3] = vLocalToNoC[3].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [3].payload_data.push_back (payload_data      [3])    ;
                                 end
                             end
@@ -346,7 +346,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 4);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[4].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[4].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[4].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [4].timeTag              = $time;
                           local_noc_pkt_sent [4].header_destination_address  = vLocalToNoC[4].locl__noc__dp_data     ;
@@ -388,7 +388,7 @@
                               if (vLocalToNoC[4].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [4] = vLocalToNoC[4].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [4] = vLocalToNoC[4].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [4].payload_data.push_back (payload_data      [4])    ;
                                 end
                             end
@@ -429,7 +429,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 5);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[5].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[5].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[5].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [5].timeTag              = $time;
                           local_noc_pkt_sent [5].header_destination_address  = vLocalToNoC[5].locl__noc__dp_data     ;
@@ -471,7 +471,7 @@
                               if (vLocalToNoC[5].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [5] = vLocalToNoC[5].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [5] = vLocalToNoC[5].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [5].payload_data.push_back (payload_data      [5])    ;
                                 end
                             end
@@ -512,7 +512,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 6);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[6].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[6].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[6].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [6].timeTag              = $time;
                           local_noc_pkt_sent [6].header_destination_address  = vLocalToNoC[6].locl__noc__dp_data     ;
@@ -554,7 +554,7 @@
                               if (vLocalToNoC[6].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [6] = vLocalToNoC[6].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [6] = vLocalToNoC[6].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [6].payload_data.push_back (payload_data      [6])    ;
                                 end
                             end
@@ -595,7 +595,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 7);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[7].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[7].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[7].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [7].timeTag              = $time;
                           local_noc_pkt_sent [7].header_destination_address  = vLocalToNoC[7].locl__noc__dp_data     ;
@@ -637,7 +637,7 @@
                               if (vLocalToNoC[7].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [7] = vLocalToNoC[7].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [7] = vLocalToNoC[7].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [7].payload_data.push_back (payload_data      [7])    ;
                                 end
                             end
@@ -678,7 +678,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 8);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[8].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[8].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[8].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [8].timeTag              = $time;
                           local_noc_pkt_sent [8].header_destination_address  = vLocalToNoC[8].locl__noc__dp_data     ;
@@ -720,7 +720,7 @@
                               if (vLocalToNoC[8].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [8] = vLocalToNoC[8].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [8] = vLocalToNoC[8].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [8].payload_data.push_back (payload_data      [8])    ;
                                 end
                             end
@@ -761,7 +761,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 9);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[9].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[9].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[9].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [9].timeTag              = $time;
                           local_noc_pkt_sent [9].header_destination_address  = vLocalToNoC[9].locl__noc__dp_data     ;
@@ -803,7 +803,7 @@
                               if (vLocalToNoC[9].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [9] = vLocalToNoC[9].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [9] = vLocalToNoC[9].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [9].payload_data.push_back (payload_data      [9])    ;
                                 end
                             end
@@ -844,7 +844,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 10);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[10].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[10].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[10].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [10].timeTag              = $time;
                           local_noc_pkt_sent [10].header_destination_address  = vLocalToNoC[10].locl__noc__dp_data     ;
@@ -886,7 +886,7 @@
                               if (vLocalToNoC[10].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [10] = vLocalToNoC[10].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [10] = vLocalToNoC[10].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [10].payload_data.push_back (payload_data      [10])    ;
                                 end
                             end
@@ -927,7 +927,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 11);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[11].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[11].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[11].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [11].timeTag              = $time;
                           local_noc_pkt_sent [11].header_destination_address  = vLocalToNoC[11].locl__noc__dp_data     ;
@@ -969,7 +969,7 @@
                               if (vLocalToNoC[11].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [11] = vLocalToNoC[11].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [11] = vLocalToNoC[11].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [11].payload_data.push_back (payload_data      [11])    ;
                                 end
                             end
@@ -1010,7 +1010,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 12);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[12].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[12].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[12].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [12].timeTag              = $time;
                           local_noc_pkt_sent [12].header_destination_address  = vLocalToNoC[12].locl__noc__dp_data     ;
@@ -1052,7 +1052,7 @@
                               if (vLocalToNoC[12].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [12] = vLocalToNoC[12].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [12] = vLocalToNoC[12].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [12].payload_data.push_back (payload_data      [12])    ;
                                 end
                             end
@@ -1093,7 +1093,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 13);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[13].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[13].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[13].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [13].timeTag              = $time;
                           local_noc_pkt_sent [13].header_destination_address  = vLocalToNoC[13].locl__noc__dp_data     ;
@@ -1135,7 +1135,7 @@
                               if (vLocalToNoC[13].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [13] = vLocalToNoC[13].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [13] = vLocalToNoC[13].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [13].payload_data.push_back (payload_data      [13])    ;
                                 end
                             end
@@ -1176,7 +1176,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 14);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[14].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[14].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[14].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [14].timeTag              = $time;
                           local_noc_pkt_sent [14].header_destination_address  = vLocalToNoC[14].locl__noc__dp_data     ;
@@ -1218,7 +1218,7 @@
                               if (vLocalToNoC[14].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [14] = vLocalToNoC[14].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [14] = vLocalToNoC[14].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [14].payload_data.push_back (payload_data      [14])    ;
                                 end
                             end
@@ -1259,7 +1259,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 15);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[15].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[15].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[15].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [15].timeTag              = $time;
                           local_noc_pkt_sent [15].header_destination_address  = vLocalToNoC[15].locl__noc__dp_data     ;
@@ -1301,7 +1301,7 @@
                               if (vLocalToNoC[15].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [15] = vLocalToNoC[15].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [15] = vLocalToNoC[15].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [15].payload_data.push_back (payload_data      [15])    ;
                                 end
                             end
@@ -1342,7 +1342,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 16);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[16].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[16].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[16].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [16].timeTag              = $time;
                           local_noc_pkt_sent [16].header_destination_address  = vLocalToNoC[16].locl__noc__dp_data     ;
@@ -1384,7 +1384,7 @@
                               if (vLocalToNoC[16].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [16] = vLocalToNoC[16].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [16] = vLocalToNoC[16].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [16].payload_data.push_back (payload_data      [16])    ;
                                 end
                             end
@@ -1425,7 +1425,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 17);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[17].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[17].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[17].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [17].timeTag              = $time;
                           local_noc_pkt_sent [17].header_destination_address  = vLocalToNoC[17].locl__noc__dp_data     ;
@@ -1467,7 +1467,7 @@
                               if (vLocalToNoC[17].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [17] = vLocalToNoC[17].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [17] = vLocalToNoC[17].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [17].payload_data.push_back (payload_data      [17])    ;
                                 end
                             end
@@ -1508,7 +1508,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 18);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[18].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[18].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[18].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [18].timeTag              = $time;
                           local_noc_pkt_sent [18].header_destination_address  = vLocalToNoC[18].locl__noc__dp_data     ;
@@ -1550,7 +1550,7 @@
                               if (vLocalToNoC[18].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [18] = vLocalToNoC[18].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [18] = vLocalToNoC[18].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [18].payload_data.push_back (payload_data      [18])    ;
                                 end
                             end
@@ -1591,7 +1591,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 19);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[19].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[19].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[19].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [19].timeTag              = $time;
                           local_noc_pkt_sent [19].header_destination_address  = vLocalToNoC[19].locl__noc__dp_data     ;
@@ -1633,7 +1633,7 @@
                               if (vLocalToNoC[19].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [19] = vLocalToNoC[19].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [19] = vLocalToNoC[19].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [19].payload_data.push_back (payload_data      [19])    ;
                                 end
                             end
@@ -1674,7 +1674,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 20);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[20].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[20].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[20].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [20].timeTag              = $time;
                           local_noc_pkt_sent [20].header_destination_address  = vLocalToNoC[20].locl__noc__dp_data     ;
@@ -1716,7 +1716,7 @@
                               if (vLocalToNoC[20].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [20] = vLocalToNoC[20].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [20] = vLocalToNoC[20].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [20].payload_data.push_back (payload_data      [20])    ;
                                 end
                             end
@@ -1757,7 +1757,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 21);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[21].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[21].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[21].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [21].timeTag              = $time;
                           local_noc_pkt_sent [21].header_destination_address  = vLocalToNoC[21].locl__noc__dp_data     ;
@@ -1799,7 +1799,7 @@
                               if (vLocalToNoC[21].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [21] = vLocalToNoC[21].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [21] = vLocalToNoC[21].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [21].payload_data.push_back (payload_data      [21])    ;
                                 end
                             end
@@ -1840,7 +1840,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 22);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[22].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[22].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[22].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [22].timeTag              = $time;
                           local_noc_pkt_sent [22].header_destination_address  = vLocalToNoC[22].locl__noc__dp_data     ;
@@ -1882,7 +1882,7 @@
                               if (vLocalToNoC[22].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [22] = vLocalToNoC[22].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [22] = vLocalToNoC[22].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [22].payload_data.push_back (payload_data      [22])    ;
                                 end
                             end
@@ -1923,7 +1923,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 23);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[23].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[23].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[23].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [23].timeTag              = $time;
                           local_noc_pkt_sent [23].header_destination_address  = vLocalToNoC[23].locl__noc__dp_data     ;
@@ -1965,7 +1965,7 @@
                               if (vLocalToNoC[23].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [23] = vLocalToNoC[23].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [23] = vLocalToNoC[23].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [23].payload_data.push_back (payload_data      [23])    ;
                                 end
                             end
@@ -2006,7 +2006,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 24);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[24].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[24].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[24].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [24].timeTag              = $time;
                           local_noc_pkt_sent [24].header_destination_address  = vLocalToNoC[24].locl__noc__dp_data     ;
@@ -2048,7 +2048,7 @@
                               if (vLocalToNoC[24].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [24] = vLocalToNoC[24].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [24] = vLocalToNoC[24].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [24].payload_data.push_back (payload_data      [24])    ;
                                 end
                             end
@@ -2089,7 +2089,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 25);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[25].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[25].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[25].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [25].timeTag              = $time;
                           local_noc_pkt_sent [25].header_destination_address  = vLocalToNoC[25].locl__noc__dp_data     ;
@@ -2131,7 +2131,7 @@
                               if (vLocalToNoC[25].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [25] = vLocalToNoC[25].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [25] = vLocalToNoC[25].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [25].payload_data.push_back (payload_data      [25])    ;
                                 end
                             end
@@ -2172,7 +2172,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 26);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[26].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[26].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[26].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [26].timeTag              = $time;
                           local_noc_pkt_sent [26].header_destination_address  = vLocalToNoC[26].locl__noc__dp_data     ;
@@ -2214,7 +2214,7 @@
                               if (vLocalToNoC[26].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [26] = vLocalToNoC[26].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [26] = vLocalToNoC[26].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [26].payload_data.push_back (payload_data      [26])    ;
                                 end
                             end
@@ -2255,7 +2255,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 27);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[27].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[27].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[27].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [27].timeTag              = $time;
                           local_noc_pkt_sent [27].header_destination_address  = vLocalToNoC[27].locl__noc__dp_data     ;
@@ -2297,7 +2297,7 @@
                               if (vLocalToNoC[27].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [27] = vLocalToNoC[27].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [27] = vLocalToNoC[27].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [27].payload_data.push_back (payload_data      [27])    ;
                                 end
                             end
@@ -2338,7 +2338,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 28);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[28].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[28].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[28].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [28].timeTag              = $time;
                           local_noc_pkt_sent [28].header_destination_address  = vLocalToNoC[28].locl__noc__dp_data     ;
@@ -2380,7 +2380,7 @@
                               if (vLocalToNoC[28].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [28] = vLocalToNoC[28].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [28] = vLocalToNoC[28].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [28].payload_data.push_back (payload_data      [28])    ;
                                 end
                             end
@@ -2421,7 +2421,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 29);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[29].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[29].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[29].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [29].timeTag              = $time;
                           local_noc_pkt_sent [29].header_destination_address  = vLocalToNoC[29].locl__noc__dp_data     ;
@@ -2463,7 +2463,7 @@
                               if (vLocalToNoC[29].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [29] = vLocalToNoC[29].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [29] = vLocalToNoC[29].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [29].payload_data.push_back (payload_data      [29])    ;
                                 end
                             end
@@ -2504,7 +2504,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 30);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[30].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[30].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[30].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [30].timeTag              = $time;
                           local_noc_pkt_sent [30].header_destination_address  = vLocalToNoC[30].locl__noc__dp_data     ;
@@ -2546,7 +2546,7 @@
                               if (vLocalToNoC[30].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [30] = vLocalToNoC[30].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [30] = vLocalToNoC[30].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [30].payload_data.push_back (payload_data      [30])    ;
                                 end
                             end
@@ -2587,7 +2587,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 31);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[31].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[31].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[31].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [31].timeTag              = $time;
                           local_noc_pkt_sent [31].header_destination_address  = vLocalToNoC[31].locl__noc__dp_data     ;
@@ -2629,7 +2629,7 @@
                               if (vLocalToNoC[31].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [31] = vLocalToNoC[31].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [31] = vLocalToNoC[31].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [31].payload_data.push_back (payload_data      [31])    ;
                                 end
                             end
@@ -2670,7 +2670,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 32);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[32].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[32].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[32].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [32].timeTag              = $time;
                           local_noc_pkt_sent [32].header_destination_address  = vLocalToNoC[32].locl__noc__dp_data     ;
@@ -2712,7 +2712,7 @@
                               if (vLocalToNoC[32].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [32] = vLocalToNoC[32].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [32] = vLocalToNoC[32].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [32].payload_data.push_back (payload_data      [32])    ;
                                 end
                             end
@@ -2753,7 +2753,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 33);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[33].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[33].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[33].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [33].timeTag              = $time;
                           local_noc_pkt_sent [33].header_destination_address  = vLocalToNoC[33].locl__noc__dp_data     ;
@@ -2795,7 +2795,7 @@
                               if (vLocalToNoC[33].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [33] = vLocalToNoC[33].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [33] = vLocalToNoC[33].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [33].payload_data.push_back (payload_data      [33])    ;
                                 end
                             end
@@ -2836,7 +2836,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 34);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[34].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[34].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[34].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [34].timeTag              = $time;
                           local_noc_pkt_sent [34].header_destination_address  = vLocalToNoC[34].locl__noc__dp_data     ;
@@ -2878,7 +2878,7 @@
                               if (vLocalToNoC[34].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [34] = vLocalToNoC[34].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [34] = vLocalToNoC[34].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [34].payload_data.push_back (payload_data      [34])    ;
                                 end
                             end
@@ -2919,7 +2919,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 35);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[35].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[35].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[35].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [35].timeTag              = $time;
                           local_noc_pkt_sent [35].header_destination_address  = vLocalToNoC[35].locl__noc__dp_data     ;
@@ -2961,7 +2961,7 @@
                               if (vLocalToNoC[35].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [35] = vLocalToNoC[35].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [35] = vLocalToNoC[35].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [35].payload_data.push_back (payload_data      [35])    ;
                                 end
                             end
@@ -3002,7 +3002,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 36);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[36].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[36].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[36].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [36].timeTag              = $time;
                           local_noc_pkt_sent [36].header_destination_address  = vLocalToNoC[36].locl__noc__dp_data     ;
@@ -3044,7 +3044,7 @@
                               if (vLocalToNoC[36].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [36] = vLocalToNoC[36].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [36] = vLocalToNoC[36].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [36].payload_data.push_back (payload_data      [36])    ;
                                 end
                             end
@@ -3085,7 +3085,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 37);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[37].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[37].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[37].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [37].timeTag              = $time;
                           local_noc_pkt_sent [37].header_destination_address  = vLocalToNoC[37].locl__noc__dp_data     ;
@@ -3127,7 +3127,7 @@
                               if (vLocalToNoC[37].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [37] = vLocalToNoC[37].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [37] = vLocalToNoC[37].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [37].payload_data.push_back (payload_data      [37])    ;
                                 end
                             end
@@ -3168,7 +3168,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 38);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[38].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[38].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[38].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [38].timeTag              = $time;
                           local_noc_pkt_sent [38].header_destination_address  = vLocalToNoC[38].locl__noc__dp_data     ;
@@ -3210,7 +3210,7 @@
                               if (vLocalToNoC[38].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [38] = vLocalToNoC[38].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [38] = vLocalToNoC[38].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [38].payload_data.push_back (payload_data      [38])    ;
                                 end
                             end
@@ -3251,7 +3251,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 39);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[39].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[39].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[39].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [39].timeTag              = $time;
                           local_noc_pkt_sent [39].header_destination_address  = vLocalToNoC[39].locl__noc__dp_data     ;
@@ -3293,7 +3293,7 @@
                               if (vLocalToNoC[39].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [39] = vLocalToNoC[39].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [39] = vLocalToNoC[39].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [39].payload_data.push_back (payload_data      [39])    ;
                                 end
                             end
@@ -3334,7 +3334,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 40);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[40].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[40].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[40].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [40].timeTag              = $time;
                           local_noc_pkt_sent [40].header_destination_address  = vLocalToNoC[40].locl__noc__dp_data     ;
@@ -3376,7 +3376,7 @@
                               if (vLocalToNoC[40].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [40] = vLocalToNoC[40].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [40] = vLocalToNoC[40].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [40].payload_data.push_back (payload_data      [40])    ;
                                 end
                             end
@@ -3417,7 +3417,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 41);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[41].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[41].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[41].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [41].timeTag              = $time;
                           local_noc_pkt_sent [41].header_destination_address  = vLocalToNoC[41].locl__noc__dp_data     ;
@@ -3459,7 +3459,7 @@
                               if (vLocalToNoC[41].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [41] = vLocalToNoC[41].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [41] = vLocalToNoC[41].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [41].payload_data.push_back (payload_data      [41])    ;
                                 end
                             end
@@ -3500,7 +3500,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 42);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[42].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[42].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[42].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [42].timeTag              = $time;
                           local_noc_pkt_sent [42].header_destination_address  = vLocalToNoC[42].locl__noc__dp_data     ;
@@ -3542,7 +3542,7 @@
                               if (vLocalToNoC[42].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [42] = vLocalToNoC[42].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [42] = vLocalToNoC[42].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [42].payload_data.push_back (payload_data      [42])    ;
                                 end
                             end
@@ -3583,7 +3583,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 43);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[43].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[43].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[43].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [43].timeTag              = $time;
                           local_noc_pkt_sent [43].header_destination_address  = vLocalToNoC[43].locl__noc__dp_data     ;
@@ -3625,7 +3625,7 @@
                               if (vLocalToNoC[43].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [43] = vLocalToNoC[43].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [43] = vLocalToNoC[43].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [43].payload_data.push_back (payload_data      [43])    ;
                                 end
                             end
@@ -3666,7 +3666,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 44);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[44].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[44].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[44].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [44].timeTag              = $time;
                           local_noc_pkt_sent [44].header_destination_address  = vLocalToNoC[44].locl__noc__dp_data     ;
@@ -3708,7 +3708,7 @@
                               if (vLocalToNoC[44].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [44] = vLocalToNoC[44].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [44] = vLocalToNoC[44].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [44].payload_data.push_back (payload_data      [44])    ;
                                 end
                             end
@@ -3749,7 +3749,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 45);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[45].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[45].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[45].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [45].timeTag              = $time;
                           local_noc_pkt_sent [45].header_destination_address  = vLocalToNoC[45].locl__noc__dp_data     ;
@@ -3791,7 +3791,7 @@
                               if (vLocalToNoC[45].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [45] = vLocalToNoC[45].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [45] = vLocalToNoC[45].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [45].payload_data.push_back (payload_data      [45])    ;
                                 end
                             end
@@ -3832,7 +3832,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 46);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[46].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[46].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[46].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [46].timeTag              = $time;
                           local_noc_pkt_sent [46].header_destination_address  = vLocalToNoC[46].locl__noc__dp_data     ;
@@ -3874,7 +3874,7 @@
                               if (vLocalToNoC[46].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [46] = vLocalToNoC[46].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [46] = vLocalToNoC[46].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [46].payload_data.push_back (payload_data      [46])    ;
                                 end
                             end
@@ -3915,7 +3915,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 47);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[47].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[47].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[47].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [47].timeTag              = $time;
                           local_noc_pkt_sent [47].header_destination_address  = vLocalToNoC[47].locl__noc__dp_data     ;
@@ -3957,7 +3957,7 @@
                               if (vLocalToNoC[47].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [47] = vLocalToNoC[47].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [47] = vLocalToNoC[47].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [47].payload_data.push_back (payload_data      [47])    ;
                                 end
                             end
@@ -3998,7 +3998,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 48);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[48].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[48].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[48].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [48].timeTag              = $time;
                           local_noc_pkt_sent [48].header_destination_address  = vLocalToNoC[48].locl__noc__dp_data     ;
@@ -4040,7 +4040,7 @@
                               if (vLocalToNoC[48].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [48] = vLocalToNoC[48].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [48] = vLocalToNoC[48].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [48].payload_data.push_back (payload_data      [48])    ;
                                 end
                             end
@@ -4081,7 +4081,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 49);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[49].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[49].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[49].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [49].timeTag              = $time;
                           local_noc_pkt_sent [49].header_destination_address  = vLocalToNoC[49].locl__noc__dp_data     ;
@@ -4123,7 +4123,7 @@
                               if (vLocalToNoC[49].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [49] = vLocalToNoC[49].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [49] = vLocalToNoC[49].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [49].payload_data.push_back (payload_data      [49])    ;
                                 end
                             end
@@ -4164,7 +4164,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 50);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[50].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[50].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[50].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [50].timeTag              = $time;
                           local_noc_pkt_sent [50].header_destination_address  = vLocalToNoC[50].locl__noc__dp_data     ;
@@ -4206,7 +4206,7 @@
                               if (vLocalToNoC[50].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [50] = vLocalToNoC[50].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [50] = vLocalToNoC[50].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [50].payload_data.push_back (payload_data      [50])    ;
                                 end
                             end
@@ -4247,7 +4247,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 51);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[51].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[51].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[51].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [51].timeTag              = $time;
                           local_noc_pkt_sent [51].header_destination_address  = vLocalToNoC[51].locl__noc__dp_data     ;
@@ -4289,7 +4289,7 @@
                               if (vLocalToNoC[51].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [51] = vLocalToNoC[51].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [51] = vLocalToNoC[51].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [51].payload_data.push_back (payload_data      [51])    ;
                                 end
                             end
@@ -4330,7 +4330,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 52);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[52].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[52].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[52].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [52].timeTag              = $time;
                           local_noc_pkt_sent [52].header_destination_address  = vLocalToNoC[52].locl__noc__dp_data     ;
@@ -4372,7 +4372,7 @@
                               if (vLocalToNoC[52].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [52] = vLocalToNoC[52].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [52] = vLocalToNoC[52].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [52].payload_data.push_back (payload_data      [52])    ;
                                 end
                             end
@@ -4413,7 +4413,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 53);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[53].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[53].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[53].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [53].timeTag              = $time;
                           local_noc_pkt_sent [53].header_destination_address  = vLocalToNoC[53].locl__noc__dp_data     ;
@@ -4455,7 +4455,7 @@
                               if (vLocalToNoC[53].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [53] = vLocalToNoC[53].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [53] = vLocalToNoC[53].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [53].payload_data.push_back (payload_data      [53])    ;
                                 end
                             end
@@ -4496,7 +4496,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 54);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[54].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[54].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[54].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [54].timeTag              = $time;
                           local_noc_pkt_sent [54].header_destination_address  = vLocalToNoC[54].locl__noc__dp_data     ;
@@ -4538,7 +4538,7 @@
                               if (vLocalToNoC[54].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [54] = vLocalToNoC[54].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [54] = vLocalToNoC[54].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [54].payload_data.push_back (payload_data      [54])    ;
                                 end
                             end
@@ -4579,7 +4579,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 55);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[55].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[55].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[55].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [55].timeTag              = $time;
                           local_noc_pkt_sent [55].header_destination_address  = vLocalToNoC[55].locl__noc__dp_data     ;
@@ -4621,7 +4621,7 @@
                               if (vLocalToNoC[55].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [55] = vLocalToNoC[55].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [55] = vLocalToNoC[55].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [55].payload_data.push_back (payload_data      [55])    ;
                                 end
                             end
@@ -4662,7 +4662,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 56);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[56].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[56].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[56].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [56].timeTag              = $time;
                           local_noc_pkt_sent [56].header_destination_address  = vLocalToNoC[56].locl__noc__dp_data     ;
@@ -4704,7 +4704,7 @@
                               if (vLocalToNoC[56].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [56] = vLocalToNoC[56].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [56] = vLocalToNoC[56].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [56].payload_data.push_back (payload_data      [56])    ;
                                 end
                             end
@@ -4745,7 +4745,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 57);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[57].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[57].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[57].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [57].timeTag              = $time;
                           local_noc_pkt_sent [57].header_destination_address  = vLocalToNoC[57].locl__noc__dp_data     ;
@@ -4787,7 +4787,7 @@
                               if (vLocalToNoC[57].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [57] = vLocalToNoC[57].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [57] = vLocalToNoC[57].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [57].payload_data.push_back (payload_data      [57])    ;
                                 end
                             end
@@ -4828,7 +4828,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 58);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[58].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[58].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[58].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [58].timeTag              = $time;
                           local_noc_pkt_sent [58].header_destination_address  = vLocalToNoC[58].locl__noc__dp_data     ;
@@ -4870,7 +4870,7 @@
                               if (vLocalToNoC[58].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [58] = vLocalToNoC[58].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [58] = vLocalToNoC[58].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [58].payload_data.push_back (payload_data      [58])    ;
                                 end
                             end
@@ -4911,7 +4911,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 59);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[59].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[59].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[59].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [59].timeTag              = $time;
                           local_noc_pkt_sent [59].header_destination_address  = vLocalToNoC[59].locl__noc__dp_data     ;
@@ -4953,7 +4953,7 @@
                               if (vLocalToNoC[59].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [59] = vLocalToNoC[59].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [59] = vLocalToNoC[59].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [59].payload_data.push_back (payload_data      [59])    ;
                                 end
                             end
@@ -4994,7 +4994,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 60);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[60].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[60].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[60].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [60].timeTag              = $time;
                           local_noc_pkt_sent [60].header_destination_address  = vLocalToNoC[60].locl__noc__dp_data     ;
@@ -5036,7 +5036,7 @@
                               if (vLocalToNoC[60].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [60] = vLocalToNoC[60].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [60] = vLocalToNoC[60].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [60].payload_data.push_back (payload_data      [60])    ;
                                 end
                             end
@@ -5077,7 +5077,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 61);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[61].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[61].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[61].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [61].timeTag              = $time;
                           local_noc_pkt_sent [61].header_destination_address  = vLocalToNoC[61].locl__noc__dp_data     ;
@@ -5119,7 +5119,7 @@
                               if (vLocalToNoC[61].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [61] = vLocalToNoC[61].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [61] = vLocalToNoC[61].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [61].payload_data.push_back (payload_data      [61])    ;
                                 end
                             end
@@ -5160,7 +5160,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 62);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[62].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[62].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[62].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [62].timeTag              = $time;
                           local_noc_pkt_sent [62].header_destination_address  = vLocalToNoC[62].locl__noc__dp_data     ;
@@ -5202,7 +5202,7 @@
                               if (vLocalToNoC[62].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [62] = vLocalToNoC[62].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [62] = vLocalToNoC[62].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [62].payload_data.push_back (payload_data      [62])    ;
                                 end
                             end
@@ -5243,7 +5243,7 @@
                       //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {%0d}", $time, `__FILE__, `__LINE__, 63);
                       //------------------------------
                       // Examine the header 
-                      if (vLocalToNoC[63].locl__noc__dp_cntl == 2'b01)  // start-of-packet
+                      if ((vLocalToNoC[63].locl__noc__dp_valid == 1'b1) && (vLocalToNoC[63].locl__noc__dp_cntl == 2'b01))  // start-of-packet
                         begin
                           local_noc_pkt_sent [63].timeTag              = $time;
                           local_noc_pkt_sent [63].header_destination_address  = vLocalToNoC[63].locl__noc__dp_data     ;
@@ -5285,7 +5285,7 @@
                               if (vLocalToNoC[63].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple 
                                 begin
                                   // Grab second data word
-                                  payload_data    [63] = vLocalToNoC[63].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;
+                                  payload_data    [63] = vLocalToNoC[63].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;
                                   local_noc_pkt_sent [63].payload_data.push_back (payload_data      [63])    ;
                                 end
                             end

@@ -70,6 +70,7 @@ class noc_checker;
       bit  [`MGR_WU_OPT_TYPE_RANGE                      ]   payload_tuple_type       [`MGR_ARRAY_NUM_OF_MGR]    ;
       bit  [`MGR_WU_EXTD_OPT_VALUE_RANGE                ]   payload_tuple_extd_value [`MGR_ARRAY_NUM_OF_MGR]    ;
       bit [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD_RANGE ]   payload_data             [`MGR_ARRAY_NUM_OF_MGR]    ;
+      bit matched ;  // found matching sent packet
 
       // grab sent and received NoC packets and place in per manager mailboxes
       fork
@@ -89,6 +90,7 @@ class noc_checker;
                 begin
                   if (noc2mgr_p[m].num() != 0)
                     begin
+                      matched = 0;  // set if we find a match
                       if (mgr2noc_p[m].num() == 0)
                         begin
                           $display ("@%0t::%s:%0d:: ERROR: Expected packet queue empty for manager {%0d}", $time, `__FILE__, `__LINE__, m);
@@ -98,7 +100,8 @@ class noc_checker;
                       for (int msg=0; msg<mgr2noc_p[m].num(); msg++) 
                         begin
                           mgr2noc_p[m].get(local_noc_pkt_sent_from_mbx);
-                          if (local_noc_pkt_sent_from_mbx.header_source != local_noc_pkt_rcvd_from_mbx.header_source)
+                          //if (local_noc_pkt_sent_from_mbx.header_source != local_noc_pkt_rcvd_from_mbx.header_source)
+                          if (local_noc_pkt_rcvd_from_mbx.compare(local_noc_pkt_sent_from_mbx) == 0)
                             begin
                               // put unmatched packet back in mailbox
                               mgr2noc_p[m].put(local_noc_pkt_sent_from_mbx);
@@ -106,9 +109,20 @@ class noc_checker;
                           else
                             begin
                               $display ("@%0t::%s:%0d:: INFO: Received expected packet to manager {%0d} from {%0d}. Transition time = %0t.", $time, `__FILE__, `__LINE__, m, local_noc_pkt_sent_from_mbx.header_source, local_noc_pkt_rcvd_from_mbx.timeTag-local_noc_pkt_sent_from_mbx.timeTag);
+                              // FIXME :need to fill rcvd packet
+                              local_noc_pkt_rcvd_from_mbx.displayPacket();
+                              $display ("@%0t::%s:%0d:: INFO: matched sent packet is:", $time, `__FILE__, `__LINE__);
+                              local_noc_pkt_sent_from_mbx.displayPacket();
+                              matched = 1;
                               break;
                               // FIXME : Display transit time
                             end
+                        end
+                      if (~matched)
+                        begin
+                          $display ("@%0t::%s:%0d:: ERROR: No match found for received packet to manager {%0d} from {%0d}.", $time, `__FILE__, `__LINE__, m, local_noc_pkt_rcvd_from_mbx.header_source);
+                          // FIXME :need to fill rcvd packet
+                          local_noc_pkt_rcvd_from_mbx.displayPacket();
                         end
                     end
                 end

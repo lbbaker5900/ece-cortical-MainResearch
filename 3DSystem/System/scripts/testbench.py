@@ -149,7 +149,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n                      //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {{%0d}}", $time, `__FILE__, `__LINE__, {0});'.format(mgr)
     pLine = pLine + '\n                      //------------------------------'
     pLine = pLine + '\n                      // Examine the header '
-    pLine = pLine + '\n                      if (vLocalToNoC[{0}].locl__noc__dp_cntl == 2\'b01)  // start-of-packet'.format(mgr)
+    pLine = pLine + '\n                      if ((vLocalToNoC[{0}].locl__noc__dp_valid == 1\'b1) && (vLocalToNoC[{0}].locl__noc__dp_cntl == 2\'b01))  // start-of-packet'.format(mgr)
     pLine = pLine + '\n                        begin'
     pLine = pLine + '\n                          local_noc_pkt_sent [{0}].timeTag              = $time;'.format(mgr)
     pLine = pLine + '\n                          local_noc_pkt_sent [{0}].header_destination_address  = vLocalToNoC[{0}].locl__noc__dp_data     ;'.format(mgr)
@@ -191,7 +191,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n                              if (vLocalToNoC[{0}].locl__noc__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple '.format(mgr)
     pLine = pLine + '\n                                begin'
     pLine = pLine + '\n                                  // Grab second data word'
-    pLine = pLine + '\n                                  payload_data    [{0}] = vLocalToNoC[{0}].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;'.format(mgr)
+    pLine = pLine + '\n                                  payload_data    [{0}] = vLocalToNoC[{0}].locl__noc__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;'.format(mgr)
     pLine = pLine + '\n                                  local_noc_pkt_sent [{0}].payload_data.push_back (payload_data      [{0}])    ;'.format(mgr)
     pLine = pLine + '\n                                end'
     pLine = pLine + '\n                            end'
@@ -230,17 +230,75 @@ if __name__ == "__main__":
     pLine = pLine + '\n            begin'
     pLine = pLine + '\n              // Observe NoC packets received by manager {0}'.format(mgr)
     pLine = pLine + '\n              @(vLocalFromNoC[{0}].cb_p);'.format(mgr)
-    pLine = pLine + '\n              if ((vLocalFromNoC[{0}].noc__locl__dp_valid == 1\'b1) && (vLocalFromNoC[{0}].noc__locl__dp_cntl == 2\'b01))'.format(mgr)
+    pLine = pLine + '\n              if ((vLocalFromNoC[{0}].noc__locl__dp_valid == 1\'b1))'.format(mgr)
     pLine = pLine + '\n                begin'
+    pLine = pLine + '\n                  // Start of packet observed, create new noc packet object and start to fill the fields'
     pLine = pLine + '\n                  local_noc_pkt_rcvd [{0}] = new();'.format(mgr)
-    pLine = pLine + '\n                  local_noc_pkt_rcvd [{0}].timeTag              = $time;'.format(mgr)
-    pLine = pLine + '\n                  local_noc_pkt_rcvd [{0}].header_destination_address  = vLocalFromNoC[{0}].noc__locl__dp_data     ;'.format(mgr)
-    pLine = pLine + '\n                  local_noc_pkt_rcvd [{0}].header_source               = vLocalFromNoC[{0}].noc__locl__dp_mgrId    ;'.format(mgr)
-    pLine = pLine + '\n                  local_noc_pkt_rcvd [{0}].header_priority             = 1\'b1                                   ;  // _dp is hi-priority'.format(mgr)
-    pLine = pLine + '\n                  $display ("@%0t::%s:%0d:: INFO: NoC Packet being received by {{%0d}} from {{%0d}}", $time, `__FILE__, `__LINE__, {0}, vLocalFromNoC[{0}].noc__locl__dp_mgrId);'.format(mgr)
-    pLine = pLine + '\n                  noc2mgr_p [{0}].put(local_noc_pkt_rcvd [{0}]);'.format(mgr)
+    pLine = pLine + '\n                  noc_rcvd_packet_complete[{0}] = 0;    '.format(mgr)
+    pLine = pLine + '\n                  while(~noc_rcvd_packet_complete[{0}])     '.format(mgr)
+    pLine = pLine + '\n                    begin'
+    pLine = pLine + '\n                      //$display ("@%0t::%s:%0d:: INFO: NoC Packet transaction from {{%0d}}", $time, `__FILE__, `__LINE__, {0});'.format(mgr)
+    pLine = pLine + '\n                      //------------------------------'
+    pLine = pLine + '\n                      // Examine the header '
+    pLine = pLine + '\n                      if ((vLocalFromNoC[{0}].noc__locl__dp_valid == 1\'b1) && (vLocalFromNoC[{0}].noc__locl__dp_cntl == 2\'b01))  // start-of-packet'.format(mgr)
+    pLine = pLine + '\n                        begin'
+    pLine = pLine + '\n                          local_noc_pkt_rcvd [{0}].timeTag                     = $time;'.format(mgr)
+    pLine = pLine + '\n                          local_noc_pkt_rcvd [{0}].header_destination_address  = vLocalFromNoC[{0}].noc__locl__dp_data     ;'.format(mgr)
+    pLine = pLine + '\n                          local_noc_pkt_rcvd [{0}].header_source               = vLocalFromNoC[{0}].noc__locl__dp_mgrId    ;'.format(mgr)
+    pLine = pLine + '\n                          local_noc_pkt_rcvd [{0}].header_priority             = 1\'b1                                   ;  // _dp is hi-priority'.format(mgr)
+    pLine = pLine + '\n                        end'
+    pLine = pLine + '\n                      //------------------------------'
+    pLine = pLine + '\n                      // Examine the payload '
+    pLine = pLine + '\n                      else '
+    pLine = pLine + '\n                        begin'
+    pLine = pLine + '\n                          if ((vLocalFromNoC[{0}].noc__locl__dp_valid == 1\'b1) && (vLocalFromNoC[{0}].noc__locl__dp_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES)) // payload is tuple '.format(mgr)
+    pLine = pLine + '\n                            begin'
+    pLine = pLine + '\n                              // Grab first tuple'
+    pLine = pLine + '\n                              //payload_tuple_type       [{0}] = new  [`MGR_WU_OPT_TYPE_WIDTH       ]   ;'.format(mgr)
+    pLine = pLine + '\n                              //payload_tuple_extd_value [{0}] = new  [`MGR_WU_EXTD_OPT_VALUE_WIDTH ]   ;'.format(mgr)
+    pLine = pLine + '\n                              payload_tuple_type       [{0}] = vLocalFromNoC[{0}].noc__locl__dp_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION0_RANGE   ]   ;'.format(mgr)
+    pLine = pLine + '\n                              payload_tuple_extd_value [{0}] = vLocalFromNoC[{0}].noc__locl__dp_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ]   ;'.format(mgr)
+    pLine = pLine + '\n                              local_noc_pkt_rcvd [{0}].payload_tuple_type.push_back      (payload_tuple_type      [{0}])    ;'.format(mgr)
+    pLine = pLine + '\n                              local_noc_pkt_rcvd [{0}].payload_tuple_extd_value.push_back(payload_tuple_extd_value[{0}])    ;'.format(mgr)
+    pLine = pLine + '\n                              // check if both tuples are valid'
+    pLine = pLine + '\n                              if (vLocalFromNoC[{0}].noc__locl__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple '.format(mgr)
+    pLine = pLine + '\n                                begin'
+    pLine = pLine + '\n                                  // Grab second tuple'
+    pLine = pLine + '\n                                  //payload_tuple_type       [{0}] = new  [`MGR_WU_OPT_TYPE_WIDTH       ]   ;'.format(mgr)
+    pLine = pLine + '\n                                  //payload_tuple_extd_value [{0}] = new  [`MGR_WU_EXTD_OPT_VALUE_WIDTH ]   ;'.format(mgr)
+    pLine = pLine + '\n                                  payload_tuple_type       [{0}] = vLocalFromNoC[{0}].noc__locl__dp_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION1_RANGE   ]   ;'.format(mgr)
+    pLine = pLine + '\n                                  payload_tuple_extd_value [{0}] = vLocalFromNoC[{0}].noc__locl__dp_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE ]   ;'.format(mgr)
+    pLine = pLine + '\n                                  local_noc_pkt_rcvd [{0}].payload_tuple_type.push_back      (payload_tuple_type      [{0}])    ;'.format(mgr)
+    pLine = pLine + '\n                                  local_noc_pkt_rcvd [{0}].payload_tuple_extd_value.push_back(payload_tuple_extd_value[{0}])    ;'.format(mgr)
+    pLine = pLine + '\n                                end'
+    pLine = pLine + '\n                            end'
+    pLine = pLine + '\n                          else if (vLocalFromNoC[{0}].noc__locl__dp_valid == 1\'b1) // payload is data '.format(mgr)
+    pLine = pLine + '\n                            begin'
+    pLine = pLine + '\n                              // Grab first data word'
+    pLine = pLine + '\n                              payload_data    [{0}] = vLocalFromNoC[{0}].noc__locl__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE  ]   ;'.format(mgr)
+    pLine = pLine + '\n                              local_noc_pkt_rcvd [{0}].payload_data.push_back (payload_data      [{0}])    ;'.format(mgr)
+    pLine = pLine + '\n                              // check if both tuples are valid'
+    pLine = pLine + '\n                              if (vLocalFromNoC[{0}].noc__locl__dp_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH) // payload is tuple '.format(mgr)
+    pLine = pLine + '\n                                begin'
+    pLine = pLine + '\n                                  // Grab second data word'
+    pLine = pLine + '\n                                  payload_data    [{0}] = vLocalFromNoC[{0}].noc__locl__dp_data[`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE  ]   ;'.format(mgr)
+    pLine = pLine + '\n                                  local_noc_pkt_rcvd [{0}].payload_data.push_back (payload_data      [{0}])    ;'.format(mgr)
+    pLine = pLine + '\n                                end'
+    pLine = pLine + '\n                            end'
+    pLine = pLine + '\n                        end'
+    pLine = pLine + '\n                      //------------------------------'
+    pLine = pLine + '\n                      // Check if this is the end of the packet'
+    pLine = pLine + '\n                      if ((vLocalFromNoC[{0}].noc__locl__dp_valid == 1\'b1) && (vLocalFromNoC[{0}].noc__locl__dp_cntl == 2\'b10)) // end of packet'.format(mgr)
+    pLine = pLine + '\n                        begin'
+    pLine = pLine + '\n                          // packet complete, now place in manager received mailbox so it can be matched with a sent packet'
+    pLine = pLine + '\n                          $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {{%0d}} from {{%0d}}", $time, `__FILE__, `__LINE__, {0}, local_noc_pkt_rcvd [{0}].header_source);'.format(mgr)
+    pLine = pLine + '\n                          noc2mgr_p [{0}].put(local_noc_pkt_rcvd [{0}]);'.format(mgr)
+    pLine = pLine + '\n                          noc_rcvd_packet_complete[{0}] = 1;    '.format(mgr)
+    pLine = pLine + '\n                        end'
+    pLine = pLine + '\n                      @(vLocalFromNoC[{0}].cb_p);'.format(mgr)
+    pLine = pLine + '\n                    end  // while'
     pLine = pLine + '\n                end'
-    pLine = pLine + '\n            end'
+    pLine = pLine + '\n            end // forever'
     pLine = pLine + '\n        end'
     pLine = pLine + '\n    '
     #                                                                                                    
