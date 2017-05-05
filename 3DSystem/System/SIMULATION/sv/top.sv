@@ -64,15 +64,15 @@ module top;
     // local NoC interfaces
     locl_to_noc_ifc   LocalToNocIfc        [`MGR_ARRAY_NUM_OF_MGR] (clk); 
     locl_from_noc_ifc LocalFromNocIfc      [`MGR_ARRAY_NUM_OF_MGR] (clk); 
-/*
-    mailbox           mgr2noc_p            [`MGR_ARRAY_NUM_OF_MGR]      ;  // capture packets sent by manager to NoC
-    mailbox           noc2mgr_p            [`MGR_ARRAY_NUM_OF_MGR]      ;  // capture packets received by manager from NoC
-*/
 
     //
     //----------------------------------------------------------------------------------------------------
     // WU Decoder to Memory Read Interfaces
     wud_to_mrc_ifc  WudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] (clk); 
+
+    //----------------------------------------------------------------------------------------------------
+    // Memory Read Controller to Stack Downstream interfaces
+    mrc_to_std_ifc  MrcToStdIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] (clk);
 
     //----------------------------------------------------------------------------------------------------
     // Probe interface(s) for forcing
@@ -150,6 +150,7 @@ module top;
     //----------------------------------------------------------------------------------------------------
     // Probes
     //
+    //------------------------------------------------------------
     // DMA to memory interface for result check
     genvar pe;
     genvar lane;
@@ -174,6 +175,7 @@ module top;
            end
     endgenerate
 
+    //------------------------------------------------------------
     // Local NoC Interfaces
     genvar mgr;
     generate
@@ -200,6 +202,7 @@ module top;
            end
     endgenerate
 
+    //------------------------------------------------------------
     // WU Decoder to memory Read Interfaces
     genvar memIfc;
     genvar opt;
@@ -233,6 +236,30 @@ module top;
             end
         end
     endgenerate
+
+    //------------------------------------------------------------
+    // Memory Read to Stack Downstream Interfaces
+/*
+    genvar el;
+    generate
+      for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+        begin
+          for (memIfc=0; memIfc<`MGR_NUM_OF_STREAMS; memIfc=memIfc+1)
+            begin
+              for (el=0; el<`MGR_NUM_OF_STREAMS; el=el+1)
+                begin
+                  assign  system_inst.manager_array_inst.mgr_inst[mgr].manager.mrc_cntl_strm_inst[memIfc].mrc__std__lane_valid [el]  =  MrcToStdIfc[mgr][memIfc].mrc__std__lane_valid [el]  ;
+                  assign  system_inst.manager_array_inst.mgr_inst[mgr].manager.mrc_cntl_strm_inst[memIfc].mrc__std__lane_cntl  [el]  =  MrcToStdIfc[mgr][memIfc].mrc__std__lane_cntl  [el]  ;
+
+                  // let the system drive ready
+                  //assign  MrcToStdIfc[mgr][memIfc].std__mrc__lane_ready [el]  = system_inst.manager_array_inst.mgr_inst[mgr].manager.mrc_cntl_strm_inst[memIfc].std__mrc__lane_ready [el] ;
+              
+                end
+            end
+        end
+    endgenerate
+*/
+
 
     //----------------------------------------------------------------------------------------------------
     // Forces

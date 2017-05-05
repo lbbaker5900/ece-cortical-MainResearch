@@ -13,6 +13,8 @@ package virtual_interface;
 
     typedef virtual wud_to_mrc_ifc                          vWudToMrc_T                   ;
 
+    typedef virtual mrc_to_std_ifc                          MrcToStd_T                    ;
+
     typedef virtual pe_dma2mem_ifc                             vDma2Mem_T                    ;
     typedef virtual regFileScalar2stOpCntl_ifc                 vRegFileScalarDrv2stOpCntl_T  ;
     typedef virtual regFileScalar2stOpCntl_ifc                 vStOpCntlFromRegFileScalar_T  ;

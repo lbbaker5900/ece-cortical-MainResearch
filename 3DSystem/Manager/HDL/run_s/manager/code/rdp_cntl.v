@@ -793,7 +793,7 @@ module rdp_cntl (
         // Write data
         // Need cntl because number of write storage ptrs per descriptor varies
         reg    [`COMMON_STD_INTF_CNTL_RANGE     ]         write_cntl         ;
-        reg    [`MGR_STORAGE_DESC_ADDRESS_RANGE ]         write_storage_ptr  ;
+        reg    [`MGR_STORAGE_DESC_ADDRESS_RANGE ]         write_storage_ptr  ;  // pointer is {mgrId, localDescAddress}
                                                                              
         // Read data                                                         
         wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         read_cntl          ;
@@ -1316,7 +1316,8 @@ module rdp_cntl (
   assign      rdp__noc__dp_desttype_e1   =  wrDescOutputPkt_desttype_e1  ; 
   assign      rdp__noc__dp_ptype_e1      =  wrDescOutputPkt_ptype_e1  ; 
   assign      rdp__noc__dp_pvalid_e1     =  wrDescOutputPkt_pvalid_e1 ; 
-  assign      rdp__noc__dp_data_e1       =  wrDescOutputPkt_data_e1  & ~thisMgrBitMask  ; 
+  assign      rdp__noc__dp_data_e1       =  (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR ) ? (wrDescOutputPkt_data_e1  & ~thisMgrBitMask) :  // mask out this Manager bit in the address
+                                                                                                                        wrDescOutputPkt_data_e1                     ;
 
 
 

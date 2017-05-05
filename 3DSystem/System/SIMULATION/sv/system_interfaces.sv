@@ -30,6 +30,7 @@
 // Downstream
 ///////////////////////////////////////////////////////////////////////////////
 
+//--------------------------------------------------------------------------------
 // NoC block local interface to local
 interface locl_from_noc_ifc(
                            input bit clk   );
@@ -59,6 +60,7 @@ endinterface : locl_from_noc_ifc
 typedef virtual locl_from_noc_ifc vLocalFromNoC_T  ;
 
 
+//--------------------------------------------------------------------------------
 // NoC block local interface from local
 interface locl_to_noc_ifc(
                            input bit clk   );
@@ -87,7 +89,9 @@ endinterface : locl_to_noc_ifc
 typedef virtual locl_to_noc_ifc vLocalToNoC_T  ;
 
 
+//--------------------------------------------------------------------------------
 // WU Decoder to MR interface(s)
+
 interface wud_to_mrc_ifc(
                            input bit clk   );
 
@@ -109,5 +113,40 @@ interface wud_to_mrc_ifc(
 endinterface : wud_to_mrc_ifc
 
 typedef virtual wud_to_mrc_ifc vWudToMrc_T  ;
+
+
+//--------------------------------------------------------------------------------
+// Memory Read Controller to Stack Down interface(s)
+//  - an interface for each executions lane (stream)
+
+interface mrc_to_std_ifc(
+                           input bit clk   );
+
+    logic                                           mrc__std__lane_valid    [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+    logic  [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__std__lane_cntl     [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+    logic                                           std__mrc__lane_ready    [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+    logic  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]      mrc__std__lane_data     [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+            
+    clocking cb_std @(posedge clk);
+
+      output  mrc__std__lane_valid      ;
+      output  mrc__std__lane_cntl       ;
+      input   std__mrc__lane_ready      ;
+      output  mrc__std__lane_data       ;
+            
+    endclocking : cb_std
+
+    clocking cb_mrc @(posedge clk);
+
+      input   mrc__std__lane_valid      ;  
+      input   mrc__std__lane_cntl       ;
+      output  std__mrc__lane_ready      ; 
+      input   mrc__std__lane_data       ;  
+            
+    endclocking : cb_mrc
+
+endinterface : mrc_to_std_ifc
+
+typedef virtual mrc_to_std_ifc  MrcToStd_T  ;
 
 

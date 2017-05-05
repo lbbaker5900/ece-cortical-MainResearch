@@ -59,12 +59,14 @@ package operation;
         //****************************************************************************************************
 
 
-        time                                                timeTag                                                  ;
-        int                                                 Id [2]                                                   ; // PE, Lane
-        logic  [`STACK_DOWN_OOB_INTF_TAG_RANGE ]            tId                                                      ; // transaction number
+        time                                                timeTag                         ;
+        int                                                 Id [2]                          ; // PE, Lane
+        logic  [`STACK_DOWN_OOB_INTF_TAG_RANGE ]            tId                             ; // transaction number
 
-        int                                                 numberOfLanes                                            ; // 
-        int                                                 beenConstrained                                          ; // 
+        int                                                 numberOfLanes                   ; // 
+        int                                                 beenConstrained                 ; // 
+        int                                                 numberOfOperands_min            ; // allow the range of numberOfOperands to be set by the environment
+        int                                                 numberOfOperands_max            ; // allow the range of numberOfOperands to be set by the environment
 
         //------------------------------------------------------------------------------------------------------
         // This struct contains the fields neccessary to form the stOp opcode
@@ -150,6 +152,8 @@ package operation;
                     this.setDestinationAddress [0] = 0       ;  
                     this.setSourceAddress      [0] = 0       ;  
                     this.hasBeenRandomized         = 0       ;
+                    this.numberOfOperands_min      = 20      ;
+                    this.numberOfOperands_max      = 20      ;
         endfunction
 
         
@@ -334,7 +338,7 @@ package operation;
                 numberOfOperands == priorOperationNumberOfOperands;
             // test if number of operands had been set by manager
             } else if (beenConstrained == 0) {
-                numberOfOperands inside {20};
+                numberOfOperands inside {[numberOfOperands_min : numberOfOperands_max]};
                 //numberOfOperands inside {[200:500]};
                 //numberOfOperands inside {[0:65535]};
             } else {
@@ -763,6 +767,41 @@ package operation;
             for (int i=0; i<payload_data.size(); i++)
               begin
                 $display("@%0t :%s:%0d:INFO:Data %0d:  {%h}", $time, `__FILE__, `__LINE__, i, payload_data[i]);
+              end
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+
+        endfunction
+
+    endclass
+
+
+    //------------------------------------------------------------------------------------------------------
+    // Instruction Classes
+    //
+    // 
+    //
+
+    class descriptor ; 
+    
+        time timeTag    ;  // debug
+
+        bit [`MGR_WU_OPT_TYPE_RANGE   ]      payload_tuple_type  [$] ;  // queues
+        bit [`MGR_WU_OPT_VALUE_RANGE  ]      payload_tuple_value [$] ;
+
+
+        function new ();
+            this.timeTag = $time ;
+        endfunction
+    
+    
+        function void displayDesc();
+            $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
+            $display("@%0t :%s:%0d:INFO: Descriptor", $time, `__FILE__, `__LINE__);
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+            //$display("@%0t :%s:%0d:INFO:  Tuples", $time, `__FILE__, `__LINE__);
+            for (int i=0; i<payload_tuple_type.size(); i++)
+              begin
+                $display("@%0t :%s:%0d:INFO:Tuple %0d:  {%h,%h}", $time, `__FILE__, `__LINE__, i, payload_tuple_type[i], payload_tuple_value[i]);
               end
             $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
 
