@@ -73,7 +73,7 @@ class generator;
     // Interfaces
 
     vDownstreamStackBusOOB_T    vDownstreamStackBusOOB  ;  // FIXME OOB interface is a per PE i/f where generator is per lane
-    vDownstreamStackBusLane_T   vDownstreamStackBusLane ;
+    vDownstreamStackBusLane_T   vDownstreamStackBusLane [`PE_NUM_OF_STREAMS] ;
 
     //----------------------------------------------------------------------------------------------------
     // Operation objects
@@ -102,7 +102,7 @@ class generator;
                   input event                 gen2oob_ack       ,
                   input event                 new_operation     ,
                   input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB   ,
-                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane  ,
+                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane [`PE_NUM_OF_STREAMS] ,
                   input mailbox               gen2rfP           ,
                   input event                 gen2rfP_ack       ,
                   input mailbox               gen2up                         

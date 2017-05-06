@@ -92,7 +92,7 @@ class manager;
     //-------------------------------------------------------------------------
 
     vDownstreamStackBusOOB_T    vDownstreamStackBusOOB                            ;  // FIXME OOB interface is a per PE i/f where generator is per lane
-    vDownstreamStackBusLane_T   vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES]  ;  // manager communicates will lane generators
+    vDownstreamStackBusLane_T   vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES] [`PE_NUM_OF_STREAMS]  ;  // manager communicates will lane generators
 
     // WU Decoder to Memory Read Interfaces
     vWudToMrc_T       vWudToMrcIfc        [`MGR_NUM_OF_STREAMS] ; 
@@ -116,7 +116,7 @@ class manager;
                   input event                        mgr2gen_ack             [`PE_NUM_OF_EXEC_LANES] ,
                   input event                        final_operation                                 ,
                   input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB                          ,
-                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane [`PE_NUM_OF_EXEC_LANES] ,
+                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane [`PE_NUM_OF_EXEC_LANES] [`PE_NUM_OF_STREAMS] ,
                   input mailbox                      mgr2up                                          , // send operation to upstream checker
                   input vWudToMrc_T                  vWudToMrcIfc            [`MGR_NUM_OF_STREAMS  ] 
                  );

@@ -85,7 +85,7 @@ class Environment;
     // an array of all stream interfaces in the system
     vGenStackBus_T                       vGenStackBus                  [`PE_ARRAY_NUM_OF_PE]                         ;
     vDownstreamStackBusOOB_T             vDownstreamStackBusOOB        [`PE_ARRAY_NUM_OF_PE]                         ;
-    vDownstreamStackBusLane_T            vDownstreamStackBusLane       [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
+    vDownstreamStackBusLane_T            vDownstreamStackBusLane       [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] [`MGR_NUM_OF_STREAMS] ;
     vUpstreamStackBus_T                  vUpstreamStackBus             [`PE_ARRAY_NUM_OF_PE]                         ;
 
     // an array of all dma to memory interfaces in the system
@@ -115,7 +115,7 @@ class Environment;
                     // Retrieving the interface passed from the testbench in order to pass it to the required blocks.
                     input vGenStackBus_T               vGenStackBus                    [`PE_ARRAY_NUM_OF_PE  ]                         ,
                     input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB          [`PE_ARRAY_NUM_OF_PE  ]                         ,
-                    input vDownstreamStackBusLane_T    vDownstreamStackBusLane         [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES] ,
+                    input vDownstreamStackBusLane_T    vDownstreamStackBusLane         [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES] [`MGR_NUM_OF_STREAMS] ,
                     input vUpstreamStackBus_T          vUpstreamStackBus               [`PE_ARRAY_NUM_OF_PE  ]                         ,
                     input vLocalToNoC_T                vLocalToNoC                     [`MGR_ARRAY_NUM_OF_MGR]                         ,
                     input vLocalFromNoC_T              vLocalFromNoC                   [`MGR_ARRAY_NUM_OF_MGR]                         ,
@@ -156,8 +156,10 @@ class Environment;
                 ldst_driver [pe]  = new ( Id,            vLoadStoreDrv2memCntl [pe] ); // ,                                      gen2ldstP, gen2ldstP_ack [pe]        );  // load/store driver for mem controller inputs
                 for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                     begin
-                        vDownstreamStackBusLane[pe][lane].cb_test.std__pe__lane_strm0_data_valid  <= 1'b0;
-                        vDownstreamStackBusLane[pe][lane].cb_test.std__pe__lane_strm1_data_valid  <= 1'b0;
+                        for (int strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
+                          begin
+                            vDownstreamStackBusLane[pe][lane][strm].cb_test.std__pe__lane_strm_data_valid  <= 1'b0;
+                          end
 
                         //$display("@%0t:%s:%0d: LEE: Create generators and drivers : {%0d,%0d,%0d}\n", $time, `__FILE__, `__LINE__,pe,lane,stream);
                         Id = {pe, lane};

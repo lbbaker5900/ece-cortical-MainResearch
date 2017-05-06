@@ -35,6 +35,18 @@ if __name__ == "__main__":
         FoundLane = True
   searchFile.close()
 
+  # Number of streams 
+  FoundStrm = False
+  searchFile = open("../../PEArray/HDL/common/pe.vh", "r")
+  for line in searchFile:
+    if FoundStrm == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "PE_NUM_OF_STREAMS" in data[1]:
+        numOfStrms = int(data[2])
+        FoundStrm = True
+  searchFile.close()
+
   # Now extract number of noc ports
   FoundPorts = False
   searchFile = open("../../PEArray/HDL/common/noc_cntl.vh", "r")
@@ -102,12 +114,12 @@ if __name__ == "__main__":
   for pe in range (0, numOfPe):
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n        // PE {1}, Lane {0}                 '.format(lane,pe)
-      for strm in range (0, 2):
+      for strm in range (0, numOfStrms):
         pLine = pLine + '\n        //  - doesnt seem to work if you use cb_test for observed signals '
-        pLine = pLine + '\n        assign DownstreamStackBusLane[{0}][{1}].pe__std__lane_strm{2}_ready                         =   system_inst.manager_array_inst.mgr_inst[{0}].std__mgr__lane{1}_strm{2}_ready ;      '.format(pe,lane,strm)
-        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__std__lane{1}_strm{2}_cntl          =   DownstreamStackBusLane[{0}][{1}].std__pe__lane_strm{2}_cntl          ;      '.format(pe,lane,strm)
-        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__std__lane{1}_strm{2}_data          =   DownstreamStackBusLane[{0}][{1}].std__pe__lane_strm{2}_data          ;      '.format(pe,lane,strm)
-        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__std__lane{1}_strm{2}_data_valid    =   DownstreamStackBusLane[{0}][{1}].std__pe__lane_strm{2}_data_valid    ;      '.format(pe,lane,strm)
+        pLine = pLine + '\n        assign DownstreamStackBusLane[{0}][{1}][{2}].pe__std__lane_strm_ready                       =   system_inst.manager_array_inst.mgr_inst[{0}].std__mgr__lane{1}_strm{2}_ready ;      '.format(pe,lane,strm)
+        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__std__lane{1}_strm{2}_cntl          =   DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_cntl          ;      '.format(pe,lane,strm)
+        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__std__lane{1}_strm{2}_data          =   DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_data          ;      '.format(pe,lane,strm)
+        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__std__lane{1}_strm{2}_data_valid    =   DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_data_valid    ;      '.format(pe,lane,strm)
         pLine = pLine + '\n        '
                                              
   f.write(pLine)

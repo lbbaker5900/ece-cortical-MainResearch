@@ -44,8 +44,8 @@ class oob_driver;
 
     // OOB driver needs oob signals and lane signals to send oob packet
     vDownstreamStackBusOOB_T  vDownstreamStackBusOOB                                 ;  // FIXME: OOB is a per PE interface but we have driver objects for all PE/Lanes
-    vDownstreamStackBusLane_T vDownstreamStackBusLane [`PE_NUM_OF_EXEC_LANES_RANGE ] ;
-    vDownstreamStackBusLane_T tmp_vDownstreamStackBusLane ;
+    vDownstreamStackBusLane_T vDownstreamStackBusLane [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS] ;
+    vDownstreamStackBusLane_T tmp_vDownstreamStackBusLane [`PE_NUM_OF_STREAMS] ;
 
 
     //----------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ class oob_driver;
                   input mailbox               gen2oob                                      ,
                   input event                 gen2oob_ack       [`PE_NUM_OF_EXEC_LANES   ] ,
                   input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB                              ,
-                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES   ] );
+                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES   ] [`PE_NUM_OF_STREAMS] );
 
         this.Id                            = Id                    ;
         this.mgr2oob                       = mgr2oob               ;
@@ -331,9 +331,11 @@ class oob_driver;
                                 // right now we dont drive the lane interface in the oob_driver so just remove the oob_packet from the generator
                                 gen2oob.get(oob_packet_gen)  ;  //Removing the instruction from manager mailbox
                                 //fork
-                                    tmp_vDownstreamStackBusLane = vDownstreamStackBusLane[oob_packet_gen.Id[1]];
-                                    tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
-                                    tmp_vDownstreamStackBusLane.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
+                                for (int strm=0; strm<`PE_NUM_OF_STREAMS; strm++)
+                                  begin
+                                    tmp_vDownstreamStackBusLane[strm] = vDownstreamStackBusLane[oob_packet_gen.Id[1]][strm];
+                                    tmp_vDownstreamStackBusLane[strm].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
+                                  end
                                 //join_none
                             end
 

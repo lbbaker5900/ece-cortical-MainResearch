@@ -18,7 +18,7 @@ program automatic test (
         // array of interfaces, one for each pe/lane/stream
         st_gen_ifc                               GenStackBus              [`PE_ARRAY_NUM_OF_PE]                         ,
         std_oob_ifc                              DownstreamStackBusOOB    [`PE_ARRAY_NUM_OF_PE]                         ,
-        std_lane_ifc                             DownstreamStackBusLane   [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ,
+        std_lane_ifc                             DownstreamStackBusLane   [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] [`MGR_NUM_OF_STREAMS] ,
         stu_ifc                                  UpstreamStackBus         [`PE_ARRAY_NUM_OF_PE]                         ,
                                                                                                                         
         // probe interfaces                                                                                             

@@ -115,43 +115,30 @@ interface std_lane_ifc(
     // FIXME - right now type is a per lane signal??
     logic [`STACK_DOWN_INTF_TYPE_RANGE   ]       std__pe__lane_type              ;  // Control or Data, Vector or scalar
 
-    logic                                        pe__std__lane_strm0_ready       ;
-    logic [`COMMON_STD_INTF_CNTL_RANGE   ]       std__pe__lane_strm0_cntl        ;
-    logic [`PE_STD_LANE_DATA_RANGE       ]       std__pe__lane_strm0_data        ;
-    logic                                        std__pe__lane_strm0_data_valid  ;
- 
-    logic                                        pe__std__lane_strm1_ready       ;
-    logic [`COMMON_STD_INTF_CNTL_RANGE   ]       std__pe__lane_strm1_cntl        ;
-    logic [`PE_STD_LANE_DATA_RANGE       ]       std__pe__lane_strm1_data        ;
-    logic                                        std__pe__lane_strm1_data_valid  ;
+    logic                                        pe__std__lane_strm_ready       ;
+    logic [`COMMON_STD_INTF_CNTL_RANGE   ]       std__pe__lane_strm_cntl        ;
+    logic [`PE_STD_LANE_DATA_RANGE       ]       std__pe__lane_strm_data        ;
+    logic                                        std__pe__lane_strm_data_valid  ;
  
     clocking cb_test @(posedge clk_lane);
         output       std__pe__lane_type              ;
 
-        //input        pe__std__lane_strm0_ready       ;
-        output       std__pe__lane_strm0_cntl        ;
-        output       std__pe__lane_strm0_data        ;
-        output       std__pe__lane_strm0_data_valid  ;
+        //input        pe__std__lane_strm_ready       ;
+        output       std__pe__lane_strm_cntl        ;
+        output       std__pe__lane_strm_data        ;
+        output       std__pe__lane_strm_data_valid  ;
     
-        //input        pe__std__lane_strm1_ready       ;
-        output       std__pe__lane_strm1_cntl        ;
-        output       std__pe__lane_strm1_data        ;
-        output       std__pe__lane_strm1_data_valid  ;
     
     endclocking : cb_test
  
     clocking cb_dut @(posedge clk_lane);
         input        std__pe__lane_type              ;
 
-        //output       pe__std__lane_strm0_ready       ;
-        input        std__pe__lane_strm0_cntl        ;
-        input        std__pe__lane_strm0_data        ;
-        inout        std__pe__lane_strm0_data_valid  ;
+        //output       pe__std__lane_strm_ready       ;
+        input        std__pe__lane_strm_cntl        ;
+        input        std__pe__lane_strm_data        ;
+        inout        std__pe__lane_strm_data_valid  ;
     
-        //output       pe__std__lane_strm1_ready       ;
-        input        std__pe__lane_strm1_cntl        ;
-        input        std__pe__lane_strm1_data        ;
-        inout        std__pe__lane_strm1_data_valid  ;
     
     endclocking : cb_dut
  
