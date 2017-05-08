@@ -116,10 +116,10 @@ if __name__ == "__main__":
       pLine = pLine + '\n        // PE {1}, Lane {0}                 '.format(lane,pe)
       for strm in range (0, numOfStrms):
         pLine = pLine + '\n        //  - doesnt seem to work if you use cb_test for observed signals '
-        pLine = pLine + '\n        assign DownstreamStackBusLane[{0}][{1}][{2}].pe__std__lane_strm_ready                       =   system_inst.manager_array_inst.mgr_inst[{0}].std__mgr__lane{1}_strm{2}_ready ;      '.format(pe,lane,strm)
-        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__std__lane{1}_strm{2}_cntl          =   DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_cntl          ;      '.format(pe,lane,strm)
-        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__std__lane{1}_strm{2}_data          =   DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_data          ;      '.format(pe,lane,strm)
-        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].mgr__std__lane{1}_strm{2}_data_valid    =   DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_data_valid    ;      '.format(pe,lane,strm)
+        pLine = pLine + '\n        assign DownstreamStackBusLane[{0}][{1}][{2}].pe__std__lane_strm_ready   =   system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst[{2}].mrc_cntl.std__mrc__lane_ready [{1}]    ;'.format(pe,lane,strm)
+        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst[{2}].mrc_cntl.mrc__std__lane_cntl_e1 [{1}]  =   DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_cntl       ;'.format(pe,lane,strm)
+        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst[{2}].mrc_cntl.mrc__std__lane_data_e1 [{1}]  =   DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_data       ;'.format(pe,lane,strm)
+        pLine = pLine + '\n        assign system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst[{2}].mrc_cntl.mrc__std__lane_valid_e1[{1}]  =   DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_data_valid ;'.format(pe,lane,strm)
         pLine = pLine + '\n        '
                                              
   f.write(pLine)
