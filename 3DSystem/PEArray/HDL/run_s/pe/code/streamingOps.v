@@ -332,8 +332,8 @@ module streamingOps (
 
   // Operations need to know when the last transaction is at the output of the
   // FIFO
-  assign  strm0_src_complete_next          =   ~strm0_fifo_empty & ((strm0_fifo_read_cntl == `DMA_CONT_STRM_CNTL_EOP) | (strm0_fifo_read_cntl == `DMA_CONT_STRM_CNTL_SOP_EOP)) ;
-  assign  strm1_src_complete_next          =   ~strm1_fifo_empty & ((strm1_fifo_read_cntl == `DMA_CONT_STRM_CNTL_EOP) | (strm1_fifo_read_cntl == `DMA_CONT_STRM_CNTL_SOP_EOP)) ;
+  assign  strm0_src_complete_next          =   strm0_fifo_read & ((strm0_fifo_read_cntl == `DMA_CONT_STRM_CNTL_EOP) | (strm0_fifo_read_cntl == `DMA_CONT_STRM_CNTL_SOP_EOP)) ;
+  assign  strm1_src_complete_next          =   strm1_fifo_read & ((strm1_fifo_read_cntl == `DMA_CONT_STRM_CNTL_EOP) | (strm1_fifo_read_cntl == `DMA_CONT_STRM_CNTL_SOP_EOP)) ;
 
   // FIXME: Need to add to REG decodes
   //
@@ -378,8 +378,8 @@ module streamingOps (
           stOp__reg__valid             =   bsum_result_valid  ;
 
           // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm_fifo_data_available ;
-          strm1_fifo_read              =   strm1_enable & strm_fifo_data_available ;
+          strm0_fifo_read              =   strm0_enable & strm_fifo_data_available & ~strm0_src_complete ;
+          strm1_fifo_read              =   strm1_enable & strm_fifo_data_available & ~strm1_src_complete ;
           strm0_stOp_complete          =   bsum_complete & strm0_fifo_empty        ;
           strm1_stOp_complete          =   bsum_complete & strm1_fifo_empty        ;
     
@@ -402,9 +402,9 @@ module streamingOps (
           //stOp__dma__strm1_data_valid  =   strm1_fifo_read_data_valid ;
 
           // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm0_fifo_data_available & ((strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm0_ready);
+          strm0_fifo_read              =   strm0_enable & strm0_fifo_data_available & ~strm0_src_complete & ((strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm0_ready);
+          strm1_fifo_read              =   strm1_enable & strm1_fifo_data_available & ~strm1_src_complete & ((strm1_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm1_ready); // FIXME add REG
           strm0_stOp_complete          =   strm0_src_complete & strm0_fifo_empty  ;
-          strm1_fifo_read              =   strm1_enable & strm1_fifo_data_available & ((strm1_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm1_ready); // FIXME add REG
           strm1_stOp_complete          =   strm1_enable & strm1_src_complete & strm1_fifo_empty  ;
     
           // stOp control
@@ -422,8 +422,8 @@ module streamingOps (
 
 
           // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm_fifo_data_available ;
-          strm1_fifo_read              =   strm1_enable & strm_fifo_data_available ;
+          strm0_fifo_read              =   strm0_enable & strm_fifo_data_available & ~strm0_src_complete ;
+          strm1_fifo_read              =   strm1_enable & strm_fifo_data_available & ~strm1_src_complete ;
           strm0_stOp_complete          =   fp_mac_complete      ;
           strm1_stOp_complete          =   fp_mac_complete      ;
     
@@ -988,8 +988,9 @@ module streamingOps (
   always @(posedge clk)
     begin
       fp_mac_input_valid  <= ( (~strm0_enable & ~strm1_enable) || ~fp_mac_enable ) ? 'd0                                    :
-                                                              ( strm0_fifo_read  & strm1_fifo_read ) ;
-      fp_mac_fb_valid  <= ( (~strm0_enable & ~strm1_enable)          || ~fp_mac_enable                                                                ) ? 'b0   :
+                                                                                     ( strm0_fifo_read  & strm1_fifo_read ) ;
+
+      fp_mac_fb_valid  <= ( (~strm0_enable & ~strm1_enable)          || ~fp_mac_enable                                         ) ? 'b0   :
                           ( fp_mac_z_s2_valid && ~fp_mac_start_flush                                                           ) ? 'b1   :  // need to let feedback flush the pipe
                           ( fp_mac_fb_s2_valid && ~fp_mac_start_flush                                                          ) ? 'b1   :  // need to let feedback flush the pipe
                           ( fp_mac_first_flush_complete        & ~fp_mac_first_flush_complete_d1                               ) ? 'b1   :  // validate flush summations using feedback valid
@@ -1001,11 +1002,14 @@ module streamingOps (
       // We need to allow the pipeline to continue rotating even if there are no valid entries in the FIFO. Could do this with one valid signal but having separate makes things a bit clearer.
 
       // MAC input stage
-      fp_mac_a           <= ( (~strm0_enable & ~strm1_enable) || ~fp_mac_enable   ) ? 'd0                   :
-                            ( strm0_fifo_read              ) ?  strm0_fifo_read_data :
-                            ( fp_mac_first_flush_complete  ) ? `COMMON_IEEE754_FLOAT_ONE  :
-                                                               `COMMON_IEEE754_FLOAT_ZERO ;
-      fp_mac_b           <= ( (~strm0_enable & ~strm1_enable) || ~fp_mac_enable                                                                      ) ? 'd0                        :
+      fp_mac_a           <= ( (~strm0_enable & ~strm1_enable) || ~fp_mac_enable   ) ? `COMMON_IEEE754_FLOAT_ZERO :
+                            (   strm0_stOp_complete &  strm1_stOp_complete        ) ? `COMMON_IEEE754_FLOAT_ZERO :
+                            ( strm0_fifo_read                                     ) ?  strm0_fifo_read_data      :
+                            ( fp_mac_first_flush_complete                         ) ? `COMMON_IEEE754_FLOAT_ONE  :
+                                                                                      `COMMON_IEEE754_FLOAT_ZERO ;
+
+      fp_mac_b           <= ( (~strm0_enable & ~strm1_enable) || ~fp_mac_enable                                               ) ? `COMMON_IEEE754_FLOAT_ZERO :
+                            (   strm0_stOp_complete &  strm1_stOp_complete                                                    ) ? `COMMON_IEEE754_FLOAT_ZERO :
                             ( strm1_fifo_read                                                                                 ) ? strm1_fifo_read_data       :  // Normal mac
                             ( fp_mac_first_flush_complete        && ~fp_mac_done_first_flush_summation  && fp_mac_fb_s2_valid ) ? fp_mac_z_s2                :  // 1st flush summation is z_s2 and flush_s0
                             ( fp_mac_done_first_flush_summation  && ~fp_mac_done_second_flush_summation && fp_mac_fb_s2_valid ) ? fp_mac_z_s2                :  // 2nd flush summation is z_s2 and flush_s1
@@ -1013,7 +1017,8 @@ module streamingOps (
 // FIXME : keep for more stages                            ( fp_mac_done_second_flush_summation && ~fp_mac_done_third_flush_summation  && fp_mac_fb_s2_valid ) ? fp_mac_z_s2                :  // 3rd flush summation is z_s2 and flush_s2
                                                                                                                                   `COMMON_IEEE754_FLOAT_ZERO ;
 
-      fp_mac_c           <= ( fp_mac_z_s2_valid                                                                                  ) ? fp_mac_z_s2                :  // Normal mac
+      fp_mac_c           <= (   strm0_stOp_complete &  strm1_stOp_complete                                                       ) ? `COMMON_IEEE754_FLOAT_ZERO :
+                            ( fp_mac_z_s2_valid                                                                                  ) ? fp_mac_z_s2                :  // Normal mac
                             ( fp_mac_fb_s2_valid                 && ~fp_mac_first_flush_complete                                 ) ? fp_mac_z_s2                :  // normal mac
                             ( fp_mac_first_flush_complete        && ~fp_mac_done_first_flush_summation  && fp_mac_flush_s0_valid ) ? fp_mac_flush_s0            :  // 1st flush summation is z_s2 and flush_s0
                             ( fp_mac_done_first_flush_summation  && ~fp_mac_done_second_flush_summation && fp_mac_flush_s1_valid ) ? fp_mac_flush_s1            :  // 2nd flush summation is z_s2 and flush_s1

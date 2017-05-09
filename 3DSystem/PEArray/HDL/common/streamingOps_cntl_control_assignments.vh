@@ -34,39 +34,6 @@
                                      ((strm_control[30].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[30].lane_enable) &  
                                      ((strm_control[31].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[31].lane_enable) ; 
 
-  assign cntl__sdp__lane0_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane1_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane2_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane3_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane4_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane5_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane6_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane7_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane8_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane9_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane10_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane11_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane12_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane13_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane14_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane15_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane16_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane17_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane18_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane19_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane20_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane21_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane22_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane23_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane24_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane25_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane26_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane27_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane28_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane29_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane30_dma_operation = rs0[31:1]                                      ; 
-  assign cntl__sdp__lane31_dma_operation = rs0[31:1]                                      ; 
-
   assign scntl__sdp__lane0_stOp_operation = rs0[31:1]                                      ; 
   assign scntl__sdp__lane0_strm0_stOp_enable    = strm_control[0].strm0_stOp_enable     ; 
   assign strm_control[0].strm0_stOp_ready      = sdp__scntl__lane0_strm0_stOp_ready     ; 

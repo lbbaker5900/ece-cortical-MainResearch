@@ -1818,10 +1818,6 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
 
   offset = 0
-  for lane in range (0, numOfExecLanes):
-    offset = lane + 16
-    pLine = pLine + '\n  assign cntl__sdp__lane{0}_dma_operation = rs0[31:1]                                      ; '.format(lane)
-  pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
     offset = lane + 16
