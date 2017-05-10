@@ -141,7 +141,7 @@ class manager;
         // wait a few cycles before starting
         repeat (20) @(vDownstreamStackBusOOB.cb_test);  
 
-        $display("@%0t:%s:%0d:INFO:Manager {%0d} Running operations:%0d", $time, `__FILE__, `__LINE__, Id, num_operations);
+        $display("@%0t:%s:%0d:INFO:Manager {%0d} Running %0d operations", $time, `__FILE__, `__LINE__, Id, num_operations);
         repeat (num_operations)                 //Number of transactions to be generated
             begin
 

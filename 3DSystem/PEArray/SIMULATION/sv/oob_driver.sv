@@ -160,6 +160,9 @@ class oob_driver;
         //  - wait for operations to be received then send OOB packet
         //
         fork
+
+          //------------------------------------------------------------------------------------------------------------------------------------------------------
+          // Proc a) Wait for manager packet
           begin
             forever
               begin
@@ -170,9 +173,12 @@ class oob_driver;
                       receivedManagerOobPacket      = 1                     ;
                   end
                 @(vDownstreamStackBusOOB.cb_test);
-              end
+              end  // forever
           end
+          //------------------------------------------------------------------------------------------------------------------------------------------------------
 
+          //------------------------------------------------------------------------------------------------------------------------------------------------------
+          // Proc b) Wait for generator packets
           begin
             forever
               begin
@@ -184,16 +190,21 @@ class oob_driver;
                 // watch out for infinite loop if commenting out this section of code
                 // a forever loop will need an @clk
                 @(vDownstreamStackBusOOB.cb_test);
-              end
+              end  // forever
           end
+          //------------------------------------------------------------------------------------------------------------------------------------------------------
          
+          //------------------------------------------------------------------------------------------------------------------------------------------------------
+          // Proc c) Wait for proc (a) and (b) then send OOB packet
           begin
             forever
               begin
                 //----------------------------------------------------------------------
                 // If we have all the oob_packets, drive the STD busA
                
-                if ( (receivedManagerOobPacket == 1) && (receivedGeneratorOobPackets == 1) )
+                // Note: Only wait for manager to provide OOB packet
+                //if ( (receivedManagerOobPacket == 1) && (receivedGeneratorOobPackets == 1) )
+                if (receivedManagerOobPacket == 1) 
                   begin
                     // The OOB packet from the manager contains PE specific information. Additional lane specific information
                     // comes from the generator. Note: we currently assume we only need PE specific data and things like number of operands and addresses are common.
@@ -359,16 +370,18 @@ class oob_driver;
                     receivedGeneratorOobPackets   = 0                     ;
                     operationNumber += 1 ;
                     $display("@%0t:%s:%0d:INFO: {%0d} Completed driving OOB", $time, `__FILE__, `__LINE__, this.Id );
-                  end
+
+                  end  // if ( (receivedManagerOobPacket == 1) && (receivedGeneratorOobPackets == 1) )
                 else
                   //----------------------------------------------------------------------
                   // make sure we dont have a zero delay loop
                   begin
                     @(vDownstreamStackBusOOB.cb_test);
                     vDownstreamStackBusOOB.cb_test.std__pe__oob_valid        <= 0  ;  // driver.sv takes care of stream valids
-                  end
-              end
+                  end  // else
+              end  // forever
           end
+          //------------------------------------------------------------------------------------------------------------------------------------------------------
         join_none
     endtask
 

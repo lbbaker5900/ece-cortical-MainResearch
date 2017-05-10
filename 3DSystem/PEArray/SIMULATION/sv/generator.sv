@@ -128,7 +128,7 @@ class generator;
     // RUN
 
     task run ();
-        //$display("@%0t:%s:%0d: LEE: Running generator : {%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+        //$display("@%0t:%s:%0d: INFO: Running generator : {%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
         // wait a few cycles before starting
 
         sys_operation_gen        =  new ()  ;  // copy of operation gcreated in manager, Generator re-creates different operand values
@@ -143,9 +143,7 @@ class generator;
                     begin
                         mgr2gen.peek(sys_operation_mgr);   //Taking the instruction from the manager
                         mgr2gen.get(sys_operation_mgr)  ;  //Removing the instruction from manager mailbox
-                        $display("@%0t:%s:%0d:LEE:Received operation from manager: {%0d,%0d}:%h", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation_mgr);
-//                        sys_operation_mgr.displayOperationFoo(`__FILE__, `__LINE__);
-                
+                        $display("@%0t:%s:%0d:INFO:Received operation from manager: {%0d,%0d}:%h", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation_mgr);
                         
                         // Create a base operation and all operation sent to driver will be copies of this
                         // This allows us to keep track of what has been generated
@@ -155,17 +153,14 @@ class generator;
 
 /*
                         // DEBUG
-
-                        $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        $display("@%0t:%s:%0d:INFO:DEBUG:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
                         sys_operation_gen.displayOperationFoo(`__FILE__, `__LINE__);
 
                         if ((Id[0]  == 63) && (Id[1] == 0) && (priorOperations.size > 0))
                             priorOperations[$].displayOperation();
                         else if ((Id[0]  == 63) && (Id[1] == 0))
-                            $display("@%0t:%s:%0d:LEE:DEBUG:No prior operation:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-
+                            $display("@%0t:%s:%0d:INFO:DEBUG:No prior operation:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
 */
-
 
                         // randomize again to create operand values
                         sys_operation_gen.c_operationType_definedOrder .constraint_mode(0) ;
@@ -201,7 +196,8 @@ class generator;
                         oob_packet_new.createFromOperation(0, sys_operation) ;
 
                         gen2oob.put(oob_packet_new)                          ;
-                        @gen2oob_ack                                         ;  // wait for OOB
+                        // Why wait
+                        //@gen2oob_ack                                         ;  // wait for OOB
 
                         //----------------------------------------------------------------------------------------------------
                         // Configure streamingCntl
@@ -210,11 +206,11 @@ class generator;
 
                         gen2rfP.put(oob_packet_new)                          ;  // OOB WU packet has been driven, now set regFile inputs
                         wait(gen2rfP_ack.triggered)                          ;  // wait for regFile inputs to be driven
-                        $display("@%0t:%s:%0d:LEE:{%0d,%0d} regFile driven", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        $display("@%0t:%s:%0d:INFO:{%0d,%0d} regFile driven", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
 
                         //----------------------------------------------------------------------------------------------------
 /*
-                        $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        $display("@%0t:%s:%0d:INFO:DEBUG:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
                         //if ((Id[0]  == 63) && (Id[1] == 0) )
                         sys_operation.displayOperationFoo(`__FILE__, `__LINE__);
 */
@@ -237,7 +233,7 @@ class generator;
                         //sys_operation.displayOperation();
                         //@gen2drv_ack;
                         wait(gen2drv_ack.triggered);
-                        //$display("@%0t:%s:%0d:LEE:{%0d,%0d} Driver ack", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        //$display("@%0t:%s:%0d:INFO:{%0d,%0d} Driver ack", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
 
 
                         //----------------------------------------------------------------------------------------------------
