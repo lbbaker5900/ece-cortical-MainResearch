@@ -67,6 +67,10 @@ module top;
 
     //
     //----------------------------------------------------------------------------------------------------
+    // WU Decoder to OOB
+    wud_to_oob_ifc  WudToOobIfc        [`MGR_ARRAY_NUM_OF_MGR] (clk);
+
+    //----------------------------------------------------------------------------------------------------
     // WU Decoder to Memory Read Interfaces
     //wud_to_mrc_ifc  WudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] (clk); 
     descriptor_ifc  WudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] (clk); 
@@ -113,6 +117,9 @@ module top;
                    .LocalToNocIfc              ( LocalToNocIfc             ) ,  // array of probes to monitor Manager NoC packets sent to NoC and received from NoC
                    .LocalFromNocIfc            ( LocalFromNocIfc           ) ,  // 
 
+                   // WU Decoder to OOB Downstream Interfaces
+                   .WudToOobIfc                ( WudToOobIfc               ),
+
                    // WU Decoder to Memory Read Interfaces
                    .WudToMrcIfc                ( WudToMrcIfc               ),
 
@@ -138,7 +145,9 @@ module top;
     
     // Downstream Stack bus OOB Interface
     //  - connect OOB signals inside manager from std_oob_ifc
-    `include "TB_system_stack_bus_downstream_oob_assignments.vh"
+    //`ifdef TB_DRIVES_OOB_PACKET
+      `include "TB_system_stack_bus_downstream_oob_assignments.vh"
+    //`endif
     
     // Downstream Stack bus Interface
     //  - connect Lane signals inside manager from std_lane_ifc

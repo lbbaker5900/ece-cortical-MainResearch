@@ -25,7 +25,8 @@ program automatic test (
         locl_to_noc_ifc                          LocalToNocIfc            [`MGR_ARRAY_NUM_OF_MGR]                       ,
         locl_from_noc_ifc                        LocalFromNocIfc          [`MGR_ARRAY_NUM_OF_MGR]                       ,
 
-        //wud_to_mrc_ifc                           WudToMrcIfc              [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] , 
+        wud_to_oob_ifc                           WudToOobIfc              [`MGR_ARRAY_NUM_OF_MGR]                       ,
+        //wud_to_mrc_ifc                         WudToMrcIfc              [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] , 
         descriptor_ifc                           WudToMrcIfc              [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] , 
 
         pe_dma2mem_ifc                           Dma2Mem                  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ,
@@ -45,6 +46,7 @@ program automatic test (
                     UpstreamStackBus       , 
                     LocalToNocIfc          , 
                     LocalFromNocIfc        , 
+                    WudToOobIfc            ,
                     WudToMrcIfc            ,
                     Dma2Mem                , 
                     RegFileScalar2StOpCntl , 

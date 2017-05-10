@@ -346,6 +346,13 @@ module manager (
           //-------------------------------
           // Stack Bus - OOB Downstream
           // FIXME: currently driven by testbench
+          /*
+          .mgr__std__oob_cntl       ( mgr__std__oob_cntl   ), 
+          .mgr__std__oob_valid      ( mgr__std__oob_valid  ), 
+          .std__mgr__oob_ready      ( std__mgr__oob_ready  ), 
+          .mgr__std__oob_type       ( mgr__std__oob_type   ), 
+          .mgr__std__oob_data       ( mgr__std__oob_data   ), 
+          */
           .mgr__std__oob_cntl       (  ), 
           .mgr__std__oob_valid      (  ), 
           .std__mgr__oob_ready      ( std__mgr__oob_ready       ), 

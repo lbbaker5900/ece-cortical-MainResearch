@@ -116,6 +116,39 @@ typedef virtual wud_to_mrc_ifc vWudToMrc_T  ;
 
 
 //--------------------------------------------------------------------------------
+// WU Decoder to OOB Downstream Controller
+//  
+
+interface wud_to_oob_ifc(
+                           input bit clk   );
+
+    logic                                         valid         ;
+    logic  [`COMMON_STD_INTF_CNTL_RANGE    ]      cntl          ;
+    logic                                         ready         ;
+    logic  [`MGR_STD_OOB_TAG_RANGE         ]      tag           ;
+    logic  [`MGR_NUM_LANES_RANGE           ]      num_lanes     ;
+    logic  [`MGR_WU_OPT_VALUE_RANGE        ]      stOp_cmd      ;
+    logic  [`MGR_WU_OPT_VALUE_RANGE        ]      simd_cmd      ;
+ 
+            
+    clocking cb_p @(posedge clk);
+
+    output  valid         ;
+    output  cntl          ;
+    output  ready         ;
+    output  tag           ;
+    output  num_lanes     ;
+    output  stOp_cmd      ;
+    output  simd_cmd      ;
+            
+    endclocking : cb_p
+
+
+endinterface : wud_to_oob_ifc
+
+typedef virtual wud_to_oob_ifc   vWudToOob_T  ;
+
+//--------------------------------------------------------------------------------
 // Memory Read Controller to Stack Down interface(s)
 //  - an interface for each executions lane (stream)
 
@@ -147,7 +180,7 @@ interface mrc_to_std_ifc(
 
 endinterface : mrc_to_std_ifc
 
-typedef virtual mrc_to_std_ifc  MrcToStd_T  ;
+typedef virtual mrc_to_std_ifc  vMrcToStd_T  ;
 
 
 //--------------------------------------------------------------------------------

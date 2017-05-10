@@ -83,20 +83,17 @@ class manager;
     integer timeout_option = 2; 
 
     //-------------------------------------------------------------------------
-    // System random traffic variables
-    int dist_type = 13;
-    integer systemEventSeed = 166;  // Initial seed, random functions regenerate seed
-    real systemEventMean = 47;  // mean
-    real systemEventStddev = 13;  // standard deviation
-    integer systemEventDeltaTime = 5;  // next time for event as integer
-    //-------------------------------------------------------------------------
+    // Downstream Interfaces
 
     vDownstreamStackBusOOB_T    vDownstreamStackBusOOB                            ;  // FIXME OOB interface is a per PE i/f where generator is per lane
     vDownstreamStackBusLane_T   vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES] [`PE_NUM_OF_STREAMS]  ;  // manager communicates will lane generators
 
+    //----------------------------------------------------------------------------------------------------
     // WU Decoder to Memory Read Interfaces
     //vWudToMrc_T       vWudToMrcIfc        [`MGR_NUM_OF_STREAMS] ; 
     vDesc_T           vWudToMrcIfc        [`MGR_NUM_OF_STREAMS] ; 
+    mailbox           mrc2mgr_m           [`MGR_NUM_OF_STREAMS] ; 
+    descriptor        mrc_desc            [`MGR_NUM_OF_STREAMS] ; 
 
     base_operation    sys_operation                              ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_mgr                          ;  // operation packet containing all data associated with operation
@@ -110,41 +107,55 @@ class manager;
     base_operation    priorOperations[$]; //Queue to hold previous operations
 
     function new (
-                  input int                          Id                                              , 
-                  input mailbox                      mgr2oob                                         ,
-                  input event                        mgr2oob_ack                                     ,
-                  input mailbox                      mgr2gen                 [`PE_NUM_OF_EXEC_LANES] ,
-                  input event                        mgr2gen_ack             [`PE_NUM_OF_EXEC_LANES] ,
-                  input event                        final_operation                                 ,
-                  input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB                          ,
-                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane [`PE_NUM_OF_EXEC_LANES] [`PE_NUM_OF_STREAMS] ,
-                  input mailbox                      mgr2up                                          , // send operation to upstream checker
-                  //input vWudToMrc_T                  vWudToMrcIfc            [`MGR_NUM_OF_STREAMS  ] 
-                  input vDesc_T                      vWudToMrcIfc            [`MGR_NUM_OF_STREAMS  ] 
+                  input int                          Id                                                                     , 
+                  input mailbox                      mgr2oob                                                                ,
+                  input event                        mgr2oob_ack                                                            ,
+                  input mailbox                      mgr2gen                 [`PE_NUM_OF_EXEC_LANES]                        ,
+                  input event                        mgr2gen_ack             [`PE_NUM_OF_EXEC_LANES]                        ,
+                  input event                        final_operation                                                        ,
+                  input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB                                                 ,
+                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane [`PE_NUM_OF_EXEC_LANES] [`PE_NUM_OF_STREAMS]   ,
+                  input mailbox                      mgr2up                                                                 , // send operation to upstream checker
+                  //input vWudToMrc_T                  vWudToMrcIfc                                  [`MGR_NUM_OF_STREAMS ] ,
+                  input vDesc_T                      vWudToMrcIfc                                    [`MGR_NUM_OF_STREAMS ] ,
+                  input mailbox                      mrc2mgr_m                                       [`MGR_NUM_OF_STREAMS ] 
                  );
 
-        this.Id                     = Id                 ;
-        this.mgr2oob                = mgr2oob            ;
-        this.mgr2oob_ack            = mgr2oob_ack        ;
-        this.mgr2gen                = mgr2gen            ;
-        this.mgr2gen_ack            = mgr2gen_ack        ;
-        //this.new_operation          = new_operation      ;
-        this.final_operation        = final_operation    ;
-        this.vDownstreamStackBusOOB        = vDownstreamStackBusOOB    ;
-        this.vDownstreamStackBusLane       = vDownstreamStackBusLane   ;
-        this.vWudToMrcIfc           = vWudToMrcIfc        ;
-        this.mgr2up                 = mgr2up             ;
+        this.Id                        = Id                      ;
+        this.mgr2oob                   = mgr2oob                 ;
+        this.mgr2oob_ack               = mgr2oob_ack             ;
+        this.mgr2gen                   = mgr2gen                 ;
+        this.mgr2gen_ack               = mgr2gen_ack             ;
+        //this.new_operation           = new_operation           ;
+        this.final_operation           = final_operation         ;
+        this.vDownstreamStackBusOOB    = vDownstreamStackBusOOB  ;
+        this.vDownstreamStackBusLane   = vDownstreamStackBusLane ;
+        this.mgr2up                    = mgr2up                  ;
+        this.vWudToMrcIfc              = vWudToMrcIfc            ;
+        this.mrc2mgr_m                 = mrc2mgr_m               ;
 
     endfunction
 
     task run ();
-        //$display("@%0t:%s:%0d:LEE: Running manager : {%0d}", $time, `__FILE__, `__LINE__, Id);
+        //$display("@%0t:%s:%0d:INFO: Running manager : {%0d}", $time, `__FILE__, `__LINE__, Id);
         // wait a few cycles before starting
         repeat (20) @(vDownstreamStackBusOOB.cb_test);  
 
         $display("@%0t:%s:%0d:INFO:Manager {%0d} Running operations:%0d", $time, `__FILE__, `__LINE__, Id, num_operations);
         repeat (num_operations)                 //Number of transactions to be generated
             begin
+
+                //----------------------------------------------------------------------------------------------------
+                // Create the operation and send to OOB driver and lane driver
+
+                // A request to both Memory Read controllers will initiate an operation
+                `ifdef TB_ENABLE_MEM_CNTL_INITIATE_OP
+                    wait (( mrc2mgr_m[0].num() != 0 ) && ( mrc2mgr_m[1].num() != 0 ));
+                    mrc2mgr_m[0].get(mrc_desc[0]);
+                    mrc2mgr_m[1].get(mrc_desc[1]);
+                    $display("@%0t:%s:%0d:INFO: Manager {%0d} received Memory Descriptor from MRC\'s", $time, `__FILE__, `__LINE__, Id);
+                `endif
+
                 // Create a base operation and send the generator which will then spawn further operations for each lane.
                 // The generator will maintain operation type and number of operands for all lanes but will randomize operands.
                 sys_operation_mgr        =  new ()  ;  // seed operation object.  Generators will copy this and then re-create different operand values
@@ -167,6 +178,10 @@ class manager;
 
                 //----------------------------------------------------------------------------------------------------
                 // Create an oob_packet and send to OOB driver
+                //
+                // FIXME: Not sure why I created an operation object for oob
+                // I think we can just :
+                //   oob_packet_mgr.createFromOperation(sys_operation_mgr.tId, sys_operation_mgr)     ;
 
                 // we need to randomize to update fields such as number of operands based on prior operation. 
                 // This randomize takes place in the generator when it sends operations to the driver so we should be the same although the OOB
@@ -192,11 +207,12 @@ class manager;
                 // send actual base operation to upstream checker 
                 mgr2up.put(sys_operation_mgr)                      ; 
 
+                //---------------------------------------------------------------------------------------------------------------
                 // create the oob_packet object from the operation
                 oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
                 oob_packet_mgr.createFromOperation(sys_operation_oob.tId, sys_operation_oob)     ;
                 mgr2oob.put(oob_packet_mgr)                                  ;  // oob needs to prepare the PE
-                $display("@%0t:%s:%0d:LEE: Manager {%0d} sent oob_packet {%0d} to oob_driver", $time, `__FILE__, `__LINE__, Id, operationNum);
+                $display("@%0t:%s:%0d:INFO: Manager {%0d} sent oob_packet {%0d} to oob_driver", $time, `__FILE__, `__LINE__, Id, operationNum);
 
                 //  The manager sends OOB packet to oob_driver and the same operation to each generator
                 //  The oob_driver will get oob information from the generator in case the generator has made changes to the operation
@@ -210,7 +226,7 @@ class manager;
 
                 // send this to all the lane generators for this PE and wait for acknowledge
                         
-                $display("@%0t:%s:%0d:LEE: Manager {%0d} sending operation {%0d} to generators and waiting for ack", $time, `__FILE__, `__LINE__, Id, operationNum);
+                $display("@%0t:%s:%0d:INFO: Manager {%0d} sending operation {%0d} to generators and waiting for ack", $time, `__FILE__, `__LINE__, Id, operationNum);
                 // include has mgr2gen and mgr2gen_ack
                 `include "TB_manager_send_operation_to_generators.vh"
                 wait fork;
@@ -221,7 +237,7 @@ class manager;
                 //wait(mgr2oob_ack.triggered) ;
                 //
                 
-                $display("@%0t:%s:%0d:LEE: Manager {%0d} operation {%0d} acked by generators", $time, `__FILE__, `__LINE__, Id, operationNum);
+                $display("@%0t:%s:%0d:INFO: Manager {%0d} operation {%0d} acked by generators", $time, `__FILE__, `__LINE__, Id, operationNum);
 
                 operationNum++                                ;
                 

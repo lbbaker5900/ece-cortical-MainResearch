@@ -38,6 +38,18 @@
 `include "loadStore_driver.sv"
 `include "manager.vh"
 `include "manager_array.vh"
+/*
+typedef class manager;
+typedef class generator;
+typedef class driver;
+typedef class oob_driver;
+typedef class upstream_checker;
+typedef class noc_checker;
+typedef class memory_read_proc;
+typedef class mem_checker;
+typedef class regFile_driver;
+typedef class loadStore_driver;
+*/
 
 import virtual_interface::*;
 
@@ -86,22 +98,27 @@ class Environment;
     //mailbox       gen2ldstP         ;
     //event         gen2ldstP_ack    [`PE_ARRAY_NUM_OF_PE]                        ;
 
+    //----------------------------------------------------------------------------------------------------
     // an array of all stream interfaces in the system
     vGenStackBus_T                       vGenStackBus                  [`PE_ARRAY_NUM_OF_PE]                         ;
     vDownstreamStackBusOOB_T             vDownstreamStackBusOOB        [`PE_ARRAY_NUM_OF_PE]                         ;
     vDownstreamStackBusLane_T            vDownstreamStackBusLane       [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] [`MGR_NUM_OF_STREAMS] ;
     vUpstreamStackBus_T                  vUpstreamStackBus             [`PE_ARRAY_NUM_OF_PE]                         ;
 
+    //----------------------------------------------------------------------------------------------------
     // an array of all dma to memory interfaces in the system
     vDma2Mem_T             vDma2Mem                              [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
 
+    //----------------------------------------------------------------------------------------------------
     // an array of all regFile scalar and vector signals to stOp controller
     vRegFileScalarDrv2stOpCntl_T vRegFileScalarDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE]                         ;
     vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
 
+    //----------------------------------------------------------------------------------------------------
     // an array of all SIMD load/store interfaces into the memory controller
     vLoadStoreDrv2memCntl_T      vLoadStoreDrv2memCntl           [`PE_ARRAY_NUM_OF_PE]                         ;
 
+    //----------------------------------------------------------------------------------------------------
     // NoC packets sent and received from each manager
     //mailbox           mgr2noc_p            [`MGR_ARRAY_NUM_OF_MGR]      ;  // capture packets sent by manager to NoC
     //mailbox           noc2mgr_p            [`MGR_ARRAY_NUM_OF_MGR]      ;  // capture packets received by manager from NoC
@@ -111,8 +128,11 @@ class Environment;
 
     //----------------------------------------------------------------------------------------------------
     // WU Decoder to Memory Read Interfaces
-    //vWudToMrc_T       vWudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] ; 
     vDesc_T           vWudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] ; 
+
+    //----------------------------------------------------------------------------------------------------
+    // WU Decoder to OOB Downstream Interfaces
+    vWudToOob_T       vWudToOobIfc        [`MGR_ARRAY_NUM_OF_MGR]       ;
 
     //----------------------------------------------------------------------------------------------------
     // 
@@ -124,7 +144,7 @@ class Environment;
                     input vUpstreamStackBus_T          vUpstreamStackBus               [`PE_ARRAY_NUM_OF_PE   ]                                                ,
                     input vLocalToNoC_T                vLocalToNoC                     [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
                     input vLocalFromNoC_T              vLocalFromNoC                   [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
-                    //input vWudToMrc_T                vWudToMrcIfc                    [`MGR_ARRAY_NUM_OF_MGR ]                         [`MGR_NUM_OF_STREAMS ] ,
+                    input vWudToOob_T                  vWudToOobIfc                    [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
                     input vDesc_T                      vWudToMrcIfc                    [`MGR_ARRAY_NUM_OF_MGR ]                         [`MGR_NUM_OF_STREAMS ] ,
                     input vDma2Mem_T                   vDma2Mem                        [`PE_ARRAY_NUM_OF_PE   ] [`PE_NUM_OF_EXEC_LANES]                        ,
                     input vRegFileScalarDrv2stOpCntl_T vRegFileScalarDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE   ]                                                ,
@@ -139,6 +159,7 @@ class Environment;
         this.vLocalToNoC                 =   vLocalToNoC                 ;
         this.vLocalFromNoC               =   vLocalFromNoC               ;
 
+        this.vWudToOobIfc                =   vWudToOobIfc                ;
         this.vWudToMrcIfc                =   vWudToMrcIfc                ;
 
         this.vDma2Mem                    =   vDma2Mem                    ;
@@ -188,7 +209,7 @@ class Environment;
                         rf_driver   [pe][lane]  = new ( Id,                                                                                      vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP[pe][lane],   gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
                     end
                  
-                mgr         [pe]  = new ( pe, mgr2oob[pe] , mgr2oob_ack[pe], mgr2gen[pe] , mgr2gen_ack[pe],  final_operation[pe], vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe] , mgr2up [pe], vWudToMrcIfc[pe]   );
+                mgr         [pe]  = new ( pe, mgr2oob[pe] , mgr2oob_ack[pe], mgr2gen[pe] , mgr2gen_ack[pe],  final_operation[pe], vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe] , mgr2up [pe], vWudToMrcIfc[pe], mrc2mgr_m[pe]  );
                 oob_drv     [pe]  = new ( pe, mgr2oob[pe],  mgr2oob_ack[pe], gen2oob[pe],  gen2oob_ack[pe],                       vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe] );
                 up_check    [pe]  = new ( pe, vUpstreamStackBus [pe],  mgr2up [pe], gen2up [pe] ) ;
             end
