@@ -68,7 +68,8 @@ module top;
     //
     //----------------------------------------------------------------------------------------------------
     // WU Decoder to Memory Read Interfaces
-    wud_to_mrc_ifc  WudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] (clk); 
+    //wud_to_mrc_ifc  WudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] (clk); 
+    descriptor_ifc  WudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] (clk); 
 
     //----------------------------------------------------------------------------------------------------
     // Memory Read Controller to Stack Downstream interfaces
@@ -204,6 +205,8 @@ module top;
 
     //------------------------------------------------------------
     // WU Decoder to memory Read Interfaces
+    //
+    /*
     genvar memIfc;
     genvar opt;
     generate
@@ -231,6 +234,40 @@ module top;
                     begin
                       assign WudToMrcIfc[mgr][memIfc].wud__mrc__option_type  [opt]     = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc1__option_type  [opt];
                       assign WudToMrcIfc[mgr][memIfc].wud__mrc__option_value [opt]     = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc1__option_value [opt];
+                    end
+                end
+            end
+        end
+    endgenerate
+    */
+
+    genvar memIfc;
+    genvar opt;
+    generate
+      for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+        begin
+          for (memIfc=0; memIfc<`MGR_NUM_OF_STREAMS; memIfc=memIfc+1)
+            begin
+              if (memIfc == 0)
+                begin
+                  assign WudToMrcIfc[mgr][memIfc].valid       = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc0__valid   ;
+                  assign WudToMrcIfc[mgr][memIfc].ready       = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.mrc0__wud__ready   ;
+                  assign WudToMrcIfc[mgr][memIfc].cntl        = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc0__cntl    ;
+                  for (opt=0; opt<`MGR_WU_OPT_PER_INST; opt=opt+1)
+                    begin
+                      assign WudToMrcIfc[mgr][memIfc].option_type  [opt]     = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc0__option_type  [opt];
+                      assign WudToMrcIfc[mgr][memIfc].option_value [opt]     = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc0__option_value [opt];
+                    end
+                end
+              else
+                begin
+                  assign WudToMrcIfc[mgr][memIfc].valid       = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc1__valid   ;
+                  assign WudToMrcIfc[mgr][memIfc].ready       = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.mrc1__wud__ready   ;
+                  assign WudToMrcIfc[mgr][memIfc].cntl        = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc1__cntl    ;
+                  for (opt=0; opt<`MGR_WU_OPT_PER_INST; opt=opt+1)
+                    begin
+                      assign WudToMrcIfc[mgr][memIfc].option_type  [opt]     = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc1__option_type  [opt];
+                      assign WudToMrcIfc[mgr][memIfc].option_value [opt]     = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.wud__mrc1__option_value [opt];
                     end
                 end
             end

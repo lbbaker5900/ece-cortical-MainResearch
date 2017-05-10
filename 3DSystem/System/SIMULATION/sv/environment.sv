@@ -32,6 +32,7 @@
 `include "oob_driver.sv"
 `include "upstream_checker.sv"
 `include "noc_checker.sv"
+`include "memory_read_proc.sv"
 `include "mem_checker.sv"
 `include "regFile_driver.sv"
 `include "loadStore_driver.sv"
@@ -42,42 +43,45 @@ import virtual_interface::*;
 
 class Environment;
     // each generator/driver pair handles the two streams in each pe/lane
-    manager            mgr               [`PE_ARRAY_NUM_OF_PE]                        ;
-    generator          gen               [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ; 
-    driver             drv               [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ;
-    oob_driver         oob_drv           [`PE_ARRAY_NUM_OF_PE]                        ;
-    upstream_checker   up_check          [`PE_ARRAY_NUM_OF_PE]                        ;
-    noc_checker        noc_check                                                      ;
-    mem_checker        mem_check         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ;
-    regFile_driver     rf_driver         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ;
-    loadStore_driver   ldst_driver       [`PE_ARRAY_NUM_OF_PE]                        ;
+    manager            mgr               [`PE_ARRAY_NUM_OF_PE  ]                                               ;
+    generator          gen               [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ; 
+    driver             drv               [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ;
+    oob_driver         oob_drv           [`PE_ARRAY_NUM_OF_PE  ]                                               ;
+    upstream_checker   up_check          [`PE_ARRAY_NUM_OF_PE  ]                                               ;
+    noc_checker        noc_check                                                                               ;
+    memory_read_proc   mr_proc           [`MGR_ARRAY_NUM_OF_MGR]                         [`MGR_NUM_OF_STREAMS] ;
+    mem_checker        mem_check         [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ;
+    regFile_driver     rf_driver         [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ;
+    loadStore_driver   ldst_driver       [`PE_ARRAY_NUM_OF_PE  ]                                               ;
 
 
-    mailbox       mgr2oob          [`PE_ARRAY_NUM_OF_PE]                         ;
-    event         mgr2oob_ack      [`PE_ARRAY_NUM_OF_PE]                         ; 
+    mailbox       mgr2oob          [`PE_ARRAY_NUM_OF_PE ]                                               ;
+    event         mgr2oob_ack      [`PE_ARRAY_NUM_OF_PE ]                                               ; 
+                                                                                                        
+    // generator provides customized addresses for OOB driver                                           
+    mailbox       gen2oob          [`PE_ARRAY_NUM_OF_PE ]                                               ;  // all generators put their oob_packet in the same mailbox 
+    event         gen2oob_ack      [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ;  // but all generators get their own ack
+                                                                                                        
+    mailbox       mgr2gen          [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ;
+    event         mgr2gen_ack      [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ; 
+                                                                                                        
+    mailbox       gen2drv          [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ;
+    event         gen2drv_ack      [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ; 
+                                                                                                        
+    mailbox       mgr2up           [`PE_ARRAY_NUM_OF_PE ]                                               ;  // manager sends transaction type to upstream checker, generator sends expected values
+    mailbox       gen2up           [`PE_ARRAY_NUM_OF_PE ]                                               ;
+                                                                                                        
+    // an operation defines what is sent on both the streams in a pe/lane                               
+    event         new_operation    [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ; 
+    event         final_operation  [`PE_ARRAY_NUM_OF_PE ]                                               ;
+                                                                                                        
+    mailbox       drv2memP         [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ;
+    event         drv2memP_ack     [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ;  
+                                                                                                        
+    mailbox       gen2rfP          [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ;
+    event         gen2rfP_ack      [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ;  
 
-    // generator provides customized addresses for OOB driver
-    mailbox       gen2oob          [`PE_ARRAY_NUM_OF_PE]                         ;  // all generators put their oob_packet in the same mailbox 
-    event         gen2oob_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;  // but all generators get their own ack
-
-    mailbox       mgr2gen          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
-    event         mgr2gen_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
-
-    mailbox       gen2drv          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
-    event         gen2drv_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
-
-    mailbox       mgr2up           [`PE_ARRAY_NUM_OF_PE]                         ;  // manager sends transaction type to upstream checker, generator sends expected values
-    mailbox       gen2up           [`PE_ARRAY_NUM_OF_PE]                         ;
-
-    // an operation defines what is sent on both the streams in a pe/lane
-    event         new_operation    [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ; 
-    event         final_operation  [`PE_ARRAY_NUM_OF_PE]                         ;
-
-    mailbox       drv2memP         [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
-    event         drv2memP_ack     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;  
-
-    mailbox       gen2rfP          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;
-    event         gen2rfP_ack      [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ;  
+    mailbox       mrc2mgr_m        [`MGR_ARRAY_NUM_OF_MGR]                        [`MGR_NUM_OF_STREAMS] ; 
 
     //mailbox       gen2ldstP         ;
     //event         gen2ldstP_ack    [`PE_ARRAY_NUM_OF_PE]                        ;
@@ -107,23 +111,25 @@ class Environment;
 
     //----------------------------------------------------------------------------------------------------
     // WU Decoder to Memory Read Interfaces
-    vWudToMrc_T       vWudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] ; 
+    //vWudToMrc_T       vWudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] ; 
+    vDesc_T           vWudToMrcIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS] ; 
 
     //----------------------------------------------------------------------------------------------------
     // 
     function new (
                     // Retrieving the interface passed from the testbench in order to pass it to the required blocks.
-                    input vGenStackBus_T               vGenStackBus                    [`PE_ARRAY_NUM_OF_PE  ]                         ,
-                    input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB          [`PE_ARRAY_NUM_OF_PE  ]                         ,
-                    input vDownstreamStackBusLane_T    vDownstreamStackBusLane         [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES] [`MGR_NUM_OF_STREAMS] ,
-                    input vUpstreamStackBus_T          vUpstreamStackBus               [`PE_ARRAY_NUM_OF_PE  ]                         ,
-                    input vLocalToNoC_T                vLocalToNoC                     [`MGR_ARRAY_NUM_OF_MGR]                         ,
-                    input vLocalFromNoC_T              vLocalFromNoC                   [`MGR_ARRAY_NUM_OF_MGR]                         ,
-                    input vWudToMrc_T                  vWudToMrcIfc                    [`MGR_ARRAY_NUM_OF_MGR] [`MGR_NUM_OF_STREAMS  ] ,
-                    input vDma2Mem_T                   vDma2Mem                        [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES] ,
-                    input vRegFileScalarDrv2stOpCntl_T vRegFileScalarDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE  ]                         ,
-                    input vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES] ,
-                    input vLoadStoreDrv2memCntl_T      vLoadStoreDrv2memCntl           [`PE_ARRAY_NUM_OF_PE  ]                        
+                    input vGenStackBus_T               vGenStackBus                    [`PE_ARRAY_NUM_OF_PE   ]                                                ,
+                    input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB          [`PE_ARRAY_NUM_OF_PE   ]                                                ,
+                    input vDownstreamStackBusLane_T    vDownstreamStackBusLane         [`PE_ARRAY_NUM_OF_PE   ] [`PE_NUM_OF_EXEC_LANES] [`MGR_NUM_OF_STREAMS]  ,
+                    input vUpstreamStackBus_T          vUpstreamStackBus               [`PE_ARRAY_NUM_OF_PE   ]                                                ,
+                    input vLocalToNoC_T                vLocalToNoC                     [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
+                    input vLocalFromNoC_T              vLocalFromNoC                   [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
+                    //input vWudToMrc_T                vWudToMrcIfc                    [`MGR_ARRAY_NUM_OF_MGR ]                         [`MGR_NUM_OF_STREAMS ] ,
+                    input vDesc_T                      vWudToMrcIfc                    [`MGR_ARRAY_NUM_OF_MGR ]                         [`MGR_NUM_OF_STREAMS ] ,
+                    input vDma2Mem_T                   vDma2Mem                        [`PE_ARRAY_NUM_OF_PE   ] [`PE_NUM_OF_EXEC_LANES]                        ,
+                    input vRegFileScalarDrv2stOpCntl_T vRegFileScalarDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE   ]                                                ,
+                    input vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE   ] [`PE_NUM_OF_EXEC_LANES]                        ,
+                    input vLoadStoreDrv2memCntl_T      vLoadStoreDrv2memCntl           [`PE_ARRAY_NUM_OF_PE   ]                                                 
                 );
         this.vGenStackBus                =   vGenStackBus                ;
         this.vDownstreamStackBusOOB      =   vDownstreamStackBusOOB      ;
@@ -154,6 +160,14 @@ class Environment;
                 //noc2mgr_p   [pe]  = new () ;
 
                 ldst_driver [pe]  = new ( Id,            vLoadStoreDrv2memCntl [pe] ); // ,                                      gen2ldstP, gen2ldstP_ack [pe]        );  // load/store driver for mem controller inputs
+
+                // Create memory read processors (two for each manager)
+                for (int strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
+                  begin
+                    mrc2mgr_m [pe] [strm] = new ()                                                ;
+                    mr_proc   [pe] [strm] = new (pe, strm, vWudToMrcIfc[pe][strm], mrc2mgr_m[pe][strm]) ;
+                  end
+
                 for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                     begin
                         for (int strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
@@ -194,11 +208,12 @@ class Environment;
         /* */
 
         $display("@%0t:%s:%0d: : INFO:ENV: Run generators and drivers \n", $time, `__FILE__, `__LINE__,);
+        // e.g. <obj>.run();
         fork                                                          
             // We have a generator, driver and checker for every pe/lane
             `include "TB_start_generators_and_drivers.vh"
-            // gen.run();
-            // drv.run();
+            // Unique to system sim (e.g. memory read proc etc.)
+            `include "TB_system_start_running_processes.vh"
             begin
               noc_check.run();
             end

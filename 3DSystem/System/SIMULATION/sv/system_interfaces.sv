@@ -150,3 +150,31 @@ endinterface : mrc_to_std_ifc
 typedef virtual mrc_to_std_ifc  MrcToStd_T  ;
 
 
+//--------------------------------------------------------------------------------
+// Standard Descriptor interface
+//
+// - use this "generic" interface so we can send it to any observer that is
+// connected to a Descriptor interface (e.g. wu_decoder -> mrc_cntl)
+
+interface descriptor_ifc(
+                           input bit clk   );
+
+    logic                                      valid                                  ;  // send MR descriptors
+    logic                                      ready                                  ;
+    logic [`COMMON_STD_INTF_CNTL_RANGE    ]    cntl                                   ;  // descriptor delineator
+    logic [`MGR_WU_OPT_TYPE_RANGE         ]    option_type    [`MGR_WU_OPT_PER_INST ] ;  // WU Instruction option fields
+    logic [`MGR_WU_OPT_VALUE_RANGE        ]    option_value   [`MGR_WU_OPT_PER_INST ] ;  
+            
+    clocking cb_p @(posedge clk);
+
+      input   valid           ;  // send MR descriptors
+      input   ready           ;
+      input   cntl            ;  // descriptor delineator
+      input   option_type     ;  // WU Instruction option fields
+      input   option_value    ;  
+            
+    endclocking : cb_p
+endinterface : descriptor_ifc
+
+typedef virtual descriptor_ifc  vDesc_T  ;
+

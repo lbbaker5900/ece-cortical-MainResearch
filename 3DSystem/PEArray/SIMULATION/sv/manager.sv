@@ -95,7 +95,8 @@ class manager;
     vDownstreamStackBusLane_T   vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES] [`PE_NUM_OF_STREAMS]  ;  // manager communicates will lane generators
 
     // WU Decoder to Memory Read Interfaces
-    vWudToMrc_T       vWudToMrcIfc        [`MGR_NUM_OF_STREAMS] ; 
+    //vWudToMrc_T       vWudToMrcIfc        [`MGR_NUM_OF_STREAMS] ; 
+    vDesc_T           vWudToMrcIfc        [`MGR_NUM_OF_STREAMS] ; 
 
     base_operation    sys_operation                              ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_mgr                          ;  // operation packet containing all data associated with operation
@@ -118,7 +119,8 @@ class manager;
                   input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB                          ,
                   input vDownstreamStackBusLane_T    vDownstreamStackBusLane [`PE_NUM_OF_EXEC_LANES] [`PE_NUM_OF_STREAMS] ,
                   input mailbox                      mgr2up                                          , // send operation to upstream checker
-                  input vWudToMrc_T                  vWudToMrcIfc            [`MGR_NUM_OF_STREAMS  ] 
+                  //input vWudToMrc_T                  vWudToMrcIfc            [`MGR_NUM_OF_STREAMS  ] 
+                  input vDesc_T                      vWudToMrcIfc            [`MGR_NUM_OF_STREAMS  ] 
                  );
 
         this.Id                     = Id                 ;
@@ -150,8 +152,16 @@ class manager;
                 sys_operation_mgr.Id[1]  =  0       ;  // set to lane 0 to avoid error in randomize
 
                 // FIXME: currently the operation class decides what type of operation based on transaction ID
+                sys_operation_mgr.c_operationType_definedOrder .constraint_mode(0) ;
+                sys_operation_mgr.c_operationType_all          .constraint_mode(0) ;
+                sys_operation_mgr.c_operationType_fpMac        .constraint_mode(1) ;
+                sys_operation_mgr.c_operationType_copyStdToMem .constraint_mode(0) ;
+                //
+                sys_operation_mgr.c_streamSize.constraint_mode(1)                 ;
+                sys_operation_mgr.c_operandValues.constraint_mode(1)              ;
+                sys_operation_mgr.c_memoryLocalized.constraint_mode(1)            ;
                 sys_operation_mgr.tId      = operationNum             ;
-
+                //
                 // create new operation
                 assert(sys_operation_mgr.randomize()) ;
 
@@ -162,7 +172,17 @@ class manager;
                 // This randomize takes place in the generator when it sends operations to the driver so we should be the same although the OOB
                 // only cares about a subset of the fields e.g. doesnt need operands.
                 sys_operation_oob = new sys_operation_mgr ;                                                                                 
+                //
                 sys_operation_oob.setPriorOperations(priorOperations)   ;  // object may need to know what went before
+                sys_operation_oob.c_operationType_definedOrder .constraint_mode(0) ;
+                sys_operation_oob.c_operationType_all          .constraint_mode(0) ;
+                sys_operation_oob.c_operationType_fpMac        .constraint_mode(1) ;
+                sys_operation_oob.c_operationType_copyStdToMem .constraint_mode(0) ;
+                //
+                sys_operation_oob.c_streamSize.constraint_mode(1)                 ;
+                sys_operation_oob.c_operandValues.constraint_mode(1)              ;
+                sys_operation_oob.c_memoryLocalized.constraint_mode(1)            ;
+                //
                 assert(sys_operation_oob.randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
 
                 // Keep copy of previous operations as they may influence future operations

@@ -12,8 +12,11 @@ package virtual_interface;
     typedef virtual locl_to_noc_ifc                         vLocalToNoC_T                 ;
 
     typedef virtual wud_to_mrc_ifc                          vWudToMrc_T                   ;
+    typedef virtual descriptor_ifc                          vDesc_T                       ;
 
     typedef virtual mrc_to_std_ifc                          MrcToStd_T                    ;
+
+
 
     typedef virtual pe_dma2mem_ifc                             vDma2Mem_T                    ;
     typedef virtual regFileScalar2stOpCntl_ifc                 vRegFileScalarDrv2stOpCntl_T  ;

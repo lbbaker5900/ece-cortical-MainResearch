@@ -168,6 +168,15 @@ class generator;
 
 
                         // randomize again to create operand values
+                        sys_operation_gen.c_operationType_definedOrder .constraint_mode(0) ;
+                        sys_operation_gen.c_operationType_all          .constraint_mode(0) ;
+                        sys_operation_gen.c_operationType_fpMac        .constraint_mode(1) ;
+                        sys_operation_gen.c_operationType_copyStdToMem .constraint_mode(0) ;
+                        //
+                        sys_operation_gen.c_streamSize.constraint_mode(1)                 ;
+                        sys_operation_gen.c_operandValues.constraint_mode(1)              ;
+                        sys_operation_gen.c_memoryLocalized.constraint_mode(1)            ;
+                        //
                         assert(sys_operation_gen.randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
 
                        

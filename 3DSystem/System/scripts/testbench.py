@@ -318,3 +318,16 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../SIMULATION/common/TB_system_start_running_processes.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    for strm in range (0, numOfStrms):
+      pLine = pLine + '\n            begin'
+      pLine = pLine + '\n              mr_proc[{0}][{1}].run()  ;'.format(pe,strm) 
+      pLine = pLine + '\n            end'                                    
+      pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
