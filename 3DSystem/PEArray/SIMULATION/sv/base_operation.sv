@@ -19,6 +19,7 @@
 `include "streamingOps.vh"
 `include "dma_cont.vh"
 `include "mem_acc_cont.vh"
+`include "pe_cntl.vh"
 `include "pe.vh"
 `include "pe_array.vh"
 `include "noc_interpe_port_Bitmasks.vh"
@@ -649,6 +650,8 @@ package operation;
 
         rand bit               [`PE_STD_OOB_TAG_RANGE            ]  tag                                                  ;  
         rand pe_stOp_operation                                      stOp_operation                                       ;  
+        bit                    [`PE_CNTL_OOB_OPTION_RANGE        ]  stOp_optionPtr                                       ;  // pointer to stOp command memory in pe_cntl
+        bit                    [`PE_CNTL_OOB_OPTION_RANGE        ]  simd_optionPtr                                       ;  // pointer to simd command memory in pe
         rand bit               [`PE_ARRAY_CHIPLET_ADDRESS_RANGE  ]  sourceAddress          [`PE_NUM_OF_STREAMS_RANGE ]   ;  
         rand bit               [`PE_ARRAY_CHIPLET_ADDRESS_RANGE  ]  destinationAddress     [`PE_NUM_OF_STREAMS_RANGE ]   ;  
         rand pe_data_type                                           src_data_type          [`PE_NUM_OF_STREAMS_RANGE ]   ;
@@ -687,6 +690,36 @@ package operation;
 
         endfunction
     endclass
+
+    class wud_to_oob_cmd ; 
+    
+        time timeTag    ;  // debug
+        int  Id         ;  // Manager
+
+        bit   [`MGR_STD_OOB_TAG_RANGE         ]      tag           ;
+        bit   [`MGR_NUM_LANES_RANGE           ]      num_lanes     ;
+        bit   [`MGR_WU_OPT_VALUE_RANGE        ]      stOp_cmd      ;
+        bit   [`MGR_WU_OPT_VALUE_RANGE        ]      simd_cmd      ;
+     
+
+        function new ();
+            this.timeTag = $time ;
+        endfunction
+    
+        function void create( bit [`MGR_STD_OOB_TAG_RANGE  ] tag        , 
+                              bit [`MGR_NUM_LANES_RANGE    ] num_lanes  , 
+                              bit [`MGR_WU_OPT_VALUE_RANGE ] stOp_cmd   ,
+                              bit [`MGR_WU_OPT_VALUE_RANGE ] simd_cmd   );
+            
+            this.tag        =  tag        ;
+            this.num_lanes  =  num_lanes  ;
+            this.stOp_cmd   =  stOp_cmd   ;
+            this.simd_cmd   =  simd_cmd   ;
+
+        endfunction
+    
+    endclass
+
 
 
     //------------------------------------------------------------------------------------------------------

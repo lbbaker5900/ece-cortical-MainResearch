@@ -177,8 +177,8 @@ clean :
 	echo "driver"
 	touch .driver
 
-.oob_driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/oob_driver.sv 
-	vlog -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/oob_driver.sv 
+.oob_driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv ../../../Manager/HDL/common/manager.vh  ../../../PEArray/SIMULATION/sv/oob_driver.sv 
+	vlog -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/oob_driver.sv 
 	echo "oob_driver"
 	touch .oob_driver
 
@@ -188,7 +188,7 @@ clean :
 	touch .generator
 
 .tb_manager : ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/manager.sv
-	vlog -sv +define+TESTING +define+TB_ENABLE_MEM_CNTL_INITIATE_OP +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/manager.sv
+	vlog -sv +define+TESTING +define+TB_ENABLE_WUD_INITIATE_OP +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/manager.sv
 	echo "manager.sv"
 	touch .tb_manager
 
@@ -228,12 +228,12 @@ clean :
 	touch .system_interfaces
 
 .environment : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      environment.sv
-	vlog -sv +define+TESTING +define+TB_ENABLE_MEM_CNTL_INITIATE_OP +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      environment.sv
+	vlog -sv +define+TESTING +define+TB_ENABLE_WUD_INITIATE_OP +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      environment.sv
 	echo "environment"
 	touch .environment
                                                                                                                                                                                                              
 .testbench : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      testbench.sv
-	vlog -sv +define+TESTING +define+TB_ENABLE_MEM_CNTL_INITIATE_OP +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      testbench.sv
+	vlog -sv +define+TESTING +define+TB_ENABLE_WUD_INITIATE_OP +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      testbench.sv
 	echo "testbench"
 	touch .testbench
 

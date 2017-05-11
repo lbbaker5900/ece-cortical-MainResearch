@@ -133,13 +133,13 @@ interface wud_to_oob_ifc(
             
     clocking cb_p @(posedge clk);
 
-    output  valid         ;
-    output  cntl          ;
-    output  ready         ;
-    output  tag           ;
-    output  num_lanes     ;
-    output  stOp_cmd      ;
-    output  simd_cmd      ;
+    input   valid         ;
+    input   cntl          ;
+    input   ready         ;
+    input   tag           ;
+    input   num_lanes     ;
+    input   stOp_cmd      ;
+    input   simd_cmd      ;
             
     endclocking : cb_p
 

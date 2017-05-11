@@ -93,7 +93,8 @@ class Environment;
     mailbox       gen2rfP          [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ;
     event         gen2rfP_ack      [`PE_ARRAY_NUM_OF_PE ] [`PE_NUM_OF_EXEC_LANES]                       ;  
 
-    mailbox       mrc2mgr_m        [`MGR_ARRAY_NUM_OF_MGR]                        [`MGR_NUM_OF_STREAMS] ; 
+    mailbox       mrc2mgr_m        [`MGR_ARRAY_NUM_OF_MGR]                        [`MGR_NUM_OF_STREAMS] ; // Got read descriptor
+    mailbox       wud2mgr_m        [`MGR_ARRAY_NUM_OF_MGR]                                              ; // Got Downstream OOB info from WU Decoder
 
     //mailbox       gen2ldstP         ;
     //event         gen2ldstP_ack    [`PE_ARRAY_NUM_OF_PE]                        ;
@@ -177,15 +178,14 @@ class Environment;
                 gen2oob     [pe]  = new () ;
                 mgr2up      [pe]  = new () ;
                 gen2up      [pe]  = new () ;
-                //mgr2noc_p   [pe]  = new () ;
-                //noc2mgr_p   [pe]  = new () ;
+                wud2mgr_m   [pe]  = new () ;  // WU Decoder commands manager to generate operation
 
                 ldst_driver [pe]  = new ( Id,            vLoadStoreDrv2memCntl [pe] ); // ,                                      gen2ldstP, gen2ldstP_ack [pe]        );  // load/store driver for mem controller inputs
 
                 // Create memory read processors (two for each manager)
                 for (int strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
                   begin
-                    mrc2mgr_m [pe] [strm] = new ()                                                ;
+                    mrc2mgr_m [pe] [strm] = new ()                                                      ;  // memory Read Controller informs manager of read request
                     mr_proc   [pe] [strm] = new (pe, strm, vWudToMrcIfc[pe][strm], mrc2mgr_m[pe][strm]) ;
                   end
 
@@ -209,8 +209,8 @@ class Environment;
                         rf_driver   [pe][lane]  = new ( Id,                                                                                      vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP[pe][lane],   gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
                     end
                  
-                mgr         [pe]  = new ( pe, mgr2oob[pe] , mgr2oob_ack[pe], mgr2gen[pe] , mgr2gen_ack[pe],  final_operation[pe], vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe] , mgr2up [pe], vWudToMrcIfc[pe], mrc2mgr_m[pe]  );
-                oob_drv     [pe]  = new ( pe, mgr2oob[pe],  mgr2oob_ack[pe], gen2oob[pe],  gen2oob_ack[pe],                       vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe] );
+                mgr         [pe]  = new ( pe, mgr2oob[pe] , mgr2oob_ack[pe], mgr2gen[pe] , mgr2gen_ack[pe],  final_operation[pe], vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe], mgr2up [pe], vWudToMrcIfc[pe], mrc2mgr_m[pe], wud2mgr_m[pe]    );
+                oob_drv     [pe]  = new ( pe, mgr2oob[pe],  mgr2oob_ack[pe], gen2oob[pe],  gen2oob_ack[pe],                       vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe], vWudToOobIfc[pe],                             wud2mgr_m[pe]    );
                 up_check    [pe]  = new ( pe, vUpstreamStackBus [pe],  mgr2up [pe], gen2up [pe] ) ;
             end
           noc_check    = new ( vLocalToNoC,  vLocalFromNoC, noc2env_mbxEmpty );

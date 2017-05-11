@@ -20,6 +20,7 @@
 `include "mem_acc_cont.vh"
 `include "pe.vh"
 `include "pe_array.vh"
+`include "manager.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
 `include "TB_streamingOps_cntl.vh"  // might cause an error if this is included in any of the above files
@@ -42,10 +43,16 @@ class oob_driver;
     oob_packet       oob_packet_mgr     ;  // from manager
     oob_packet       oob_packet_gen     ;  // from generator
 
+    //----------------------------------------------------------------------------------------------------
     // OOB driver needs oob signals and lane signals to send oob packet
     vDownstreamStackBusOOB_T  vDownstreamStackBusOOB                                                          ;  // FIXME: OOB is a per PE interface but we have driver objects for all PE/Lanes
     vDownstreamStackBusLane_T vDownstreamStackBusLane     [`PE_NUM_OF_EXEC_LANES_RANGE ] [`PE_NUM_OF_STREAMS] ;
     vDownstreamStackBusLane_T tmp_vDownstreamStackBusLane                                [`PE_NUM_OF_STREAMS] ;
+
+    //----------------------------------------------------------------------------------------------------
+    // WU Decoder to OOB Downstream Interfaces
+    vWudToOob_T       vWudToOobIfc        ;
+    mailbox           wud2mgr_m           ;  // WU Decoder has generated OOB Downstream request to Downstream OOB Controller
 
 
     //----------------------------------------------------------------------------------------------------
@@ -59,13 +66,16 @@ class oob_driver;
 
 
     function new (
-                  input int                          Id                                                                        ,
-                  input mailbox                      mgr2oob                                                                   ,   
-                  input event                        mgr2oob_ack                                                               ,
-                  input mailbox                      gen2oob                                                                   ,
-                  input event                        gen2oob_ack              [`PE_NUM_OF_EXEC_LANES   ]                       ,
-                  input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB                                                    ,
-                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES   ] [`PE_NUM_OF_STREAMS] );
+                  input int                          Id                                                                      ,
+                  input mailbox                      mgr2oob                                                                 ,   
+                  input event                        mgr2oob_ack                                                             ,
+                  input mailbox                      gen2oob                                                                 ,
+                  input event                        gen2oob_ack              [`PE_NUM_OF_EXEC_LANES ]                       ,
+                  input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB                                                  ,
+                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES ] [`PE_NUM_OF_STREAMS]  ,
+                  input vWudToOob_T                  vWudToOobIfc                                                            ,
+                  input mailbox                      wud2mgr_m             
+                  );
 
         this.Id                            =   Id                      ;
         this.mgr2oob                       =   mgr2oob                 ;
@@ -76,16 +86,27 @@ class oob_driver;
         this.vDownstreamStackBusLane       =   vDownstreamStackBusLane ;
         this.receivedManagerOobPacket      =   0                       ;
         this.receivedGeneratorOobPackets   =   0                       ;
+        this.vWudToOobIfc                  =   vWudToOobIfc            ;
+        this.wud2mgr_m                     =   wud2mgr_m               ;
     endfunction
 
     task run();
         //$display("@%0t:%s:%0d: DEBUG: {%0d,%0d} Running OOB driver : ", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
         
-
         // OOB process will configure the PE (WIP)
 
         // oob_driver receives an oob_packet from the manager and oob_packets from each generator.
         // All oob_packets need to be received before the oob_command is driven on the STD but.
+
+        //----------------------------------------------------------------------------------------------------
+        // WU Decoder to Downstream OOB Controller
+        //
+        wud_to_oob_cmd                               rcvd_wud_to_oob_cmd ;  // grab any WU Decoder commands
+        bit   [`MGR_STD_OOB_TAG_RANGE         ]      rcvd_tag            ;
+        bit   [`MGR_NUM_LANES_RANGE           ]      rcvd_num_lanes      ;
+        bit   [`MGR_WU_OPT_VALUE_RANGE        ]      rcvd_stOp_cmd       ;
+        bit   [`MGR_WU_OPT_VALUE_RANGE        ]      rcvd_simd_cmd       ;
+     
 
         //----------------------------------------------------------------------------------------------------
         // readmeh files for pe_cntl stOp control memory
@@ -105,7 +126,7 @@ class oob_driver;
         integer fileNameInt ;
 
         bit      oob_sent            ;
-        integer  operationNumber = 0 ; // use this to create location in control file and send this as ptr
+        integer  operationNumber = 1 ; // use this to create location in control file and send this as ptr
         reg  [`STACK_DOWN_OOB_INTF_OPTION_SIZE-1:0 ]    oob_option [`STACK_DOWN_OOB_INTF_TUPLES_PER_CYCLE ] ;
         reg  [`STACK_DOWN_OOB_INTF_VALUE_SIZE-1:0  ]    oob_value  [`STACK_DOWN_OOB_INTF_TUPLES_PER_CYCLE ] ;
         stack_down_oob_option  tmp_oob_option  ;
@@ -158,6 +179,7 @@ class oob_driver;
         //  - receive operation from teh manager
         //  - receive operations from all the generators
         //  - wait for operations to be received then send OOB packet
+        //  - observe and grab transactions between WU Decoder and OOB Downstream controller
         //
         fork
 
@@ -216,8 +238,9 @@ class oob_driver;
                
                     //------------------------------------------------------------------------------
                     // Update readmemh files for stOp control memory in pe_cntl before we send WU
-                    //   - each new command gets appended to the control
-                    //   memory
+                    //   - each new command gets placed into pe_cntl memry based on pointer in OP descriptor
+                    //   - pointer comes from manager oob_packet (which used the content of the wud_to_oob command provided by the oob_driver
+                    //     e.g. manager merged pointer from wud_to_oob command into the operation packet
                     stOp_cntl_memory_stOp_operation_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_stOp_operation.dat"     , this.Id), "a"    );
                     
                     stOp_cntl_memory_sourceAddress0_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_sourceAddress0.dat"     , this.Id), "a"    );
@@ -233,17 +256,17 @@ class oob_driver;
                     stOp_cntl_memory_numberOfOperands_File     =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_numberOfOperands.dat"   , this.Id), "a"    );
                     
                     // Write to only location 0x1 as this pointer address is hard-coded in stack_interface_typedef.vh
-                    $fwrite(stOp_cntl_memory_stOp_operation_File       , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.stOp_operation          ));
+                    $fwrite(stOp_cntl_memory_stOp_operation_File       , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, oob_packet_mgr.stOp_operation          ));
                                                                                                                                                           
-                    $fwrite(stOp_cntl_memory_sourceAddress0_File       , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.sourceAddress     [0]   ));
-                    $fwrite(stOp_cntl_memory_destinationAddress0_File  , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.destinationAddress[0]   ));
-                    $fwrite(stOp_cntl_memory_src_data_type0_File       , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.src_data_type     [0]   ));
+                    $fwrite(stOp_cntl_memory_sourceAddress0_File       , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, oob_packet_mgr.sourceAddress     [0]   ));
+                    $fwrite(stOp_cntl_memory_destinationAddress0_File  , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, oob_packet_mgr.destinationAddress[0]   ));
+                    $fwrite(stOp_cntl_memory_src_data_type0_File       , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, oob_packet_mgr.src_data_type     [0]   ));
                                                                                                                                                           
-                    $fwrite(stOp_cntl_memory_sourceAddress1_File       , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.sourceAddress     [1]   ));
-                    $fwrite(stOp_cntl_memory_destinationAddress1_File  , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.destinationAddress[1]   ));
-                    $fwrite(stOp_cntl_memory_src_data_type1_File       , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.src_data_type     [1]   ));
+                    $fwrite(stOp_cntl_memory_sourceAddress1_File       , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, oob_packet_mgr.sourceAddress     [1]   ));
+                    $fwrite(stOp_cntl_memory_destinationAddress1_File  , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, oob_packet_mgr.destinationAddress[1]   ));
+                    $fwrite(stOp_cntl_memory_src_data_type1_File       , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, oob_packet_mgr.src_data_type     [1]   ));
                                                                                                                                                           
-                    $fwrite(stOp_cntl_memory_numberOfOperands_File     , $sformatf("@%0d %h\n", operationNumber, oob_packet_mgr.numberOfOperands        ));
+                    $fwrite(stOp_cntl_memory_numberOfOperands_File     , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, oob_packet_mgr.numberOfOperands        ));
                     
                     // close
                     $fclose(stOp_cntl_memory_stOp_operation_File       );
@@ -368,7 +391,7 @@ class oob_driver;
                         -> gen2oob_ack[i];
                       end
                     receivedGeneratorOobPackets   = 0                     ;
-                    operationNumber += 1 ;
+                    //operationNumber += 1 ;
                     $display("@%0t:%s:%0d:INFO: {%0d} Completed driving OOB", $time, `__FILE__, `__LINE__, this.Id );
 
                   end  // if ( (receivedManagerOobPacket == 1) && (receivedGeneratorOobPackets == 1) )
@@ -381,6 +404,35 @@ class oob_driver;
                   end  // else
               end  // forever
           end
+
+          //------------------------------------------------------------------------------------------------------------------------------------------------------
+          // Proc d) Grab commands between WU Decoder OOB Downstream Controller
+          begin
+            forever
+              begin
+                // Observe descriptor interface
+                @(vWudToOobIfc.cb_p);
+                if ((vWudToOobIfc.valid == 1'b1))
+                  begin
+                    // Start of descriptor observed, create new descriptor and start to fill the fields
+                    $display ("@%0t::%s:%0d:: INFO: Manager {%0d} observed command between WU decoder and OOB Controller", $time, `__FILE__, `__LINE__, this.Id);
+                    rcvd_wud_to_oob_cmd          =   new()               ;  
+                    rcvd_wud_to_oob_cmd.timeTag  =   $time               ;
+                    rcvd_tag                     =   vWudToOobIfc.valid  ;
+                    rcvd_num_lanes               =   vWudToOobIfc.valid  ;
+                    rcvd_stOp_cmd                =   vWudToOobIfc.valid  ;
+                    rcvd_simd_cmd                =   vWudToOobIfc.valid  ;
+                    rcvd_wud_to_oob_cmd.create( rcvd_tag, rcvd_num_lanes, rcvd_stOp_cmd, rcvd_simd_cmd);
+                    if ((vWudToOobIfc.valid == 1'b1) && (vWudToOobIfc.cntl != `COMMON_STD_INTF_CNTL_SOM_EOM))  // not single cycle
+                      begin
+                        $display ("@%0t:%s:%0d:ERROR::Manager {%0d} Non single cycle command between WU Decoder and Downstream OOB Controller", $time, `__FILE__, `__LINE__, this.Id);
+                      end
+                    wud2mgr_m.put(rcvd_wud_to_oob_cmd)  ;  // Inform manager
+                  end  // if ((vWudToOobIfc.valid == 1'b1))
+              end  // forever
+          end
+          //------------------------------------------------------------------------------------------------------------------------------------------------------
+
           //------------------------------------------------------------------------------------------------------------------------------------------------------
         join_none
     endtask

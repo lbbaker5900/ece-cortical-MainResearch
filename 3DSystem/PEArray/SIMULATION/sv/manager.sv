@@ -89,6 +89,10 @@ class manager;
     vDownstreamStackBusLane_T   vDownstreamStackBusLane  [`PE_NUM_OF_EXEC_LANES] [`PE_NUM_OF_STREAMS]  ;  // manager communicates will lane generators
 
     //----------------------------------------------------------------------------------------------------
+    // Observed WU Decoder to OOB Command
+    mailbox           wud2mgr_m           ;
+
+    //----------------------------------------------------------------------------------------------------
     // WU Decoder to Memory Read Interfaces
     //vWudToMrc_T       vWudToMrcIfc        [`MGR_NUM_OF_STREAMS] ; 
     vDesc_T           vWudToMrcIfc        [`MGR_NUM_OF_STREAMS] ; 
@@ -118,7 +122,8 @@ class manager;
                   input mailbox                      mgr2up                                                                 , // send operation to upstream checker
                   //input vWudToMrc_T                  vWudToMrcIfc                                  [`MGR_NUM_OF_STREAMS ] ,
                   input vDesc_T                      vWudToMrcIfc                                    [`MGR_NUM_OF_STREAMS ] ,
-                  input mailbox                      mrc2mgr_m                                       [`MGR_NUM_OF_STREAMS ] 
+                  input mailbox                      mrc2mgr_m                                       [`MGR_NUM_OF_STREAMS ] ,
+                  input mailbox                      wud2mgr_m               
                  );
 
         this.Id                        = Id                      ;
@@ -133,12 +138,24 @@ class manager;
         this.mgr2up                    = mgr2up                  ;
         this.vWudToMrcIfc              = vWudToMrcIfc            ;
         this.mrc2mgr_m                 = mrc2mgr_m               ;
+        this.wud2mgr_m                 = wud2mgr_m               ;
 
     endfunction
 
     task run ();
         //$display("@%0t:%s:%0d:INFO: Running manager : {%0d}", $time, `__FILE__, `__LINE__, Id);
         // wait a few cycles before starting
+
+        //----------------------------------------------------------------------------------------------------
+        // WU Decoder to Downstream OOB Controller
+        // - inform manager of OOB command
+        wud_to_oob_cmd                               rcvd_wud_to_oob_cmd ; 
+        bit   [`MGR_STD_OOB_TAG_RANGE         ]      rcvd_tag            ;
+        bit   [`MGR_NUM_LANES_RANGE           ]      rcvd_num_lanes      ;
+        bit   [`MGR_WU_OPT_VALUE_RANGE        ]      rcvd_stOp_cmd       ;
+        bit   [`MGR_WU_OPT_VALUE_RANGE        ]      rcvd_simd_cmd       ;
+     
+
         repeat (20) @(vDownstreamStackBusOOB.cb_test);  
 
         $display("@%0t:%s:%0d:INFO:Manager {%0d} Running %0d operations", $time, `__FILE__, `__LINE__, Id, num_operations);
@@ -147,6 +164,13 @@ class manager;
 
                 //----------------------------------------------------------------------------------------------------
                 // Create the operation and send to OOB driver and lane driver
+
+                // A WU Decoder command to OOB Downstream controller initiates the operation
+                `ifdef TB_ENABLE_WUD_INITIATE_OP
+                    wait ( wud2mgr_m.num() != 0 ) 
+                    wud2mgr_m.get(rcvd_wud_to_oob_cmd);
+                    $display("@%0t:%s:%0d:INFO: Manager {%0d} received WUD DOwnstream OOB CommandMRC\'s", $time, `__FILE__, `__LINE__, Id);
+                `endif
 
                 // A request to both Memory Read controllers will initiate an operation
                 `ifdef TB_ENABLE_MEM_CNTL_INITIATE_OP
@@ -211,6 +235,8 @@ class manager;
                 // create the oob_packet object from the operation
                 oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
                 oob_packet_mgr.createFromOperation(sys_operation_oob.tId, sys_operation_oob)     ;
+                oob_packet_mgr.stOp_optionPtr     = rcvd_wud_to_oob_cmd.stOp_cmd;
+                oob_packet_mgr.simd_optionPtr     = rcvd_wud_to_oob_cmd.simd_cmd;
                 mgr2oob.put(oob_packet_mgr)                                  ;  // oob needs to prepare the PE
                 $display("@%0t:%s:%0d:INFO: Manager {%0d} sent oob_packet {%0d} to oob_driver", $time, `__FILE__, `__LINE__, Id, operationNum);
 

@@ -213,6 +213,21 @@ module top;
     endgenerate
 
     //------------------------------------------------------------
+    // WU Decoder to OOB Downstream Interfaces
+    generate
+       for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+           begin
+             assign WudToOobIfc[mgr].valid        = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__valid     ;
+             assign WudToOobIfc[mgr].cntl         = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__cntl      ;
+             assign WudToOobIfc[mgr].ready        = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.odc__wud__ready     ;
+             assign WudToOobIfc[mgr].tag          = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__tag       ;
+             assign WudToOobIfc[mgr].num_lanes    = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__num_lanes ;
+             assign WudToOobIfc[mgr].stOp_cmd     = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__stOp_cmd  ;
+             assign WudToOobIfc[mgr].simd_cmd     = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__simd_cmd  ;
+           end
+    endgenerate
+
+    //------------------------------------------------------------
     // WU Decoder to memory Read Interfaces
     //
     /*
