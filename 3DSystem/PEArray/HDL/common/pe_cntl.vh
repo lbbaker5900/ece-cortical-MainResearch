@@ -70,8 +70,8 @@
 // FIFO's
 //------------------------------------------------
 
-`define PE_CNTL_OOB_RX_FIFO_DEPTH          4
-`define PE_CNTL_OOB_RX_FIFO_THRESHOLD      2
+`define PE_CNTL_OOB_RX_FIFO_DEPTH          16
+`define PE_CNTL_OOB_RX_FIFO_THRESHOLD      8
 
 
 //--------------------------------------------------------

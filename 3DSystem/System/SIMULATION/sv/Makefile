@@ -142,7 +142,8 @@ clean :
 	touch .mgr_noc_cntl
 
 .manager : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh ../../../PEArray/SIMULATION/common/*.vh        ../../../Manager/HDL/run_s/manager/code/manager.v
-	vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common        ../../../Manager/HDL/run_s/manager/code/manager.v
+	vlog -sv +define+TESTING +define+TB_SYSTEM_DRIVES_OOB_PACKET +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common        ../../../Manager/HDL/run_s/manager/code/manager.v
+	#vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common        ../../../Manager/HDL/run_s/manager/code/manager.v
 	echo "manager"
 	touch .manager
 
@@ -238,8 +239,8 @@ clean :
 	touch .testbench
 
 .top : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh        top.sv 
-	#vlog -sv +define+TESTING +define+TB_DRIVES_OOB_PACKET +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
-	vlog -sv +define+TESTING +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
+	vlog -sv +define+TESTING +define+TB_SYSTEM_DRIVES_OOB_PACKET +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
+	#vlog -sv +define+TESTING +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	echo "top"
 	touch .top
 

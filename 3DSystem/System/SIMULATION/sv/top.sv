@@ -145,9 +145,9 @@ module top;
     
     // Downstream Stack bus OOB Interface
     //  - connect OOB signals inside manager from std_oob_ifc
-    //`ifdef TB_DRIVES_OOB_PACKET
+    `ifndef TB_SYSTEM_DRIVES_OOB_PACKET
       `include "TB_system_stack_bus_downstream_oob_assignments.vh"
-    //`endif
+    `endif
     
     // Downstream Stack bus Interface
     //  - connect Lane signals inside manager from std_lane_ifc

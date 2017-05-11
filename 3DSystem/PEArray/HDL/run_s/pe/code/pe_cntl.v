@@ -272,7 +272,7 @@ module pe_cntl (
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`PE_CNTL_OOB_RX_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`PE_CNTL_OOB_RX_FIFO_THRESHOLD ),
                        .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`STACK_DOWN_OOB_INTF_TYPE_WIDTH+`STACK_DOWN_OOB_INTF_DATA_WIDTH )
-                        ) stu_data_fifo (
+                        ) std_oob_fifo (
                                           // Status
                                          .empty            ( empty                                ),
                                          .almost_full      ( almost_full                          ),

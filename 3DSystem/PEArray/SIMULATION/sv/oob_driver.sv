@@ -176,10 +176,11 @@ class oob_driver;
         // We can send two option,value tuples per OOB cycle
 
         // Spawn processes for:
-        //  - receive operation from teh manager
+        //  - receive operation from the manager and construct the stOp command memory in pe_cntl
         //  - receive operations from all the generators
         //  - wait for operations to be received then send OOB packet
-        //  - observe and grab transactions between WU Decoder and OOB Downstream controller
+        //  - observe and grab transactions between WU Decoder and OOB Downstream controller and send stOp_optionPtr to manager
+        //    Note: The manager will add the stOp and simd option ptrs to the operation and return to oob_driver
         //
         fork
 
