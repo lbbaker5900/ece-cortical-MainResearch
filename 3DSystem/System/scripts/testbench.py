@@ -219,6 +219,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n                                begin'
     pLine = pLine + '\n                                  $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {{%0d}} to {{%0d}}", $time, `__FILE__, `__LINE__, {0}, dm);'.format(mgr)
     pLine = pLine + '\n                                  mgr2noc_p [dm].put(local_noc_pkt_sent [{0}]);'.format(mgr)
+    pLine = pLine + '\n                                  local_noc_pkt_sent [{0}].displayPacket;'.format(mgr)
     pLine = pLine + '\n                                end'
     pLine = pLine + '\n                            end'
     pLine = pLine + '\n                          noc_sent_packet_complete[{0}] = 1;    '.format(mgr)
@@ -305,6 +306,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n                          // packet complete, now place in manager received mailbox so it can be matched with a sent packet'
     pLine = pLine + '\n                          $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {{%0d}} from {{%0d}}", $time, `__FILE__, `__LINE__, {0}, local_noc_pkt_rcvd [{0}].header_source);'.format(mgr)
     pLine = pLine + '\n                          noc2mgr_p [{0}].put(local_noc_pkt_rcvd [{0}]);'.format(mgr)
+    pLine = pLine + '\n                          local_noc_pkt_rcvd [{0}].displayPacket;'.format(mgr)
     pLine = pLine + '\n                          noc_rcvd_packet_complete[{0}] = 1;    '.format(mgr)
     pLine = pLine + '\n                        end'
     pLine = pLine + '\n                      @(vLocalFromNoC[{0}].cb_p);'.format(mgr)

@@ -67,6 +67,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 0, local_noc_pkt_rcvd [0].header_source);
                           noc2mgr_p [0].put(local_noc_pkt_rcvd [0]);
+                          local_noc_pkt_rcvd [0].displayPacket;
                           noc_rcvd_packet_complete[0] = 1;    
                         end
                       @(vLocalFromNoC[0].cb_p);
@@ -143,6 +144,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 1, local_noc_pkt_rcvd [1].header_source);
                           noc2mgr_p [1].put(local_noc_pkt_rcvd [1]);
+                          local_noc_pkt_rcvd [1].displayPacket;
                           noc_rcvd_packet_complete[1] = 1;    
                         end
                       @(vLocalFromNoC[1].cb_p);
@@ -219,6 +221,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 2, local_noc_pkt_rcvd [2].header_source);
                           noc2mgr_p [2].put(local_noc_pkt_rcvd [2]);
+                          local_noc_pkt_rcvd [2].displayPacket;
                           noc_rcvd_packet_complete[2] = 1;    
                         end
                       @(vLocalFromNoC[2].cb_p);
@@ -295,6 +298,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 3, local_noc_pkt_rcvd [3].header_source);
                           noc2mgr_p [3].put(local_noc_pkt_rcvd [3]);
+                          local_noc_pkt_rcvd [3].displayPacket;
                           noc_rcvd_packet_complete[3] = 1;    
                         end
                       @(vLocalFromNoC[3].cb_p);
@@ -371,6 +375,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 4, local_noc_pkt_rcvd [4].header_source);
                           noc2mgr_p [4].put(local_noc_pkt_rcvd [4]);
+                          local_noc_pkt_rcvd [4].displayPacket;
                           noc_rcvd_packet_complete[4] = 1;    
                         end
                       @(vLocalFromNoC[4].cb_p);
@@ -447,6 +452,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 5, local_noc_pkt_rcvd [5].header_source);
                           noc2mgr_p [5].put(local_noc_pkt_rcvd [5]);
+                          local_noc_pkt_rcvd [5].displayPacket;
                           noc_rcvd_packet_complete[5] = 1;    
                         end
                       @(vLocalFromNoC[5].cb_p);
@@ -523,6 +529,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 6, local_noc_pkt_rcvd [6].header_source);
                           noc2mgr_p [6].put(local_noc_pkt_rcvd [6]);
+                          local_noc_pkt_rcvd [6].displayPacket;
                           noc_rcvd_packet_complete[6] = 1;    
                         end
                       @(vLocalFromNoC[6].cb_p);
@@ -599,6 +606,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 7, local_noc_pkt_rcvd [7].header_source);
                           noc2mgr_p [7].put(local_noc_pkt_rcvd [7]);
+                          local_noc_pkt_rcvd [7].displayPacket;
                           noc_rcvd_packet_complete[7] = 1;    
                         end
                       @(vLocalFromNoC[7].cb_p);
@@ -675,6 +683,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 8, local_noc_pkt_rcvd [8].header_source);
                           noc2mgr_p [8].put(local_noc_pkt_rcvd [8]);
+                          local_noc_pkt_rcvd [8].displayPacket;
                           noc_rcvd_packet_complete[8] = 1;    
                         end
                       @(vLocalFromNoC[8].cb_p);
@@ -751,6 +760,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 9, local_noc_pkt_rcvd [9].header_source);
                           noc2mgr_p [9].put(local_noc_pkt_rcvd [9]);
+                          local_noc_pkt_rcvd [9].displayPacket;
                           noc_rcvd_packet_complete[9] = 1;    
                         end
                       @(vLocalFromNoC[9].cb_p);
@@ -827,6 +837,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 10, local_noc_pkt_rcvd [10].header_source);
                           noc2mgr_p [10].put(local_noc_pkt_rcvd [10]);
+                          local_noc_pkt_rcvd [10].displayPacket;
                           noc_rcvd_packet_complete[10] = 1;    
                         end
                       @(vLocalFromNoC[10].cb_p);
@@ -903,6 +914,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 11, local_noc_pkt_rcvd [11].header_source);
                           noc2mgr_p [11].put(local_noc_pkt_rcvd [11]);
+                          local_noc_pkt_rcvd [11].displayPacket;
                           noc_rcvd_packet_complete[11] = 1;    
                         end
                       @(vLocalFromNoC[11].cb_p);
@@ -979,6 +991,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 12, local_noc_pkt_rcvd [12].header_source);
                           noc2mgr_p [12].put(local_noc_pkt_rcvd [12]);
+                          local_noc_pkt_rcvd [12].displayPacket;
                           noc_rcvd_packet_complete[12] = 1;    
                         end
                       @(vLocalFromNoC[12].cb_p);
@@ -1055,6 +1068,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 13, local_noc_pkt_rcvd [13].header_source);
                           noc2mgr_p [13].put(local_noc_pkt_rcvd [13]);
+                          local_noc_pkt_rcvd [13].displayPacket;
                           noc_rcvd_packet_complete[13] = 1;    
                         end
                       @(vLocalFromNoC[13].cb_p);
@@ -1131,6 +1145,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 14, local_noc_pkt_rcvd [14].header_source);
                           noc2mgr_p [14].put(local_noc_pkt_rcvd [14]);
+                          local_noc_pkt_rcvd [14].displayPacket;
                           noc_rcvd_packet_complete[14] = 1;    
                         end
                       @(vLocalFromNoC[14].cb_p);
@@ -1207,6 +1222,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 15, local_noc_pkt_rcvd [15].header_source);
                           noc2mgr_p [15].put(local_noc_pkt_rcvd [15]);
+                          local_noc_pkt_rcvd [15].displayPacket;
                           noc_rcvd_packet_complete[15] = 1;    
                         end
                       @(vLocalFromNoC[15].cb_p);
@@ -1283,6 +1299,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 16, local_noc_pkt_rcvd [16].header_source);
                           noc2mgr_p [16].put(local_noc_pkt_rcvd [16]);
+                          local_noc_pkt_rcvd [16].displayPacket;
                           noc_rcvd_packet_complete[16] = 1;    
                         end
                       @(vLocalFromNoC[16].cb_p);
@@ -1359,6 +1376,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 17, local_noc_pkt_rcvd [17].header_source);
                           noc2mgr_p [17].put(local_noc_pkt_rcvd [17]);
+                          local_noc_pkt_rcvd [17].displayPacket;
                           noc_rcvd_packet_complete[17] = 1;    
                         end
                       @(vLocalFromNoC[17].cb_p);
@@ -1435,6 +1453,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 18, local_noc_pkt_rcvd [18].header_source);
                           noc2mgr_p [18].put(local_noc_pkt_rcvd [18]);
+                          local_noc_pkt_rcvd [18].displayPacket;
                           noc_rcvd_packet_complete[18] = 1;    
                         end
                       @(vLocalFromNoC[18].cb_p);
@@ -1511,6 +1530,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 19, local_noc_pkt_rcvd [19].header_source);
                           noc2mgr_p [19].put(local_noc_pkt_rcvd [19]);
+                          local_noc_pkt_rcvd [19].displayPacket;
                           noc_rcvd_packet_complete[19] = 1;    
                         end
                       @(vLocalFromNoC[19].cb_p);
@@ -1587,6 +1607,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 20, local_noc_pkt_rcvd [20].header_source);
                           noc2mgr_p [20].put(local_noc_pkt_rcvd [20]);
+                          local_noc_pkt_rcvd [20].displayPacket;
                           noc_rcvd_packet_complete[20] = 1;    
                         end
                       @(vLocalFromNoC[20].cb_p);
@@ -1663,6 +1684,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 21, local_noc_pkt_rcvd [21].header_source);
                           noc2mgr_p [21].put(local_noc_pkt_rcvd [21]);
+                          local_noc_pkt_rcvd [21].displayPacket;
                           noc_rcvd_packet_complete[21] = 1;    
                         end
                       @(vLocalFromNoC[21].cb_p);
@@ -1739,6 +1761,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 22, local_noc_pkt_rcvd [22].header_source);
                           noc2mgr_p [22].put(local_noc_pkt_rcvd [22]);
+                          local_noc_pkt_rcvd [22].displayPacket;
                           noc_rcvd_packet_complete[22] = 1;    
                         end
                       @(vLocalFromNoC[22].cb_p);
@@ -1815,6 +1838,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 23, local_noc_pkt_rcvd [23].header_source);
                           noc2mgr_p [23].put(local_noc_pkt_rcvd [23]);
+                          local_noc_pkt_rcvd [23].displayPacket;
                           noc_rcvd_packet_complete[23] = 1;    
                         end
                       @(vLocalFromNoC[23].cb_p);
@@ -1891,6 +1915,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 24, local_noc_pkt_rcvd [24].header_source);
                           noc2mgr_p [24].put(local_noc_pkt_rcvd [24]);
+                          local_noc_pkt_rcvd [24].displayPacket;
                           noc_rcvd_packet_complete[24] = 1;    
                         end
                       @(vLocalFromNoC[24].cb_p);
@@ -1967,6 +1992,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 25, local_noc_pkt_rcvd [25].header_source);
                           noc2mgr_p [25].put(local_noc_pkt_rcvd [25]);
+                          local_noc_pkt_rcvd [25].displayPacket;
                           noc_rcvd_packet_complete[25] = 1;    
                         end
                       @(vLocalFromNoC[25].cb_p);
@@ -2043,6 +2069,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 26, local_noc_pkt_rcvd [26].header_source);
                           noc2mgr_p [26].put(local_noc_pkt_rcvd [26]);
+                          local_noc_pkt_rcvd [26].displayPacket;
                           noc_rcvd_packet_complete[26] = 1;    
                         end
                       @(vLocalFromNoC[26].cb_p);
@@ -2119,6 +2146,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 27, local_noc_pkt_rcvd [27].header_source);
                           noc2mgr_p [27].put(local_noc_pkt_rcvd [27]);
+                          local_noc_pkt_rcvd [27].displayPacket;
                           noc_rcvd_packet_complete[27] = 1;    
                         end
                       @(vLocalFromNoC[27].cb_p);
@@ -2195,6 +2223,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 28, local_noc_pkt_rcvd [28].header_source);
                           noc2mgr_p [28].put(local_noc_pkt_rcvd [28]);
+                          local_noc_pkt_rcvd [28].displayPacket;
                           noc_rcvd_packet_complete[28] = 1;    
                         end
                       @(vLocalFromNoC[28].cb_p);
@@ -2271,6 +2300,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 29, local_noc_pkt_rcvd [29].header_source);
                           noc2mgr_p [29].put(local_noc_pkt_rcvd [29]);
+                          local_noc_pkt_rcvd [29].displayPacket;
                           noc_rcvd_packet_complete[29] = 1;    
                         end
                       @(vLocalFromNoC[29].cb_p);
@@ -2347,6 +2377,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 30, local_noc_pkt_rcvd [30].header_source);
                           noc2mgr_p [30].put(local_noc_pkt_rcvd [30]);
+                          local_noc_pkt_rcvd [30].displayPacket;
                           noc_rcvd_packet_complete[30] = 1;    
                         end
                       @(vLocalFromNoC[30].cb_p);
@@ -2423,6 +2454,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 31, local_noc_pkt_rcvd [31].header_source);
                           noc2mgr_p [31].put(local_noc_pkt_rcvd [31]);
+                          local_noc_pkt_rcvd [31].displayPacket;
                           noc_rcvd_packet_complete[31] = 1;    
                         end
                       @(vLocalFromNoC[31].cb_p);
@@ -2499,6 +2531,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 32, local_noc_pkt_rcvd [32].header_source);
                           noc2mgr_p [32].put(local_noc_pkt_rcvd [32]);
+                          local_noc_pkt_rcvd [32].displayPacket;
                           noc_rcvd_packet_complete[32] = 1;    
                         end
                       @(vLocalFromNoC[32].cb_p);
@@ -2575,6 +2608,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 33, local_noc_pkt_rcvd [33].header_source);
                           noc2mgr_p [33].put(local_noc_pkt_rcvd [33]);
+                          local_noc_pkt_rcvd [33].displayPacket;
                           noc_rcvd_packet_complete[33] = 1;    
                         end
                       @(vLocalFromNoC[33].cb_p);
@@ -2651,6 +2685,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 34, local_noc_pkt_rcvd [34].header_source);
                           noc2mgr_p [34].put(local_noc_pkt_rcvd [34]);
+                          local_noc_pkt_rcvd [34].displayPacket;
                           noc_rcvd_packet_complete[34] = 1;    
                         end
                       @(vLocalFromNoC[34].cb_p);
@@ -2727,6 +2762,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 35, local_noc_pkt_rcvd [35].header_source);
                           noc2mgr_p [35].put(local_noc_pkt_rcvd [35]);
+                          local_noc_pkt_rcvd [35].displayPacket;
                           noc_rcvd_packet_complete[35] = 1;    
                         end
                       @(vLocalFromNoC[35].cb_p);
@@ -2803,6 +2839,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 36, local_noc_pkt_rcvd [36].header_source);
                           noc2mgr_p [36].put(local_noc_pkt_rcvd [36]);
+                          local_noc_pkt_rcvd [36].displayPacket;
                           noc_rcvd_packet_complete[36] = 1;    
                         end
                       @(vLocalFromNoC[36].cb_p);
@@ -2879,6 +2916,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 37, local_noc_pkt_rcvd [37].header_source);
                           noc2mgr_p [37].put(local_noc_pkt_rcvd [37]);
+                          local_noc_pkt_rcvd [37].displayPacket;
                           noc_rcvd_packet_complete[37] = 1;    
                         end
                       @(vLocalFromNoC[37].cb_p);
@@ -2955,6 +2993,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 38, local_noc_pkt_rcvd [38].header_source);
                           noc2mgr_p [38].put(local_noc_pkt_rcvd [38]);
+                          local_noc_pkt_rcvd [38].displayPacket;
                           noc_rcvd_packet_complete[38] = 1;    
                         end
                       @(vLocalFromNoC[38].cb_p);
@@ -3031,6 +3070,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 39, local_noc_pkt_rcvd [39].header_source);
                           noc2mgr_p [39].put(local_noc_pkt_rcvd [39]);
+                          local_noc_pkt_rcvd [39].displayPacket;
                           noc_rcvd_packet_complete[39] = 1;    
                         end
                       @(vLocalFromNoC[39].cb_p);
@@ -3107,6 +3147,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 40, local_noc_pkt_rcvd [40].header_source);
                           noc2mgr_p [40].put(local_noc_pkt_rcvd [40]);
+                          local_noc_pkt_rcvd [40].displayPacket;
                           noc_rcvd_packet_complete[40] = 1;    
                         end
                       @(vLocalFromNoC[40].cb_p);
@@ -3183,6 +3224,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 41, local_noc_pkt_rcvd [41].header_source);
                           noc2mgr_p [41].put(local_noc_pkt_rcvd [41]);
+                          local_noc_pkt_rcvd [41].displayPacket;
                           noc_rcvd_packet_complete[41] = 1;    
                         end
                       @(vLocalFromNoC[41].cb_p);
@@ -3259,6 +3301,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 42, local_noc_pkt_rcvd [42].header_source);
                           noc2mgr_p [42].put(local_noc_pkt_rcvd [42]);
+                          local_noc_pkt_rcvd [42].displayPacket;
                           noc_rcvd_packet_complete[42] = 1;    
                         end
                       @(vLocalFromNoC[42].cb_p);
@@ -3335,6 +3378,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 43, local_noc_pkt_rcvd [43].header_source);
                           noc2mgr_p [43].put(local_noc_pkt_rcvd [43]);
+                          local_noc_pkt_rcvd [43].displayPacket;
                           noc_rcvd_packet_complete[43] = 1;    
                         end
                       @(vLocalFromNoC[43].cb_p);
@@ -3411,6 +3455,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 44, local_noc_pkt_rcvd [44].header_source);
                           noc2mgr_p [44].put(local_noc_pkt_rcvd [44]);
+                          local_noc_pkt_rcvd [44].displayPacket;
                           noc_rcvd_packet_complete[44] = 1;    
                         end
                       @(vLocalFromNoC[44].cb_p);
@@ -3487,6 +3532,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 45, local_noc_pkt_rcvd [45].header_source);
                           noc2mgr_p [45].put(local_noc_pkt_rcvd [45]);
+                          local_noc_pkt_rcvd [45].displayPacket;
                           noc_rcvd_packet_complete[45] = 1;    
                         end
                       @(vLocalFromNoC[45].cb_p);
@@ -3563,6 +3609,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 46, local_noc_pkt_rcvd [46].header_source);
                           noc2mgr_p [46].put(local_noc_pkt_rcvd [46]);
+                          local_noc_pkt_rcvd [46].displayPacket;
                           noc_rcvd_packet_complete[46] = 1;    
                         end
                       @(vLocalFromNoC[46].cb_p);
@@ -3639,6 +3686,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 47, local_noc_pkt_rcvd [47].header_source);
                           noc2mgr_p [47].put(local_noc_pkt_rcvd [47]);
+                          local_noc_pkt_rcvd [47].displayPacket;
                           noc_rcvd_packet_complete[47] = 1;    
                         end
                       @(vLocalFromNoC[47].cb_p);
@@ -3715,6 +3763,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 48, local_noc_pkt_rcvd [48].header_source);
                           noc2mgr_p [48].put(local_noc_pkt_rcvd [48]);
+                          local_noc_pkt_rcvd [48].displayPacket;
                           noc_rcvd_packet_complete[48] = 1;    
                         end
                       @(vLocalFromNoC[48].cb_p);
@@ -3791,6 +3840,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 49, local_noc_pkt_rcvd [49].header_source);
                           noc2mgr_p [49].put(local_noc_pkt_rcvd [49]);
+                          local_noc_pkt_rcvd [49].displayPacket;
                           noc_rcvd_packet_complete[49] = 1;    
                         end
                       @(vLocalFromNoC[49].cb_p);
@@ -3867,6 +3917,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 50, local_noc_pkt_rcvd [50].header_source);
                           noc2mgr_p [50].put(local_noc_pkt_rcvd [50]);
+                          local_noc_pkt_rcvd [50].displayPacket;
                           noc_rcvd_packet_complete[50] = 1;    
                         end
                       @(vLocalFromNoC[50].cb_p);
@@ -3943,6 +3994,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 51, local_noc_pkt_rcvd [51].header_source);
                           noc2mgr_p [51].put(local_noc_pkt_rcvd [51]);
+                          local_noc_pkt_rcvd [51].displayPacket;
                           noc_rcvd_packet_complete[51] = 1;    
                         end
                       @(vLocalFromNoC[51].cb_p);
@@ -4019,6 +4071,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 52, local_noc_pkt_rcvd [52].header_source);
                           noc2mgr_p [52].put(local_noc_pkt_rcvd [52]);
+                          local_noc_pkt_rcvd [52].displayPacket;
                           noc_rcvd_packet_complete[52] = 1;    
                         end
                       @(vLocalFromNoC[52].cb_p);
@@ -4095,6 +4148,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 53, local_noc_pkt_rcvd [53].header_source);
                           noc2mgr_p [53].put(local_noc_pkt_rcvd [53]);
+                          local_noc_pkt_rcvd [53].displayPacket;
                           noc_rcvd_packet_complete[53] = 1;    
                         end
                       @(vLocalFromNoC[53].cb_p);
@@ -4171,6 +4225,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 54, local_noc_pkt_rcvd [54].header_source);
                           noc2mgr_p [54].put(local_noc_pkt_rcvd [54]);
+                          local_noc_pkt_rcvd [54].displayPacket;
                           noc_rcvd_packet_complete[54] = 1;    
                         end
                       @(vLocalFromNoC[54].cb_p);
@@ -4247,6 +4302,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 55, local_noc_pkt_rcvd [55].header_source);
                           noc2mgr_p [55].put(local_noc_pkt_rcvd [55]);
+                          local_noc_pkt_rcvd [55].displayPacket;
                           noc_rcvd_packet_complete[55] = 1;    
                         end
                       @(vLocalFromNoC[55].cb_p);
@@ -4323,6 +4379,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 56, local_noc_pkt_rcvd [56].header_source);
                           noc2mgr_p [56].put(local_noc_pkt_rcvd [56]);
+                          local_noc_pkt_rcvd [56].displayPacket;
                           noc_rcvd_packet_complete[56] = 1;    
                         end
                       @(vLocalFromNoC[56].cb_p);
@@ -4399,6 +4456,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 57, local_noc_pkt_rcvd [57].header_source);
                           noc2mgr_p [57].put(local_noc_pkt_rcvd [57]);
+                          local_noc_pkt_rcvd [57].displayPacket;
                           noc_rcvd_packet_complete[57] = 1;    
                         end
                       @(vLocalFromNoC[57].cb_p);
@@ -4475,6 +4533,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 58, local_noc_pkt_rcvd [58].header_source);
                           noc2mgr_p [58].put(local_noc_pkt_rcvd [58]);
+                          local_noc_pkt_rcvd [58].displayPacket;
                           noc_rcvd_packet_complete[58] = 1;    
                         end
                       @(vLocalFromNoC[58].cb_p);
@@ -4551,6 +4610,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 59, local_noc_pkt_rcvd [59].header_source);
                           noc2mgr_p [59].put(local_noc_pkt_rcvd [59]);
+                          local_noc_pkt_rcvd [59].displayPacket;
                           noc_rcvd_packet_complete[59] = 1;    
                         end
                       @(vLocalFromNoC[59].cb_p);
@@ -4627,6 +4687,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 60, local_noc_pkt_rcvd [60].header_source);
                           noc2mgr_p [60].put(local_noc_pkt_rcvd [60]);
+                          local_noc_pkt_rcvd [60].displayPacket;
                           noc_rcvd_packet_complete[60] = 1;    
                         end
                       @(vLocalFromNoC[60].cb_p);
@@ -4703,6 +4764,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 61, local_noc_pkt_rcvd [61].header_source);
                           noc2mgr_p [61].put(local_noc_pkt_rcvd [61]);
+                          local_noc_pkt_rcvd [61].displayPacket;
                           noc_rcvd_packet_complete[61] = 1;    
                         end
                       @(vLocalFromNoC[61].cb_p);
@@ -4779,6 +4841,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 62, local_noc_pkt_rcvd [62].header_source);
                           noc2mgr_p [62].put(local_noc_pkt_rcvd [62]);
+                          local_noc_pkt_rcvd [62].displayPacket;
                           noc_rcvd_packet_complete[62] = 1;    
                         end
                       @(vLocalFromNoC[62].cb_p);
@@ -4855,6 +4918,7 @@
                           // packet complete, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 63, local_noc_pkt_rcvd [63].header_source);
                           noc2mgr_p [63].put(local_noc_pkt_rcvd [63]);
+                          local_noc_pkt_rcvd [63].displayPacket;
                           noc_rcvd_packet_complete[63] = 1;    
                         end
                       @(vLocalFromNoC[63].cb_p);

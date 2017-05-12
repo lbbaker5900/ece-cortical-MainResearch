@@ -299,6 +299,12 @@ module mgr_noc_cntl (
   `include "mgr_noc_cntl_noc_general_assignments.vh"
 
 
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //  ******** TRAFFIC OUT OF THE NODE ********
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  
   //------------------------------------------------------------
   // Control and Data to NoC FIFO(s)
   //
@@ -459,12 +465,6 @@ module mgr_noc_cntl (
 
 
 
-  //--------------------------------------------------------------------------------------------
-  //--------------------------------------------------------------------------------------------
-  //  ******** TRAFFIC OUT OF THE NODE ********
-  //--------------------------------------------------------------------------------------------
-  //--------------------------------------------------------------------------------------------
-  
   //--------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------
   // Local output Control
@@ -875,6 +875,8 @@ module mgr_noc_cntl (
   //--------------------------------------------------------------------------------------------
 
 
+
+
   //--------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------
   //  ******** TRAFFIC INTO THE NODE ********
@@ -1157,11 +1159,9 @@ module mgr_noc_cntl (
         assign  fromNoc_mom  = (fifo_read_cntl == `COMMON_STD_INTF_CNTL_MOM)                                                       ;
         assign  fromNoc_eom  = (fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM) || (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
 
-        assign fifo_read  = ( (fifo_eop_count > 0)      & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
-                            //( allDestinationsStillReady & (nc_port_fromNoc_state_next == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER))|  // send header of control packet
-                            //( allDestinationsStillReady & (nc_port_fromNoc_state_next == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ; // send balance of control packet
-                            (                             (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER))|  // send header of control packet
-                            ( ~fromNoc_eom              & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ; // send balance of control packet
+        assign fifo_read  = ( (fifo_eop_count > 0)                     & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
+                            (                                            (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER))|  // send header of control packet
+                            ( ~fromNoc_eom & allDestinationsStillReady & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ; // send balance of control packet
                               
         assign destinationReq  = //((fifo_eop_count > 0) & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
                                  (                       (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ)) ; // destination bitmask set, now request outport
@@ -1170,8 +1170,8 @@ module mgr_noc_cntl (
         assign destinationReqAddr   = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE ] ;
         assign destinationPriority  = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE         ] ;
    
-        assign valid_fromNoc    = ((nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER) |
-                                   (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ;  
+        assign valid_fromNoc    = ( nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER) |
+                                  ((nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET) & fifo_read_data_valid );
 
         assign cntl_fromNoc     = fifo_read_cntl ;  // 
         assign data_fromNoc     = fifo_read_data ;  //

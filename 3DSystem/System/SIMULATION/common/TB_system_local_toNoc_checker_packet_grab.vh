@@ -72,6 +72,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 0, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [0]);
+                                  local_noc_pkt_sent [0].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[0] = 1;    
@@ -155,6 +156,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 1, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [1]);
+                                  local_noc_pkt_sent [1].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[1] = 1;    
@@ -238,6 +240,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 2, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [2]);
+                                  local_noc_pkt_sent [2].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[2] = 1;    
@@ -321,6 +324,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 3, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [3]);
+                                  local_noc_pkt_sent [3].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[3] = 1;    
@@ -404,6 +408,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 4, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [4]);
+                                  local_noc_pkt_sent [4].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[4] = 1;    
@@ -487,6 +492,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 5, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [5]);
+                                  local_noc_pkt_sent [5].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[5] = 1;    
@@ -570,6 +576,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 6, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [6]);
+                                  local_noc_pkt_sent [6].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[6] = 1;    
@@ -653,6 +660,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 7, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [7]);
+                                  local_noc_pkt_sent [7].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[7] = 1;    
@@ -736,6 +744,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 8, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [8]);
+                                  local_noc_pkt_sent [8].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[8] = 1;    
@@ -819,6 +828,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 9, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [9]);
+                                  local_noc_pkt_sent [9].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[9] = 1;    
@@ -902,6 +912,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 10, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [10]);
+                                  local_noc_pkt_sent [10].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[10] = 1;    
@@ -985,6 +996,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 11, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [11]);
+                                  local_noc_pkt_sent [11].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[11] = 1;    
@@ -1068,6 +1080,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 12, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [12]);
+                                  local_noc_pkt_sent [12].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[12] = 1;    
@@ -1151,6 +1164,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 13, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [13]);
+                                  local_noc_pkt_sent [13].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[13] = 1;    
@@ -1234,6 +1248,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 14, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [14]);
+                                  local_noc_pkt_sent [14].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[14] = 1;    
@@ -1317,6 +1332,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 15, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [15]);
+                                  local_noc_pkt_sent [15].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[15] = 1;    
@@ -1400,6 +1416,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 16, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [16]);
+                                  local_noc_pkt_sent [16].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[16] = 1;    
@@ -1483,6 +1500,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 17, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [17]);
+                                  local_noc_pkt_sent [17].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[17] = 1;    
@@ -1566,6 +1584,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 18, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [18]);
+                                  local_noc_pkt_sent [18].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[18] = 1;    
@@ -1649,6 +1668,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 19, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [19]);
+                                  local_noc_pkt_sent [19].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[19] = 1;    
@@ -1732,6 +1752,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 20, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [20]);
+                                  local_noc_pkt_sent [20].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[20] = 1;    
@@ -1815,6 +1836,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 21, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [21]);
+                                  local_noc_pkt_sent [21].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[21] = 1;    
@@ -1898,6 +1920,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 22, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [22]);
+                                  local_noc_pkt_sent [22].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[22] = 1;    
@@ -1981,6 +2004,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 23, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [23]);
+                                  local_noc_pkt_sent [23].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[23] = 1;    
@@ -2064,6 +2088,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 24, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [24]);
+                                  local_noc_pkt_sent [24].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[24] = 1;    
@@ -2147,6 +2172,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 25, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [25]);
+                                  local_noc_pkt_sent [25].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[25] = 1;    
@@ -2230,6 +2256,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 26, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [26]);
+                                  local_noc_pkt_sent [26].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[26] = 1;    
@@ -2313,6 +2340,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 27, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [27]);
+                                  local_noc_pkt_sent [27].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[27] = 1;    
@@ -2396,6 +2424,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 28, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [28]);
+                                  local_noc_pkt_sent [28].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[28] = 1;    
@@ -2479,6 +2508,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 29, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [29]);
+                                  local_noc_pkt_sent [29].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[29] = 1;    
@@ -2562,6 +2592,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 30, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [30]);
+                                  local_noc_pkt_sent [30].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[30] = 1;    
@@ -2645,6 +2676,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 31, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [31]);
+                                  local_noc_pkt_sent [31].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[31] = 1;    
@@ -2728,6 +2760,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 32, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [32]);
+                                  local_noc_pkt_sent [32].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[32] = 1;    
@@ -2811,6 +2844,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 33, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [33]);
+                                  local_noc_pkt_sent [33].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[33] = 1;    
@@ -2894,6 +2928,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 34, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [34]);
+                                  local_noc_pkt_sent [34].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[34] = 1;    
@@ -2977,6 +3012,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 35, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [35]);
+                                  local_noc_pkt_sent [35].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[35] = 1;    
@@ -3060,6 +3096,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 36, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [36]);
+                                  local_noc_pkt_sent [36].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[36] = 1;    
@@ -3143,6 +3180,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 37, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [37]);
+                                  local_noc_pkt_sent [37].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[37] = 1;    
@@ -3226,6 +3264,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 38, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [38]);
+                                  local_noc_pkt_sent [38].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[38] = 1;    
@@ -3309,6 +3348,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 39, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [39]);
+                                  local_noc_pkt_sent [39].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[39] = 1;    
@@ -3392,6 +3432,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 40, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [40]);
+                                  local_noc_pkt_sent [40].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[40] = 1;    
@@ -3475,6 +3516,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 41, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [41]);
+                                  local_noc_pkt_sent [41].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[41] = 1;    
@@ -3558,6 +3600,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 42, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [42]);
+                                  local_noc_pkt_sent [42].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[42] = 1;    
@@ -3641,6 +3684,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 43, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [43]);
+                                  local_noc_pkt_sent [43].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[43] = 1;    
@@ -3724,6 +3768,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 44, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [44]);
+                                  local_noc_pkt_sent [44].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[44] = 1;    
@@ -3807,6 +3852,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 45, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [45]);
+                                  local_noc_pkt_sent [45].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[45] = 1;    
@@ -3890,6 +3936,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 46, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [46]);
+                                  local_noc_pkt_sent [46].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[46] = 1;    
@@ -3973,6 +4020,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 47, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [47]);
+                                  local_noc_pkt_sent [47].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[47] = 1;    
@@ -4056,6 +4104,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 48, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [48]);
+                                  local_noc_pkt_sent [48].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[48] = 1;    
@@ -4139,6 +4188,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 49, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [49]);
+                                  local_noc_pkt_sent [49].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[49] = 1;    
@@ -4222,6 +4272,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 50, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [50]);
+                                  local_noc_pkt_sent [50].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[50] = 1;    
@@ -4305,6 +4356,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 51, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [51]);
+                                  local_noc_pkt_sent [51].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[51] = 1;    
@@ -4388,6 +4440,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 52, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [52]);
+                                  local_noc_pkt_sent [52].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[52] = 1;    
@@ -4471,6 +4524,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 53, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [53]);
+                                  local_noc_pkt_sent [53].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[53] = 1;    
@@ -4554,6 +4608,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 54, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [54]);
+                                  local_noc_pkt_sent [54].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[54] = 1;    
@@ -4637,6 +4692,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 55, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [55]);
+                                  local_noc_pkt_sent [55].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[55] = 1;    
@@ -4720,6 +4776,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 56, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [56]);
+                                  local_noc_pkt_sent [56].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[56] = 1;    
@@ -4803,6 +4860,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 57, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [57]);
+                                  local_noc_pkt_sent [57].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[57] = 1;    
@@ -4886,6 +4944,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 58, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [58]);
+                                  local_noc_pkt_sent [58].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[58] = 1;    
@@ -4969,6 +5028,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 59, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [59]);
+                                  local_noc_pkt_sent [59].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[59] = 1;    
@@ -5052,6 +5112,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 60, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [60]);
+                                  local_noc_pkt_sent [60].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[60] = 1;    
@@ -5135,6 +5196,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 61, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [61]);
+                                  local_noc_pkt_sent [61].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[61] = 1;    
@@ -5218,6 +5280,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 62, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [62]);
+                                  local_noc_pkt_sent [62].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[62] = 1;    
@@ -5301,6 +5364,7 @@
                                 begin
                                   $display ("@%0t::%s:%0d:: INFO: NoC Packet sent from {%0d} to {%0d}", $time, `__FILE__, `__LINE__, 63, dm);
                                   mgr2noc_p [dm].put(local_noc_pkt_sent [63]);
+                                  local_noc_pkt_sent [63].displayPacket;
                                 end
                             end
                           noc_sent_packet_complete[63] = 1;    
