@@ -17,7 +17,7 @@
 //------------------------------------------------
 
 `define WU_DEC_INSTR_FIFO_DEPTH          16
-`define WU_DEC_INSTR_FIFO_THRESHOLD      2
+`define WU_DEC_INSTR_FIFO_THRESHOLD      8
 
 //--------------------------------------------------------
   

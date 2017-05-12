@@ -686,7 +686,7 @@ module wu_decode (
  
   // Drive to return Data processor conditioned on the send_info and sending flags
   // Note: Used assign for valid because during debug we set valid = 0 and that doest work if you use a procedure because I assume not event actually occurs to stimulate the assign.
-  assign wud__rdp__valid_e1        =   (send_info_to_return_proc & from_WuMemory_Fifo[0].pipe_read) | sending_to_return_proc  ;
+  assign wud__rdp__valid_e1        =   (send_info_to_return_proc | sending_to_return_proc) & from_WuMemory_Fifo[0].pipe_read  ;
   always @(*)
     begin
         wud__rdp__dcntl_e1        =   from_WuMemory_Fifo[0].pipe_dcntl  ;
@@ -700,8 +700,8 @@ module wu_decode (
 
   // Drive to return Data processor conditioned on the send_info and sending flags
   // Note: Used assign for valid because during debug we set valid = 0 and that doest work if you use a procedure because I assume not event actually occurs to stimulate the assign.
-  assign wud__mrc0__valid_e1      =  (send_info_to_arg0_mem_cntl & from_WuMemory_Fifo[0].pipe_read) | sending_to_arg0_mem_cntl ;
-  assign wud__mrc1__valid_e1      =  (send_info_to_arg1_mem_cntl & from_WuMemory_Fifo[0].pipe_read) | sending_to_arg1_mem_cntl ;
+  assign wud__mrc0__valid_e1      =  (send_info_to_arg0_mem_cntl | sending_to_arg0_mem_cntl) & from_WuMemory_Fifo[0].pipe_read ;
+  assign wud__mrc1__valid_e1      =  (send_info_to_arg1_mem_cntl | sending_to_arg1_mem_cntl) & from_WuMemory_Fifo[0].pipe_read ;
   always @(*)
     begin
         wud__mrc0__cntl_e1              =  from_WuMemory_Fifo[0].pipe_dcntl  ;
