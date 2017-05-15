@@ -143,3 +143,66 @@
   assign Port_from_NoC_Control[3].destinationAck[4]     =  Port_to_NoC[3].src3_OutqAck     ;
   assign Port_from_NoC_Control[3].destinationReady[4]   =  Port_to_NoC[3].src3_OutqReady   ;
  
+  //---------------------------------------------------
+  // Flag indicating one or more ports is transferring from a port
+  // This is to ensure that if an output port has accepted a request and another output
+  // port is finishing a transfer, that the finishing port accepts the port others are waiting for
+ 
+  assign inputPort_acceptedByOutputValid[0] = (Port_to_NoC[0].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT0) | 
+                                              (Port_to_NoC[1].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT0) | 
+                                              (Port_to_NoC[2].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT0) | 
+                                              (Port_to_NoC[3].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT0) | 
+                                              (nc_local_inq_cntl_state            == `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_HEADER0    ) ; 
+ 
+  assign inputPort_acceptedByOutputValid[1] = (Port_to_NoC[0].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT1) | 
+                                              (Port_to_NoC[1].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT1) | 
+                                              (Port_to_NoC[2].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT1) | 
+                                              (Port_to_NoC[3].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT1) | 
+                                              (nc_local_inq_cntl_state            == `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_HEADER1    ) ; 
+ 
+  assign inputPort_acceptedByOutputValid[2] = (Port_to_NoC[0].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT2) | 
+                                              (Port_to_NoC[1].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT2) | 
+                                              (Port_to_NoC[2].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT2) | 
+                                              (Port_to_NoC[3].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT2) | 
+                                              (nc_local_inq_cntl_state            == `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_HEADER2    ) ; 
+ 
+  assign inputPort_acceptedByOutputValid[3] = (Port_to_NoC[0].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT3) | 
+                                              (Port_to_NoC[1].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT3) | 
+                                              (Port_to_NoC[2].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT3) | 
+                                              (Port_to_NoC[3].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT3) | 
+                                              (nc_local_inq_cntl_state            == `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_HEADER3    ) ; 
+ 
+  assign inputPort_acceptedByOutput [0] [0] =  (Port_to_NoC[0].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT0) ; 
+  assign inputPort_acceptedByOutput [0] [1] =  (Port_to_NoC[1].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT0) ; 
+  assign inputPort_acceptedByOutput [0] [2] =  (Port_to_NoC[2].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT0) ; 
+  assign inputPort_acceptedByOutput [0] [3] =  (Port_to_NoC[3].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT0) ; 
+  assign inputPort_acceptedByOutput [0] [4] =  (nc_local_inq_cntl_state            == `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_HEADER0    ) ; 
+ 
+  assign inputPort_acceptedByOutput [1] [0] =  (Port_to_NoC[0].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT1) ; 
+  assign inputPort_acceptedByOutput [1] [1] =  (Port_to_NoC[1].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT1) ; 
+  assign inputPort_acceptedByOutput [1] [2] =  (Port_to_NoC[2].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT1) ; 
+  assign inputPort_acceptedByOutput [1] [3] =  (Port_to_NoC[3].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT1) ; 
+  assign inputPort_acceptedByOutput [1] [4] =  (nc_local_inq_cntl_state            == `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_HEADER1    ) ; 
+ 
+  assign inputPort_acceptedByOutput [2] [0] =  (Port_to_NoC[0].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT2) ; 
+  assign inputPort_acceptedByOutput [2] [1] =  (Port_to_NoC[1].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT2) ; 
+  assign inputPort_acceptedByOutput [2] [2] =  (Port_to_NoC[2].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT2) ; 
+  assign inputPort_acceptedByOutput [2] [3] =  (Port_to_NoC[3].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT2) ; 
+  assign inputPort_acceptedByOutput [2] [4] =  (nc_local_inq_cntl_state            == `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_HEADER2    ) ; 
+ 
+  assign inputPort_acceptedByOutput [3] [0] =  (Port_to_NoC[0].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT3) ; 
+  assign inputPort_acceptedByOutput [3] [1] =  (Port_to_NoC[1].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT3) ; 
+  assign inputPort_acceptedByOutput [3] [2] =  (Port_to_NoC[2].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT3) ; 
+  assign inputPort_acceptedByOutput [3] [3] =  (Port_to_NoC[3].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT3) ; 
+  assign inputPort_acceptedByOutput [3] [4] =  (nc_local_inq_cntl_state            == `MGR_NOC_CONT_LOCAL_INQ_CNTL_TRANSFER_HEADER3    ) ; 
+ 
+  assign localPort_acceptedByOutputValid =  (Port_to_NoC[0].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_LOCAL) | 
+                                            (Port_to_NoC[1].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_LOCAL) | 
+                                            (Port_to_NoC[2].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_LOCAL) | 
+                                            (Port_to_NoC[3].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_LOCAL) ; 
+ 
+  assign localPort_acceptedByOutput [0]  =  (Port_to_NoC[0].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_LOCAL) ; 
+  assign localPort_acceptedByOutput [1]  =  (Port_to_NoC[1].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_LOCAL) ; 
+  assign localPort_acceptedByOutput [2]  =  (Port_to_NoC[2].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_LOCAL) ; 
+  assign localPort_acceptedByOutput [3]  =  (Port_to_NoC[3].nc_port_toNoc_state == `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_LOCAL) ; 
+ 

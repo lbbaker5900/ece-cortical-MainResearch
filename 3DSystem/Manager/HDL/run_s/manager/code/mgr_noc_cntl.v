@@ -811,6 +811,23 @@ module mgr_noc_cntl (
   // Arbitration: RR
   //
 
+  // when an output is servicing an input port, when it finishes it must jump
+  // to an input port that has been requested by another port
+  wire                                                   inputPort_acceptedByOutputValid[`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE] ;  // A[n]    : Output port <n> has accepted an input port
+  wire [`MGR_NOC_CONT_NOC_NUM_OF_PKT_DEST_VECTOR_RANGE ] inputPort_acceptedByOutput     [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE] ;  // A[n][m] : Output port <n> accepted input port <m>
+  wire                                                   localPort_acceptedByOutputValid                                              ;
+  wire [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE    ] localPort_acceptedByOutput                                                   ;  // A[m] : Local port accepted input port <m>
+
+  //--------------------------------------------------------------------------------------------
+  // Keep track of which input ports have waitied the longest
+  //  - we need to ensure all outputs select the oldest requestor
+  //
+  reg    [1:0]                                         portWaitComp           [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE] [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE] ;
+  reg    [1:0]                                         portWaitComp_next      [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE] [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE] ;
+  wire   [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE] portWaiting          ;
+  wire   [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE] portStartingWaiting  ;
+  wire   [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE] portEndingWaiting    ;
+
   generate
     for (gvi=0; gvi<`MGR_NOC_CONT_NOC_NUM_OF_PORTS; gvi=gvi+1) 
       begin: Port_to_NoC
@@ -827,6 +844,28 @@ module mgr_noc_cntl (
         //
         // Each source (local, port0..3) provide an OutqReq and receive an OutqAck and OutqReady
         `include "noc_cntl_noc_port_output_control_wires.vh"
+
+        //----------------------------------------------------------------------------------------------------
+        // We need to keep track of the port who has been waiting the longest
+        // The matrx portWaitComp tells us if a node has been waiting longer than
+        // another node, we track this by observing when an input port goes into its wait state and exits its wait state. We dont care about the actual wait times.
+        // If a node has been waiting longer than another node, the code is 2. less than the code is 1.
+        // We construct a value from the request signal and the compare code {req, code}. If a port isnt requesting, its value will be less than 4.
+        // If two nodes are requesting, the node who has been waiting longest will have a code {1,10}=6 compared to {1,01}=5.
+        // The task trackWait is used to maintain the compare matrix.
+       
+        wire  [2:0]   compareValueFrom01     ;   // result when comparing the code from two inputs
+        wire  [2:0]   compareValueFrom23     ;
+        wire  [1:0]   compareValueFrom01_sel ;  // the selected node from the comparison of input 0 and 1
+        wire  [1:0]   compareValueFrom23_sel ;
+        wire          compareValueFrom01_req ;  // copy the request from the winning port to contruct the next compare
+        wire          compareValueFrom23_req ;
+        wire  [1:0]   src_selected           ;
+        wire          src_selected_valid     ;  // make sure the winner has actually requested
+        
+        // vector of source port requests
+        wire   [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE] inputPortReq         ;
+        assign inputPortReq = {src3_OutqReq, src2_OutqReq, src1_OutqReq, src0_OutqReq}; 
 
         // Once a source has been Ack'ed, the Outqready to that source is based on the output FIFO almost_full
 
@@ -859,14 +898,65 @@ module mgr_noc_cntl (
 
         `include "mgr_noc_cntl_noc_port_output_control_fsm_assignments.vh"
 
+        // First compare ports 0-1 and 2-3. Index into the portWaitComp matrix to determine which of the two ports has waitied longer.
+        // Select the port which is a) requesting and b) has been waiting longer
+        // Take the two selected ports, and again index into the portWaitComp matrix to determine wjich has waited longer
+        assign compareValueFrom01     = ({inputPortReq[0], portWaitComp[0][1]} > {inputPortReq[1], portWaitComp[1][0]}) ? {inputPortReq[0], portWaitComp[0][1]} : {inputPortReq[1], portWaitComp[1][0]} ;
+        assign compareValueFrom01_sel = ({inputPortReq[0], portWaitComp[0][1]} > {inputPortReq[1], portWaitComp[1][0]}) ? 2'd0 : 2'd1 ;
+        assign compareValueFrom01_req = ({inputPortReq[0], portWaitComp[0][1]} > {inputPortReq[1], portWaitComp[1][0]}) ? inputPortReq[0] : inputPortReq[1] ;
+        assign compareValueFrom23     = ({inputPortReq[2], portWaitComp[2][3]} > {inputPortReq[3], portWaitComp[3][2]}) ? {inputPortReq[2], portWaitComp[2][3]} : {inputPortReq[3], portWaitComp[3][2]} ;
+        assign compareValueFrom23_sel = ({inputPortReq[2], portWaitComp[2][3]} > {inputPortReq[3], portWaitComp[3][2]}) ? 2'd2 : 2'd3 ;
+        assign compareValueFrom23_req = ({inputPortReq[2], portWaitComp[2][3]} > {inputPortReq[3], portWaitComp[3][2]}) ? inputPortReq[2] : inputPortReq[3] ;
+        
+        assign src_selected         = ({compareValueFrom01_req, portWaitComp[compareValueFrom01_sel][compareValueFrom23_sel]} > {compareValueFrom23_req, portWaitComp[compareValueFrom23_sel][compareValueFrom01_sel]}) ? compareValueFrom01_sel : compareValueFrom23_sel ;
+        assign src_selected_valid   = |inputPortReq ;
+
       end
   endgenerate
+
+
+  // Local Input FSM
+  // - defined here because output port fsm uses state of local inq fsm
+  reg [`MGR_NOC_CONT_LOCAL_INQ_CNTL_STATE_RANGE] nc_local_inq_cntl_state      ;  // state flop
 
   `include "mgr_noc_cntl_noc_port_output_control_mask_assignments.vh"          // which destinations nodes does this support. Based on input from top level
   `include "mgr_noc_cntl_noc_port_output_control_request_assignments.vh"       // set {local, src0..3}_OutqReq based on ReqAddr  from each of those requestors
                                                                                // send the OutqAck and OutqReady to the requestors (local, port0..3)
   `include "mgr_noc_cntl_noc_port_output_control_header_field_assignments.vh"  // Format of packet defined at source, just pass the packet over but deassert the ports in the address bitfield not accessible via this output port
   `include "mgr_noc_cntl_noc_port_output_control_transfer_assignments.vh"      // Connect output of FIFO to external NoC ports
+
+
+  //----------------------------------------------------------------------------------------------------
+  // We need to keep track of the port who has been waiting the longest
+  // The matrx portWaitComp tells us if a node has been waiting longer than
+  // another node, we track this by observing when an input port goes into its wait state and exits its wait state. We dont care about the actual wait times.
+  // If a node has been waiting longer than another node, the code is 2. less than the code is 1.
+  // We construct a value from the request signal and the compare code {req, code}. If a port isnt requesting, its value will be less than 4.
+  // If two nodes are requesting, the node who has been waiting longest will have a code {1,10}=6 compared to {1,01}=5.
+  // The task trackWait is used to maintain the compare matrix.
+  genvar gvj;
+  generate
+    for (gvi=0; gvi<`MGR_NOC_CONT_NOC_NUM_OF_PORTS; gvi=gvi+1) 
+      begin: CompareWaitTimes
+        assign portWaiting         [gvi]  =  Port_from_NoC_Control[gvi].inWaitState_d1   ;
+        assign portStartingWaiting [gvi]  =  Port_from_NoC_Control[gvi].startingWaiting  ;
+        assign portEndingWaiting   [gvi]  =  Port_from_NoC_Control[gvi].endingWaiting    ;
+
+        for (gvj=0; gvj<`MGR_NOC_CONT_NOC_NUM_OF_PORTS; gvj=gvj+1) 
+          begin
+            always @(*)
+              begin
+              end
+            always @(posedge clk)
+              begin
+                trackWait(portWaitComp[gvi][gvj], portWaiting[gvi], portWaiting[gvj], portStartingWaiting[gvi], portEndingWaiting[gvi], portStartingWaiting[gvj], portEndingWaiting[gvj], 
+                          portWaitComp_next[gvi][gvj]   );
+                portWaitComp[gvi][gvj]  = (reset_poweron) ? 2'b00                    : 
+                                                         portWaitComp_next[gvi][gvj] ;
+              end
+          end
+      end
+  endgenerate
 
   //--------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------
@@ -895,10 +985,30 @@ module mgr_noc_cntl (
   reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc         ;  // latch as we need type to know whether to add EOD at end of current apcket transfer
 
 
+  //----------------------------------------------------------------------------------------------------
+  // We need to keep track of the port who has been waiting the longest
+  // The matrx portWaitComp tells us if a node has been waiting longer than
+  // another node, we track this by observing when an input port goes into its wait state and exits its wait state. We dont care about the actual wait times.
+  // If a node has been waiting longer than another node, the code is 2. less than the code is 1.
+  // We construct a value from the request signal and the compare code {req, code}. If a port isnt requesting, its value will be less than 4.
+  // If two nodes are requesting, the node who has been waiting longest will have a code {1,10}=6 compared to {1,01}=5.
+  // The task trackWait is used to maintain the compare matrix.
+  wire  [2:0]   local_compareValueFrom01     ;   // result when local_comparing the code from two inputs
+  wire  [2:0]   local_compareValueFrom23     ;
+  wire  [1:0]   local_compareValueFrom01_sel ;  // the selected node from the local_comparison of input 0 and 1
+  wire  [1:0]   local_compareValueFrom23_sel ;
+  wire          local_compareValueFrom01_req ;  // copy the request from the winning port to contruct the next local_compare
+  wire          local_compareValueFrom23_req ;
+  wire  [1:0]   local_src_selected           ;
+  wire          local_src_selected_valid     ;  // make sure the winner has actually requested
+
+  wire   [`MGR_NOC_CONT_NOC_NUM_OF_PORTS_VECTOR_RANGE] local_inputPortReq         ;
+  assign local_inputPortReq = {port3_localInqReq, port2_localInqReq, port1_localInqReq, port0_localInqReq}; 
+
   //--------------------------------------------------------------------------------------------
   // Local Input FSM
   //
-  reg [`MGR_NOC_CONT_LOCAL_INQ_CNTL_STATE_RANGE] nc_local_inq_cntl_state      ;  // state flop
+  //reg [`MGR_NOC_CONT_LOCAL_INQ_CNTL_STATE_RANGE] nc_local_inq_cntl_state      ;  // state flop - defined earlier
   reg [`MGR_NOC_CONT_LOCAL_INQ_CNTL_STATE_RANGE] nc_local_inq_cntl_state_next ;
   
 
@@ -922,10 +1032,25 @@ module mgr_noc_cntl (
 
   `include "mgr_noc_cntl_noc_local_inq_control_assignments.vh"
 
+   
+   // First compare ports 0-1 and 2-3. Index into the portWaitComp matrix to determine which of the two ports has waitied longer.
+   // Select the port which is a) requesting and b) has been waiting longer
+   // Take the two selected ports, and again index into the portWaitComp matrix to determine wjich has waited longer
+   assign local_compareValueFrom01     = ({local_inputPortReq[0], portWaitComp[0][1]} > {local_inputPortReq[1], portWaitComp[1][0]}) ? {local_inputPortReq[0], portWaitComp[0][1]} : {local_inputPortReq[1], portWaitComp[1][0]} ;
+   assign local_compareValueFrom01_sel = ({local_inputPortReq[0], portWaitComp[0][1]} > {local_inputPortReq[1], portWaitComp[1][0]}) ? 2'd0 : 2'd1 ;
+   assign local_compareValueFrom01_req = ({local_inputPortReq[0], portWaitComp[0][1]} > {local_inputPortReq[1], portWaitComp[1][0]}) ? local_inputPortReq[0] : local_inputPortReq[1] ;
+   assign local_compareValueFrom23     = ({local_inputPortReq[2], portWaitComp[2][3]} > {local_inputPortReq[3], portWaitComp[3][2]}) ? {local_inputPortReq[2], portWaitComp[2][3]} : {local_inputPortReq[3], portWaitComp[3][2]} ;
+   assign local_compareValueFrom23_sel = ({local_inputPortReq[2], portWaitComp[2][3]} > {local_inputPortReq[3], portWaitComp[3][2]}) ? 2'd2 : 2'd3 ;
+   assign local_compareValueFrom23_req = ({local_inputPortReq[2], portWaitComp[2][3]} > {local_inputPortReq[3], portWaitComp[3][2]}) ? local_inputPortReq[2] : local_inputPortReq[3] ;
+   
+   assign local_src_selected         = ({local_compareValueFrom01_req, portWaitComp[local_compareValueFrom01_sel][local_compareValueFrom23_sel]} > {local_compareValueFrom23_req, portWaitComp[local_compareValueFrom23_sel][local_compareValueFrom01_sel]}) ? local_compareValueFrom01_sel : local_compareValueFrom23_sel ;
+   assign local_src_selected_valid   = |local_inputPortReq ;
+
   //--------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------
   // Port Input Control
   //
+  //  FIXME: Not used yet
 
   //--------------------------------------------------
   // FIFO's
@@ -1103,6 +1228,11 @@ module mgr_noc_cntl (
         wire                                            fromNoc_mom      ;
         wire                                            fromNoc_eom      ;
 
+        wire inWaitState                                                 ;  // we will create a pulse when we enter and exit waiting
+        reg  inWaitState_d1                                              ;
+        wire startingWaiting                                             ;
+        wire endingWaiting                                               ;
+
         //--------------------------------------------------------------------------------------------
         // Port Control from NoC FSM
         //
@@ -1129,7 +1259,7 @@ module mgr_noc_cntl (
               // we have to identify the destination PE from the incoming pe mask address
               // put it out there to be accepted by an output port(s) and/or local input queue
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ:
-                nc_port_fromNoc_state_next = ( ~|destinationAck               ) ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  :  // Need at least one to ack
+                nc_port_fromNoc_state_next = ( ~|destinationAck               ) ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  :  // Need at least one to ack. FIXME: Was this to catch an error??
                                              ( allDestinationsInitiallyReady  ) ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER  :  // output port has acked and all destinations ready
                                                                                   `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ  ;
             
@@ -1181,7 +1311,14 @@ module mgr_noc_cntl (
         assign type_fromNoc     = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE  ] ;  // valid only during 1st tuple cycle of NoC packet       
         assign ptype_fromNoc    = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE ] ;  // valid during tuple and data cycles of NoC packet       
 */
-                                                                                   
+                          
+        assign inWaitState = (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ ) ;
+        always @(posedge clk)
+          begin
+            inWaitState_d1 <= (reset_poweron)  ? 1'b0 :  inWaitState  ;
+          end
+        assign startingWaiting = inWaitState & ~inWaitState_d1 ;
+        assign endingWaiting  = ~inWaitState &  inWaitState_d1 ;
 
    
         always @(posedge clk)
@@ -1204,12 +1341,106 @@ module mgr_noc_cntl (
   // Connect incoming NoC packets to input FIFO(s)
   `include "mgr_noc_cntl_port_input_control_assignments.vh"
 
+
   //--------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------
   //  ******** END OF TRAFFIC INTO THE NODE ********
   //--------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------
 
+  task trackWait ( input logic [1:0] compState, input logic refWaiting, input logic inputWaiting, input logic refEnteringWait, input logic refExitingWait, input logic inputEnteringWait, input logic inputExitingWait,
+                   output logic [1:0] compState_next); //, output refWaiting_next, output inputWaiting_next );
+
+    `define MGR_CONT_NOC_TRACKWAIT_GT        2'd2      
+    `define MGR_CONT_NOC_TRACKWAIT_LT        2'd1     
+    `define MGR_CONT_NOC_TRACKWAIT_NULL      2'd0     
+    begin
+      casex ({compState, refWaiting, inputWaiting, refEnteringWait, refExitingWait, inputEnteringWait, inputExitingWait})
+        (8'b_xx___0_0___1_0___0_x_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+          end
+        (8'b_xx___0_0___1_0___1_x_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+          end
+        (8'b_xx___0_0___0_x___1_x_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
+          end
+
+        (8'b_xx___0_1___1_x___x_0_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
+          end
+        (8'b_xx___0_1___1_x___x_1_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+          end
+        (8'b_xx___0_1___0_x___x_1_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+          end
+
+        (8'b_xx___1_0___x_1___0_x_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+          end
+        (8'b_xx___1_0___x_0___1_x_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+          end
+        (8'b_xx___1_0___x_1___1_x_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
+          end
+
+        (8'b_10___1_1___x_1___x_0_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
+          end
+        (8'b_10___1_1___x_0___x_1_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+          end
+        (8'b_10___1_1___x_1___x_1_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+          end
+
+        (8'b_01___1_1___x_1___x_0_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
+          end
+        (8'b_01___1_1___x_0___x_1_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+          end
+        (8'b_01___1_1___x_1___x_1_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+          end
+
+        (8'b_00___1_1___x_1___x_0_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
+          end
+        (8'b_00___1_1___x_0___x_1_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+          end
+        (8'b_00___1_1___x_1___x_1_) :
+          begin
+            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+          end
+
+        default:
+          begin
+            assign compState_next   = compState    ;
+          end
+      endcase
+    end
+  endtask
 
 endmodule
 

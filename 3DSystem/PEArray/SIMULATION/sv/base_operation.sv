@@ -153,8 +153,8 @@ package operation;
                     this.setDestinationAddress [0] = 0       ;  
                     this.setSourceAddress      [0] = 0       ;  
                     this.hasBeenRandomized         = 0       ;
-                    this.numberOfOperands_min      = 100     ;
-                    this.numberOfOperands_max      = 100     ;
+                    this.numberOfOperands_min      = 20     ;
+                    this.numberOfOperands_max      = 20     ;
         endfunction
 
         

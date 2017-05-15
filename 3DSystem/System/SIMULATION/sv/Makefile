@@ -137,7 +137,7 @@ clean :
 	touch .mrc_cntl
 
 .mgr_noc_cntl : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh           ../../../Manager/HDL/run_s/manager/code/mgr_noc_cntl.v
-	vlog     +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common           ../../../Manager/HDL/run_s/manager/code/mgr_noc_cntl.v
+	vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common           ../../../Manager/HDL/run_s/manager/code/mgr_noc_cntl.v
 	echo "mgr_noc_cntl"
 	touch .mgr_noc_cntl
 
