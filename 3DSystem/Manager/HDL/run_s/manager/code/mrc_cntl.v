@@ -158,7 +158,9 @@ module mrc_cntl (
                                           // Status
                                          .empty            ( empty                                                     ),
                                          .almost_full      ( almost_full                                               ),
-                                         //.almost_empty     ( almost_empty                                              ),
+                                         .almost_empty     (                                                           ),
+                                         .depth            (                                                           ),
+
                                           // Write                                                                    
                                          .write            ( write                                                     ),
                                          .write_data       ( {write_cntl,  write_option_type[0], write_option_value[0],

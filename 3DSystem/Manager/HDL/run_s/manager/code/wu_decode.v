@@ -294,6 +294,8 @@ module wu_decode (
                                           // Status
                                          .empty            ( empty                                                ),
                                          .almost_full      ( almost_full                                          ),
+                                         .almost_empty     (                                                      ),
+                                         .depth            (                                                      ),
                                           // Write                                                               
                                          .write            ( write                                                ),
                                          .write_data       ( {write_icntl, write_dcntl, write_op, write_option_type[0], write_option_value[0],

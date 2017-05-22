@@ -16,14 +16,14 @@
 //                        ) name_of_fifo( ..... );
 
 `include "common.vh"
-`include "pe_array.vh"
 
 `timescale 1ns/10ps
 
 
 module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
                       parameter GENERIC_FIFO_THRESHOLD   = 32  ,
-                      parameter GENERIC_FIFO_DATA_WIDTH  = 4   )
+                      parameter GENERIC_FIFO_DATA_WIDTH  = 4   ,
+                      localparam GENERIC_FIFO_ADDR_WIDTH = $clog2(GENERIC_FIFO_DEPTH))
                  (
 
           //---------------------------------------------------------------
@@ -35,28 +35,25 @@ module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
           
           //---------------------------------------------------------------
           // Input
-          input   wire                                      write       , 
-          input   wire  [GENERIC_FIFO_DATA_WIDTH-1 :0  ]    write_data  ,
+          input   wire                                      write        , 
+          input   wire  [GENERIC_FIFO_DATA_WIDTH-1 :0  ]    write_data   ,
           
           //---------------------------------------------------------------
           // Output
-          input   wire                                      read        , 
-          output  reg   [GENERIC_FIFO_DATA_WIDTH-1 :0  ]    read_data   ,
+          input   wire                                      read         , 
+          output  reg   [GENERIC_FIFO_DATA_WIDTH-1 :0  ]    read_data    ,
           
           //---------------------------------------------------------------
           // Status
-          output  wire                                      empty       , 
-          output  wire                                      almost_full         
+          output  wire                                      empty        , 
+          output  reg                                       almost_full  ,        
+          output  reg                                       almost_empty ,
+          output  reg   [GENERIC_FIFO_ADDR_WIDTH -1 :0  ]   depth         
 
              );
 
-/*
-  parameter GENERIC_FIFO_DEPTH            = 8                          ;
-  parameter GENERIC_FIFO_DATA_WIDTH       = 32                         ;
-  parameter GENERIC_FIFO_THRESHOLD        = 4                          ; 
-*/
   // 
-  localparam GENERIC_FIFO_ADDR_WIDTH       = $clog2(GENERIC_FIFO_DEPTH) ;
+  //localparam GENERIC_FIFO_ADDR_WIDTH       = $clog2(GENERIC_FIFO_DEPTH) ;
 
 
 
@@ -64,14 +61,45 @@ module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
   // Regs/Wires
   //
 
-  reg  [GENERIC_FIFO_DATA_WIDTH-1 :0  ]       fifo_data     [GENERIC_FIFO_DEPTH-1 :0 ] ;
+    
+  wire [GENERIC_FIFO_DATA_WIDTH-1 :0  ]       int_read_data                            ;
   reg  [GENERIC_FIFO_ADDR_WIDTH-1 :0  ]       wp                                       ; 
   reg  [GENERIC_FIFO_ADDR_WIDTH-1 :0  ]       rp                                       ; 
-  reg  [GENERIC_FIFO_ADDR_WIDTH-1 :0  ]       depth                                    ; 
   //`ifdef TESTING
-  reg                                         full                                     ;   // latch the fall condition for debug
+  reg                                         full                                     ;   // latch the full condition for debug
   // `endif
   
+//  The necessary delays and SYNTHESIS modes are now handled in the generic
+//  memory
+//  `ifdef SYNTHESIS
+    generic_memory #(.GENERIC_MEM_DEPTH          (GENERIC_FIFO_DEPTH     ),
+                     .GENERIC_MEM_REGISTERED_OUT (0                      ),
+                     .GENERIC_MEM_DATA_WIDTH     (GENERIC_FIFO_DATA_WIDTH)
+                    ) fifo_data_mem ( 
+                    //---------------------------------------------------------------
+                    // Port A 
+                    .portA_address       ( wp          ),
+                    .portA_write_data    ( write_data  ),
+                    .portA_read_data     (             ),
+                    .portA_enable        ( 1'b1        ), 
+                    .portA_write         ( write       ),
+                    
+                    //---------------------------------------------------------------
+                    // Port B 
+                    .portB_address       ( rp                               ),
+                    .portB_write_data    ( {GENERIC_FIFO_DATA_WIDTH {1'b0}}),
+                    .portB_read_data     ( int_read_data                    ),
+                    .portB_enable        ( read                             ), 
+                    .portB_write         ( 1'b0                             ),
+                    
+                    //---------------------------------------------------------------
+                    // General
+                    .clk                 ( clk                       )
+                    ) ;
+//  `else
+//    reg  [GENERIC_FIFO_DATA_WIDTH-1 :0 ]       fifo_data     [GENERIC_FIFO_DEPTH-1 :0 ] ;
+//  `endif
+
   always @(posedge clk)
     begin
       wp                 <= ( reset_poweron   ) ? 'd0           : 
@@ -79,8 +107,12 @@ module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
                             ( write           ) ?  wp + 'd1     :
                                                    wp           ;
   
-      fifo_data[wp]      <= ( write           ) ? write_data    : 
-                                                  fifo_data[wp] ;
+//  The necessary delays and SYNTHESIS modes are now handled in the generic
+//  memory
+//      `ifndef SYNTHESIS
+//        fifo_data[wp]      <= ( write           ) ? write_data    : 
+//                                                    fifo_data[wp] ;
+//      `endif
   
       rp                 <= ( reset_poweron   ) ? 'd0           : 
                             ( clear           ) ? 'd0           : 
@@ -102,18 +134,63 @@ module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
 
   //--------------------------------------------------------
   // Registered outputs
-  //
-  always @(posedge clk)
-    begin
-      read_data         <= ( read             ) ? fifo_data [rp] : 
-                                                  read_data      ;
-    end
+  // - in non-pipe mode, actual memory presents it output after the MENA is clocked
+  /*
+                          ______        ______        ______        ______        ______        ______
+                    _____|      |______|      |______|      |______|      |______|      |______|      
+                                       ^             ^             ^
+                                     sample        sample        sample
+                                     enable     non-piped data  piped data         
+                                 _____________  
+            MEA     ____________|             |_______________________________________________________
+                                       ^
+                                    enable
+                                 _____________
+           Address  ------------|_____________|-------------------------------------------------------
+                                        
+                                          ___________
+  Non-piped Data    -------------------<<|___________|>>---------------------------
+                                       ^       
+                                  non-pipe data 
+                                     output
+                                                        ___________
+      Piped Data    ---------------------------------<<|___________|>---------------------------
+                                                     ^            
+                                                 pipe data 
+                                                  output
+  */
+//  The necessary delays and SYNTHESIS modes are now handled in the generic
+//  memory
+// 
+//  `ifndef SYNTHESIS
+//    always @(posedge clk)
+//      begin
+//        read_data         <= ( read             ) ? int_read_data  :
+//                                                    read_data      ;
+//      end
+//  `else
+    always @(*)
+      begin
+        read_data         =  int_read_data  ;
+      end
+//  `endif
       
   //--------------------------------------------------------
-  // Un-Registered outputs
+  // Keep track of almost full and empty
   //
   assign empty          = (rp == wp)                                             ;
-  assign almost_full    = (depth >= (GENERIC_FIFO_DEPTH-GENERIC_FIFO_THRESHOLD)) ;
+  always @(posedge clk)
+    begin
+      almost_full   <= ( reset_poweron                                                           ) ? 1'b0        : 
+                       ((depth == (GENERIC_FIFO_DEPTH-GENERIC_FIFO_THRESHOLD)) &&  write && ~read) ? 1'b1        :
+                       ((depth == (GENERIC_FIFO_DEPTH-GENERIC_FIFO_THRESHOLD)) && ~write &&  read) ? 1'b0        :
+                                                                                                     almost_full ;
+      almost_empty  <= ( reset_poweron                                        ) ? 1'b1         : 
+                       ((depth == (GENERIC_FIFO_THRESHOLD)) &&  write && ~read) ? 1'b0         :
+                       ((depth == (GENERIC_FIFO_THRESHOLD)) && ~write &&  read) ? 1'b1         :
+                                                                                  almost_empty ;
+  
+    end
 
   //--------------------------------------------------------
 

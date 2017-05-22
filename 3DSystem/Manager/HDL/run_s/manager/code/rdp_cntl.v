@@ -412,6 +412,8 @@ module rdp_cntl (
                                           // Status
                                          .empty            ( empty                                                ),
                                          .almost_full      ( almost_full                                          ),
+                                         .almost_empty     (                                                      ),
+                                         .depth            (                                                      ),
                                           // Write                                                               
                                          .write            ( write                                                ),
                                          .write_data       ( {write_dcntl, write_tag, write_option_type[0], write_option_value[0],
@@ -546,6 +548,8 @@ module rdp_cntl (
                                           // Status
                                          .empty            ( empty                                     ),
                                          .almost_full      ( almost_full                               ),
+                                         .almost_empty     (                                           ),
+                                         .depth            (                                           ),
                                           // Write                                                     
                                          .write            ( write                                     ),
                                          .write_data       ( {write_cntl, write_tag, write_data}       ),
@@ -815,6 +819,8 @@ module rdp_cntl (
                                           // Status
                                          .empty            ( empty                      ),
                                          .almost_full      ( almost_full                ),
+                                         .almost_empty     (                            ),
+                                         .depth            (                            ),
                                           // Write                                      
                                          .write            ( write                      ),
                                          .write_data       ( {write_cntl, write_storage_ptr }), 
@@ -968,6 +974,8 @@ module rdp_cntl (
                                           // Status
                                          .empty            ( empty                      ),
                                          .almost_full      ( almost_full                ),
+                                         .almost_empty     (                            ),
+                                         .depth            (                            ),
                                           // Write                                      
                                          .write            ( write                      ),
                                          .write_data       ( {write_cntl, write_tag, write_oneIsLocal, write_oneIsNotLocal, write_numLanes, write_destAddr }), 

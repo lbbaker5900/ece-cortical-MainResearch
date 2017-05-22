@@ -200,6 +200,8 @@ module oob_downstream_cntl (
                                           // Status
                                          .empty            ( empty                                                ),
                                          .almost_full      ( almost_full                                          ),
+                                         .almost_empty     (                                                      ),
+                                         .depth            (                                                      ),
                                           // Write                                                               
                                          .write            ( write                                                ),
                                          .write_data       ({write_cntl, write_tag, write_num_lanes, write_stOp_cmd, write_simd_cmd}),

@@ -213,6 +213,8 @@ module simd_wrapper (
                                           // Status
                                          .empty            ( empty                        ),
                                          .almost_full      ( almost_full                  ),
+                                         .almost_empty     (                              ),
+                                         .depth            (                              ),
                                           // Write
                                          .write            ( write                        ),
                                          .write_data       ( write_data                   ),
@@ -312,6 +314,8 @@ module simd_wrapper (
                                           // Status
                                          .empty            ( empty                        ),
                                          .almost_full      ( almost_full                  ),
+                                         .almost_empty     (                              ),
+                                         .depth            (                              ),
                                           // Write
                                          .write            ( write                        ),
                                          .write_data       ( write_tag                    ),
