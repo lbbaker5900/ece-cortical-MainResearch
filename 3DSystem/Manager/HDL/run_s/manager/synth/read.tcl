@@ -19,20 +19,67 @@
 # latches                                            
 #---------------------------------------------------------
 
-read_sverilog $PE_RTL_COM_DIR/generic_fifo.v
+read_sverilog $RTL_COM_DIR/generic_memory.v
+read_sverilog $RTL_COM_DIR/generic_fifo.v
+read_sverilog $RTL_COM_DIR/generic_pipelined_fifo.v
 
+#------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------
+# Create parameterized modules
+# - each FIFO has a corresponding memory
+# - dont forget to create memory .db file
+#
+
+#------------------------------------------------------------------------------------------------------------------------
+# Generic Pipelined FIFO's (and memory)
+#  - elaborate the memory first, then generic_fifo then generic_pipelined_fifo
+
+# <name>
+
+#------------------------------------------------------------------------------------------------------------------------
+# Generic FIFO's (and memory)
+#  - elaborate the memory first
+
+# <name>
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=32,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=58  $RTL_COM_DIR/generic_memory.v
+elaborate generic_memory -parameter "GENERIC_MEM_DEPTH=32,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=58"
 analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=32,GENERIC_FIFO_THRESHOLD=8,GENERIC_FIFO_DATA_WIDTH=58   $PE_RTL_COM_DIR/generic_fifo.v
-analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=32,GENERIC_FIFO_THRESHOLD=8,GENERIC_FIFO_DATA_WIDTH=138  $PE_RTL_COM_DIR/generic_fifo.v
-analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=70,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=18   $PE_RTL_COM_DIR/generic_fifo.v
-analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=4,GENERIC_FIFO_THRESHOLD=2,GENERIC_FIFO_DATA_WIDTH=82    $PE_RTL_COM_DIR/generic_fifo.v
-
 elaborate generic_fifo -parameter "GENERIC_FIFO_DEPTH=32,GENERIC_FIFO_THRESHOLD=8,GENERIC_FIFO_DATA_WIDTH=58"   
+
+# <name>
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=32,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=138  $RTL_COM_DIR/generic_memory.v
+elaborate generic_memory -parameter "GENERIC_MEM_DEPTH=32,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=138"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=32,GENERIC_FIFO_THRESHOLD=8,GENERIC_FIFO_DATA_WIDTH=138  $PE_RTL_COM_DIR/generic_fifo.v
 elaborate generic_fifo -parameter "GENERIC_FIFO_DEPTH=32,GENERIC_FIFO_THRESHOLD=8,GENERIC_FIFO_DATA_WIDTH=138"  
+
+# ????????? depth = 70 ????/
+# <name>  70x18
+# Depth must be %8 - use 72x18
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=70,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=18  $RTL_COM_DIR/generic_memory.v
+elaborate generic_memory -parameter "GENERIC_MEM_DEPTH=70,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=18"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=70,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=18   $PE_RTL_COM_DIR/generic_fifo.v
 elaborate generic_fifo -parameter "GENERIC_FIFO_DEPTH=70,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=18"   
+
+# <name>
+# Dimensions not allowed - too shallow
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=4,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=82  $RTL_COM_DIR/generic_memory.v
+elaborate generic_memory -parameter "GENERIC_MEM_DEPTH=4,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=82"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=4,GENERIC_FIFO_THRESHOLD=2,GENERIC_FIFO_DATA_WIDTH=82    $PE_RTL_COM_DIR/generic_fifo.v
 elaborate generic_fifo -parameter "GENERIC_FIFO_DEPTH=4,GENERIC_FIFO_THRESHOLD=2,GENERIC_FIFO_DATA_WIDTH=82"    
+
+#------------------------------------------------------------------------------------------------------------------------
+# Generic Memories
+#
+
+# <name>
+
+#------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------
+
 
 read_sverilog $RTL_DIR/rdp_cntl.v
 
 #suppress_message LINT-28
 check_design
+
 

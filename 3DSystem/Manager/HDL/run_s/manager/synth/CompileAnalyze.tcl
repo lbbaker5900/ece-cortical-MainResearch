@@ -48,9 +48,9 @@
 # and highest (fastest) Vcc                            
 #---------------------------------------------------------
 
- set target_library $target_library
- #set link_library   saed32lvt_ff1p16v25c.db
- set link_library   [concat  $target_library dw_foundation.sldb] 
+# set target_library cp65npkldst_tt1p0v25c.db
+# set link_library   cp65npkldst_tt1p0v25c.db
+# set link_library   [concat  $link_library dw_foundation.sldb] 
  translate
 
 #---------------------------------------------------------
@@ -79,7 +79,7 @@
 # later verification.                                  
 #---------------------------------------------------------
 
- write_sdf counter_min.sdf
+ write_sdf ${modname}_min.sdf
 
 #---------------------------------------------------------
 # Since Synopsys has to insert logic to meet hold      
@@ -90,9 +90,9 @@
 # 'translate' means 'translate to new library'         
 #---------------------------------------------------------
 
- set target_library $target_library
- #set link_library   saed32lvt_ss0p95v125c.db
- set link_library   [concat  "*" $target_library dw_foundation.sldb]
+# set target_library cp65npkldst_tt1p0v25c.db
+# set link_library   cp65npkldst_tt1p0v25c.db
+# set link_library   [concat  $link_library dw_foundation.sldb]
  translate
  report_timing  > timing_max_slow_holdfixed_${type}.rpt
 # report_timing -delay min  > timing_min_slow_holdfixed_${type}.rpt
@@ -101,18 +101,18 @@
 # Sanity checks to see if the libraries are characterized 
 # correctly    
 #---------------------------------------------------------
- set target_library $target_library
- #set link_library   saed32lvt_ff1p16v25c.db
- set link_library   [concat  "*" $target_library dw_foundation.sldb]
- translate
- report_timing  > timing_max_fast_holdfixed_${type}.rpt
+# set target_library NangateOpenCellLibrary_PDKv1_2_v2008_10_fast_nldm.db
+# set link_library   NangateOpenCellLibrary_PDKv1_2_v2008_10_fast_nldm.db
+# set link_library   [concat  $link_library dw_foundation.sldb]
+# translate
+# report_timing  > timing_max_fast_holdfixed_${type}.rpt
 # report_timing -delay min  > timing_min_fast_holdfixed_${type}.rpt
 
- set target_library $target_library
- #set link_library   saed32lvt_tt1p05v25c.db
- set link_library   [concat  "*" $target_library dw_foundation.sldb]
- translate
- report_timing  > timing_max_typ_holdfixed_${type}.rpt
+# set target_library NangateOpenCellLibrary_PDKv1_2_v2008_10_typical_nldm.db
+# set link_library   NangateOpenCellLibrary_PDKv1_2_v2008_10_typical_nldm.db
+# set link_library   [concat  $link_library dw_foundation.sldb]
+# translate
+# report_timing  > timing_max_typ_holdfixed_${type}.rpt
 # report_timing -delay min  > timing_min_typ_holdfixed_${type}.rpt
 
 
@@ -134,4 +134,10 @@
 # later verification.                                  
 #---------------------------------------------------------
 
- write_sdf counter_max.sdf
+ write_sdf ${modname}_max.sdf
+
+report_area > area_netlist.rpt
+
+report_power > power_netlist.rpt
+
+

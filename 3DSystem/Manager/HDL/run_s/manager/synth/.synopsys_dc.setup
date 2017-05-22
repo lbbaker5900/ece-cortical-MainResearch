@@ -1,3 +1,4 @@
+
 # rename as .synopsys_dc.setup 
 
 # Search Path variables  
@@ -7,19 +8,28 @@ set PE_COM_DIR        "../../../../../PEArray/HDL/common"
 set PE_RTL_COM_DIR    "../../../../../PEArray/HDL/run_s/common/code"
 set SYS_RTL_COM_DIR   "../../../../../System/HDL/common"
 
-#set path1 "/afs/eos.ncsu.edu/lockers/research/ece/wdavis/tech/nangate/NangateOpenCellLibrary_PDKv1_2_v2008_10/liberty/520"
-set LIB_PATH "/afs/eos.ncsu.edu/lockers/research/ece/wdavis/tech/synopsys/SAED32/SAED32_EDK/lib/stdcell_lvt/db_ccs"
+set path_fg065_ccs "/local/home/GF065/synopsys/DesignWare_logic_libs/commonplatform65nlp/hd/base/lvt/5.00a/liberty/ccs"
+set path_fg065_lib "/local/home/GF065/synopsys/DesignWare_logic_libs/commonplatform65nlp/hd/base/lvt/5.00a/liberty/symbol"
+# set path3 "/local/home/GF065/synopsys/DesignWare_logic_libs/commonplatform65nlp/hd/base/lvt/5.00a/liberty/logic_synth"
+set path_this "/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/Manager/HDL/run_s/manager/synth"
+set path_common "../../../../HDL/common"
 
-set search_path "$MGR_COM_DIR $PE_COM_DIR $PE_RTL_COM_DIR $SYS_RTL_COM_DIR $LIB_PATH $search_path";
+set search_path "$MGR_COM_DIR $PE_COM_DIR $PE_RTL_COM_DIR $SYS_RTL_COM_DIR $search_path";
+set search_path "$path_fg065_ccs $path_fg065_lib $path_common $path_this $search_path"
 
-set search_path [concat  $search_path [list [format "%s%s"  $synopsys_root "/libraries/syn"]]]
-set search_path [concat  $search_path [list "." [format "%s%s"  $synopsys_root "/dw/sim_ver"]]]
+#set search_path [concat  $search_path [list [format "%s%s"  $synopsys_root "/libraries/syn"]]]
+#set search_path [concat  $search_path [list "." [format "%s%s"  $synopsys_root "/dw/sim_ver"]]]
 
 # Library Variables 
 set synthetic_library [list dw_foundation.sldb]
-#set target_library NangateOpenCellLibrary_PDKv1_2_v2008_10_slow_nldm.db
-set target_library saed32lvt_ss0p95v125c.db
-set link_library   [concat  "*" $target_library $synthetic_library]
+set target_library cp65npkldst_tt1p2v25c.db
+set symbol_library cp65npkldst.slib
+set mem_lib1 "sasslnpky2p64x35cm16sw0bk1ltlc1_lib.db sasslnpky2p16x117cm4sw0bk1ltlc1_lib.db sasslnpky2p16x116cm4sw0bk1ltlc1_lib.db sasslnpky2p512x160cm4sw0bk1ltlc1_lib.db sasslnpky2p256x8cm4sw0bk1ltlc1_lib.db sasslnpky2p16x118cm4sw0bk1ltlc1_lib.db "
+#set mem_lib2 sasslnpky2p256x8cm4sw0bk1ltlc1_lib.db
+#set fifo_library  sasslnpky2p32x35cm4sw0bk1ltlc1_lib.db
+#set link_library   [concat  $target_library $synthetic_library $fifo_library *]
+set link_library   [concat  $target_library $synthetic_library $mem_lib1 *]
 
 set verilogout_no_tri "true"
 
+alias h history

@@ -1,5 +1,5 @@
 
-MODNAME = rdp_cntl
+MODNAME = readpath
 RTL_DIR = ../code
 GATE_DIR = ../synth
 
@@ -20,6 +20,11 @@ ptsi:
 ptpx:
 	tcsh -c "add synopsys2015 ; \
 	pt_shell -f run_ptpx.tcl |& tee run_ptpx.log"
+
+lib:
+	tcsh -c "add synopsys2015 ; \
+	lc_shell -64bit -f run_lib.tcl |& tee run_lib.log"
+
 
 
 clean:
