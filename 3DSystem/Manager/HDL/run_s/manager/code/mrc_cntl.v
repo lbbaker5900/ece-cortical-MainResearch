@@ -52,6 +52,23 @@ module mrc_cntl (
             output  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]      mrc__std__lane_data     [`MGR_NUM_OF_EXEC_LANES_RANGE ],
 
             //-------------------------------
+            // Main Memory Controller interface
+            // - response must be in order
+            //
+            output  reg                                            mrc__mmc__valid                                   ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl                                    ,
+            input   wire                                           mmc__mrc__ready                                   ,
+            output  reg   [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      mrc__mmc__channel                                 ,
+            output  reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mrc__mmc__bank                                    ,
+            output  reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      mrc__mmc__page                                    ,
+            output  reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      mrc__mmc__word                                    ,
+                                                                                                                    
+            input   wire                                           mmc__mrc__valid                                   ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mmc__mrc__cntl                                    ,
+            output  reg                                            mrc__mmc__ready                                   ,
+            input   wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      mmc__mrc__data    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ,
+
+            //-------------------------------
             // General
             //
             input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
@@ -82,6 +99,25 @@ module mrc_cntl (
     reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc__option_value_d1   [`MGR_WU_OPT_PER_INST ] ;
 
 
+    //--------------------------------------------------
+    // from Main Memory Controller
+    
+    reg                                         mmc__mrc__valid_d1                                   ;
+    reg  [`COMMON_STD_INTF_CNTL_RANGE      ]    mmc__mrc__cntl_d1                                    ;
+    wire                                        mrc__mmc__ready_e1                                   ;
+    reg  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]    mmc__mrc__data_d1    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
+
+    //--------------------------------------------------
+    // to Main Memory Controller
+    
+    wire                                           mrc__mmc__valid_e1      ;
+    wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl_e1       ;
+    reg                                            mmc__mrc__ready_d1      ;
+    wire  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      mrc__mmc__channel_e1    ;
+    wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mrc__mmc__bank_e1       ;
+    wire  [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      mrc__mmc__page_e1       ;
+    wire  [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      mrc__mmc__word_e1       ;
+
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
     // Register inputs and outputs
@@ -102,6 +138,7 @@ module mrc_cntl (
 
 
       end
+
     //--------------------------------------------------
     // from WU Decoder
     
@@ -118,6 +155,36 @@ module mrc_cntl (
 
         mrc__wud__ready        <=   ( reset_poweron   ) ? 'd0  :  mrc__wud__ready_e1       ;
 
+      end
+
+    //--------------------------------------------------
+    // from Main Memory Controller
+    
+    always @(posedge clk) 
+      begin
+        mmc__mrc__valid_d1        <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__valid  ;
+        mmc__mrc__cntl_d1         <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__cntl   ;
+
+        for (int lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
+          begin: data
+            mmc__mrc__data_d1 [lane] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__data [lane]  ;
+          end
+
+        mrc__mmc__ready           <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__ready_e1  ;
+
+      end
+    //--------------------------------------------------
+    // to Main Memory Controller
+    
+    always @(posedge clk) 
+      begin
+        mrc__mmc__valid      <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__valid_e1   ;
+        mrc__mmc__cntl       <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__cntl_e1    ;
+        mmc__mrc__ready_d1   <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__ready      ;
+        mrc__mmc__channel    <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__channel_e1 ;
+        mrc__mmc__bank       <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__bank_e1    ;
+        mrc__mmc__page       <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__page_e1    ;
+        mrc__mmc__word       <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__word_e1    ;
       end
 
   //----------------------------------------------------------------------------------------------------
@@ -364,6 +431,7 @@ module mrc_cntl (
         `MRC_CNTL_DESC_READ: 
           mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_MEM_OUT_VALID ;
                                       
+        // Storage Descriptor address is valid so we can send the memory request
         // Pointer to cons/jump memory will be valid, now wait one clk for output of consequtive/jump memory to be valid
         `MRC_CNTL_DESC_MEM_OUT_VALID: 
           mrc_cntl_desc_state_next =  `MRC_CNTL_CONS_JUMP_MEM_OUT_VALID;
@@ -524,5 +592,127 @@ module mrc_cntl (
   //
   //
 
+  //-------------------------------------------------------------------------------------------
+  //------------------------------------------
+  // Main Memory Controller FIFO's
+  //
+  generate
+    for (gvi=0; gvi<1; gvi=gvi+1) 
+      begin: from_mmc_fifo
+
+        wire  clear        ;
+        wire  empty        ;
+        wire  almost_full  ;
+        wire                                                 write        ;
+        wire  [`MRC_CNTL_FROM_MMC_AGGREGATE_FIFO_RANGE   ]   write_data   ;
+        wire                                                 pipe_valid   ;
+        wire                                                 pipe_read    ;
+        wire  [`MRC_CNTL_FROM_MMC_AGGREGATE_FIFO_RANGE   ]   pipe_data    ;
+
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MRC_CNTL_FROM_MMC_FIFO_DEPTH                 ),
+                                 .GENERIC_FIFO_THRESHOLD  (`MRC_CNTL_FROM_MMC_FIFO_ALMOST_FULL_THRESHOLD ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`MRC_CNTL_FROM_MMC_AGGREGATE_FIFO_WIDTH       )
+                        ) gpfifo (
+                                 // Status
+                                .almost_full      ( almost_full           ),
+                                 // Write                                 
+                                .write            ( write                 ),
+                                .write_data       ( write_data            ),
+                                 // Read                                  
+                                .pipe_valid       ( pipe_valid            ),
+                                .pipe_data        ( pipe_data             ),
+                                .pipe_read        ( pipe_read             ),
+
+                                // General
+                                .clear            ( clear                 ),
+                                .reset_poweron    ( reset_poweron         ),
+                                .clk              ( clk                   )
+                                );
+
+        // FIXME
+        assign pipe_read = pipe_valid ;
+    
+      end
+  endgenerate
+
+  assign from_mmc_fifo[0].clear    = 1'b0  ;
+
+  assign from_mmc_fifo[0].write_data [`MRC_CNTL_FROM_MMC_AGGREGATE_CNTL_RANGE ]  = mmc__mrc__cntl_d1   ;
+
+  genvar lane ;
+  generate
+    for (lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
+      begin: mmc_fifo_data
+        assign from_mmc_fifo[0].write_data [(lane+1)*`MGR_EXEC_LANE_WIDTH-1 : lane*`MGR_EXEC_LANE_WIDTH]   = mmc__mrc__data_d1 [lane] ;
+      end
+  endgenerate
+
+  assign from_mmc_fifo[0].write =   mmc__mrc__valid_d1           ;
+  assign  mrc__mmc__ready_e1    =  ~from_mmc_fifo[0].almost_full ;
+
+
+  //----------------------------------------------------------------------------------------------------
+  //
+  //
+  //
+
+  assign   mrc__mmc__valid_e1   = (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ;
+  assign   mrc__mmc__cntl_e1    = `COMMON_STD_INTF_CNTL_SOM_EOM        ;  // memory request is single cycle
+  assign   mrc__mmc__channel_e1 =  storage_desc_channel ;
+  assign   mrc__mmc__bank_e1    =  storage_desc_bank    ;
+  assign   mrc__mmc__page_e1    =  storage_desc_page    ;
+  assign   mrc__mmc__word_e1    =  storage_desc_word    ;
+
+  // Pointer to word in a page
+  //  - initially set to storage pointer word address offset by lane ID
+  //  - increment by number of active lanes
+  reg  [ `STACK_DOWN_INTF_STRM_DATA_RANGE ]      lane_word        [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; // value driven to downstream stack bus
+  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE     ]      lane_word_ptr    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; 
+  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE     ]      lane_word_inc    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; // value to increment the pointer by
+  reg  [ `MGR_NUM_OF_EXEC_LANES_RANGE     ]      lane_word_enable                                 ;  // vector of lane enables based on number of active lanes
+  //genvar lane ;
+  //generate
+  always @(posedge clk)
+    begin
+      for (int lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
+        begin: word_ptrs
+          lane_word_enable[lane]  <= (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ? (num_lanes >  lane)        :
+                                                                                             lane_word_enable[lane]     ;
+          lane_word_ptr   [lane]  <= (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ? storage_desc_word + lane   :
+                                                                                             lane_word_ptr[lane]        ;
+          lane_word_inc   [lane]  <= (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ? num_lanes                  :
+                                                                                             lane_word_inc[lane]        ;
+        end
+    end
+  //endgenerate
+
+  generate
+    for (lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
+      begin: select_data
+        always @(*)
+         begin
+           selectLaneWord (lane_word_ptr[lane], from_mmc_fifo[0].pipe_data, lane_word[lane]);
+         end
+      end
+  endgenerate
+
+
+
+  //----------------------------------------------------------------------------------------------------
+  //
+  //
+  //
+  task selectLaneWord ( input logic [4:0] select, input logic [1023:0] in,
+                        output logic [31:0] out); 
+    begin
+      `include "manager_mrc_cntl_word_lane_mux.vh"
+    end
+  endtask
+
+
+  //----------------------------------------------------------------------------------------------------
+  //
+  //
+  //
 endmodule
 

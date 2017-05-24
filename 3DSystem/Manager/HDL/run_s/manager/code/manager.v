@@ -377,16 +377,35 @@ module manager (
     for (gvi=0; gvi<`MGR_NUM_OF_STREAMS; gvi=gvi+1) 
       begin: mrc_cntl_strm_inst
 
+        //----------------------------------------------------------------------------------------------------
+        // Stack Downstream
         wire                                        std__mrc__lane_ready  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
         wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__std__lane_cntl   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
         wire  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mrc__std__lane_data   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
         wire                                        mrc__std__lane_valid  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
       
+        //----------------------------------------------------------------------------------------------------
+        // WU Decoder
         wire                                        wud__mrc__valid                                      ;  // send MR descriptors
         wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   wud__mrc__cntl                                       ;  // descriptor delineator
         wire                                        mrc__wud__ready                                      ;
         wire  [`MGR_WU_OPT_TYPE_RANGE           ]   wud__mrc__option_type   [`MGR_WU_OPT_PER_INST ]      ;  // WU Instruction option fields
         wire  [`MGR_WU_OPT_VALUE_RANGE          ]   wud__mrc__option_value  [`MGR_WU_OPT_PER_INST ]      ;  
+
+        //----------------------------------------------------------------------------------------------------
+        // Main memory Controller
+        wire                                           mrc__mmc__valid                                     ;
+        wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl                                      ;
+        wire                                           mmc__mrc__ready                                     ;
+        wire  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      mrc__mmc__channel                                   ;
+        wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mrc__mmc__bank                                      ;
+        wire  [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      mrc__mmc__page                                      ;
+        wire  [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      mrc__mmc__word                                      ;
+                                                                                                           
+        wire                                           mmc__mrc__valid                                     ;
+        wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mmc__mrc__cntl                                      ;
+        wire                                           mrc__mmc__ready                                     ;
+        wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      mmc__mrc__data      [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
 
         mrc_cntl mrc_cntl (
         
@@ -408,15 +427,54 @@ module manager (
                 .mrc__std__lane_valid    ( mrc__std__lane_valid    ),
       
                 //-------------------------------
+                // to/from MMC
+                //
+                .mrc__mmc__valid         ( mrc__mmc__valid         ),                         
+                .mrc__mmc__cntl          ( mrc__mmc__cntl          ),                         
+                .mmc__mrc__ready         ( mmc__mrc__ready         ),                         
+                .mrc__mmc__channel       ( mrc__mmc__channel       ),                         
+                .mrc__mmc__bank          ( mrc__mmc__bank          ),                         
+                .mrc__mmc__page          ( mrc__mmc__page          ),                         
+                .mrc__mmc__word          ( mrc__mmc__word          ),                         
+                                                                                           
+                .mmc__mrc__valid         ( mmc__mrc__valid         ),                         
+                .mmc__mrc__cntl          ( mmc__mrc__cntl          ),                         
+                .mrc__mmc__ready         ( mrc__mmc__ready         ),                         
+                .mmc__mrc__data          ( mmc__mrc__data          ),                         
+
+                //-------------------------------
                 // General
                 //
-                .sys__mgr__mgrId         ( sys__mgr__mgrId          ),
-                .clk                     ( clk                      ),
-                .reset_poweron           ( reset_poweron            ) 
+                .sys__mgr__mgrId         ( sys__mgr__mgrId         ),
+                .clk                     ( clk                     ),
+                .reset_poweron           ( reset_poweron           ) 
               );
 
       end
   endgenerate
+
+  //******************************
+  // ****  DEBUG  ****
+  // FIXME
+  //******************************
+  genvar lane ;
+  generate
+    for (lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
+      begin: debug_data
+        assign mrc_cntl_strm_inst[0].mmc__mrc__valid = mrc_cntl_strm_inst[0].mrc__mmc__ready;
+        assign mrc_cntl_strm_inst[1].mmc__mrc__valid = mrc_cntl_strm_inst[1].mrc__mmc__ready;
+
+        assign mrc_cntl_strm_inst[0].mmc__mrc__ready = 1'b1;
+        assign mrc_cntl_strm_inst[1].mmc__mrc__ready = 1'b1;
+
+        assign mrc_cntl_strm_inst[0].mmc__mrc__cntl  = 2'b11 ;
+        assign mrc_cntl_strm_inst[1].mmc__mrc__cntl  = 2'b11 ;
+        assign mrc_cntl_strm_inst[0].mmc__mrc__data [lane] = lane+1024;
+        assign mrc_cntl_strm_inst[1].mmc__mrc__data [lane] = lane+8192;
+      end
+  endgenerate
+  //******************************
+  //******************************
 
   // Connect packed array port of MRC(s) to WU Decoder
   `include "manager_mrc_cntl_wud_connections.vh"

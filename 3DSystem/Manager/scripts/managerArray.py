@@ -1544,6 +1544,31 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../HDL/common/manager_mrc_cntl_word_lane_mux.vh', 'w')
+  pLine = ""
+
+  # Extract the word from the page line
+  numOfExecLaneIdBits = int(math.log(numOfExecLanes,2))
+  pLine = pLine + '\n'
+  pLine = pLine + '\n  // Extract the word from the page line'
+  pLine = pLine + '\n  // Convert the mgrId of the pointer to a bit mask'
+  pLine = pLine + '\n      case ( select ) // synopsys parallel_case'
+  for lane in range (numOfExecLanes):
+    pLine = pLine + '\n      {2}\'d{0} :'.format(lane,numOfExecLanes, numOfExecLaneIdBits )
+    pLine = pLine + '\n        begin'
+    lsb = lane*32
+    msb = (lane+1)*32-1
+    pLine = pLine + '\n          out = in[{2:>3}:{3:>3}] ; '.format(lane, numOfExecLaneIdBits, msb, lsb )
+    pLine = pLine + '\n        end'
+  pLine = pLine + '\n      default:'
+  pLine = pLine + '\n        begin'
+  pLine = pLine + '\n          out = 32\'d0 ; '
+  pLine = pLine + '\n        end'
+  pLine = pLine + '\n      endcase'
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
 
   # RDP
 
