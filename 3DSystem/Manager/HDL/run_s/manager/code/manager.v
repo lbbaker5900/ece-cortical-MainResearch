@@ -402,10 +402,10 @@ module manager (
         wire  [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      mrc__mmc__page                                      ;
         wire  [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      mrc__mmc__word                                      ;
                                                                                                            
-        wire                                           mmc__mrc__valid                                     ;
-        wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mmc__mrc__cntl                                      ;
-        wire                                           mrc__mmc__ready                                     ;
-        wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      mmc__mrc__data      [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
+        wire                                           mmc__mrc__valid   [`MGR_DRAM_NUM_CHANNELS ]                                   ;
+        wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mmc__mrc__cntl    [`MGR_DRAM_NUM_CHANNELS ]                                   ;
+        wire                                           mrc__mmc__ready   [`MGR_DRAM_NUM_CHANNELS ]                                   ;
+        wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      mmc__mrc__data    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
 
         mrc_cntl mrc_cntl (
         
@@ -457,20 +457,20 @@ module manager (
   // ****  DEBUG  ****
   // FIXME
   //******************************
-  genvar lane ;
+  genvar ctl, chan, word ;
   generate
-    for (lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
-      begin: debug_data
-        assign mrc_cntl_strm_inst[0].mmc__mrc__valid = mrc_cntl_strm_inst[0].mrc__mmc__ready;
-        assign mrc_cntl_strm_inst[1].mmc__mrc__valid = mrc_cntl_strm_inst[1].mrc__mmc__ready;
-
-        assign mrc_cntl_strm_inst[0].mmc__mrc__ready = 1'b1;
-        assign mrc_cntl_strm_inst[1].mmc__mrc__ready = 1'b1;
-
-        assign mrc_cntl_strm_inst[0].mmc__mrc__cntl  = 2'b11 ;
-        assign mrc_cntl_strm_inst[1].mmc__mrc__cntl  = 2'b11 ;
-        assign mrc_cntl_strm_inst[0].mmc__mrc__data [lane] = lane+1024;
-        assign mrc_cntl_strm_inst[1].mmc__mrc__data [lane] = lane+8192;
+    for (ctl=0; ctl<2; ctl++)
+      begin
+        assign mrc_cntl_strm_inst[ctl].mmc__mrc__ready = 1'b1;
+        for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
+          begin
+            assign mrc_cntl_strm_inst[ctl].mmc__mrc__valid[chan] = mrc_cntl_strm_inst[ctl].mrc__mmc__ready[chan];
+            assign mrc_cntl_strm_inst[ctl].mmc__mrc__cntl[chan]  = 2'b11 ;
+            for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
+              begin: debug_data
+                assign mrc_cntl_strm_inst[ctl].mmc__mrc__data[chan] [word] = word+1024;
+              end
+          end
       end
   endgenerate
   //******************************

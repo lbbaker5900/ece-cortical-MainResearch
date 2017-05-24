@@ -56,6 +56,17 @@ if __name__ == "__main__":
         FoundLanes = True
   searchFile.close()
 
+  FoundBitsPerLane = False
+  searchFile = open("../../PEArray/HDL/common/pe.vh", "r")
+  for line in searchFile:
+    if FoundBitsPerLane == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "PE_EXEC_LANE_WIDTH" in data[1]:
+        bitsPerLane = int(data[2])
+        FoundBitsPerLane = True
+  searchFile.close()
+
   # extract number of tuples per instruction
   FoundNumOfTuplesPerInst = False
   searchFile = open("../../Manager/HDL/common/manager.vh", "r")
@@ -67,6 +78,31 @@ if __name__ == "__main__":
         numOfTuplesPerInst = int(data[2])
         FoundNumOfTuplesPerInst = True
   searchFile.close()
+
+  FoundNumOfBitsPerPage = False
+  searchFile = open("../../Manager/HDL/common/manager.vh", "r")
+  for line in searchFile:
+    if FoundNumOfBitsPerPage == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "MGR_DRAM_PAGE_SIZE" in data[1]:
+        numOfBitsPerPage = int(data[2])
+        FoundNumOfBitsPerPage = True
+  searchFile.close()
+  numOfWordsPerPage = numOfBitsPerPage/bitsPerLane
+
+  FoundNumOfBitsPerMmcIntf = False
+  searchFile = open("../../Manager/HDL/common/manager.vh", "r")
+  for line in searchFile:
+    if FoundNumOfBitsPerMmcIntf == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "MGR_MMC_TO_MRC_INTF_WIDTH" in data[1]:
+        numOfBitsPerMmcIntf = int(data[2])
+        FoundNumOfBitsPerMmcIntf = True
+  searchFile.close()
+  numOfWordsPerMmcIntf = numOfBitsPerMmcIntf/bitsPerLane
+
 
 
   #------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1548,21 +1584,21 @@ if __name__ == "__main__":
   pLine = ""
 
   # Extract the word from the page line
-  numOfExecLaneIdBits = int(math.log(numOfExecLanes,2))
+  numOfMmcWordAddressBits = int(math.log(numOfWordsPerMmcIntf,2))
   pLine = pLine + '\n'
-  pLine = pLine + '\n  // Extract the word from the page line'
+  pLine = pLine + '\n  // Extract the word from the interface page line'
   pLine = pLine + '\n  // Convert the mgrId of the pointer to a bit mask'
   pLine = pLine + '\n      case ( select ) // synopsys parallel_case'
-  for lane in range (numOfExecLanes):
-    pLine = pLine + '\n      {2}\'d{0} :'.format(lane,numOfExecLanes, numOfExecLaneIdBits )
+  for word in range (numOfWordsPerMmcIntf):
+    pLine = pLine + '\n      {1}\'d{0} :'.format(word,numOfMmcWordAddressBits )
     pLine = pLine + '\n        begin'
-    lsb = lane*32
-    msb = (lane+1)*32-1
-    pLine = pLine + '\n          out = in[{2:>3}:{3:>3}] ; '.format(lane, numOfExecLaneIdBits, msb, lsb )
+    lsb = word*bitsPerLane
+    msb = (word+1)*bitsPerLane-1
+    pLine = pLine + '\n          out = in[{1:>3}:{2:>3}] ; '.format(word, msb, lsb )
     pLine = pLine + '\n        end'
   pLine = pLine + '\n      default:'
   pLine = pLine + '\n        begin'
-  pLine = pLine + '\n          out = 32\'d0 ; '
+  pLine = pLine + '\n          out = {0}\'d0 ; '.format(bitsPerLane)
   pLine = pLine + '\n        end'
   pLine = pLine + '\n      endcase'
   pLine = pLine + '\n'

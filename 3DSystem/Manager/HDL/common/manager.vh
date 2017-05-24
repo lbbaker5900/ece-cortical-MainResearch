@@ -301,7 +301,24 @@
 `define MGR_DRAM_NUM_BANKS                          32
 `define MGR_DRAM_NUM_PAGES                          4096
 `define MGR_DRAM_PAGE_SIZE                          4096
-`define MGR_DRAM_NUM_WORDS                          `MGR_DRAM_PAGE_SIZE/32
+`define MGR_DRAM_NUM_WORDS_PER_PAGE                 `MGR_DRAM_PAGE_SIZE/32
+
+//---------------------------------------------------------------------------------------------------------------------
+// MMC to MRC
+
+`define MGR_MMC_TO_MRC_INTF_WIDTH                          2048
+`define MGR_MMC_TO_MRC_INTF_MSB                         `MGR_MMC_TO_MRC_INTF_WIDTH-1
+`define MGR_MMC_TO_MRC_INTF_LSB                         0
+`define MGR_MMC_TO_MRC_INTF_SIZE                        (`MGR_MMC_TO_MRC_INTF_MSB - `MGR_MMC_TO_MRC_INTF_LSB +1)
+`define MGR_MMC_TO_MRC_INTF_RANGE                        `MGR_MMC_TO_MRC_INTF_MSB : `MGR_MMC_TO_MRC_INTF_LSB
+
+`define MGR_MMC_TO_MRC_INTF_NUM_WORDS          `MGR_MMC_TO_MRC_INTF_WIDTH/32
+
+`define MGR_MMC_TO_MRC_WORD_ADDRESS_WIDTH                       (`CLOG2(`MGR_MMC_TO_MRC_INTF_NUM_WORDS ))
+`define MGR_MMC_TO_MRC_WORD_ADDRESS_MSB                         `MGR_MMC_TO_MRC_WORD_ADDRESS_WIDTH-1
+`define MGR_MMC_TO_MRC_WORD_ADDRESS_LSB                         0
+`define MGR_MMC_TO_MRC_WORD_ADDRESS_SIZE                        (`MGR_MMC_TO_MRC_WORD_ADDRESS_MSB - `MGR_MMC_TO_MRC_WORD_ADDRESS_LSB +1)
+`define MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE                        `MGR_MMC_TO_MRC_WORD_ADDRESS_MSB : `MGR_MMC_TO_MRC_WORD_ADDRESS_LSB
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -330,7 +347,7 @@
 `define MGR_DRAM_PAGE_ADDRESS_SIZE                        (`MGR_DRAM_PAGE_ADDRESS_MSB - `MGR_DRAM_PAGE_ADDRESS_LSB +1)
 `define MGR_DRAM_PAGE_ADDRESS_RANGE                        `MGR_DRAM_PAGE_ADDRESS_MSB : `MGR_DRAM_PAGE_ADDRESS_LSB
 
-`define MGR_DRAM_WORD_ADDRESS_WIDTH                       (`CLOG2(`MGR_DRAM_NUM_WORDS ))
+`define MGR_DRAM_WORD_ADDRESS_WIDTH                       (`CLOG2(`MGR_DRAM_NUM_WORDS_PER_PAGE ))
 `define MGR_DRAM_WORD_ADDRESS_MSB                         `MGR_DRAM_WORD_ADDRESS_WIDTH-1
 `define MGR_DRAM_WORD_ADDRESS_LSB                         0
 `define MGR_DRAM_WORD_ADDRESS_SIZE                        (`MGR_DRAM_WORD_ADDRESS_MSB - `MGR_DRAM_WORD_ADDRESS_LSB +1)
