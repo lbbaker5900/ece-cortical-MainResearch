@@ -20,19 +20,22 @@
 //--------------------------------------------------------
 // WU Instruction Decode FSM
 
-`define MRC_CNTL_DESC_WAIT               8'b0000_0001
+`define MRC_CNTL_DESC_WAIT                         12'b0000_0000_0001
+                                                 
+`define MRC_CNTL_DESC_EXTRACT                      12'b0000_0000_0010
+`define MRC_CNTL_DESC_READ                         12'b0000_0000_0100
+`define MRC_CNTL_DESC_MEM_OUT_VALID                12'b0000_0000_1000
+`define MRC_CNTL_DESC_START_STREAM                 12'b0000_0001_0000
+`define MRC_CNTL_DESC_CONS_FIELD                   12'b0000_0010_0000
+`define MRC_CNTL_DESC_JUMP_FIELD                   12'b0000_0100_0000
+`define MRC_CNTL_DESC_GENERATE_ANOTHER_MEM_REQ     12'b0000_1000_0000
+`define MRC_CNTL_DESC_WAIT_STREAM_COMPLETE         12'b0001_0000_0000
 
-`define MRC_CNTL_DESC_EXTRACT            8'b0000_0010
-`define MRC_CNTL_DESC_READ               8'b0000_0100
-`define MRC_CNTL_DESC_MEM_OUT_VALID      8'b0000_1000
-`define MRC_CNTL_DESC_STREAM             8'b0001_0000
-//`define MRC_CNTL_DESC_READ               8'b0010_0000
+`define MRC_CNTL_DESC_COMPLETE                     12'b0100_0000_0000
+                                                  
+`define MRC_CNTL_DESC_ERR                          12'b1000_0000_0000
 
-`define MRC_CNTL_DESC_COMPLETE                8'b0100_0000
-
-`define MRC_CNTL_DESC_ERR                     8'b1000_0000
-
-`define MRC_CNTL_DESC_STATE_WIDTH         8
+`define MRC_CNTL_DESC_STATE_WIDTH         12
 `define MRC_CNTL_DESC_STATE_MSB           `MRC_CNTL_DESC_STATE_WIDTH-1
 `define MRC_CNTL_DESC_STATE_LSB           0
 `define MRC_CNTL_DESC_STATE_SIZE          (`MRC_CNTL_DESC_STATE_MSB - `MRC_CNTL_DESC_STATE_LSB +1)
@@ -83,7 +86,7 @@
 //------------------------------------------------------------------------------------------------------------
 
 `define MRC_CNTL_DESC_FIFO_DEPTH          16
-`define MRC_CNTL_DESC_FIFO_THRESHOLD      2
+`define MRC_CNTL_DESC_FIFO_THRESHOLD      4
 
 //--------------------------------------------------------
 //--------------------------------------------------------
@@ -125,6 +128,41 @@
 `define MRC_CNTL_FROM_MMC_FIFO_ALMOST_FULL_THRESHOLD 4
 
 
+//--------------------------------------------------------
+//--------------------------------------------------------
+// Desc fsm to From MMC
+
+`define MRC_CNTL_TO_STRM_FIFO_DEPTH         16
+`define MRC_CNTL_TO_STRM_FIFO_DEPTH_MSB      (`MRC_CNTL_TO_STRM_FIFO_DEPTH) -1
+`define MRC_CNTL_TO_STRM_FIFO_DEPTH_LSB      0
+`define MRC_CNTL_TO_STRM_FIFO_DEPTH_SIZE     (`MRC_CNTL_TO_STRM_FIFO_DEPTH_MSB - `MRC_CNTL_TO_STRM_FIFO_DEPTH_LSB +1)
+`define MRC_CNTL_TO_STRM_FIFO_DEPTH_RANGE     `MRC_CNTL_TO_STRM_FIFO_DEPTH_MSB : `MRC_CNTL_TO_STRM_FIFO_DEPTH_LSB
+`define MRC_CNTL_TO_STRM_FIFO_MSB            ((`CLOG2(`MRC_CNTL_TO_STRM_FIFO_DEPTH)) -1)
+`define MRC_CNTL_TO_STRM_FIFO_LSB            0
+`define MRC_CNTL_TO_STRM_FIFO_SIZE           (`MRC_CNTL_TO_STRM_FIFO_MSB - `MRC_CNTL_TO_STRM_FIFO_LSB +1)
+`define MRC_CNTL_TO_STRM_FIFO_RANGE           `MRC_CNTL_TO_STRM_FIFO_MSB : `MRC_CNTL_TO_STRM_FIFO_LSB
+
+// For AGGREGATE_FIFO implemented as single memory, define field ranges
+`define MRC_CNTL_TO_STRM_AGGREGATE_DATA_WIDTH    `MGR_INST_CONS_JUMP_WIDTH
+`define MRC_CNTL_TO_STRM_AGGREGATE_DATA_MSB      `MRC_CNTL_TO_STRM_AGGREGATE_DATA_WIDTH-1
+`define MRC_CNTL_TO_STRM_AGGREGATE_DATA_LSB      0
+`define MRC_CNTL_TO_STRM_AGGREGATE_DATA_SIZE     (`MRC_CNTL_TO_STRM_AGGREGATE_DATA_MSB - `MRC_CNTL_TO_STRM_AGGREGATE_DATA_LSB +1)
+`define MRC_CNTL_TO_STRM_AGGREGATE_DATA_RANGE     `MRC_CNTL_TO_STRM_AGGREGATE_DATA_MSB : `MRC_CNTL_TO_STRM_AGGREGATE_DATA_LSB
+
+`define MRC_CNTL_TO_STRM_AGGREGATE_CNTL_MSB      (`MRC_CNTL_TO_STRM_AGGREGATE_CNTL_LSB+`COMMON_STD_INTF_CNTL_WIDTH) -1
+`define MRC_CNTL_TO_STRM_AGGREGATE_CNTL_LSB      `MRC_CNTL_TO_STRM_AGGREGATE_DATA_MSB+1
+`define MRC_CNTL_TO_STRM_AGGREGATE_CNTL_SIZE     (`MRC_CNTL_TO_STRM_AGGREGATE_CNTL_MSB - `MRC_CNTL_TO_STRM_AGGREGATE_CNTL_LSB +1)
+`define MRC_CNTL_TO_STRM_AGGREGATE_CNTL_RANGE     `MRC_CNTL_TO_STRM_AGGREGATE_CNTL_MSB : `MRC_CNTL_TO_STRM_AGGREGATE_CNTL_LSB
+
+`define MRC_CNTL_TO_STRM_AGGREGATE_FIFO_WIDTH     `COMMON_STD_INTF_CNTL_WIDTH \
+                                                   +`MRC_CNTL_TO_STRM_AGGREGATE_DATA_WIDTH
+
+`define MRC_CNTL_TO_STRM_AGGREGATE_FIFO_MSB            `MRC_CNTL_TO_STRM_AGGREGATE_FIFO_WIDTH -1
+`define MRC_CNTL_TO_STRM_AGGREGATE_FIFO_LSB            0
+`define MRC_CNTL_TO_STRM_AGGREGATE_FIFO_SIZE           (`MRC_CNTL_TO_STRM_AGGREGATE_FIFO_MSB - `MRC_CNTL_TO_STRM_AGGREGATE_FIFO_LSB +1)
+`define MRC_CNTL_TO_STRM_AGGREGATE_FIFO_RANGE           `MRC_CNTL_TO_STRM_AGGREGATE_FIFO_MSB : `MRC_CNTL_TO_STRM_AGGREGATE_FIFO_LSB
+
+`define MRC_CNTL_TO_STRM_FIFO_ALMOST_FULL_THRESHOLD 4
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 
