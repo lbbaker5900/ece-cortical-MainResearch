@@ -331,6 +331,8 @@ module mrc_cntl (
   //   Extract the consequtive/jump tuples and pipeline memory requests
   //   Pass the consequtive/jump tuples to another fifo which will be processed by the streaming fsmA
   //   Note: We have to send to another fifo because we want to pipeline the memory page accesses
+  // - With memory requests, we always request the starting chan/bank/page but we will also grab the next channel also.
+  //   So we need to form an address using only the chan, bank and page based on the increment order of page,bank,chan and increment and request this chan/bank/page also
       
   // State register 
   reg [`MRC_CNTL_DESC_STATE_RANGE ] mrc_cntl_desc_state      ; // state flop
@@ -355,8 +357,8 @@ module mrc_cntl (
   // for memory reads, we assume one storage descriptor pointer
   reg  [`MGR_STORAGE_DESC_ADDRESS_RANGE ]      storage_desc_ptr  ;  // pointer to local storage descriptor although msb's contain manager ID, so remove
   // use option tuple range
-  reg  [`MGR_WU_OPT_VALUE_RANGE         ]      txfer_type        ;  // FIXME: wastes bits by using option_value for range
-  reg  [`MGR_WU_OPT_VALUE_RANGE         ]      target            ;
+  reg  [`MGR_INST_OPTION_TRANSFER_RANGE ]      txfer_type        ;  // FIXME: wastes bits by using option_value for range
+  reg  [`MGR_INST_OPTION_TGT_RANGE      ]      target            ;
 
   genvar optNum;
   generate
@@ -418,21 +420,28 @@ module mrc_cntl (
   reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  consJumpPtr               ;
   reg                                                      inc_consJumpPtr           ;  // cycle thru consequtive and jump memory
                                                                                      
-  reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  storage_desc_address      ;  // main memory address in storage descriptor
-  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  storage_desc_accessOrder  ;  // how to increment Chan/Bank/Page/Word e.g. CWBP, WCBP
-  wire                                                     consJumpMemory_som        ;
-  wire                                                     consJumpMemory_eom        ;
-  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  storage_desc_consJumpPtr  ;
+  reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  storage_desc_address       ;  // main memory address in storage descriptor
+  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE                  ]  storage_desc_local_address ;  // local main memory address in storage descriptor
+  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  storage_desc_accessOrder   ;  // how to increment Chan/Bank/Page/Word e.g. CWBP, WCBP
+  wire                                                     consJumpMemory_som         ;
+  wire                                                     consJumpMemory_som_eom     ;
+  wire                                                     consJumpMemory_eom         ;
+  reg                                                      first_time_thru            ;  // need to make sure for the first cycle we request the starting bank/page
+  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  storage_desc_consJumpPtr   ;
 
   wire                                                     to_strm_fsm_fifo_ready    ;
 
   wire                                                     require_mem_request       ;
   wire                                                     generate_mem_request      ;
+  wire                                                     requests_complete         ;
+  wire                                                     generate_requests         ;
+  reg   [`MRC_CNTL_CHAN_BIT_RANGE                       ]  channel_requested         ;  // which channels have been requested with current bank/page
+  wire                                                     bank_change               ;  // check current increment vs previous last request
+  wire                                                     page_change               ;
 
   // The MRC_CNTL_DESC FSM extracts the decriptor and handles memory requests
   // The MRC_CNTL_STRM FSM increments thru the words in the from_mmc_fifo
   //
-  wire start_streaming     ;  // desc fsm tells strm fsm that the consequtive/jump memory is valid and streaming should commence once data is available from the mmc
   wire completed_streaming ;  // strm fsm has completed the cons/jump memory tuples
 
   //--------------------------------------------------
@@ -459,30 +468,49 @@ module mrc_cntl (
                                       
         // Storage Descriptor address is valid so we can send the memory request
         // Pointer to cons/jump memory will be valid, now wait one clk for output of consequtive/jump memory to be valid
+        // Always generate requests first time in, so jump to GENERATE_REQ
         `MRC_CNTL_DESC_MEM_OUT_VALID: 
-          mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_START_STREAM;
+          mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_GENERATE_REQ_CHA;
                                       
-        // Cycle thru all cons/jump fields
-        `MRC_CNTL_DESC_START_STREAM: 
-          mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_CONS_FIELD    ;
-
-
         // Memory requests will occur if the consequtive increment moves to another page
-        `MRC_CNTL_DESC_CONS_FIELD: 
-          mrc_cntl_desc_state_next =  (~to_strm_fsm_fifo_ready) ? `MRC_CNTL_DESC_CONS_FIELD       :
-                                      ( consJumpMemory_eom    ) ? `MRC_CNTL_DESC_WAIT_STREAM_COMPLETE        :
-                                                                  `MRC_CNTL_DESC_JUMP_FIELD ;
-
-
-        // 
-        `MRC_CNTL_DESC_JUMP_FIELD: 
-          mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_GENERATE_ANOTHER_MEM_REQ    ;
-
-
         // Make sure we transition right thru this state
-        `MRC_CNTL_DESC_GENERATE_ANOTHER_MEM_REQ : 
-          mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_CONS_FIELD ;
+        `MRC_CNTL_DESC_GENERATE_REQ_CHA : 
+       //   mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_GENERATE_REQ_CHB   ;
+          mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_INC_PBC      ;
 
+       // `MRC_CNTL_DESC_GENERATE_REQ_CHB : 
+       //   mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_INC_PBC      ;
+
+        // Make sure strm fifo can take cons/jump before reading
+        // - mem_end currently points to beginning of next consequtive phase
+        `MRC_CNTL_DESC_CHECK_STRM_FIFO : 
+          mrc_cntl_desc_state_next =  ( to_strm_fsm_fifo_ready) ? `MRC_CNTL_DESC_CONS_FIELD           :
+                                                                  `MRC_CNTL_DESC_CHECK_STRM_FIFO      ;
+
+
+        // Cycle thru all cons/jump fields
+        //
+        `MRC_CNTL_DESC_CONS_FIELD: 
+          mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_CALC_NUM_REQS ;
+
+        // we now have the start address and end of cons/jump phase address
+        // set pbc_inc to start and pbc_end to boundaries of consequtive phase.
+        `MRC_CNTL_DESC_CALC_NUM_REQS: 
+          mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_INC_PBC ;
+
+        // start points to first consequtive address, end points to last consequtive address
+        // pbc_last_end points to last address of previous consequtive phase
+        // pbc_inc is the first address of the current consequtive phase
+        // CHeck if last_end != inc. If so, generate requests and set last_end = inc
+        `MRC_CNTL_DESC_INC_PBC: 
+          mrc_cntl_desc_state_next =  ( first_time_thru                              ) ? `MRC_CNTL_DESC_CHECK_STRM_FIFO  :  // we will get here first time thru after the initial request
+                                      ( generate_requests                            ) ? `MRC_CNTL_DESC_GENERATE_REQ_CHA :
+                                      ( requests_complete  && ~consJumpMemory_eom    ) ? `MRC_CNTL_DESC_JUMP_FIELD       :
+                                      ( requests_complete  &&  consJumpMemory_eom    ) ? `MRC_CNTL_DESC_WAIT_STREAM_COMPLETE  :
+                                                                                         `MRC_CNTL_DESC_INC_PBC          ;
+
+        `MRC_CNTL_DESC_JUMP_FIELD: 
+          mrc_cntl_desc_state_next =  `MRC_CNTL_DESC_CHECK_STRM_FIFO    ;
 
         // Cycle thru all cons/jump fields
         `MRC_CNTL_DESC_WAIT_STREAM_COMPLETE: 
@@ -516,23 +544,70 @@ module mrc_cntl (
   reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE   ]    storage_desc_word    ;
   always @(*)
     begin
-      storage_desc_mgr     =  storage_desc_address[`MGR_DRAM_ADDRESS_MGR_FIELD_RANGE  ]  ;
-      storage_desc_channel =  storage_desc_address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ]  ;
-      storage_desc_bank    =  storage_desc_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ]  ;
-      storage_desc_page    =  storage_desc_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ]  ;
-      storage_desc_word    =  storage_desc_address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ]  ;
+      storage_desc_local_address  =  storage_desc_address[`MGR_DRAM_LOCAL_ADDRESS_RANGE      ]  ;
+      storage_desc_mgr            =  storage_desc_address[`MGR_DRAM_ADDRESS_MGR_FIELD_RANGE  ]  ;
+      storage_desc_channel        =  storage_desc_address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ]  ;
+      storage_desc_bank           =  storage_desc_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ]  ;
+      storage_desc_page           =  storage_desc_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ]  ;
+      storage_desc_word           =  storage_desc_address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ]  ;
     end
           
+  // Form an address using the base address fields ordered based on access order
+  reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]    mem_start_address     ;  // Start address for a consequtive phase
+  reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]    mem_end_address       ;  // address we increment for each jump
+  reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]    mem_last_end_address       ;  // address we increment for each jump
+
+  reg  [`MGR_DRAM_PBC_RANGE                 ]    pbc_end_addr         ;  // 
+  reg  [`MGR_DRAM_PBC_RANGE                 ]    pbc_inc_addr         ;  // 
+  reg  [`MGR_DRAM_PBC_RANGE                 ]    pbc_last_end_addr         ;  // last requested. Use to check for changes during increment
+ 
+  reg  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE    ]    mem_start_channel   ;
+  reg  [ `MGR_DRAM_BANK_ADDRESS_RANGE       ]    mem_start_bank      ;
+  reg  [ `MGR_DRAM_PAGE_ADDRESS_RANGE       ]    mem_start_page      ;
+  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE       ]    mem_start_word      ;
+
+  reg  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE    ]    mem_end_channel       ;  // formed address in access order for incrementing
+  reg  [ `MGR_DRAM_BANK_ADDRESS_RANGE       ]    mem_end_bank          ;
+  reg  [ `MGR_DRAM_PAGE_ADDRESS_RANGE       ]    mem_end_page          ;
+  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE       ]    mem_end_word          ;
+
+  reg  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE    ]    mem_last_end_channel       ;  // formed address in access order for incrementing
+  reg  [ `MGR_DRAM_BANK_ADDRESS_RANGE       ]    mem_last_end_bank          ;
+  reg  [ `MGR_DRAM_PAGE_ADDRESS_RANGE       ]    mem_last_end_page          ;
+  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE       ]    mem_last_end_word          ;
+
 
   assign from_Wud_Fifo[0].pipe_read = (from_Wud_Fifo[0].pipe_valid && (mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT   ) && ~from_Wud_Fifo[0].pipe_som ) |
                                       (from_Wud_Fifo[0].pipe_valid && (mrc_cntl_desc_state == `MRC_CNTL_DESC_EXTRACT)                               ) ;
 
+  always @(posedge clk)
+    begin
+      first_time_thru <= (mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT    ) ? 1'b1            :
+                         (mrc_cntl_desc_state == `MRC_CNTL_DESC_INC_PBC ) ? 1'b0            :
+                                                                            first_time_thru ;  
+    end
 
-  assign start_streaming = (mrc_cntl_desc_state == `MRC_CNTL_DESC_START_STREAM) ;
+  reg create_mem_request ;
+  always @(*)
+    begin 
+      create_mem_request  = ((mrc_cntl_desc_state == `MRC_CNTL_DESC_GENERATE_REQ_CHA  )  |
+                             (mrc_cntl_desc_state == `MRC_CNTL_DESC_GENERATE_REQ_CHB )) ;
+    end
 
-  assign create_mem_request  = ((mrc_cntl_desc_state == `MRC_CNTL_DESC_START_STREAM             )                      ) |
-                               ((mrc_cntl_desc_state == `MRC_CNTL_DESC_GENERATE_ANOTHER_MEM_REQ ) & require_mem_request) ;
+  assign requests_complete =  (pbc_end_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] == pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ) &
+                              (pbc_end_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ] == pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ] ) &
+                              (pbc_end_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] == pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ) ;
+                                         
 
+  assign bank_change       =  (pbc_last_end_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ] != pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ] ) ;  // as we increment thru the consequtive phase, check if we have changed bank or page
+  assign page_change       =  (pbc_last_end_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] != pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ) ;  
+
+  assign generate_requests =  (mrc_cntl_desc_state == `MRC_CNTL_DESC_INC_PBC                     ) &
+                              ( bank_change                                                      |
+                                page_change                                                      |
+                               (~channel_requested[pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ]]));
+                                         
+                                         
 
   //---------------------------------------------------------------------------------
   // Consequtive/Jump Memory Control
@@ -547,16 +622,231 @@ module mrc_cntl (
                                                                                 consJumpPtr              ;
          
     end
+
+  // increment the ptr each time we are about to enter that the state that uses the output
   always @(*)
     begin
-      inc_consJumpPtr     =  ((mrc_cntl_desc_state == `MRC_CNTL_DESC_START_STREAM    )                         ) |
-                             ((mrc_cntl_desc_state == `MRC_CNTL_DESC_CONS_FIELD      ) & to_strm_fsm_fifo_ready) |
-                             ((mrc_cntl_desc_state == `MRC_CNTL_DESC_GENERATE_ANOTHER_MEM_REQ)                         ) ;
+      inc_consJumpPtr     =  ((mrc_cntl_desc_state == `MRC_CNTL_DESC_INC_PBC          ) &  requests_complete & ~generate_requests & ~consJumpMemory_som & ~consJumpMemory_eom ) |  // transition to JUMP state
+                             ((mrc_cntl_desc_state == `MRC_CNTL_DESC_CHECK_STRM_FIFO  ) &  to_strm_fsm_fifo_ready                                       & ~consJumpMemory_eom ) ;  // transition to CONS state
     end
 
-  //---------------------------------------------------------------------------------
-  // Consequtive/Jump FIFO to stream fsm
+  //----------------------------------------------------------------------------------------------------
   //
+  // Construct Memory requests
+  //
+  // These regs will be initialized to the storage descriptor base address and then incremented based on access order
+  // When the addresses transtition to another bank or page, a memory request will be generated
+
+
+  // Set end of current consequtive phase
+  always @(posedge clk)
+    begin
+      // Initialize starting increment address
+      if ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) && (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID ))
+        begin
+          mem_end_address      <=  {storage_desc_page, storage_desc_bank, storage_desc_channel, storage_desc_word, 2'b00} ;  // byte address
+        end
+      else if ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) && (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID ))
+        begin
+          mem_end_address      <=  {storage_desc_page, storage_desc_bank, storage_desc_word, storage_desc_channel, 2'b00} ;  // byte address
+        end
+      // increment using number of consequtive onyy if strm fsm can take the cons/jump
+      else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_CONS_FIELD ) 
+        begin
+          // FIXME: Need to accomodate a consequtive value traversing multiple bank/pages
+          // Jump value is from previous end location so add consequtive and jump to start address to get next start address
+          mem_end_address      <=  mem_end_address + {consJumpMemory_value, 2'b00} ;  // account for byte address 
+        end
+      // increment using jump 
+      else if ((mrc_cntl_desc_state == `MRC_CNTL_DESC_JUMP_FIELD ) && ~consJumpMemory_eom)
+        begin
+          // Jump value is from previous inc location
+          mem_end_address   <=  mem_end_address + {consJumpMemory_value, 2'b00} ;  // account for byte address
+        end
+    end
+
+  always @(posedge clk)
+    begin
+      if (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID )
+        begin
+          mem_start_address <=  {storage_desc_channel, storage_desc_bank, storage_desc_page, storage_desc_word, 2'b00} ;
+        end
+      // when we enter the CHECK_STRM state the mem_end address points to beginning of next consequtive phase
+      else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_CHECK_STRM_FIFO )
+        begin
+          mem_start_address <=  {mem_end_channel, mem_end_bank, mem_end_page, mem_end_word, 2'b00} ;
+        end
+    end
+
+  always @(posedge clk)
+    begin
+      if (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID )
+        begin
+          pbc_inc_addr <=  {storage_desc_page, storage_desc_bank, storage_desc_channel};
+        end
+      else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_CALC_NUM_REQS )
+        begin
+          //pbc_inc_addr    <=  pbc_last_end_addr ;
+          pbc_inc_addr    <=  {mem_start_page, mem_start_bank, mem_start_channel} ;
+        end
+      // increment during first request to generate second request chan/bank/page
+      else if ((mrc_cntl_desc_state == `MRC_CNTL_DESC_INC_PBC ) && ~generate_requests)
+        begin
+          pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
+        end
+
+      // the request may occur with inc == end, so dont increment past end
+      else if ((mrc_cntl_desc_state == `MRC_CNTL_DESC_GENERATE_REQ_CHA ) && ~requests_complete)
+        begin
+          pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
+        end
+/*
+      else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_GENERATE_REQ_CHB )
+        begin
+          pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
+        end
+*/
+    end
+
+  genvar chan;
+  generate
+    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
+      begin: chan_requested
+        always @(posedge clk)
+          begin
+            if (mrc_cntl_desc_state == `MRC_CNTL_DESC_WAIT )
+              begin
+                channel_requested[chan]    <=  1'b0    ;
+              end
+            if (mrc_cntl_desc_state == `MRC_CNTL_DESC_CALC_NUM_REQS )
+              begin
+                channel_requested[chan]    <= (mem_start_bank != mem_last_end_bank) ? 1'b0                    :
+                                              (mem_start_page != mem_last_end_page) ? 1'b0                    :
+                                                                                      channel_requested[chan] ;
+              end
+            else if ((mrc_cntl_desc_state == `MRC_CNTL_DESC_INC_PBC ) && generate_requests)
+              begin
+                channel_requested[chan]    <= (bank_change ) ? 1'b0                    :
+                                              (page_change ) ? 1'b0                    :
+                                                               channel_requested[chan] ;
+              end
+            else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_GENERATE_REQ_CHA )
+              begin
+                // if we are about to request <chan>, make sure it hasnt been requested already with this bank and page
+                channel_requested[chan]    <=  (pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] == chan) ? 1'b1                    :
+                                                                                                         channel_requested[chan] ;
+              end
+          end
+      end
+  endgenerate
+
+
+
+  always @(posedge clk)
+    begin
+      if (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID )
+        begin
+          // set req == end to generate the first requests
+          pbc_end_addr <=  {storage_desc_page, storage_desc_bank, storage_desc_channel};
+        end
+      else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_CALC_NUM_REQS )
+        begin
+          pbc_end_addr    <=  {mem_end_page, mem_end_bank, mem_end_channel} ;
+        end
+    end
+
+  always @(posedge clk)
+    begin
+      if (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID )
+        begin
+          mem_last_end_address <=  {storage_desc_channel, storage_desc_bank, storage_desc_page, storage_desc_word, 2'b00} ;
+        end
+      else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_JUMP_FIELD )
+        begin
+          // mem_addr is current set to end of CONS phase, so set last req to end of previous consequtive phase
+          mem_last_end_address <=  {mem_end_channel, mem_end_bank, mem_end_page, mem_end_word, 2'b00} ;
+        end
+    end
+
+  always @(posedge clk)
+    begin
+      if (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID )
+        begin
+          pbc_last_end_addr    <=  {storage_desc_page, storage_desc_bank, storage_desc_channel};
+        end
+      else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_JUMP_FIELD )
+        begin
+          // mem_addr is current set to end of CONS phase, so set last req to end of previous consequtive phase
+          pbc_last_end_addr    <=  {mem_end_page, mem_end_bank, mem_end_channel} ;
+        end
+      //else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_GENERATE_REQ_CHB )
+      else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_GENERATE_REQ_CHA )
+        begin
+          // mem_addr is current set to end of CONS phase, so set last req to end of previous consequtive phase
+          pbc_last_end_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ;
+          pbc_last_end_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ] ;
+          pbc_last_end_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ;
+        end
+    end
+
+  // extract chan/bank/page/word fields from ordered address
+  always @(*)
+    begin
+      if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
+        begin
+          mem_end_channel =  mem_end_address[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
+          mem_end_bank    =  mem_end_address[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
+          mem_end_page    =  mem_end_address[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
+          mem_end_word    =  mem_end_address[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
+        end
+      else if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
+        begin
+          mem_end_channel =  mem_end_address[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+          mem_end_bank    =  mem_end_address[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
+          mem_end_page    =  mem_end_address[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+          mem_end_word    =  mem_end_address[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+        end
+    end
+
+  // extract chan/bank/page/word fields from previous request address
+  always @(*)
+    begin
+      mem_start_channel =  mem_start_address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ]  ;
+      mem_start_bank    =  mem_start_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ]  ;
+      mem_start_page    =  mem_start_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ]  ;
+      mem_start_word    =  mem_start_address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ]  ;
+    end
+
+  always @(*)
+    begin
+      mem_last_end_channel =  mem_last_end_address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ]  ;
+      mem_last_end_bank    =  mem_last_end_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ]  ;
+      mem_last_end_page    =  mem_last_end_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ]  ;
+      mem_last_end_word    =  mem_last_end_address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ]  ;
+    end
+
+  // Create a new request if after incrementing the mem_start_address any of the chan/bank/page have changed
+  assign   require_mem_request  = //( mem_start_channel != mem_end_channel  ) |  // we always grab next channel
+                                  ( mem_start_bank    != mem_end_bank     ) |
+                                  ( mem_start_page    != mem_end_page     ) ;
+
+
+  assign   mrc__mmc__valid_e1   =  create_mem_request                            ;
+  assign   mrc__mmc__cntl_e1    = `COMMON_STD_INTF_CNTL_SOM_EOM                  ;  // memory request is single cycle
+  assign   mrc__mmc__channel_e1 =  pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ;
+  assign   mrc__mmc__bank_e1    =  pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ] ;
+  assign   mrc__mmc__page_e1    =  pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ;
+  assign   mrc__mmc__word_e1    =  mem_start_word                                ;
+
+
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  // DRAM Address and Consequtive/Jump FIFOs to stream fsm
+  //  - two FIFOs
+  //    a) all the consequtive and jump fields along with cntl for delineation
+  //    b) single address associated with each cons/jump group 
+  //
+  //  a) Cons/Jump FIFO
   generate
     for (gvi=0; gvi<1 ; gvi=gvi+1) 
       begin: consJump_to_strm_fsm_fifo
@@ -564,14 +854,14 @@ module mrc_cntl (
         wire  clear        ;
         wire  almost_full  ;
         wire                                              write        ;
-        wire  [`MRC_CNTL_TO_STRM_AGGREGATE_FIFO_RANGE ]   write_data   ;
+        wire  [`MRC_CNTL_CJ_TO_STRM_AGGREGATE_FIFO_RANGE ]   write_data   ;
         wire                                              pipe_valid   ;
         wire                                              pipe_read    ;
-        wire  [`MRC_CNTL_TO_STRM_AGGREGATE_FIFO_RANGE ]   pipe_data    ;
+        wire  [`MRC_CNTL_CJ_TO_STRM_AGGREGATE_FIFO_RANGE ]   pipe_data    ;
 
-        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MRC_CNTL_TO_STRM_FIFO_DEPTH                 ),
-                                 .GENERIC_FIFO_THRESHOLD  (`MRC_CNTL_TO_STRM_FIFO_ALMOST_FULL_THRESHOLD ),
-                                 .GENERIC_FIFO_DATA_WIDTH (`MRC_CNTL_TO_STRM_AGGREGATE_FIFO_WIDTH       )
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MRC_CNTL_CJ_TO_STRM_FIFO_DEPTH                 ),
+                                 .GENERIC_FIFO_THRESHOLD  (`MRC_CNTL_CJ_TO_STRM_FIFO_ALMOST_FULL_THRESHOLD ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`MRC_CNTL_CJ_TO_STRM_AGGREGATE_FIFO_WIDTH       )
                         ) gpfifo (
                                  // Status
                                 .almost_full      ( almost_full           ),
@@ -609,8 +899,66 @@ module mrc_cntl (
   assign  consJump_to_strm_fsm_fifo[0].write       = to_strm_fsm_fifo_write  ;
   assign  consJump_to_strm_fsm_fifo[0].write_data  = {consJumpMemory_cntl, consJumpMemory_value};
 
-  assign  to_strm_fsm_fifo_ready                   = ~consJump_to_strm_fsm_fifo[0].almost_full  ;
 
+  // b) Start Address FIFO 
+  //
+  generate
+    for (gvi=0; gvi<1 ; gvi=gvi+1) 
+      begin: addr_to_strm_fsm_fifo
+
+        wire  clear        ;
+        wire  almost_full  ;
+        wire                                                   write        ;
+        wire  [`MRC_CNTL_ADDR_TO_STRM_AGGREGATE_FIFO_RANGE ]   write_data   ;
+        wire                                                   pipe_valid   ;
+        wire                                                   pipe_read    ;
+        wire  [`MRC_CNTL_ADDR_TO_STRM_AGGREGATE_FIFO_RANGE ]   pipe_data    ;
+
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MRC_CNTL_ADDR_TO_STRM_FIFO_DEPTH                 ),
+                                 .GENERIC_FIFO_THRESHOLD  (`MRC_CNTL_ADDR_TO_STRM_FIFO_ALMOST_FULL_THRESHOLD ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`MRC_CNTL_ADDR_TO_STRM_AGGREGATE_FIFO_WIDTH       )
+                        ) gpfifo (
+                                 // Status
+                                .almost_full      ( almost_full           ),
+                                 // Write                                 
+                                .write            ( write                 ),
+                                .write_data       ( write_data            ),
+                                 // Read                                  
+                                .pipe_valid       ( pipe_valid            ),
+                                .pipe_data        ( pipe_data             ),
+                                .pipe_read        ( pipe_read             ),
+
+                                // General
+                                .clear            ( clear                 ),
+                                .reset_poweron    ( reset_poweron         ),
+                                .clk              ( clk                   )
+                                );
+
+    
+        wire   [`MGR_DRAM_LOCAL_ADDRESS_RANGE    ]  pipe_addr           ;
+        wire   [`MGR_INST_OPTION_ORDER_RANGE     ]  pipe_order          ;
+        wire   [`MGR_INST_OPTION_TGT_RANGE       ]  pipe_tgt            ;
+        wire   [`MGR_INST_OPTION_TRANSFER_RANGE  ]  pipe_transfer_type  ;
+        wire   [`MGR_NUM_LANES_RANGE             ]  pipe_num_lanes      ;  // 0-32 so need 6 bits
+        assign  {pipe_num_lanes, pipe_transfer_type, pipe_tgt, pipe_order, pipe_addr}        = pipe_data   ;
+
+      end
+  endgenerate
+
+  assign  addr_to_strm_fsm_fifo[0].clear       = 1'b0    ;
+  assign  addr_to_strm_fsm_fifo[0].write       = (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID) ;
+  assign  addr_to_strm_fsm_fifo[0].write_data  = {num_lanes, txfer_type, target, storage_desc_accessOrder, storage_desc_local_address} ;
+
+
+  // Flow control DESC fsm if either fifo becomes almost full
+  assign  to_strm_fsm_fifo_ready    = ~consJump_to_strm_fsm_fifo[0].almost_full & ~addr_to_strm_fsm_fifo[0].almost_full ;
+
+
+
+  // end of to stream fifo's
+  //---------------------------------------------------------------------------------
+  //
+  //
   //---------------------------------------------------------------------------------
   // Storage Descriptor Memory Control
   //
@@ -702,7 +1050,8 @@ module mrc_cntl (
   assign storage_desc_address     = sdmem_Address       ;  // main memory address in storage descriptor
   assign storage_desc_accessOrder = sdmem_AccessOrder   ;  // how to increment Chan/Bank/Page/Word
   // wires to make FSM decodes look cleaner
-  assign consJumpMemory_som       =  (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_SOM    ); 
+  assign consJumpMemory_som       =  (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_SOM    ) ; 
+  assign consJumpMemory_som_eom   =  (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_SOM_EOM) ;
   assign consJumpMemory_eom       =  (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_EOM);
 
 
@@ -717,6 +1066,7 @@ module mrc_cntl (
   // - Take the conseqtive/jump tuples from the intermediate fifo and start streaming data
   // - If page line changes occur, assume the next line is in the from_mmc_fifo because its been pipelined
   //   by the descriptor processing fsm
+  // - The stream fsm will keep a register for channel 0 and channel 1 and  draw from these two registers as required when incrementing
       
   // State register 
   reg [`MRC_CNTL_STRM_STATE_RANGE ] mrc_cntl_stream_state      ; // state flop
@@ -732,8 +1082,8 @@ module mrc_cntl (
   // FSM Registers
   //
 
-  reg  [`MGR_INST_CONS_JUMP_RANGE ]      consequtive_counter ;
-  reg  [`MGR_INST_CONS_JUMP_RANGE ]      jump_value_for_strm ;
+  reg  [`MRC_CNTL_CONS_COUNTER_RANGE ]      consequtive_counter ;
+  reg  [`MGR_INST_CONS_JUMP_RANGE    ]      jump_value_for_strm ;
   
   //--------------------------------------------------
   // State Transitions
@@ -743,10 +1093,11 @@ module mrc_cntl (
       case (mrc_cntl_stream_state)
         
         `MRC_CNTL_STRM_WAIT: 
-          mrc_cntl_stream_state_next =  ( consJump_to_strm_fsm_fifo[0].pipe_valid) ? `MRC_CNTL_STRM_LOAD_FIRST_CONS_COUNT :  // load consequtive words counter
-                                                                                    `MRC_CNTL_STRM_WAIT        ;
+          mrc_cntl_stream_state_next =  ( consJump_to_strm_fsm_fifo[0].pipe_valid && consJump_to_strm_fsm_fifo[0].pipe_valid) ? `MRC_CNTL_STRM_LOAD_FIRST_CONS_COUNT :  // load consequtive words counter
+                                                                                                                                `MRC_CNTL_STRM_WAIT        ;
   
         // wait for consequtive counter to time out
+        //  - transition straight thru this state
         `MRC_CNTL_STRM_LOAD_FIRST_CONS_COUNT: 
           mrc_cntl_stream_state_next =  (consJump_to_strm_fsm_fifo[0].pipe_eom ) ? `MRC_CNTL_STRM_COUNT_CONS      :
                                                                                    `MRC_CNTL_STRM_LOAD_JUMP_VALUE ;
@@ -758,9 +1109,11 @@ module mrc_cntl (
 
         // wait for consequtive counter to time out
         `MRC_CNTL_STRM_COUNT_CONS: 
-          mrc_cntl_stream_state_next =  ((consequtive_counter == 'd1) && consJump_to_strm_fsm_fifo[0].pipe_eom) ? `MRC_CNTL_STRM_COMPLETE        :
-                                        ((consequtive_counter == 'd1)                                         ) ? `MRC_CNTL_STRM_LOAD_JUMP_VALUE :
-                                                                                                                  `MRC_CNTL_STRM_COUNT_CONS      ;
+          mrc_cntl_stream_state_next =  ((consequtive_counter == 'd0                              ) && consJump_to_strm_fsm_fifo[0].pipe_eom) ? `MRC_CNTL_STRM_COMPLETE        :
+                                        ((consequtive_counter[`MRC_CNTL_CONS_COUNTER_MSB]  == 1'b1) && consJump_to_strm_fsm_fifo[0].pipe_eom) ? `MRC_CNTL_STRM_COMPLETE        :  // check for negative
+                                        ((consequtive_counter == 'd0                              )                                         ) ? `MRC_CNTL_STRM_LOAD_JUMP_VALUE :
+                                        ((consequtive_counter[`MRC_CNTL_CONS_COUNTER_MSB]  == 1'b1)                                         ) ? `MRC_CNTL_STRM_LOAD_JUMP_VALUE :  // check for negative
+                                                                                                                                                `MRC_CNTL_STRM_COUNT_CONS      ;
 
  //       `MRC_CNTL_STRM_JUMP_VALUE_WAIT: 
  //         mrc_cntl_stream_state_next =                                                          `MRC_CNTL_STRM_LOAD_JUMP_VALUE ;
@@ -782,9 +1135,11 @@ module mrc_cntl (
   
   //----------------------------------------------------------------------------------------------------
 
+  assign  addr_to_strm_fsm_fifo[0].pipe_read           =  (mrc_cntl_stream_state == `MRC_CNTL_STRM_LOAD_FIRST_CONS_COUNT);
+
   assign  consJump_to_strm_fsm_fifo[0].pipe_read       = ((mrc_cntl_stream_state == `MRC_CNTL_STRM_LOAD_FIRST_CONS_COUNT)                                           ) |
                                                          ((mrc_cntl_stream_state == `MRC_CNTL_STRM_LOAD_JUMP_VALUE      ) &  consJump_to_strm_fsm_fifo[0].pipe_valid) |
-                                                         ((mrc_cntl_stream_state == `MRC_CNTL_STRM_COUNT_CONS           ) & (consequtive_counter == 'd1)           ) ;
+                                                         ((mrc_cntl_stream_state == `MRC_CNTL_STRM_COUNT_CONS           ) & (consequtive_counter == 'd0)           ) ;
 
 
   assign completed_streaming = (mrc_cntl_stream_state == `MRC_CNTL_STRM_COMPLETE) ;
@@ -792,9 +1147,11 @@ module mrc_cntl (
   always @(posedge clk)
     begin
       consequtive_counter <=  ( reset_poweron )  ? 'd0  :  
-                              (                                (mrc_cntl_stream_state == `MRC_CNTL_STRM_LOAD_FIRST_CONS_COUNT)) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue  :  
-                              ((consequtive_counter == 'd1) && (mrc_cntl_stream_state == `MRC_CNTL_STRM_COUNT_CONS      )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue  :  
-                                                                                                                             consequtive_counter-1 ;
+                              (                                (mrc_cntl_stream_state == `MRC_CNTL_STRM_LOAD_FIRST_CONS_COUNT)) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
+                              ((consequtive_counter == 'd0) && (mrc_cntl_stream_state == `MRC_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
+                              ( addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST                    ) ? consequtive_counter-1                                       :
+                              ( addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR                   ) ? consequtive_counter-addr_to_strm_fsm_fifo[0].pipe_num_lanes :
+                                                                                                                                  consequtive_counter                                         ;  // will only occur with error
     end
   always @(posedge clk)
     begin
@@ -802,6 +1159,79 @@ module mrc_cntl (
                               ((mrc_cntl_stream_state == `MRC_CNTL_STRM_LOAD_JUMP_VALUE)) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue  : 
                                                                                             jump_value_for_strm            ;
     end
+
+  reg  [`MGR_INST_OPTION_ORDER_RANGE    ]    strm_accessOrder       ;
+
+  reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]    strm_request_address   ;  // main memory address for additional requests
+  reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]    strm_inc_address       ;  // address we increment for each jump
+ 
+  reg  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE]    strm_request_channel   ;
+  reg  [ `MGR_DRAM_BANK_ADDRESS_RANGE   ]    strm_request_bank      ;
+  reg  [ `MGR_DRAM_PAGE_ADDRESS_RANGE   ]    strm_request_page      ;
+  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE   ]    strm_request_word      ;
+
+  reg  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE]    strm_inc_channel       ;  // formed address in access order for incrementing
+  reg  [ `MGR_DRAM_BANK_ADDRESS_RANGE   ]    strm_inc_bank          ;
+  reg  [ `MGR_DRAM_PAGE_ADDRESS_RANGE   ]    strm_inc_page          ;
+  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE   ]    strm_inc_word          ;
+
+  always @(*)
+    begin
+      if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
+        begin
+          strm_inc_channel =  strm_inc_address[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
+          strm_inc_bank    =  strm_inc_address[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
+          strm_inc_page    =  strm_inc_address[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
+          strm_inc_word    =  strm_inc_address[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
+        end
+      else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
+        begin
+          strm_inc_channel =  strm_inc_address[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+          strm_inc_bank    =  strm_inc_address[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
+          strm_inc_page    =  strm_inc_address[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+          strm_inc_word    =  strm_inc_address[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+        end
+    end
+
+  // extract chan/bank/page/word fields from previous request address
+  always @(*)
+    begin
+      strm_request_channel =  strm_request_address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ]  ;
+      strm_request_bank    =  strm_request_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ]  ;
+      strm_request_page    =  strm_request_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ]  ;
+      strm_request_word    =  strm_request_address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ]  ;
+    end
+
+  // access order stays static during increment phase
+  always @(*)
+    begin
+      strm_accessOrder      =  addr_to_strm_fsm_fifo[0].pipe_order ;
+    end
+  // we will set the request address to the start of each cons/jump group
+  always @(posedge clk)
+    begin
+      strm_request_address  =  (addr_to_strm_fsm_fifo[0].pipe_read) ?  addr_to_strm_fsm_fifo[0].pipe_addr  : strm_request_address   ;
+    end
+
+  // Load the increment address in the order of increment
+  always @(posedge clk)
+    begin
+      if ((addr_to_strm_fsm_fifo[0].pipe_read == PY_WU_INST_ORDER_TYPE_WCBP) && (addr_to_strm_fsm_fifo[0].pipe_read))
+        begin
+          strm_inc_address[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ] =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ]  ;
+          strm_inc_address[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ] =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ]  ;
+          strm_inc_address[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ] =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ]  ;
+          strm_inc_address[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ] =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ]  ;
+        end
+      if ((addr_to_strm_fsm_fifo[0].pipe_read == PY_WU_INST_ORDER_TYPE_CWBP) && (addr_to_strm_fsm_fifo[0].pipe_read))
+        begin
+          strm_inc_address[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ] =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ]  ;
+          strm_inc_address[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ] =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ]  ;
+          strm_inc_address[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ] =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ]  ;
+          strm_inc_address[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ] =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ]  ;
+        end
+    end
+
   //-------------------------------------------------------------------------------------------
   //------------------------------------------
   // Main Memory Controller FIFO's
@@ -845,7 +1275,7 @@ module mrc_cntl (
   endgenerate
 
 
-  genvar chan, word;
+  genvar word;
   generate
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
       begin
@@ -862,123 +1292,6 @@ module mrc_cntl (
   endgenerate
 
 
-
-  //----------------------------------------------------------------------------------------------------
-  //
-  // Construct Memory requests
-  //
-  // These regs will be initialized to the storage descriptor base address and then incremented based on access order
-  // When the addresses transtition to another bank or page, a memory request will be generated
-
-  // Form an address using the base address fields ordered based on access order
-  reg  [`MGR_DRAM_ADDRESS_RANGE         ]    mem_request_address   ;  // main memory address for additional requests
-  reg  [`MGR_DRAM_ADDRESS_RANGE         ]    mem_start_address     ;  // start address of each consequtive run
- 
-  reg  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE]    mem_request_channel   ;
-  reg  [ `MGR_DRAM_BANK_ADDRESS_RANGE   ]    mem_request_bank      ;
-  reg  [ `MGR_DRAM_PAGE_ADDRESS_RANGE   ]    mem_request_page      ;
-  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE   ]    mem_request_word      ;
-
-  reg  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE]    mem_start_channel     ;
-  reg  [ `MGR_DRAM_BANK_ADDRESS_RANGE   ]    mem_start_bank        ;
-  reg  [ `MGR_DRAM_PAGE_ADDRESS_RANGE   ]    mem_start_page        ;
-  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE   ]    mem_start_word        ;
-
-  always @(posedge clk)
-    begin
-      if ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) && (mrc_cntl_desc_state == `MRC_CNTL_DESC_START_STREAM ))
-        begin
-          mem_request_address   <=  {storage_desc_page, storage_desc_bank, storage_desc_channel, storage_desc_word} ;
-        end
-      else if ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) && (mrc_cntl_desc_state == `MRC_CNTL_DESC_START_STREAM ))
-        begin
-          mem_request_address   <=  mem_start_address ;
-        end
-      else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_GENERATE_ANOTHER_MEM_REQ )
-        begin
-          // Jump value is from previous start location
-          mem_request_address   <=  mem_start_address ;
-        end
-      else
-        begin
-          //mem_request_address   <=  mem_request_address + num_lanes ;
-        end
-    end
-
-  // Latch the starting address for each consequtive group
-  always @(posedge clk)
-    begin
-      if ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) && (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID ))
-        begin
-          mem_start_address   <=  {storage_desc_page, storage_desc_bank, storage_desc_channel, storage_desc_word} ;
-        end
-      else if ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) && (mrc_cntl_desc_state == `MRC_CNTL_DESC_MEM_OUT_VALID ))
-        begin
-          mem_start_address   <=  {storage_desc_page, storage_desc_bank, storage_desc_channel, storage_desc_word} ;
-        end
-      else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_CONS_FIELD )
-        begin
-          // FIXME: Need to accomodate a consequtive value traversing multiple bank/pages
-          // Jump value is from previous end location so add consequtive and jump to start address to get next start address
-          mem_start_address   <=  mem_start_address + {consJumpMemory_value, 2'b00} ;  // account for byte address 
-        end
-      else if (mrc_cntl_desc_state == `MRC_CNTL_DESC_JUMP_FIELD )
-        begin
-          // Jump value is from previous start location
-          mem_start_address   <=  mem_start_address + {consJumpMemory_value, 2'b00} ;  // account for byte address
-        end
-    end
-
-  // set currently access memory
-  always @(*)
-    begin
-      if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
-        begin
-          mem_start_channel =  mem_start_address[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
-          mem_start_bank    =  mem_start_address[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
-          mem_start_page    =  mem_start_address[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
-          mem_start_word    =  mem_start_address[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
-        end
-      else if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
-        begin
-          mem_start_channel =  mem_start_address[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
-          mem_start_bank    =  mem_start_address[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
-          mem_start_page    =  mem_start_address[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
-          mem_start_word    =  mem_start_address[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
-        end
-    end
-
-  // extract chan/bank/page/word fields from ordered address
-  always @(*)
-    begin
-      if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
-        begin
-          mem_request_channel =  mem_request_address[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
-          mem_request_bank    =  mem_request_address[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
-          mem_request_page    =  mem_request_address[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
-          mem_request_word    =  mem_request_address[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
-        end
-      else if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
-        begin
-          mem_request_channel =  mem_request_address[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
-          mem_request_bank    =  mem_request_address[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
-          mem_request_page    =  mem_request_address[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
-          mem_request_word    =  mem_request_address[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
-        end
-    end
-
-  // Create a new request if after incrementing the mem_request_address any of the chan/bank/page have changed
-  assign   require_mem_request  = ( mem_request_channel != mem_start_channel  ) |
-                                  ( mem_request_bank    != mem_start_bank     ) |
-                                  ( mem_request_page    != mem_start_page     ) ;
-
-
-  assign   mrc__mmc__valid_e1   =  create_mem_request   ;
-  assign   mrc__mmc__cntl_e1    = `COMMON_STD_INTF_CNTL_SOM_EOM        ;  // memory request is single cycle
-  assign   mrc__mmc__channel_e1 =  mem_start_channel ;
-  assign   mrc__mmc__bank_e1    =  mem_start_bank    ;
-  assign   mrc__mmc__page_e1    =  mem_start_page    ;
-  assign   mrc__mmc__word_e1    =  mem_start_word    ;
 
   // Pointer to word in a page
   //  - initially set to storage pointer word address offset by lane ID
