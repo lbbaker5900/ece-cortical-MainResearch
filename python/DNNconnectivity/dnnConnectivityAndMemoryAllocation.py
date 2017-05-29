@@ -58,18 +58,21 @@ class __LINE__(object):
 # Plotting
 # 
 # Check matplotlib version in case I run on ncsu linux machines that dont support animation
-import matplotlib as mpl
-if (int(mpl.__version__.split('.')[0]) > 1) or  ((int(mpl.__version__.split('.')[0]) == 1) and (int(mpl.__version__.split('.')[1]) >= 4)) :
-    del mpl
-    import matplotlib.pyplot as plt
-    import matplotlib.animation as manimation
-    from pylab import *
-    from matplotlib.colors import BoundaryNorm
-    from matplotlib.ticker import MaxNLocator
-    #from mpl_toolkits.mplot3d import Axes3D
-else :
-    print '{0}:{1}:WARNING:Matplotlib not loaded, version doesnt support all features required'.format(__FILE__(), __LINE__())
-
+try:
+  import matplotlib as mpl
+  if (int(mpl.__version__.split('.')[0]) > 1) or  ((int(mpl.__version__.split('.')[0]) == 1) and (int(mpl.__version__.split('.')[1]) >= 4)) :
+      del mpl
+      import matplotlib.pyplot as plt
+      import matplotlib.animation as manimation
+      from pylab import *
+      from matplotlib.colors import BoundaryNorm
+      from matplotlib.ticker import MaxNLocator
+      #from mpl_toolkits.mplot3d import Axes3D
+  else :
+      print '{0}:{1}:WARNING:Matplotlib not loaded, version doesnt support all features required'.format(__FILE__(), __LINE__())
+except:
+    print '{0}:{1}:WARNING:Matplotlib doesnt exist'.format(__FILE__(), __LINE__())
+  
 ########################################################################################################################
 ## Globals
 
@@ -2999,9 +3002,9 @@ class Manager():
           pLine = pLine + storageDesc.address + ' ' 
           pLine = pLine + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  storageDesc.accessOrder)), orderValues.WIDTH)
           for c in range(len(storageDesc.consequtive)) :
-              pLine = pLine + '{0:>3} '.format(storageDesc.consequtive[c])
+              pLine = pLine + '{0:>3} '.format(toHexPad(int(storageDesc.consequtive[c],16)-1,3))
               try :
-                  pLine = pLine + '1 {0:>3} '.format(storageDesc.jump[c])
+                  pLine = pLine + '1 {0:>3} '.format(toHexPad(int(storageDesc.jump[c],16)+1,3))
               except:
                   pass
           pLine = pLine + '0\n'
@@ -3700,11 +3703,16 @@ def main():
     #network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
     
+    # Small
     network.addLayer('Input',           55,  55,    4,                      ) #   96,
     network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
     network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
     network.addLayer('Convolutional',   13,  13,  4,    3,   3,   8,   1 ) #  384,
-    #network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   1 ) #  384,
+    
+    # FC-7
+    #network.addLayer('Input',         4096,    1,    1,                      ) #   96,
+    #network.addLayer('Convolutional', 4096,    1,    1, 4096,   1,    1,   0 ) #  256,
+    #network.addLayer('Convolutional', 1024,    1,    1, 4096,   1,    1,   0 ) #  384,
     
     #network.addLayer('Input',           55,  55,    3,                      ) #   96,
     #network.addLayer('Convolutional',   27,  27,  128,    5,   5,    3,   2 ) #  256,
