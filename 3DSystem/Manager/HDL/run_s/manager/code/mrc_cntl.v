@@ -958,98 +958,177 @@ module mrc_cntl (
   // end of to stream fifo's
   //---------------------------------------------------------------------------------
   //
-  //
-  //---------------------------------------------------------------------------------
-  // Storage Descriptor Memory Control
-  //
-
-  wire read_storage_desc_memory ; 
-
-  assign read_storage_desc_memory = 1'b1 ;
-
-
-
+ 
   //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
   // Memories
   //----------------------------------------------------------------------------------------------------
   //
 
-
-
-  reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  Address_mem         [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
-  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  AccessOrder_mem     [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
-  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  consJumpPtr_mem     [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
-
-  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  consJumpCntl_mem    [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_RANGE ] ;  // cons/jump delineator
-  reg   [`MGR_INST_CONS_JUMP_RANGE                      ]  consJump_mem        [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_RANGE ] ;  
-
-  // The memory is updated using the testbench, so everytime we see an read, reload the memory
-  always @(posedge read_storage_desc_memory) 
-    begin
-
-      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAddress_readmem.dat"        , sys__mgr__mgrId) , Address_mem      );
-      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAccessOrder_readmem.dat"    , sys__mgr__mgrId) , AccessOrder_mem  );
-      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorPtr_readmem.dat"            , sys__mgr__mgrId) , consJumpPtr_mem  );
-      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpCntl_readmem.dat"   , sys__mgr__mgrId) , consJumpCntl_mem );
-      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpFields_readmem.dat" , sys__mgr__mgrId) , consJump_mem     );
-    end
-  
-  reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address       , sdmem_Address_e1       ;  
-  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder   , sdmem_AccessOrder_e1   ;
-  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr   , sdmem_consJumpPtr_e1   ;  
-                                                                                
-  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  sdmem_consJumpCntl  , sdmem_consJumpCntl_e1  ;  // cons/jump delineator
-  reg   [`MGR_INST_CONS_JUMP_RANGE                      ]  sdmem_consJump      , sdmem_consJump_e1      ;  
-
-
-  //----------------------------------------------------------------------------------------------------
+  //--------------------------------------------------
   // Storage Descriptor Memory
   
-  //--------------------------------------------------
-  // Main Storage Descriptor memory
+  // The sorage descriptor pointer in the descriptor points to a location in this memory
+  // There are 5 memory
+  //   i) Address_mem       - Starting address of storage
+  //  ii) AccessOrder_mem   - How the memory will be accessed
+  // iii) consJumpPtr_mem   - pointer to the first consequtive field in the consJumpPtr
+  //  iv) consJumpCntl_mem  - consequtive/jump field delineation
+  //   v) consJump_mem      - consequtive/jump value
   
+  // FIXME: instantiate one real memory for now to ensure funcrionality
+  // Will need to merge Address_mem, AccessOrder_mem and consJumpPtr_mem into one device
+  // e.g. merge memories 1,2,3 and merge 4,5
+  
+  //--------------------------------------------------
+  // i) Storage Descriptor Address Memory
+  
+  //reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address       , sdmem_Address_e1       ;  
+  wire   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address       ;
+  //reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  Address_mem         [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
+  generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH  ),
+                   .GENERIC_MEM_REGISTERED_OUT (0                                     ),
+                   .GENERIC_MEM_DATA_WIDTH     (`MGR_DRAM_ADDRESS_WIDTH               )
+                  ) Address_mem ( 
+                  //---------------------------------------------------------------
+                  // Port A 
+                  .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH ) {1'b0}} ),
+                  .portA_write_data    ( {`MGR_DRAM_ADDRESS_WIDTH {1'b0}} ),
+                  .portA_read_data     (             ),
+                  .portA_enable        ( 1'b0        ), 
+                  .portA_write         ( 1'b0        ),
+                  
+                  //---------------------------------------------------------------
+                  // Port B 
+                  .portB_address       ( local_storage_desc_ptr ),
+                  .portB_write_data    ( {`MGR_DRAM_ADDRESS_WIDTH {1'b0}} ),
+                  .portB_read_data     ( sdmem_Address       ),
+                  .portB_enable        ( 1'b1                             ), 
+                  .portB_write         ( 1'b0                             ),
+                  
+                  //---------------------------------------------------------------
+                  // General
+                  .reset_poweron       ( reset_poweron             ),
+                  .clk                 ( clk                       )
+                  ) ;
+/*
   always @(*) 
     begin 
-      #0.3    sdmem_Address_e1             =  Address_mem      [local_storage_desc_ptr ] ;
       #0.3    sdmem_AccessOrder_e1         =  AccessOrder_mem  [local_storage_desc_ptr ] ;
-      #0.3    sdmem_consJumpPtr_e1         =  consJumpPtr_mem  [local_storage_desc_ptr ] ;
     end
-
   always @(posedge clk) 
     begin 
       sdmem_Address             <=  sdmem_Address_e1        ;
-      sdmem_AccessOrder         <=  sdmem_AccessOrder_e1    ;
-      sdmem_consJumpPtr         <=  sdmem_consJumpPtr_e1    ;
+    end
+*/
+  initial
+    begin
+      @(negedge reset_poweron);
+      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAddress_readmem.dat"        , sys__mgr__mgrId) , Address_mem.mem      );
+      //$readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAddress_readmem.dat"        , sys__mgr__mgrId) , Address_mem      );
     end
 
-  assign  storage_desc_consJumpPtr = sdmem_consJumpPtr      ;
 
   //--------------------------------------------------
-  // Consequitve/Jump Memory
+  // ii) Access Order Memory
   
+  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder   , sdmem_AccessOrder_e1   ;
+  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  AccessOrder_mem     [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
+  always @(*) 
+    begin 
+      #0.3    sdmem_AccessOrder_e1         =  AccessOrder_mem  [local_storage_desc_ptr ] ;
+    end
+  always @(posedge clk) 
+    begin 
+      sdmem_AccessOrder         <=  sdmem_AccessOrder_e1    ;
+    end
+
+  initial
+    begin
+      @(negedge reset_poweron);
+      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAccessOrder_readmem.dat"    , sys__mgr__mgrId) , AccessOrder_mem  );
+    end
+
+
+
+  //--------------------------------------------------
+  // iii) ConsJump Pointer Memory
+  
+  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr   , sdmem_consJumpPtr_e1   ;  
+  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  consJumpPtr_mem     [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
+  always @(*) 
+    begin 
+      #0.3    sdmem_consJumpPtr_e1         =  consJumpPtr_mem  [local_storage_desc_ptr ] ;
+    end
+  always @(posedge clk) 
+    begin 
+      sdmem_consJumpPtr         <=  sdmem_consJumpPtr_e1    ;
+    end
+  initial
+    begin
+      @(negedge reset_poweron);
+      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorPtr_readmem.dat"            , sys__mgr__mgrId) , consJumpPtr_mem  );
+    end
+
+
+
+
+  //--------------------------------------------------
+  // iv) ConsJump Cntl Memory
+
+  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  sdmem_consJumpCntl  , sdmem_consJumpCntl_e1  ;  // cons/jump delineator
+  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  consJumpCntl_mem    [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_RANGE ] ;  // cons/jump delineator
   always @(*) 
     begin 
       #0.3    sdmem_consJumpCntl_e1        =  consJumpCntl_mem [consJumpPtr   ] ;
-      #0.3    sdmem_consJump_e1            =  consJump_mem     [consJumpPtr   ] ;
     end
-
   always @(posedge clk) 
     begin 
       sdmem_consJumpCntl        <=  sdmem_consJumpCntl_e1   ;
+    end
+  initial
+    begin
+      @(negedge reset_poweron);
+      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpCntl_readmem.dat"   , sys__mgr__mgrId) , consJumpCntl_mem );
+    end
+
+
+  //--------------------------------------------------
+  // v) ConsJump Value Memory
+
+  reg   [`MGR_INST_CONS_JUMP_RANGE                      ]  sdmem_consJump      , sdmem_consJump_e1      ;  
+  reg   [`MGR_INST_CONS_JUMP_RANGE                      ]  consJump_mem        [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_RANGE ] ;  
+  always @(*) 
+    begin 
+      #0.3    sdmem_consJump_e1            =  consJump_mem     [consJumpPtr   ] ;
+    end
+  always @(posedge clk) 
+    begin 
       sdmem_consJump            <=  sdmem_consJump_e1       ;
     end
+  initial
+    begin
+      @(negedge reset_poweron);
+      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpFields_readmem.dat" , sys__mgr__mgrId) , consJump_mem     );
+    end
+  
+
+
+  assign  storage_desc_consJumpPtr = sdmem_consJumpPtr      ;
+
 
         
   //----------------------------------------------------------------------------------------------------
   // end memories
   //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
 
+
+  // wires to make FSM decodes look cleaner
   assign consJumpMemory_cntl      = sdmem_consJumpCntl  ;  // cons/jump delineator for fsm
   assign consJumpMemory_value     = sdmem_consJump      ;  // cons/jump delineator for fsm
   assign storage_desc_address     = sdmem_Address       ;  // main memory address in storage descriptor
   assign storage_desc_accessOrder = sdmem_AccessOrder   ;  // how to increment Chan/Bank/Page/Word
-  // wires to make FSM decodes look cleaner
   assign consJumpMemory_som       =  (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_SOM    ) ; 
   assign consJumpMemory_som_eom   =  (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_SOM_EOM) ;
   assign consJumpMemory_eom       =  (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (sdmem_consJumpCntl == `COMMON_STD_INTF_CNTL_EOM);
@@ -1063,6 +1142,7 @@ module mrc_cntl (
   //----------------------------------------------------------------------------------------------------
   // Stream Data FSM
   //----------------------------------------------------------------------------------------------------
+  //
   // - Take the conseqtive/jump tuples from the intermediate fifo and start streaming data
   // - If page line changes occur, assume the next line is in the from_mmc_fifo because its been pipelined
   //   by the descriptor processing fsm
@@ -1236,6 +1316,9 @@ module mrc_cntl (
   //------------------------------------------
   // Main Memory Controller FIFO's
   //
+  // these are the big memroies so we can absorb data from back-to-back page opens and provide data during back-to-back page closes
+  // see  https://github.ncsu.edu/lbbaker/ece-cortical-MainResearch/tree/master/3DSystem/DOC/DramReadBuffer.pdf
+
   generate
     for (gvi=0; gvi<`MGR_DRAM_NUM_CHANNELS ; gvi=gvi+1) 
       begin: from_mmc_fifo

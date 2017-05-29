@@ -87,13 +87,14 @@ module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
                     //---------------------------------------------------------------
                     // Port B 
                     .portB_address       ( rp                               ),
-                    .portB_write_data    ( {GENERIC_FIFO_DATA_WIDTH {1'b0}}),
+                    .portB_write_data    ( {GENERIC_FIFO_DATA_WIDTH {1'b0}} ),
                     .portB_read_data     ( int_read_data                    ),
                     .portB_enable        ( read                             ), 
                     .portB_write         ( 1'b0                             ),
                     
                     //---------------------------------------------------------------
                     // General
+                    .reset_poweron       ( reset_poweron             ),
                     .clk                 ( clk                       )
                     ) ;
 //  `else

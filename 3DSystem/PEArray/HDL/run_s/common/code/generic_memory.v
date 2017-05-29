@@ -48,7 +48,8 @@
 
 module generic_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
                         parameter GENERIC_MEM_REGISTERED_OUT  = 0      ,
-                        parameter GENERIC_MEM_DATA_WIDTH      = 32     )
+                        parameter GENERIC_MEM_DATA_WIDTH      = 32     ,
+                        parameter GENERIC_MEM_INIT_FILE       = ""     )
                          (
                           //---------------------------------------------------------------
                           // Port A 
@@ -68,6 +69,7 @@ module generic_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
                           
                           //---------------------------------------------------------------
                           // General
+                          reset_poweron        ,
                           clk            
                           );
 
@@ -75,6 +77,7 @@ module generic_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
   localparam GENERIC_MEM_ADDR_WIDTH       = $clog2(GENERIC_MEM_DEPTH) ;
 
   input   wire                       clk            ;
+  input   wire                       reset_poweron  ;  // used only to intialize memory
 
   input   wire  [GENERIC_MEM_ADDR_WIDTH-1 :0  ]     portA_address     ;
   input   wire  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     portA_write_data  ;
@@ -113,6 +116,14 @@ module generic_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
     // Not synthesis
     reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
 
+    initial
+      begin
+        @(negedge reset_poweron)
+          if (GENERIC_MEM_INIT_FILE != "")
+            begin
+              $readmemh( GENERIC_MEM_INIT_FILE, mem);
+            end
+      end
   `endif
 
   `ifndef SYNTHESIS
