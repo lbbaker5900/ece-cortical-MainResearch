@@ -57,18 +57,21 @@ class __LINE__(object):
 # Plotting
 # 
 # Check matplotlib version in case I run on ncsu linux machines that dont support animation
-import matplotlib as mpl
-if (int(mpl.__version__.split('.')[0]) > 1) or  ((int(mpl.__version__.split('.')[0]) == 1) and (int(mpl.__version__.split('.')[1]) >= 4)) :
-    del mpl
-    import matplotlib.pyplot as plt
-    import matplotlib.animation as manimation
-    from pylab import *
-    from matplotlib.colors import BoundaryNorm
-    from matplotlib.ticker import MaxNLocator
-    #from mpl_toolkits.mplot3d import Axes3D
-else :
-    print '{0}:{1}:WARNING:Matplotlib not loaded, version doesnt support all features required'.format(__FILE__(), __LINE__())
-
+try:
+  import matplotlib as mpl
+  if (int(mpl.__version__.split('.')[0]) > 1) or  ((int(mpl.__version__.split('.')[0]) == 1) and (int(mpl.__version__.split('.')[1]) >= 4)) :
+      del mpl
+      import matplotlib.pyplot as plt
+      import matplotlib.animation as manimation
+      from pylab import *
+      from matplotlib.colors import BoundaryNorm
+      from matplotlib.ticker import MaxNLocator
+      #from mpl_toolkits.mplot3d import Axes3D
+  else :
+      print '{0}:{1}:WARNING:Matplotlib not loaded, version doesnt support all features required'.format(__FILE__(), __LINE__())
+except:
+    print '{0}:{1}:WARNING:Matplotlib doesnt exist'.format(__FILE__(), __LINE__())
+  
 ########################################################################################################################
 ## Globals
 
