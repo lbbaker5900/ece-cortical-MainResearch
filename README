@@ -1,25 +1,79 @@
-3D DRAM based architecture for Deep Neural rNnetworks
+3D DRAM based architecture for Deep Neural Networks
 
  - the architecture includes a 3D-DRAM (e.g. DiRAM4), a manager layer and a PE array layer
 
-Manager Layer
-  - under 3DSystem/Manager
-  - RTL WIP
-  - Simulation - WIP
 
-PE Array Layer
-  - under 3DSystem/PEArray
-  - RTL WIP
-      * completed floating point operations for convolution
-      * need to instantiate SIMD (currently convolution operations are passed directly back to the Manager 
-  - Simulation
-      * system verilog
-      * SV checks mamory writes to PE local and upstream stack bus packets to ensure values and addresses are correct
-        - focuses on floating point operations
-      * To run PE Array simulation
-        a) cd 3DSystem/PEArray/SIMULATION/sv
-        b) source ../../setup.do
-        c) ./compile.do compile.log
-        d) grep ERROR transcript ; grep PASS transcript | wc -l
-           - should be no ERROR's and a PASS count of 20480
+Directories:
 
+  python
+      - DNNconnectivity
+          * dnnConnectivityAndMemoryAllocation.py
+                Creates connections between neurons of a deep neural network.
+                Allocates DRAM and constructs instructions and storage descriptors
+          * createReadmem.py
+                Takes the output of dnnConnectivityAndMemoryAllocation.py and creates readmem files for the system simulation
+      - NoC
+          * generateConnectionConfig.py
+              generates a configuration file used by https://github.ncsu.edu/lbbaker/ece-cortical-project-InterPE-NoC/tree/master/InterPERoutingTableGeneration
+              Default config is mesh.
+              the python code under https://github.ncsu.edu/lbbaker/ece-cortical-project-InterPE-NoC/tree/master/InterPERoutingTableGeneration generates verilog macros
+              to define NoC connectivity and routing tables
+
+  3DSystem
+      /DOC
+        - SystemColumn.pdf
+            * Block diagram of single Manager, Stack bus and PE
+        - Manager.pdf
+            * manager block diamgram
+         - PE.pdf
+            * pe block diagram
+         - WU hierarchy.pdf
+             * system instructions
+                 Shows the four basic instructions used to perform activation for a group of neurons
+         - WU processing.pdf
+             * shows how system instructions are decoded
+         - InstructionWaveform.pdf
+             * a simulation waveform showing a group of instructions being passed from the Work-Unit memory to the work-unit decoder
+      /System 
+        - under 3DSystem/System
+        - RTL
+            * Contains system which instantiates:
+                array of managers
+                array of PEs
+                stack bus
+        - Simulation 
+            * system verilog
+            * SV checks mamory writes to PE local and upstream stack bus packets to ensure values and addresses are correct
+              - focuses on floating point operations
+            * To run 
+              a) cd 3DSystem/System/SIMULATION/sv
+              b) source ../../setup.do
+              c) make vsim
+              d) Check for errors
+                 i) grep ERROR transcript ; grep PASS transcript | wc -l
+                      - should be no ERROR's and a PASS count of approx 24576
+                ii) grep 'Packet.*sent.*from' transcript  | wc -l ; grep 'Received.*expected packet' transcript  | wc -l
+                      - count sent packet and received packets. expect 710/710
+      /Manager 
+        - under 3DSystem/Manager
+        - RTL 
+            * complete except memory read and write controllers
+                read controller generates memory controller page open requests
+                still working on reading page and muxing to downstream
+                write controller WIP
+      /PEArray
+        - under 3DSystem/PEArray
+        - RTL completed with streaming Op for floating point operations for convolution
+            * need to instantiate SIMD (currently convolution operations are passed directly back to the Manager through a SIMD wrapper)
+        - Simulation
+            * #### no longer maintained. superceded by System simulation ####
+            * system verilog
+            * SV checks mamory writes to PE local and upstream stack bus packets to ensure values and addresses are correct
+              - focuses on floating point operations
+            * To run PE Array simulation
+              a) cd 3DSystem/PEArray/SIMULATION/sv
+              b) source ../../setup.do
+              c) ./compile.do compile.log
+              d) grep ERROR transcript ; grep PASS transcript | wc -l
+                 - should be no ERROR's and a PASS count of 20480
+      
