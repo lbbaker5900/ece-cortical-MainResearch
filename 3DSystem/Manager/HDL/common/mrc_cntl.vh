@@ -83,6 +83,19 @@
 `define MRC_CNTL_CHAN_BIT_RANGE           `MRC_CNTL_CHAN_BIT_MSB : `MRC_CNTL_CHAN_BIT_LSB
 //------------------------------------------------------------------------------------------------------------
 
+`ifdef  MGR_DRAM_REQUEST_LT_PAGE
+  //--------------------------------------------------------
+  // Vector of Lines
+  //  - used to indicate which line has been opened with the current chan/bank/page
+    
+  `define MRC_CNTL_LINE_BIT_WIDTH          `MGR_DRAM_NUM_LINES
+  `define MRC_CNTL_LINE_BIT_MSB           `MRC_CNTL_LINE_BIT_WIDTH-1
+  `define MRC_CNTL_LINE_BIT_LSB            0
+  `define MRC_CNTL_LINE_BIT_SIZE           (`MRC_CNTL_LINE_BIT_MSB - `MRC_CNTL_LINE_BIT_LSB +1)
+  `define MRC_CNTL_LINE_BIT_RANGE           `MRC_CNTL_LINE_BIT_MSB : `MRC_CNTL_LINE_BIT_LSB
+  //------------------------------------------------------------------------------------------------------------
+`endif
+
 //------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------
 // When we decrement the consequtive counter, we check for negative, so add bit

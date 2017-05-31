@@ -315,6 +315,20 @@
 `define MGR_DRAM_PAGE_SIZE                          4096
 `define MGR_DRAM_NUM_WORDS_PER_PAGE                 `MGR_DRAM_PAGE_SIZE/32
 
+// cache line size 
+`define MGR_DRAM_NUM_WORDS_PER_LINE              (`MGR_DRAM_NUM_WORDS_PER_PAGE/2)
+`define MGR_DRAM_NUM_LINES                       (`MGR_DRAM_NUM_WORDS_PER_PAGE/`MGR_DRAM_NUM_WORDS_PER_LINE)
+//****************************************************************************************************
+//****************************************************************************************************
+// Note: undef MGR_DRAM_REQUEST_LT_PAGE  if an entire page is transferred during a memory access
+`undef MGR_DRAM_REQUEST_LT_PAGE
+`define MGR_DRAM_REQUEST_LT_PAGE
+//****************************************************************************************************
+//****************************************************************************************************
+  
+
+
+
 //---------------------------------------------------------------------------------------------------------------------
 // MMC to MRC
 
@@ -365,6 +379,19 @@
 `define MGR_DRAM_WORD_ADDRESS_SIZE                        (`MGR_DRAM_WORD_ADDRESS_MSB - `MGR_DRAM_WORD_ADDRESS_LSB +1)
 `define MGR_DRAM_WORD_ADDRESS_RANGE                        `MGR_DRAM_WORD_ADDRESS_MSB : `MGR_DRAM_WORD_ADDRESS_LSB
 
+`ifdef  MGR_DRAM_REQUEST_LT_PAGE
+  // We access a cache line for each read. We need to know which line is being accessed for the given word address in the page
+  `define MGR_DRAM_LINE_ADDRESS_WIDTH                       (`CLOG2(`MGR_DRAM_NUM_LINES))
+  `define MGR_DRAM_LINE_ADDRESS_MSB                         `MGR_DRAM_LINE_ADDRESS_WIDTH-1
+  `define MGR_DRAM_LINE_ADDRESS_LSB                         0
+  `define MGR_DRAM_LINE_ADDRESS_SIZE                        (`MGR_DRAM_LINE_ADDRESS_MSB - `MGR_DRAM_LINE_ADDRESS_LSB +1)
+  `define MGR_DRAM_LINE_ADDRESS_RANGE                        `MGR_DRAM_LINE_ADDRESS_MSB : `MGR_DRAM_LINE_ADDRESS_LSB
+
+  `define MGR_DRAM_LINE_IN_WORD_ADDRESS                    `MGR_DRAM_WORD_ADDRESS_MSB : (`MGR_DRAM_WORD_ADDRESS_MSB-(`MGR_DRAM_LINE_ADDRESS_WIDTH-1))
+`endif
+
+
+
 // DRAM has 64 interface, 2 channels,  32 banks, 4096 pages and 4096 bits per page
 `define MGR_DRAM_ADDRESS_WIDTH             `MGR_MGR_ID_WIDTH+`MGR_DRAM_CHANNEL_ADDRESS_WIDTH+`MGR_DRAM_BANK_ADDRESS_WIDTH+`MGR_DRAM_PAGE_ADDRESS_WIDTH+`MGR_DRAM_WORD_ADDRESS_WIDTH+2  // byte address
 `define MGR_DRAM_ADDRESS_MSB               `MGR_DRAM_ADDRESS_WIDTH-1
@@ -384,6 +411,13 @@
 `define MGR_DRAM_ADDRESS_WORD_FIELD_MSB                         `MGR_DRAM_ADDRESS_WORD_FIELD_LSB+`MGR_DRAM_WORD_ADDRESS_WIDTH-1
 `define MGR_DRAM_ADDRESS_WORD_FIELD_SIZE                        (`MGR_DRAM_ADDRESS_WORD_FIELD_MSB - `MGR_DRAM_ADDRESS_WORD_FIELD_LSB +1)
 `define MGR_DRAM_ADDRESS_WORD_FIELD_RANGE                        `MGR_DRAM_ADDRESS_WORD_FIELD_MSB : `MGR_DRAM_ADDRESS_WORD_FIELD_LSB
+
+`ifdef  MGR_DRAM_REQUEST_LT_PAGE
+  `define MGR_DRAM_ADDRESS_LINE_FIELD_MSB                         `MGR_DRAM_ADDRESS_WORD_FIELD_MSB
+  `define MGR_DRAM_ADDRESS_LINE_FIELD_LSB                         (`MGR_DRAM_ADDRESS_LINE_FIELD_MSB-`MGR_DRAM_LINE_ADDRESS_WIDTH)+1
+  `define MGR_DRAM_ADDRESS_LINE_FIELD_SIZE                        (`MGR_DRAM_ADDRESS_LINE_FIELD_MSB - `MGR_DRAM_ADDRESS_LINE_FIELD_LSB +1)
+  `define MGR_DRAM_ADDRESS_LINE_FIELD_RANGE                        `MGR_DRAM_ADDRESS_LINE_FIELD_MSB : `MGR_DRAM_ADDRESS_LINE_FIELD_LSB
+`endif
 
 `define MGR_DRAM_ADDRESS_PAGE_FIELD_LSB                         `MGR_DRAM_ADDRESS_WORD_FIELD_MSB+1
 `define MGR_DRAM_ADDRESS_PAGE_FIELD_MSB                         `MGR_DRAM_ADDRESS_PAGE_FIELD_LSB+`MGR_DRAM_PAGE_ADDRESS_WIDTH-1
@@ -417,6 +451,11 @@
 `define MGR_DRAM_WCBP_ORDER_CHAN_FIELD_SIZE                        (`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_MSB - `MGR_DRAM_WCBP_ORDER_CHAN_FIELD_LSB +1)
 `define MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE                        `MGR_DRAM_WCBP_ORDER_CHAN_FIELD_MSB : `MGR_DRAM_WCBP_ORDER_CHAN_FIELD_LSB
 
+`define MGR_DRAM_WCBP_ORDER_LINE_FIELD_LSB                         (`MGR_DRAM_WCBP_ORDER_LINE_FIELD_MSB-`MGR_DRAM_LINE_ADDRESS_WIDTH)+1
+`define MGR_DRAM_WCBP_ORDER_LINE_FIELD_MSB                         `MGR_DRAM_WCBP_ORDER_WORD_FIELD_MSB
+`define MGR_DRAM_WCBP_ORDER_LINE_FIELD_SIZE                        (`MGR_DRAM_WCBP_ORDER_LINE_FIELD_MSB - `MGR_DRAM_WCBP_ORDER_LINE_FIELD_LSB +1)
+`define MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE                        `MGR_DRAM_WCBP_ORDER_LINE_FIELD_MSB : `MGR_DRAM_WCBP_ORDER_LINE_FIELD_LSB
+
 `define MGR_DRAM_WCBP_ORDER_BANK_FIELD_LSB                         `MGR_DRAM_WCBP_ORDER_CHAN_FIELD_MSB+1
 `define MGR_DRAM_WCBP_ORDER_BANK_FIELD_MSB                         `MGR_DRAM_WCBP_ORDER_BANK_FIELD_LSB+`MGR_DRAM_BANK_ADDRESS_WIDTH-1
 `define MGR_DRAM_WCBP_ORDER_BANK_FIELD_SIZE                        (`MGR_DRAM_WCBP_ORDER_BANK_FIELD_MSB - `MGR_DRAM_WCBP_ORDER_BANK_FIELD_LSB +1)
@@ -439,6 +478,11 @@
 `define MGR_DRAM_CWBP_ORDER_WORD_FIELD_SIZE                        (`MGR_DRAM_CWBP_ORDER_WORD_FIELD_MSB - `MGR_DRAM_CWBP_ORDER_WORD_FIELD_LSB +1)
 `define MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE                        `MGR_DRAM_CWBP_ORDER_WORD_FIELD_MSB : `MGR_DRAM_CWBP_ORDER_WORD_FIELD_LSB
 
+`define MGR_DRAM_CWBP_ORDER_LINE_FIELD_LSB                         (`MGR_DRAM_CWBP_ORDER_LINE_FIELD_MSB-`MGR_DRAM_LINE_ADDRESS_WIDTH)+1
+`define MGR_DRAM_CWBP_ORDER_LINE_FIELD_MSB                         `MGR_DRAM_CWBP_ORDER_WORD_FIELD_MSB
+`define MGR_DRAM_CWBP_ORDER_LINE_FIELD_SIZE                        (`MGR_DRAM_CWBP_ORDER_LINE_FIELD_MSB - `MGR_DRAM_CWBP_ORDER_LINE_FIELD_LSB +1)
+`define MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE                        `MGR_DRAM_CWBP_ORDER_LINE_FIELD_MSB : `MGR_DRAM_CWBP_ORDER_LINE_FIELD_LSB
+
 `define MGR_DRAM_CWBP_ORDER_BANK_FIELD_LSB                         `MGR_DRAM_CWBP_ORDER_WORD_FIELD_MSB+1
 `define MGR_DRAM_CWBP_ORDER_BANK_FIELD_MSB                         `MGR_DRAM_CWBP_ORDER_BANK_FIELD_LSB+`MGR_DRAM_BANK_ADDRESS_WIDTH-1
 `define MGR_DRAM_CWBP_ORDER_BANK_FIELD_SIZE                        (`MGR_DRAM_CWBP_ORDER_BANK_FIELD_MSB - `MGR_DRAM_CWBP_ORDER_BANK_FIELD_LSB +1)
@@ -449,9 +493,14 @@
 `define MGR_DRAM_CWBP_ORDER_PAGE_FIELD_SIZE                        (`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_MSB - `MGR_DRAM_CWBP_ORDER_PAGE_FIELD_LSB +1)
 `define MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE                        `MGR_DRAM_CWBP_ORDER_PAGE_FIELD_MSB : `MGR_DRAM_CWBP_ORDER_PAGE_FIELD_LSB
 
-// The memory requestor will always open the next channel/bank page based on the current address
-// We form a adrress based on page/bank/channel 
-  
+//------------------------------------------------------------------------------------------------------------------------
+// The memory requestor will always open the next channel/bank/page based on the current address
+// If a memory request provides an entire page, then to determine whether we
+// need a request, just form an adrress based on page/bank/channel and increment 
+// If a memry request is a partial page (line), then form an address based on PBLC or PBCL
+//
+// 1) Line same size as page, so only increment page/bank/channel
+// PBC
 `define MGR_DRAM_PBC_CHAN_FIELD_WIDTH       `MGR_DRAM_CHANNEL_ADDRESS_WIDTH
 `define MGR_DRAM_PBC_CHAN_FIELD_LSB         0
 `define MGR_DRAM_PBC_CHAN_FIELD_MSB         `MGR_DRAM_PBC_CHAN_FIELD_LSB+`MGR_DRAM_PBC_CHAN_FIELD_WIDTH -1
@@ -470,16 +519,96 @@
 `define MGR_DRAM_PBC_PAGE_FIELD_SIZE        (`MGR_DRAM_PBC_PAGE_FIELD_MSB - `MGR_DRAM_PBC_PAGE_FIELD_LSB +1)
 `define MGR_DRAM_PBC_PAGE_FIELD_RANGE        `MGR_DRAM_PBC_PAGE_FIELD_MSB : `MGR_DRAM_PBC_PAGE_FIELD_LSB
 
-`define MGR_DRAM_PBC_WIDTH         `MGR_DRAM_PBC_PAGE_FIELD_WIDTH      \
-                                                  +`MGR_DRAM_PBC_BANK_FIELD_WIDTH      \
-                                                  +`MGR_DRAM_PBC_CHAN_FIELD_WIDTH       
-
+`define MGR_DRAM_PBC_WIDTH                   `MGR_DRAM_PBC_PAGE_FIELD_WIDTH      \
+                                            +`MGR_DRAM_PBC_BANK_FIELD_WIDTH      \
+                                            +`MGR_DRAM_PBC_CHAN_FIELD_WIDTH 
+                                            
 `define MGR_DRAM_PBC_MSB            `MGR_DRAM_PBC_WIDTH -1
 `define MGR_DRAM_PBC_LSB            0
 `define MGR_DRAM_PBC_SIZE           (`MGR_DRAM_PBC_MSB - `MGR_DRAM_PBC_LSB +1)
 `define MGR_DRAM_PBC_RANGE           `MGR_DRAM_PBC_MSB : `MGR_DRAM_PBC_LSB
 
 
+
+// 2) Line smaller than page, so increment either page/bank/channel/line or page/bank/line/channel
+`ifdef  MGR_DRAM_REQUEST_LT_PAGE
+
+  //----------------------------------------------------------------------------------------------------
+  // PBCL
+  `define MGR_DRAM_PBCL_LINE_FIELD_WIDTH       `MGR_DRAM_LINE_ADDRESS_WIDTH 
+  `define MGR_DRAM_PBCL_LINE_FIELD_LSB         0
+  `define MGR_DRAM_PBCL_LINE_FIELD_MSB         `MGR_DRAM_PBCL_LINE_FIELD_LSB+`MGR_DRAM_PBCL_LINE_FIELD_WIDTH -1
+  `define MGR_DRAM_PBCL_LINE_FIELD_SIZE        (`MGR_DRAM_PBCL_LINE_FIELD_MSB - `MGR_DRAM_PBCL_LINE_FIELD_LSB +1)
+  `define MGR_DRAM_PBCL_LINE_FIELD_RANGE        `MGR_DRAM_PBCL_LINE_FIELD_MSB : `MGR_DRAM_PBCL_LINE_FIELD_LSB
+
+  `define MGR_DRAM_PBCL_CHAN_FIELD_WIDTH       `MGR_DRAM_CHANNEL_ADDRESS_WIDTH
+  `define MGR_DRAM_PBCL_CHAN_FIELD_LSB         `MGR_DRAM_PBCL_LINE_FIELD_MSB+1
+  `define MGR_DRAM_PBCL_CHAN_FIELD_MSB         `MGR_DRAM_PBCL_CHAN_FIELD_LSB+`MGR_DRAM_PBCL_CHAN_FIELD_WIDTH -1
+  `define MGR_DRAM_PBCL_CHAN_FIELD_SIZE        (`MGR_DRAM_PBCL_CHAN_FIELD_MSB - `MGR_DRAM_PBCL_CHAN_FIELD_LSB +1)
+  `define MGR_DRAM_PBCL_CHAN_FIELD_RANGE        `MGR_DRAM_PBCL_CHAN_FIELD_MSB : `MGR_DRAM_PBCL_CHAN_FIELD_LSB
+  
+  `define MGR_DRAM_PBCL_BANK_FIELD_WIDTH       `MGR_DRAM_BANK_ADDRESS_WIDTH
+  `define MGR_DRAM_PBCL_BANK_FIELD_LSB         `MGR_DRAM_PBCL_CHAN_FIELD_MSB+1
+  `define MGR_DRAM_PBCL_BANK_FIELD_MSB         `MGR_DRAM_PBCL_BANK_FIELD_LSB+`MGR_DRAM_PBCL_BANK_FIELD_WIDTH -1
+  `define MGR_DRAM_PBCL_BANK_FIELD_SIZE        (`MGR_DRAM_PBCL_BANK_FIELD_MSB - `MGR_DRAM_PBCL_BANK_FIELD_LSB +1)
+  `define MGR_DRAM_PBCL_BANK_FIELD_RANGE        `MGR_DRAM_PBCL_BANK_FIELD_MSB : `MGR_DRAM_PBCL_BANK_FIELD_LSB
+  
+  `define MGR_DRAM_PBCL_PAGE_FIELD_WIDTH       `MGR_DRAM_PAGE_ADDRESS_WIDTH
+  `define MGR_DRAM_PBCL_PAGE_FIELD_LSB         `MGR_DRAM_PBCL_BANK_FIELD_MSB+1
+  `define MGR_DRAM_PBCL_PAGE_FIELD_MSB         `MGR_DRAM_PBCL_PAGE_FIELD_LSB+`MGR_DRAM_PBCL_PAGE_FIELD_WIDTH -1
+  `define MGR_DRAM_PBCL_PAGE_FIELD_SIZE        (`MGR_DRAM_PBCL_PAGE_FIELD_MSB - `MGR_DRAM_PBCL_PAGE_FIELD_LSB +1)
+  `define MGR_DRAM_PBCL_PAGE_FIELD_RANGE        `MGR_DRAM_PBCL_PAGE_FIELD_MSB : `MGR_DRAM_PBCL_PAGE_FIELD_LSB
+  
+  `define MGR_DRAM_PBCL_WIDTH                   `MGR_DRAM_PBCL_PAGE_FIELD_WIDTH      \
+                                               +`MGR_DRAM_PBCL_BANK_FIELD_WIDTH      \
+                                               +`MGR_DRAM_PBCL_CHAN_FIELD_WIDTH      \
+                                               +`MGR_DRAM_PBCL_LINE_FIELD_WIDTH       
+  
+  
+  `define MGR_DRAM_PBCL_MSB            `MGR_DRAM_PBCL_WIDTH -1
+  `define MGR_DRAM_PBCL_LSB            0
+  `define MGR_DRAM_PBCL_SIZE           (`MGR_DRAM_PBCL_MSB - `MGR_DRAM_PBCL_LSB +1)
+  `define MGR_DRAM_PBCL_RANGE           `MGR_DRAM_PBCL_MSB : `MGR_DRAM_PBCL_LSB
+
+  //----------------------------------------------------------------------------------------------------
+  // PBLC
+  `define MGR_DRAM_PBLC_CHAN_FIELD_WIDTH       `MGR_DRAM_CHANNEL_ADDRESS_WIDTH
+  `define MGR_DRAM_PBLC_CHAN_FIELD_LSB         0
+  `define MGR_DRAM_PBLC_CHAN_FIELD_MSB         `MGR_DRAM_PBLC_CHAN_FIELD_LSB+`MGR_DRAM_PBLC_CHAN_FIELD_WIDTH -1
+  `define MGR_DRAM_PBLC_CHAN_FIELD_SIZE        (`MGR_DRAM_PBLC_CHAN_FIELD_MSB - `MGR_DRAM_PBLC_CHAN_FIELD_LSB +1)
+  `define MGR_DRAM_PBLC_CHAN_FIELD_RANGE        `MGR_DRAM_PBLC_CHAN_FIELD_MSB : `MGR_DRAM_PBLC_CHAN_FIELD_LSB
+  
+  `define MGR_DRAM_PBLC_LINE_FIELD_WIDTH       `MGR_DRAM_LINE_ADDRESS_WIDTH 
+  `define MGR_DRAM_PBLC_LINE_FIELD_LSB         `MGR_DRAM_PBLC_CHAN_FIELD_MSB+1
+  `define MGR_DRAM_PBLC_LINE_FIELD_MSB         `MGR_DRAM_PBLC_LINE_FIELD_LSB+`MGR_DRAM_PBLC_LINE_FIELD_WIDTH -1
+  `define MGR_DRAM_PBLC_LINE_FIELD_SIZE        (`MGR_DRAM_PBLC_LINE_FIELD_MSB - `MGR_DRAM_PBLC_LINE_FIELD_LSB +1)
+  `define MGR_DRAM_PBLC_LINE_FIELD_RANGE        `MGR_DRAM_PBLC_LINE_FIELD_MSB : `MGR_DRAM_PBLC_LINE_FIELD_LSB
+
+  `define MGR_DRAM_PBLC_BANK_FIELD_WIDTH       `MGR_DRAM_BANK_ADDRESS_WIDTH
+  `define MGR_DRAM_PBLC_BANK_FIELD_LSB         `MGR_DRAM_PBLC_LINE_FIELD_MSB+1
+  `define MGR_DRAM_PBLC_BANK_FIELD_MSB         `MGR_DRAM_PBLC_BANK_FIELD_LSB+`MGR_DRAM_PBLC_BANK_FIELD_WIDTH -1
+  `define MGR_DRAM_PBLC_BANK_FIELD_SIZE        (`MGR_DRAM_PBLC_BANK_FIELD_MSB - `MGR_DRAM_PBLC_BANK_FIELD_LSB +1)
+  `define MGR_DRAM_PBLC_BANK_FIELD_RANGE        `MGR_DRAM_PBLC_BANK_FIELD_MSB : `MGR_DRAM_PBLC_BANK_FIELD_LSB
+  
+  `define MGR_DRAM_PBLC_PAGE_FIELD_WIDTH       `MGR_DRAM_PAGE_ADDRESS_WIDTH
+  `define MGR_DRAM_PBLC_PAGE_FIELD_LSB         `MGR_DRAM_PBLC_BANK_FIELD_MSB+1
+  `define MGR_DRAM_PBLC_PAGE_FIELD_MSB         `MGR_DRAM_PBLC_PAGE_FIELD_LSB+`MGR_DRAM_PBLC_PAGE_FIELD_WIDTH -1
+  `define MGR_DRAM_PBLC_PAGE_FIELD_SIZE        (`MGR_DRAM_PBLC_PAGE_FIELD_MSB - `MGR_DRAM_PBLC_PAGE_FIELD_LSB +1)
+  `define MGR_DRAM_PBLC_PAGE_FIELD_RANGE        `MGR_DRAM_PBLC_PAGE_FIELD_MSB : `MGR_DRAM_PBLC_PAGE_FIELD_LSB
+  
+  `define MGR_DRAM_PBLC_WIDTH                   `MGR_DRAM_PBLC_PAGE_FIELD_WIDTH      \
+                                               +`MGR_DRAM_PBLC_BANK_FIELD_WIDTH      \
+                                               +`MGR_DRAM_PBLC_CHAN_FIELD_WIDTH      \
+                                               +`MGR_DRAM_PBLC_LINE_FIELD_WIDTH       
+  
+  
+  `define MGR_DRAM_PBLC_MSB            `MGR_DRAM_PBLC_WIDTH -1
+  `define MGR_DRAM_PBLC_LSB            0
+  `define MGR_DRAM_PBLC_SIZE           (`MGR_DRAM_PBLC_MSB - `MGR_DRAM_PBLC_LSB +1)
+  `define MGR_DRAM_PBLC_RANGE           `MGR_DRAM_PBLC_MSB : `MGR_DRAM_PBLC_LSB
+
+
+`endif
 
 
 //---------------------------------------------------------------------------------------------------------------------
