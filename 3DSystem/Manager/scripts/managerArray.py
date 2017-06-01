@@ -516,11 +516,11 @@ if __name__ == "__main__":
   pLine = pLine + '\n  // Port outputs to NoC'.format(port)
   for port in range (0, numOfPorts):
     pLine = pLine + '\n  // NoC port {0}'.format(port)
-    pLine = pLine + '\n  assign mgr__noc__port{0}_cntl  = Port_to_NoC[{0}].fifo_read_cntl;'.format(port)
-    pLine = pLine + '\n  assign mgr__noc__port{0}_data  = Port_to_NoC[{0}].fifo_read_data;'.format(port)
-    pLine = pLine + '\n  assign Port_to_NoC[{0}].fifo_read = ~Port_to_NoC[{0}].fifo_empty & ~noc__mgr__port{0}_fc ;'.format(port)
+    pLine = pLine + '\n  assign mgr__noc__port{0}_cntl  = Port_to_NoC[{0}].read_cntl;'.format(port)
+    pLine = pLine + '\n  assign mgr__noc__port{0}_data  = Port_to_NoC[{0}].read_data;'.format(port)
+    pLine = pLine + '\n  assign Port_to_NoC[{0}].read = ~Port_to_NoC[{0}].empty & ~noc__mgr__port{0}_fc ;'.format(port)
     pLine = pLine + '\n  always @(posedge clk)'
-    pLine = pLine + '\n      mgr__noc__port{0}_valid  <= Port_to_NoC[{0}].fifo_read ;'.format(port)
+    pLine = pLine + '\n      mgr__noc__port{0}_valid  <= Port_to_NoC[{0}].read ;'.format(port)
     pLine = pLine + '\n'        
   pLine = pLine + '\n'
 
@@ -546,13 +546,13 @@ if __name__ == "__main__":
   pLine = pLine + '\n  // Port inputs from NoC'.format(port)
   for port in range (0, numOfPorts):
     pLine = pLine + '\n  // NoC port {0}'.format(port)
-    pLine = pLine + '\n  assign    mgr__noc__port{0}_fc      = Port_from_NoC_Control[{0}].fifo_almost_full ;'.format(port)
-    pLine = pLine + '\n  always @(*)'
-    pLine = pLine + '\n    begin '
-    pLine = pLine + '\n      Port_from_NoC_Control[{0}].cntl        = noc__mgr__port{0}_cntl               ;'.format(port)
-    pLine = pLine + '\n      Port_from_NoC_Control[{0}].data        = noc__mgr__port{0}_data               ;'.format(port)
-    pLine = pLine + '\n      Port_from_NoC_Control[{0}].fifo_write  = noc__mgr__port{0}_valid              ;'.format(port)
-    pLine = pLine + '\n    end '
+    pLine = pLine + '\n  //assign    mgr__noc__port{0}_fc      = Port_from_NoC_Control[{0}].fifo_almost_full ;'.format(port)
+    pLine = pLine + '\n  //always @(*)'
+    pLine = pLine + '\n  //  begin '
+    pLine = pLine + '\n  //    Port_from_NoC_Control[{0}].cntl        = noc__mgr__port{0}_cntl               ;'.format(port)
+    pLine = pLine + '\n  //    Port_from_NoC_Control[{0}].data        = noc__mgr__port{0}_data               ;'.format(port)
+    pLine = pLine + '\n  //    Port_from_NoC_Control[{0}].fifo_write  = noc__mgr__port{0}_valid              ;'.format(port)
+    pLine = pLine + '\n  //  end '
     pLine = pLine + '\n'        
   pLine = pLine + '\n'
 
@@ -560,17 +560,17 @@ if __name__ == "__main__":
   # Port input controller fifo inputs from NoC
   pLine = pLine + '\n  // Port inputs from NoC'.format(port)
   for port in range (0, numOfPorts):
-    pLine = pLine + '\n  // NoC port {0}'.format(port)
-    pLine = pLine + '\n  // FIXME'
-    pLine = pLine + '\n  //assign    mgr__noc__port{0}_fc      = Port_from_NoC_Control[{0}].fifo_almost_full ;'.format(port)
+    pLine = pLine + '\n   //NoC port {0}'.format(port)
+    pLine = pLine + '\n   //'
+    pLine = pLine + '\n  assign    mgr__noc__port{0}_fc      = Port_from_NoC_fifo[{0}].almost_full ;'.format(port)
     pLine = pLine + '\n  always @(*)'
     pLine = pLine + '\n    begin '
     pLine = pLine + '\n      Port_from_NoC_fifo[{0}].write_cntl    = noc__mgr__port{0}_cntl               ;'.format(port)
     pLine = pLine + '\n      Port_from_NoC_fifo[{0}].write_data    = noc__mgr__port{0}_data               ;'.format(port)
     pLine = pLine + '\n      Port_from_NoC_fifo[{0}].write         = noc__mgr__port{0}_valid              ;'.format(port)
     pLine = pLine + '\n    end '
-    pLine = pLine + '\n  // FIXME'
-    pLine = pLine + '\n  assign Port_from_NoC_fifo[{0}].pipe_read  =  Port_from_NoC_fifo[{0}].pipe_valid   ;'.format(port)
+    pLine = pLine + '\n   //FIXME'
+    pLine = pLine + '\n  //assign Port_from_NoC_fifo[{0}].read  =  Port_from_NoC_Control[{0}].fifo_read   ;'.format(port)
     pLine = pLine + '\n'        
   pLine = pLine + '\n'
 
@@ -852,9 +852,9 @@ if __name__ == "__main__":
       else:
         pLine = pLine + '\n          src{0}_OutqReady   = 1\'b0  ;'.format(nextPort-1)
     if port == 0:
-      pLine = pLine + '\n          local_OutqReady   = ~fifo_almost_full ; // only enable source if fifo is available ;'.format(port)
+      pLine = pLine + '\n          local_OutqReady   = ~almost_full ; // only enable source if fifo is available ;'.format(port)
     else:
-      pLine = pLine + '\n          src{0}_OutqReady   = ~fifo_almost_full ; // only enable source if fifo is available ;'.format(port-1)
+      pLine = pLine + '\n          src{0}_OutqReady   = ~almost_full ; // only enable source if fifo is available ;'.format(port-1)
     for nextPort in range (port+1, numOfPorts+1):
       pLine = pLine + '\n          src{0}_OutqReady   = 1\'b0  ;'.format(nextPort-1)
     pLine = pLine + '\n        end'
@@ -872,9 +872,9 @@ if __name__ == "__main__":
       else:
         pLine = pLine + '\n          src{0}_OutqReady   = 1\'b0  ;'.format(nextPort-1)
     if port == 0:
-      pLine = pLine + '\n          local_OutqReady   = ~fifo_almost_full ; // only enable source if fifo is available ;'.format(port)
+      pLine = pLine + '\n          local_OutqReady   = ~almost_full ; // only enable source if fifo is available ;'.format(port)
     else:
-      pLine = pLine + '\n          src{0}_OutqReady   = ~fifo_almost_full ; // only enable source if fifo is available ;'.format(port-1)
+      pLine = pLine + '\n          src{0}_OutqReady   = ~almost_full ; // only enable source if fifo is available ;'.format(port-1)
     for nextPort in range (port+1, numOfPorts+1):
       pLine = pLine + '\n          src{0}_OutqReady   = 1\'b0  ;'.format(nextPort-1)
     pLine = pLine + '\n        end'
@@ -891,9 +891,9 @@ if __name__ == "__main__":
       else:
         pLine = pLine + '\n          src{0}_OutqReady   = 1\'b0  ;'.format(nextPort-1)
     if port == 0:
-      pLine = pLine + '\n          local_OutqReady   = ~fifo_almost_full ; // only enable source if fifo is available ;'.format(port)
+      pLine = pLine + '\n          local_OutqReady   = ~almost_full ; // only enable source if fifo is available ;'.format(port)
     else:
-      pLine = pLine + '\n          src{0}_OutqReady   = ~fifo_almost_full ; // only enable source if fifo is available ;'.format(port-1)
+      pLine = pLine + '\n          src{0}_OutqReady   = ~almost_full ; // only enable source if fifo is available ;'.format(port-1)
     for nextPort in range (port+1, numOfPorts+1):
       pLine = pLine + '\n          src{0}_OutqReady   = 1\'b0  ;'.format(nextPort-1)
     pLine = pLine + '\n        end'
@@ -922,68 +922,68 @@ if __name__ == "__main__":
     if port == 0:
       pLine = pLine + '\n        `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_LOCAL:'.format(port)
       pLine = pLine + '\n          begin'
-      pLine = pLine + '\n            fifo_write = local_toNoc_valid ;'
-      pLine = pLine + '\n            cntl  = local_cntl_toNoc  ;'
+      pLine = pLine + '\n            write = local_toNoc_valid ;'
+      pLine = pLine + '\n            write_cntl  = local_cntl_toNoc  ;'
       pLine = pLine + '\n            // mask of destination bits not associated with this port'
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (local_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :'
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (local_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :'
       pLine = pLine + '\n                                                                                                                            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;'
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'
       pLine = pLine + '\n          end'
     else:
       pLine = pLine + '\n        `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT{0}:'.format(port-1)
       pLine = pLine + '\n          begin'
-      pLine = pLine + '\n            fifo_write = src{0}_toNoc_valid ;'.format(port-1)
-      pLine = pLine + '\n            cntl  = src{0}_cntl_toNoc  ;'.format(port-1)
+      pLine = pLine + '\n            write = src{0}_toNoc_valid ;'.format(port-1)
+      pLine = pLine + '\n            write_cntl  = src{0}_cntl_toNoc  ;'.format(port-1)
       pLine = pLine + '\n            // mask of destination bits not associated with this port'
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (src{0}_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :'.format(port-1)
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (src{0}_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :'.format(port-1)
       pLine = pLine + '\n                                                                                                                             src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;'.format(port-1)
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'.format(port-1)
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'.format(port-1)
       pLine = pLine + '\n          end'
     # READ
     if port == 0:
       pLine = pLine + '\n        `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_LOCAL:'.format(port)
       pLine = pLine + '\n          begin'
-      pLine = pLine + '\n            fifo_write = local_toNoc_valid ;'
-      pLine = pLine + '\n            cntl  = local_cntl_toNoc  ;'
+      pLine = pLine + '\n            write = local_toNoc_valid ;'
+      pLine = pLine + '\n            write_cntl  = local_cntl_toNoc  ;'
       pLine = pLine + '\n            // mask of destination bits not associated with this port'
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;'
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;'
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'
       pLine = pLine + '\n          end'
     else:
       pLine = pLine + '\n        `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT{0}:'.format(port-1)
       pLine = pLine + '\n          begin'
-      pLine = pLine + '\n            fifo_write = src{0}_toNoc_valid ;'.format(port-1)
-      pLine = pLine + '\n            cntl  = src{0}_cntl_toNoc  ;'.format(port-1)
+      pLine = pLine + '\n            write = src{0}_toNoc_valid ;'.format(port-1)
+      pLine = pLine + '\n            write_cntl  = src{0}_cntl_toNoc  ;'.format(port-1)
       pLine = pLine + '\n            // mask of destination bits not associated with this port'
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;'.format(port-1)
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'.format(port-1)
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;'.format(port-1)
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'.format(port-1)
       pLine = pLine + '\n          end'
     # ACK
     if port == 0:
       pLine = pLine + '\n        `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_LOCAL:'.format(port)
       pLine = pLine + '\n          begin'
-      pLine = pLine + '\n            fifo_write = local_toNoc_valid ;'
-      pLine = pLine + '\n            cntl  = local_cntl_toNoc  ;'
+      pLine = pLine + '\n            write = local_toNoc_valid ;'
+      pLine = pLine + '\n            write_cntl  = local_cntl_toNoc  ;'
       pLine = pLine + '\n            // mask of destination bits not associated with this port'
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (local_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :'
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (local_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :'
       pLine = pLine + '\n                                                                                                                            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;'
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'
       pLine = pLine + '\n          end'
     else:
       pLine = pLine + '\n        `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_ACK_PORT{0}:'.format(port-1)
       pLine = pLine + '\n          begin'
-      pLine = pLine + '\n            fifo_write = src{0}_toNoc_valid ;'.format(port-1)
-      pLine = pLine + '\n            cntl  = src{0}_cntl_toNoc  ;'.format(port-1)
+      pLine = pLine + '\n            write = src{0}_toNoc_valid ;'.format(port-1)
+      pLine = pLine + '\n            write_cntl  = src{0}_cntl_toNoc  ;'.format(port-1)
       pLine = pLine + '\n            // mask of destination bits not associated with this port'
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (src{0}_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :'.format(port-1)
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (src{0}_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :'.format(port-1)
       pLine = pLine + '\n                                                                                                                             src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;'.format(port-1)
-      pLine = pLine + '\n            data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'.format(port-1)
+      pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'.format(port-1)
       pLine = pLine + '\n          end'
   pLine = pLine + '\n        default:'
   pLine = pLine + '\n          begin'
-  pLine = pLine + '\n            fifo_write = \'d0 ;'.format(port-1)
-  pLine = pLine + '\n            cntl  = \'d0 ;'.format(port-1)
-  pLine = pLine + '\n            data  = \'d0 ;'.format(port-1)
+  pLine = pLine + '\n            write = \'d0 ;'.format(port-1)
+  pLine = pLine + '\n            write_cntl  = \'d0 ;'.format(port-1)
+  pLine = pLine + '\n            write_data  = \'d0 ;'.format(port-1)
   pLine = pLine + '\n          end'
   pLine = pLine + '\n'
   pLine = pLine + '\n      endcase'

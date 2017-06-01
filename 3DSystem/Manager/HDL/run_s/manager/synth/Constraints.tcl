@@ -37,7 +37,7 @@
 # set target_library cp65npkldst_ss0p9v125c.db
 # set target_library NangateOpenCellLibrary_PDKv1_2_v2008_10_slow_nldm.db
 # set link_library   [concat  $target_library $synthetic_library $fifo_library ]
- set link_library   [concat  "*" $target_library $synthetic_library $mem_lib1  ]
+ set link_library   [concat  "*" $target_library $synthetic_library $mem_lib  ]
 
 #---------------------------------------------------------
 # Specify a 5000ps clock period with 50% duty cycle     
@@ -122,12 +122,9 @@
 # Dont touch on memories
 #--------------------------------------------------------- 
 # set_dont_touch [get_cell to_stOp_fifo[*].mem*]
-# readpath memories
-set_dont_touch [get_cell readpath/sch_data_buffer_mem/*mem*]
-set_dont_touch [get_cell readpath/free_BufId_fifo[0].gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell from_system_fifo[0].gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell to_bnc_fifo[*].gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell to_readpath_fifo[0].gfifo/fifo_data_mem/*mem*]
+#
+# rdp_cntl
+set_dont_touch [get_cell *.gfifo/fifo_data_mem/*mem*]
 
 #------------------------------------------------------
 # During the initial map (synthesis), Synopsys might   

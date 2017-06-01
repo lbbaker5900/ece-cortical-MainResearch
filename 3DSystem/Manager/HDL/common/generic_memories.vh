@@ -236,7 +236,7 @@ if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 353) && (GENERIC_MEM
 //
 if ((GENERIC_MEM_DEPTH == 32) && (GENERIC_MEM_DATA_WIDTH == 138) && (GENERIC_MEM_REGISTERED_OUT == 0))
   begin
-    sasslnpky2p32x138cm16sw0bk1ltlc1 mem2p32x138( 
+    sasslnpky2p32x138cm4sw0bk1ltlc1 mem2p32x138( 
                    // Port A
                    .CLKA        ( clk                              ),
                    .WEA         ( portA_write_dly                  ),
@@ -265,7 +265,7 @@ if ((GENERIC_MEM_DEPTH == 32) && (GENERIC_MEM_DATA_WIDTH == 138) && (GENERIC_MEM
 //
 if ((GENERIC_MEM_DEPTH == 32) && (GENERIC_MEM_DATA_WIDTH == 58) && (GENERIC_MEM_REGISTERED_OUT == 0))
   begin
-    sasslnpky2p32x58cm16sw0bk1ltlc1 mem2p32x58( 
+    sasslnpky2p32x58cm4sw0bk1ltlc1 mem2p32x58( 
                    // Port A
                    .CLKA        ( clk                              ),
                    .WEA         ( portA_write_dly                  ),
@@ -294,7 +294,123 @@ if ((GENERIC_MEM_DEPTH == 32) && (GENERIC_MEM_DATA_WIDTH == 58) && (GENERIC_MEM_
 //
 if ((GENERIC_MEM_DEPTH == 72) && (GENERIC_MEM_DATA_WIDTH == 18) && (GENERIC_MEM_REGISTERED_OUT == 0))
   begin
-    sasslnpky2p72x18cm16sw0bk1ltlc1 mem2p72x18( 
+    sasslnpky2p72x18cm4sw0bk1ltlc1 mem2p72x18( 
+                   // Port A
+                   .CLKA        ( clk                              ),
+                   .WEA         ( portA_write_dly                  ),
+                   .MEA         ( portA_enable_dly                 ),
+                   .ADRA        ( portA_address_dly                ),
+                   .DA          ( portA_write_data_dly             ),
+                   .QA          ( int_portA_read_data_dly          ),
+                
+                   // Port B
+                   .CLKB        ( clk                              ),
+                   .WEB         ( portB_write_dly                  ),
+                   .MEB         ( portB_enable_dly                 ),
+                   .ADRB        ( portB_address_dly                ),
+                   .DB          ( portB_write_data_dly             ),
+                   .QB          ( int_portB_read_data_dly          ),
+                
+                   .TEST1A      ( 1'b0 ),
+                   .RMEA        ( 1'b0 ),
+                   .RMA         ( 4'd0 ),
+                   .TEST1B      ( 1'b0 ),
+                   .RMEB        ( 1'b0 ),
+                   .RMB         ( 4'd0 ));
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
+if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 32) && (GENERIC_MEM_REGISTERED_OUT == 0))
+  begin
+    sasslnpky2p16x32cm4sw0bk1ltlc1 mem2p16x32( 
+                   // Port A
+                   .CLKA        ( clk                              ),
+                   .WEA         ( portA_write_dly                  ),
+                   .MEA         ( portA_enable_dly                 ),
+                   .ADRA        ( portA_address_dly                ),
+                   .DA          ( portA_write_data_dly             ),
+                   .QA          ( int_portA_read_data_dly          ),
+                
+                   // Port B
+                   .CLKB        ( clk                              ),
+                   .WEB         ( portB_write_dly                  ),
+                   .MEB         ( portB_enable_dly                 ),
+                   .ADRB        ( portB_address_dly                ),
+                   .DB          ( portB_write_data_dly             ),
+                   .QB          ( int_portB_read_data_dly          ),
+                
+                   .TEST1A      ( 1'b0 ),
+                   .RMEA        ( 1'b0 ),
+                   .RMA         ( 4'd0 ),
+                   .TEST1B      ( 1'b0 ),
+                   .RMEB        ( 1'b0 ),
+                   .RMB         ( 4'd0 ));
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
+if ((GENERIC_MEM_DEPTH == 2048) && (GENERIC_MEM_DATA_WIDTH == 75) && (GENERIC_MEM_REGISTERED_OUT == 0))
+  begin
+    sasslnpky2p2048x75cm4sw0bk1ltlc1 mem2p2048x75( 
+                   // Port A
+                   .CLKA        ( clk                              ),
+                   .WEA         ( portA_write_dly                  ),
+                   .MEA         ( portA_enable_dly                 ),
+                   .ADRA        ( portA_address_dly                ),
+                   .DA          ( portA_write_data_dly             ),
+                   .QA          ( int_portA_read_data_dly          ),
+                
+                   // Port B
+                   .CLKB        ( clk                              ),
+                   .WEB         ( portB_write_dly                  ),
+                   .MEB         ( portB_enable_dly                 ),
+                   .ADRB        ( portB_address_dly                ),
+                   .DB          ( portB_write_data_dly             ),
+                   .QB          ( int_portB_read_data_dly          ),
+                
+                   .TEST1A      ( 1'b0 ),
+                   .RMEA        ( 1'b0 ),
+                   .RMA         ( 4'd0 ),
+                   .TEST1B      ( 1'b0 ),
+                   .RMEB        ( 1'b0 ),
+                   .RMB         ( 4'd0 ));
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
+if ((GENERIC_MEM_DEPTH == 256) && (GENERIC_MEM_DATA_WIDTH == 75) && (GENERIC_MEM_REGISTERED_OUT == 0))
+  begin
+    sasslnpky2p256x75cm4sw0bk1ltlc1 mem2p256x75( 
+                   // Port A
+                   .CLKA        ( clk                              ),
+                   .WEA         ( portA_write_dly                  ),
+                   .MEA         ( portA_enable_dly                 ),
+                   .ADRA        ( portA_address_dly                ),
+                   .DA          ( portA_write_data_dly             ),
+                   .QA          ( int_portA_read_data_dly          ),
+                
+                   // Port B
+                   .CLKB        ( clk                              ),
+                   .WEB         ( portB_write_dly                  ),
+                   .MEB         ( portB_enable_dly                 ),
+                   .ADRB        ( portB_address_dly                ),
+                   .DB          ( portB_write_data_dly             ),
+                   .QB          ( int_portB_read_data_dly          ),
+                
+                   .TEST1A      ( 1'b0 ),
+                   .RMEA        ( 1'b0 ),
+                   .RMA         ( 4'd0 ),
+                   .TEST1B      ( 1'b0 ),
+                   .RMEB        ( 1'b0 ),
+                   .RMB         ( 4'd0 ));
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
+if ((GENERIC_MEM_DEPTH == 64) && (GENERIC_MEM_DATA_WIDTH == 76) && (GENERIC_MEM_REGISTERED_OUT == 0))
+  begin
+    sasslnpky2p64x76cm4sw0bk1ltlc1 mem2p64x76( 
                    // Port A
                    .CLKA        ( clk                              ),
                    .WEA         ( portA_write_dly                  ),

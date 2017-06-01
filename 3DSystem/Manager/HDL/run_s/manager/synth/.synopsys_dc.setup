@@ -20,16 +20,32 @@ set search_path "$path_fg065_ccs $path_fg065_lib $path_common $path_this $search
 #set search_path [concat  $search_path [list [format "%s%s"  $synopsys_root "/libraries/syn"]]]
 #set search_path [concat  $search_path [list "." [format "%s%s"  $synopsys_root "/dw/sim_ver"]]]
 
+
+
+
 # Library Variables 
 set synthetic_library [list dw_foundation.sldb]
 set target_library cp65npkldst_tt1p2v25c.db
 set symbol_library cp65npkldst.slib
-set mem_lib1 "sasslnpky2p64x35cm16sw0bk1ltlc1_lib.db sasslnpky2p16x117cm4sw0bk1ltlc1_lib.db sasslnpky2p16x116cm4sw0bk1ltlc1_lib.db sasslnpky2p512x160cm4sw0bk1ltlc1_lib.db sasslnpky2p256x8cm4sw0bk1ltlc1_lib.db sasslnpky2p16x118cm4sw0bk1ltlc1_lib.db "
+set libList [glob dw_memories/compout/views/sass*/tt1p2v25c/*.lib]
+set mem_lib ""
+foreach libFile $libList {
+  set lName [file tail [file rootname $libFile]]
+  set dbName ${lName}_lib
+  set dbFileName ${lName}_lib.db
+  echo $dbFileName
+
+  echo "Adding .db file to mem_lib variable : " $dbFileName
+  set mem_lib [concat $mem_lib $dbFileName]
+}
+#set mem_lib1 "sasslnpky2p64x35cm16sw0bk1ltlc1_lib.db sasslnpky2p16x117cm4sw0bk1ltlc1_lib.db sasslnpky2p16x116cm4sw0bk1ltlc1_lib.db sasslnpky2p512x160cm4sw0bk1ltlc1_lib.db sasslnpky2p256x8cm4sw0bk1ltlc1_lib.db sasslnpky2p16x118cm4sw0bk1ltlc1_lib.db "
 #set mem_lib2 sasslnpky2p256x8cm4sw0bk1ltlc1_lib.db
 #set fifo_library  sasslnpky2p32x35cm4sw0bk1ltlc1_lib.db
 #set link_library   [concat  $target_library $synthetic_library $fifo_library *]
-set link_library   [concat  $target_library $synthetic_library $mem_lib1 *]
+set link_library   [concat  $target_library $synthetic_library $mem_lib *]
 
 set verilogout_no_tri "true"
 
 alias h history
+
+

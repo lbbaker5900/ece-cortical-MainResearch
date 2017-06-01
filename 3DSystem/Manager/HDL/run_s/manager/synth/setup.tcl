@@ -2,10 +2,33 @@
 set clkname clk 
 
 # set variable "modname" to the name of topmost module in design
-set modname rdp_cntl
+
+#------------------------------------------------------------------------------------------------------------------------
+# Done
+#
+# set modname  rdp_cntl
+# set modname  oob_downstream_cntl
+
+#------------------------------------------------------------------------------------------------------------------------
+# WIP
+#
+set modname  mrc_cntl
+
+#------------------------------------------------------------------------------------------------------------------------
+# TBD
+#
+# set modname  wu_memory
+# set modname  sd_memory
+# set modname  wu_fetch
+# set modname  wu_decode
+# set modname  stu_cntl
+# set modname  manager
+# set modname  mrc_cntl
+# 
 
 # set variable "RTL_DIR" to the HDL directory w.r.t synthesis directory
 set RTL_DIR    ../code
+set RTL_COM_DIR   ../../../../../PEArray/HDL/run_s/common/code
 
 # set variable "GATE_DIR" to the output directory w.r.t synthesis directory
 set GATE_DIR    ../synth

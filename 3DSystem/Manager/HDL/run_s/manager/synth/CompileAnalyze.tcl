@@ -134,7 +134,7 @@
 # later verification.                                  
 #---------------------------------------------------------
 
- write_sdf ${modname}_max.sdf
+write_sdf ${modname}_max.sdf
 
 report_area > area_netlist.rpt
 

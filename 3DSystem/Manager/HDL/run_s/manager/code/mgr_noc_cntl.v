@@ -342,7 +342,7 @@ module mgr_noc_cntl (
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_DEPTH                 ), 
                        .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_ALMOST_FULL_THRESHOLD ),
                        .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_NOC_CONT_NOC_PACKET_TYPE_WIDTH+`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_WIDTH+`MGR_NOC_CONT_NOC_DEST_TYPE_WIDTH+1+`MGR_NOC_CONT_INTERNAL_DATA_WIDTH)
-                        ) fromLocal_fifo (
+                        ) gfifo (
                                           // Status
                                          .empty            ( empty                                     ),
                                          .almost_full      ( almost_full                               ),
@@ -836,10 +836,62 @@ module mgr_noc_cntl (
 
         //--------------------------------------------------------------------------------------------
         // Port to NoC FIFO
-        `NoC_Port_fifo
+   
+        // Write data
+        reg    [`COMMON_STD_INTF_CNTL_RANGE          ]    write_cntl       ;
+        reg    [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE    ]    write_data       ; 
 
-        assign clear = 0;  // FIXME
+        // Read data                                                       
+        wire   [`COMMON_STD_INTF_CNTL_RANGE          ]    read_cntl        ;
+        wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE    ]    read_data        ; 
 
+        // Control
+        wire                                              clear            ; 
+        wire                                              empty            ; 
+        wire                                              almost_full      ; 
+        wire                                              read             ; 
+        reg                                               write            ; 
+ 
+
+        // Combine FIFO bits
+        generic_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH), 
+                       .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_ALMOST_FULL_THRESHOLD),
+                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_NOC_CONT_NOC_PORT_DATA_WIDTH)
+                        ) gfifo (
+                                          // Status
+                                         .empty            ( empty                      ),
+                                         .almost_full      ( almost_full                ),
+                                         .almost_empty     (                            ),
+                                         .depth            (                            ),
+                                          // Write                                      
+                                         .write            ( write                      ),
+                                         .write_data       ( {write_cntl,    write_data}),
+                                          // Read                                                
+                                         .read             ( read                       ),
+                                         .read_data        ( { read_cntl,     read_data}),
+
+                                         // General
+                                         .clear            ( clear                      ),
+                                         .reset_poweron    ( reset_poweron              ),
+                                         .clk              ( clk                        )
+                                         );
+        assign clear = 0;  
+
+        reg  [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_RANGE] eop_count       ;
+        reg       valid ;
+        always @(posedge clk)
+          begin
+            eop_count          <= ( reset_poweron                                                                                                                              )  ? 'd0                  :
+                                       ( clear                                                                                                                                      )  ? 'd0                  :
+                                       ((((read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && valid ) &&                      
+                                       (((          write_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          write_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & write                     ))  ? eop_count       :
+                                       (((read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && valid           )  ? eop_count - 'd1 :
+                                       (((          write_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          write_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & write                      )  ? eop_count + 'd1 :
+                                                                                                                                                                                         eop_count       ;
+            valid    <= ( reset_poweron                   ) ? 'd0        :
+                                       ( clear                           ) ? 'd0        :
+                                                                              read ;
+          end
     
         //--------------------------------------------------------------------------------------------
         // Port Control to NoC FSM
@@ -893,10 +945,6 @@ module mgr_noc_cntl (
         //-------------------------------------------------------------------------------------------------
         // Internal signals
     
-        always @(posedge clk)
-          begin
-        
-          end
 
         `include "mgr_noc_cntl_noc_port_output_control_fsm_assignments.vh"
 
@@ -946,9 +994,6 @@ module mgr_noc_cntl (
 
         for (gvj=0; gvj<`MGR_NOC_CONT_NOC_NUM_OF_PORTS; gvj=gvj+1) 
           begin
-            always @(*)
-              begin
-              end
             always @(posedge clk)
               begin
                 trackWait(portWaitComp[gvi][gvj], portWaiting[gvi], portWaiting[gvj], portStartingWaiting[gvi], portEndingWaiting[gvi], portStartingWaiting[gvj], portEndingWaiting[gvj], 
@@ -1057,6 +1102,7 @@ module mgr_noc_cntl (
   //--------------------------------------------------
   // FIFO's
   
+
   generate
     for (gvi=0; gvi<`MGR_NOC_CONT_NOC_NUM_OF_PORTS; gvi=gvi+1) 
       begin: Port_from_NoC_fifo
@@ -1081,7 +1127,7 @@ module mgr_noc_cntl (
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH), 
                        .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_ALMOST_FULL_THRESHOLD),
                        .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_NOC_CONT_NOC_PORT_DATA_WIDTH)
-                        ) fromLocal_fifo (
+                        ) gfifo (
                                           // Status
                                          .empty            ( empty                      ),
                                          .almost_full      ( almost_full                ),
@@ -1099,6 +1145,8 @@ module mgr_noc_cntl (
                                          .reset_poweron    ( reset_poweron              ),
                                          .clk              ( clk                        )
                                          );
+
+/*
         // Note: First stage of pipeline is inside FIFO
         // fifo output stage
         reg                                                  fifo_pipe_valid   ;
@@ -1154,8 +1202,25 @@ module mgr_noc_cntl (
                            ((~write                                                 ) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ? pkt_count - 'd1 :
                                                                                                                                                        pkt_count       ;
           end
+*/
 
         assign clear   =   1'b0                ;
+
+        reg  [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_RANGE] eop_count       ;
+        reg       valid ;
+        always @(posedge clk)
+          begin
+            eop_count          <= ( reset_poweron                                                                                                                              )  ? 'd0                  :
+                                       ( clear                                                                                                                                      )  ? 'd0                  :
+                                       ((((read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && valid ) &&                      
+                                       (((          write_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          write_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & write                     ))  ? eop_count       :
+                                       (((read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && valid           )  ? eop_count - 'd1 :
+                                       (((          write_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          write_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & write                      )  ? eop_count + 'd1 :
+                                                                                                                                                                                         eop_count       ;
+            valid    <= ( reset_poweron                   ) ? 'd0        :
+                                       ( clear                           ) ? 'd0        :
+                                                                              read ;
+          end
 
       end
   endgenerate
@@ -1174,9 +1239,6 @@ module mgr_noc_cntl (
 
         //--------------------------------------------------------------------------------------------
         // Port Control from NoC FIFO
-        `NoC_Port_fifo
-
-        assign clear = 0;  // FIXME
 
         //--------------------------------------------------------------------------------------------
         wire                              destinationReq       ; // request to all destinations, one (or more) will accept.
@@ -1216,15 +1278,6 @@ module mgr_noc_cntl (
 
         // the following are to NoC packet bus from the input controller
         wire                                            valid_fromNoc    ;  // when valid, the destination port(s) must write to their output fifo's
-/*
-        wire [`MGR_MGR_ID_RANGE                      ]  mgr_fromNoc      ;  // grap during header cycle
-        reg  [`MGR_MGR_ID_RANGE                      ]  mgr_fromNoc_d1   ;  // grap during header cycle
-        reg  [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE      ]  cntl_fromNoc_d1  ;  // latch for entire transaction
-        wire                                            priority_fromNoc ;  // valid only during header cycle of external NoC packet       
-        wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  type_fromNoc     ;  // valid only during 2nd cycle or tuple cycle of external NoC packet (assume valid only during 1st tuple cycle)
-        reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  type_fromNoc_d1  ;  // latch for entire transaction
-        wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE   ]  ptype_fromNoc    ;  // payload type valid during tuple and data cycles
-*/
         wire [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE      ]  cntl_fromNoc     ;
         wire [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE      ]  data_fromNoc     ;
 
@@ -1256,7 +1309,7 @@ module mgr_noc_cntl (
           begin
             case (nc_port_fromNoc_state)
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT: 
-                nc_port_fromNoc_state_next = ( ~fifo_empty && (fifo_eop_count > 0) )  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ :
+                nc_port_fromNoc_state_next = ( ~Port_from_NoC_fifo[gvi].empty && (Port_from_NoC_fifo[gvi].eop_count > 0) )  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ :
                                                                                         `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT            ;
     
 
@@ -1271,7 +1324,7 @@ module mgr_noc_cntl (
                 nc_port_fromNoc_state_next = `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET ;
             
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET:
-                nc_port_fromNoc_state_next = ( fifo_read_data_valid && fromNoc_eom)  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE        :
+                nc_port_fromNoc_state_next = ( Port_from_NoC_fifo[gvi].valid && fromNoc_eom)  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE        :
                                                                                        `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET ;
             
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE:
@@ -1289,32 +1342,26 @@ module mgr_noc_cntl (
         //-------------------------------------------------------------------------------------------------
         // Internal signals
 
-        assign  fromNoc_som  = (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM) || (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
-        assign  fromNoc_mom  = (fifo_read_cntl == `COMMON_STD_INTF_CNTL_MOM)                                                       ;
-        assign  fromNoc_eom  = (fifo_read_cntl == `COMMON_STD_INTF_CNTL_EOM) || (fifo_read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
+        assign  fromNoc_som  = (Port_from_NoC_fifo[gvi].read_cntl == `COMMON_STD_INTF_CNTL_SOM) || (Port_from_NoC_fifo[gvi].read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
+        assign  fromNoc_mom  = (Port_from_NoC_fifo[gvi].read_cntl == `COMMON_STD_INTF_CNTL_MOM)                                                       ;
+        assign  fromNoc_eom  = (Port_from_NoC_fifo[gvi].read_cntl == `COMMON_STD_INTF_CNTL_EOM) || (Port_from_NoC_fifo[gvi].read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
 
-        assign fifo_read  = ( (fifo_eop_count > 0)                     & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
+        assign Port_from_NoC_fifo[gvi].read  = ( (Port_from_NoC_fifo[gvi].eop_count > 0)                     & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
                             (                                            (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER))|  // send header of control packet
                             ( ~fromNoc_eom & allDestinationsStillReady & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ; // send balance of control packet
                               
-        assign destinationReq  = //((fifo_eop_count > 0) & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
+        assign destinationReq  = //((Port_from_NoC_fifo[gvi].eop_count > 0) & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
                                  (                       (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ)) ; // destination bitmask set, now request outport
 
         // valid only during destinationReq	
-        assign destinationReqAddr   = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE ] ;
-        assign destinationPriority  = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE         ] ;
+        assign destinationReqAddr   = Port_from_NoC_fifo[gvi].read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE ] ;
+        assign destinationPriority  = Port_from_NoC_fifo[gvi].read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE         ] ;
    
         assign valid_fromNoc    = ( nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER) |
-                                  ((nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET) & fifo_read_data_valid );
+                                  ((nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET) & Port_from_NoC_fifo[gvi].valid );
 
-        assign cntl_fromNoc     = fifo_read_cntl ;  // 
-        assign data_fromNoc     = fifo_read_data ;  //
-/*
-        assign mgr_fromNoc      = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE         ] ;  // valid only during header cycle of NoC packet       
-        assign priority_fromNoc = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE          ] ;  // valid only during header cycle of NoC packet       
-        assign type_fromNoc     = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PACKET_TYPE_RANGE  ] ;  // valid only during 1st tuple cycle of NoC packet       
-        assign ptype_fromNoc    = fifo_read_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE ] ;  // valid during tuple and data cycles of NoC packet       
-*/
+        assign cntl_fromNoc     = Port_from_NoC_fifo[gvi].read_cntl ;  // 
+        assign data_fromNoc     = Port_from_NoC_fifo[gvi].read_data ;  //
                           
         assign inWaitState = (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ ) ;
         always @(posedge clk)
@@ -1360,87 +1407,106 @@ module mgr_noc_cntl (
     `define MGR_CONT_NOC_TRACKWAIT_NULL      2'd0     
     begin
       casex ({compState, refWaiting, inputWaiting, refEnteringWait, refExitingWait, inputEnteringWait, inputExitingWait})
-        (8'b_xx___0_0___1_0___0_x_) :
+        // Noye: synopsys didnt like underscore
+        //(8'b_xx___0_0___1_0___0_x_) :
+        (8'bxx00100x) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
           end
-        (8'b_xx___0_0___1_0___1_x_) :
+        //(8'b_xx___0_0___1_0___1_x_) :
+        (8'bxx00101x) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
           end
-        (8'b_xx___0_0___0_x___1_x_) :
+        //(8'b_xx___0_0___0_x___1_x_) :
+        (8'bxx000x1x) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
-          end
-
-        (8'b_xx___0_1___1_x___x_0_) :
-          begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
-          end
-        (8'b_xx___0_1___1_x___x_1_) :
-          begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
-          end
-        (8'b_xx___0_1___0_x___x_1_) :
-          begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
           end
 
-        (8'b_xx___1_0___x_1___0_x_) :
+        //(8'b_xx___0_1___1_x___x_0_) :
+        (8'bxx011xx0) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
           end
-        (8'b_xx___1_0___x_0___1_x_) :
+        //(8'b_xx___0_1___1_x___x_1_) :
+        (8'bxx011xx1) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
           end
-        (8'b_xx___1_0___x_1___1_x_) :
+        //(8'b_xx___0_1___0_x___x_1_) :
+        (8'bxx010xx1) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
-          end
-
-        (8'b_10___1_1___x_1___x_0_) :
-          begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
-          end
-        (8'b_10___1_1___x_0___x_1_) :
-          begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
-          end
-        (8'b_10___1_1___x_1___x_1_) :
-          begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
           end
 
-        (8'b_01___1_1___x_1___x_0_) :
+        //(8'b_xx___1_0___x_1___0_x_) :
+        (8'bxx10x10x) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
           end
-        (8'b_01___1_1___x_0___x_1_) :
+        //(8'b_xx___1_0___x_0___1_x_) :
+        (8'bxx10x01x) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
           end
-        (8'b_01___1_1___x_1___x_1_) :
+        //(8'b_xx___1_0___x_1___1_x_) :
+        (8'bxx10x11x) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
           end
 
-        (8'b_00___1_1___x_1___x_0_) :
+        //(8'b_10___1_1___x_1___x_0_) :
+        (8'b1011x1x0) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
           end
-        (8'b_00___1_1___x_0___x_1_) :
+        //(8'b_10___1_1___x_0___x_1_) :
+        (8'b1011x0x1) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
           end
-        (8'b_00___1_1___x_1___x_1_) :
+        //(8'b_10___1_1___x_1___x_1_) :
+        (8'b1011x1x1) :
           begin
-            assign compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+          end
+
+        //(8'b_01___1_1___x_1___x_0_) :
+        (8'b0111x1x0) :
+          begin
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
+          end
+        //(8'b_01___1_1___x_0___x_1_) :
+        (8'b0111x0x1) :
+          begin
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+          end
+        //(8'b_01___1_1___x_1___x_1_) :
+        (8'b0111x1x1) :
+          begin
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
+          end
+
+        //(8'b_00___1_1___x_1___x_0_) :
+        (8'b0011x1x0) :
+          begin
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_LT    ;
+          end
+        //(8'b_00___1_1___x_0___x_1_) :
+        (8'b0011x0x1) :
+          begin
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_GT    ;
+          end
+        //(8'b_00___1_1___x_1___x_1_) :
+        (8'b0011x1x1) :
+          begin
+            compState_next   = `MGR_CONT_NOC_TRACKWAIT_NULL    ;
           end
 
         default:
           begin
-            assign compState_next   = compState    ;
+            compState_next   = compState    ;
           end
       endcase
     end

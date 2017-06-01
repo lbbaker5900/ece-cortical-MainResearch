@@ -196,7 +196,7 @@ module oob_downstream_cntl (
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`OOB_DOWN_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`OOB_DOWN_FIFO_THRESHOLD ),
                        .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_STD_OOB_TAG_WIDTH+`MGR_NUM_LANES_WIDTH+`MGR_WU_OPT_VALUE_WIDTH+`MGR_WU_OPT_VALUE_WIDTH)
-                        ) instr_fifo (
+                        ) gfifo (
                                           // Status
                                          .empty            ( empty                                                ),
                                          .almost_full      ( almost_full                                          ),

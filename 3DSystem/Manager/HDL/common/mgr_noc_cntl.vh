@@ -598,7 +598,7 @@
 // External from NoC Interface Control FIFO
 //------------------------------------------------
 
-`define MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH          2048
+`define MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH          256
 `define MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH_MSB      (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH) -1
 `define MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH_LSB      0
 `define MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH_SIZE     (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH_MSB - `MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH_LSB +1)
@@ -649,75 +649,6 @@
 //------------------------------------------------
 // FIFO's
 //------------------------------------------------
-
-
-//--------------------------------------------------------
-// NoC FIFO's
-
-`define NoC_Port_fifo \
-\
-        reg  [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE ]                   fifo_cntl      [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH_RANGE] ; \
-        reg  [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE]                    fifo_data      [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH_RANGE] ; \
-        reg  [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_RANGE]           fifo_wp              ; \
-        reg  [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_RANGE]           fifo_rp              ; \
-        reg  [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_RANGE]           fifo_depth           ; \
-        reg  [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_RANGE] fifo_eop_count       ; \
-        wire                                                        fifo_empty           ; \
-        wire                                                        fifo_almost_full     ; \
-        wire                                                        fifo_read            ; \
-        reg  [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE ]                   fifo_read_cntl       ; \
-        reg  [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE]                    fifo_read_data       ; \
-        reg                                                         fifo_read_data_valid ; \
-        reg  [`MGR_NOC_CONT_NOC_PORT_CNTL_RANGE ]                   cntl                 ; \
-        reg  [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE]                    data                 ; \
-        reg                                                         fifo_write           ; \
-        wire                                                        clear                ; \
-   \
-        always @(posedge clk)\
-          begin\
-            fifo_wp                 <= ( reset_poweron   ) ? 'd0            : \
-                                       ( clear           ) ? 'd0            : \
-                                       ( fifo_write      ) ? fifo_wp + 'd1  :\
-                                                             fifo_wp        ;\
-   \
-            fifo_cntl[fifo_wp]      <= ( fifo_write       ) ? cntl               : \
-                                                              fifo_cntl[fifo_wp] ;\
-   \
-            fifo_data[fifo_wp]      <= ( fifo_write       ) ? data               : \
-                                                              fifo_data[fifo_wp] ;\
-   \
-            fifo_rp                 <= ( reset_poweron    ) ? 'd0           : \
-                                       ( clear            ) ? 'd0           : \
-                                       ( fifo_read        ) ? fifo_rp + 'd1 :\
-                                                              fifo_rp       ;\
-\
-            fifo_eop_count          <= ( reset_poweron                                                                                                                       )  ? 'd0                  : \
-                                       ( clear                                                                                                                               )  ? 'd0                  : \
-                                       ((((fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && fifo_read_data_valid ) &&                       \
-                                       (((          cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & fifo_write )) ? fifo_eop_count       : \
-                                       (((fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (fifo_read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && fifo_read_data_valid )  ? fifo_eop_count - 'd1 : \
-                                       (((          cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & fifo_write )  ? fifo_eop_count + 'd1 : \
-                                                                                                                                                                                  fifo_eop_count       ; \
-\
-            fifo_depth              <= ( reset_poweron                   ) ? 'd0              : \
-                                       ( clear                           ) ? 'd0              : \
-                                       (  fifo_read & ~fifo_write        ) ? fifo_depth - 'd1 :\
-                                       ( ~fifo_read &  fifo_write        ) ? fifo_depth + 'd1 :\
-                                                                             fifo_depth       ;\
-   \
-            fifo_read_data_valid    <= ( reset_poweron                   ) ? 'd0        : \
-                                       ( clear                           ) ? 'd0        : \
-                                                                              fifo_read ;\
-   \
-          end\
-\
-          assign fifo_empty          = (fifo_rp == fifo_wp)    ;\
-          assign fifo_almost_full    = (fifo_depth >= 'd`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH-`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_ALMOST_FULL_THRESHOLD)    ;\
-        always @(posedge clk)\
-          begin\
-            fifo_read_cntl      <= (fifo_read) ? fifo_cntl [fifo_rp]   : fifo_read_cntl   ;\
-            fifo_read_data      <= (fifo_read) ? fifo_data [fifo_rp]   : fifo_read_data   ;\
-          end\
 
 //----------------------------------------------------------------------------------------------------
 //
