@@ -9,3 +9,5 @@ scp outputFiles/latest/*/*.dat lbbaker@olympia.ece.ncsu.edu:/home/lbbaker/Cortic
 scp verilogFiles/latest/*.vh   lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/System/HDL/common/.
 scp outputFiles/latest/*/*.dat lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/System/SIMULATION/sv/inputFiles/.
 
+bsub -W 2:00 < script.csh
+

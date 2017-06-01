@@ -49,6 +49,8 @@ class PE():
 
         # Keep a dictinary of port state so we can generate port numbers
         self.portState = {'North' : 'on', 'South' : 'on', 'East' : 'on', 'West' : 'on'}
+
+        # Determine index of adjacent PEs
         northPe = np.copy(peId)
         northPe[0] -= 1
         eastPe = np.copy(peId)
@@ -57,6 +59,9 @@ class PE():
         southPe[0] += 1
         westPe = np.copy(peId)
         westPe[1] -= 1
+
+        # MESH Assignment
+        # - set the PE idx connected to by each port
         self.portDestPe     = {'North' : northPe, 'South' : southPe, 'East' : eastPe, 'West' : westPe}
         self.portDestPeSide = PortConnectionSides 
        
@@ -143,6 +148,9 @@ for y in range (0, yDim ):
                 port    = peArray.pe[y][x].ports[p].Number
                 dy      = peArray.pe[y][x].ports[p].DestinationPe[0]
                 dx      = peArray.pe[y][x].ports[p].DestinationPe[1]
+                # The .. port is connected to the port ..
+                # e.g. North Port is connected to the PE above's south port
+                # We have aleardy set which PE the port is connected to, now find the actual port in that PE
                 dPort   = peArray.pe[dy][dx].ports[peArray.pe[y][x].portDestPeSide[p]].Number
                 pLine = pLine + '\n// PE <{0},{1}> Port {2} Connected to Node <{3},{4}> port {5} '.format(y,x,p,dy,dx,peArray.pe[y][x].portDestPeSide[p])
                 pLine = pLine + '\nPort {2} Connected to Node = {3} {4} {5}                      '.format(y,x,port,dy,dx,dPort)
