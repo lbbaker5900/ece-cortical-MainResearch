@@ -1255,260 +1255,376 @@ module mrc_cntl (
   // Will need to merge Address_mem, AccessOrder_mem and consJumpPtr_mem into one device
   // e.g. merge memories 1,2,3 and merge 4,5
   
-  //--------------------------------------------------
-  // i) Storage Descriptor Address Memory
-  
-  //reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address       , sdmem_Address_e1       ;  
   wire   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address       ;
-  //reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  Address_mem         [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
-  generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH  ),
-                   .GENERIC_MEM_REGISTERED_OUT (0                                     ),
-                   .GENERIC_MEM_DATA_WIDTH     (`MGR_DRAM_ADDRESS_WIDTH               )
-                  ) Address_mem ( 
-                  //---------------------------------------------------------------
-                  // Port A 
-                  .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH ) {1'b0}} ),
-                  .portA_write_data    ( {`MGR_DRAM_ADDRESS_WIDTH {1'b0}} ),
-                  .portA_read_data     (             ),
-                  .portA_enable        ( 1'b0        ), 
-                  .portA_write         ( 1'b0        ),
-                  
-                  //---------------------------------------------------------------
-                  // Port B 
-                  .portB_address       ( local_storage_desc_ptr          ),
-                  .portB_write_data    ( {`MGR_DRAM_ADDRESS_WIDTH {1'b0}} ),
-                  .portB_read_data     ( sdmem_Address                    ),
-                  .portB_enable        ( 1'b1                             ), 
-                  .portB_write         ( 1'b0                             ),
-                  
-                  //---------------------------------------------------------------
-                  // General
-                  .reset_poweron       ( reset_poweron             ),
-                  .clk                 ( clk                       )
-                  ) ;
-/*
-  always @(*) 
-    begin 
-      #0.3    sdmem_AccessOrder_e1         =  AccessOrder_mem  [local_storage_desc_ptr ] ;
-    end
-  always @(posedge clk) 
-    begin 
-      sdmem_Address             <=  sdmem_Address_e1        ;
-    end
-*/
-  initial
-    begin
-      @(negedge reset_poweron);
-      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAddress_readmem.dat"        , sys__mgr__mgrId) , Address_mem.mem      );
-      //$readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAddress_readmem.dat"        , sys__mgr__mgrId) , Address_mem      );
-    end
+  wire   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder   ;
+  wire   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr   ;
 
 
-  //--------------------------------------------------
-  // ii) Access Order Memory
-  
-  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder   ;
+  generate
+    for (gvi=0; gvi<1 ; gvi=gvi+1) 
+      begin: storageDesc_mem
 
-  generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH  ),
-                   .GENERIC_MEM_REGISTERED_OUT (0                                     ),
-                   .GENERIC_MEM_DATA_WIDTH     (`MGR_INST_OPTION_ORDER_WIDTH          )
-                  ) AccessOrder_mem ( 
-                  //---------------------------------------------------------------
-                  // Port A 
-                  .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH ) {1'b0}} ),
-                  .portA_write_data    ( {`MGR_INST_OPTION_ORDER_WIDTH  {1'b0}} ),
-                  .portA_read_data     (             ),
-                  .portA_enable        ( 1'b0        ), 
-                  .portA_write         ( 1'b0        ),
-                  
-                  //---------------------------------------------------------------
-                  // Port B 
-                  .portB_address       ( local_storage_desc_ptr           ),
-                  .portB_write_data    ( {`MGR_INST_OPTION_ORDER_WIDTH  {1'b0}} ),
-                  .portB_read_data     ( sdmem_AccessOrder                ),
-                  .portB_enable        ( 1'b1                             ), 
-                  .portB_write         ( 1'b0                             ),
-                  
-                  //---------------------------------------------------------------
-                  // General
-                  .reset_poweron       ( reset_poweron             ),
-                  .clk                 ( clk                       )
-                  ) ;
-/*
-  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder   , sdmem_AccessOrder_e1   ;
-  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  AccessOrder_mem     [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
-  always @(*) 
-    begin 
-      #0.3    sdmem_AccessOrder_e1         =  AccessOrder_mem  [local_storage_desc_ptr ] ;
-    end
-  always @(posedge clk) 
-    begin 
-      sdmem_AccessOrder         <=  sdmem_AccessOrder_e1    ;
-    end
-*/
+        generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH  ),
+                         .GENERIC_MEM_REGISTERED_OUT (0                                     ),
+                         .GENERIC_MEM_DATA_WIDTH     (`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_WIDTH )
+                        ) gmemory ( 
+                        //---------------------------------------------------------------
+                        // Port A 
+                        .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH ) {1'b0}} ),
+                        .portA_write_data    ( {`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_WIDTH {1'b0}} ),
+                        .portA_read_data     (             ),
+                        .portA_enable        ( 1'b0        ), 
+                        .portA_write         ( 1'b0        ),
+                        
+                        //---------------------------------------------------------------
+                        // Port B 
+                        .portB_address       ( local_storage_desc_ptr          ),
+                        .portB_write_data    ( {`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_WIDTH {1'b0}} ),
+                        .portB_read_data     ( {sdmem_consJumpPtr, sdmem_AccessOrder, sdmem_Address}),
+                        .portB_enable        ( 1'b1                             ), 
+                        .portB_write         ( 1'b0                             ),
+                        
+                        //---------------------------------------------------------------
+                        // General
+                        .reset_poweron       ( reset_poweron             ),
+                        .clk                 ( clk                       )
+                        ) ;
+  // Note: parameters must be fixed, so have to load directly
+  //defparam gmemory.GENERIC_MEM_INIT_FILE   =    $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId);
+        `ifndef SYNTHESIS
+          initial
+            begin
+              @(negedge reset_poweron);
+              $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId), gmemory.mem);
+            end
+        `endif
+      end
+  endgenerate
 
-  initial
-    begin
-      @(negedge reset_poweron);
-      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAccessOrder_readmem.dat"    , sys__mgr__mgrId) , AccessOrder_mem.mem  );
-      //$readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAccessOrder_readmem.dat"    , sys__mgr__mgrId) , AccessOrder_mem  );
-    end
+  wire   [`COMMON_STD_INTF_CNTL_RANGE                    ]  sdmem_consJumpCntl  ;
+  wire   [`MGR_INST_CONS_JUMP_RANGE                      ]  sdmem_consJump      ;
 
+  generate
+    for (gvi=0; gvi<1 ; gvi=gvi+1) 
+      begin: storageDescConsJump_mem
 
-
-  //--------------------------------------------------
-  // iii) ConsJump Pointer Memory
-  
-  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr   ;
-
-  generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH           ),
-                   .GENERIC_MEM_REGISTERED_OUT (0                                              ),
-                   .GENERIC_MEM_DATA_WIDTH     (`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_WIDTH )
-                  ) consJumpPtr_mem    ( 
-                  //---------------------------------------------------------------
-                  // Port A 
-                  .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH ) {1'b0}} ),
-                  .portA_write_data    ( {`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_WIDTH {1'b0}} ),
-                  .portA_read_data     (             ),
-                  .portA_enable        ( 1'b0        ), 
-                  .portA_write         ( 1'b0        ),
-                  
-                  //---------------------------------------------------------------
-                  // Port B 
-                  .portB_address       ( local_storage_desc_ptr           ),
-                  .portB_write_data    ( {`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_WIDTH {1'b0}} ),
-                  .portB_read_data     ( sdmem_consJumpPtr                ),
-                  .portB_enable        ( 1'b1                             ), 
-                  .portB_write         ( 1'b0                             ),
-                  
-                  //---------------------------------------------------------------
-                  // General
-                  .reset_poweron       ( reset_poweron             ),
-                  .clk                 ( clk                       )
-                  ) ;
-/*
-  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr   , sdmem_consJumpPtr_e1   ;  
-  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  consJumpPtr_mem     [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
-  always @(*) 
-    begin 
-      #0.3    sdmem_consJumpPtr_e1         =  consJumpPtr_mem  [local_storage_desc_ptr ] ;
-    end
-  always @(posedge clk) 
-    begin 
-      sdmem_consJumpPtr         <=  sdmem_consJumpPtr_e1    ;
-    end
-*/
-  initial
-    begin
-      @(negedge reset_poweron);
-      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorPtr_readmem.dat"            , sys__mgr__mgrId) , consJumpPtr_mem.mem  );
-      //$readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorPtr_readmem.dat"            , sys__mgr__mgrId) , consJumpPtr_mem  );
-    end
+        generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH        ),
+                         .GENERIC_MEM_REGISTERED_OUT (0                                                    ),
+                         .GENERIC_MEM_DATA_WIDTH     (`MGR_LOCAL_STORAGE_DESC_CONSJUMP_AGGREGATE_MEM_WIDTH )
+                        ) gmemory ( 
+                        //---------------------------------------------------------------
+                        // Port A 
+                        .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH  ) {1'b0}} ),
+                        .portA_write_data    ( {`MGR_LOCAL_STORAGE_DESC_CONSJUMP_AGGREGATE_MEM_WIDTH {1'b0}} ),
+                        .portA_read_data     (             ),
+                        .portA_enable        ( 1'b0        ), 
+                        .portA_write         ( 1'b0        ),
+                        
+                        //---------------------------------------------------------------
+                        // Port B 
+                        .portB_address       ( consJumpPtr                      ),
+                        .portB_write_data    ( {`MGR_LOCAL_STORAGE_DESC_CONSJUMP_AGGREGATE_MEM_WIDTH {1'b0}} ),
+                        .portB_read_data     ( {sdmem_consJumpCntl, sdmem_consJump}),
+                        .portB_enable        ( 1'b1                             ), 
+                        .portB_write         ( 1'b0                             ),
+                        
+                        //---------------------------------------------------------------
+                        // General
+                        .reset_poweron       ( reset_poweron             ),
+                        .clk                 ( clk                       )
+                        ) ;
+        `ifndef SYNTHESIS
+          initial
+            begin
+              @(negedge reset_poweron);
+              $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJump_readmem.dat", sys__mgr__mgrId), gmemory.mem);
+            end
+        `endif
+      end
+  endgenerate
 
 
-
-
-  //--------------------------------------------------
-  // iv) ConsJump Cntl Memory
-
-  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  sdmem_consJumpCntl  ;
-
-  generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH  ),
-                   .GENERIC_MEM_REGISTERED_OUT (0                                              ),
-                   .GENERIC_MEM_DATA_WIDTH     (`COMMON_STD_INTF_CNTL_WIDTH                    )
-                  ) consJumpCntl_mem  ( 
-                  //---------------------------------------------------------------
-                  // Port A 
-                  .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH  ) {1'b0}} ),
-                  .portA_write_data    ( {`COMMON_STD_INTF_CNTL_WIDTH {1'b0}} ),
-                  .portA_read_data     (             ),
-                  .portA_enable        ( 1'b0        ), 
-                  .portA_write         ( 1'b0        ),
-                  
-                  //---------------------------------------------------------------
-                  // Port B 
-                  .portB_address       ( consJumpPtr                      ),
-                  .portB_write_data    ( {`COMMON_STD_INTF_CNTL_WIDTH {1'b0}} ),
-                  .portB_read_data     ( sdmem_consJumpCntl               ),
-                  .portB_enable        ( 1'b1                             ), 
-                  .portB_write         ( 1'b0                             ),
-                  
-                  //---------------------------------------------------------------
-                  // General
-                  .reset_poweron       ( reset_poweron             ),
-                  .clk                 ( clk                       )
-                  ) ;
-/*
-  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  sdmem_consJumpCntl  , sdmem_consJumpCntl_e1  ;  // cons/jump delineator
-  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  consJumpCntl_mem    [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_RANGE ] ;  // cons/jump delineator
-  always @(*) 
-    begin 
-      #0.3    sdmem_consJumpCntl_e1        =  consJumpCntl_mem [consJumpPtr   ] ;
-    end
-  always @(posedge clk) 
-    begin 
-      sdmem_consJumpCntl        <=  sdmem_consJumpCntl_e1   ;
-    end
-*/
-  initial
-    begin
-      @(negedge reset_poweron);
-      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpCntl_readmem.dat"   , sys__mgr__mgrId) , consJumpCntl_mem.mem );
-      //$readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpCntl_readmem.dat"   , sys__mgr__mgrId) , consJumpCntl_mem );
-    end
-
-
-  //--------------------------------------------------
-  // v) ConsJump Value Memory
-
-  reg   [`MGR_INST_CONS_JUMP_RANGE                      ]  sdmem_consJump      ;
-
-  generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH  ),
-                   .GENERIC_MEM_REGISTERED_OUT (0                                              ),
-                   .GENERIC_MEM_DATA_WIDTH     (`MGR_INST_CONS_JUMP_WIDTH                      )
-                  ) consJump_mem  ( 
-                  //---------------------------------------------------------------
-                  // Port A 
-                  .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH  ) {1'b0}} ),
-                  .portA_write_data    ( {`MGR_INST_CONS_JUMP_WIDTH   {1'b0}} ),
-                  .portA_read_data     (             ),
-                  .portA_enable        ( 1'b0        ), 
-                  .portA_write         ( 1'b0        ),
-                  
-                  //---------------------------------------------------------------
-                  // Port B 
-                  .portB_address       ( consJumpPtr                      ),
-                  .portB_write_data    ( {`MGR_INST_CONS_JUMP_WIDTH   {1'b0}} ),
-                  .portB_read_data     ( sdmem_consJump                   ),
-                  .portB_enable        ( 1'b1                             ), 
-                  .portB_write         ( 1'b0                             ),
-                  
-                  //---------------------------------------------------------------
-                  // General
-                  .reset_poweron       ( reset_poweron             ),
-                  .clk                 ( clk                       )
-                  ) ;
-/*
-  reg   [`MGR_INST_CONS_JUMP_RANGE                      ]  sdmem_consJump      , sdmem_consJump_e1      ;  
-  reg   [`MGR_INST_CONS_JUMP_RANGE                      ]  consJump_mem        [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_RANGE ] ;  
-  always @(*) 
-    begin 
-      #0.3    sdmem_consJump_e1            =  consJump_mem     [consJumpPtr   ] ;
-    end
-  always @(posedge clk) 
-    begin 
-      sdmem_consJump            <=  sdmem_consJump_e1       ;
-    end
-*/
-  initial
-    begin
-      @(negedge reset_poweron);
-      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpFields_readmem.dat" , sys__mgr__mgrId) , consJump_mem.mem     );
-      //$readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpFields_readmem.dat" , sys__mgr__mgrId) , consJump_mem     );
-    end
-  
-
-
+//  //--------------------------------------------------
+//  // i) Storage Descriptor Address Memory
+//  
+//  //wire   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address       ;
+//  generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH  ),
+//                   .GENERIC_MEM_REGISTERED_OUT (0                                     ),
+//                   .GENERIC_MEM_DATA_WIDTH     (`MGR_DRAM_ADDRESS_WIDTH               )
+//                  ) Address_mem ( 
+//                  //---------------------------------------------------------------
+//                  // Port A 
+//                  .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH ) {1'b0}} ),
+//                  .portA_write_data    ( {`MGR_DRAM_ADDRESS_WIDTH {1'b0}} ),
+//                  .portA_read_data     (             ),
+//                  .portA_enable        ( 1'b0        ), 
+//                  .portA_write         ( 1'b0        ),
+//                  
+//                  //---------------------------------------------------------------
+//                  // Port B 
+//                  .portB_address       ( local_storage_desc_ptr          ),
+//                  .portB_write_data    ( {`MGR_DRAM_ADDRESS_WIDTH {1'b0}} ),
+//                  .portB_read_data     ( sdmem_Address                    ),
+//                  .portB_enable        ( 1'b1                             ), 
+//                  .portB_write         ( 1'b0                             ),
+//                  
+//                  //---------------------------------------------------------------
+//                  // General
+//                  .reset_poweron       ( reset_poweron             ),
+//                  .clk                 ( clk                       )
+//                  ) ;
+//  initial
+//    begin
+//      @(negedge reset_poweron);
+//        $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAddress_readmem.dat"        , sys__mgr__mgrId) , Address_mem.mem      );
+//    end
+//
+///*
+//  //reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address       , sdmem_Address_e1       ;  
+//  //reg   [`MGR_DRAM_ADDRESS_RANGE                        ]  Address_mem         [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
+//  always @(*) 
+//    begin 
+//      #0.3    sdmem_AccessOrder_e1         =  AccessOrder_mem  [local_storage_desc_ptr ] ;
+//    end
+//  always @(posedge clk) 
+//    begin 
+//      sdmem_Address             <=  sdmem_Address_e1        ;
+//    end
+//  initial
+//    begin
+//      @(negedge reset_poweron);
+//      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAddress_readmem.dat"        , sys__mgr__mgrId) , Address_mem      );
+//    end
+//*/
+//
+//
+//  //--------------------------------------------------
+//  // ii) Access Order Memory
+//  
+//  //wire  [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder   ;
+//
+//  generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH  ),
+//                   .GENERIC_MEM_REGISTERED_OUT (0                                     ),
+//                   .GENERIC_MEM_DATA_WIDTH     (`MGR_INST_OPTION_ORDER_WIDTH          )
+//                  ) AccessOrder_mem ( 
+//                  //---------------------------------------------------------------
+//                  // Port A 
+//                  .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH ) {1'b0}} ),
+//                  .portA_write_data    ( {`MGR_INST_OPTION_ORDER_WIDTH  {1'b0}} ),
+//                  .portA_read_data     (             ),
+//                  .portA_enable        ( 1'b0        ), 
+//                  .portA_write         ( 1'b0        ),
+//                  
+//                  //---------------------------------------------------------------
+//                  // Port B 
+//                  .portB_address       ( local_storage_desc_ptr           ),
+//                  .portB_write_data    ( {`MGR_INST_OPTION_ORDER_WIDTH  {1'b0}} ),
+//                  .portB_read_data     ( sdmem_AccessOrder                ),
+//                  .portB_enable        ( 1'b1                             ), 
+//                  .portB_write         ( 1'b0                             ),
+//                  
+//                  //---------------------------------------------------------------
+//                  // General
+//                  .reset_poweron       ( reset_poweron             ),
+//                  .clk                 ( clk                       )
+//                  ) ;
+//
+//  initial
+//    begin
+//      @(negedge reset_poweron);
+//      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAccessOrder_readmem.dat"    , sys__mgr__mgrId) , AccessOrder_mem.mem  );
+//    end
+///*
+//  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder   , sdmem_AccessOrder_e1   ;
+//  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]  AccessOrder_mem     [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
+//  always @(*) 
+//    begin 
+//      #0.3    sdmem_AccessOrder_e1         =  AccessOrder_mem  [local_storage_desc_ptr ] ;
+//    end
+//  always @(posedge clk) 
+//    begin 
+//      sdmem_AccessOrder         <=  sdmem_AccessOrder_e1    ;
+//    end
+//
+//  initial
+//    begin
+//      @(negedge reset_poweron);
+//      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorAccessOrder_readmem.dat"    , sys__mgr__mgrId) , AccessOrder_mem  );
+//    end
+//*/
+//
+//
+//
+//  //--------------------------------------------------
+//  // iii) ConsJump Pointer Memory
+//  
+//  //wire   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr   ;
+//
+//  generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH           ),
+//                   .GENERIC_MEM_REGISTERED_OUT (0                                              ),
+//                   .GENERIC_MEM_DATA_WIDTH     (`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_WIDTH )
+//                  ) consJumpPtr_mem    ( 
+//                  //---------------------------------------------------------------
+//                  // Port A 
+//                  .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH ) {1'b0}} ),
+//                  .portA_write_data    ( {`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_WIDTH {1'b0}} ),
+//                  .portA_read_data     (             ),
+//                  .portA_enable        ( 1'b0        ), 
+//                  .portA_write         ( 1'b0        ),
+//                  
+//                  //---------------------------------------------------------------
+//                  // Port B 
+//                  .portB_address       ( local_storage_desc_ptr           ),
+//                  .portB_write_data    ( {`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_WIDTH {1'b0}} ),
+//                  .portB_read_data     ( sdmem_consJumpPtr                ),
+//                  .portB_enable        ( 1'b1                             ), 
+//                  .portB_write         ( 1'b0                             ),
+//                  
+//                  //---------------------------------------------------------------
+//                  // General
+//                  .reset_poweron       ( reset_poweron             ),
+//                  .clk                 ( clk                       )
+//                  ) ;
+//
+//  initial
+//    begin
+//      @(negedge reset_poweron);
+//      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorPtr_readmem.dat"            , sys__mgr__mgrId) , consJumpPtr_mem.mem  );
+//    end
+///*
+//  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr   , sdmem_consJumpPtr_e1   ;  
+//  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  consJumpPtr_mem     [`MGR_LOCAL_STORAGE_DESC_MEMORY_RANGE ] ;  
+//  always @(*) 
+//    begin 
+//      #0.3    sdmem_consJumpPtr_e1         =  consJumpPtr_mem  [local_storage_desc_ptr ] ;
+//    end
+//  always @(posedge clk) 
+//    begin 
+//      sdmem_consJumpPtr         <=  sdmem_consJumpPtr_e1    ;
+//    end
+//  initial
+//    begin
+//      @(negedge reset_poweron);
+//      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorPtr_readmem.dat"            , sys__mgr__mgrId) , consJumpPtr_mem  );
+//    end
+//*/
+//
+//
+//
+//
+//  //--------------------------------------------------
+//  // iv) ConsJump Cntl Memory
+//
+//  //wire   [`COMMON_STD_INTF_CNTL_RANGE                    ]  sdmem_consJumpCntl  ;
+//
+//  generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH  ),
+//                   .GENERIC_MEM_REGISTERED_OUT (0                                              ),
+//                   .GENERIC_MEM_DATA_WIDTH     (`COMMON_STD_INTF_CNTL_WIDTH                    )
+//                  ) consJumpCntl_mem  ( 
+//                  //---------------------------------------------------------------
+//                  // Port A 
+//                  .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH  ) {1'b0}} ),
+//                  .portA_write_data    ( {`COMMON_STD_INTF_CNTL_WIDTH {1'b0}} ),
+//                  .portA_read_data     (             ),
+//                  .portA_enable        ( 1'b0        ), 
+//                  .portA_write         ( 1'b0        ),
+//                  
+//                  //---------------------------------------------------------------
+//                  // Port B 
+//                  .portB_address       ( consJumpPtr                      ),
+//                  .portB_write_data    ( {`COMMON_STD_INTF_CNTL_WIDTH {1'b0}} ),
+//                  .portB_read_data     ( sdmem_consJumpCntl               ),
+//                  .portB_enable        ( 1'b1                             ), 
+//                  .portB_write         ( 1'b0                             ),
+//                  
+//                  //---------------------------------------------------------------
+//                  // General
+//                  .reset_poweron       ( reset_poweron             ),
+//                  .clk                 ( clk                       )
+//                  ) ;
+//
+//  initial
+//    begin
+//      @(negedge reset_poweron);
+//      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpCntl_readmem.dat"   , sys__mgr__mgrId) , consJumpCntl_mem.mem );
+//    end
+//
+///*
+//  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  sdmem_consJumpCntl  , sdmem_consJumpCntl_e1  ;  // cons/jump delineator
+//  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  consJumpCntl_mem    [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_RANGE ] ;  // cons/jump delineator
+//  always @(*) 
+//    begin 
+//      #0.3    sdmem_consJumpCntl_e1        =  consJumpCntl_mem [consJumpPtr   ] ;
+//    end
+//  always @(posedge clk) 
+//    begin 
+//      sdmem_consJumpCntl        <=  sdmem_consJumpCntl_e1   ;
+//    end
+//  initial
+//    begin
+//      @(negedge reset_poweron);
+//      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpCntl_readmem.dat"   , sys__mgr__mgrId) , consJumpCntl_mem );
+//    end
+//*/
+//
+//
+//  //--------------------------------------------------
+//  // v) ConsJump Value Memory
+//
+//  //wire   [`MGR_INST_CONS_JUMP_RANGE                      ]  sdmem_consJump      ;
+//
+//  generic_memory #(.GENERIC_MEM_DEPTH          (`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH  ),
+//                   .GENERIC_MEM_REGISTERED_OUT (0                                              ),
+//                   .GENERIC_MEM_DATA_WIDTH     (`MGR_INST_CONS_JUMP_WIDTH                      )
+//                  ) consJump_mem  ( 
+//                  //---------------------------------------------------------------
+//                  // Port A 
+//                  .portA_address       ( {$clog2(`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_DEPTH  ) {1'b0}} ),
+//                  .portA_write_data    ( {`MGR_INST_CONS_JUMP_WIDTH   {1'b0}} ),
+//                  .portA_read_data     (             ),
+//                  .portA_enable        ( 1'b0        ), 
+//                  .portA_write         ( 1'b0        ),
+//                  
+//                  //---------------------------------------------------------------
+//                  // Port B 
+//                  .portB_address       ( consJumpPtr                      ),
+//                  .portB_write_data    ( {`MGR_INST_CONS_JUMP_WIDTH   {1'b0}} ),
+//                  .portB_read_data     ( sdmem_consJump                   ),
+//                  .portB_enable        ( 1'b1                             ), 
+//                  .portB_write         ( 1'b0                             ),
+//                  
+//                  //---------------------------------------------------------------
+//                  // General
+//                  .reset_poweron       ( reset_poweron             ),
+//                  .clk                 ( clk                       )
+//                  ) ;
+//
+//  initial
+//    begin
+//      @(negedge reset_poweron);
+//      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpFields_readmem.dat" , sys__mgr__mgrId) , consJump_mem.mem     );
+//    end
+//
+///*
+//  reg   [`MGR_INST_CONS_JUMP_RANGE                      ]  sdmem_consJump      , sdmem_consJump_e1      ;  
+//  reg   [`MGR_INST_CONS_JUMP_RANGE                      ]  consJump_mem        [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_MEMORY_RANGE ] ;  
+//  always @(*) 
+//    begin 
+//      #0.3    sdmem_consJump_e1            =  consJump_mem     [consJumpPtr   ] ;
+//    end
+//  always @(posedge clk) 
+//    begin 
+//      sdmem_consJump            <=  sdmem_consJump_e1       ;
+//    end
+//  initial
+//    begin
+//      @(negedge reset_poweron);
+//      $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJumpFields_readmem.dat" , sys__mgr__mgrId) , consJump_mem     );
+//    end
+//*/
+//  
+//
+//
   assign  storage_desc_consJumpPtr = sdmem_consJumpPtr      ;
 
 

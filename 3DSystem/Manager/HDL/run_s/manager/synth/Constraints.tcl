@@ -125,6 +125,7 @@
 #
 # rdp_cntl
 set_dont_touch [get_cell *.gfifo/fifo_data_mem/*mem*]
+set_dont_touch [get_cell *.gmemory/*mem*]
 
 #------------------------------------------------------
 # During the initial map (synthesis), Synopsys might   
