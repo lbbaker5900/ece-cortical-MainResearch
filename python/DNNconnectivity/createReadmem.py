@@ -80,6 +80,17 @@ FoundMemorySize = False
 FoundNumOfPes   = False
 FoundNumOfLanes = False
 FoundLaneWidth  = False
+FoundBitsPerCntl = False 
+
+searchFile = open("../../github/ece-cortical-MainResearch/3DSystem/PEArray/HDL/common/common.vh", "r")
+for line in searchFile:
+  if FoundBitsPerCntl == False :
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "COMMON_STD_INTF_CNTL_WIDTH" in data[1]:
+      bitsPerCntl       = int(data[2])
+      FoundBitsPerCntl = True
+searchFile.close()
 
 searchFile = open("../../github/ece-cortical-MainResearch/3DSystem/PEArray/HDL/common/pe_array.vh", "r")
 for line in searchFile:
@@ -130,7 +141,23 @@ FoundDramChans = False
 FoundDramBanks = False
 FoundDramPages = False
 FoundDramWords = False
+FoundOperationWidth = False
+FoundOptOrderWidth = False
+FoundConsJumpPtrWidth = False
+FoundLocalStorageDescMemoryDepth = False
+FoundDescToCJRatio = False
+FoundCJWidth = False
+
+
+
 for line in searchFile:
+  if FoundOperationWidth== False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_INST_TYPE_WIDTH" in data[1]:
+      bitsPerOperation      = int(data[2])
+      FoundOperationWidth= True
+  #
   if FoundOptsPerInst == False:
     data = re.split(r'\s{1,}', line)
     # check define is in 2nd field
@@ -151,6 +178,38 @@ for line in searchFile:
     if "MGR_WU_OPT_VALUE_WIDTH" in data[1]:
       optionValueWidth      = int(data[2])
       FoundOptValueWidth = True
+  #
+  if FoundOptOrderWidth == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_INST_OPTION_ORDER_WIDTH" in data[1]:
+      optionOrderWidth      = int(data[2])
+      FoundOptOrderWidth = True
+  #
+
+  if FoundLocalStorageDescMemoryDepth == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH" in data[1]:
+      localStorageDescMemoryDepth = int(data[2])
+      FoundLocalStorageDescMemoryDepth = True
+
+  #*
+  if FoundDescToCJRatio == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_LOCAL_STORAGE_DESC_CONSJUMP_PER_DESC" in data[1]:
+      cjToDescRatio = int(data[2])
+      FoundDescToCJRatio = True
+  #
+  if FoundCJWidth == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_INST_CONS_JUMP_WIDTH" in data[1]:
+      cjWidth = int(data[2])
+      FoundCJWidth = True
+  #
+ 
   #
   if FoundDramChans == False:
     data = re.split(r'\s{1,}', line)
@@ -463,7 +522,7 @@ def main():
         """
 
         # Create individual instruction readmem files
-
+     
         pLine = ''
         mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
         outputFile = mgrDirStr + "manager_{0}_layer{1}_op_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
@@ -512,8 +571,34 @@ def main():
           oFile.write(pLine)
           oFile.close()
 
-        print '{0}:{1}:INFO: Created manager_{2}_{3} instruction readmem files'.format(__FILE__(), __LINE__(), mgrY, mgrX)
 
+
+        # Create an aggregate WU instruction memory
+     
+        pLine = ''
+        mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+        outputFile = mgrDirStr + "manager_{0}_layer{1}_instruction_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+        oFile = open(outputFile, 'w')
+
+        for c in range(len(icntl)):
+          instruction = ''
+          instruction = bin(int(str(icntl[c]),16)).split('b')[1].zfill(bitsPerCntl) + instruction
+          instruction = bin(int(str(dcntl[c]),16)).split('b')[1].zfill(bitsPerCntl) + instruction
+          instruction = bin(int(str(op[c]),16)).split('b')[1].zfill(bitsPerOperation) + instruction
+          for o in range(optionsPerInst):
+            instruction = bin(int(str(option[o][c]),16)).split('b')[1].zfill(optionWidth ) + instruction
+            instruction = bin(int(str(optionValue[o][c]),16)).split('b')[1].zfill(optionWidth ) + instruction
+
+          if len(instruction)%4 == 0:
+            lenInstInHex = len(instruction)/4
+          else :
+            lenInstInHex = len(instruction)/4 + 1
+          pLine = pLine + '@{0:>6} {1:>{2}} \n'.format(toHexPad(c, 6), toHexPad(int(instruction,2), lenInstInHex), lenInstInHex)
+        oFile.write(pLine)
+        oFile.close()
+
+
+        print '{0}:{1}:INFO: Created manager_{2}_{3} instruction readmem files'.format(__FILE__(), __LINE__(), mgrY, mgrX)
 
 
       #----------------------------------------------------------------------------------------------------
@@ -572,11 +657,12 @@ def main():
         wordBits = math.log(numOfDramWords,2)
         address = address + bin(int(addressFields[4], 16)).split('b')[1].zfill(int(wordBits))
         print address
+        numOfAddressBits = int(peBits) + int(channelBits) + int(bankBits) + int(pageBits) + int(wordBits)  + 2 # byte address
         # byte address
         address = address + '00'
         print address
 
-        print 'number of address bits {0} {1} {2} {3} {4}'.format(int(peBits), int(channelBits), int(bankBits), int(pageBits), int(wordBits))
+        print 'number of address bits {0} {1} {2} {3} {4} = {5}'.format(int(peBits), int(channelBits), int(bankBits), int(pageBits), int(wordBits), numOfAddressBits)
         print 'number of address bits {0} {1} {2} {3} {4} {5}'.format(bin(int(addressFields[0], 16)).split('b')[1].zfill(int(peBits)), bin(int(addressFields[1], 16)).split('b')[1].zfill(int(channelBits)), bin(int(addressFields[2], 16)).split('b')[1].zfill(int(bankBits)), bin(int(addressFields[3], 16)).split('b')[1].zfill(int(pageBits)), bin(int(addressFields[4], 16)).split('b')[1].zfill(int(wordBits)), '00')
         print re.findall('....', address)
 
@@ -664,8 +750,54 @@ def main():
       oFile.write(pLine)
       oFile.close()
         
+      # Create aggregate storage desciptor memory
+  
+      # Aggregate Address/AccessOrder,ConsJump_ptr memory
+      pLine = ''
+      mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+      outputFile = mgrDirStr + "manager_{0}_layer{1}_storageDescriptor_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+      oFile = open(outputFile, 'w')
+
+      consJumpPtrWidth = int(math.log(localStorageDescMemoryDepth*cjToDescRatio*2,2))
+      for c in range(len(sdAddress)):
+        instruction = ''
+        instruction = bin(int(memAddress[c],16)).split('b')[1].zfill(numOfAddressBits) + instruction
+        print 'Instruction : {0}'.format(instruction)
+        instruction = bin(int(accessOrder[c],16)).split('b')[1].zfill(optionOrderWidth) + instruction
+        print 'Instruction : {0}'.format(instruction)
+        instruction = bin(int(consJumpPtr[c],16)).split('b')[1].zfill(consJumpPtrWidth ) + instruction
+        print 'Instruction : {0}'.format(instruction)
+        if len(instruction)%4 == 0:
+          lenInstInHex = len(instruction)/4
+        else :
+          lenInstInHex = len(instruction)/4 + 1
+        pLine = pLine + '@{0:>6} {1:>{2}} \n'.format(toHexPad(c, 6), toHexPad(int(instruction,2), lenInstInHex), lenInstInHex)
         
+      oFile.write(pLine)
+      oFile.close()
         
+      # Aggregate cntl/ConsJump memory
+      pLine = ''
+      mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
+      outputFile = mgrDirStr + "manager_{0}_layer{1}_storageDescriptorConsJump_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
+      oFile = open(outputFile, 'w')
+      for c in range(len(cjCntl)):
+        instruction = ''
+        instruction = bin(int(consJumpMemory[c],16)).split('b')[1].zfill(cjWidth ) + instruction
+        print 'Instruction : {0}'.format(instruction)
+        instruction = bin(int(str(cjCntl[c]),16)).split('b')[1].zfill(bitsPerCntl) + instruction
+        print 'Instruction : {0}'.format(instruction)
+        if len(instruction)%4 == 0:
+          lenInstInHex = len(instruction)/4
+        else :
+          lenInstInHex = len(instruction)/4 + 1
+        pLine = pLine + '@{0:>6} {1:>{2}} \n'.format(toHexPad(c, 6), toHexPad(int(instruction,2), lenInstInHex), lenInstInHex)
+        
+      oFile.write(pLine)
+      oFile.close()
+        
+
+
   #------------------------------------------------------------------------------------------------------------------------
   # End main()
   #------------------------------------------------------------------------------------------------------------------------
