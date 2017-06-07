@@ -1,5 +1,5 @@
 
-MODNAME = wu_decode
+MODNAME = wu_memory
 RTL_DIR = ../code
 GATE_DIR = ../synth
 

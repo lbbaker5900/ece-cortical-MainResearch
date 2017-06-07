@@ -225,7 +225,7 @@ module stu_cntl (
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`STU_CNTL_RX_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`STU_CNTL_RX_FIFO_THRESHOLD ),
                        .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`STACK_UP_INTF_TYPE_WIDTH+`STACK_UP_INTF_DATA_WIDTH+`STACK_UP_INTF_OOB_DATA_WIDTH )
-                        ) stu_rx_fifo (
+                        ) gfifo (
                                           // Status
                                          .empty            ( empty                                                ),
                                          .almost_full      ( almost_full                                          ),

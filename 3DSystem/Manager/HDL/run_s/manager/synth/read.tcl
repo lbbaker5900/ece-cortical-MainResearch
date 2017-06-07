@@ -134,24 +134,24 @@ elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=16384,GENERIC_MEM_R
 #
 # read_sverilog  $RTL_DIR/mgr_noc_cntl.v
 # read_sverilog  $RTL_DIR/mrc_cntl.v
-# read_sverilog $RTL_DIR/rdp_cntl.v
+# read_sverilog  $RTL_DIR/rdp_cntl.v
 # read_sverilog  $RTL_DIR/oob_downstream_cntl.v
+# read_sverilog  $RTL_DIR/wu_decode.v
+# read_sverilog  $RTL_DIR/stu_cntl.v
 
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
 
-read_sverilog  $RTL_DIR/wu_decode.v
 
+read_sverilog  $RTL_DIR/wu_memory.v
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
 #
-# read_sverilog  $RTL_DIR/wu_memory.v
 # read_sverilog  $RTL_DIR/sd_memory.v
 # read_sverilog  $RTL_DIR/wu_fetch.v
-# read_sverilog  $RTL_DIR/stu_cntl.v
 # read_sverilog  $RTL_DIR/manager.v
 
 

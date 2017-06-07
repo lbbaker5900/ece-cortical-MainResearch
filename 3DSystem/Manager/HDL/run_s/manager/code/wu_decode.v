@@ -290,7 +290,7 @@ module wu_decode (
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`WU_DEC_INSTR_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`WU_DEC_INSTR_FIFO_THRESHOLD ),
                        .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`COMMON_STD_INTF_CNTL_WIDTH+`MGR_INST_TYPE_WIDTH+`MGR_WU_OPT_PER_INST*`MGR_WU_OPT_TYPE_WIDTH+`MGR_WU_OPT_PER_INST*`MGR_WU_OPT_VALUE_WIDTH )
-                        ) instr_fifo (
+                        ) gfifo (
                                           // Status
                                          .empty            ( empty                                                ),
                                          .almost_full      ( almost_full                                          ),

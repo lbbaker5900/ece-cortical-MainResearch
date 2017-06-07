@@ -1725,7 +1725,7 @@ module mrc_cntl (
 
   assign  consJump_to_strm_fsm_fifo[0].pipe_read       = ((mrc_cntl_stream_state == `MRC_CNTL_STRM_LOAD_FIRST_CONS_COUNT) & ~consJump_to_strm_fsm_fifo[0].pipe_eom  ) |  // leave consJump fifo output alone so we keep valid and eom 
                                                          ((mrc_cntl_stream_state == `MRC_CNTL_STRM_LOAD_JUMP_VALUE      ) &  consJump_to_strm_fsm_fifo[0].pipe_valid) |
-                                                         ((mrc_cntl_stream_state == `MRC_CNTL_STRM_COUNT_CONS           ) &  consJump_to_strm_fsm_fifo[0].pipe_valid  & (consequtive_counter == 'd0)) ;
+                                                         ((mrc_cntl_stream_state == `MRC_CNTL_STRM_COUNT_CONS           ) &  consJump_to_strm_fsm_fifo[0].pipe_valid  & ((consequtive_counter == 'd0) | (consequtive_counter[`MRC_CNTL_CONS_COUNTER_MSB]  == 1'b1))) ;
 
 
   assign completed_streaming = (mrc_cntl_stream_state == `MRC_CNTL_STRM_COMPLETE) ;
@@ -1784,10 +1784,10 @@ module mrc_cntl (
   always @(*) 
     begin
       get_next_line = (strm_inc_channel != strm_inc_channel_e1) |
-                      (strm_inc_bank    != strm_inc_bank_e1) |
-                      (strm_inc_page    != strm_inc_page_e1) |
+                      (strm_inc_bank    != strm_inc_bank_e1   ) |
+                      (strm_inc_page    != strm_inc_page_e1   ) |
                       `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-                        (strm_inc_line != strm_inc_line_e1) ;
+                        (strm_inc_line != strm_inc_line_e1    ) ;
                       `else
                         1'b0 ;
                       `endif
@@ -1818,11 +1818,11 @@ module mrc_cntl (
             // reorder fields for incrementing
             if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
               begin
-                strm_inc_address_e1 =  {strm_inc_page_e1, strm_inc_bank_e1, strm_inc_channel_e1, strm_inc_word_e1};
+                strm_inc_address_e1 =  {strm_inc_page_e1, strm_inc_bank_e1, strm_inc_channel_e1, strm_inc_word_e1, 2'b00};
               end
             else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
               begin
-                strm_inc_address_e1 =  {strm_inc_page_e1, strm_inc_bank_e1, strm_inc_channel_e1, strm_inc_word_e1};
+                strm_inc_address_e1 =  {strm_inc_page_e1, strm_inc_bank_e1, strm_inc_channel_e1, strm_inc_word_e1, 2'b00};
               end
           end
 

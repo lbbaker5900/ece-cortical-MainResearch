@@ -10,20 +10,20 @@ set clkname clk
 # set modname  mgr_noc_cntl
 # set modname  rdp_cntl
 # set modname  oob_downstream_cntl
+# set modname  wu_decode
+# set modname  stu_cntl
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
 
-set modname  wu_decode
+set modname  wu_memory
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
 #
-# set modname  wu_memory
 # set modname  sd_memory
 # set modname  wu_fetch
-# set modname  stu_cntl
 # set modname  manager
 # 
 

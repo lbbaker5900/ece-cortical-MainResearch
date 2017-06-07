@@ -363,6 +363,56 @@ if ((GENERIC_MEM_DEPTH == 256) && (GENERIC_MEM_DATA_WIDTH == 8) && (GENERIC_MEM_
 
 //------------------------------------------------------------------------------------------------------------------------
 //
+if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 57) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+  begin
+    asdrlnpky2p16x57cm1sw0         mem2prf16x57(
+                   // Output
+                   .QB          ( int_portB_read_data_dly               ),
+                   // Read Port
+                   .CLKB        ( clk                                   ),
+                   .MEB         ( portB_enable_dly                      ),
+                   .ADRB        ( portB_address_dly                     ),
+                   // Write Port
+                   .CLKA        ( clk                                   ),
+                   .WEA         ( portA_write_dly                       ),
+                   .MEA         ( portA_enable_dly                      ),
+                   .ADRA        ( portA_address_dly                     ),
+                   .DA          ( portA_write_data_dly                  ),
+                   // Test
+                   .TEST1A      ( 1'b0     ), 
+                   .WMENA       ( 1'b0     ), // FIXME
+                   .TEST1B      ( 1'b0     ), 
+                   .RMB         ( 4'd0     ), 
+                   .RMEB        ( 1'b0     ));
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
+if ((GENERIC_MEM_DEPTH == 32) && (GENERIC_MEM_DATA_WIDTH == 150) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+  begin
+    asdrlnpky2p32x150cm1sw0         mem2prf32x150(
+                   // Output
+                   .QB          ( int_portB_read_data_dly               ),
+                   // Read Port
+                   .CLKB        ( clk                                   ),
+                   .MEB         ( portB_enable_dly                      ),
+                   .ADRB        ( portB_address_dly                     ),
+                   // Write Port
+                   .CLKA        ( clk                                   ),
+                   .WEA         ( portA_write_dly                       ),
+                   .MEA         ( portA_enable_dly                      ),
+                   .ADRA        ( portA_address_dly                     ),
+                   .DA          ( portA_write_data_dly                  ),
+                   // Test
+                   .TEST1A      ( 1'b0     ), 
+                   .WMENA       ( 1'b0     ), // FIXME
+                   .TEST1B      ( 1'b0     ), 
+                   .RMB         ( 4'd0     ), 
+                   .RMEB        ( 1'b0     ));
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
 if ((GENERIC_MEM_DEPTH == 32) && (GENERIC_MEM_DATA_WIDTH == 138) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
   begin
     asdrlnpky2p32x138cm1sw0         mem2prf32x138(
@@ -640,6 +690,25 @@ if ((GENERIC_MEM_DEPTH == 1024) && (GENERIC_MEM_DATA_WIDTH == 50) && (GENERIC_ME
                    .TEST1B      ( 1'b0 ),
                    .RMEB        ( 1'b0 ),
                    .RMB         ( 4'd0 ));
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
+if ((GENERIC_MEM_DEPTH == 4096) && (GENERIC_MEM_DATA_WIDTH == 57) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 1))
+  begin
+    sasslnpky1p4096x57cm8sw0ltlc1 mem1p4096x57( 
+                   // Port A
+                   .CLK        ( clk                              ),
+                   .WE         ( portA_write_dly                  ),
+                   .ME         ( portA_enable_dly                 ),
+                   .ADR        ( portA_address_dly                ),
+                   .D          ( portA_write_data_dly             ),
+                   .Q          ( int_portA_read_data_dly          ),
+                
+                
+                   .TEST1      ( 1'b0 ),
+                   .RME        ( 1'b0 ),
+                   .RM         ( 4'd0 ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------

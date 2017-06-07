@@ -78,8 +78,8 @@ module wu_memory (
     output [`MGR_INST_TYPE_RANGE           ]    wum__wud__op                   ;  // NOP, OP, MR, MW
 
     // WU Instruction option fields
-    output [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type    [`MGR_WU_OPT_PER_INST ] ;  // 
-    output [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value   [`MGR_WU_OPT_PER_INST ] ;  // 
+    output [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
+    output [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
 
 
     //----------------------------------------------------------------------------------------------------
@@ -109,7 +109,6 @@ module wu_memory (
 
     reg  [`MGR_WU_ADDRESS_RANGE          ]    wuf__wum__addr_d1                ;
     reg                                       wuf__wum__read_d1                ;
-
     //----------------------------------------------------------------------------------------------------
     // Register inputs and outputs
 
@@ -145,11 +144,55 @@ module wu_memory (
         */
       end
 
-    assign valid_e1 = wuf__wum__read_d1 ;
+    wire    memory_read                      ;
+    assign  memory_read = wuf__wum__read_d1  ;
+
+    reg     memory_valid                     ;
+    always @(posedge clk) 
+      begin
+        memory_valid           <=  memory_read   ;
+      end
+    assign valid_e1 = memory_valid ;
 
     //----------------------------------------------------------------------------------------------------
     // Memories 
 
+  genvar gvi;
+  generate
+    for (gvi=0; gvi<1 ; gvi=gvi+1) 
+      begin: instruction_mem
+
+        generic_1port_memory #(.GENERIC_MEM_DEPTH          (`MGR_INSTRUCTION_MEMORY_DEPTH              ),
+                               .GENERIC_MEM_REGISTERED_OUT (0                                          ),
+                               .GENERIC_MEM_DATA_WIDTH     (`MGR_INSTRUCTION_MEMORY_AGGREGATE_MEM_WIDTH)
+                        ) gmemory ( 
+                        
+                        //---------------------------------------------------------------
+                        // Port 
+                        .portA_address       ( wuf__wum__addr_d1),
+                        .portA_write_data    ( {`MGR_INSTRUCTION_MEMORY_AGGREGATE_MEM_WIDTH {1'b0}} ),
+                        .portA_read_data     ( {option_value_e1[2], option_type_e1[2], option_value_e1[1], option_type_e1[1], option_value_e1[0], option_type_e1[0], op_e1, dcntl_e1, icntl_e1} ),
+                        .portA_enable        ( wuf__wum__read_d1                ), 
+                        .portA_write         ( 1'b0                             ),
+                        
+                        //---------------------------------------------------------------
+                        // General
+                        .reset_poweron       ( reset_poweron             ),
+                        .clk                 ( clk                       )
+                        ) ;
+  // Note: parameters must be fixed, so have to load directly
+  //defparam gmemory.GENERIC_MEM_INIT_FILE   =    $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId);
+        `ifndef SYNTHESIS
+          initial
+            begin
+              @(negedge reset_poweron);
+              $readmemh($sformatf("./inputFiles/manager_%0d_layer1_instruction_readmem.dat", sys__mgr__mgrId), gmemory.mem);
+            end
+        `endif
+      end
+  endgenerate
+
+/*
     reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    icntl                                        [`MGR_INSTRUCTION_MEMORY_RANGE ] ;  // instruction delineator
     reg    [`MGR_INST_TYPE_RANGE           ]    op                                           [`MGR_INSTRUCTION_MEMORY_RANGE ] ;  // 
     // WU Instruction option fields
@@ -177,17 +220,19 @@ module wu_memory (
 
     always @(*) 
       begin 
-        #0.3   icntl_e1            =  (wuf__wum__read_d1) ? icntl [wuf__wum__addr_d1] : 'd0 ;
-        #0.3   op_e1               =  (wuf__wum__read_d1) ? op    [wuf__wum__addr_d1] : 'd0 ;
+        #0.3   icntl_e1            =  (memory_read) ? icntl [wuf__wum__addr_d1] : 'd0 ;
+        #0.3   op_e1               =  (memory_read) ? op    [wuf__wum__addr_d1] : 'd0 ;
                                 
         for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
           begin: option_mem
-            #0.3   option_type_e1  [opt] =  (wuf__wum__read_d1) ? option_type    [opt] [wuf__wum__addr_d1] : 'd0 ;
-            #0.3   option_value_e1 [opt] =  (wuf__wum__read_d1) ? option_value   [opt] [wuf__wum__addr_d1] : 'd0 ;
+            #0.3   option_type_e1  [opt] =  (memory_read) ? option_type    [opt] [wuf__wum__addr_d1] : 'd0 ;
+            #0.3   option_value_e1 [opt] =  (memory_read) ? option_value   [opt] [wuf__wum__addr_d1] : 'd0 ;
           end
-        #0.3   dcntl_e1            =  (wuf__wum__read_d1) ? dcntl              [wuf__wum__addr_d1] : 'd0 ;
+        #0.3   dcntl_e1            =  (memory_read) ? dcntl              [wuf__wum__addr_d1] : 'd0 ;
 
       end
+
+*/
 
 endmodule
 
