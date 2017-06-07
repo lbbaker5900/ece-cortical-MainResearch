@@ -51,8 +51,8 @@
 
 `define MRC_CNTL_STRM_LOAD_FIRST_CONS_COUNT   8'b0000_0010
 `define MRC_CNTL_STRM_LOAD_JUMP_VALUE         8'b0000_0100
-`define MRC_CNTL_STRM_COUNT_CONS              8'b0000_1000
-`define MRC_CNTL_STRM_JUMP_VALUE_WAIT         8'b0001_0000
+//`define MRC_CNTL_STRM_CALC_NEXT_START_ADDR    8'b0000_1000
+`define MRC_CNTL_STRM_COUNT_CONS              8'b0001_0000
 
 `define MRC_CNTL_STRM_COMPLETE                8'b0100_0000
 
@@ -130,7 +130,7 @@
 //--------------------------------------------------------
 // From MMC
 
-`define MRC_CNTL_FROM_MMC_FIFO_DEPTH          64
+`define MRC_CNTL_FROM_MMC_FIFO_DEPTH          32
 `define MRC_CNTL_FROM_MMC_FIFO_DEPTH_MSB      (`MRC_CNTL_FROM_MMC_FIFO_DEPTH) -1
 `define MRC_CNTL_FROM_MMC_FIFO_DEPTH_LSB      0
 `define MRC_CNTL_FROM_MMC_FIFO_DEPTH_SIZE     (`MRC_CNTL_FROM_MMC_FIFO_DEPTH_MSB - `MRC_CNTL_FROM_MMC_FIFO_DEPTH_LSB +1)
@@ -203,7 +203,7 @@
 `define MRC_CNTL_CJ_TO_STRM_FIFO_ALMOST_FULL_THRESHOLD 4
 
 //------------------------------------------------------------------------------------------------------------
-// Need to pipeline more than 32 PO's
+// 
 `define MRC_CNTL_ADDR_TO_STRM_FIFO_DEPTH         64
 `define MRC_CNTL_ADDR_TO_STRM_FIFO_DEPTH_MSB      (`MRC_CNTL_ADDR_TO_STRM_FIFO_DEPTH) -1
 `define MRC_CNTL_ADDR_TO_STRM_FIFO_DEPTH_LSB      0

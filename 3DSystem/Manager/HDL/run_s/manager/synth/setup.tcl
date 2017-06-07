@@ -6,13 +6,16 @@ set clkname clk
 #------------------------------------------------------------------------------------------------------------------------
 # Done
 #
+# set modname  mrc_cntl
+# set modname  mgr_noc_cntl
 # set modname  rdp_cntl
 # set modname  oob_downstream_cntl
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
-set modname  mrc_cntl
+
+set modname  wu_decode
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
@@ -20,10 +23,8 @@ set modname  mrc_cntl
 # set modname  wu_memory
 # set modname  sd_memory
 # set modname  wu_fetch
-# set modname  wu_decode
 # set modname  stu_cntl
 # set modname  manager
-# set modname  mrc_cntl
 # 
 
 # set variable "RTL_DIR" to the HDL directory w.r.t synthesis directory

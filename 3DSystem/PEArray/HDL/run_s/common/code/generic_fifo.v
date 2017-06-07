@@ -72,9 +72,9 @@ module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
 //  The necessary delays and SYNTHESIS modes are now handled in the generic
 //  memory
 //  `ifdef SYNTHESIS
-    generic_memory #(.GENERIC_MEM_DEPTH          (GENERIC_FIFO_DEPTH     ),
-                     .GENERIC_MEM_REGISTERED_OUT (0                      ),
-                     .GENERIC_MEM_DATA_WIDTH     (GENERIC_FIFO_DATA_WIDTH)
+    generic_2port_memory #(.GENERIC_MEM_DEPTH          (GENERIC_FIFO_DEPTH     ),
+                           .GENERIC_MEM_REGISTERED_OUT (0                      ),
+                           .GENERIC_MEM_DATA_WIDTH     (GENERIC_FIFO_DATA_WIDTH)
                     ) fifo_data_mem ( 
                     //---------------------------------------------------------------
                     // Port A 

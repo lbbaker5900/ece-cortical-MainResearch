@@ -404,6 +404,11 @@
 //****************************************************************************************************
   
 
+`define MGR_DRAM_NUM_CHANNELS_VECTOR_WIDTH                       `MGR_DRAM_NUM_CHANNELS
+`define MGR_DRAM_NUM_CHANNELS_VECTOR_MSB                         `MGR_DRAM_NUM_CHANNELS_VECTOR_WIDTH-1
+`define MGR_DRAM_NUM_CHANNELS_VECTOR_LSB                         0
+`define MGR_DRAM_NUM_CHANNELS_VECTOR_SIZE                        (`MGR_DRAM_NUM_CHANNELS_VECTOR_MSB - `MGR_DRAM_NUM_CHANNELS_VECTOR_LSB +1)
+`define MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE                        `MGR_DRAM_NUM_CHANNELS_VECTOR_MSB : `MGR_DRAM_NUM_CHANNELS_VECTOR_LSB
 
 
 //---------------------------------------------------------------------------------------------------------------------

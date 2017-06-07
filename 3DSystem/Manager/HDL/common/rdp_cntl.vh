@@ -27,8 +27,8 @@
 `define RDP_CNTL_MW_PTR_FIFO_DEPTH          70
 `define RDP_CNTL_MW_PTR_FIFO_THRESHOLD      4
 
-`define RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_DEPTH          4
-`define RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_THRESHOLD      2
+`define RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_DEPTH          8
+`define RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_THRESHOLD      4
 
 
 //--------------------------------------------------------

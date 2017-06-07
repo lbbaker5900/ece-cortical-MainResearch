@@ -37,7 +37,7 @@
 # set target_library cp65npkldst_ss0p9v125c.db
 # set target_library NangateOpenCellLibrary_PDKv1_2_v2008_10_slow_nldm.db
 # set link_library   [concat  $target_library $synthetic_library $fifo_library ]
- set link_library   [concat  "*" $target_library $synthetic_library $mem_lib  ]
+ set link_library   [concat  "*" $target_library $synthetic_library $mem_lib $regf_lib  ]
 
 #---------------------------------------------------------
 # Specify a 5000ps clock period with 50% duty cycle     

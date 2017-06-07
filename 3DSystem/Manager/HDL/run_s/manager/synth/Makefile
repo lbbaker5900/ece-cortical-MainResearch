@@ -1,5 +1,5 @@
 
-MODNAME = mgr_noc_cntl
+MODNAME = wu_decode
 RTL_DIR = ../code
 GATE_DIR = ../synth
 
