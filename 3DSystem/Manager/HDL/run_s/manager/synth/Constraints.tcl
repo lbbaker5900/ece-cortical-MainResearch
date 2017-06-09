@@ -127,11 +127,11 @@ set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
 # set_dont_touch [get_cell to_stOp_fifo[*].mem*]
 
 # readpath memories
-set_dont_touch [get_cell readpath/sch_data_buffer_mem/*mem*]
-set_dont_touch [get_cell readpath/free_BufId_fifo[0].gfifo/fifo_data_mem/*mem*]
+#set_dont_touch [get_cell readpath/sch_data_buffer_mem/*mem*]
+#set_dont_touch [get_cell readpath/free_BufId_fifo[0].gfifo/fifo_data_mem/*mem*]
 
-#set_dont_touch [get_cell *.gpfifo/gfifo/fifo_data_mem/*mem*]
-#set_dont_touch [get_cell *.gfifo/fifo_data_mem/*mem*]
+set_dont_touch [get_cell *.gpfifo/gfifo/fifo_data_mem/*mem*]
+set_dont_touch [get_cell *.gfifo/fifo_data_mem/*mem*]
 set_dont_touch [get_cell *.gmemory/*mem*]
 
 set_dont_touch [get_cell from_system_fifo[0].gpfifo/gfifo/fifo_data_mem/*mem*]

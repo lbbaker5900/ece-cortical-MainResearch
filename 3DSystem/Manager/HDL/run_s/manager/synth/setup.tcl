@@ -7,17 +7,17 @@ set clkname clk
 # Done
 #
 # set modname  mrc_cntl
-# set modname  mgr_noc_cntl
 # set modname  rdp_cntl
 # set modname  oob_downstream_cntl
 # set modname  wu_decode
 # set modname  stu_cntl
+# set modname  wu_memory
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
 
-set modname  wu_memory
+set modname  mgr_noc_cntl
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD

@@ -11,7 +11,7 @@ set_structure true
 
 #compile -map_effort medium -boundary_optimization -auto_ungroup area
 compile -map_effort medium
-#compile_ultra
+compile_ultra
 #report_fsm
 
 #---------------------------------------------------------
@@ -48,14 +48,14 @@ translate
 #
 set_fix_hold $clkname
 
-#compile_ultra  -incremental -only_design_rule
+compile_ultra  -incremental -only_design_rule
 
 report_timing \
 	-delay min \
 	-nworst 30 \
-	> ${type}_tming_ff_min.rpt
+	> ${modname}_${type}_tming_ff_min.rpt
 
-report_timing  > ${type}_timing_ff_max.rpt
+report_timing  > ${modname}_${type}_timing_ff_max.rpt
 
 write_sdf ${modname}_ff.sdf
 
@@ -74,9 +74,9 @@ translate
 
 report_timing \
 	-delay min \
-	> ${type}_timing_ss_min.rpt
+	> ${modname}_${type}_timing_ss_min.rpt
 
-report_timing > ${type}_timing_ss_max.rpt
+report_timing > ${modname}_${type}_timing_ss_max.rpt
 
 write_sdf ${modname}_ss.sdf
 
@@ -96,11 +96,11 @@ translate
 #
 #	write out area
 #
-report_cell > ${type}_cell_report_final.rpt
+report_cell > ${modname}_${type}_cell_report_final.rpt
 
 #
 #	write out gate level netlist in verilog
-change_names -rules verilog -hierarchy > fixed_names_init
+change_names -rules verilog -hierarchy > ${modname}_${type}_fixed_names_init
 
 write -hierarchy -f verilog -o ${modname}_final.v
 
@@ -108,6 +108,10 @@ write_sdf ${modname}_tt.sdf
 
 write_sdc ${modname}_tt.sdc
 
+
+report_area > ${modname}_${type}_area_netlist.rpt
+
+report_power > ${modname}_${type}_power_netlist.rpt
 
 
 

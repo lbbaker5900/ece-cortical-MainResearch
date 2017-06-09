@@ -15,11 +15,12 @@ set path_fg065_plib "/home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a
 set path_fg065_slib "/home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/liberty/symbol"
 
 
-set path_this "/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/Manager/HDL/run_s/manager/synth"
+set path_this "/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/Manager/HDL/run_s/manager/pr"
+set path_synth "/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/Manager/HDL/run_s/manager/synth"
 set path_common "../../../../HDL/common"
 
 set search_path "$MGR_COM_DIR $PE_COM_DIR $PE_RTL_COM_DIR $SYS_RTL_COM_DIR $search_path";
-set search_path "$path_fg065_ccs $path_fg065_plib $path_fg065_slib $path_common $path_this $search_path"
+set search_path "$path_fg065_ccs $path_fg065_plib $path_fg065_slib $path_common $path_this $path_synth $search_path"
 
 #set search_path [concat  $search_path [list [format "%s%s"  $synopsys_root "/libraries/syn"]]]
 #set search_path [concat  $search_path [list "." [format "%s%s"  $synopsys_root "/dw/sim_ver"]]]
@@ -60,6 +61,13 @@ foreach libFile $libList {
 set link_library   [concat  $target_library $synthetic_library $mem_lib $regf_lib *]
 
 set verilogout_no_tri "true"
+
+set_tlu_plus_files \
+	-max_tluplus "/home/GF065/MOSIS/chrt65lpe_V1500CP_DK010_IC61_Rev8/Synopsys/cmos10lpe_6_00_01_00_TLUplus_rev2/cmos10lpe_SigCmax_6_00_01_00_LB_effective_wFILL.TLUplus" \
+	-min_tluplus "/home/GF065/MOSIS/chrt65lpe_V1500CP_DK010_IC61_Rev8/Synopsys/cmos10lpe_6_00_01_00_TLUplus_rev2/cmos10lpe_SigCmin_6_00_01_00_LB_effective_wFILL.TLUplus" \
+	-tech2itf_map "/home/GF065/MOSIS/chrt65lpe_V1500CP_DK010_IC61_Rev8/Synopsys/cmos10lpe_6_00_01_00_TLUplus_rev2/cmos10lpe_6_00_01_mdb2itf.map"
+
+
 
 alias h history
 

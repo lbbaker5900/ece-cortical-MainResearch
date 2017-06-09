@@ -1,7 +1,7 @@
 source setup.tcl
 set begintime [clock seconds]
-open_mw_lib ./work
-open_mw_cel ${modname}_placed
+open_mw_lib ./work/${modname}
+open_mw_cel ${modname}
 
  
 

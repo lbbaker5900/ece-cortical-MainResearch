@@ -1,5 +1,5 @@
 
-MODNAME = wu_memory
+MODNAME = mgr_noc_cntl
 RTL_DIR = ../code
 GATE_DIR = ../synth
 

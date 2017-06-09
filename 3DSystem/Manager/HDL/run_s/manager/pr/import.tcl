@@ -1,6 +1,30 @@
 
+#----------------------------------------------------------------------------------------------------
+# pr_tut
+#----------------------------------------------------------------------------------------------------
+####source  setup.tcl
+####
+####create_mw_lib -technology ${SAED32_ROOT}/tech/milkyway/saed32nm_1p9m_mw.tf \
+####    -mw_reference_library \
+####    ${SAED32_ROOT}/lib/stdcell_lvt/milkyway/saed32nm_lvt_1p9m \
+####    -hier_separator {/} \
+####    -bus_naming_style {[%d]} \
+####    -open ./work
+####
+####import_designs -format verilog \
+####    -top ${modname} \
+####    -cel ${modname}_init ${GATE_DIR}/${modname}_final.v
+####
+####source  constraints.tcl
+#----------------------------------------------------------------------------------------------------
+# end pr_tut
+#----------------------------------------------------------------------------------------------------
 
-source  setup.tcl
+
+#----------------------------------------------------------------------------------------------------
+# Josh
+#----------------------------------------------------------------------------------------------------
+####source  setup.tcl
 
 #create_mw_lib \
 #               -technology /local/home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/milkyway/tf/cp65npksdst_m07f0f1.tf \
@@ -25,11 +49,17 @@ import_designs -format verilog \
 	-cel ${modname} \
 	${GATE_DIR}/${modname}_final.v
 
- read_sdc ${GATE_DIR}/${modname}_tt.sdc
+read_sdc ${GATE_DIR}/${modname}_tt.sdc
  
-save_mw_cel
-close_mw_cel
-close_mw_lib
+save_mw_cel -as ${modname}
 
-exit
+####save_mw_cel
+####close_mw_cel
+####close_mw_lib
+
+####exit
+#----------------------------------------------------------------------------------------------------
+# end Josh
+#----------------------------------------------------------------------------------------------------
+
 

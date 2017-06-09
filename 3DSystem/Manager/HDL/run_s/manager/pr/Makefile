@@ -3,10 +3,20 @@ MODNAME=wu_memory
 
 all: route
 
+crDWlib = .crDWlib
+#.PHONY: crDWlib
+crDWlib: $(crDWlib)
+$(crDWlib): ../synth/dw_memories/compout/views/*/*.plef
+	tcsh -c "add synopsys2015 ; \
+	/bin/rm -rf ../pr/dw_memories ; \
+	icc_shell -f run_create_mw_lib.tcl |& tee run_create_mw_lib.log ; \
+	Milkyway -tcl -galaxy -nogui -file run_create_dw_lib.tcl |& tee run_create_dw_lib.log ; \
+	touch $(crDWlib)"
+
 INIT = .init
 .PHONY: init
 init: $(INIT)
-$(INIT): constraints.tcl run_init.tcl ../v/src/gate/$(MODNAME)_final.v
+$(INIT): $(crDWlib) constraints.tcl run_init.tcl ../synth/$(MODNAME)_final.v 
 	tcsh -c "add synopsys2015 ; \
 	icc_shell -f run_init.tcl |& tee run_init.log ; \
 	touch $(INIT)"
@@ -14,37 +24,54 @@ $(INIT): constraints.tcl run_init.tcl ../v/src/gate/$(MODNAME)_final.v
 PLACE = .place
 .PHONY: place
 place: $(PLACE)
-$(PLACE): $(INIT)
+$(PLACE): $(INIT) run_place.tcl
 	tcsh -c "add synopsys2015 ; \
 	icc_shell -f run_place.tcl |& tee run_place.log ; \
 	touch $(PLACE)"
 
+PP = .pp
+.PHONY: pp
+pp: $(PP)
+$(PP): $(PLACE) run_pp.tcl
+	tcsh -c "add synopsys2015 ; \
+	icc_shell -f run_pp.tcl |& tee run_pp.log ; \
+	touch $(PP)"
+
 CTS = .cts
 .PHONY: cts
 cts: $(CTS)
-$(CTS): $(PLACE)
+$(CTS): $(PP) run_cts.tcl
 	tcsh -c "add synopsys2015 ; \
 	icc_shell -f run_cts.tcl |& tee run_cts.log ; \
 	touch $(CTS)"
 
+FILL = .fill
+.PHONY: fill
+fill: $(FILL)
+$(FILL): $(CTS) run_fill.tcl
+	tcsh -c "add synopsys2015 ; \
+	icc_shell -f run_fill.tcl |& tee run_fill.log ; \
+	touch $(FILL)"
+
 ROUTE = .route
 .PHONY: route
 route: $(ROUTE)
-$(ROUTE): $(CTS)
+$(ROUTE): $(FILL) run_route.tcl
 	tcsh -c "add synopsys2015 ; \
 	icc_shell -f run_route.tcl |& tee run_route.log ; \
 	touch $(ROUTE)"
 
-
-crDWlib = .crDWlib
-#.PHONY: crDWlib
-crDWlib: $(crDWlib)
-$(crDWlib): ../synth/$(MODNAME)_final.v
+SO = .so
+.PHONY: so
+so: $(SO)
+$(SO): $(ROUTE) run_so.tcl
 	tcsh -c "add synopsys2015 ; \
-	/bin/rm -rf ../pr/dw_memories ; \
-	icc_shell -f run_create_mw_lib.tcl |& tee run_create_mw_lib.log ; \
-	Milkyway -tcl -galaxy -nogui -file run_create_dw_lib.tcl |& tee run_create_dw_lib.log ; \
-	touch $(crDWlib)"
+	icc_shell -f run_so.tcl |& tee run_so.log ; \
+	touch $(SO)"
+
+
+#----------------------------------------------------------------------------------------------------
+## DO NOT USE
 
 IMPORT = .import
 .PHONY: import
@@ -65,6 +92,7 @@ $(rest): import.tcl setup.tcl ../synth/$(MODNAME)_final.v $(crDWlib) $(IMPORT)
 	icc_shell -f rest.tcl |& tee rest.log ; \
 	touch $(rest)"
 
+#----------------------------------------------------------------------------------------------------
 
 gui:
 	tcsh -c "add synopsys2015 ; \
@@ -83,7 +111,7 @@ clean:
 	-rm -rf *.min
 	-rm -rf *.max
 	-rm -rf legalizer_debug_plots
-	-rm -f .init .place .cts .route .crDWlib
+	-rm -f .init .place .cts .route .crDWlib .pp .so .fill
 	-rm -f *.log* *.tcl.*
 	-rm -rf Nangate*
 	-rm -f skipped_contactCode_vias.sum
