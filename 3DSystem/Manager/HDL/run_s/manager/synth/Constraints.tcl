@@ -88,8 +88,10 @@
 #---------------------------------------------------------
 
 # set DR_CELL_NAME DFFR_X1
- set DR_CELL_NAME SEL_FDPRBQ_D_1
- set DR_CELL_PIN  Q
+set DR_CELL_NAME	SEN_FDPQ_1
+set DR_CELL_PIN	Q
+# set DR_CELL_NAME SEL_FDPRBQ_D_1
+# set DR_CELL_PIN  Q
 
  set_driving_cell -lib_cell "$DR_CELL_NAME" -pin "$DR_CELL_PIN" [remove_from_collection [all_inputs] $clkname]
 
@@ -98,8 +100,9 @@
 # 4 D-flip-flop (D-inputs) and                         
 # 0.013 units of wiring capacitance                     
 #---------------------------------------------------------
+set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
 # set PORT_LOAD_CELL  cp65npkldst_ss0p9v125c/SEL_FDPRBQ_D_1/D
- set PORT_LOAD_CELL  cp65npkldst_tt1p2v25c/SEL_FDPRBQ_D_1/D
+# set PORT_LOAD_CELL  cp65npkldst_ss0p9v125c/SEL_FDPRBQ_D_1/D
 # set PORT_LOAD_CELL  NangateOpenCellLibrary_PDKv1_2_v2008_10_slow_nldm/DFFR_X1/D
  set WIRE_LOAD_EST   0.013
  set FANOUT          4
@@ -122,10 +125,18 @@
 # Dont touch on memories
 #--------------------------------------------------------- 
 # set_dont_touch [get_cell to_stOp_fifo[*].mem*]
-#
-# rdp_cntl
-set_dont_touch [get_cell *.gfifo/fifo_data_mem/*mem*]
+
+# readpath memories
+set_dont_touch [get_cell readpath/sch_data_buffer_mem/*mem*]
+set_dont_touch [get_cell readpath/free_BufId_fifo[0].gfifo/fifo_data_mem/*mem*]
+
+#set_dont_touch [get_cell *.gpfifo/gfifo/fifo_data_mem/*mem*]
+#set_dont_touch [get_cell *.gfifo/fifo_data_mem/*mem*]
 set_dont_touch [get_cell *.gmemory/*mem*]
+
+set_dont_touch [get_cell from_system_fifo[0].gpfifo/gfifo/fifo_data_mem/*mem*]
+set_dont_touch [get_cell to_bnc_fifo[*].gfifo/fifo_data_mem/*mem*]
+set_dont_touch [get_cell to_readpath_fifo[0].gfifo/fifo_data_mem/*mem*]
 
 #------------------------------------------------------
 # During the initial map (synthesis), Synopsys might   

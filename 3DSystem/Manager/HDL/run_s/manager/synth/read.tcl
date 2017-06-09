@@ -124,6 +124,9 @@ elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=1024,GENERIC_MEM_RE
 analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=16384,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=12  $RTL_COM_DIR/generic_1port_memory.v
 elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=16384,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=12"
 
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=4096,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=57  $RTL_COM_DIR/generic_1port_memory.v
+elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=4096,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=57"
+
 # <name>
 
 #------------------------------------------------------------------------------------------------------------------------

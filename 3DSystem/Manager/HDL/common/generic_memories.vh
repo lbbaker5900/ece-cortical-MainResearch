@@ -14,6 +14,23 @@
 
   Examples:
 
+if ((GENERIC_MEM_DEPTH == 16384) && (GENERIC_MEM_DATA_WIDTH == 12) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 1))
+  begin
+    sasslnpky1p16384x12cm16sw0ltlc1 mem1p16384x12( 
+                   // Port A
+                   .CLK        ( clk                              ),
+                   .WE         ( portA_write_dly                  ),
+                   .ME         ( portA_enable_dly                 ),
+                   .ADR        ( portA_address_dly                ),
+                   .D          ( portA_write_data_dly             ),
+                   .Q          ( int_portA_read_data_dly          ),
+                
+                
+                   .TEST1      ( 1'b0 ),
+                   .RME        ( 1'b0 ),
+                   .RM         ( 4'd0 ));
+  end
+
 if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 50) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
   begin
     asdrlnpky2p16x50cm1sw0         mem2prf16x50(
@@ -324,6 +341,7 @@ if ((GENERIC_MEM_DEPTH == 64) && (GENERIC_MEM_DATA_WIDTH == 40) && (GENERIC_MEM_
             if (portA_enable_dly && portA_write_dly)
               mem2p32x2_topBits [portA_address_dly] <= portA_write_data_dly [2049:2048] ;
           end
+        assign int_portB_read_data_dly [2049:2048] = mem2p32x2_topBits [portB_address_dly] ;
       end
   endgenerate
 

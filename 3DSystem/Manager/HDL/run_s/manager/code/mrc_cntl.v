@@ -1663,6 +1663,7 @@ module mrc_cntl (
   reg  [`MGR_INST_CONS_JUMP_RANGE     ]     jump_value_for_strm        ;
   wire [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   channel_data_valid         ;  // valid data from channel data fifo
   reg                                       current_channel            ;  // currently taking data from channel fifo n
+  reg                                       next_channel               ;  // about to access data from channel fifo n
 
   //--------------------------------------------------
   // State Transitions
@@ -1796,7 +1797,8 @@ module mrc_cntl (
 
   always @(*)
     begin
-      current_channel     =  strm_inc_channel_e1 ;
+      current_channel     =  strm_inc_channel    ;
+      next_channel        =  strm_inc_channel_e1 ;
     end
 
   // Load increment address based on access order
@@ -2000,9 +2002,6 @@ module mrc_cntl (
       strm_accessOrder      =  addr_to_strm_fsm_fifo[0].pipe_order ;
     end
 
-  assign from_mmc_fifo[0].pipe_read = 0;
-  assign from_mmc_fifo[1].pipe_read = 0;
-
   //-------------------------------------------------------------------------------------------
   //------------------------------------------
   // Main Memory Controller FIFO's
@@ -2061,8 +2060,12 @@ module mrc_cntl (
           end
         assign from_mmc_fifo[chan].write   =   mmc__mrc__valid_d1 [chan]       ;
         assign  mrc__mmc__ready_e1 [chan]  =  ~from_mmc_fifo[chan].almost_full ;
+        assign from_mmc_fifo[chan].pipe_read = (current_channel == chan) & get_next_line ;
       end
   endgenerate
+
+  //assign from_mmc_fifo[0].pipe_read = (current_channel == 'd0) & get_next_line ;
+  //assign from_mmc_fifo[1].pipe_read = (current_channel == 'd1) & get_next_line ;
 
 
 
