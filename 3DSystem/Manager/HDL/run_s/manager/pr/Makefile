@@ -1,5 +1,5 @@
 
-MODNAME=wu_memory
+MODNAME=mgr_noc_cntl
 
 all: route
 

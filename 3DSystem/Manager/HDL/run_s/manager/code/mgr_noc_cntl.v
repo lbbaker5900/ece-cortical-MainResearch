@@ -323,12 +323,12 @@ module mgr_noc_cntl (
         reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    write_data       ; 
 
         // Read data                                                       
-        wire   [`COMMON_STD_INTF_CNTL_RANGE          ]    read_cntl        ;
-        wire   [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    read_type        ; 
-        wire   [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    read_ptype       ; 
-        wire   [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    read_desttype    ; 
-        wire                                              read_pvalid      ; 
-        wire   [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    read_data        ; 
+        wire   [`COMMON_STD_INTF_CNTL_RANGE          ]    pipe_cntl        ;
+        wire   [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    pipe_type        ; 
+        wire   [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    pipe_ptype       ; 
+        wire   [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    pipe_desttype    ; 
+        wire                                              pipe_pvalid      ; 
+        wire   [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    pipe_data        ; 
 
         // Control
         wire                                              clear            ; 
@@ -338,6 +338,26 @@ module mgr_noc_cntl (
         wire                                              write            ; 
  
 
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_DEPTH                 ), 
+                                 .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_ALMOST_FULL_THRESHOLD ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_NOC_CONT_NOC_PACKET_TYPE_WIDTH+`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_WIDTH+`MGR_NOC_CONT_NOC_DEST_TYPE_WIDTH+1+`MGR_NOC_CONT_INTERNAL_DATA_WIDTH)
+                        ) gpfifo (
+                                 // Status
+                                .almost_full      ( almost_full           ),
+                                 // Write                                 
+                                .write            ( write                 ),
+                                .write_data       ( {write_cntl, write_type, write_ptype, write_desttype, write_pvalid, write_data}),
+                                 // Read                                  
+                                .pipe_valid       ( pipe_valid                 ),
+                                .pipe_data        ( { pipe_cntl,  pipe_type,  pipe_ptype,  pipe_desttype,  pipe_pvalid,  pipe_data}),
+                                .pipe_read        ( pipe_read                  ),
+
+                                // General
+                                .clear            ( clear                 ),
+                                .reset_poweron    ( reset_poweron         ),
+                                .clk              ( clk                   )
+                                );
+/*
         // Combine FIFO bits
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_DEPTH                 ), 
                        .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_ALMOST_FULL_THRESHOLD ),
@@ -412,7 +432,7 @@ module mgr_noc_cntl (
             pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
                                                             pipe_data            ;
           end
-
+*/
         reg    [`MGR_NOC_CONT_TO_INTF_DATA_FIFO_PKT_CNT_RANGE ]    pkt_count       ;
         always @(posedge clk)
           begin
@@ -1119,10 +1139,31 @@ module mgr_noc_cntl (
         wire                                              clear            ; 
         wire                                              empty            ; 
         wire                                              almost_full      ; 
+        wire                                              valid            ; 
         wire                                              read             ; 
         reg                                               write            ; 
  
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH), 
+                                 .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_ALMOST_FULL_THRESHOLD),
+                                 .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_NOC_CONT_NOC_PORT_DATA_WIDTH)
+                        ) gpfifo (
+                                 // Status
+                                .almost_full      ( almost_full           ),
+                                 // Write                                 
+                                .write            ( write                 ),
+                                .write_data       ( {write_cntl, write_data}),
+                                 // Read                                  
+                                .pipe_valid       ( valid                 ),
+                                .pipe_data        ( { read_cntl,  read_data}),
+                                .pipe_read        ( read                  ),
 
+                                // General
+                                .clear            ( clear                 ),
+                                .reset_poweron    ( reset_poweron         ),
+                                .clk              ( clk                   )
+                                );
+
+/*
         // Combine FIFO bits
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH), 
                        .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_ALMOST_FULL_THRESHOLD),
@@ -1145,81 +1186,26 @@ module mgr_noc_cntl (
                                          .reset_poweron    ( reset_poweron              ),
                                          .clk              ( clk                        )
                                          );
-
-/*
-        // Note: First stage of pipeline is inside FIFO
-        // fifo output stage
-        reg                                                  fifo_pipe_valid   ;
-        wire                                                 fifo_pipe_read    ;
-        // pipe stage
-        reg                                                  pipe_valid        ;
-        reg    [`COMMON_STD_INTF_CNTL_RANGE          ]       pipe_cntl         ;
-        reg    [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE    ]       pipe_data         ; 
-
-        wire                                                 pipe_read         ;
-
-
-        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
-        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
-
-        // If we are reading the fifo, then this stage will be valid
-        // If we are not reading the fifo but the next stage is reading this stage, then this stage will not be valid
-        always @(posedge clk)
-          begin
-            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
-                               ( read               ) ? 'b1               :
-                               ( fifo_pipe_read     ) ? 'b0               :
-                                                         fifo_pipe_valid  ;
-          end
-
-        always @(posedge clk)
-          begin
-            // If we are reading the previous stage, then this stage will be valid
-            // otherwise if we are reading this stage this stage will not be valid
-            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
-                               ( fifo_pipe_read     ) ? 'b1              :
-                               ( pipe_read          ) ? 'b0              :
-                                                         pipe_valid      ;
-        
-            // if we are reading, transfer from previous pipe stage. 
-            pipe_cntl           <= ( fifo_pipe_read     ) ? read_cntl            :
-                                                            pipe_cntl            ;
-            pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
-                                                            pipe_data            ;
-          end
-
-        reg    [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_PKT_CNT_RANGE ]    pkt_count       ;
-        always @(posedge clk)
-          begin
-            pkt_count  <=  ( reset_poweron || clear                                                                                                ) ? 'd0             :
-                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_EOM    )) && (~pipe_read                                              )) ? pkt_count + 'd1 :
-                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_EOM    )) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ? pkt_count       :
-                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_EOM    )) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ? pkt_count       :
-                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) && (~pipe_read                                              )) ? pkt_count + 'd1 :
-                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ? pkt_count       :
-                           (( write && (write_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ? pkt_count       :
-                           ((~write                                                 ) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ? pkt_count - 'd1 :
-                           ((~write                                                 ) && ( pipe_read && pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ? pkt_count - 'd1 :
-                                                                                                                                                       pkt_count       ;
-          end
 */
 
         assign clear   =   1'b0                ;
 
         reg  [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_RANGE] eop_count       ;
-        reg       valid ;
+//        reg       valid ;
         always @(posedge clk)
           begin
-            eop_count          <= ( reset_poweron                                                                                                                              )  ? 'd0                  :
-                                       ( clear                                                                                                                                      )  ? 'd0                  :
-                                       ((((read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && valid ) &&                      
-                                       (((          write_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          write_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & write                     ))  ? eop_count       :
-                                       (((read_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && valid           )  ? eop_count - 'd1 :
-                                       (((          write_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (          write_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & write                      )  ? eop_count + 'd1 :
-                                                                                                                                                                                         eop_count       ;
+            eop_count          <=      ( reset_poweron                                                                                                            )  ? 'd0             :
+                                       ( clear                                                                                                                    )  ? 'd0             :
+                                       ((((read_cntl  ==  'd`COMMON_STD_INTF_CNTL_EOM) | (read_cntl  ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && valid && read  ) &&                      
+                                        (((write_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (write_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM))          && write     ))  ? eop_count       :
+                                       ((( read_cntl  ==  'd`COMMON_STD_INTF_CNTL_EOM) | (read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && valid && read        )  ? eop_count - 'd1 :
+                                       ((( write_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (write_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & write                )  ? eop_count + 'd1 :
+                                                                                                                                                                       eop_count       ;
+/*
             valid    <= ( reset_poweron                   ) ? 'd0        :
                                        ( clear                           ) ? 'd0        :
                                                                               read ;
+*/
           end
 
       end
@@ -1309,8 +1295,8 @@ module mgr_noc_cntl (
           begin
             case (nc_port_fromNoc_state)
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT: 
-                nc_port_fromNoc_state_next = ( ~Port_from_NoC_fifo[gvi].empty && (Port_from_NoC_fifo[gvi].eop_count > 0) )  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ :
-                                                                                        `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT            ;
+                nc_port_fromNoc_state_next = ( Port_from_NoC_fifo[gvi].valid && (Port_from_NoC_fifo[gvi].eop_count > 0) )  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ :
+                                                                                                                             `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT            ;
     
 
               // we have to identify the destination PE from the incoming pe mask address
@@ -1346,9 +1332,10 @@ module mgr_noc_cntl (
         assign  fromNoc_mom  = (Port_from_NoC_fifo[gvi].read_cntl == `COMMON_STD_INTF_CNTL_MOM)                                                       ;
         assign  fromNoc_eom  = (Port_from_NoC_fifo[gvi].read_cntl == `COMMON_STD_INTF_CNTL_EOM) || (Port_from_NoC_fifo[gvi].read_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
 
-        assign Port_from_NoC_fifo[gvi].read  = ( (Port_from_NoC_fifo[gvi].eop_count > 0)                     & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
+        assign Port_from_NoC_fifo[gvi].read  = 
+ //                           ( (Port_from_NoC_fifo[gvi].eop_count > 0)  & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
                             (                                            (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER))|  // send header of control packet
-                            ( ~fromNoc_eom & allDestinationsStillReady & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ; // send balance of control packet
+                            (                allDestinationsStillReady & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET)) ; // send balance of control packet
                               
         assign destinationReq  = //((Port_from_NoC_fifo[gvi].eop_count > 0) & (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT           ))|  // read head of packet to determine destination bitmask
                                  (                       (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ)) ; // destination bitmask set, now request outport

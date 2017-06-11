@@ -28,7 +28,7 @@ if ((GENERIC_MEM_DEPTH == 16384) && (GENERIC_MEM_DATA_WIDTH == 12) && (GENERIC_M
                 
                    .TEST1      ( 1'b0 ),
                    .RME        ( 1'b0 ),
-                   .RM         ( 4'd0 ));
+                   .RM         ( 4'b0011));
   end
 
 if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 50) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
@@ -50,8 +50,8 @@ if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 50) && (GENERIC_MEM_
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011  ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 if ((GENERIC_MEM_DEPTH == 128) && (GENERIC_MEM_DATA_WIDTH == 12) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
@@ -74,11 +74,11 @@ if ((GENERIC_MEM_DEPTH == 128) && (GENERIC_MEM_DATA_WIDTH == 12) && (GENERIC_MEM
                    .QB          ( int_portB_read_data_dly          ),
                 
                    .TEST1A      ( 1'b0 ),
-                   .RMEA        ( 1'b0 ),
-                   .RMA         ( 4'd0 ),
+                   .RMEA        ( 1'b1 ),
+                   .RMA         ( 4'b0011),
                    .TEST1B      ( 1'b0 ),
-                   .RMEB        ( 1'b0 ),
-                   .RMB         ( 4'd0 ));
+                   .RMEB        ( 1'b1 ),
+                   .RMB         ( 4'b0011));
   end
 
   generate
@@ -105,8 +105,8 @@ if ((GENERIC_MEM_DEPTH == 128) && (GENERIC_MEM_DATA_WIDTH == 12) && (GENERIC_MEM
                            .QB          ( int_portB_read_data_dly [(gvi+1)*128-1:gvi*128] ),
                         
                            .TEST1A      ( 1'b0 ),
-                           .RMEA        ( 1'b0 ),
-                           .RMA         ( 4'd0 ),
+                           .RMEA        ( 1'b1 ),
+                           .RMA         ( 4'b0011),
                            .TEST1B      ( 1'b0 ),
                            .RMEB        ( 1'b1 ),  // see datasheet
                            .RMB         ( 4'b0011 ));  // see datasheet
@@ -129,11 +129,11 @@ if ((GENERIC_MEM_DEPTH == 128) && (GENERIC_MEM_DATA_WIDTH == 12) && (GENERIC_MEM
                        .QB          ( int_portB_read_data_dly [2050-1:15*128] ),
                     
                        .TEST1A      ( 1'b0 ),
-                       .RMEA        ( 1'b0 ),
-                       .RMA         ( 4'd0 ),
+                       .RMEA        ( 1'b1 ),
+                       .RMA         ( 4'b0011),
                        .TEST1B      ( 1'b0 ),
-                       .RMEB        ( 1'b0 ),
-                       .RMB         ( 4'd0 ));
+                       .RMEB        ( 1'b1 ),
+                       .RMB         ( 4'b0011));
 
 
       end
@@ -159,11 +159,11 @@ if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 350) && (GENERIC_MEM
                    .QB          ( int_portB_read_data_dly [116:0]  ),
                 
                    .TEST1A      ( 1'b0 ),
-                   .RMEA        ( 1'b0 ),
-                   .RMA         ( 4'd0 ),
+                   .RMEA        ( 1'b1 ),
+                   .RMA         ( 4'b0011),
                    .TEST1B      ( 1'b0 ),
-                   .RMEB        ( 1'b0 ),
-                   .RMB         ( 4'd0 ));
+                   .RMEB        ( 1'b1 ),
+                   .RMB         ( 4'b0011));
     sasslnpky2p16x117cm4sw0bk1ltlc1 mem2p16x117_1( 
                    // Port A
                    .CLKA        ( clk                               ),
@@ -182,11 +182,11 @@ if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 350) && (GENERIC_MEM
                    .QB          ( int_portB_read_data_dly [233:117] ),
                 
                    .TEST1A      ( 1'b0 ),
-                   .RMEA        ( 1'b0 ),
-                   .RMA         ( 4'd0 ),
+                   .RMEA        ( 1'b1 ),
+                   .RMA         ( 4'b0011),
                    .TEST1B      ( 1'b0 ),
-                   .RMEB        ( 1'b0 ),
-                   .RMB         ( 4'd0 ));
+                   .RMEB        ( 1'b1 ),
+                   .RMB         ( 4'b0011));
     sasslnpky2p16x116cm4sw0bk1ltlc1 mem2p16x116_0( 
                    // Port A
                    .CLKA        ( clk                               ),
@@ -205,11 +205,11 @@ if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 350) && (GENERIC_MEM
                    .QB          ( int_portB_read_data_dly [349:234] ),
                 
                    .TEST1A      ( 1'b0 ),
-                   .RMEA        ( 1'b0 ),
-                   .RMA         ( 4'd0 ),
+                   .RMEA        ( 1'b1 ),
+                   .RMA         ( 4'b0011),
                    .TEST1B      ( 1'b0 ),
-                   .RMEB        ( 1'b0 ),
-                   .RMB         ( 4'd0 ));
+                   .RMEB        ( 1'b1 ),
+                   .RMB         ( 4'b0011));
   end
 
 
@@ -277,8 +277,8 @@ if ((GENERIC_MEM_DEPTH == 128) && (GENERIC_MEM_DATA_WIDTH == 12) && (GENERIC_MEM
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011  ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -302,8 +302,8 @@ if ((GENERIC_MEM_DEPTH == 64) && (GENERIC_MEM_DATA_WIDTH == 40) && (GENERIC_MEM_
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011  ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -331,8 +331,8 @@ if ((GENERIC_MEM_DEPTH == 64) && (GENERIC_MEM_DATA_WIDTH == 40) && (GENERIC_MEM_
                            .TEST1A      ( 1'b0     ), 
                            .WMENA       ( 1'b0     ), // FIXME
                            .TEST1B      ( 1'b0     ), 
-                           .RMB         ( 4'd0     ), 
-                           .RMEB        ( 1'b0     ));
+                           .RMB         ( 4'b0011  ), 
+                           .RMEB        ( 1'b1     ));
           end
 
         reg [1:0] mem2p32x2_topBits  [ 31:0 ] ; 
@@ -372,11 +372,11 @@ if ((GENERIC_MEM_DEPTH == 256) && (GENERIC_MEM_DATA_WIDTH == 8) && (GENERIC_MEM_
                    .QB          ( int_portB_read_data_dly          ),
                 
                    .TEST1A      ( 1'b0 ),
-                   .RMEA        ( 1'b0 ),
-                   .RMA         ( 4'd0 ),
+                   .RMEA        ( 1'b1 ),
+                   .RMA         ( 4'b0011),
                    .TEST1B      ( 1'b0 ),
-                   .RMEB        ( 1'b0 ),
-                   .RMB         ( 4'd0 ));
+                   .RMEB        ( 1'b1 ),
+                   .RMB         ( 4'b0011));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -400,8 +400,8 @@ if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 57) && (GENERIC_MEM_
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -425,8 +425,8 @@ if ((GENERIC_MEM_DEPTH == 32) && (GENERIC_MEM_DATA_WIDTH == 150) && (GENERIC_MEM
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -450,8 +450,8 @@ if ((GENERIC_MEM_DEPTH == 32) && (GENERIC_MEM_DATA_WIDTH == 138) && (GENERIC_MEM
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -475,8 +475,8 @@ if ((GENERIC_MEM_DEPTH == 32) && (GENERIC_MEM_DATA_WIDTH == 58) && (GENERIC_MEM_
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -500,8 +500,8 @@ if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 82) && (GENERIC_MEM_R
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -525,8 +525,8 @@ if ((GENERIC_MEM_DEPTH == 70) && (GENERIC_MEM_DATA_WIDTH == 18) && (GENERIC_MEM_
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -550,8 +550,8 @@ if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 32) && (GENERIC_MEM_
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -576,11 +576,11 @@ if ((GENERIC_MEM_DEPTH == 2048) && (GENERIC_MEM_DATA_WIDTH == 75) && (GENERIC_ME
                    .QB          ( int_portB_read_data_dly          ),
                 
                    .TEST1A      ( 1'b0 ),
-                   .RMEA        ( 1'b0 ),
-                   .RMA         ( 4'd0 ),
+                   .RMEA        ( 1'b1 ),
+                   .RMA         ( 4'b0011),
                    .TEST1B      ( 1'b0 ),
-                   .RMEB        ( 1'b0 ),
-                   .RMB         ( 4'd0 ));
+                   .RMEB        ( 1'b1 ),
+                   .RMB         ( 4'b0011));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -604,8 +604,8 @@ if ((GENERIC_MEM_DEPTH == 256) && (GENERIC_MEM_DATA_WIDTH == 75) && (GENERIC_MEM
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -629,8 +629,8 @@ if ((GENERIC_MEM_DEPTH == 64) && (GENERIC_MEM_DATA_WIDTH == 76) && (GENERIC_MEM_
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -654,8 +654,8 @@ if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 50) && (GENERIC_MEM_
                    .TEST1A      ( 1'b0     ), 
                    .WMENA       ( 1'b0     ), // FIXME
                    .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'd0     ), 
-                   .RMEB        ( 1'b0     ));
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
   end
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -677,8 +677,8 @@ if ((GENERIC_MEM_DEPTH == 1024) && (GENERIC_MEM_DATA_WIDTH == 50) && (GENERIC_ME
                 
                 
                    .TEST1      ( 1'b0 ),
-                   .RME        ( 1'b0 ),
-                   .RM         ( 4'd0 ));
+                   .RME        ( 1'b1 ),
+                   .RM         ( 4'b0011));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -703,11 +703,11 @@ if ((GENERIC_MEM_DEPTH == 1024) && (GENERIC_MEM_DATA_WIDTH == 50) && (GENERIC_ME
                    .QB          ( int_portB_read_data_dly          ),
                 
                    .TEST1A      ( 1'b0 ),
-                   .RMEA        ( 1'b0 ),
-                   .RMA         ( 4'd0 ),
+                   .RMEA        ( 1'b1 ),
+                   .RMA         ( 4'b0011),
                    .TEST1B      ( 1'b0 ),
-                   .RMEB        ( 1'b0 ),
-                   .RMB         ( 4'd0 ));
+                   .RMEB        ( 1'b1 ),
+                   .RMB         ( 4'b0011));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -725,8 +725,8 @@ if ((GENERIC_MEM_DEPTH == 4096) && (GENERIC_MEM_DATA_WIDTH == 57) && (GENERIC_ME
                 
                 
                    .TEST1      ( 1'b0 ),
-                   .RME        ( 1'b0 ),
-                   .RM         ( 4'd0 ));
+                   .RME        ( 1'b1 ),
+                   .RM         ( 4'b0011));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -744,8 +744,8 @@ if ((GENERIC_MEM_DEPTH == 16384) && (GENERIC_MEM_DATA_WIDTH == 12) && (GENERIC_M
                 
                 
                    .TEST1      ( 1'b0 ),
-                   .RME        ( 1'b0 ),
-                   .RM         ( 4'd0 ));
+                   .RME        ( 1'b1 ),
+                   .RM         ( 4'b0011));
   end
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -781,11 +781,11 @@ if ((GENERIC_MEM_DEPTH == 16384) && (GENERIC_MEM_DATA_WIDTH == 12) && (GENERIC_M
                            .QB          ( local_int_portB_read_data_dly    ),
                         
                            .TEST1A      ( 1'b0 ),
-                           .RMEA        ( 1'b0 ),
-                           .RMA         ( 4'd0 ),
+                           .RMEA        ( 1'b1 ),
+                           .RMA         ( 4'b0011),
                            .TEST1B      ( 1'b0 ),
-                           .RMEB        ( 1'b0 ),
-                           .RMB         ( 4'd0 ));
+                           .RMEB        ( 1'b1 ),
+                           .RMB         ( 4'b0011));
           end
 
         // Mux read data

@@ -1784,14 +1784,16 @@ module mrc_cntl (
   reg                                        get_next_line                ;  // look for line, page or bank changes and read data fifo
   always @(*) 
     begin
-      get_next_line = (strm_inc_channel != strm_inc_channel_e1) |
-                      (strm_inc_bank    != strm_inc_bank_e1   ) |
-                      (strm_inc_page    != strm_inc_page_e1   ) |
-                      `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-                        (strm_inc_line != strm_inc_line_e1    ) ;
-                      `else
-                        1'b0 ;
-                      `endif
+      get_next_line = ((mrc_cntl_stream_state == `MRC_CNTL_STRM_LOAD_JUMP_VALUE ) |
+                       (mrc_cntl_stream_state == `MRC_CNTL_STRM_COUNT_CONS      )) 
+                     &((strm_inc_channel != strm_inc_channel_e1) |
+                       (strm_inc_bank    != strm_inc_bank_e1   ) |
+                       (strm_inc_page    != strm_inc_page_e1   ) |
+                       `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                         (strm_inc_line != strm_inc_line_e1    ));
+                       `else
+                         1'b0) ;
+                       `endif
                        
     end
 
@@ -2060,7 +2062,7 @@ module mrc_cntl (
           end
         assign from_mmc_fifo[chan].write   =   mmc__mrc__valid_d1 [chan]       ;
         assign  mrc__mmc__ready_e1 [chan]  =  ~from_mmc_fifo[chan].almost_full ;
-        assign from_mmc_fifo[chan].pipe_read = (current_channel == chan) & get_next_line ;
+        assign from_mmc_fifo[chan].pipe_read = (current_channel == chan) & get_next_line & from_mmc_fifo[chan].pipe_valid;
       end
   endgenerate
 

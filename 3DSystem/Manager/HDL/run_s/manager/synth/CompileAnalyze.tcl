@@ -28,7 +28,16 @@ write -hierarchy -f verilog -o ${modname}_init.v
 # tricks that Synopsys can do                          
 #---------------------------------------------------------
 
-# report_timing  > timing_max_slow.rpt
+report_timing \
+	-delay max \
+	-nworst 30 \
+	> ${modname}_${type}_timing_initial_ss_max.rpt
+
+report_timing \
+	-delay min \
+	-nworst 30 \
+	> ${modname}_${type}_timing_initial_ss_min.rpt
+
 
 #
 # 	Now resynthesize the design for the fastest corner   
@@ -53,9 +62,14 @@ compile_ultra  -incremental -only_design_rule
 report_timing \
 	-delay min \
 	-nworst 30 \
-	> ${modname}_${type}_tming_ff_min.rpt
+	> ${modname}_${type}_timing_ff_min.rpt
 
-report_timing  > ${modname}_${type}_timing_ff_max.rpt
+report_timing \
+	-delay max \
+	-nworst 30 \
+	> ${modname}_${type}_timing_ff_max.rpt
+
+#report_timing  > ${modname}_${type}_timing_ff_max.rpt
 
 write_sdf ${modname}_ff.sdf
 
@@ -74,9 +88,15 @@ translate
 
 report_timing \
 	-delay min \
+	-nworst 30 \
 	> ${modname}_${type}_timing_ss_min.rpt
 
-report_timing > ${modname}_${type}_timing_ss_max.rpt
+report_timing \
+	-delay max \
+	-nworst 30 \
+	> ${modname}_${type}_timing_ss_max.rpt
+
+#report_timing > ${modname}_${type}_timing_ss_max.rpt
 
 write_sdf ${modname}_ss.sdf
 

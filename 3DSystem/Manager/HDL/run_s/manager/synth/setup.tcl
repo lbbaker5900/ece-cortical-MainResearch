@@ -35,7 +35,7 @@ set RTL_COM_DIR   ../../../../../PEArray/HDL/run_s/common/code
 set GATE_DIR    ../synth
 
 # set variable "type" to a name that distinguishes this synthesis run
-set type foo
+set type test
 
 #set the number of digits to be used for delay results
 set report_default_significant_digits 4

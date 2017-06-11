@@ -2,7 +2,7 @@
 set clkname clk
 
 # set variable "modname" to the name of topmost module in design
-set modname wu_memory
+set modname mgr_noc_cntl
 
 set GATE_DIR	../synth
 

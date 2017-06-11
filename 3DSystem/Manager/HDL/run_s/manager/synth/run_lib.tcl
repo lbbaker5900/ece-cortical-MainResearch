@@ -54,5 +54,5 @@ foreach libFile $libList {
 exit
 
 # For info
-# firefox readpath/compout/views/*/*.html
+# firefox dw_memories/compout/views/*/*.html
 
