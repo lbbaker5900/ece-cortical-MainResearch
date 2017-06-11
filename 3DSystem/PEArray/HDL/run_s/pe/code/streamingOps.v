@@ -255,12 +255,10 @@ module streamingOps (
   wire                                         sti__stOp__strm1_data_valid  ; 
 
   // Input FIFO
-  reg                                         strm0_fifo_read_data_valid    ;    // FIFO output pipe valid
+  reg                                         strm0_fifo_data_valid    ;    // FIFO output pipe valid
   reg                                         strm0_fifo_read               ;    
-  reg                                         strm1_fifo_read_data_valid    ;    
+  reg                                         strm1_fifo_data_valid    ;    
   reg                                         strm1_fifo_read               ;    
-  reg                                         strm0_output_valid            ;    
-  reg                                         strm1_output_valid            ;    
 
   reg  [`DMA_CONT_STRM_CNTL_RANGE     ]       strm0_cntl        ; 
   reg  [`STREAMING_OP_DATA_RANGE      ]       strm0_data        ; 
@@ -270,16 +268,11 @@ module streamingOps (
   reg  [`STREAMING_OP_DATA_RANGE      ]       strm1_data        ; 
   reg  [`STREAMING_OP_DATA_RANGE      ]       strm1_data_mask   ; 
   reg                                         strm1_data_valid  ; 
-  wire                                        strm0_fifo_empty           ; 
   wire [`STREAMING_OP_DATA_RANGE      ]       strm0_fifo_read_data       ; 
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       strm0_fifo_read_cntl       ; 
-  wire                                        strm1_fifo_empty           ; 
   wire [`STREAMING_OP_DATA_RANGE      ]       strm1_fifo_read_data       ; 
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       strm1_fifo_read_cntl       ; 
-  wire                                        strm_fifo_data_available   ;
-  wire                                        strm0_fifo_data_available   ;
-  wire                                        strm1_fifo_data_available   ;
-  wire                                        strm_fifo_empty            ;
+  wire                                        strm_fifo_data_valid   ;
 
   //-----------------------------------------------
   // operation reg's
@@ -332,8 +325,6 @@ module streamingOps (
 
   // Operations need to know when the last transaction is at the output of the
   // FIFO
-  assign  strm0_src_complete_next          =   strm0_fifo_read & ((strm0_fifo_read_cntl == `DMA_CONT_STRM_CNTL_EOP) | (strm0_fifo_read_cntl == `DMA_CONT_STRM_CNTL_SOP_EOP)) ;
-  assign  strm1_src_complete_next          =   strm1_fifo_read & ((strm1_fifo_read_cntl == `DMA_CONT_STRM_CNTL_EOP) | (strm1_fifo_read_cntl == `DMA_CONT_STRM_CNTL_SOP_EOP)) ;
 
   // FIXME: Need to add to REG decodes
   //
@@ -378,10 +369,10 @@ module streamingOps (
           stOp__reg__valid             =   bsum_result_valid  ;
 
           // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm_fifo_data_available & ~strm0_src_complete ;
-          strm1_fifo_read              =   strm1_enable & strm_fifo_data_available & ~strm1_src_complete ;
-          strm0_stOp_complete          =   bsum_complete & strm0_fifo_empty        ;
-          strm1_stOp_complete          =   bsum_complete & strm1_fifo_empty        ;
+          strm0_fifo_read              =   strm0_enable & strm_fifo_data_valid & ~strm0_src_complete ;
+          strm1_fifo_read              =   strm1_enable & strm_fifo_data_valid & ~strm1_src_complete ;
+          strm0_stOp_complete          =   bsum_complete ;
+          strm1_stOp_complete          =   bsum_complete ;
     
           // stOp control
           bsum_enable                  =  1'b1 ;
@@ -392,20 +383,20 @@ module streamingOps (
           stOp__dma__strm0_data        =   strm0_fifo_read_data       ;
           stOp__dma__strm0_data_mask   =   32'hFFFF_FFFF              ;
           stOp__dma__strm0_cntl        =   strm0_fifo_read_cntl       ; // only one result
-          stOp__dma__strm0_data_valid  =   strm0_enable & strm0_fifo_data_available & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
-          //stOp__dma__strm0_data_valid  =   strm0_fifo_read_data_valid ;
+          stOp__dma__strm0_data_valid  =   strm0_enable & strm0_fifo_data_valid & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
+          //stOp__dma__strm0_data_valid  =   strm0_fifo_data_valid ;
 
           stOp__dma__strm1_data        =   strm1_fifo_read_data       ;
           stOp__dma__strm1_data_mask   =   32'hFFFF_FFFF              ;
           stOp__dma__strm1_cntl        =   strm1_fifo_read_cntl       ; // only one result
-          stOp__dma__strm1_data_valid  =   strm1_enable & strm0_fifo_data_available & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
-          //stOp__dma__strm1_data_valid  =   strm1_fifo_read_data_valid ;
+          stOp__dma__strm1_data_valid  =   strm1_enable & strm0_fifo_data_valid & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
+          //stOp__dma__strm1_data_valid  =   strm1_fifo_data_valid ;
 
           // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm0_fifo_data_available & ~strm0_src_complete & ((strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm0_ready);
-          strm1_fifo_read              =   strm1_enable & strm1_fifo_data_available & ~strm1_src_complete & ((strm1_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm1_ready); // FIXME add REG
-          strm0_stOp_complete          =   strm0_src_complete & strm0_fifo_empty  ;
-          strm1_stOp_complete          =   strm1_enable & strm1_src_complete & strm1_fifo_empty  ;
+          strm0_fifo_read              =   strm0_enable & strm0_fifo_data_valid & ~strm0_src_complete & ((strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm0_ready);
+          strm1_fifo_read              =   strm1_enable & strm1_fifo_data_valid & ~strm1_src_complete & ((strm1_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm1_ready); // FIXME add REG
+          strm0_stOp_complete          =   strm0_src_complete ;
+          strm1_stOp_complete          =   strm1_enable & strm1_src_complete ;
     
           // stOp control
         end
@@ -422,8 +413,8 @@ module streamingOps (
 
 
           // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm_fifo_data_available & ~strm0_src_complete ;
-          strm1_fifo_read              =   strm1_enable & strm_fifo_data_available & ~strm1_src_complete ;
+          strm0_fifo_read              =   strm0_enable & strm_fifo_data_valid & ~strm0_src_complete ;
+          strm1_fifo_read              =   strm1_enable & strm_fifo_data_valid & ~strm1_src_complete ;
           strm0_stOp_complete          =   fp_mac_complete      ;
           strm1_stOp_complete          =   fp_mac_complete      ;
     
@@ -438,7 +429,7 @@ module streamingOps (
           stOp__dma__strm0_data_valid  =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & fp_cmp_result_valid  ;
 
           // FIFO control
-          strm0_fifo_read              =   strm0_enable & ~strm0_fifo_empty & (so_cmp_state == `STREAMING_OP_FP_CMP_STATE_COMPARING_MAX ) ;
+          strm0_fifo_read              =   strm0_enable & strm_fifo_data_valid & (so_cmp_state == `STREAMING_OP_FP_CMP_STATE_COMPARING_MAX ) ;
           strm0_stOp_complete          =   fp_cmp_complete   ;
           strm1_stOp_complete          =   fp_cmp_complete   ;
     
@@ -454,10 +445,10 @@ module streamingOps (
           stOp__dma__strm0_data_valid  =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & fp_cmp_result_valid  ;
 
           // FIFO control
-          strm0_fifo_read              =   strm0_enable & ~strm0_fifo_empty & (so_cmp_state == `STREAMING_OP_FP_CMP_STATE_FINDING_FIRST_GT  ) ;
-          strm1_fifo_read              =   strm1_enable & ~strm1_fifo_empty & (so_cmp_state == `STREAMING_OP_FP_CMP_STATE_LOADING_THRESHOLD ) ;
-          strm0_stOp_complete          =   fp_cmp_complete  & strm0_fifo_empty ;
-          strm1_stOp_complete          =   fp_cmp_complete  & strm1_fifo_empty ;
+          strm0_fifo_read              =   strm0_enable & strm0_fifo_data_valid & (so_cmp_state == `STREAMING_OP_FP_CMP_STATE_FINDING_FIRST_GT  ) ;
+          strm1_fifo_read              =   strm1_enable & strm1_fifo_data_valid & (so_cmp_state == `STREAMING_OP_FP_CMP_STATE_LOADING_THRESHOLD ) ;
+          strm0_stOp_complete          =   fp_cmp_complete  ;
+          strm1_stOp_complete          =   fp_cmp_complete  ;
     
           // stOp control
           fp_cmp_first_gt_threshold    =   'b1                       ;
@@ -550,7 +541,7 @@ module streamingOps (
             strm0_cntl              =  sti__stOp__strm0_cntl       ; 
             strm0_data              =  sti__stOp__strm0_data       ; 
             strm0_data_valid        =  sti__stOp__strm0_data_valid ; 
-            stOp__sti__strm0_ready  = ~fifo[0].fifo_almost_full    ; 
+            stOp__sti__strm0_ready  = ~fifo[0].almost_full    ; 
           end
         `STREAMING_OP_CNTL_OPERATION_FROM_NOC       : 
           begin
@@ -583,7 +574,7 @@ module streamingOps (
             strm1_cntl              =  sti__stOp__strm1_cntl       ; 
             strm1_data              =  sti__stOp__strm1_data       ; 
             strm1_data_valid        =  sti__stOp__strm1_data_valid ; 
-            stOp__sti__strm1_ready  = ~fifo[1].fifo_almost_full    ; 
+            stOp__sti__strm1_ready  = ~fifo[1].almost_full    ; 
           end
         `STREAMING_OP_CNTL_OPERATION_FROM_NOC       : 
           begin
@@ -605,7 +596,7 @@ module streamingOps (
     casex (strm0_destination)  // the strm0_source override the FROM in the operation
       `STREAMING_OP_CNTL_OPERATION_TO_MEMORY       : 
         begin
-          stOp__dma__strm0_ready  =  ~fifo[0].fifo_almost_full ;
+          stOp__dma__strm0_ready  =  ~fifo[0].almost_full ;
         end
       `STREAMING_OP_CNTL_OPERATION_TO_STD : 
         begin
@@ -626,7 +617,7 @@ module streamingOps (
     casex (strm1_destination)  // the strm1_source override the FROM in the operation
       `STREAMING_OP_CNTL_OPERATION_TO_MEMORY       : 
         begin
-          stOp__dma__strm1_ready  =  ~fifo[1].fifo_almost_full ;
+          stOp__dma__strm1_ready  =  ~fifo[1].almost_full ;
         end
       `STREAMING_OP_CNTL_OPERATION_TO_STD : 
         begin
@@ -644,7 +635,7 @@ module streamingOps (
 
   always @(*)
     begin
-          stOp__noc__strm_ready  = (stOp__noc__strm_id) ? ~fifo[1].fifo_almost_full   : ~fifo[0].fifo_almost_full   ; 
+          stOp__noc__strm_ready  = (stOp__noc__strm_id) ? ~fifo[1].almost_full   : ~fifo[0].almost_full   ; 
     end
 
   // we dont fifo the data mask, so capture mask so it can be used when data
@@ -749,40 +740,68 @@ module streamingOps (
   generate
     for (gvi=0; gvi<2; gvi=gvi+1) 
       begin: fifo
-        `STREAMING_OP_INPUT_FIFO
+        //`STREAMING_OP_INPUT_FIFO
+
+        reg    [`COMMON_STD_INTF_CNTL_RANGE   ]    write_cntl       ;
+        reg    [`STREAMING_OP_DATA_RANGE      ]    write_data       ; 
+        reg                                        write            ; 
+
+        // Read data                                                       
+        wire                                       pipe_valid       ; 
+        wire                                       pipe_read        ; 
+        wire   [`COMMON_STD_INTF_CNTL_RANGE   ]    pipe_cntl        ;
+        wire   [`STREAMING_OP_DATA_RANGE      ]    pipe_data        ; 
+
+        // Control
+        wire                                       empty            ; 
+        wire                                       almost_full      ; 
+
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`STREAMING_OP_INPUT_FIFO_DEPTH                      ), 
+                                 .GENERIC_FIFO_THRESHOLD  (`STREAMING_OP_INPUT_FIFO_FIFO_ALMOST_FULL_THRESHOLD ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`STREAMING_OP_INPUT_FIFO_AGGREGATE_FIFO_WIDTH       )
+                        ) gpfifo (
+                                 // Status
+                                .almost_full      ( almost_full           ),
+                                 // Write                                 
+                                .write            ( write                 ),
+                                .write_data       ( {write_cntl, write_data}),
+                                 // Read                                  
+                                .pipe_valid       ( pipe_valid                 ),
+                                .pipe_data        ( { pipe_cntl,  pipe_data}),
+                                .pipe_read        ( pipe_read                  ),
+
+                                // General
+                                .clear            ( 1'b0                  ),
+                                .reset_poweron    ( reset_poweron         ),
+                                .clk              ( clk                   )
+                                );
+        wire  pipe_som  = (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM) || (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
+        wire  pipe_mom  = (pipe_cntl == `COMMON_STD_INTF_CNTL_MOM)                              ;
+        wire  pipe_eom  = (pipe_cntl == `COMMON_STD_INTF_CNTL_EOM) || (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
       end
   endgenerate
   
    
-  assign     fifo[0].clear              = reset_poweron            ;  // FIXME: need another clear as using the enable was too close to the actual STD starting
-  assign     strm0_fifo_empty           = fifo[0].fifo_empty       ; 
-  assign     fifo[0].fifo_read          = strm0_fifo_read          ; 
-  assign     strm0_fifo_read_data       = fifo[0].fifo_read_data   ; 
-  assign     strm0_fifo_read_cntl       = fifo[0].fifo_read_cntl   ; 
-  assign     fifo[0].data               = strm0_data               ;
-  assign     fifo[0].cntl               = strm0_cntl               ;
-  assign     fifo[0].fifo_write         = strm0_data_valid         ;  // with FIFO inputs, dont condition write with ready
-  assign     strm0_fifo_data_available  = ~strm0_fifo_empty        ;
+  assign     strm0_fifo_data_valid  = fifo[0].pipe_valid       ; 
+  assign     fifo[0].pipe_read               = strm0_fifo_read          ; 
+  assign     strm0_fifo_read_data       = fifo[0].pipe_data   ; 
+  assign     strm0_fifo_read_cntl       = fifo[0].pipe_cntl   ; 
+  assign     strm0_src_complete_next         = fifo[0].pipe_read & fifo[0].pipe_eom ;
+  assign     fifo[0].write_data         = strm0_data               ;
+  assign     fifo[0].write_cntl         = strm0_cntl               ;
+  assign     fifo[0].write              = strm0_data_valid         ;  // with FIFO inputs, dont condition write with ready
                                                                       // we need source to stop within two cycles
-  assign     fifo[1].clear              = reset_poweron            ;  // FIXME: need another clear as using the enable was too close to the actual STD starting
-  assign     strm1_fifo_empty           = fifo[1].fifo_empty       ; 
-  assign     fifo[1].fifo_read          = strm1_fifo_read          ; 
-  assign     strm1_fifo_read_data       = fifo[1].fifo_read_data   ; 
-  assign     strm1_fifo_read_cntl       = fifo[1].fifo_read_cntl   ; 
-  assign     fifo[1].data               =  strm1_data              ;
-  assign     fifo[1].cntl               =  strm1_cntl              ;
-  assign     fifo[1].fifo_write         =  strm1_data_valid        ;
-  assign     strm1_fifo_data_available  = ~strm1_fifo_empty        ;
+  assign     strm1_fifo_data_valid  = fifo[1].pipe_valid       ; 
+  assign     fifo[1].pipe_read          = strm1_fifo_read          ; 
+  assign     strm1_fifo_read_data       = fifo[1].pipe_data   ; 
+  assign     strm1_fifo_read_cntl       = fifo[1].pipe_cntl   ; 
+  assign     strm1_src_complete_next         = fifo[1].pipe_read & fifo[1].pipe_eom ;
+  assign     fifo[1].write_data               =  strm1_data              ;
+  assign     fifo[1].write_cntl               =  strm1_cntl              ;
+  assign     fifo[1].write         =  strm1_data_valid        ;
 
-  assign     strm_fifo_data_available   = ~strm1_fifo_empty & ~strm0_fifo_empty ;
-  assign     strm_fifo_empty            =  strm1_fifo_empty &  strm0_fifo_empty ;
+  assign     strm_fifo_data_valid   =   strm1_fifo_data_valid &  strm0_fifo_data_valid ;
 
-  // FIXME : need to make fifo registered output
-  always @(posedge clk)
-    begin
-      strm0_fifo_read_data_valid <= ( reset_poweron ) ? 1'b0 : strm0_fifo_read ;
-      strm1_fifo_read_data_valid <= ( reset_poweron ) ? 1'b0 : strm1_fifo_read ;
-    end
 
   //-------------------------------------------------------------------------------------------
   //-------------------------------------------------------------------------------------------
