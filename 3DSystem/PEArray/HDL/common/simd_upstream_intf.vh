@@ -16,8 +16,8 @@
 // FIFO's
 //------------------------------------------------
 
-`define SIMD_TO_STI_FIFO_DEPTH          4
-`define SIMD_TO_STI_FIFO_THRESHOLD      2
+`define SIMD_TO_STI_FIFO_DEPTH          8
+`define SIMD_TO_STI_FIFO_THRESHOLD      4
 
 
 //--------------------------------------------------------

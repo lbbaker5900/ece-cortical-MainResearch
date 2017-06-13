@@ -91,7 +91,6 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
   //
   wire portA_read = ~portA_write  ;
 
-  // FIXME: Include this section as a .vh file
   `ifdef SYNTHESIS
     // this file has all memories selected using parameters
     //
@@ -106,11 +105,17 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
     `include "generic_memories.vh"
 
   `else
+// FIXME: why did I have to do this?????  why didnt the if PARAMETER work?
+        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [1023 :0 ] ;
     // Not synthesis
-    if (GENERIC_MEM_DEPTH > 1024)
-      reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [1023 :0 ] ;
+    if (GENERIC_MEM_ADDR_WIDTH >= 10)
+      begin
+        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [1023 :0 ] ;
+      end
     else
-      reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
+      begin
+        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
+      end
 
 
     initial

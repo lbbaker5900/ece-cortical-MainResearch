@@ -21,6 +21,10 @@
 `define MEM_ACC_CONT_NUM_OF_MEMORY_BANKS    32
 `define MEM_ACC_CONT_NUM_OF_PORTS           32
 
+//------------------------------------------------
+// Do we allow each lane to access any bank
+`define MEM_ACC_CONT_ALLOW_ACCESS_ANY False 
+
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------
 // MEM_ACC_CONT_ARBITER state machine states
@@ -63,10 +67,13 @@
 `define MEM_ACC_CONT_MEMORY_DATA_WIDTH          `PE_MEMORY_DATA_WIDTH
 `define MEM_ACC_CONT_MEMORY_BYTE_WIDTH          (`MEM_ACC_CONT_MEMORY_DATA_WIDTH / 8)
 `define MEM_ACC_CONT_MEMORY_BYTE_SHIFT          (`MEM_ACC_CONT_MEMORY_BYTE_WIDTH)
+//FIXME
+//`define MEM_ACC_CONT_BANK_DEPTH                2**(`MEM_ACC_CONT_BANK_WIDTH)
+`define MEM_ACC_CONT_BANK_DEPTH                1024
+//`define MEM_ACC_CONT_BANK_ADDRESS_MSB           (`MEM_ACC_CONT_MEMORY_ADDRESS_MSB - (`CLOG2(`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS)))
+`define MEM_ACC_CONT_BANK_ADDRESS_MSB           9
 
-`define MEM_ACC_CONT_BANK_DEPTH                2**`MEM_ACC_CONT_BANK_WIDTH                
 `define MEM_ACC_CONT_BANK_WIDTH                `MEM_ACC_CONT_BANK_ADDRESS_MSB - `MEM_ACC_CONT_BANK_ADDRESS_LSB +1
-`define MEM_ACC_CONT_BANK_ADDRESS_MSB           (`MEM_ACC_CONT_MEMORY_ADDRESS_MSB - (`CLOG2(`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS)))
 `define MEM_ACC_CONT_BANK_ADDRESS_LSB            0
 `define MEM_ACC_CONT_BANK_ADDRESS_SIZE           (`MEM_ACC_CONT_BANK_ADDRESS_MSB - `MEM_ACC_CONT_BANK_ADDRESS_LSB +1)
 `define MEM_ACC_CONT_BANK_ADDRESS_RANGE           `MEM_ACC_CONT_BANK_ADDRESS_MSB : `MEM_ACC_CONT_BANK_ADDRESS_LSB

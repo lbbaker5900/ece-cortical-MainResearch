@@ -32,6 +32,21 @@ if __name__ == "__main__":
         FoundPorts = True
   searchFile.close()
 
+  # Does the memory controller allow a stream to access any bank
+  foundAllowAnyBankAccess = False
+  searchFile = open("../HDL/common/mem_acc_cont.vh", "r")
+  for line in searchFile:
+    if foundAllowAnyBankAccess == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "MEM_ACC_CONT_ALLOW_ACCESS_ANY" in data[1]:
+        if data[2] == 'True':
+          allowAnyBankAccess = True
+        else:
+          allowAnyBankAccess = False
+        foundAllowAnyBankAccess = True
+  searchFile.close()
+
   f = open('../HDL/common/noc_cntl_noc_ports.vh', 'w')
   pLine = ""
 
@@ -1143,15 +1158,23 @@ if __name__ == "__main__":
   for dma in range (0, numOfMemPorts):
     pLine = pLine + '\n  // DMA {0}'.format(dma)
     pLine = pLine + '\n  wire read_pause{0}     =  dma__memc__read_pause{0}   ;  '.format(dma,bank)
-    for bank in range (0, numOfBanks):
-      pLine = pLine + '\n  // DMA {0}, bank{1}'.format(dma,bank)
-      pLine = pLine + '\n  wire dma_write_addr{0}_to_bank{1}      =  (dma__memc__write_address{0}[`MEM_ACC_CONT_MEMORY_ADDRESS_MSB : `MEM_ACC_CONT_MEMORY_ADDRESS_MSB-{3}] == {2}\'d{1})  ;'.format(dma,bank,int(bankMsb),int(bankMsb-1))
-      pLine = pLine + '\n  wire dma_read_addr{0}_to_bank{1}       =  (dma__memc__read_address{0}[`MEM_ACC_CONT_MEMORY_ADDRESS_MSB  : `MEM_ACC_CONT_MEMORY_ADDRESS_MSB-{3}] == {2}\'d{1})  ;'.format(dma,bank,int(bankMsb),int(bankMsb-1))
+    if (allowAnyBankAccess):
+      for bank in range (0, numOfBanks):
+        pLine = pLine + '\n  // DMA {0}, bank{1}'.format(dma,bank)
+        pLine = pLine + '\n  wire dma_write_addr{0}_to_bank{1}      =  (dma__memc__write_address{0}[`MEM_ACC_CONT_MEMORY_ADDRESS_MSB : `MEM_ACC_CONT_MEMORY_ADDRESS_MSB-{3}] == {2}\'d{1})  ;'.format(dma,bank,int(bankMsb),int(bankMsb-1))
+        pLine = pLine + '\n  wire dma_read_addr{0}_to_bank{1}       =  (dma__memc__read_address{0}[`MEM_ACC_CONT_MEMORY_ADDRESS_MSB  : `MEM_ACC_CONT_MEMORY_ADDRESS_MSB-{3}] == {2}\'d{1})  ;'.format(dma,bank,int(bankMsb),int(bankMsb-1))
+        pLine = pLine + '\n  // Signals indicating whether a request is being made and if the request is accepted'
+        pLine = pLine + '\n  wire write_request{0}_to_bank{1}   =  dma_write_addr{0}_to_bank{1}  & dma__memc__write_valid{0}  ;                                         '.format(dma,bank)
+        pLine = pLine + '\n  wire write_access{0}_to_bank{1}    =  write_request{0}_to_bank{1}   & memc__dma__write_ready{0}  ;  // request and ready to accept request '.format(dma,bank)
+        pLine = pLine + '\n  wire read_request{0}_to_bank{1}    =  dma_read_addr{0}_to_bank{1}   & dma__memc__read_valid{0}   ;                                         '.format(dma,bank) 
+        pLine = pLine + '\n  wire read_access{0}_to_bank{1}     =  read_request{0}_to_bank{1}    & memc__dma__read_ready{0}   ;                                         '.format(dma,bank)
+    else:
+      pLine = pLine + '\n  // DMA/Bank {0}'.format(dma)
       pLine = pLine + '\n  // Signals indicating whether a request is being made and if the request is accepted'
-      pLine = pLine + '\n  wire write_request{0}_to_bank{1}   =  dma_write_addr{0}_to_bank{1}  & dma__memc__write_valid{0}  ;                                         '.format(dma,bank)
-      pLine = pLine + '\n  wire write_access{0}_to_bank{1}    =  write_request{0}_to_bank{1}   & memc__dma__write_ready{0}  ;  // request and ready to accept request '.format(dma,bank)
-      pLine = pLine + '\n  wire read_request{0}_to_bank{1}    =  dma_read_addr{0}_to_bank{1}   & dma__memc__read_valid{0}   ;                                         '.format(dma,bank) 
-      pLine = pLine + '\n  wire read_access{0}_to_bank{1}     =  read_request{0}_to_bank{1}    & memc__dma__read_ready{0}   ;                                         '.format(dma,bank)
+      pLine = pLine + '\n  wire write_request{0}_to_bank{1}   =  dma__memc__write_valid{0}  ;                                         '.format(dma,dma)
+      pLine = pLine + '\n  wire write_access{0}_to_bank{1}    =  write_request{0}_to_bank{1}   & memc__dma__write_ready{0}  ;  // request and ready to accept request '.format(dma,dma)
+      pLine = pLine + '\n  wire read_request{0}_to_bank{1}    =  dma__memc__read_valid{0}   ;                                         '.format(dma,dma) 
+      pLine = pLine + '\n  wire read_access{0}_to_bank{1}     =  read_request{0}_to_bank{1}    & memc__dma__read_ready{0}   ;                                         '.format(dma,dma)
 
 
   f.write(pLine)
@@ -1162,14 +1185,24 @@ if __name__ == "__main__":
   f = open('../HDL/common/mem_acc_cont_bank_fsm_dma_access_wires.vh', 'w')
   pLine = ""
   pLine = pLine + '\n  // DMA accesses'.format(dma)
-  for dma in range (0, numOfMemPorts):
-    pLine = pLine + '\n        wire read_pause{0}        ;'.format(dma)
-    pLine = pLine + '\n        wire read_request{0}      ;'.format(dma)
-    pLine = pLine + '\n        wire read_access{0}       ;'.format(dma)
-    pLine = pLine + '\n        wire write_request{0}     ;'.format(dma)
-    pLine = pLine + '\n        wire write_access{0}      ;'.format(dma)
-    pLine = pLine + '\n        wire read_ready_strm{0}   ;  // ignore all requests until we deassert ready'.format(dma)
-    pLine = pLine + '\n        wire write_ready_strm{0}  ;  // ignore all requests until we deassert ready'.format(dma)
+  if (allowAnyBankAccess):
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n        wire read_pause{0}        ;'.format(dma)
+      pLine = pLine + '\n        wire read_request{0}      ;'.format(dma)
+      pLine = pLine + '\n        wire read_access{0}       ;'.format(dma)
+      pLine = pLine + '\n        wire write_request{0}     ;'.format(dma)
+      pLine = pLine + '\n        wire write_access{0}      ;'.format(dma)
+      pLine = pLine + '\n        wire read_ready_strm{0}   ;  // ignore all requests until we deassert ready'.format(dma)
+      pLine = pLine + '\n        wire write_ready_strm{0}  ;  // ignore all requests until we deassert ready'.format(dma)
+  else:
+      pLine = pLine + '\n        wire read_pause        ;'.format(dma)
+      pLine = pLine + '\n        wire read_request      ;'.format(dma)
+      pLine = pLine + '\n        wire read_access       ;'.format(dma)
+      pLine = pLine + '\n        wire write_request     ;'.format(dma)
+      pLine = pLine + '\n        wire write_access      ;'.format(dma)
+      pLine = pLine + '\n        wire read_ready_strm   ;  // ignore all requests until we deassert ready'.format(dma)
+      pLine = pLine + '\n        wire write_ready_strm  ;  // ignore all requests until we deassert ready'.format(dma)
+
 
   f.write(pLine)
   f.close()
@@ -1198,10 +1231,15 @@ if __name__ == "__main__":
   pLine = pLine + '\n`define MEM_ACC_CONT_LDST_WRITE_ACCESS       {0}\'d16'.format(numOfBankFsmStateBits)
   dma = 0
   bit = 5
-  for dma in range (0, numOfMemPorts):
-    pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS   {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit))
-    pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS  {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit+1))
-    bit = bit+2
+  if (allowAnyBankAccess):
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS   {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit))
+      pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS  {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit+1))
+      bit = bit+2
+  else:
+      pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM_READ_ACCESS   {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit))
+      pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit+1))
+      bit = bit+2
 
 
   f.write(pLine)
@@ -1210,42 +1248,57 @@ if __name__ == "__main__":
   f = open('../HDL/common/mem_acc_cont_bank_fsm_state_transitions.vh', 'w')
   pLine = ""
   pLine = pLine + '\n           `MEM_ACC_CONT_DMA:'
-  pLine = pLine + '\n             mem_acc_state_next = ( ~cntl_granted     )  ? `MEM_ACC_CONT_WAIT                   :'
-  for dma in range (0, numOfMemPorts):
-    pLine = pLine + '\n                                  (  write_request{0}  )  ? `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS : '.format(dma)
-  for dma in range (0, numOfMemPorts):
-    pLine = pLine + '\n                                  (  read_request{0} && ~read_pause{0}   )  ? `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS  : '.format(dma)
-  pLine = pLine + '\n                                                          `MEM_ACC_CONT_DMA                    ; '
+  pLine = pLine + '\n             mem_acc_state_next = ( ~cntl_granted                  )  ? `MEM_ACC_CONT_WAIT                   :'
+  if (allowAnyBankAccess):
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n                                  (  write_request{0}                    )  ? `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS : '.format(dma)
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n                                  (  read_request{0} && ~read_pause{0}   )  ? `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS  : '.format(dma)
+  else:
+    pLine = pLine + '\n                                  (  write_request                 )  ? `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS : '
+    pLine = pLine + '\n                                  (  read_request && ~read_pause   )  ? `MEM_ACC_CONT_DMA_STRM_READ_ACCESS  : '
+  
+  pLine = pLine + '\n                                                                       `MEM_ACC_CONT_DMA                    ; '
 
-  for dma in range (0, numOfMemPorts):
-    pLine = pLine + '\n           `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS:'.format(dma)
-    pLine = pLine + '\n             mem_acc_state_next = ( ~cntl_granted     )  ? `MEM_ACC_CONT_WAIT                   :'
+  if (allowAnyBankAccess):
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n           `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS:'.format(dma)
+      pLine = pLine + '\n             mem_acc_state_next = ( ~cntl_granted                        )  ? `MEM_ACC_CONT_WAIT                   :'
+    
+      for nextDma in range (dma+1, numOfMemPorts):
+        pLine = pLine + '\n                                  (  write_request{0}                    )  ? `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS : '.format(nextDma)
+      for nextDma in range (0, dma+1):                                                              
+        pLine = pLine + '\n                                  (  write_request{0}                    )  ? `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS : '.format(nextDma)
+      for nextDma in range (dma+1, numOfMemPorts):
+        pLine = pLine + '\n                                  (  read_request{0} && ~read_pause{0}   )  ? `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS  : '.format(nextDma)
+      for nextDma in range (0, dma+1):
+        pLine = pLine + '\n                                  (  read_request{0} && ~read_pause{0}   )  ? `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS  : '.format(nextDma)
+  else:
+    pLine = pLine + '\n           `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS:'.format(dma)
+    pLine = pLine + '\n             mem_acc_state_next = ( ~cntl_granted                  )  ? `MEM_ACC_CONT_WAIT                  :'
+    pLine = pLine + '\n                                  (  write_request                 )  ? `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS :'
+    pLine = pLine + '\n                                  (  read_request && ~read_pause   )  ? `MEM_ACC_CONT_DMA_STRM_READ_ACCESS  :'
+    pLine = pLine + '\n                                                                        `MEM_ACC_CONT_DMA                   ;'
 
-    for nextDma in range (dma+1, numOfMemPorts):
-      pLine = pLine + '\n                                  (  write_request{0}  )  ? `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS : '.format(nextDma)
-    for nextDma in range (0, dma+1):
-      pLine = pLine + '\n                                  (  write_request{0}  )  ? `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS : '.format(nextDma)
-    for nextDma in range (dma+1, numOfMemPorts):
-      pLine = pLine + '\n                                  (  read_request{0} && ~read_pause{0}   )  ? `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS  : '.format(nextDma)
-    for nextDma in range (0, dma+1):
-      pLine = pLine + '\n                                  (  read_request{0} && ~read_pause{0}   )  ? `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS  : '.format(nextDma)
-
-    pLine = pLine + '\n                                                          `MEM_ACC_CONT_DMA                    ; '
-
-  for dma in range (0, numOfMemPorts):
-    pLine = pLine + '\n           `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS:'.format(dma)
-    pLine = pLine + '\n             mem_acc_state_next = ( ~cntl_granted     )  ? `MEM_ACC_CONT_WAIT                   :'
-
-    for nextDma in range (dma+1, numOfMemPorts):
-      pLine = pLine + '\n                                  (  write_request{0}  )  ? `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS : '.format(nextDma)
-    for nextDma in range (0, dma+1):
-      pLine = pLine + '\n                                  (  write_request{0}  )  ? `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS : '.format(nextDma)
-    for nextDma in range (dma+1, numOfMemPorts):
-      pLine = pLine + '\n                                  (  read_request{0} && ~read_pause{0}   )  ? `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS  : '.format(nextDma)
-    for nextDma in range (0, dma+1):
-      pLine = pLine + '\n                                  (  read_request{0} && ~read_pause{0}   )  ? `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS  : '.format(nextDma)
-
-    pLine = pLine + '\n                                                          `MEM_ACC_CONT_DMA                    ; '
+  if (allowAnyBankAccess):
+   for dma in range (0, numOfMemPorts):
+     pLine = pLine + '\n           `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS:'.format(dma)
+     pLine = pLine + '\n             mem_acc_state_next = ( ~cntl_granted     )  ? `MEM_ACC_CONT_WAIT                   :'
+   
+     for nextDma in range (dma+1, numOfMemPorts):
+       pLine = pLine + '\n                                  (  write_request{0}  )  ? `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS : '.format(nextDma)
+     for nextDma in range (0, dma+1):
+       pLine = pLine + '\n                                  (  write_request{0}  )  ? `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS : '.format(nextDma)
+     for nextDma in range (dma+1, numOfMemPorts):
+       pLine = pLine + '\n                                  (  read_request{0} && ~read_pause{0}   )  ? `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS  : '.format(nextDma)
+     for nextDma in range (0, dma+1):
+       pLine = pLine + '\n                                  (  read_request{0} && ~read_pause{0}   )  ? `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS  : '.format(nextDma)
+  else:
+   pLine = pLine + '\n           `MEM_ACC_CONT_DMA_STRM_READ_ACCESS:'.format(dma)
+   pLine = pLine + '\n             mem_acc_state_next = ( ~cntl_granted                  )  ? `MEM_ACC_CONT_WAIT                  :'
+   pLine = pLine + '\n                                  (  write_request                 )  ? `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS :'
+   pLine = pLine + '\n                                  (  read_request && ~read_pause   )  ? `MEM_ACC_CONT_DMA_STRM_READ_ACCESS  :'
+   pLine = pLine + '\n                                                                        `MEM_ACC_CONT_DMA                   ;'
 
   f.write(pLine)
   f.close()
@@ -1254,9 +1307,13 @@ if __name__ == "__main__":
   pLine = ""
 
   # port ready when transitioning to the state
-  for dma in range (0, numOfMemPorts):
-    pLine = pLine + '\n          assign read_ready_strm{0}   = ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS)  ;'.format(dma)
-    pLine = pLine + '\n          assign write_ready_strm{0}  = ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS) ;'.format(dma)
+  if (allowAnyBankAccess):
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n          assign read_ready_strm{0}   = ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS)  ;'.format(dma)
+      pLine = pLine + '\n          assign write_ready_strm{0}  = ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS) ;'.format(dma)
+  else:
+    pLine = pLine + '\n          assign read_ready_strm   = ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  ;'.format(dma)
+    pLine = pLine + '\n          assign write_ready_strm  = ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS) ;'.format(dma)
 
   f.write(pLine)
   f.close()
@@ -1277,36 +1334,48 @@ if __name__ == "__main__":
     pLine = pLine + '\n  assign bank_fsm[{0}].ldst_write_request       = ldst_write_request_to_bank{0}  ;'.format(bank)
     pLine = pLine + '\n  assign bank_fsm[{0}].ldst_write_access        = ldst_write_access_to_bank{0}   ;'.format(bank)
     pLine = pLine + '\n  //'
-    for dma in range (0, numOfMemPorts):
-       pLine = pLine + '\n  assign bank_fsm[{0}].read_pause{1}              = read_pause{1}                    ;'.format(bank,dma)
-       pLine = pLine + '\n  assign bank_fsm[{0}].read_request{1}            = read_request{1}_to_bank{0}       ;'.format(bank,dma)
-       pLine = pLine + '\n  assign bank_fsm[{0}].read_access{1}             = read_access{1}_to_bank{0}        ;'.format(bank,dma)
-       pLine = pLine + '\n  assign bank_fsm[{0}].write_request{1}            = write_request{1}_to_bank{0}     ;'.format(bank,dma)
-       pLine = pLine + '\n  assign bank_fsm[{0}].write_access{1}             = write_access{1}_to_bank{0}      ;'.format(bank,dma)
+    if (allowAnyBankAccess):
+      for dma in range (0, numOfMemPorts):
+         pLine = pLine + '\n  assign bank_fsm[{0}].read_pause{1}              = read_pause{1}                  ;'.format(bank,dma)
+         pLine = pLine + '\n  assign bank_fsm[{0}].read_request{1}            = read_request{1}_to_bank{0}       ;'.format(bank,dma)
+         pLine = pLine + '\n  assign bank_fsm[{0}].read_access{1}             = read_access{1}_to_bank{0}        ;'.format(bank,dma)
+         pLine = pLine + '\n  assign bank_fsm[{0}].write_request{1}           = write_request{1}_to_bank{0}      ;'.format(bank,dma)
+         pLine = pLine + '\n  assign bank_fsm[{0}].write_access{1}            = write_access{1}_to_bank{0}       ;'.format(bank,dma)
+         pLine = pLine + '\n  '
+    else:
+       pLine = pLine + '\n  assign bank_fsm[{0}].read_pause              = read_pause{0}                  ;'.format(bank,dma)
+       pLine = pLine + '\n  assign bank_fsm[{0}].read_request            = read_request{0}_to_bank{0}       ;'.format(bank,dma)
+       pLine = pLine + '\n  assign bank_fsm[{0}].read_access             = read_access{0}_to_bank{0}        ;'.format(bank,dma)
+       pLine = pLine + '\n  assign bank_fsm[{0}].write_request           = write_request{0}_to_bank{0}      ;'.format(bank,dma)
+       pLine = pLine + '\n  assign bank_fsm[{0}].write_access            = write_access{0}_to_bank{0}       ;'.format(bank,dma)
        pLine = pLine + '\n  '
 
   # each dma port will get a ready from one of the bank fsm's
-  pLine = pLine + '\n  assign memc__ldst__read_ready = bank_fsm[0].ldst_read_ready'
+  pLine = pLine + '\n  assign memc__ldst__read_ready =  bank_fsm[ 0].ldst_read_ready'
   for bank in range (1, numOfBanks):
-    pLine = pLine + '\n                                 | bank_fsm[{0}].ldst_read_ready'.format(bank)
+    pLine = pLine + '\n                                 | bank_fsm[{0:>2}].ldst_read_ready'.format(bank)
   pLine = pLine + '\n                                 ;'
-  pLine = pLine + '\n  assign memc__ldst__write_ready = bank_fsm[0].ldst_write_ready'
+  pLine = pLine + '\n  assign memc__ldst__write_ready =  bank_fsm[ 0].ldst_write_ready'
   for bank in range (1, numOfBanks):
-    pLine = pLine + '\n                                  | bank_fsm[{0}].ldst_write_ready'.format(bank)
+    pLine = pLine + '\n                                  | bank_fsm[{0:>2}].ldst_write_ready'.format(bank)
   pLine = pLine + '\n                                  ;'
-  for dma in range (0, numOfMemPorts):
-    pLine = pLine + '\n  assign memc__dma__write_ready{0} = bank_fsm[0].write_ready_strm{0}'.format(dma,bank)
-    for bank in range (1, numOfBanks):
-      pLine = pLine + '\n                                  | bank_fsm[{1}].write_ready_strm{0}'.format(dma,bank)
-    pLine = pLine + '\n                                  ;'
-  for dma in range (0, numOfMemPorts):
-    pLine = pLine + '\n  assign memc__dma__read_ready{0} = bank_fsm[0].read_ready_strm{0} '.format(dma,bank)
-    for bank in range (1, numOfBanks):
-      pLine = pLine + '\n                                  | bank_fsm[{1}].read_ready_strm{0} '.format(dma,bank)
-    pLine = pLine + '\n                                  ;'
-  #  pLine = pLine + '\n   assign memc__ldst__write_ready    = bank_fsm[0].ldst_write_ready  | bank_fsm[1].ldst_write_ready   ;         
-  #   pLine = pLine + '\n   assign memc__dma__read_ready0     = bank_fsm[0].read_ready_strm0  | bank_fsm[1].read_ready_strm0   ;         
-  #    pLine = pLine + '\n   assign memc__dma__write_ready0    = bank_fsm[0].write_ready_strm0 | bank_fsm[1].write_ready_strm0  ;         
+
+  if (allowAnyBankAccess):
+    for dma in range (0, numOfMemPorts):
+      if (allowAnyBankAccess):
+        pLine = pLine + '\n  assign memc__dma__write_ready{0:2<} = bank_fsm[0].write_ready_strm{0}'.format(dma,bank)
+        for bank in range (1, numOfBanks):
+          pLine = pLine + '\n                                  | bank_fsm[{1}].write_ready_strm{0}'.format(dma,bank)
+        pLine = pLine + '\n                                  ;'
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n  assign memc__dma__read_ready{0:2<} = bank_fsm[0].read_ready_strm{0} '.format(dma,bank)
+      for bank in range (1, numOfBanks):
+        pLine = pLine + '\n                                  | bank_fsm[{1}].read_ready_strm{0} '.format(dma,bank)
+      pLine = pLine + '\n                                  ;'
+  else:
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n  assign memc__dma__write_ready{0:<2} = bank_fsm[{0:2}].write_ready_strm;'.format(dma)
+      pLine = pLine + '\n  assign memc__dma__read_ready{0:<2}  = bank_fsm[{0:2}].read_ready_strm ;'.format(dma)
 
   f.write(pLine)
   f.close()
@@ -1315,11 +1384,15 @@ if __name__ == "__main__":
   f = open('../HDL/common/mem_acc_cont_bank_mem_dma_declarations.vh', 'w')
   pLine = ""
 
-  for dma in range (0, numOfMemPorts):
-    pLine = pLine + '\n        wire                                      read_data_strm{0}_valid_next  ;  '.format(dma)
-    pLine = pLine + '\n        reg                                       read_data_strm{0}_valid       ;  '.format(dma)
-    pLine = pLine + '\n        wire                                      dma_read_addr{0}_to_bank        ;  '.format(dma)
-    pLine = pLine + '\n        wire                                      dma_write_addr{0}_to_bank       ;  '.format(dma)
+  if (allowAnyBankAccess):
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n        wire                                      read_data_strm{0}_valid_next  ;  '.format(dma)
+      pLine = pLine + '\n        reg                                       read_data_strm{0}_valid       ;  '.format(dma)
+      pLine = pLine + '\n        wire                                      dma_read_addr{0}_to_bank        ;  '.format(dma)
+      pLine = pLine + '\n        wire                                      dma_write_addr{0}_to_bank       ;  '.format(dma)
+  else:
+    pLine = pLine + '\n        wire                                      read_data_strm_valid_next  ;  '.format(dma)
+    pLine = pLine + '\n        reg                                       read_data_strm_valid       ;  '.format(dma)
 
   f.write(pLine)
   f.close()
@@ -1330,36 +1403,46 @@ if __name__ == "__main__":
 
   pLine = pLine + '\n       assign read_data_ldst_valid_next   = ( mem_acc_state_next == `MEM_ACC_CONT_LDST_READ_ACCESS    );'
 
-  pLine = pLine + '\n       assign read_address  = (( dma_read_addr0_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS    )) ? dma__memc__read_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'
-  for dma in range (1, numOfMemPorts):
-     pLine = pLine + '\n                              (( dma_read_addr{0}_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS    )) ? dma__memc__read_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(dma)
-  pLine = pLine + '\n                                                                                                                                 ldst__memc__read_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] ;'
+  if (allowAnyBankAccess):
+    pLine = pLine + '\n       assign read_address  = (( dma_read_addr0_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS    )) ? dma__memc__read_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'
+    for dma in range (1, numOfMemPorts):
+       pLine = pLine + '\n                              (( dma_read_addr{0}_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS    )) ? dma__memc__read_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(dma)
+    pLine = pLine + '\n                                                                                                                                 ldst__memc__read_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] ;'
                                                                                                                           
-  for dma in range (0, numOfMemPorts):
-     pLine = pLine + '\n       assign read_data_strm{0}_valid_next  = ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS    );'.format(dma)
+  if (allowAnyBankAccess):
+    for dma in range (0, numOfMemPorts):
+       pLine = pLine + '\n       assign read_data_strm{0}_valid_next  = ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_READ_ACCESS    );'.format(dma)
+  else:
+       pLine = pLine + '\n       assign read_data_strm_valid_next  = ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS    );'
 
-  pLine = pLine + '\n       assign write_address =      (( dma_write_addr0_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS    )) ? dma__memc__write_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'
-  for dma in range (1, numOfMemPorts):
-     pLine = pLine + '\n                                   (( dma_write_addr{0}_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS    )) ? dma__memc__write_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(dma)
-  pLine = pLine + '\n                                                                                                                                        ldst__memc__write_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] ;'
+  if (allowAnyBankAccess):
+    pLine = pLine + '\n       assign write_address =      (( dma_write_addr0_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS    )) ? dma__memc__write_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'
+    for dma in range (1, numOfMemPorts):
+       pLine = pLine + '\n                                   (( dma_write_addr{0}_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS    )) ? dma__memc__write_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(dma)
+    pLine = pLine + '\n                                                                                                                                        ldst__memc__write_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] ;'
                                                                                                                           
-  pLine = pLine + '\n       assign write_data    =      (( dma_write_addr0_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS    )) ? dma__memc__write_data0[`MEM_ACC_CONT_BANK_DATA_RANGE] :'
-  for dma in range (1, numOfMemPorts):
-     pLine = pLine + '\n                                   (( dma_write_addr{0}_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS    )) ? dma__memc__write_data{0}[`MEM_ACC_CONT_BANK_DATA_RANGE] :'.format(dma)
-  pLine = pLine + '\n                                                                                                                                        ldst__memc__write_data[`MEM_ACC_CONT_BANK_DATA_RANGE] ;'
-                                                                                                                          
-  pLine = pLine + '\n       assign write_enable  =      (( dma_write_addr0_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS    )) ? dma__memc__write_valid0 :'
-  for dma in range (1, numOfMemPorts):
-     pLine = pLine + '\n                                   (( dma_write_addr{0}_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS    )) ? dma__memc__write_valid{0} :'.format(dma)
-  pLine = pLine + '\n                                                                                                                                        ldst__memc__write_valid ;'
+  if (allowAnyBankAccess):
+    pLine = pLine + '\n       assign write_data    =      (( dma_write_addr0_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS    )) ? dma__memc__write_data0[`MEM_ACC_CONT_BANK_DATA_RANGE] :'
+    for dma in range (1, numOfMemPorts):
+       pLine = pLine + '\n                                   (( dma_write_addr{0}_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS    )) ? dma__memc__write_data{0}[`MEM_ACC_CONT_BANK_DATA_RANGE] :'.format(dma)
+    pLine = pLine + '\n                                                                                                                                        ldst__memc__write_data[`MEM_ACC_CONT_BANK_DATA_RANGE] ;'
+                                                                                                                            
+  if (allowAnyBankAccess):
+    pLine = pLine + '\n       assign write_enable  =      (( dma_write_addr0_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS    )) ? dma__memc__write_valid0 :'
+    for dma in range (1, numOfMemPorts):
+       pLine = pLine + '\n                                   (( dma_write_addr{0}_to_bank ) && ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM{0}_WRITE_ACCESS    )) ? dma__memc__write_valid{0} :'.format(dma)
+    pLine = pLine + '\n                                                                                                                                        ldst__memc__write_valid ;'
                                                                                                                           
 
   pLine = pLine + '\n       // outputs '
   pLine = pLine + '\n       always @(posedge clk)'
   pLine = pLine + '\n         begin'
   pLine = pLine + '\n           read_data_ldst_valid   <= ( reset_poweron ) ? \'b0  : read_data_ldst_valid_next   ;'
-  for dma in range (0, numOfMemPorts):
-    pLine = pLine + '\n           read_data_strm{0}_valid  <= ( reset_poweron ) ? \'b0  : read_data_strm{0}_valid_next  ;'.format(dma)
+  if (allowAnyBankAccess):
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n           read_data_strm{0}_valid  <= ( reset_poweron ) ? \'b0  : read_data_strm{0}_valid_next  ;'.format(dma)
+  else:
+    pLine = pLine + '\n           read_data_strm_valid  <= ( reset_poweron ) ? \'b0  : read_data_strm_valid_next  ;'.format(dma)
   pLine = pLine + '\n         end'
 
   f.write(pLine)
@@ -1370,41 +1453,63 @@ if __name__ == "__main__":
   pLine = ""
 
   for bank in range (0, numOfBanks):
-    pLine = pLine + '\n  assign bank_mem[{0}].mem_acc_state_next = bank_fsm[{0}].mem_acc_state_next ;'.format(bank)
+    pLine = pLine + '\n  assign bank_mem[{0:>2}].mem_acc_state_next = bank_fsm[{0:>2}].mem_acc_state_next ;'.format(bank)
+    if (~allowAnyBankAccess):
+      pLine = pLine + '\n  assign bank_mem[{0:>2}].read_address  =  ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS  ) ? dma__memc__read_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(bank)
+      pLine = pLine + '\n                                                                                                            ldst__memc__read_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] ;'.format(bank)
+      pLine = pLine + '\n  assign bank_mem[{0:>2}].write_address =  ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS ) ? dma__memc__write_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(bank)
+      pLine = pLine + '\n                                                                                                            ldst__memc__write_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] ;'.format(bank)
+      pLine = pLine + '\n  assign bank_mem[{0:>2}].write_data    =  ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS ) ? dma__memc__write_data{0}[`MEM_ACC_CONT_BANK_DATA_RANGE] :'.format(bank)
+      pLine = pLine + '\n                                                                                                     ldst__memc__write_data[`MEM_ACC_CONT_BANK_DATA_RANGE] ;'
+      pLine = pLine + '\n  assign bank_mem[{0:>2}].write_enable  =  ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS ) ? dma__memc__write_valid{0} :'.format(bank)
+      pLine = pLine + '\n                                                                                                            ldst__memc__write_valid ;'
   pLine = pLine + '\n'
 
 
-  pLine = pLine + '\n  assign memc__ldst__read_data        = ( ldst_read_addr_to_bank0 )  ?  bank_mem[0].read_data             : '
+  pLine = pLine + '\n  assign memc__ldst__read_data        = ( ldst_read_addr_to_bank0 )  ?  bank_mem[ 0].read_data             : '
   for bank in range (1, numOfBanks-1):
-    pLine = pLine + '\n                                        ( ldst_read_addr_to_bank{0} )  ?  bank_mem[{0}].read_data             : '.format(bank,dma)
-  pLine = pLine + '\n                                                                        bank_mem[{0}].read_data             ;'.format(numOfBanks-1)
+    pLine = pLine + '\n                                        ( ldst_read_addr_to_bank{0} )  ?  bank_mem[{0:>2}].read_data             : '.format(bank,dma)
+  pLine = pLine + '\n                                                                        bank_mem[{0:>2}].read_data             ;'.format(numOfBanks-1)
+  pLine = pLine + '\n'
 
   pLine = pLine + '\n  assign memc__ldst__read_data_valid  = ( ldst_read_addr_to_bank0 && (bank_fsm[0].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[0].read_data_ldst_valid : '
   for bank in range (1, numOfBanks):
-    pLine = pLine + '\n                                        ( ldst_read_addr_to_bank{0} && (bank_fsm[{0}].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[{0}].read_data_ldst_valid :'.format(bank)
+    pLine = pLine + '\n                                        ( ldst_read_addr_to_bank{0} && (bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[{0}].read_data_ldst_valid :'.format(bank)
   pLine = pLine + '\n                                                                                                                                        1\'b0                             ;'
 
 
   
-  for dma in range (0, numOfMemPorts):
-    bank=0
-    pLine = pLine + '\n  assign memc__dma__read_data{1}        = ( dma_read_addr{1}_to_bank{0} )  ?  bank_mem[{0}].read_data             : '.format(bank,dma)
-    for bank in range (1, numOfBanks-1):
-      pLine = pLine + '\n                                        ( dma_read_addr{1}_to_bank{0} )  ?  bank_mem[{0}].read_data             : '.format(bank,dma)
-    pLine = pLine + '\n                                                                        bank_mem[{0}].read_data             ;'.format(numOfBanks-1)
+  if (allowAnyBankAccess):
+    for dma in range (0, numOfMemPorts):
+      bank=0
+      pLine = pLine + '\n  assign memc__dma__read_data{1:<2}        = ( dma_read_addr{1}_to_bank{0} )  ?  bank_mem[{0:>2}].read_data             : '.format(bank,dma)
+      for bank in range (1, numOfBanks-1):
+        pLine = pLine + '\n                                        ( dma_read_addr{1}_to_bank{0} )  ?  bank_mem[{0:>2}].read_data             : '.format(bank,dma)
+      pLine = pLine + '\n                                                                        bank_mem[{0}].read_data             ;'.format(numOfBanks-1)
+  else:
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n  assign memc__dma__read_data{0:<2}        = bank_mem[{0:>2}].read_data             ; '.format(dma)
+  pLine = pLine + '\n'
  
-  for dma in range (0, numOfMemPorts):
-    bank=0
-    pLine = pLine + '\n  assign memc__dma__read_data_valid{1}  = ( dma_read_addr{1}_to_bank0 && (bank_fsm[{0}].mem_acc_state == `MEM_ACC_CONT_DMA_STRM{1}_READ_ACCESS))  ?  bank_mem[{0}].read_data_strm{1}_valid : '.format(bank,dma)
-    for bank in range (1, numOfBanks):
-      pLine = pLine + '\n                                        ( dma_read_addr{1}_to_bank{0} && (bank_fsm[{0}].mem_acc_state == `MEM_ACC_CONT_DMA_STRM{1}_READ_ACCESS))  ?  bank_mem[{0}].read_data_strm{1}_valid :'.format(bank,dma)
-    pLine = pLine + '\n                                                                                                                                             1\'b0                              ;'
+  if (allowAnyBankAccess):
+    for dma in range (0, numOfMemPorts):
+      bank=0
+      pLine = pLine + '\n  assign memc__dma__read_data_valid{1}  = ( dma_read_addr{1}_to_bank0 && (bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_DMA_STRM{1}_READ_ACCESS))  ?  bank_mem[{0}].read_data_strm{1}_valid : '.format(bank,dma)
+      for bank in range (1, numOfBanks):
+        pLine = pLine + '\n                                        ( dma_read_addr{1}_to_bank{0} && (bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_DMA_STRM{1}_READ_ACCESS))  ?  bank_mem[{0}].read_data_strm{1}_valid :'.format(bank,dma)
+      pLine = pLine + '\n                                                                                                                                             1\'b0                              ;'
+  else:
+    for dma in range (0, numOfMemPorts):
+      pLine = pLine + '\n  assign memc__dma__read_data_valid{0}  = ( (bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[{0}].read_data_strm_valid : '.format(dma)
+      pLine = pLine + '\n                                                                                                                  1\'b0                              ;'
+  pLine = pLine + '\n'
     
  
-  for bank in range (0, numOfBanks):
-    for dma in range (0, numOfMemPorts):
-     pLine = pLine + '\n  assign bank_mem[{0}].dma_read_addr{1}_to_bank  = dma_read_addr{1}_to_bank{0}  ;'.format(bank,dma)
-     pLine = pLine + '\n  assign bank_mem[{0}].dma_write_addr{1}_to_bank = dma_write_addr{1}_to_bank{0} ;'.format(bank,dma)
+  if (allowAnyBankAccess):
+    for bank in range (0, numOfBanks):
+      for dma in range (0, numOfMemPorts):
+       pLine = pLine + '\n  assign bank_mem[{0:>2}].dma_read_addr{1}_to_bank  = dma_read_addr{1}_to_bank{0}  ;'.format(bank,dma)
+       pLine = pLine + '\n  assign bank_mem[{0:>2}].dma_write_addr{1}_to_bank = dma_write_addr{1}_to_bank{0} ;'.format(bank,dma)
   
 
   f.write(pLine)

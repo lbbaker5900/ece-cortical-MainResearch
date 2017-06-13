@@ -196,75 +196,34 @@ module simd_wrapper (
         wire   [`PE_EXEC_LANE_WIDTH_RANGE      ]          write_data       ;
                                                                            
         // Read data                                                       
-        wire   [`PE_EXEC_LANE_WIDTH_RANGE      ]          read_data        ;
+        wire                                              pipe_valid       ; 
+        wire   [`PE_EXEC_LANE_WIDTH_RANGE      ]          pipe_data        ;
 
         // Control
         wire                                              clear            ; 
-        wire                                              empty            ; 
         wire                                              almost_full      ; 
-        wire                                              read             ; 
+        wire                                              pipe_read        ; 
         wire                                              write            ; 
 
-        // FIXME: Combine FIFO's for synthesis
-        generic_fifo #(.GENERIC_FIFO_DEPTH      (`SIMD_WRAP_REG_FROM_SCNTL_FIFO_DEPTH     ), 
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`SIMD_WRAP_REG_FROM_SCNTL_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`SIMD_WRAP_REG_FROM_SCNTL_FIFO_THRESHOLD ),
                        .GENERIC_FIFO_DATA_WIDTH (`PE_EXEC_LANE_WIDTH                      )
-                        ) reg_fifo (
+                        ) gpfifo (
                                           // Status
-                                         .empty            ( empty                        ),
                                          .almost_full      ( almost_full                  ),
-                                         .almost_empty     (                              ),
-                                         .depth            (                              ),
                                           // Write
                                          .write            ( write                        ),
                                          .write_data       ( write_data                   ),
                                           // Read
-                                         .read             ( read                         ),
-                                         .read_data        ( read_data                    ),
+                                         .pipe_valid       ( pipe_valid                   ),
+                                         .pipe_read        ( pipe_read                    ),
+                                         .pipe_data        ( pipe_data                    ),
 
                                          // General
                                          .clear            ( clear                        ),
                                          .reset_poweron    ( reset_poweron                ),
                                          .clk              ( clk                          )
                                          );
-
-        // Note: First stage of pipeline is inside FIFO
-        // fifo output stage
-        reg                                                  fifo_pipe_valid   ;
-        wire                                                 fifo_pipe_read    ;
-        // pipe stage
-        reg                                                  pipe_valid        ;
-        reg    [`PE_EXEC_LANE_WIDTH_RANGE       ]            pipe_data         ;
-        wire                                                 pipe_read         ;
-
-        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
-        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
-
-        // If we are reading the fifo, then this stage will be valid
-        // If we are not reading the fifo but the next stage is reading this stage, then this stage will not be valid
-        always @(posedge clk)
-          begin
-            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
-                               ( read               ) ? 'b1               :
-                               ( fifo_pipe_read     ) ? 'b0               :
-                                                         fifo_pipe_valid  ;
-          end
-
-        always @(posedge clk)
-          begin
-            // If we are reading the previous stage, then this stage will be valid
-            // otherwise if we are reading this stage this stage will not be valid
-            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
-                               ( fifo_pipe_read     ) ? 'b1              :
-                               ( pipe_read          ) ? 'b0              :
-                                                         pipe_valid      ;
-        
-            // if we are reading, transfer from previous pipe stage. 
-            pipe_data       <= ( fifo_pipe_read     ) ? read_data        :
-                                                        pipe_data        ;
-
-            // DEBUG reg__scntl_ready [gvi]  <=  ~almost_full                  ;
-          end
 
         assign write                           =   scntl__reg__valid [gvi]   ;
         assign write_data                      =   scntl__reg__data  [gvi]   ;
@@ -297,31 +256,29 @@ module simd_wrapper (
         wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]          write_tag       ;
                                                  
         // Read data                              
-        wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]          read_tag        ;
+        wire                                               pipe_valid      ; 
+        wire                                               pipe_read       ; 
+        wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]          pipe_tag        ;
 
         // Control
         wire                                              clear            ; 
-        wire                                              empty            ; 
         wire                                              almost_full      ; 
-        wire                                              read             ; 
         wire                                              write            ; 
 
         // FIXME: Combine FIFO's for synthesis
-        generic_fifo #(.GENERIC_FIFO_DEPTH      (`SIMD_WRAP_TAG_FROM_CNTL_FIFO_DEPTH     ), 
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`SIMD_WRAP_TAG_FROM_CNTL_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`SIMD_WRAP_TAG_FROM_CNTL_FIFO_THRESHOLD ),
                        .GENERIC_FIFO_DATA_WIDTH (`STACK_DOWN_OOB_INTF_TAG_SIZE           )
-                        ) reg_fifo (
+                        ) gpfifo (
                                           // Status
-                                         .empty            ( empty                        ),
                                          .almost_full      ( almost_full                  ),
-                                         .almost_empty     (                              ),
-                                         .depth            (                              ),
                                           // Write
                                          .write            ( write                        ),
                                          .write_data       ( write_tag                    ),
                                           // Read
-                                         .read             ( read                         ),
-                                         .read_data        ( read_tag                     ),
+                                         .pipe_valid       ( pipe_valid                   ),
+                                         .pipe_read        ( pipe_read                    ),
+                                         .pipe_data        ( pipe_tag                     ),
 
                                          // General
                                          .clear            ( clear                        ),
@@ -329,41 +286,8 @@ module simd_wrapper (
                                          .clk              ( clk                          )
                                          );
 
-        // Note: First stage of pipeline is inside FIFO
-        // fifo output stage
-        reg                                                  fifo_pipe_valid   ;
-        wire                                                 fifo_pipe_read    ;
-        // pipe stage
-        reg                                                  pipe_valid        ;
-        reg    [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]            pipe_tag          ;
-        wire                                                 pipe_read         ;
-
-        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
-        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
-
-        // If we are reading the fifo, then this stage will be valid
-        // If we are not reading the fifo but the next stage is reading this stage, then this stage will not be valid
         always @(posedge clk)
           begin
-            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
-                               ( read               ) ? 'b1               :
-                               ( fifo_pipe_read     ) ? 'b0               :
-                                                         fifo_pipe_valid  ;
-          end
-
-        always @(posedge clk)
-          begin
-            // If we are reading the previous stage, then this stage will be valid
-            // otherwise if we are reading this stage this stage will not be valid
-            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
-                               ( fifo_pipe_read     ) ? 'b1              :
-                               ( pipe_read          ) ? 'b0              :
-                                                         pipe_valid      ;
-        
-            // if we are reading, transfer from previous pipe stage. 
-            pipe_tag        <= ( fifo_pipe_read     ) ?  read_tag        :
-                                                         pipe_tag        ;
-
             simd__cntl__tag_ready <=  ~almost_full                  ;
           end
 

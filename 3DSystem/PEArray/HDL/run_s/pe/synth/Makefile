@@ -1,5 +1,5 @@
 
-MODNAME = mem_acc_cont
+MODNAME = simd_wrapper
 RTL_DIR = ../code
 GATE_DIR = ../synth
 

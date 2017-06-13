@@ -235,7 +235,6 @@ module mem_acc_cont (
   genvar gvi;
   generate
     for (gvi=0; gvi<`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS; gvi=gvi+1) 
-//    for (gvi=0; gvi<`NUM_OF_MEMORY_BANKS; gvi=gvi+1) 
       begin: bank_fsm  // 0 - bank0, 1 - bank1, 2 - etc.
 
         reg  [`MEM_ACC_CONT_STATE_RANGE] mem_acc_state;          // state flop
