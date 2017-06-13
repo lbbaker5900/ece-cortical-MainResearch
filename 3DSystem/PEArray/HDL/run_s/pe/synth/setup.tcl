@@ -11,12 +11,13 @@ set clkname clk
 # set modname streamingOps_cntl
 # set modname dma_cont
 # set modname streamingOps_datapath
+# set modname pe_cntl
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
 
-set modname pe_cntl
+set modname mem_acc_cont
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
@@ -27,7 +28,6 @@ set modname pe_cntl
 # set modname noc_cntl
 # set modname my_include
 # set modname mult
-# set modname mem_acc_cont
 # set modname simd_upstream_intf
 # set modname simd_wrapper
 # 

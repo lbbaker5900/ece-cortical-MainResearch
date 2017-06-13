@@ -1357,7 +1357,6 @@ if __name__ == "__main__":
   pLine = pLine + '\n       // outputs '
   pLine = pLine + '\n       always @(posedge clk)'
   pLine = pLine + '\n         begin'
-  pLine = pLine + '\n           read_data              <= ( reset_poweron ) ? \'b0  : read_data_next              ;'
   pLine = pLine + '\n           read_data_ldst_valid   <= ( reset_poweron ) ? \'b0  : read_data_ldst_valid_next   ;'
   for dma in range (0, numOfMemPorts):
     pLine = pLine + '\n           read_data_strm{0}_valid  <= ( reset_poweron ) ? \'b0  : read_data_strm{0}_valid_next  ;'.format(dma)
@@ -1418,7 +1417,7 @@ if __name__ == "__main__":
   for bank in range (0, numOfBanks):
     pLine = pLine + '\n  // Memory port {0}'.format(bank)
     pLine = pLine + '\n  assign memc__sram__read_address{0}  = bank_mem[{0}].read_address  ;'.format(bank)
-    pLine = pLine + '\n  assign bank_mem[{0}].read_data_next = sram__memc__read_data{0}    ;'.format(bank)
+    pLine = pLine + '\n  assign bank_mem[{0}].read_data      = sram__memc__read_data{0}    ;'.format(bank)
     pLine = pLine + '\n  assign memc__sram__write_address{0} = bank_mem[{0}].write_address ;'.format(bank)
     pLine = pLine + '\n  assign memc__sram__write_enable{0}  = bank_mem[{0}].write_enable  ;'.format(bank)
     pLine = pLine + '\n  assign memc__sram__write_data{0}    = bank_mem[{0}].write_data    ;'.format(bank)

@@ -42,7 +42,7 @@ module mem_acc_cont (
                                         
             `ifdef SYNTHESIS
             // if synthesis, bring sram ports to top
-            `include "mem_acc_cont_memory_ports.vh"
+            //`include "mem_acc_cont_memory_ports.vh"
             `endif
 
             //-------------------------------
@@ -85,7 +85,7 @@ module mem_acc_cont (
 
   `ifdef SYNTHESIS
   // if synthesis, bring sram ports to top
-  `include "mem_acc_cont_memory_ports_declaration.vh"
+  //`include "mem_acc_cont_memory_ports_declaration.vh"
   `endif
 
   `include "mem_acc_cont_dma_ports_declaration.vh"
@@ -340,26 +340,53 @@ module mem_acc_cont (
   //genvar gvi;
   generate
     for (gvi=0; gvi<`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS; gvi=gvi+1) 
-//    for (gvi=0; gvi<`NUM_OF_MEMORY_BANKS; gvi=gvi+1) 
       begin: bank_mem
 
         // Bank addr/data/control
-        wire [`MEM_ACC_CONT_BANK_ADDRESS_RANGE ]  read_address                ;
-        reg  [`MEM_ACC_CONT_MEMORY_DATA_RANGE  ]  read_data                   ; 
-        wire [`MEM_ACC_CONT_MEMORY_DATA_RANGE  ]  read_data_next              ; 
-        wire                                      read_data_ldst_valid_next   ;
-        reg                                       read_data_ldst_valid        ;
+        wire  [`MEM_ACC_CONT_BANK_ADDRESS_RANGE ]  read_address                ;
+        wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE  ]  read_data                   ; 
+        wire                                       read_data_ldst_valid_next   ;
+        reg                                        read_data_ldst_valid        ;
+
         `include "mem_acc_cont_bank_mem_dma_declarations.vh"
          
-        wire [`MEM_ACC_CONT_BANK_ADDRESS_RANGE ]  write_address      ;
-        wire [`MEM_ACC_CONT_MEMORY_DATA_RANGE  ]  write_data         ; 
-        wire                                      write_enable       ; 
+        wire  [`MEM_ACC_CONT_BANK_ADDRESS_RANGE ]  write_address      ;
+        wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE  ]  write_data         ; 
+        wire                                       write_enable       ; 
 
-        wire  [`MEM_ACC_CONT_STATE_RANGE] mem_acc_state_next;    
+        wire  [`MEM_ACC_CONT_STATE_RANGE        ]  mem_acc_state_next ;    
      
         `include "mem_acc_cont_bank_mem_assignments.vh"
 
-   
+
+        generic_2port_memory #(.GENERIC_MEM_DEPTH          (`MEM_ACC_CONT_BANK_DEPTH        ),
+                               .GENERIC_MEM_REGISTERED_OUT (0                               ),
+                               .GENERIC_MEM_DATA_WIDTH     (`MEM_ACC_CONT_MEMORY_DATA_WIDTH )
+                        ) gmemory ( 
+                        
+                        //---------------------------------------------------------------
+                        // Port A
+                        .portA_address       ( write_address   ),
+                        .portA_write_data    ( write_data      ),
+                        .portA_read_data     (                 ),
+                        .portA_enable        ( 1'b1            ),
+                        .portA_write         ( write_enable    ),
+                        
+                        //---------------------------------------------------------------
+                        // Port B
+                        .portB_address       ( read_address    ),
+                        .portB_write_data    ( {`MEM_ACC_CONT_MEMORY_DATA_WIDTH {1'b0}} ),
+                        .portB_read_data     ( read_data       ),
+                        .portB_enable        ( 1'b1            ),
+                        .portB_write         ( 1'b0            ),
+                        
+                        //---------------------------------------------------------------
+                        // General
+                        .reset_poweron       ( reset_poweron   ),
+                        .clk                 ( clk             )
+                        ) ;
+
+/*
 `ifndef SYNTHESIS
         sram mem (
                      .clock         ( clk                ),
@@ -370,6 +397,7 @@ module mem_acc_cont (
                      .ReadAddress   ( read_address       ),
                      .ReadBus       ( read_data_next     ));
 `endif
+*/
 
       end
   endgenerate
@@ -378,7 +406,7 @@ module mem_acc_cont (
   
 `ifdef SYNTHESIS
   // if synthesis, bring sram ports to top
-  `include "mem_acc_cont_bank_mem_sram_connections.vh"
+  //`include "mem_acc_cont_bank_mem_sram_connections.vh"
 `endif
 
   

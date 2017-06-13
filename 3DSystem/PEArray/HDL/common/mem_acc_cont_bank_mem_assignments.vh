@@ -167,7 +167,6 @@
        // outputs 
        always @(posedge clk)
          begin
-           read_data              <= ( reset_poweron ) ? 'b0  : read_data_next              ;
            read_data_ldst_valid   <= ( reset_poweron ) ? 'b0  : read_data_ldst_valid_next   ;
            read_data_strm0_valid  <= ( reset_poweron ) ? 'b0  : read_data_strm0_valid_next  ;
            read_data_strm1_valid  <= ( reset_poweron ) ? 'b0  : read_data_strm1_valid_next  ;

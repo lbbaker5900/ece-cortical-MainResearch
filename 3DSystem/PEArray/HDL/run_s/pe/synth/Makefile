@@ -1,5 +1,5 @@
 
-MODNAME = pe_cntl
+MODNAME = mem_acc_cont
 RTL_DIR = ../code
 GATE_DIR = ../synth
 

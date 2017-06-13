@@ -107,7 +107,11 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
 
   `else
     // Not synthesis
-    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
+    if (GENERIC_MEM_DEPTH > 1024)
+      reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [1023 :0 ] ;
+    else
+      reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
+
 
     initial
       begin

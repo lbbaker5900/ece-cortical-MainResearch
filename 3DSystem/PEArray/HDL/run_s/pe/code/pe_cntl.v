@@ -298,87 +298,44 @@ module pe_cntl (
 
         // Write data
         reg    [`COMMON_STD_INTF_CNTL_RANGE     ]         write_cntl       ;
-        //stack_down_oob_type                               write_type       ; // cause error during vlog ???  FIXME
         wire   [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]         write_type       ;
         wire   [`STACK_DOWN_OOB_INTF_DATA_RANGE ]         write_data       ;
+        reg                                               write            ; 
                                                                            
         // Read data                                                       
-        wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         read_cntl        ;
-        wire   [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]         read_type        ;
-        wire   [`STACK_DOWN_OOB_INTF_DATA_RANGE ]         read_data        ;
+        wire                                              pipe_valid       ; 
+        wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         pipe_cntl        ;
+        wire   [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]         pipe_type        ;
+        wire   [`STACK_DOWN_OOB_INTF_DATA_RANGE ]         pipe_data        ;
+        wire                                              pipe_read        ; 
 
         // Control
-        wire                                              clear            ; 
-        wire                                              empty            ; 
         wire                                              almost_full      ; 
-        wire                                              read             ; 
-        wire                                              write            ; 
+        wire                                              clear            ; 
 
-        // FIXME: Combine FIFO's for synthesis
-        generic_fifo #(.GENERIC_FIFO_DEPTH      (`PE_CNTL_OOB_RX_FIFO_DEPTH     ), 
-                       .GENERIC_FIFO_THRESHOLD  (`PE_CNTL_OOB_RX_FIFO_THRESHOLD ),
-                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`STACK_DOWN_OOB_INTF_TYPE_WIDTH+`STACK_DOWN_OOB_INTF_DATA_WIDTH )
-                        ) std_oob_fifo (
-                                          // Status
-                                         .empty            ( empty                                ),
-                                         .almost_full      ( almost_full                          ),
-                                         .almost_empty     (                                      ),
-                                         .depth            (                                      ),
-                                          // Write
-                                         .write            ( write                                ),
-                                         .write_data       ( {write_cntl, write_type, write_data} ),
-                                          // Read
-                                         .read             ( read                                 ),
-                                         .read_data        ( { read_cntl,  read_type,  read_data} ),
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`PE_CNTL_OOB_RX_FIFO_DEPTH     ), 
+                                .GENERIC_FIFO_THRESHOLD  (`PE_CNTL_OOB_RX_FIFO_THRESHOLD ),
+                                .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`STACK_DOWN_OOB_INTF_TYPE_WIDTH+`STACK_DOWN_OOB_INTF_DATA_WIDTH )
+                        ) gpfifo (
+                                 // Status
+                                .almost_full      ( almost_full           ),
+                                 // Write                                 
+                                .write            ( write                 ),
+                                .write_data       ( {write_cntl, write_type, write_data} ),
+                                 // Read                                  
+                                .pipe_valid       ( pipe_valid                 ),
+                                .pipe_data        ( { pipe_cntl,  pipe_type,  pipe_data} ),
+                                .pipe_read        ( pipe_read                  ),
 
-                                         // General
-                                         .clear            ( clear                                ),
-                                         .reset_poweron    ( reset_poweron                        ),
-                                         .clk              ( clk                                  )
-                                         );
+                                // General
+                                .clear            ( clear                 ),
+                                .reset_poweron    ( reset_poweron         ),
+                                .clk              ( clk                   )
+                                );
 
-        // Note: First stage of pipeline is inside FIFO
-        // fifo output stage
-        reg                                                  fifo_pipe_valid   ;
-        wire                                                 fifo_pipe_read    ;
-        // pipe stage
-        reg                                                  pipe_valid        ;
-        reg    [`COMMON_STD_INTF_CNTL_RANGE     ]            pipe_cntl         ;
-        reg    [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]            pipe_type         ;
-        reg    [`STACK_DOWN_OOB_INTF_DATA_RANGE ]            pipe_data         ;
-        wire                                                 pipe_read         ;
-
-        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
-        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
-
-        // If we are reading the fifo, then this stage will be valid
-        // If we are not reading the fifo but the next stage is reading this stage, then this stage will not be valid
-        always @(posedge clk)
-          begin
-            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
-                               ( read               ) ? 'b1               :
-                               ( fifo_pipe_read     ) ? 'b0               :
-                                                         fifo_pipe_valid  ;
-          end
-
-        always @(posedge clk)
-          begin
-            // If we are reading the previous stage, then this stage will be valid
-            // otherwise if we are reading this stage this stage will not be valid
-            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
-                               ( fifo_pipe_read     ) ? 'b1              :
-                               ( pipe_read          ) ? 'b0              :
-                                                         pipe_valid      ;
-        
-            // if we are reading, transfer from previous pipe stage. 
-            pipe_cntl       <= ( fifo_pipe_read     ) ? read_cntl        :
-                                                        pipe_cntl        ;
-            pipe_type       <= ( fifo_pipe_read     ) ? read_type        :
-                                                        pipe_type        ;
-            pipe_data       <= ( fifo_pipe_read     ) ? read_data        :
-                                                        pipe_data        ;
-          end
-
+        wire  pipe_som  = (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM) || (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
+        wire  pipe_mom  = (pipe_cntl == `COMMON_STD_INTF_CNTL_MOM)                              ;
+        wire  pipe_eom  = (pipe_cntl == `COMMON_STD_INTF_CNTL_EOM) || (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
       end
   endgenerate
 
