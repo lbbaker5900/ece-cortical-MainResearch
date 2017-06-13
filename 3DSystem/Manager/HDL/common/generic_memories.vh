@@ -281,6 +281,29 @@ if ((GENERIC_MEM_DEPTH == 128) && (GENERIC_MEM_DATA_WIDTH == 12) && (GENERIC_MEM
                    .RMEB        ( 1'b1     ));
   end
 
+if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 34) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+  begin
+    asdrlnpky2p8x34cm1sw0         mem2prf8x34(
+                   // Output
+                   .QB          ( int_portB_read_data_dly               ),
+                   // Read Port
+                   .CLKB        ( clk                                   ),
+                   .MEB         ( portB_enable_dly                      ),
+                   .ADRB        ( portB_address_dly                     ),
+                   // Write Port
+                   .CLKA        ( clk                                   ),
+                   .WEA         ( portA_write_dly                       ),
+                   .MEA         ( portA_enable_dly                      ),
+                   .ADRA        ( portA_address_dly                     ),
+                   .DA          ( portA_write_data_dly                  ),
+                   // Test
+                   .TEST1A      ( 1'b0     ), 
+                   .WMENA       ( 1'b0     ), // FIXME
+                   .TEST1B      ( 1'b0     ), 
+                   .RMB         ( 4'b0011  ), 
+                   .RMEB        ( 1'b1     ));
+  end
+
 //------------------------------------------------------------------------------------------------------------------------
 //
 if ((GENERIC_MEM_DEPTH == 64) && (GENERIC_MEM_DATA_WIDTH == 40) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
@@ -662,6 +685,31 @@ if ((GENERIC_MEM_DEPTH == 16) && (GENERIC_MEM_DATA_WIDTH == 50) && (GENERIC_MEM_
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 //  Generic Memories
 //
+//------------------------------------------------------------------------------------------------------------------------
+//
+if ((GENERIC_MEM_DEPTH == 256) && (GENERIC_MEM_DATA_WIDTH == 149) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 1))
+  begin
+    asdrlnpky2p256x149cm1sw0         mem2prf256x149(
+                   // Output
+                   .QB          ( int_portB_read_data_dly               ),
+                   // Read Port
+                   .CLKB        ( clk                                   ),
+                   .MEB         ( portB_enable_dly                      ),
+                   .ADRB        ( portB_address_dly                     ),
+                   // Write Port
+                   .CLKA        ( clk                                   ),
+                   .WEA         ( portA_write_dly                       ),
+                   .MEA         ( portA_enable_dly                      ),
+                   .ADRA        ( portA_address_dly                     ),
+                   .DA          ( portA_write_data_dly                  ),
+                   // Test
+                   .TEST1A      ( 1'b0     ), 
+                   .WMENA       ( 1'b0     ), // FIXME
+                   .TEST1B      ( 1'b0     ), 
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
+  end
+
 //------------------------------------------------------------------------------------------------------------------------
 //
 if ((GENERIC_MEM_DEPTH == 1024) && (GENERIC_MEM_DATA_WIDTH == 50) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 1))

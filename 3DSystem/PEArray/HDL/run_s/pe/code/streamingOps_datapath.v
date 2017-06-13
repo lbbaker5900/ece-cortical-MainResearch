@@ -29,21 +29,6 @@ module streamingOps_datapath (
             //---------------------------------------------------------------
             // Main Streaming Interface(s)
            
-            //-------------------------------
-            // NoC interface (via stop_cntl)
-
-            // to NoC
-            stOp__noc__strm_ready       ,
-            noc__stOp__strm_cntl        , 
-            noc__stOp__strm_id          , 
-            noc__stOp__strm_data        , 
-            noc__stOp__strm_data_valid  , 
-            // from NoC
-            noc__stOp__strm_ready       ,
-            stOp__noc__strm_cntl        , 
-            stOp__noc__strm_id          , 
-            stOp__noc__strm_data        , 
-            stOp__noc__strm_data_valid  , 
 
             //-------------------------------
             // Downstream from Stack Interface
@@ -218,21 +203,6 @@ module streamingOps_datapath (
   input [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]                        scntl__dma__num_of_types1             ;
 
   //-------------------------------------------------------------------------------------------------
-  // Interface to NoC (via cntl)
-  // from NoC
-  output                                       stOp__noc__strm_ready       ;
-  input [`DMA_CONT_STRM_CNTL_RANGE     ]       noc__stOp__strm_cntl        ; 
-  input                                        noc__stOp__strm_id          ; 
-  input [`STREAMING_OP_DATA_RANGE      ]       noc__stOp__strm_data        ; 
-  input                                        noc__stOp__strm_data_valid  ; 
-  // to NoC
-  input                                        noc__stOp__strm_ready       ;
-  output[`DMA_CONT_STRM_CNTL_RANGE     ]       stOp__noc__strm_cntl        ; 
-  output                                       stOp__noc__strm_id          ; 
-  output[`STREAMING_OP_DATA_RANGE      ]       stOp__noc__strm_data        ; 
-  output                                       stOp__noc__strm_data_valid  ; 
-
-  //-------------------------------------------------------------------------------------------------
   // Interface to Downstream Stack bus
   output                                       stOp__sti__strm0_ready       ;
   input [`DMA_CONT_STRM_CNTL_RANGE     ]       sti__stOp__strm0_cntl        ; 
@@ -356,19 +326,6 @@ module streamingOps_datapath (
                            .stOp__dma__strm1_data_mask   ( stOp__dma__strm1_data_mask  ), 
                            .stOp__dma__strm1_data_valid  ( stOp__dma__strm1_data_valid ), 
                                                              
-                            // NoC interface
-                            // from NoC
-                           .stOp__noc__strm_ready       ( stOp__noc__strm_ready      ),
-                           .noc__stOp__strm_cntl        ( noc__stOp__strm_cntl       ), 
-                           .noc__stOp__strm_id          ( noc__stOp__strm_id         ), 
-                           .noc__stOp__strm_data        ( noc__stOp__strm_data       ), 
-                           .noc__stOp__strm_data_valid  ( noc__stOp__strm_data_valid ), 
-                            // to NoC
-                           .noc__stOp__strm_ready       ( noc__stOp__strm_ready      ),
-                           .stOp__noc__strm_cntl        ( stOp__noc__strm_cntl       ), 
-                           .stOp__noc__strm_id          ( stOp__noc__strm_id         ), 
-                           .stOp__noc__strm_data        ( stOp__noc__strm_data       ), 
-                           .stOp__noc__strm_data_valid  ( stOp__noc__strm_data_valid ), 
 
                             // Downstream Stack Bus
                            .stOp__sti__strm0_ready       ( stOp__sti__strm0_ready      ),

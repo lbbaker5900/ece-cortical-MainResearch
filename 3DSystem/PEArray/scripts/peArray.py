@@ -1769,11 +1769,11 @@ if __name__ == "__main__":
       pLine = pLine + '\n  wire   [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ] lane{0}_num_of_types{1}                        ;'.format(lane,strm)
       pLine = pLine + '\n  wire   [`PE_MAX_STAGGER_RANGE              ] lane{0}_stagger{1}                             ;'.format(lane,strm)
       if strm == 0:
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
       else:
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
-         pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
+         pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
@@ -1839,10 +1839,8 @@ if __name__ == "__main__":
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_write_complete       = sdp__scntl__lane{0}_strm{1}_write_complete     ;  // FIXME'.format(lane,strm)
     pLine = pLine + '\n  always @(*)'
     pLine = pLine + '\n    begin'
-    pLine = pLine + '\n      scntl__sdp__lane{0}_strm0_read_start_address  = (strm_control[{0}].strm0_assignedToExternalDma) ? strm_control[{0}].strm0_ExternalDma_read_start_address  :'.format(lane,strm)
-    pLine = pLine + '\n                                                                                                       lane{0}_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;'.format(lane,strm)
-    pLine = pLine + '\n      scntl__sdp__lane{0}_strm1_read_start_address  = (strm_control[{0}].strm1_assignedToExternalDma) ? strm_control[{0}].strm1_ExternalDma_read_start_address  :'.format(lane,strm)
-    pLine = pLine + '\n                                                                                                       lane{0}_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;'.format(lane,strm)
+    pLine = pLine + '\n      scntl__sdp__lane{0}_strm0_read_start_address  = lane{0}_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;'.format(lane,strm)
+    pLine = pLine + '\n      scntl__sdp__lane{0}_strm1_read_start_address  = lane{0}_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;'.format(lane,strm)
     pLine = pLine + '\n    end'
     pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm0_write_start_address = lane{0}_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
     pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm1_write_start_address = lane{0}_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
@@ -1897,149 +1895,6 @@ if __name__ == "__main__":
     for strm in range (0, 2):
       pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_stOp_source      = strm_control[{0}].strm{1}_stOp_src  ;'.format(lane,strm)
       pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_stOp_destination = strm_control[{0}].strm{1}_stOp_dest ;'.format(lane,strm)
-  pLine = pLine + '\n'
-
-  for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  assign NoC_Request_Vector[{0}]       = strm_control[{0}].NocLocalDmaRequest     ;'.format(lane,strm)
-    pLine = pLine + '\n  assign NoC_Request_Strm_Vector[{0}]  = strm_control[{0}].NocLocalDmaRequestStrm ;'.format(lane,strm)
-  pLine = pLine + '\n'
-
-  pLine = pLine + '// Vector of available read streams for external DMA\'s\n'
-  for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  assign Read_Stream_Available_Vector[{0}]       = (strm_control[{0}].lane_enable & strm_control[{0}].ReadyForStreamExternalRequests & (~strm_control[{0}].strm0_read_enable | ~strm_control[{0}].strm1_read_enable)) & // if either stream isnt enabled its available to be assigned to an external DMA'.format(lane,strm)
-    pLine = pLine + '\n                                                   (~strm_control[{0}].strm0_assignedToExternalDma & ~strm_control[{0}].strm1_assignedToExternalDma) ; // only allow one stream to be assigned per lane to an external DMA'.format(lane,strm)
-  pLine = pLine + '\n'
-
-  #--------------------------------------------------
-  # to NoC Control
-
-  # Take the first Stream controller DMA request and pass request to NoC Control FSM
-  pLine = pLine + '\n'
-  pLine = pLine + '\n  // Take the first Stream controller DMA request and pass request to NoC Control FSM'
-  pLine = pLine + '\n  // Latch in a register in case a higher order lane makes a request after a lower order stream'
-  pLine = pLine + '\n  // Latcheit and ack are pass thru, so dont latch. request/ack specified in the mux below'
-  pLine = pLine + '\n  always @(posedge clk)'
-  pLine = pLine + '\n    begin'
-  pLine = pLine + '\n      if (~NocControlLocalRequestWait)'
-  pLine = pLine + '\n        begin'
-  pLine = pLine + '\n          casez(NoC_Request_Vector)'
-  for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n            {0}\'b'.format(numOfExecLanes)
-    for bit in range (0, lane):
-      pLine = pLine + '0'
-    pLine = pLine + '1'
-    for bit in range (lane+1, numOfExecLanes):
-      pLine = pLine + '?'
-    pLine = pLine + ':'
-    pLine = pLine + '\n            begin'
-    pLine = pLine + '\n              localDmaRequestLane <= \'d{0};'.format(numOfExecLanes-lane-1)
-    pLine = pLine + '\n            end'
-  pLine = pLine + '\n            default:'
-  pLine = pLine + '\n            begin'
-  pLine = pLine + '\n              localDmaRequestLane <= \'d0;'
-  pLine = pLine + '\n            end'
-  pLine = pLine + '\n          endcase'
-  pLine = pLine + '\n        end'
-  pLine = pLine + '\n      end'
-  pLine = pLine + '\n'
-
-  # Take the Acknowledge from the  NoC Control FSM and pass back to requesting stream controller
-  pLine = pLine + '\n'
-  pLine = pLine + '\n  // Take the Acknowledge from the "to" NoC Control FSM and pass back to requesting stream controller'
-  pLine = pLine + '\n  always @(*)'
-  pLine = pLine + '\n    begin'
-  for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n      strm_control[{0}].localDmaReqNocAck = 1\'b0;'.format(lane)
-  pLine = pLine + '\n        localDmaRequest                     = \'b0;'
-  pLine = pLine + '\n      case(localDmaRequestLane)'
-  for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n        \'d{0}:'.format(lane)
-    pLine = pLine + '\n        begin'
-    pLine = pLine + '\n          strm_control[{0}].localDmaReqNocAck   = NocControlLocalAck                   ;'.format(lane)
-    pLine = pLine + '\n          localDmaRequest                       = strm_control[{0}].NocLocalDmaRequest ;'.format(lane)
-    pLine = pLine + '\n'
-    pLine = pLine + '            // Pass local DMA request to NoC \n'
-    pLine = pLine + '\n          if (cntl_to_noc_1st_cycle)  '
-    pLine = pLine + '\n            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_SOP;'.format(lane)
-    pLine = pLine + '\n          else  '
-    pLine = pLine + '\n            scntl__noc__cp_cntl_p1                                                        = `STREAMING_OP_CNTL_STRM_CNTL_EOP;'.format(lane)
-    pLine = pLine + '\n          scntl__noc__cp_type_p1                                                          = `STREAMING_OP_CNTL_TYPE_DMA_REQUEST;'.format(lane)
-    pLine = pLine + '\n          if (cntl_to_noc_1st_cycle)  '
-    pLine = pLine + '\n            begin  '
-    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_ADDRESS_RANGE]    = (strm_control[{0}].NocLocalDmaRequestStrm) ? lane{0}_r131[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE] : lane{0}_r130[`STREAMING_OP_CNTL_CHIPLET_ADDRESS_RANGE]; '.format(lane)
-    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_STAGGER_RANGE]    = (strm_control[{0}].NocLocalDmaRequestStrm) ? lane{0}_stagger1                 : lane{0}_stagger0                 ; '.format(lane)
-    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_1ST_CYCLE_PAD_RANGE    ]    = \'d0                                                                                                             ; '.format(lane)
-    pLine = pLine + '\n            end  '
-    pLine = pLine + '\n          else  '
-    pLine = pLine + '\n            begin  '
-    # FIXME: proper numBytes and stagger
-    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_NUM_OF_WORDS_RANGE] = (strm_control[{0}].NocLocalDmaRequestStrm) ? strm_control[{0}].strm1_word_count : strm_control[{0}].strm0_word_count ; '.format(lane)
-    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAYLOAD_TYPE_RANGE] = (strm_control[{0}].NocLocalDmaRequestStrm) ? lane{0}_type1                      : lane{0}_type0                      ; '.format(lane)
-    pLine = pLine + '\n              scntl__noc__cp_data_p1[`NOC_CONT_INTERNAL_DMA_REQ_2ND_CYCLE_PAD_RANGE         ]    = \'d0                                                                                                              ; '.format(lane)
-    pLine = pLine + '\n            end  '
-    pLine = pLine + '\n          scntl__noc__cp_laneId_p1                                                        = localDmaRequestLane;'.format(lane)
-    pLine = pLine + '\n          scntl__noc__cp_strmId_p1                                                        = strm_control[{0}].NocLocalDmaRequestStrm;'.format(lane)
-    pLine = pLine + '\n        end'
-  pLine = pLine + '\n      endcase'
-  pLine = pLine + '\n    end'
-  pLine = pLine + '\n'
-
-  #----------------------------------------------------------------------------------------------------
-  # from NoC Control
-
-  # Take the first Stream thats available and set to next DMA request that arrives from the NoC
-  pLine = pLine + '\n'
-  pLine = pLine + '\n  // Take the first Stream thats available and provide to next DMA request that arrives from the NoC'
-  pLine = pLine + '\n  // Latch in a register in case a higher order lane becomes available'
-  pLine = pLine + '\n  always @(posedge clk)'
-  pLine = pLine + '\n    begin'
-  pLine = pLine + '\n      if (reset_poweron)'
-  pLine = pLine + '\n        begin'
-  pLine = pLine + '\n          localStrmAvailableLane <= \'d{0};'.format(numOfExecLanes-lane-1)
-  pLine = pLine + '\n          localStrmAvailable     <= \'b0;'.format(numOfExecLanes-lane-1)
-  pLine = pLine + '\n        end'
-  pLine = pLine + '\n      else if (~NocControlExternalRequestWait)'
-  pLine = pLine + '\n        begin'
-  pLine = pLine + '\n          casez(Read_Stream_Available_Vector)'
-  for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n            {0}\'b'.format(numOfExecLanes)
-    for bit in range (0, lane):
-      pLine = pLine + '0'
-    pLine = pLine + '1'
-    for bit in range (lane+1, numOfExecLanes):
-      pLine = pLine + '?'
-    pLine = pLine + ':'
-    pLine = pLine + '\n            begin'
-    pLine = pLine + '\n              localStrmAvailableLane <= \'d{0};'.format(numOfExecLanes-lane-1)
-    pLine = pLine + '\n              localStrmAvailable     <= \'b1;'.format(numOfExecLanes-lane-1)
-    pLine = pLine + '\n            end'
-  pLine = pLine + '\n            default:'
-  pLine = pLine + '\n            begin'
-  pLine = pLine + '\n              localStrmAvailableLane <= \'d0;'
-  pLine = pLine + '\n              localStrmAvailable     <= \'b0;'.format(numOfExecLanes-lane-1)
-  pLine = pLine + '\n            end'
-  pLine = pLine + '\n          endcase'
-  pLine = pLine + '\n        end'
-  pLine = pLine + '\n      end'
-  pLine = pLine + '\n'
-
-  # Take the Acknowledge from the Stream controller and pass to the external DMA request FSM
-  pLine = pLine + '\n'
-  pLine = pLine + '\n  // Take the Acknowledge from the Stream controller and pass to the external DMA request FSM'
-  pLine = pLine + '\n  always @(*)'
-  pLine = pLine + '\n    begin'
-  for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n      strm_control[{0}].externalDmaReqStrmReq = 1\'b0;'.format(lane)
-  pLine = pLine + '\n      NocControlExternalAck                   = 1\'b0;'
-  pLine = pLine + '\n      case(localStrmAvailableLane)'
-  for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n        \'d{0}:'.format(lane)
-    pLine = pLine + '\n        begin'
-    pLine = pLine + '\n          strm_control[{0}].externalDmaReqStrmReq     = NocControlExternalReq                    ;'.format(lane)
-    pLine = pLine + '\n          NocControlExternalAck                       = strm_control[{0}].externalDmaReqStrmAck  ;'.format(lane)
-    pLine = pLine + '\n        end'
-  pLine = pLine + '\n      endcase'
-  pLine = pLine + '\n    end'
   pLine = pLine + '\n'
 
 

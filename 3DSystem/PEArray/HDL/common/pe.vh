@@ -122,12 +122,14 @@
 `define PE_PE_ID_BITMASK_SIZE              (`PE_PE_ID_BITMASK_MSB - `PE_PE_ID_BITMASK_LSB +1)
 `define PE_PE_ID_BITMASK_RANGE              `PE_PE_ID_BITMASK_MSB : `PE_PE_ID_BITMASK_LSB
 
-`define PE_DATA_TYPES_MSB            3
+`define PE_DATA_TYPES_WIDTH            4
+`define PE_DATA_TYPES_MSB            `PE_DATA_TYPES_WIDTH -1
 `define PE_DATA_TYPES_LSB            0
 `define PE_DATA_TYPES_SIZE           (`PE_DATA_TYPES_MSB - `PE_DATA_TYPES_LSB +1)
 `define PE_DATA_TYPES_RANGE           `PE_DATA_TYPES_MSB : `PE_DATA_TYPES_LSB
 // Set maximum numver of elements in a vector  - FIXME
 `define PE_MAX_NUM_OF_TYPES        2**16
+`define PE_MAX_NUM_OF_TYPES_WIDTH  (`CLOG2(`PE_MAX_NUM_OF_TYPES))
 `define PE_MAX_NUM_OF_TYPES_SIZE   (`CLOG2(`PE_MAX_NUM_OF_TYPES))
 `define PE_MAX_NUM_OF_TYPES_RANGE  (`CLOG2(`PE_MAX_NUM_OF_TYPES))-1 : 0
 `define PE_MAX_STAGGER             2**8

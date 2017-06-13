@@ -26,7 +26,7 @@
 `include "pe_array.vh"
 `include "pe.vh"
 `include "stack_interface.vh"
-`include "noc_cntl.vh"
+//`include "noc_cntl.vh"
 `include "mem_acc_cont.vh"
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
@@ -70,12 +70,6 @@ module pe (
             pe__stu__type          ,  // Control or Data, Vector or scalar
             pe__stu__data          ,
             pe__stu__oob_data      ,
- 
-            //-------------------------------
-            // NoC
-            //
-            `include "noc_cntl_noc_ports.vh"
-            //
  
             //peId             ,
             clk              ,
@@ -142,7 +136,7 @@ module pe (
   //-------------------------------------------------------------------------------------------------
   // NoC
   //
-  `include "noc_cntl_noc_ports_declaration.vh"
+  //`include "noc_cntl_noc_ports_declaration.vh"
 
   //-------------------------------------------------------------------------------------------------
   // Streaming Operations Control
@@ -161,9 +155,9 @@ module pe (
   `include "pe_dma_memc_connection_wires.vh"
   `include "pe_std_to_stOp_connection_wires.vh"
 
-  `include "pe_noc_to_peArray_connection_wires.vh"
+  //`include "pe_noc_to_peArray_connection_wires.vh"
 
-  `include "pe_cntl_noc_connection_wires.vh"
+  //`include "pe_cntl_noc_connection_wires.vh"
   `include "pe_cntl_to_stOp_connection_wires.vh"
 
   `include "pe_stOp_control_to_stOp_wires.vh"
@@ -379,56 +373,6 @@ module pe (
 
 
   //-------------------------------------------------------------------------------------------------
-  // NoC Interface
-  // 
-  noc_cntl noc_cntl (
-
-                        // Aggregate Control-Path (cp) to NoC 
-                       .noc__scntl__cp_ready          ( noc__scntl__cp_ready         ), 
-                       .scntl__noc__cp_cntl           ( scntl__noc__cp_cntl          ), 
-                       .scntl__noc__cp_type           ( scntl__noc__cp_type          ), 
-                       .scntl__noc__cp_data           ( scntl__noc__cp_data          ), 
-                       .scntl__noc__cp_laneId         ( scntl__noc__cp_laneId        ), 
-                       .scntl__noc__cp_strmId         ( scntl__noc__cp_strmId        ), 
-                       .scntl__noc__cp_valid          ( scntl__noc__cp_valid         ), 
-                        // Aggregate Data-Path (cp) from NoC 
-                       .scntl__noc__cp_ready          ( scntl__noc__cp_ready         ), 
-                       .noc__scntl__cp_cntl           ( noc__scntl__cp_cntl          ), 
-                       .noc__scntl__cp_type           ( noc__scntl__cp_type          ), 
-                       .noc__scntl__cp_data           ( noc__scntl__cp_data          ), 
-                       .noc__scntl__cp_peId           ( noc__scntl__cp_peId          ), 
-                       .noc__scntl__cp_laneId         ( noc__scntl__cp_laneId        ), 
-                       .noc__scntl__cp_strmId         ( noc__scntl__cp_strmId        ), 
-                       .noc__scntl__cp_valid          ( noc__scntl__cp_valid         ), 
-                       
-                        // Aggregate Data-Path (dp) to NoC 
-                       .noc__scntl__dp_ready          ( noc__scntl__dp_ready         ), 
-                       .scntl__noc__dp_type           ( scntl__noc__dp_type          ), 
-                       .scntl__noc__dp_cntl           ( scntl__noc__dp_cntl          ), 
-                       .scntl__noc__dp_peId           ( scntl__noc__dp_peId          ), 
-                       .scntl__noc__dp_laneId         ( scntl__noc__dp_laneId        ), 
-                       .scntl__noc__dp_strmId         ( scntl__noc__dp_strmId        ), 
-                       .scntl__noc__dp_data           ( scntl__noc__dp_data          ), 
-                       .scntl__noc__dp_valid          ( scntl__noc__dp_valid         ), 
-                        // Aggregate Data-Path (dp) from NoC 
-                       .scntl__noc__dp_ready          ( scntl__noc__dp_ready         ), 
-                       .noc__scntl__dp_cntl           ( noc__scntl__dp_cntl          ), 
-                       .noc__scntl__dp_type           ( noc__scntl__dp_type          ), 
-                       .noc__scntl__dp_laneId         ( noc__scntl__dp_laneId        ), 
-                       .noc__scntl__dp_strmId         ( noc__scntl__dp_strmId        ), 
-                       .noc__scntl__dp_data           ( noc__scntl__dp_data          ), 
-                       .noc__scntl__dp_valid          ( noc__scntl__dp_valid         ), 
-
-                        // Connections to external NoC
-                        `include "noc_cntl_noc_ports_instance_ports.vh"
-
-                       .peId                         ( peId                        ),
-                       .clk                          ( clk                         ),
-                       .reset_poweron                ( reset_poweron               )
-                          
-  );
-
-  //-------------------------------------------------------------------------------------------------
   // Controller
   // 
   streamingOps_cntl streamingOps_cntl (
@@ -446,8 +390,8 @@ module pe (
                           //------------------------------------------------------------
                           // stOp NoC Interface(s)
                           // connections to datapath made via mem_acc_control python script
-                          `include "streamingOps_cntl_stOp_instance_ports.vh"
-                          `include "streamingOps_cntl_noc_instance_ports.vh"
+                          //`include "streamingOps_cntl_stOp_instance_ports.vh"
+                          //`include "streamingOps_cntl_noc_instance_ports.vh"
                           
                           //------------------------------------------------------------
                           // connections to datapath made via mem_acc_control python script
@@ -560,17 +504,6 @@ module pe (
         wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  scntl__stOp__strm0_destination ;
         wire  [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  scntl__stOp__strm1_destination ;
 
-        wire                                         stOp__noc__strm_ready       ;
-        wire  [`DMA_CONT_STRM_CNTL_RANGE          ]  noc__stOp__strm_cntl        ; 
-        wire                                         noc__stOp__strm_id          ; 
-        wire  [`STREAMING_OP_DATA_RANGE           ]  noc__stOp__strm_data        ; 
-        wire                                         noc__stOp__strm_data_valid  ; 
-
-        wire                                         noc__stOp__strm_ready       ;
-        wire  [`DMA_CONT_STRM_CNTL_RANGE          ]  stOp__noc__strm_cntl        ; 
-        wire                                         stOp__noc__strm_id          ; 
-        wire  [`STREAMING_OP_DATA_RANGE           ]  stOp__noc__strm_data        ; 
-        wire                                         stOp__noc__strm_data_valid  ; 
 
         wire                                         stOp__sti__strm0_ready       ;
         wire  [`DMA_CONT_STRM_CNTL_RANGE          ]  sti__stOp__strm0_cntl        ; 
@@ -684,22 +617,6 @@ module pe (
                                  .stOp__reg__data                ( stOp__reg__data                ),
                                  .stOp__reg__cntl                ( stOp__reg__cntl                ),
 
-                                 //--------------------------------------------------------------------------------
-                                 // NoC interface
-
-                                 // from NoC
-                                 .stOp__noc__strm_ready         ( stOp__noc__strm_ready           ),
-                                 .noc__stOp__strm_cntl          ( noc__stOp__strm_cntl            ), 
-                                 .noc__stOp__strm_id            ( noc__stOp__strm_id              ), 
-                                 .noc__stOp__strm_data          ( noc__stOp__strm_data            ), 
-                                 .noc__stOp__strm_data_valid    ( noc__stOp__strm_data_valid      ), 
-                                                                                                  
-                                  // to NoC                                                       
-                                 .noc__stOp__strm_ready         ( noc__stOp__strm_ready           ),
-                                 .stOp__noc__strm_cntl          ( stOp__noc__strm_cntl            ), 
-                                 .stOp__noc__strm_id            ( stOp__noc__strm_id              ), 
-                                 .stOp__noc__strm_data          ( stOp__noc__strm_data            ), 
-                                 .stOp__noc__strm_data_valid    ( stOp__noc__strm_data_valid      ), 
                                                                                                        
                                  //--------------------------------------------------------------------------------
                                  // External interface - Stack bus
@@ -735,7 +652,7 @@ module pe (
 
   `include "pe_dma_to_memc_connections.vh"
 
-  `include "streamingOps_cntl_stOp_noc_connections.vh"
+  //`include "streamingOps_cntl_stOp_noc_connections.vh"
 
   // Stack Interface Downstream to Streaming Op
   `include "pe_stack_interface_to_stOp_connections.vh"

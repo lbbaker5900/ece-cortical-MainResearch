@@ -295,13 +295,11 @@ module dma_cont (
   wire [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]  num_of_types1            ;
 
   // Input FIFO from stOp
-  wire                                        strm0_from_stOp_fifo_empty           ; 
-  wire                                        strm0_from_stOp_fifo_almost_full     ; 
+  wire                                        strm0_from_stOp_fifo_valid           ; 
   wire [`STREAMING_OP_DATA_RANGE      ]       strm0_from_stOp_fifo_read_data       ; 
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       strm0_from_stOp_fifo_read_cntl       ; 
 
-  wire                                        strm1_from_stOp_fifo_empty           ; 
-  wire                                        strm1_from_stOp_fifo_almost_full     ; 
+  wire                                        strm1_from_stOp_fifo_valid           ; 
   wire [`STREAMING_OP_DATA_RANGE      ]       strm1_from_stOp_fifo_read_data       ; 
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       strm1_from_stOp_fifo_read_cntl       ; 
 
@@ -482,7 +480,7 @@ module dma_cont (
                                                             address       ;
    
         // when writing, we always write if there is data available in the FIFO and memc is ready (we always write complete words so ignore mask)
-        // So set valid and only transition to next data when erady has been asserted
+        // So set valid and only transition to next data when ready has been asserted
         //assign valid_next    =   enable & data_available ;
         assign valid=   enable & data_available ;
    
@@ -526,20 +524,20 @@ module dma_cont (
   assign write_strm[0].enable                  =  strm0_write_enable ;
   assign write_strm[0].ready                   = memc__dma__write_ready0              ;
   assign write_strm[0].start_address           = strm0_write_start_address            ;
-  assign write_strm[0].data_available          = ~strm0_from_stOp_fifo_empty          ;
+  assign write_strm[0].data_available          = strm0_from_stOp_fifo_valid          ;
   assign write_strm[0].types_in_last_data      = strm_type_info[0].types_in_last_data ;
-  assign write_strm[0].last_write_transaction  = ~strm0_from_stOp_fifo_empty & 
-                                                ((strm0_from_stOp_fifo_read_cntl ==  `DMA_CONT_STRM_CNTL_EOP) | (strm0_from_stOp_fifo_read_cntl ==  `DMA_CONT_STRM_CNTL_SOP_EOP))  ;
+  assign write_strm[0].last_write_transaction  = strm0_from_stOp_fifo_valid & 
+                                                ((strm0_from_stOp_fifo_read_cntl ==  `COMMON_STD_INTF_CNTL_EOM) | (strm0_from_stOp_fifo_read_cntl ==  `COMMON_STD_INTF_CNTL_SOM_EOM))  ;
   assign strm0_write_complete                  = write_strm[0].complete               ;
 
   // Stream 1
   assign write_strm[1].enable                  =  strm1_write_enable ;
   assign write_strm[1].ready                   = memc__dma__write_ready1              ;
   assign write_strm[1].start_address           = strm1_write_start_address            ;
-  assign write_strm[1].data_available          = ~strm1_from_stOp_fifo_empty          ;
+  assign write_strm[1].data_available          = strm1_from_stOp_fifo_valid          ;
   assign write_strm[1].types_in_last_data      = strm_type_info[1].types_in_last_data ;
-  assign write_strm[1].last_write_transaction  = ~strm1_from_stOp_fifo_empty & 
-                                                ((strm1_from_stOp_fifo_read_cntl ==  `DMA_CONT_STRM_CNTL_EOP) | (strm1_from_stOp_fifo_read_cntl ==  `DMA_CONT_STRM_CNTL_SOP_EOP))  ;
+  assign write_strm[1].last_write_transaction  = strm1_from_stOp_fifo_valid & 
+                                                ((strm1_from_stOp_fifo_read_cntl ==  `COMMON_STD_INTF_CNTL_EOM) | (strm1_from_stOp_fifo_read_cntl ==  `COMMON_STD_INTF_CNTL_SOM_EOM))  ;
   assign strm1_write_complete                  = write_strm[1].complete               ;
 
   // FIXME: add interrupt if last transaction and fifo not empty
@@ -807,37 +805,72 @@ module dma_cont (
   generate
     for (gvi=0; gvi<2; gvi=gvi+1) 
       begin: from_stOp_fifo
-        `STREAMING_OP_INPUT_FIFO
+
+        reg    [`COMMON_STD_INTF_CNTL_RANGE   ]    write_cntl       ;
+        reg    [`STREAMING_OP_DATA_RANGE      ]    write_data       ; 
+        reg                                        write            ; 
+
+        // Read data                                                       
+        wire                                       pipe_valid       ; 
+        wire                                       pipe_read        ; 
+        wire   [`COMMON_STD_INTF_CNTL_RANGE   ]    pipe_cntl        ;
+        wire   [`STREAMING_OP_DATA_RANGE      ]    pipe_data        ; 
+
+        // Control
+        wire                                       clear            ; 
+        wire                                       empty            ; 
+        wire                                       almost_full      ; 
+
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`DMA_CONT_INPUT_FIFO_DEPTH                      ), 
+                                 .GENERIC_FIFO_THRESHOLD  (`DMA_CONT_INPUT_FIFO_FIFO_ALMOST_FULL_THRESHOLD ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`DMA_CONT_INPUT_FIFO_AGGREGATE_FIFO_WIDTH       )
+                        ) gpfifo (
+                                 // Status
+                                .almost_full      ( almost_full           ),
+                                 // Write                                 
+                                .write            ( write                 ),
+                                .write_data       ( {write_cntl, write_data}),
+                                 // Read                                  
+                                .pipe_valid       ( pipe_valid                 ),
+                                .pipe_data        ( { pipe_cntl,  pipe_data}),
+                                .pipe_read        ( pipe_read                  ),
+
+                                // General
+                                .clear            ( clear                 ),
+                                .reset_poweron    ( reset_poweron         ),
+                                .clk              ( clk                   )
+                                );
+        wire  pipe_som  = (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM) || (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
+        wire  pipe_mom  = (pipe_cntl == `COMMON_STD_INTF_CNTL_MOM)                              ;
+        wire  pipe_eom  = (pipe_cntl == `COMMON_STD_INTF_CNTL_EOM) || (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)  ;
       end
   endgenerate
 
   //-----------------------
   // Stream 0
   assign  from_stOp_fifo[0].clear              = ~strm0_write_enable                ;  // FIFO is from stOp to memory, so clear using write enable
-  assign  strm0_from_stOp_fifo_empty           = from_stOp_fifo[0].fifo_empty       ; 
-  assign  strm0_from_stOp_fifo_almost_full     = from_stOp_fifo[0].fifo_almost_full ; 
-  assign  from_stOp_fifo[0].fifo_read          = ~strm0_from_stOp_fifo_empty & memc__dma__write_ready0;  // FIFO feeds write stream 0 into memory controller
-  assign  strm0_from_stOp_fifo_read_data       = from_stOp_fifo[0].fifo_read_data   ; 
-  assign  strm0_from_stOp_fifo_read_cntl       = from_stOp_fifo[0].fifo_read_cntl   ; 
-  assign  from_stOp_fifo[0].data               = stOp__dma__strm0_data              ;
-  assign  from_stOp_fifo[0].cntl               = stOp__dma__strm0_cntl              ;
-  assign  from_stOp_fifo[0].fifo_write         = stOp__dma__strm0_data_valid        ;
+  assign  strm0_from_stOp_fifo_valid           = from_stOp_fifo[0].pipe_valid       ; 
+  assign  from_stOp_fifo[0].pipe_read          = from_stOp_fifo[0].pipe_valid & memc__dma__write_ready0;  // FIFO feeds write stream 0 into memory controller
+  assign  strm0_from_stOp_fifo_read_data       = from_stOp_fifo[0].pipe_data        ; 
+  assign  strm0_from_stOp_fifo_read_cntl       = from_stOp_fifo[0].pipe_cntl        ; 
+  assign  from_stOp_fifo[0].write_data               = stOp__dma__strm0_data              ;
+  assign  from_stOp_fifo[0].write_cntl               = stOp__dma__strm0_cntl              ;
+  assign  from_stOp_fifo[0].write         = stOp__dma__strm0_data_valid        ;
                                               
   //-----------------------
   // Stream 1
   assign  from_stOp_fifo[1].clear              = ~strm1_write_enable                ;
-  assign  strm1_from_stOp_fifo_empty           = from_stOp_fifo[1].fifo_empty       ; 
-  assign  strm1_from_stOp_fifo_almost_full     = from_stOp_fifo[1].fifo_almost_full ; 
-  assign  from_stOp_fifo[1].fifo_read          = ~strm1_from_stOp_fifo_empty & memc__dma__write_ready1;  // FIFO feeds write stream 0 into memory controller
-  assign  strm1_from_stOp_fifo_read_data       = from_stOp_fifo[1].fifo_read_data   ; 
-  assign  strm1_from_stOp_fifo_read_cntl       = from_stOp_fifo[1].fifo_read_cntl   ; 
-  assign  from_stOp_fifo[1].data               = stOp__dma__strm1_data              ;
-  assign  from_stOp_fifo[1].cntl               = stOp__dma__strm1_cntl              ;
-  assign  from_stOp_fifo[1].fifo_write         = stOp__dma__strm1_data_valid        ;
+  assign  strm1_from_stOp_fifo_valid           = from_stOp_fifo[1].pipe_valid       ; 
+  assign  from_stOp_fifo[1].pipe_read          = from_stOp_fifo[1].pipe_valid & memc__dma__write_ready1;  // FIFO feeds write stream 0 into memory controller
+  assign  strm1_from_stOp_fifo_read_data       = from_stOp_fifo[1].pipe_data        ; 
+  assign  strm1_from_stOp_fifo_read_cntl       = from_stOp_fifo[1].pipe_cntl        ; 
+  assign  from_stOp_fifo[1].write_data               = stOp__dma__strm1_data              ;
+  assign  from_stOp_fifo[1].write_cntl               = stOp__dma__strm1_cntl              ;
+  assign  from_stOp_fifo[1].write         = stOp__dma__strm1_data_valid        ;
 
   // Flow control to stOp interface
-  assign    dma__stOp__strm0_ready   =  ~strm0_from_stOp_fifo_almost_full ;
-  assign    dma__stOp__strm1_ready   =  ~strm1_from_stOp_fifo_almost_full ;
+  assign    dma__stOp__strm0_ready   =  ~from_stOp_fifo[0].almost_full  ;
+  assign    dma__stOp__strm1_ready   =  ~from_stOp_fifo[1].almost_full  ;
 
   //-------------------------------------------------------------------------------------------------
 

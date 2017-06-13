@@ -58,6 +58,24 @@
 `define PE_CNTL_STOP_OPTION_MEMORY_RANGE    `PE_CNTL_STOP_OPTION_MEMORY_DEPTH-1 : 0
 `define PE_CNTL_STOP_PTR_MEMORY_RANGE       `PE_CNTL_STOP_OPTION_MEMORY_DEPTH-1 : 0
 
+`define PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_WIDTH \
+                                    `STREAMING_OP_CNTL_OPERATION_WIDTH   \
+                                  + `PE_ARRAY_CHIPLET_ADDRESS_WIDTH      \
+                                  + `PE_ARRAY_CHIPLET_ADDRESS_WIDTH      \
+                                  + `PE_DATA_TYPES_WIDTH                 \
+                                  + `PE_DATA_TYPES_WIDTH                 \
+                                  + `PE_ARRAY_CHIPLET_ADDRESS_WIDTH      \
+                                  + `PE_ARRAY_CHIPLET_ADDRESS_WIDTH      \
+                                  + `PE_DATA_TYPES_WIDTH                 \
+                                  + `PE_DATA_TYPES_WIDTH                 \
+                                  + `PE_MAX_NUM_OF_TYPES_WIDTH           \
+               
+
+`define PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_MSB            `PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_WIDTH -1
+`define PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_LSB            0
+`define PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_SIZE           (`PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_MSB - `PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_LSB +1)
+`define PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_RANGE           `PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_MSB : `PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_LSB
+
 // PE stOp option memory size
 `define PE_CNTL_SIMD_OPTION_MEMORY_DEPTH   256
 `define PE_CNTL_SIMD_OPTION_MEMORY_RANGE    `PE_CNTL_SIMD_OPTION_MEMORY_DEPTH-1 : 0

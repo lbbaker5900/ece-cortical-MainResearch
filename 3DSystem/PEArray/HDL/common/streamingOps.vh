@@ -173,62 +173,6 @@
 
 //--------------------------------------------------------------------------------------------------
 //------------------------------------------------
-// FIFO's
-//------------------------------------------------
-
-//--------------------------------------------------------
-// Streaming Op input and DMA input from stOp
-
-// Uses:
-//      inside stOp - shared between from dma and cntl(noc) 
-//      inside dma  - from stOp
-
-`define STREAMING_OP_INPUT_FIFO \
-        reg  [`STREAMING_OP_DATA_RANGE      ]       fifo_data      [`STREAMING_OP_INPUT_FIFO_DEPTH_RANGE] ; \
-        reg  [`DMA_CONT_STRM_CNTL_RANGE     ]       fifo_cntl      [`STREAMING_OP_INPUT_FIFO_DEPTH_RANGE] ; \
-        reg  [`STREAMING_OP_INPUT_FIFO_RANGE]       fifo_wp              ; \
-        reg  [`STREAMING_OP_INPUT_FIFO_RANGE]       fifo_rp              ; \
-        reg  [`STREAMING_OP_INPUT_FIFO_RANGE]       fifo_depth           ; \
-        wire                                        fifo_empty           ; \
-        wire                                        fifo_almost_full     ; \
-        wire                                        fifo_read            ; \
-        wire [`STREAMING_OP_DATA_RANGE      ]       fifo_read_data       ; \
-        wire [`DMA_CONT_STRM_CNTL_RANGE     ]       fifo_read_cntl       ; \
-        wire [`STREAMING_OP_DATA_RANGE      ]       data                 ; \
-        wire [`DMA_CONT_STRM_CNTL_RANGE     ]       cntl                 ; \
-        wire                                        fifo_write           ; \
-        wire                                        clear                ; \
-   \
-        always @(posedge clk)\
-          begin\
-            fifo_wp                 <= ( reset_poweron   ) ? 'd0            : \
-                                       ( clear           ) ? 'd0            : \
-                                       ( fifo_write      ) ? fifo_wp + 'd1  :\
-                                                             fifo_wp        ;\
-   \
-            fifo_data[fifo_wp]      <= ( fifo_write       ) ? data               : \
-                                                              fifo_data[fifo_wp] ;\
-   \
-            fifo_cntl[fifo_wp]      <= ( fifo_write       ) ? cntl               : \
-                                                              fifo_cntl[fifo_wp] ;\
-   \
-            fifo_rp                 <= ( reset_poweron    ) ? 'd0           : \
-                                       ( clear            ) ? 'd0           : \
-                                       ( fifo_read        ) ? fifo_rp + 'd1 :\
-                                                              fifo_rp       ;\
-\
-            fifo_depth              <= ( reset_poweron                   ) ? 'd0              : \
-                                       ( clear                           ) ? 'd0              : \
-                                       (  fifo_read & ~fifo_write        ) ? fifo_depth - 'd1 :\
-                                       ( ~fifo_read &  fifo_write        ) ? fifo_depth + 'd1 :\
-                                                                             fifo_depth       ;\
-   \
-          end\
-\
-          assign fifo_empty          = (fifo_rp == fifo_wp)    ;\
-          assign fifo_almost_full    = (fifo_depth >= 'd`STREAMING_OP_INPUT_FIFO_DEPTH-`COMMON_STREAMING_OP_INPUT_FIFO_ALMOST_FULL_THRESHOLD)    ;\
-          assign fifo_read_data      = fifo_data [fifo_rp] ;\
-          assign fifo_read_cntl      = fifo_cntl [fifo_rp] ;\
 
 //------------------------------------------------------------------------------------------------------------
 `endif

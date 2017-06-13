@@ -90,19 +90,6 @@ module streamingOps (
                           stOp__dma__strm1_data_mask   , 
                           stOp__dma__strm1_data_valid  , 
 
-                          // NoC interface (via stop_cntl)
-                          // from NoC
-                          stOp__noc__strm_ready        ,
-                          noc__stOp__strm_cntl         , 
-                          noc__stOp__strm_id           , 
-                          noc__stOp__strm_data         , 
-                          noc__stOp__strm_data_valid   , 
-                          // to NoC
-                          noc__stOp__strm_ready        ,
-                          stOp__noc__strm_cntl         , 
-                          stOp__noc__strm_id           , 
-                          stOp__noc__strm_data         , 
-                          stOp__noc__strm_data_valid   , 
 
                           // Downstream Stack interface
                           stOp__sti__strm0_ready        ,
@@ -164,19 +151,6 @@ module streamingOps (
   output [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm1_data_mask   ; 
   output                                       stOp__dma__strm1_data_valid  ; 
 
-  // NoC interface
-  // from NoC
-  output                                       stOp__noc__strm_ready       ;
-  input [`DMA_CONT_STRM_CNTL_RANGE     ]       noc__stOp__strm_cntl        ; 
-  input                                        noc__stOp__strm_id          ; 
-  input [`STREAMING_OP_DATA_RANGE      ]       noc__stOp__strm_data        ; 
-  input                                        noc__stOp__strm_data_valid  ; 
-  // to NoC
-  input                                        noc__stOp__strm_ready       ;
-  output[`DMA_CONT_STRM_CNTL_RANGE     ]       stOp__noc__strm_cntl        ; 
-  output                                       stOp__noc__strm_id          ; 
-  output[`STREAMING_OP_DATA_RANGE      ]       stOp__noc__strm_data        ; 
-  output                                       stOp__noc__strm_data_valid  ; 
 
   // Downstream Stack interface
   output                                       stOp__sti__strm0_ready       ;
@@ -228,20 +202,6 @@ module streamingOps (
   wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data        ; 
   wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data_mask   ; 
   wire                                         dma__stOp__strm1_data_valid  ; 
-  // NoC interface
-  wire                                         noc__stOp__strm_ready       ;
-  reg    [`DMA_CONT_STRM_CNTL_RANGE     ]      stOp__noc__strm_cntl        ; 
-  reg                                          stOp__noc__strm_id          ; 
-  reg    [`STREAMING_OP_DATA_RANGE      ]      stOp__noc__strm_data        ; 
-  reg    [`STREAMING_OP_DATA_RANGE      ]      stOp__noc__strm_data_mask   ; 
-  reg                                          stOp__noc__strm_data_valid  ; 
-
-  reg                                          stOp__noc__strm_ready       ;
-  wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       noc__stOp__strm_cntl        ; 
-  wire                                         noc__stOp__strm_id          ; 
-  wire  [`STREAMING_OP_DATA_RANGE      ]       noc__stOp__strm_data        ; 
-  wire  [`STREAMING_OP_DATA_RANGE      ]       noc__stOp__strm_data_mask   ; 
-  wire                                         noc__stOp__strm_data_valid  ; 
   // Downstream Stack interface
   reg                                          stOp__sti__strm0_ready       ;
   wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       sti__stOp__strm0_cntl        ; 
@@ -355,6 +315,7 @@ module streamingOps (
     fp_cmp_first_gt_threshold    =   'b0                       ;
     fp_cmp_enable                =   'b0                       ;
     casex (opcode)
+`ifdef STREAMINGOPS_INCLUDE_BITSUM
       `STREAMING_OP_CNTL_OPERATION_BITSUM   :
         begin
           // Output
@@ -377,6 +338,7 @@ module streamingOps (
           // stOp control
           bsum_enable                  =  1'b1 ;
         end
+`endif
       `STREAMING_OP_CNTL_OPERATION_NOP  :
         begin
           // Output
@@ -421,6 +383,7 @@ module streamingOps (
           // stOp control
           fp_mac_enable                =   'b1                       ;
         end
+`ifdef STREAMINGOPS_INCLUDE_FP_MAX
       `STREAMING_OP_CNTL_OPERATION_FP_MAX     :
         begin
           // Output
@@ -437,6 +400,8 @@ module streamingOps (
           fp_cmp_max                   =   'b1                       ;
           fp_cmp_enable                =   'b1                       ;
         end
+`endif
+`ifdef STREAMINGOPS_INCLUDE_FIRST_GT
       `STREAMING_OP_CNTL_OPERATION_FP_FIRST_GT     :
         begin
           // Output
@@ -454,6 +419,7 @@ module streamingOps (
           fp_cmp_first_gt_threshold    =   'b1                       ;
           fp_cmp_enable                =   'b1                       ;
         end
+`endif
 
       default                       : 
         begin
@@ -543,12 +509,14 @@ module streamingOps (
             strm0_data_valid        =  sti__stOp__strm0_data_valid ; 
             stOp__sti__strm0_ready  = ~fifo[0].almost_full    ; 
           end
+/*
         `STREAMING_OP_CNTL_OPERATION_FROM_NOC       : 
           begin
             strm0_cntl             =  noc__stOp__strm_cntl       ; 
             strm0_data             =  noc__stOp__strm_data       ; 
             strm0_data_valid       =  noc__stOp__strm_data_valid & ~noc__stOp__strm_id ; // from NoC can be strm0 or 1
           end
+*/
         default                       : 
           begin
             strm0_cntl              =  'd0                         ; 
@@ -576,12 +544,14 @@ module streamingOps (
             strm1_data_valid        =  sti__stOp__strm1_data_valid ; 
             stOp__sti__strm1_ready  = ~fifo[1].almost_full    ; 
           end
+/*
         `STREAMING_OP_CNTL_OPERATION_FROM_NOC       : 
           begin
             strm1_cntl             =  noc__stOp__strm_cntl       ; 
             strm1_data             =  noc__stOp__strm_data       ; 
             strm1_data_valid       =  noc__stOp__strm_data_valid & noc__stOp__strm_id ; // from NoC can be strm0 or 1
           end
+*/
         default                       : 
           begin
             strm1_cntl              =  'd0                         ; 
@@ -602,10 +572,12 @@ module streamingOps (
         begin
           stOp__dma__strm0_ready  = 1'b0                  ;
         end
+/*
       `STREAMING_OP_CNTL_OPERATION_TO_NOC       : 
         begin
           stOp__dma__strm0_ready = noc__stOp__strm_ready ;
         end
+*/
       default                       : 
         begin
           stOp__dma__strm0_ready  = 1'b0                  ;
@@ -623,20 +595,18 @@ module streamingOps (
         begin
           stOp__dma__strm1_ready  = 1'b0                  ;
         end
+/*
       `STREAMING_OP_CNTL_OPERATION_TO_NOC       : 
         begin
           stOp__dma__strm1_ready = noc__stOp__strm_ready ;
         end
+*/
       default                       : 
         begin
           stOp__dma__strm1_ready  = 1'b0                  ;
         end
     endcase // always @
 
-  always @(*)
-    begin
-          stOp__noc__strm_ready  = (stOp__noc__strm_id) ? ~fifo[1].almost_full   : ~fifo[0].almost_full   ; 
-    end
 
   // we dont fifo the data mask, so capture mask so it can be used when data
   // is pulled from the fifo
@@ -685,52 +655,6 @@ module streamingOps (
         end
     endcase // always @
 
-  //------------------------------
-  // NoC related Signalling
-  // 
-  // DMA Read Stream
-  // The DMA read typically goes to the stOp. But if the memory address of the source happens to be another PE's memory, then the
-  // local read stream is available.
-  // In which case, another PE may be using this PE's local memory as its source, in which case the DMA read may be used as the source and
-  // therefore the dma read stream must be sent to the NoC.
-  //
-  // stream is spare or the stream comes from another PE, the DMA read stream may be used by
-  // another PE as an external DMA. If the destination is NoC, then direct the DMA read stream to the NoC.
-  //
-  //Also, if a write path is available, it might be used as a
-  // Assumption: Only one read stream per lane is allocated for external DMA
-  //  i) this means if any one read stream destination is NoC, transfer it
-  //  directly to the NoC interface
-  //
-  //
-  always @(posedge clk)
-    begin
-      //------------------------------
-      // Stream 0
-      if (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_NOC)
-        begin
-          stOp__noc__strm_cntl        <=  dma__stOp__strm0_cntl        ; 
-          stOp__noc__strm_id          <=  1'b0                         ; 
-          stOp__noc__strm_data        <=  dma__stOp__strm0_data        ; 
-          stOp__noc__strm_data_valid  <=  dma__stOp__strm0_data_valid  ; 
-        end
-      //------------------------------
-      // Stream 1
-      else if (strm1_destination == `STREAMING_OP_CNTL_OPERATION_TO_NOC)
-        begin
-          stOp__noc__strm_cntl        <=  dma__stOp__strm1_cntl        ; 
-          stOp__noc__strm_id          <=  1'b1                         ; 
-          stOp__noc__strm_data        <=  dma__stOp__strm1_data        ; 
-          stOp__noc__strm_data_valid  <=  dma__stOp__strm1_data_valid  ; 
-        end
-      else 
-        begin
-          stOp__noc__strm_data        <=   32'hFFFF_FFFF               ;
-          stOp__noc__strm_cntl        <=  'd0                          ;
-          stOp__noc__strm_id          <=  'd0                          ;
-          stOp__noc__strm_data_valid  <=  'b0                          ;
-        end
-    end
   //
   //------------------------------------------------------------
 
@@ -871,6 +795,7 @@ module streamingOps (
   // Operations
   //
 
+`ifdef STREAMINGOPS_INCLUDE_BITSUM
   //-----------------------------------------------
   // BSUM
   //
@@ -959,6 +884,7 @@ module streamingOps (
                                                                      bsum_almost_complete ;
 
     end
+`endif
 
   //-----------------------------------------------
   // Floating Point MAC
@@ -1191,6 +1117,7 @@ module streamingOps (
 `endif
 
 
+`ifdef STREAMINGOPS_INCLUDE_FP_MAX
   //-----------------------------------------------
   // Floating Point Compare
   //
@@ -1431,8 +1358,12 @@ module streamingOps (
       fp_cmp_result_valid  <= ( (~strm0_enable & ~strm1_enable) ) ? 'd0                     :
                                                                      fp_cmp_almost_complete ;
     end
-  //-------------------------------------------------------------------------------------------------
-  //-------------------------------------------------------------------------------------------------
    
+`endif
+
+  //-------------------------------------------------------------------------------------------------
+  //-------------------------------------------------------------------------------------------------
+
+
 endmodule
 

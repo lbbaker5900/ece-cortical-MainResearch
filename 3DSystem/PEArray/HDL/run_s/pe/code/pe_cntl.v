@@ -211,6 +211,52 @@ module pe_cntl (
   //  - stOp fields are accessed by a pointer provided in the OOB {option,value} tuple
   //
   
+  genvar gvi;
+  generate
+    for (gvi=0; gvi<1 ; gvi=gvi+1) 
+      begin: stOp_option_memory
+  
+        wire enable_memory ;
+
+        generic_1port_memory #(.GENERIC_MEM_DEPTH          (`PE_CNTL_STOP_OPTION_MEMORY_DEPTH           ),
+                               .GENERIC_MEM_REGISTERED_OUT (0                                           ),
+                               .GENERIC_MEM_DATA_WIDTH     (`PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_WIDTH )
+                        ) gmemory ( 
+                        
+                        //---------------------------------------------------------------
+                        // Port 
+                        .portA_address       ( stOp_optionPtr       ),
+                        .portA_write_data    ( {`PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_WIDTH {1'b0}} ),
+                        .portA_read_data     ( { stOp_operation       ,                                                     
+                                                 sourceAddress0       ,
+                                                 destinationAddress0  ,
+                                                 src_data_type0       ,
+                                                 dest_data_type0      ,
+                                                 sourceAddress1       ,
+                                                 destinationAddress1  ,
+                                                 src_data_type1       ,
+                                                 dest_data_type1      ,
+                                                 numberOfOperands     }),
+                        .portA_enable        ( enable_memory                    ),
+                        .portA_write         ( 1'b0                             ),
+                        
+                        //---------------------------------------------------------------
+                        // General
+                        .reset_poweron       ( reset_poweron             ),
+                        .clk                 ( clk                       )
+                        ) ;
+  // Note: parameters must be fixed, so have to load directly
+  //defparam gmemory.GENERIC_MEM_INIT_FILE   =    $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId);
+        `ifndef SYNTHESIS
+          always
+            begin
+              @(posedge enable_memory)
+              $readmemh($sformatf("./inputFiles/pe%0d_pe_cntl_stOp_memory.dat", sys__pe__peId), gmemory.mem);
+            end
+        `endif
+      end
+  endgenerate
+/*
   pe_cntl_stOp_rom pe_cntl_stOp_rom (  
                                      .valid                 ( oob_packet_starting  ),  // used by readmem. If we are receiving a WU, update control memory
                                      .optionPtr             ( stOp_optionPtr       ),
@@ -232,6 +278,7 @@ module pe_cntl (
                                      .sys__pe__peId         ( sys__pe__peId        ),
                                      .clk
                                   );
+*/
 
   //----------------------------------------------------------------------------------------------------
   // Downstream OOB FIFO
@@ -245,7 +292,6 @@ module pe_cntl (
   //
   // Put in a generate in case we decide to extend to multiple downstream lanes
 
-  genvar gvi;
   generate
     for (gvi=0; gvi<1; gvi=gvi+1) 
       begin: from_Sti_OOB_Fifo
@@ -431,6 +477,8 @@ module pe_cntl (
   //----------------------------------------------------------------------------------------------------
   // Assignments
   //
+  assign stOp_option_memory[0].enable_memory = (pe_cntl_oob_rx_cntl_state != `PE_CNTL_OOB_RX_CNTL_WAIT) ;
+
   assign from_Sti_OOB_Fifo[0].pipe_read = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT) & from_Sti_OOB_Fifo[0].pipe_valid |
                                           (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_SOM ) & from_Sti_OOB_Fifo[0].pipe_valid |
                                           (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_MOM ) & from_Sti_OOB_Fifo[0].pipe_valid ;
@@ -510,7 +558,7 @@ endmodule
 
 
 
-
+`ifndef SYNTHESIS
 
 //----------------------------------------------------------------------------------------------------
 // PE control memory
@@ -633,3 +681,4 @@ module pe_cntl_stOp_rom (
 
 endmodule
 
+`endif

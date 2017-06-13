@@ -24,11 +24,11 @@
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
 `include "dma_cont.vh"
-`include "noc_cntl.vh"
+//`include "noc_cntl.vh"
 `include "mem_acc_cont.vh"
 `include "pe.vh"
 `include "pe_array.vh"
-`include "noc_interpe_port_Bitmasks.vh"
+//`include "noc_interpe_port_Bitmasks.vh"
 
 `timescale 1ns/10ps
 
@@ -143,7 +143,7 @@ module pe_array (
 
         //-------------------------------------------------------------------------------------------------
         // NoC Interface
-        `include "pe_noc_instance_wires.vh"
+        //`include "pe_noc_instance_wires.vh"
 
         assign sys__pe__peId = gvi;
 
@@ -151,7 +151,7 @@ module pe_array (
    
                 //-------------------------------
                 // NoC Interface
-                `include "pe_noc_instance_ports.vh"
+                //`include "pe_noc_instance_ports.vh"
    
                 //-------------------------------
                 // Stack Bus General control and status     
@@ -201,8 +201,8 @@ module pe_array (
 
   //-------------------------------------------------------------------------------------------------
   // Inter PE NoC Connectivity      
-  `include "pe_noc_interpe_connections.vh"
-  `include "noc_interpe_port_Bitmask_assignments.vh"
+  //`include "pe_noc_interpe_connections.vh"
+  //`include "noc_interpe_port_Bitmask_assignments.vh"
 
 
 

@@ -107,7 +107,18 @@
 // DMA_CONT FIFO
 //------------------------------------------------
 
-`define DMA_CONT_INPUT_FIFO_DEPTH          4
+//`define DMA_CONT_INPUT_FIFO_DEPTH          4
+//`define DMA_CONT_INPUT_FIFO_DEPTH_MSB      (`DMA_CONT_INPUT_FIFO_DEPTH) -1
+//`define DMA_CONT_INPUT_FIFO_DEPTH_LSB      0
+//`define DMA_CONT_INPUT_FIFO_DEPTH_SIZE     (`DMA_CONT_INPUT_FIFO_DEPTH_MSB - `DMA_CONT_INPUT_FIFO_DEPTH_LSB +1)
+//`define DMA_CONT_INPUT_FIFO_DEPTH_RANGE     `DMA_CONT_INPUT_FIFO_DEPTH_MSB : `DMA_CONT_INPUT_FIFO_DEPTH_LSB
+//`define DMA_CONT_INPUT_FIFO_MSB            ((`CLOG2(`DMA_CONT_INPUT_FIFO_DEPTH)) -1)
+//`define DMA_CONT_INPUT_FIFO_LSB            0
+//`define DMA_CONT_INPUT_FIFO_SIZE           (`DMA_CONT_INPUT_FIFO_MSB - `DMA_CONT_INPUT_FIFO_LSB +1)
+//`define DMA_CONT_INPUT_FIFO_RANGE           `DMA_CONT_INPUT_FIFO_MSB : `DMA_CONT_INPUT_FIFO_LSB
+
+
+`define DMA_CONT_INPUT_FIFO_DEPTH          8
 `define DMA_CONT_INPUT_FIFO_DEPTH_MSB      (`DMA_CONT_INPUT_FIFO_DEPTH) -1
 `define DMA_CONT_INPUT_FIFO_DEPTH_LSB      0
 `define DMA_CONT_INPUT_FIFO_DEPTH_SIZE     (`DMA_CONT_INPUT_FIFO_DEPTH_MSB - `DMA_CONT_INPUT_FIFO_DEPTH_LSB +1)
@@ -117,3 +128,88 @@
 `define DMA_CONT_INPUT_FIFO_SIZE           (`DMA_CONT_INPUT_FIFO_MSB - `DMA_CONT_INPUT_FIFO_LSB +1)
 `define DMA_CONT_INPUT_FIFO_RANGE           `DMA_CONT_INPUT_FIFO_MSB : `DMA_CONT_INPUT_FIFO_LSB
 
+// For AGGREGATE_FIFO implemented as single memory, define field ranges
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_WIDTH    `STREAMING_OP_DATA_WIDTH 
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_MSB      `DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_WIDTH-1
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_LSB      0
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_SIZE     (`DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_MSB - `DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_LSB +1)
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_RANGE     `DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_MSB : `DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_LSB
+
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_WIDTH      `COMMON_STD_INTF_CNTL_WIDTH
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_MSB      (`DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_LSB+`DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_WIDTH) -1
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_LSB      `DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_MSB+1
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_SIZE     (`DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_MSB - `DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_LSB +1)
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_RANGE     `DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_MSB : `DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_LSB
+
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_FIFO_WIDTH     `DMA_CONT_INPUT_FIFO_AGGREGATE_CNTL_WIDTH  \
+                                                        +`DMA_CONT_INPUT_FIFO_AGGREGATE_DATA_WIDTH
+
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_FIFO_MSB            `DMA_CONT_INPUT_FIFO_AGGREGATE_FIFO_WIDTH -1
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_FIFO_LSB            0
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_FIFO_SIZE           (`DMA_CONT_INPUT_FIFO_AGGREGATE_FIFO_MSB - `DMA_CONT_INPUT_FIFO_AGGREGATE_FIFO_LSB +1)
+`define DMA_CONT_INPUT_FIFO_AGGREGATE_FIFO_RANGE           `DMA_CONT_INPUT_FIFO_AGGREGATE_FIFO_MSB : `DMA_CONT_INPUT_FIFO_AGGREGATE_FIFO_LSB
+
+// Threshold below full when we assert almost full
+// assert almost full when there are only this many entries available in the fifo
+`define DMA_CONT_INPUT_FIFO_FIFO_ALMOST_FULL_THRESHOLD 4
+
+//--------------------------------------------------------------------------------------------------
+//------------------------------------------------
+// FIFO's
+//------------------------------------------------
+
+//--------------------------------------------------------
+// Streaming Op input and DMA input from stOp
+
+// Uses:
+//      inside stOp - shared between from dma and cntl(noc) 
+//      inside dma  - from stOp
+
+`define STREAMING_OP_INPUT_FIFO \
+        reg  [`STREAMING_OP_DATA_RANGE      ]       fifo_data      [`STREAMING_OP_INPUT_FIFO_DEPTH_RANGE] ; \
+        reg  [`DMA_CONT_STRM_CNTL_RANGE     ]       fifo_cntl      [`STREAMING_OP_INPUT_FIFO_DEPTH_RANGE] ; \
+        reg  [`STREAMING_OP_INPUT_FIFO_RANGE]       fifo_wp              ; \
+        reg  [`STREAMING_OP_INPUT_FIFO_RANGE]       fifo_rp              ; \
+        reg  [`STREAMING_OP_INPUT_FIFO_RANGE]       fifo_depth           ; \
+        wire                                        fifo_empty           ; \
+        wire                                        fifo_almost_full     ; \
+        wire                                        fifo_read            ; \
+        wire [`STREAMING_OP_DATA_RANGE      ]       fifo_read_data       ; \
+        wire [`DMA_CONT_STRM_CNTL_RANGE     ]       fifo_read_cntl       ; \
+        wire [`STREAMING_OP_DATA_RANGE      ]       data                 ; \
+        wire [`DMA_CONT_STRM_CNTL_RANGE     ]       cntl                 ; \
+        wire                                        fifo_write           ; \
+        wire                                        clear                ; \
+   \
+        always @(posedge clk)\
+          begin\
+            fifo_wp                 <= ( reset_poweron   ) ? 'd0            : \
+                                       ( clear           ) ? 'd0            : \
+                                       ( fifo_write      ) ? fifo_wp + 'd1  :\
+                                                             fifo_wp        ;\
+   \
+            fifo_data[fifo_wp]      <= ( fifo_write       ) ? data               : \
+                                                              fifo_data[fifo_wp] ;\
+   \
+            fifo_cntl[fifo_wp]      <= ( fifo_write       ) ? cntl               : \
+                                                              fifo_cntl[fifo_wp] ;\
+   \
+            fifo_rp                 <= ( reset_poweron    ) ? 'd0           : \
+                                       ( clear            ) ? 'd0           : \
+                                       ( fifo_read        ) ? fifo_rp + 'd1 :\
+                                                              fifo_rp       ;\
+\
+            fifo_depth              <= ( reset_poweron                   ) ? 'd0              : \
+                                       ( clear                           ) ? 'd0              : \
+                                       (  fifo_read & ~fifo_write        ) ? fifo_depth - 'd1 :\
+                                       ( ~fifo_read &  fifo_write        ) ? fifo_depth + 'd1 :\
+                                                                             fifo_depth       ;\
+   \
+          end\
+\
+          assign fifo_empty          = (fifo_rp == fifo_wp)    ;\
+          assign fifo_almost_full    = (fifo_depth >= 'd`STREAMING_OP_INPUT_FIFO_DEPTH-`COMMON_STREAMING_OP_INPUT_FIFO_ALMOST_FULL_THRESHOLD)    ;\
+          assign fifo_read_data      = fifo_data [fifo_rp] ;\
+          assign fifo_read_cntl      = fifo_cntl [fifo_rp] ;\
+
+//------------------------------------------------------------------------------------------------------------

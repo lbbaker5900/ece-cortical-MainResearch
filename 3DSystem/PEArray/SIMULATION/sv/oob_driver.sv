@@ -21,6 +21,7 @@
 `include "pe.vh"
 `include "pe_array.vh"
 `include "manager.vh"
+`include "pe_cntl.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
 `include "TB_streamingOps_cntl.vh"  // might cause an error if this is included in any of the above files
@@ -111,6 +112,12 @@ class oob_driver;
         //----------------------------------------------------------------------------------------------------
         // readmeh files for pe_cntl stOp control memory
         //
+        // Aggregate memories for stOp and simd control
+        integer stOp_cntl_memory_pe_cntl_stOp_File         ;
+        integer stOp_cntl_memory_pe_cntl_simd_File         ;
+        //bit [`PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_RANGE  ]  pe_cntl_stOp_memory_data ;
+
+        // we originally created separate files for each field, now create an aggregate memory
         integer stOp_cntl_memory_stOp_operation_File       ;
         integer stOp_cntl_memory_sourceAddress0_File       ;
         integer stOp_cntl_memory_destinationAddress0_File  ;
@@ -144,6 +151,8 @@ class oob_driver;
         */
 
         // Here we initially create the file, later we'll open for append
+        //stOp_cntl_memory_pe_cntl_stOp_File         =   $fopen($sformatf("./inputFiles/pe%0d_pe_cntl_stOp_memory.dat"     , this.Id), "w"    );
+        stOp_cntl_memory_pe_cntl_simd_File         =   $fopen($sformatf("./inputFiles/pe%0d_pe_cntl_simd_memory.dat"     , this.Id), "w"    );
         
         stOp_cntl_memory_stOp_operation_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_stOp_operation.dat"     , this.Id), "w"    );
         
@@ -160,6 +169,11 @@ class oob_driver;
         stOp_cntl_memory_numberOfOperands_File     =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_numberOfOperands.dat"   , this.Id), "w"    );
         
         // close
+        // Aggregate Memory
+        //$fclose(stOp_cntl_memory_pe_cntl_stOp_File       );
+        $fclose(stOp_cntl_memory_pe_cntl_simd_File       );
+
+        // Individual memory
         $fclose(stOp_cntl_memory_stOp_operation_File       );
                                                            
         $fclose(stOp_cntl_memory_sourceAddress0_File       );
@@ -242,6 +256,11 @@ class oob_driver;
                     //   - each new command gets placed into pe_cntl memry based on pointer in OP descriptor
                     //   - pointer comes from manager oob_packet (which used the content of the wud_to_oob command provided by the oob_driver
                     //     e.g. manager merged pointer from wud_to_oob command into the operation packet
+                    // Aggregate Memory
+                    //stOp_cntl_memory_pe_cntl_stOp_File         =   $fopen($sformatf("./inputFiles/pe%0d_pe_cntl_stOp_memory.dat"     , this.Id), "w"    );
+                    stOp_cntl_memory_pe_cntl_simd_File         =   $fopen($sformatf("./inputFiles/pe%0d_pe_cntl_simd_memory.dat"     , this.Id), "w"    );
+
+                    // Individual memory
                     stOp_cntl_memory_stOp_operation_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_stOp_operation.dat"     , this.Id), "a"    );
                     
                     stOp_cntl_memory_sourceAddress0_File       =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_sourceAddress0.dat"     , this.Id), "a"    );
@@ -257,6 +276,23 @@ class oob_driver;
                     stOp_cntl_memory_numberOfOperands_File     =   $fopen($sformatf("./inputFiles/pe%0d_stOp_cntl_memory_numberOfOperands.dat"   , this.Id), "a"    );
                     
                     // Write to only location 0x1 as this pointer address is hard-coded in stack_interface_typedef.vh
+                    //--------------------------------------------------------------------------------------------
+                    // Aggregate Memory
+                    $fwrite(stOp_cntl_memory_pe_cntl_stOp_File         , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, {oob_packet_mgr.stOp_operation       , 
+                                                                                                                                oob_packet_mgr.sourceAddress     [0], 
+                                                                                                                                oob_packet_mgr.destinationAddress[0],
+                                                                                                                                oob_packet_mgr.src_data_type     [0],
+                                                                                                                                oob_packet_mgr.dest_data_type    [0],
+                                                                                                                                oob_packet_mgr.sourceAddress     [1],
+                                                                                                                                oob_packet_mgr.destinationAddress[1],
+                                                                                                                                oob_packet_mgr.src_data_type     [1],
+                                                                                                                                oob_packet_mgr.dest_data_type    [1],
+                                                                                                                                oob_packet_mgr.numberOfOperands     }));
+
+                    //
+
+                    //--------------------------------------------------------------------------------------------
+                    // Individual memory
                     $fwrite(stOp_cntl_memory_stOp_operation_File       , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, oob_packet_mgr.stOp_operation          ));
                                                                                                                                                           
                     $fwrite(stOp_cntl_memory_sourceAddress0_File       , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, oob_packet_mgr.sourceAddress     [0]   ));
@@ -270,6 +306,11 @@ class oob_driver;
                     $fwrite(stOp_cntl_memory_numberOfOperands_File     , $sformatf("@%0d %h\n", oob_packet_mgr.stOp_optionPtr, oob_packet_mgr.numberOfOperands        ));
                     
                     // close
+                    // Aggregate Memory
+                    //$fclose(stOp_cntl_memory_pe_cntl_stOp_File       );
+                    $fclose(stOp_cntl_memory_pe_cntl_simd_File       );
+                    
+                    // Individual memory
                     $fclose(stOp_cntl_memory_stOp_operation_File       );
                                                                        
                     $fclose(stOp_cntl_memory_sourceAddress0_File       );
