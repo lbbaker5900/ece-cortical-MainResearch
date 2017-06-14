@@ -329,7 +329,7 @@ module mem_acc_cont (
   //----------------------------------------------------------------------
   // Memory
   //
-  // Instantiate 2 banks
+  // Instantiate 1 banks
   //
   // Signalling passed to and from the banks based on the read and write FSM
   // state.
@@ -342,7 +342,10 @@ module mem_acc_cont (
       begin: bank_mem
 
         // Bank addr/data/control
+        localparam MEM_ACC_CONT_BANK_NUM_OF_PORTS = `MEM_ACC_CONT_BANK_NUM_OF_PORTS ;
+
         wire  [`MEM_ACC_CONT_BANK_ADDRESS_RANGE ]  read_address                ;
+        wire  [`MEM_ACC_CONT_BANK_ADDRESS_RANGE ]  address                     ;  // cant seem to use if localparam with wires???
         wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE  ]  read_data                   ; 
         wire                                       read_data_ldst_valid_next   ;
         reg                                        read_data_ldst_valid        ;
@@ -357,33 +360,56 @@ module mem_acc_cont (
      
         `include "mem_acc_cont_bank_mem_assignments.vh"
 
-
-        generic_2port_memory #(.GENERIC_MEM_DEPTH          (`MEM_ACC_CONT_BANK_DEPTH        ),
-                               .GENERIC_MEM_REGISTERED_OUT (0                               ),
-                               .GENERIC_MEM_DATA_WIDTH     (`MEM_ACC_CONT_MEMORY_DATA_WIDTH )
-                        ) gmemory ( 
-                        
-                        //---------------------------------------------------------------
-                        // Port A
-                        .portA_address       ( write_address   ),
-                        .portA_write_data    ( write_data      ),
-                        .portA_read_data     (                 ),
-                        .portA_enable        ( 1'b1            ),
-                        .portA_write         ( write_enable    ),
-                        
-                        //---------------------------------------------------------------
-                        // Port B
-                        .portB_address       ( read_address    ),
-                        .portB_write_data    ( {`MEM_ACC_CONT_MEMORY_DATA_WIDTH {1'b0}} ),
-                        .portB_read_data     ( read_data       ),
-                        .portB_enable        ( 1'b1            ),
-                        .portB_write         ( 1'b0            ),
-                        
-                        //---------------------------------------------------------------
-                        // General
-                        .reset_poweron       ( reset_poweron   ),
-                        .clk                 ( clk             )
-                        ) ;
+        if (MEM_ACC_CONT_BANK_NUM_OF_PORTS == 2)
+          begin
+            generic_2port_memory #(.GENERIC_MEM_DEPTH          (`MEM_ACC_CONT_BANK_DEPTH        ),
+                                   .GENERIC_MEM_REGISTERED_OUT (0                               ),
+                                   .GENERIC_MEM_DATA_WIDTH     (`MEM_ACC_CONT_MEMORY_DATA_WIDTH )
+                            ) gmemory ( 
+                            
+                            //---------------------------------------------------------------
+                            // Port A
+                            .portA_address       ( write_address   ),
+                            .portA_write_data    ( write_data      ),
+                            .portA_read_data     (                 ),
+                            .portA_enable        ( 1'b1            ),
+                            .portA_write         ( write_enable    ),
+                            
+                            //---------------------------------------------------------------
+                            // Port B
+                            .portB_address       ( read_address    ),
+                            .portB_write_data    ( {`MEM_ACC_CONT_MEMORY_DATA_WIDTH {1'b0}} ),
+                            .portB_read_data     ( read_data       ),
+                            .portB_enable        ( 1'b1            ),
+                            .portB_write         ( 1'b0            ),
+                            
+                            //---------------------------------------------------------------
+                            // General
+                            .reset_poweron       ( reset_poweron   ),
+                            .clk                 ( clk             )
+                            ) ;
+          end
+        else
+          begin
+            generic_1port_memory #(.GENERIC_MEM_DEPTH          (`MEM_ACC_CONT_BANK_DEPTH        ),
+                                   .GENERIC_MEM_REGISTERED_OUT (0                               ),
+                                   .GENERIC_MEM_DATA_WIDTH     (`MEM_ACC_CONT_MEMORY_DATA_WIDTH )
+                            ) gmemory ( 
+                            
+                            //---------------------------------------------------------------
+                            // Port A
+                            .portA_address       ( address         ),
+                            .portA_write_data    ( write_data      ),
+                            .portA_read_data     ( read_data       ),
+                            .portA_enable        ( 1'b1            ),
+                            .portA_write         ( write_enable    ),
+                            
+                            //---------------------------------------------------------------
+                            // General
+                            .reset_poweron       ( reset_poweron   ),
+                            .clk                 ( clk             )
+                            ) ;
+          end
 
 /*
 `ifndef SYNTHESIS

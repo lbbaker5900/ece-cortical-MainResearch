@@ -1,6 +1,7 @@
 
        assign read_data_ldst_valid_next   = ( mem_acc_state_next == `MEM_ACC_CONT_LDST_READ_ACCESS    );
-       assign read_data_strm_valid_next  = ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS    );
+       assign read_data_strm_valid_next  = ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS  ) | 
+                                           ( mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS ) ;
        // outputs 
        always @(posedge clk)
          begin

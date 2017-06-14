@@ -921,3 +921,4 @@ set jobs [project $p list_job_names]
   }
 
 project $p save
+project $p run_job generate_all

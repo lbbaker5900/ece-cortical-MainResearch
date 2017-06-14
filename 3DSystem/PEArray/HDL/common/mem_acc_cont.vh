@@ -23,7 +23,9 @@
 
 //------------------------------------------------
 // Do we allow each lane to access any bank
-`define MEM_ACC_CONT_ALLOW_ACCESS_ANY False 
+// `define MEM_ACC_CONT_ALLOW_ACCESS_ANY 
+// Are the memories 1 or 2 port
+`define MEM_ACC_CONT_BANK_NUM_OF_PORTS 1
 
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------
@@ -69,9 +71,10 @@
 `define MEM_ACC_CONT_MEMORY_BYTE_SHIFT          (`MEM_ACC_CONT_MEMORY_BYTE_WIDTH)
 //FIXME
 //`define MEM_ACC_CONT_BANK_DEPTH                2**(`MEM_ACC_CONT_BANK_WIDTH)
-`define MEM_ACC_CONT_BANK_DEPTH                1024
+`define MEM_ACC_CONT_BANK_DEPTH                256
 //`define MEM_ACC_CONT_BANK_ADDRESS_MSB           (`MEM_ACC_CONT_MEMORY_ADDRESS_MSB - (`CLOG2(`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS)))
-`define MEM_ACC_CONT_BANK_ADDRESS_MSB           9
+`define MEM_ACC_CONT_BANK_ADDRESS_WIDTH         (`CLOG2(`MEM_ACC_CONT_BANK_DEPTH))
+`define MEM_ACC_CONT_BANK_ADDRESS_MSB           `MEM_ACC_CONT_BANK_ADDRESS_WIDTH-1
 
 `define MEM_ACC_CONT_BANK_WIDTH                `MEM_ACC_CONT_BANK_ADDRESS_MSB - `MEM_ACC_CONT_BANK_ADDRESS_LSB +1
 `define MEM_ACC_CONT_BANK_ADDRESS_LSB            0
