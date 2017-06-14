@@ -512,105 +512,105 @@
                                        ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS ) ? dma__memc__write_valid0 :
                                                                                                                     ldst__memc__write_valid ;
 
-  assign memc__ldst__read_data        = ( ldst_read_addr_to_bank0  )  ?  bank_mem[ 0].read_data             : 
-                                        ( ldst_read_addr_to_bank1  )  ?  bank_mem[ 1].read_data             : 
-                                        ( ldst_read_addr_to_bank2  )  ?  bank_mem[ 2].read_data             : 
-                                        ( ldst_read_addr_to_bank3  )  ?  bank_mem[ 3].read_data             : 
-                                        ( ldst_read_addr_to_bank4  )  ?  bank_mem[ 4].read_data             : 
-                                        ( ldst_read_addr_to_bank5  )  ?  bank_mem[ 5].read_data             : 
-                                        ( ldst_read_addr_to_bank6  )  ?  bank_mem[ 6].read_data             : 
-                                        ( ldst_read_addr_to_bank7  )  ?  bank_mem[ 7].read_data             : 
-                                        ( ldst_read_addr_to_bank8  )  ?  bank_mem[ 8].read_data             : 
-                                        ( ldst_read_addr_to_bank9  )  ?  bank_mem[ 9].read_data             : 
-                                        ( ldst_read_addr_to_bank10 )  ?  bank_mem[10].read_data             : 
-                                        ( ldst_read_addr_to_bank11 )  ?  bank_mem[11].read_data             : 
-                                        ( ldst_read_addr_to_bank12 )  ?  bank_mem[12].read_data             : 
-                                        ( ldst_read_addr_to_bank13 )  ?  bank_mem[13].read_data             : 
-                                        ( ldst_read_addr_to_bank14 )  ?  bank_mem[14].read_data             : 
-                                        ( ldst_read_addr_to_bank15 )  ?  bank_mem[15].read_data             : 
-                                        ( ldst_read_addr_to_bank16 )  ?  bank_mem[16].read_data             : 
-                                        ( ldst_read_addr_to_bank17 )  ?  bank_mem[17].read_data             : 
-                                        ( ldst_read_addr_to_bank18 )  ?  bank_mem[18].read_data             : 
-                                        ( ldst_read_addr_to_bank19 )  ?  bank_mem[19].read_data             : 
-                                        ( ldst_read_addr_to_bank20 )  ?  bank_mem[20].read_data             : 
-                                        ( ldst_read_addr_to_bank21 )  ?  bank_mem[21].read_data             : 
-                                        ( ldst_read_addr_to_bank22 )  ?  bank_mem[22].read_data             : 
-                                        ( ldst_read_addr_to_bank23 )  ?  bank_mem[23].read_data             : 
-                                        ( ldst_read_addr_to_bank24 )  ?  bank_mem[24].read_data             : 
-                                        ( ldst_read_addr_to_bank25 )  ?  bank_mem[25].read_data             : 
-                                        ( ldst_read_addr_to_bank26 )  ?  bank_mem[26].read_data             : 
-                                        ( ldst_read_addr_to_bank27 )  ?  bank_mem[27].read_data             : 
-                                        ( ldst_read_addr_to_bank28 )  ?  bank_mem[28].read_data             : 
-                                        ( ldst_read_addr_to_bank29 )  ?  bank_mem[29].read_data             : 
-                                        ( ldst_read_addr_to_bank30 )  ?  bank_mem[30].read_data             : 
-                                                                         bank_mem[31].read_data             ;
+  assign memc__ldst__read_data        = ( ldst_read_addr_to_bank0  & bank_mem[ 0].read_data )  | 
+                                        ( ldst_read_addr_to_bank1  & bank_mem[ 1].read_data )  | 
+                                        ( ldst_read_addr_to_bank2  & bank_mem[ 2].read_data )  | 
+                                        ( ldst_read_addr_to_bank3  & bank_mem[ 3].read_data )  | 
+                                        ( ldst_read_addr_to_bank4  & bank_mem[ 4].read_data )  | 
+                                        ( ldst_read_addr_to_bank5  & bank_mem[ 5].read_data )  | 
+                                        ( ldst_read_addr_to_bank6  & bank_mem[ 6].read_data )  | 
+                                        ( ldst_read_addr_to_bank7  & bank_mem[ 7].read_data )  | 
+                                        ( ldst_read_addr_to_bank8  & bank_mem[ 8].read_data )  | 
+                                        ( ldst_read_addr_to_bank9  & bank_mem[ 9].read_data )  | 
+                                        ( ldst_read_addr_to_bank10 & bank_mem[10].read_data )  | 
+                                        ( ldst_read_addr_to_bank11 & bank_mem[11].read_data )  | 
+                                        ( ldst_read_addr_to_bank12 & bank_mem[12].read_data )  | 
+                                        ( ldst_read_addr_to_bank13 & bank_mem[13].read_data )  | 
+                                        ( ldst_read_addr_to_bank14 & bank_mem[14].read_data )  | 
+                                        ( ldst_read_addr_to_bank15 & bank_mem[15].read_data )  | 
+                                        ( ldst_read_addr_to_bank16 & bank_mem[16].read_data )  | 
+                                        ( ldst_read_addr_to_bank17 & bank_mem[17].read_data )  | 
+                                        ( ldst_read_addr_to_bank18 & bank_mem[18].read_data )  | 
+                                        ( ldst_read_addr_to_bank19 & bank_mem[19].read_data )  | 
+                                        ( ldst_read_addr_to_bank20 & bank_mem[20].read_data )  | 
+                                        ( ldst_read_addr_to_bank21 & bank_mem[21].read_data )  | 
+                                        ( ldst_read_addr_to_bank22 & bank_mem[22].read_data )  | 
+                                        ( ldst_read_addr_to_bank23 & bank_mem[23].read_data )  | 
+                                        ( ldst_read_addr_to_bank24 & bank_mem[24].read_data )  | 
+                                        ( ldst_read_addr_to_bank25 & bank_mem[25].read_data )  | 
+                                        ( ldst_read_addr_to_bank26 & bank_mem[26].read_data )  | 
+                                        ( ldst_read_addr_to_bank27 & bank_mem[27].read_data )  | 
+                                        ( ldst_read_addr_to_bank28 & bank_mem[28].read_data )  | 
+                                        ( ldst_read_addr_to_bank29 & bank_mem[29].read_data )  | 
+                                        ( ldst_read_addr_to_bank30 & bank_mem[30].read_data )  | 
+                                        ( ldst_read_addr_to_bank31 & bank_mem[31].read_data )  ;
 
-  assign memc__ldst__read_data_valid  = ( ldst_read_addr_to_bank0  && (bank_fsm[ 0].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[ 0].read_data_ldst_valid : 
-                                        ( ldst_read_addr_to_bank1  && (bank_fsm[ 1].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[ 1].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank2  && (bank_fsm[ 2].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[ 2].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank3  && (bank_fsm[ 3].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[ 3].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank4  && (bank_fsm[ 4].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[ 4].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank5  && (bank_fsm[ 5].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[ 5].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank6  && (bank_fsm[ 6].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[ 6].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank7  && (bank_fsm[ 7].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[ 7].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank8  && (bank_fsm[ 8].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[ 8].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank9  && (bank_fsm[ 9].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[ 9].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank10 && (bank_fsm[10].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[10].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank11 && (bank_fsm[11].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[11].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank12 && (bank_fsm[12].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[12].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank13 && (bank_fsm[13].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[13].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank14 && (bank_fsm[14].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[14].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank15 && (bank_fsm[15].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[15].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank16 && (bank_fsm[16].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[16].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank17 && (bank_fsm[17].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[17].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank18 && (bank_fsm[18].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[18].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank19 && (bank_fsm[19].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[19].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank20 && (bank_fsm[20].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[20].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank21 && (bank_fsm[21].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[21].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank22 && (bank_fsm[22].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[22].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank23 && (bank_fsm[23].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[23].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank24 && (bank_fsm[24].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[24].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank25 && (bank_fsm[25].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[25].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank26 && (bank_fsm[26].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[26].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank27 && (bank_fsm[27].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[27].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank28 && (bank_fsm[28].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[28].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank29 && (bank_fsm[29].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[29].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank30 && (bank_fsm[30].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[30].read_data_ldst_valid :
-                                        ( ldst_read_addr_to_bank31 && (bank_fsm[31].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS))  ?  bank_mem[31].read_data_ldst_valid :
+  assign memc__ldst__read_data_valid  = (( ldst_read_addr_to_bank0  & (bank_fsm[ 0].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 0].read_data_ldst_valid) | 
+                                        (( ldst_read_addr_to_bank1  & (bank_fsm[ 1].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 1].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank2  & (bank_fsm[ 2].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 2].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank3  & (bank_fsm[ 3].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 3].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank4  & (bank_fsm[ 4].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 4].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank5  & (bank_fsm[ 5].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 5].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank6  & (bank_fsm[ 6].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 6].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank7  & (bank_fsm[ 7].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 7].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank8  & (bank_fsm[ 8].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 8].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank9  & (bank_fsm[ 9].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 9].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank10 & (bank_fsm[10].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[10].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank11 & (bank_fsm[11].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[11].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank12 & (bank_fsm[12].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[12].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank13 & (bank_fsm[13].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[13].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank14 & (bank_fsm[14].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[14].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank15 & (bank_fsm[15].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[15].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank16 & (bank_fsm[16].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[16].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank17 & (bank_fsm[17].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[17].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank18 & (bank_fsm[18].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[18].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank19 & (bank_fsm[19].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[19].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank20 & (bank_fsm[20].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[20].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank21 & (bank_fsm[21].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[21].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank22 & (bank_fsm[22].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[22].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank23 & (bank_fsm[23].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[23].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank24 & (bank_fsm[24].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[24].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank25 & (bank_fsm[25].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[25].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank26 & (bank_fsm[26].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[26].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank27 & (bank_fsm[27].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[27].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank28 & (bank_fsm[28].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[28].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank29 & (bank_fsm[29].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[29].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank30 & (bank_fsm[30].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[30].read_data_ldst_valid) |
+                                        (( ldst_read_addr_to_bank31 & (bank_fsm[31].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[31].read_data_ldst_valid) |
                                                                                                                                           1'b0                              ;
   assign memc__dma__read_data0         =  
-                                             ( dma_read_addr0_to_bank1  )  ?  bank_mem[ 1].read_data             : 
-                                             ( dma_read_addr0_to_bank2  )  ?  bank_mem[ 2].read_data             : 
-                                             ( dma_read_addr0_to_bank3  )  ?  bank_mem[ 3].read_data             : 
-                                             ( dma_read_addr0_to_bank4  )  ?  bank_mem[ 4].read_data             : 
-                                             ( dma_read_addr0_to_bank5  )  ?  bank_mem[ 5].read_data             : 
-                                             ( dma_read_addr0_to_bank6  )  ?  bank_mem[ 6].read_data             : 
-                                             ( dma_read_addr0_to_bank7  )  ?  bank_mem[ 7].read_data             : 
-                                             ( dma_read_addr0_to_bank8  )  ?  bank_mem[ 8].read_data             : 
-                                             ( dma_read_addr0_to_bank9  )  ?  bank_mem[ 9].read_data             : 
-                                             ( dma_read_addr0_to_bank10 )  ?  bank_mem[10].read_data             : 
-                                             ( dma_read_addr0_to_bank11 )  ?  bank_mem[11].read_data             : 
-                                             ( dma_read_addr0_to_bank12 )  ?  bank_mem[12].read_data             : 
-                                             ( dma_read_addr0_to_bank13 )  ?  bank_mem[13].read_data             : 
-                                             ( dma_read_addr0_to_bank14 )  ?  bank_mem[14].read_data             : 
-                                             ( dma_read_addr0_to_bank15 )  ?  bank_mem[15].read_data             : 
-                                             ( dma_read_addr0_to_bank16 )  ?  bank_mem[16].read_data             : 
-                                             ( dma_read_addr0_to_bank17 )  ?  bank_mem[17].read_data             : 
-                                             ( dma_read_addr0_to_bank18 )  ?  bank_mem[18].read_data             : 
-                                             ( dma_read_addr0_to_bank19 )  ?  bank_mem[19].read_data             : 
-                                             ( dma_read_addr0_to_bank20 )  ?  bank_mem[20].read_data             : 
-                                             ( dma_read_addr0_to_bank21 )  ?  bank_mem[21].read_data             : 
-                                             ( dma_read_addr0_to_bank22 )  ?  bank_mem[22].read_data             : 
-                                             ( dma_read_addr0_to_bank23 )  ?  bank_mem[23].read_data             : 
-                                             ( dma_read_addr0_to_bank24 )  ?  bank_mem[24].read_data             : 
-                                             ( dma_read_addr0_to_bank25 )  ?  bank_mem[25].read_data             : 
-                                             ( dma_read_addr0_to_bank26 )  ?  bank_mem[26].read_data             : 
-                                             ( dma_read_addr0_to_bank27 )  ?  bank_mem[27].read_data             : 
-                                             ( dma_read_addr0_to_bank28 )  ?  bank_mem[28].read_data             : 
-                                             ( dma_read_addr0_to_bank29 )  ?  bank_mem[29].read_data             : 
-                                             ( dma_read_addr0_to_bank30 )  ?  bank_mem[30].read_data             : 
-                                             ( dma_read_addr0_to_bank31 )  ?  bank_mem[31].read_data             : 
-                                                                              bank_mem[ 0].read_data             ; 
+                                             ( dma_read_addr0_to_bank1  & bank_mem[ 1].read_data ) | 
+                                             ( dma_read_addr0_to_bank2  & bank_mem[ 2].read_data ) | 
+                                             ( dma_read_addr0_to_bank3  & bank_mem[ 3].read_data ) | 
+                                             ( dma_read_addr0_to_bank4  & bank_mem[ 4].read_data ) | 
+                                             ( dma_read_addr0_to_bank5  & bank_mem[ 5].read_data ) | 
+                                             ( dma_read_addr0_to_bank6  & bank_mem[ 6].read_data ) | 
+                                             ( dma_read_addr0_to_bank7  & bank_mem[ 7].read_data ) | 
+                                             ( dma_read_addr0_to_bank8  & bank_mem[ 8].read_data ) | 
+                                             ( dma_read_addr0_to_bank9  & bank_mem[ 9].read_data ) | 
+                                             ( dma_read_addr0_to_bank10 & bank_mem[10].read_data ) | 
+                                             ( dma_read_addr0_to_bank11 & bank_mem[11].read_data ) | 
+                                             ( dma_read_addr0_to_bank12 & bank_mem[12].read_data ) | 
+                                             ( dma_read_addr0_to_bank13 & bank_mem[13].read_data ) | 
+                                             ( dma_read_addr0_to_bank14 & bank_mem[14].read_data ) | 
+                                             ( dma_read_addr0_to_bank15 & bank_mem[15].read_data ) | 
+                                             ( dma_read_addr0_to_bank16 & bank_mem[16].read_data ) | 
+                                             ( dma_read_addr0_to_bank17 & bank_mem[17].read_data ) | 
+                                             ( dma_read_addr0_to_bank18 & bank_mem[18].read_data ) | 
+                                             ( dma_read_addr0_to_bank19 & bank_mem[19].read_data ) | 
+                                             ( dma_read_addr0_to_bank20 & bank_mem[20].read_data ) | 
+                                             ( dma_read_addr0_to_bank21 & bank_mem[21].read_data ) | 
+                                             ( dma_read_addr0_to_bank22 & bank_mem[22].read_data ) | 
+                                             ( dma_read_addr0_to_bank23 & bank_mem[23].read_data ) | 
+                                             ( dma_read_addr0_to_bank24 & bank_mem[24].read_data ) | 
+                                             ( dma_read_addr0_to_bank25 & bank_mem[25].read_data ) | 
+                                             ( dma_read_addr0_to_bank26 & bank_mem[26].read_data ) | 
+                                             ( dma_read_addr0_to_bank27 & bank_mem[27].read_data ) | 
+                                             ( dma_read_addr0_to_bank28 & bank_mem[28].read_data ) | 
+                                             ( dma_read_addr0_to_bank29 & bank_mem[29].read_data ) | 
+                                             ( dma_read_addr0_to_bank30 & bank_mem[30].read_data ) | 
+                                             ( dma_read_addr0_to_bank31 & bank_mem[31].read_data ) | 
+                                               ( dma_read_addr0_to_bank0  & bank_mem[ 0].read_data ) ; 
 
   assign memc__dma__read_data1         = bank_mem[ 1].read_data             ; 
   assign memc__dma__read_data2         = bank_mem[ 2].read_data             ; 
@@ -644,130 +644,100 @@
   assign memc__dma__read_data30        = bank_mem[30].read_data             ; 
   assign memc__dma__read_data31        = bank_mem[31].read_data             ; 
 
-  assign memc__dma__read_data_valid0   = ( (bank_fsm[ 0].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS ))  ?  bank_mem[0].read_data_strm_valid : 
-                                         ( (bank_fsm[ 1].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[1].read_data_strm_valid : 
-                                         ( (bank_fsm[ 2].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[2].read_data_strm_valid : 
-                                         ( (bank_fsm[ 3].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[3].read_data_strm_valid : 
-                                         ( (bank_fsm[ 4].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[4].read_data_strm_valid : 
-                                         ( (bank_fsm[ 5].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[5].read_data_strm_valid : 
-                                         ( (bank_fsm[ 6].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[6].read_data_strm_valid : 
-                                         ( (bank_fsm[ 7].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[7].read_data_strm_valid : 
-                                         ( (bank_fsm[ 8].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[8].read_data_strm_valid : 
-                                         ( (bank_fsm[ 9].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[9].read_data_strm_valid : 
-                                         ( (bank_fsm[10].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[10].read_data_strm_valid : 
-                                         ( (bank_fsm[11].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[11].read_data_strm_valid : 
-                                         ( (bank_fsm[12].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[12].read_data_strm_valid : 
-                                         ( (bank_fsm[13].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[13].read_data_strm_valid : 
-                                         ( (bank_fsm[14].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[14].read_data_strm_valid : 
-                                         ( (bank_fsm[15].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[15].read_data_strm_valid : 
-                                         ( (bank_fsm[16].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[16].read_data_strm_valid : 
-                                         ( (bank_fsm[17].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[17].read_data_strm_valid : 
-                                         ( (bank_fsm[18].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[18].read_data_strm_valid : 
-                                         ( (bank_fsm[19].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[19].read_data_strm_valid : 
-                                         ( (bank_fsm[20].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[20].read_data_strm_valid : 
-                                         ( (bank_fsm[21].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[21].read_data_strm_valid : 
-                                         ( (bank_fsm[22].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[22].read_data_strm_valid : 
-                                         ( (bank_fsm[23].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[23].read_data_strm_valid : 
-                                         ( (bank_fsm[24].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[24].read_data_strm_valid : 
-                                         ( (bank_fsm[25].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[25].read_data_strm_valid : 
-                                         ( (bank_fsm[26].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[26].read_data_strm_valid : 
-                                         ( (bank_fsm[27].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[27].read_data_strm_valid : 
-                                         ( (bank_fsm[28].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[28].read_data_strm_valid : 
-                                         ( (bank_fsm[29].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[29].read_data_strm_valid : 
-                                         ( (bank_fsm[30].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[30].read_data_strm_valid : 
-                                         ( (bank_fsm[31].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS))  ?  bank_mem[31].read_data_strm_valid : 
+  assign memc__dma__read_data_valid0   = ((bank_fsm[ 0].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS )  &  bank_mem[0].read_data_strm_valid) | 
+                                         ((bank_fsm[ 0].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[0].read_data_strm_valid) | 
+                                         ((bank_fsm[ 1].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[1].read_data_strm_valid) | 
+                                         ((bank_fsm[ 2].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[2].read_data_strm_valid) | 
+                                         ((bank_fsm[ 3].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[3].read_data_strm_valid) | 
+                                         ((bank_fsm[ 4].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[4].read_data_strm_valid) | 
+                                         ((bank_fsm[ 5].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[5].read_data_strm_valid) | 
+                                         ((bank_fsm[ 6].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[6].read_data_strm_valid) | 
+                                         ((bank_fsm[ 7].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[7].read_data_strm_valid) | 
+                                         ((bank_fsm[ 8].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[8].read_data_strm_valid) | 
+                                         ((bank_fsm[ 9].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[9].read_data_strm_valid) | 
+                                         ((bank_fsm[10].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[10].read_data_strm_valid) | 
+                                         ((bank_fsm[11].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[11].read_data_strm_valid) | 
+                                         ((bank_fsm[12].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[12].read_data_strm_valid) | 
+                                         ((bank_fsm[13].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[13].read_data_strm_valid) | 
+                                         ((bank_fsm[14].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[14].read_data_strm_valid) | 
+                                         ((bank_fsm[15].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[15].read_data_strm_valid) | 
+                                         ((bank_fsm[16].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[16].read_data_strm_valid) | 
+                                         ((bank_fsm[17].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[17].read_data_strm_valid) | 
+                                         ((bank_fsm[18].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[18].read_data_strm_valid) | 
+                                         ((bank_fsm[19].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[19].read_data_strm_valid) | 
+                                         ((bank_fsm[20].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[20].read_data_strm_valid) | 
+                                         ((bank_fsm[21].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[21].read_data_strm_valid) | 
+                                         ((bank_fsm[22].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[22].read_data_strm_valid) | 
+                                         ((bank_fsm[23].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[23].read_data_strm_valid) | 
+                                         ((bank_fsm[24].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[24].read_data_strm_valid) | 
+                                         ((bank_fsm[25].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[25].read_data_strm_valid) | 
+                                         ((bank_fsm[26].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[26].read_data_strm_valid) | 
+                                         ((bank_fsm[27].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[27].read_data_strm_valid) | 
+                                         ((bank_fsm[28].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[28].read_data_strm_valid) | 
+                                         ((bank_fsm[29].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[29].read_data_strm_valid) | 
+                                         ((bank_fsm[30].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[30].read_data_strm_valid) | 
+                                         ((bank_fsm[31].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS )  &  bank_mem[31].read_data_strm_valid) | 
                                                                                                                    1'b0                               ;
 
-  assign memc__dma__read_data_valid1   = ( (bank_fsm[ 1].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[1].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid1   = (bank_fsm[ 1].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[1].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid2   = ( (bank_fsm[ 2].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[2].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid2   = (bank_fsm[ 2].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[2].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid3   = ( (bank_fsm[ 3].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[3].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid3   = (bank_fsm[ 3].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[3].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid4   = ( (bank_fsm[ 4].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[4].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid4   = (bank_fsm[ 4].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[4].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid5   = ( (bank_fsm[ 5].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[5].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid5   = (bank_fsm[ 5].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[5].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid6   = ( (bank_fsm[ 6].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[6].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid6   = (bank_fsm[ 6].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[6].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid7   = ( (bank_fsm[ 7].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[7].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid7   = (bank_fsm[ 7].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[7].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid8   = ( (bank_fsm[ 8].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[8].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid8   = (bank_fsm[ 8].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[8].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid9   = ( (bank_fsm[ 9].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[9].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid9   = (bank_fsm[ 9].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[9].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid10  = ( (bank_fsm[10].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[10].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid10  = (bank_fsm[10].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[10].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid11  = ( (bank_fsm[11].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[11].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid11  = (bank_fsm[11].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[11].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid12  = ( (bank_fsm[12].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[12].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid12  = (bank_fsm[12].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[12].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid13  = ( (bank_fsm[13].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[13].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid13  = (bank_fsm[13].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[13].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid14  = ( (bank_fsm[14].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[14].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid14  = (bank_fsm[14].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[14].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid15  = ( (bank_fsm[15].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[15].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid15  = (bank_fsm[15].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[15].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid16  = ( (bank_fsm[16].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[16].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid16  = (bank_fsm[16].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[16].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid17  = ( (bank_fsm[17].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[17].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid17  = (bank_fsm[17].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[17].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid18  = ( (bank_fsm[18].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[18].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid18  = (bank_fsm[18].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[18].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid19  = ( (bank_fsm[19].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[19].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid19  = (bank_fsm[19].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[19].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid20  = ( (bank_fsm[20].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[20].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid20  = (bank_fsm[20].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[20].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid21  = ( (bank_fsm[21].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[21].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid21  = (bank_fsm[21].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[21].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid22  = ( (bank_fsm[22].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[22].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid22  = (bank_fsm[22].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[22].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid23  = ( (bank_fsm[23].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[23].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid23  = (bank_fsm[23].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[23].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid24  = ( (bank_fsm[24].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[24].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid24  = (bank_fsm[24].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[24].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid25  = ( (bank_fsm[25].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[25].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid25  = (bank_fsm[25].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[25].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid26  = ( (bank_fsm[26].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[26].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid26  = (bank_fsm[26].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[26].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid27  = ( (bank_fsm[27].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[27].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid27  = (bank_fsm[27].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[27].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid28  = ( (bank_fsm[28].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[28].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid28  = (bank_fsm[28].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[28].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid29  = ( (bank_fsm[29].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[29].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid29  = (bank_fsm[29].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[29].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid30  = ( (bank_fsm[30].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[30].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid30  = (bank_fsm[30].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[30].read_data_strm_valid ; 
 
-  assign memc__dma__read_data_valid31  = ( (bank_fsm[31].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS))  ?  bank_mem[31].read_data_strm_valid : 
-                                                                                                                   1'b0                             ;
+  assign memc__dma__read_data_valid31  = (bank_fsm[31].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS)  &  bank_mem[31].read_data_strm_valid ; 
 

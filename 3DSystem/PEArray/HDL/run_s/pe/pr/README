@@ -1,2 +1,1 @@
-Makefile
-setup.tcl
+vim setup.tcl read.tcl Makefile

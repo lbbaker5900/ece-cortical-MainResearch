@@ -306,8 +306,9 @@ module mem_acc_cont (
           end // always @ (*)
 
           // port ready when transitioning to the state
-          assign ldst_read_ready    = ( mem_acc_state_next == `MEM_ACC_CONT_LDST_READ_ACCESS)       ;
-          assign ldst_write_ready   = ( mem_acc_state_next == `MEM_ACC_CONT_LDST_WRITE_ACCESS)      ;
+          assign ldst_read_ready    = ldst_read_request  & ( mem_acc_state == `MEM_ACC_CONT_LDST) ;
+          assign ldst_write_ready   = ldst_write_request & ( mem_acc_state == `MEM_ACC_CONT_LDST) ;
+
           `include "mem_acc_cont_bank_fsm_dma_port_ready.vh"
 
       end

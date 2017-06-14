@@ -133,7 +133,7 @@ module streamingOps_datapath (
             scntl__dma__strm0_write_start_address ,  // "result" start address
 
             //--------------
-            // Stream 0
+            // Stream 1
             scntl__dma__type1                     ,
             scntl__dma__num_of_types1             ,
 

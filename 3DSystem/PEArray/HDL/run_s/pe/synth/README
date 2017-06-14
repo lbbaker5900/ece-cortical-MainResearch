@@ -1,0 +1,7 @@
+design_vision -64bit -no_gui
+
+change 
+  - setup.tcl
+  - read.tcl
+  - Makefile
+cp *rpt *log *.v logs/<name>/.
