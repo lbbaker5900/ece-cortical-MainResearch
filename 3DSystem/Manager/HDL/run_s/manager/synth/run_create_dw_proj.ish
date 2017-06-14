@@ -1,0 +1,1081 @@
+#!/bin/sh
+# \
+    exec ish $0 ${1+"$@"} 
+#
+
+# Embed-It! (R) Integrator Shell H-2013.03
+
+############### Project ###############
+set p [project new]
+project $p create [file join [pwd] [lindex $argv 0]]
+project $p add_compiler_library /local/home/GF065/synopsys/2-Port-HSpd-SRAM-512K-Sync-Compiler-Mixed-Vt-HVt
+project $p add_compiler_library /local/home/GF065/synopsys/2-Port-HDens-Register-File-32K-Sync-Compiler-Mixed-Vt-HV
+project $p add_compiler_library /local/home/GF065/synopsys/1-Port-HSpd-SRAM-512K-Sync-Compiler-Mixed-Vt-HVt
+
+
+############### Components ###############
+set c [project $p create_component asdrlnpky2p128x12cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 12
+  component $c set_parameter NW 128
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p16x32cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 32
+  component $c set_parameter NW 16
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p16x50cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 50
+  component $c set_parameter NW 16
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p16x57cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 57
+  component $c set_parameter NW 16
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p256x75cm2sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 2
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 75
+  component $c set_parameter NW 256
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p32x138cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 138
+  component $c set_parameter NW 32
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p32x150cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 150
+  component $c set_parameter NW 32
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p32x256cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 256
+  component $c set_parameter NW 32
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p32x58cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 58
+  component $c set_parameter NW 32
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p64x40cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 40
+  component $c set_parameter NW 64
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p64x76cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 76
+  component $c set_parameter NW 64
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p70x18cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 18
+  component $c set_parameter NW 70
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p8x82cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 82
+  component $c set_parameter NW 8
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky1p1024x50cm4sw0ltlc1 cp65npky1p11sassl512sa05p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 50
+  component $c set_parameter NW 1024
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky1p16384x12cm16sw0ltlc1 cp65npky1p11sassl512sa05p1]
+  component $c set_parameter CM 16
+  component $c set_parameter NB 12
+  component $c set_parameter NW 16384
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky1p4096x57cm8sw0ltlc1 cp65npky1p11sassl512sa05p1]
+  component $c set_parameter CM 8
+  component $c set_parameter NB 57
+  component $c set_parameter NW 4096
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p1024x50cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 50
+  component $c set_parameter NW 1024
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p128x12cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 12
+  component $c set_parameter NW 128
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p16x32cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 32
+  component $c set_parameter NW 16
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p16x50cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 50
+  component $c set_parameter NW 16
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p2048x12cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 12
+  component $c set_parameter NW 2048
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p2048x12cm4sw0bk1ltlc1__1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 12
+  component $c set_parameter NW 2048
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p2048x75cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 75
+  component $c set_parameter NW 2048
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p2048x75cm8sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 8
+  component $c set_parameter NB 75
+  component $c set_parameter NW 2048
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p256x75cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 75
+  component $c set_parameter NW 256
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p256x75cm8sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 8
+  component $c set_parameter NB 75
+  component $c set_parameter NW 256
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p32x128cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 128
+  component $c set_parameter NW 32
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p32x130cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 130
+  component $c set_parameter NW 32
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p32x138cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 138
+  component $c set_parameter NW 32
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p32x58cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 58
+  component $c set_parameter NW 32
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p512x75cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 75
+  component $c set_parameter NW 512
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p512x75cm8sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 8
+  component $c set_parameter NB 75
+  component $c set_parameter NW 512
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p64x128cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 128
+  component $c set_parameter NW 64
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p64x130cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 130
+  component $c set_parameter NW 64
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p64x40cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 40
+  component $c set_parameter NW 64
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p64x76cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 76
+  component $c set_parameter NW 64
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p72x18cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  component $c set_parameter CM 4
+  component $c set_parameter NB 18
+  component $c set_parameter NW 72
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+
+
+############### Actions ###############
+set action_names [project $p list_action_names]
+
+  if { [lsearch -exact $action_names AREACHECK] != -1 } {
+      set a [project $p get_action AREACHECK]
+  } else {
+      set a [project $p create_action AREACHECK AREACHECK]
+  }
+
+project $p set_active_action AREACHECK
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter tolerance 5
+
+
+  if { [lsearch -exact $action_names ASSURA_DRC] != -1 } {
+      set a [project $p get_action ASSURA_DRC]
+  } else {
+      set a [project $p create_action ASSURA_DRC ASSURA_DRC]
+  }
+
+project $p set_active_action ASSURA_DRC
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter options {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter results_file assura_drc
+  action $a set_parameter ruledeck {}
+  action $a set_parameter ruledeck1 {}
+  action $a set_parameter summary_file assura_drc.err
+
+
+  if { [lsearch -exact $action_names ASSURA_LVS] != -1 } {
+      set a [project $p get_action ASSURA_LVS]
+  } else {
+      set a [project $p create_action ASSURA_LVS ASSURA_LVS]
+  }
+
+project $p set_active_action ASSURA_LVS
+  action $a set_parameter auto_bind 0
+  action $a set_parameter behavior {}
+  action $a set_parameter binding_file bindingfile
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter options {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter results_file assura_lvs.cls
+  action $a set_parameter ruledeck {}
+  action $a set_parameter run_name assura_lvs
+  action $a set_parameter summary_file assura_lvs.csm
+
+
+  if { [lsearch -exact $action_names AVANTI_FRAM] != -1 } {
+      set a [project $p get_action AVANTI_FRAM]
+  } else {
+      set a [project $p create_action AVANTI_FRAM AVANTI_FRAM]
+  }
+
+project $p set_active_action AVANTI_FRAM
+  action $a set_parameter Milkyway {}
+  action $a set_parameter behavior {}
+  action $a set_parameter best_corner_name Best
+  action $a set_parameter block_layer_list { Metal1 151 Metal2 152 Metal3 153 Metal4 154 Metal5 155 Metal6 156 Metal7 157 Metal8 158 Metal9 159 }
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter fram_gen_log_file fram_gen.log
+  action $a set_parameter fram_lib_name {}
+  action $a set_parameter gnd_pin_name {}
+  action $a set_parameter inst_block_layer 255
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter layermap_path ./layermap.map
+  action $a set_parameter pin_layermap_path {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter smash_level 2
+  action $a set_parameter techfile_path ./techfile.tf
+  action $a set_parameter typical_corner_name Typical
+  action $a set_parameter vdd_pin_name {}
+  action $a set_parameter worst_corner_name Worst
+
+
+  if { [lsearch -exact $action_names CALIBRE_ANT] != -1 } {
+      set a [project $p get_action CALIBRE_ANT]
+  } else {
+      set a [project $p create_action CALIBRE_ANT CALIBRE_ANT]
+  }
+
+project $p set_active_action CALIBRE_ANT
+  action $a set_parameter {LAYOUT PATH} {}
+  action $a set_parameter {LAYOUT PRIMARY} {}
+  action $a set_parameter behavior {}
+  action $a set_parameter calibre calibre
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {calex_results ruledeck.* *.tmp.* tmp.*}
+  action $a set_parameter define_in_deck {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter keyword {}
+  action $a set_parameter log_file calibre_ant.log
+  action $a set_parameter options {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter results_file DRC.gds.ascii
+  action $a set_parameter ruledeck {}
+  action $a set_parameter summary_file DRC.sum
+
+
+  if { [lsearch -exact $action_names CALIBRE_DRC] != -1 } {
+      set a [project $p get_action CALIBRE_DRC]
+  } else {
+      set a [project $p create_action CALIBRE_DRC CALIBRE_DRC]
+  }
+
+project $p set_active_action CALIBRE_DRC
+  action $a set_parameter {LAYOUT PATH} {}
+  action $a set_parameter {LAYOUT PRIMARY} {}
+  action $a set_parameter behavior {}
+  action $a set_parameter calibre calibre
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {calex_results ruledeck.* *.tmp.* tmp.*}
+  action $a set_parameter define_in_deck {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter keyword {}
+  action $a set_parameter log_file calibre_drc.log
+  action $a set_parameter options {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter results_file DRC.gds.ascii
+  action $a set_parameter ruledeck {}
+  action $a set_parameter summary_file DRC.sum
+
+
+  if { [lsearch -exact $action_names CALIBRE_LVS] != -1 } {
+      set a [project $p get_action CALIBRE_LVS]
+  } else {
+      set a [project $p create_action CALIBRE_LVS CALIBRE_LVS]
+  }
+
+project $p set_active_action CALIBRE_LVS
+  action $a set_parameter {LAYOUT PATH} {}
+  action $a set_parameter {LAYOUT PRIMARY} {}
+  action $a set_parameter {LVS REPORT} LVS.lvs
+  action $a set_parameter {SOURCE PATH} {}
+  action $a set_parameter {SOURCE PRIMARY} {}
+  action $a set_parameter {VIRTUAL CONNECT COLON} {}
+  action $a set_parameter behavior {}
+  action $a set_parameter calibre calibre
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {calex_results ruledeck.* *.tmp.* tmp.* svdb/*.tmp.* svdb/ruledeck.*}
+  action $a set_parameter define_in_deck {}
+  action $a set_parameter hcell {}
+  action $a set_parameter ignore_lvs_check 0
+  action $a set_parameter keep_svdb no
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter log_file calibre_lvs.log
+  action $a set_parameter options {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter ruledeck {}
+  action $a set_parameter ruledeck_warning {}
+  action $a set_parameter starrcm_log_file starrcm.log
+  action $a set_parameter starrcm_options {}
+  action $a set_parameter starrcm_output 1
+  action $a set_parameter stress_prerun 0
+  action $a set_parameter use_virtual_connect_colon yes
+
+
+  if { [lsearch -exact $action_names CCSN] != -1 } {
+      set a [project $p get_action CCSN]
+  } else {
+      set a [project $p create_action CCSN CCSN]
+  }
+
+project $p set_active_action CCSN
+  action $a set_parameter PVT_list all
+  action $a set_parameter behavior {}
+  action $a set_parameter ccs_lpe_path {}
+  action $a set_parameter ccs_spice_path {}
+  action $a set_parameter ccsn_opts {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list { %PVT/vnc_logs %PVT/WDIR  %PVT/*.db %PVT/*_log }
+  action $a set_parameter copy_results no
+  action $a set_parameter exit_on_error yes
+  action $a set_parameter ignore_perl_ver_check yes
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter lc_shell_path {}
+  action $a set_parameter perl_path {}
+  action $a set_parameter plugin_debug_mode no
+  action $a set_parameter post_action_script {}
+  action $a set_parameter power_rail {}
+  action $a set_parameter pt_shell_path {}
+  action $a set_parameter quick_results no
+  action $a set_parameter reports_only no
+  action $a set_parameter simulator_path {}
+  action $a set_parameter spice_config_file {}
+  action $a set_parameter spice_model_dir {}
+
+
+  if { [lsearch -exact $action_names CELTIC] != -1 } {
+      set a [project $p get_action CELTIC]
+  } else {
+      set a [project $p create_action CELTIC CELTIC]
+  }
+
+project $p set_active_action CELTIC
+  action $a set_parameter PVT_list ALL
+  action $a set_parameter behavior {}
+  action $a set_parameter celtic_opts {}
+  action $a set_parameter check_celfile 0
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter gen_lib_cmds {}
+  action $a set_parameter gnd VSS
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter msg_handler off
+  action $a set_parameter post_action_script {}
+  action $a set_parameter spice_config_file {}
+  action $a set_parameter spice_model_dir {}
+  action $a set_parameter text_mode 1
+  action $a set_parameter tmpdir_loc {}
+  action $a set_parameter validate 1
+  action $a set_parameter vdd VDD
+
+
+  if { [lsearch -exact $action_names FRAM] != -1 } {
+      set a [project $p get_action FRAM]
+  } else {
+      set a [project $p create_action FRAM FRAM]
+  }
+
+project $p set_active_action FRAM
+  action $a set_parameter Milkyway {}
+  action $a set_parameter behavior {}
+  action $a set_parameter best_corner_name Best
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter fram_gen_log_file fram_gen.log
+  action $a set_parameter fram_lib_name {}
+  action $a set_parameter gnd_pin_name {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter layermap_path ./layermap.map
+  action $a set_parameter post_action_script {}
+  action $a set_parameter smash_level 2
+  action $a set_parameter techfile_path ./techfile.tf
+  action $a set_parameter typical_corner_name Typical
+  action $a set_parameter vdd_pin_name {}
+  action $a set_parameter worst_corner_name Worst
+
+
+  if { [lsearch -exact $action_names GDSCHECK] != -1 } {
+      set a [project $p get_action GDSCHECK]
+  } else {
+      set a [project $p create_action GDSCHECK GDSCHECK]
+  }
+
+project $p set_active_action GDSCHECK
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter enable_exposed_blockage_check true
+  action $a set_parameter enable_exposed_metal_check true
+  action $a set_parameter enable_rectangular_blockage_check true
+  action $a set_parameter enable_routing_porosity_check true
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter min_metal_spacing { }
+  action $a set_parameter min_metal_width { }
+  action $a set_parameter post_action_script {}
+
+
+  if { [lsearch -exact $action_names GENERATE] != -1 } {
+      set a [project $p get_action GENERATE]
+  } else {
+      set a [project $p create_action GENERATE GENERATE]
+  }
+
+project $p set_active_action GENERATE
+  action $a set_parameter coverage_lib {}
+  action $a set_parameter post_action_script {}
+
+
+  if { [lsearch -exact $action_names HDLICE] != -1 } {
+      set a [project $p get_action HDLICE]
+  } else {
+      set a [project $p create_action HDLICE HDLICE]
+  }
+
+project $p set_active_action HDLICE
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list { vnc_logs }
+  action $a set_parameter copy_results no
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter plugin_debug_mode no
+  action $a set_parameter post_action_script {}
+  action $a set_parameter reports_only no
+  action $a set_parameter vaelab_opts {}
+  action $a set_parameter vavlog_opts {}
+
+
+  if { [lsearch -exact $action_names HERC_DRC] != -1 } {
+      set a [project $p get_action HERC_DRC]
+  } else {
+      set a [project $p create_action HERC_DRC HERC_DRC]
+  }
+
+project $p set_active_action HERC_DRC
+  action $a set_parameter GROUP_DIR group
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {run_details evaccess group RCXT ruledeck.evx}
+  action $a set_parameter define_in_deck {}
+  action $a set_parameter hercules hercules
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter options {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter ruledeck {}
+  action $a set_parameter ruledeck_filename ruledeck
+
+
+  if { [lsearch -exact $action_names HERC_LVS] != -1 } {
+      set a [project $p get_action HERC_LVS]
+  } else {
+      set a [project $p create_action HERC_LVS HERC_LVS]
+  }
+
+project $p set_active_action HERC_LVS
+  action $a set_parameter GROUP_DIR group
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {run_details evaccess EV_OUT HERCULES_EXTRACT_RCXT  ruledeck.evx hx2mw.tf group }
+  action $a set_parameter define_in_deck {}
+  action $a set_parameter equivfile defequivfile
+  action $a set_parameter hercules hercules
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter options {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter rootCell {}
+  action $a set_parameter ruledeck {}
+  action $a set_parameter ruledeck_filename ruledeck
+  action $a set_parameter ruledeck_warning {}
+  action $a set_parameter starrc_output 0
+
+
+  if { [lsearch -exact $action_names ICV_DRC] != -1 } {
+      set a [project $p get_action ICV_DRC]
+  } else {
+      set a [project $p create_action ICV_DRC ICV_DRC]
+  }
+
+project $p set_active_action ICV_DRC
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup NO
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {run_details ICV_iLVS iLVS}
+  action $a set_parameter icv icv
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter options {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter ruledeck {}
+  action $a set_parameter ruledeck_filename ruledeck
+  action $a set_parameter verbosity 0
+
+
+  if { [lsearch -exact $action_names ICV_LVS] != -1 } {
+      set a [project $p get_action ICV_LVS]
+  } else {
+      set a [project $p create_action ICV_LVS ICV_LVS]
+  }
+
+project $p set_active_action ICV_LVS
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup no
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {run_details ICV_iLVS iLVS}
+  action $a set_parameter equivfile defequivfile
+  action $a set_parameter icv icv
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter options {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter ruledeck {}
+  action $a set_parameter ruledeck_filename ruledeck
+  action $a set_parameter ruledeck_warning {}
+  action $a set_parameter starrc_output 0
+  action $a set_parameter stc yes
+  action $a set_parameter verbosity 0
+
+
+  if { [lsearch -exact $action_names LIBCOMPILE] != -1 } {
+      set a [project $p get_action LIBCOMPILE]
+  } else {
+      set a [project $p create_action LIBCOMPILE LIBCOMPILE]
+  }
+
+project $p set_active_action LIBCOMPILE
+  action $a set_parameter PVT_list ALL
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter lc_opts -xg
+  action $a set_parameter lc_shell lc_shell
+  action $a set_parameter log_file lc_shell.log
+  action $a set_parameter post_action_script {}
+
+
+  if { [lsearch -exact $action_names LIBSCR] != -1 } {
+      set a [project $p get_action LIBSCR]
+  } else {
+      set a [project $p create_action LIBSCR LIBSCR]
+  }
+
+project $p set_active_action LIBSCR
+  action $a set_parameter PVT_list ALL
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter libscr libscr
+  action $a set_parameter libscr_noise_options {-chk_IV -chk_NIC -chk_reg1 -chk_noise_exis -chk_noise_range -chk_noise_polar -chk_noise_neg}
+  action $a set_parameter libscr_options -check_mono
+  action $a set_parameter log_file libscr.log
+  action $a set_parameter post_action_script {}
+
+
+  if { [lsearch -exact $action_names LPEM] != -1 } {
+      set a [project $p get_action LPEM]
+  } else {
+      set a [project $p create_action LPEM LPEM]
+  }
+
+project $p set_active_action LPEM
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter path {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter results_subdir lpem
+
+
+  if { [lsearch -exact $action_names MAGMA] != -1 } {
+      set a [project $p get_action MAGMA]
+  } else {
+      set a [project $p create_action MAGMA MAGMA]
+  }
+
+project $p set_active_action MAGMA
+  action $a set_parameter behavior {}
+  action $a set_parameter best_case_corner Best
+  action $a set_parameter blastwrap_options {}
+  action $a set_parameter cell_volcano {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list { vnc_logs }
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter library_name {}
+  action $a set_parameter output magma
+  action $a set_parameter plugin_debug_mode no
+  action $a set_parameter post_action_script {}
+  action $a set_parameter reports reports
+  action $a set_parameter slew_hi 70
+  action $a set_parameter slew_lo 30
+  action $a set_parameter worst_case_corner Worst
+
+
+  if { [lsearch -exact $action_names NCSIM] != -1 } {
+      set a [project $p get_action NCSIM]
+  } else {
+      set a [project $p create_action NCSIM NCSIM]
+  }
+
+project $p set_active_action NCSIM
+  action $a set_parameter PVT_list ALL
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter common_lib ncsim_lib
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter model_type ncvhdl
+  action $a set_parameter post_action_script {}
+  action $a set_parameter run_vhdl 1
+  action $a set_parameter simcom run_ncsim
+  action $a set_parameter simname ncsim
+  action $a set_parameter simopts -epulse_no_msg
+  action $a set_parameter simulator nc
+
+
+  if { [lsearch -exact $action_names PRIMETIME] != -1 } {
+      set a [project $p get_action PRIMETIME]
+  } else {
+      set a [project $p create_action PRIMETIME PRIMETIME]
+  }
+
+project $p set_active_action PRIMETIME
+  action $a set_parameter PVT_list ALL
+  action $a set_parameter behavior {}
+  action $a set_parameter cds_inst_dir {}
+  action $a set_parameter cell_iden {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list { %PVT/*/vnc_logs %PVT/nc/INCA_libs %PVT/nc/vhdl %PVT/ms/work %PVT/nc/primetime_lib %PVT/nc/*_lib.db %PVT/vcs/csrc %PVT/vcs/simv* MIQ/%PVT/*/nc/INCA_libs MIQ/%PVT/*/nc/vhdl MIQ/%PVT/*/nc/primetime_lib MIQ/%PVT/*/ms/work MIQ/%PVT/*/vcs/csrc MIQ/%PVT/*/vcs/simv* }
+  action $a set_parameter clock_name clkgrp
+  action $a set_parameter clock_period 20
+  action $a set_parameter clock_transition 0.3
+  action $a set_parameter clock_waveform {0 10}
+  action $a set_parameter copy_results no
+  action $a set_parameter dc_opts {}
+  action $a set_parameter dc_shell dc_shell
+  action $a set_parameter input_transition 0.5
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter lc_opts {}
+  action $a set_parameter lc_shell lc_shell
+  action $a set_parameter logic_lib {}
+  action $a set_parameter logic_verilog {}
+  action $a set_parameter miq no
+  action $a set_parameter nc_opts {}
+  action $a set_parameter pin_load 0.05
+  action $a set_parameter plugin_debug_mode no
+  action $a set_parameter post_action_script {}
+  action $a set_parameter pt_cmds {}
+  action $a set_parameter pt_opts {}
+  action $a set_parameter pt_shell pt_shell
+  action $a set_parameter pvt_override {}
+  action $a set_parameter quick_results no
+  action $a set_parameter reports_only no
+  action $a set_parameter sdf_tool {pt dc}
+  action $a set_parameter simopts {-l vcs.log}
+  action $a set_parameter simulator vcs
+  action $a set_parameter vcs_opts {}
+  action $a set_parameter version 3.0
+  action $a set_parameter vlib_opts {}
+  action $a set_parameter vlog_opts {}
+  action $a set_parameter vsim_opts {}
+
+
+  if { [lsearch -exact $action_names REDHAWK] != -1 } {
+      set a [project $p get_action REDHAWK]
+  } else {
+      set a [project $p create_action REDHAWK REDHAWK]
+  }
+
+project $p set_active_action REDHAWK
+  action $a set_parameter Cload 200fF
+  action $a set_parameter PVT_list ssdb0p81v125c
+  action $a set_parameter analysis_type both
+  action $a set_parameter apache_tech_file {}
+  action $a set_parameter avm_update yes
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter custom_flow_update no
+  action $a set_parameter error_mask {}
+  action $a set_parameter freq {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter lowest_metal_layer {}
+  action $a set_parameter mode both
+  action $a set_parameter nxtgrd_path {}
+  action $a set_parameter onstate_post_script {}
+  action $a set_parameter plugin_debug_mode no
+  action $a set_parameter post_action_script {}
+  action $a set_parameter rampup_post_script {}
+  action $a set_parameter reports_only no
+  action $a set_parameter scale_factor 1.0
+  action $a set_parameter spice_config_file {}
+  action $a set_parameter spice_model_dir {}
+  action $a set_parameter spice_simulator {}
+  action $a set_parameter support_pgarc_lib no
+  action $a set_parameter switch_models_path {}
+  action $a set_parameter toggle_rate 0.3
+  action $a set_parameter upper_metal_layer {}
+
+
+  if { [lsearch -exact $action_names REPORT] != -1 } {
+      set a [project $p get_action REPORT]
+  } else {
+      set a [project $p create_action REPORT REPORT]
+  }
+
+project $p set_active_action REPORT
+  action $a set_parameter post_action_script {}
+  action $a set_parameter table_parameter_list {compiler_name NW NB CM Tcq Tcc Idd_leakage Memory_area Memory_length_width BK center_decode bist_enable redundancy_enable timing_mode periphery_Vt SW low_leakage dual_rail power_gating}
+
+
+  if { [lsearch -exact $action_names SMS_ECC_QA] != -1 } {
+      set a [project $p get_action SMS_ECC_QA]
+  } else {
+      set a [project $p create_action SMS_ECC_QA SMS_ECC_QA]
+  }
+
+project $p set_active_action SMS_ECC_QA
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter post_action_script {}
+
+
+  if { [lsearch -exact $action_names SMS_GATE_QA] != -1 } {
+      set a [project $p get_action SMS_GATE_QA]
+  } else {
+      set a [project $p create_action SMS_GATE_QA SMS_GATE_QA]
+  }
+
+project $p set_active_action SMS_GATE_QA
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter post_action_script {}
+
+
+  if { [lsearch -exact $action_names SMS_INTEGRITY_QA] != -1 } {
+      set a [project $p get_action SMS_INTEGRITY_QA]
+  } else {
+      set a [project $p create_action SMS_INTEGRITY_QA SMS_INTEGRITY_QA]
+  }
+
+project $p set_active_action SMS_INTEGRITY_QA
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter post_action_script {}
+
+
+  if { [lsearch -exact $action_names SMS_RTL_QA] != -1 } {
+      set a [project $p get_action SMS_RTL_QA]
+  } else {
+      set a [project $p create_action SMS_RTL_QA SMS_RTL_QA]
+  }
+
+project $p set_active_action SMS_RTL_QA
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter post_action_script {}
+
+
+  if { [lsearch -exact $action_names STARRC] != -1 } {
+      set a [project $p get_action STARRC]
+  } else {
+      set a [project $p create_action STARRC STARRC]
+  }
+
+project $p set_active_action STARRC
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter cmd_file {}
+  action $a set_parameter extract_c_only 0
+  action $a set_parameter extract_options {}
+  action $a set_parameter icv_annot_file starrc.adp.gz
+  action $a set_parameter icv_db_name ICV_EXTRACT_RCXT
+  action $a set_parameter ignore_lvs_check 0
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter mapping {}
+  action $a set_parameter milkyway_lib {}
+  action $a set_parameter options {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter starrc StarXtract
+  action $a set_parameter techfile {}
+  action $a set_parameter techfile_warning {}
+  action $a set_parameter verification hercules
+
+
+  if { [lsearch -exact $action_names STARRCM] != -1 } {
+      set a [project $p get_action STARRCM]
+  } else {
+      set a [project $p create_action STARRCM STARRCM]
+  }
+
+project $p set_active_action STARRCM
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter cmd_file {}
+  action $a set_parameter extract_c_only 0
+  action $a set_parameter extract_options {}
+  action $a set_parameter ignore_lvs_check 0
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter mapping {}
+  action $a set_parameter milkyway_lib {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter starrc StarXtract
+  action $a set_parameter techfile {}
+  action $a set_parameter techfile_warning {}
+  action $a set_parameter use_tvf_format false
+
+
+  if { [lsearch -exact $action_names VSTORM] != -1 } {
+      set a [project $p get_action VSTORM]
+  } else {
+      set a [project $p create_action VSTORM VSTORM]
+  }
+
+project $p set_active_action VSTORM
+  action $a set_parameter PVT_list all
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list { %PVT/vnc_logs }
+  action $a set_parameter copy_results no
+  action $a set_parameter frequency 1.0
+  action $a set_parameter gds_layermap {}
+  action $a set_parameter gen_views detailed
+  action $a set_parameter keep_debug_files yes
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter lefdef_layermap {}
+  action $a set_parameter libgen_opts {}
+  action $a set_parameter logic_lef_model {}
+  action $a set_parameter plugin_debug_mode no
+  action $a set_parameter post_action_script {}
+  action $a set_parameter rc_techfile {}
+  action $a set_parameter reports_only no
+  action $a set_parameter spice_config_file {}
+  action $a set_parameter spice_model_dir {}
+  action $a set_parameter xtc_model {}
+  action $a set_parameter zx_model {}
+
+
+  if { [lsearch -exact $action_names VXL] != -1 } {
+      set a [project $p get_action VXL]
+  } else {
+      set a [project $p create_action VXL VXL]
+  }
+
+project $p set_active_action VXL
+  action $a set_parameter PVT_list FIRST
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter defines +define+enable_rm_verification
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter post_action_script {}
+  action $a set_parameter simulator vcs
+
+
+  if { [lsearch -exact $action_names VXLRTL] != -1 } {
+      set a [project $p get_action VXLRTL]
+  } else {
+      set a [project $p create_action VXLRTL VXLRTL]
+  }
+
+project $p set_active_action VXLRTL
+  action $a set_parameter PVT_list FIRST
+  action $a set_parameter behavior {}
+  action $a set_parameter cleanup {}
+  action $a set_parameter cleanup_additions {}
+  action $a set_parameter cleanup_exclusions {}
+  action $a set_parameter cleanup_list {}
+  action $a set_parameter common_lib vxlrtl_lib
+  action $a set_parameter keep_vldb {}
+  action $a set_parameter model_type rtlbehavioral
+  action $a set_parameter post_action_script {}
+  action $a set_parameter simcom ncxlmode
+  action $a set_parameter simname vxlrtl
+  action $a set_parameter simopts {-l vcs.log}
+  action $a set_parameter simulator nc
+
+
+############### Jobs ###############
+set jobs [project $p list_job_names]
+  if { [lsearch -exact $jobs generate_all] == -1} {
+    set jb [project $p create_job generate_all]
+    job $jb add_filter TOP: Generate
+    job $jb enable_filter TOP: 1
+  }
+
+project $p save

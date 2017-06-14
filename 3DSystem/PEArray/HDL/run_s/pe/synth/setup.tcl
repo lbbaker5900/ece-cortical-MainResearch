@@ -14,17 +14,17 @@ set clkname clk
 # set modname pe_cntl
 # set modname mem_acc_cont
 # set modname simd_upstream_intf
+# set modname simd_wrapper
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
 
-set modname simd_wrapper
+set modname pe
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
 #
-# set modname stack_interface
 # set modname pe
 # 
 

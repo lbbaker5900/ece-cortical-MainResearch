@@ -24,7 +24,7 @@
 # Set the synthetic library variable to enable use of 
 # desigware blocks
 #---------------------------------------------------------
- set synthetic_library [list dw_foundation.sldb]
+# set synthetic_library [list dw_foundation.sldb]
  
 #---------------------------------------------------------
 # Specify the worst case (slowest) libraries and       
@@ -33,11 +33,8 @@
 # target and setting the link library to the conctenation
 # of the target and the synthetic library
 #---------------------------------------------------------
-# set target_library cp65npkldst_tt1p2v25c.db
-# set target_library cp65npkldst_ss0p9v125c.db
-# set target_library NangateOpenCellLibrary_PDKv1_2_v2008_10_slow_nldm.db
-# set link_library   [concat  $target_library $synthetic_library $fifo_library ]
- set link_library   [concat  "*" $target_library $synthetic_library $mem_lib $regf_lib  ]
+ set target_library saed32lvt_ss0p95v125c.db
+ set link_library   [concat  $target_library $synthetic_library]
 
 #---------------------------------------------------------
 # Specify a 5000ps clock period with 50% duty cycle     
@@ -87,11 +84,8 @@
 # ASSUME being driven by a D-flip-flop                 
 #---------------------------------------------------------
 
-# set DR_CELL_NAME DFFR_X1
-set DR_CELL_NAME	SEN_FDPQ_1
-set DR_CELL_PIN	Q
-# set DR_CELL_NAME SEL_FDPRBQ_D_1
-# set DR_CELL_PIN  Q
+ set DR_CELL_NAME DFFX1_LVT
+ set DR_CELL_PIN  Q
 
  set_driving_cell -lib_cell "$DR_CELL_NAME" -pin "$DR_CELL_PIN" [remove_from_collection [all_inputs] $clkname]
 
@@ -100,10 +94,7 @@ set DR_CELL_PIN	Q
 # 4 D-flip-flop (D-inputs) and                         
 # 0.013 units of wiring capacitance                     
 #---------------------------------------------------------
-set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
-# set PORT_LOAD_CELL  cp65npkldst_ss0p9v125c/SEL_FDPRBQ_D_1/D
-# set PORT_LOAD_CELL  cp65npkldst_ss0p9v125c/SEL_FDPRBQ_D_1/D
-# set PORT_LOAD_CELL  NangateOpenCellLibrary_PDKv1_2_v2008_10_slow_nldm/DFFR_X1/D
+ set PORT_LOAD_CELL  saed32lvt_ss0p95v125c/DFFX1_LVT/D
  set WIRE_LOAD_EST   0.013
  set FANOUT          4
  set PORT_LOAD [expr $WIRE_LOAD_EST + $FANOUT * [load_of $PORT_LOAD_CELL]]
@@ -119,38 +110,6 @@ set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
 # This command prevents feedthroughs from input to output and avoids assign statements                 
 #--------------------------------------------------------- 
  set_fix_multiple_port_nets -all -buffer_constants [get_designs]
-
-
-#---------------------------------------------------------
-# Dont touch on DW functions
-#  - dw mults etc. are found in dw_foundation.sldb and are found during instance search in the sldb
-#  - i dont think we dont_touch these instances
-#--------------------------------------------------------- 
-#set_dont_touch [get_cell DW_*]
-
-
-#---------------------------------------------------------
-# Dont touch on memories
-#--------------------------------------------------------- 
-# set_dont_touch [get_cell to_stOp_fifo[*].mem*]
-
-# readpath memories
-#set_dont_touch [get_cell readpath/sch_data_buffer_mem/*mem*]
-#set_dont_touch [get_cell readpath/free_BufId_fifo[0].gfifo/fifo_data_mem/*mem*]
-
-set_dont_touch [get_cell */*/*.gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell */*.gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell */*.gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell */*.gmemory/*mem*]
-
-set_dont_touch [get_cell */*.gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell *.gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell *.gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell *.gmemory/*mem*]
-
-set_dont_touch [get_cell from_system_fifo[0].gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell to_bnc_fifo[*].gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell to_readpath_fifo[0].gfifo/fifo_data_mem/*mem*]
 
 #------------------------------------------------------
 # During the initial map (synthesis), Synopsys might   

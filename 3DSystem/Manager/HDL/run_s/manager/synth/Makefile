@@ -25,6 +25,13 @@ lib:
 	tcsh -c "add synopsys2015 ; \
 	lc_shell -64bit -f run_lib.tcl |& tee run_lib.log"
 
+dw:
+	tcsh -c "add synopsys2015 ; \
+	unset LM_LICENSE_FILE ; \
+	unset SNPSLMD_LICENSE_FILE ; \
+	add embedit2013.03 ; \
+        ./run_create_dw_proj.ish dw_memories"
+
 
 
 clean:

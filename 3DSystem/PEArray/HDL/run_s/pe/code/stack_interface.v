@@ -147,7 +147,7 @@ module stack_interface (
   //
   reg                                            pe__stu__valid       ;
   reg     [`COMMON_STD_INTF_CNTL_RANGE   ]       pe__stu__cntl        ;
-  input                                          stu__pe__ready       ;
+  wire                                           stu__pe__ready       ;
   reg     [`STACK_UP_INTF_TYPE_RANGE     ]       pe__stu__type        ;  // Control or Data, Vector or scalar
   reg     [`STACK_UP_INTF_DATA_RANGE     ]       pe__stu__data        ;
   reg     [`STACK_UP_INTF_OOB_DATA_RANGE ]       pe__stu__oob_data    ;
