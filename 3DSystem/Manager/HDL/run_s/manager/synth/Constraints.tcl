@@ -122,21 +122,21 @@ set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
 
 
 #---------------------------------------------------------
-# Dont touch on memories
+# Dont touch on DW functions
+#  - dw mults etc. are found in dw_foundation.sldb and are found during instance search in the sldb
+#  - i dont think we dont_touch these instances
 #--------------------------------------------------------- 
-# set_dont_touch [get_cell to_stOp_fifo[*].mem*]
+#set_dont_touch [get_cell DW_*]
 
-# readpath memories
-#set_dont_touch [get_cell readpath/sch_data_buffer_mem/*mem*]
-#set_dont_touch [get_cell readpath/free_BufId_fifo[0].gfifo/fifo_data_mem/*mem*]
 
-set_dont_touch [get_cell *.gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell *.gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell *.gmemory/*mem*]
+#---------------------------------------------------------
+# Dont touch on memories and regFiles
+#--------------------------------------------------------- 
+# Seem to have to perform a get_cell first
+set acells [get_cell -hier]
+set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ asdr.*"]
+set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ sass.*"]
 
-set_dont_touch [get_cell from_system_fifo[0].gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell to_bnc_fifo[*].gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell to_readpath_fifo[0].gfifo/fifo_data_mem/*mem*]
 
 #------------------------------------------------------
 # During the initial map (synthesis), Synopsys might   

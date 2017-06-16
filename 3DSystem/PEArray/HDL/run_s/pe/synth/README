@@ -1,7 +1,36 @@
 design_vision -64bit -no_gui
 
 change 
-  - setup.tcl
-  - read.tcl
-  - Makefile
+gvim setup.tcl read.tcl Makefile
 cp *rpt *log *.v logs/<name>/.
+
+
+get_cells -hier -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*generic_.port_memory.*"
+
+dc_shell> get_cells -hier -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*fifo.*"
+{pe_cntl/from_Sti_OOB_Fifo[0].gpfifo/gfifo pe_cntl/from_Sti_OOB_Fifo[0].gpfifo}
+dc_shell> get_attr [get_cells -hier -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*fifo.*"] ref_name
+generic_fifo_GENERIC_FIFO_DEPTH16_GENERIC_FIFO_THRESHOLD8_GENERIC_FIFO_DATA_WIDTH38 generic_pipelined_fifo_GENERIC_FIFO_DEPTH16_GENERIC_FIFO_THRESHOLD8_GENERIC_FIFO_DATA_WIDTH38
+dc_shell> 
+
+
+get_cells -hier -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*generic_.port_memory.*"
+get_cells -hier -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*fifo.*"
+get_cells -hier -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*asdr.*"
+get_attr [get_cells -hier -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*fifo.*"] ref_name
+get_attr [get_cells -hier -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*asdr.*"] ref_name
+
+get_cell */*/*.gpfifo/gfifo/fifo_data_mem/*mem*  -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*fifo.*"
+get_cell */*.gpfifo/gfifo/fifo_data_mem/*mem*    -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*asdr.*"
+get_cell */*.gfifo/fifo_data_mem/*mem*           -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*fifo.*"
+get_cell */*.gmemory/*mem*                       -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*asdr.*"
+
+get_cell */*.gpfifo/gfifo/fifo_data_mem/*mem*   -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*fifo.*"
+get_cell *.gpfifo/gfifo/fifo_data_mem/*mem*     -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*asdr.*"
+get_cell *.gfifo/fifo_data_mem/*mem*            -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*fifo.*"
+get_cell *.gmemory/*mem*                        -regexp -filter "full_name =~ .*Sti_OOB.* && ref_name =~ .*asdr.*"
+
+get_cell from_system_fifo[0.gpfifo/gfifo/fifo_data_mem/*mem*
+#get_cell to_bnc_fifo\[*.gfifo/fifo_data_mem/*mem*
+get_cell to_readpath_fifo[0.gfifo/fifo_data_mem/*mem*
+

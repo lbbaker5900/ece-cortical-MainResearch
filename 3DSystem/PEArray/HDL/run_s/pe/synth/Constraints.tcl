@@ -130,27 +130,13 @@ set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
 
 
 #---------------------------------------------------------
-# Dont touch on memories
+# Dont touch on memories and regFiles
 #--------------------------------------------------------- 
-# set_dont_touch [get_cell to_stOp_fifo[*].mem*]
+# Seem to have to perform a get_cell first
+set acells [get_cell -hier]
+set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ asdr.*"]
+set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ sass.*"]
 
-# readpath memories
-#set_dont_touch [get_cell readpath/sch_data_buffer_mem/*mem*]
-#set_dont_touch [get_cell readpath/free_BufId_fifo[0].gfifo/fifo_data_mem/*mem*]
-
-set_dont_touch [get_cell */*/*.gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell */*.gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell */*.gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell */*.gmemory/*mem*]
-
-set_dont_touch [get_cell */*.gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell *.gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell *.gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell *.gmemory/*mem*]
-
-set_dont_touch [get_cell from_system_fifo[0].gpfifo/gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell to_bnc_fifo[*].gfifo/fifo_data_mem/*mem*]
-set_dont_touch [get_cell to_readpath_fifo[0].gfifo/fifo_data_mem/*mem*]
 
 #------------------------------------------------------
 # During the initial map (synthesis), Synopsys might   

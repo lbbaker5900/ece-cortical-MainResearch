@@ -169,7 +169,7 @@ class manager;
                 `ifdef TB_ENABLE_WUD_INITIATE_OP
                     wait ( wud2mgr_m.num() != 0 ) 
                     wud2mgr_m.get(rcvd_wud_to_oob_cmd);
-                    $display("@%0t:%s:%0d:INFO: Manager {%0d} received WUD DOwnstream OOB CommandMRC\'s", $time, `__FILE__, `__LINE__, Id);
+                    $display("@%0t:%s:%0d:INFO: Manager {%0d} received WUD Downstream OOB Command from WUD\'s", $time, `__FILE__, `__LINE__, Id);
                 `endif
 
                 // A request to both Memory Read controllers will initiate an operation

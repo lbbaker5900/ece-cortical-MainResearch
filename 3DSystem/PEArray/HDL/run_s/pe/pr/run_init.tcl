@@ -57,7 +57,14 @@ set_fp_placement_strategy \
 
 if {$modname == "pe" || $modname == "manager"} {
 
-  create_floorplan -control_type width_and_height -core_width 1460 -core_height 1650 -left_io2core 5 -bottom_io2core 5 -right_io2core 5 -top_io2core 5
+  create_floorplan                      \
+        -control_type width_and_height  \
+        -core_width ${CHIPLET_WIDTH}    \
+        -core_height ${CHIPLET_HEIGHT}  \
+        -left_io2core 5                 \
+        -bottom_io2core 5               \
+        -right_io2core 5                \
+        -top_io2core 5
 
 } else {
 
