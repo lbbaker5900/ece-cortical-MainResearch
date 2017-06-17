@@ -201,6 +201,41 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../SIMULATION/common/TB_PEonly_system_stack_bus_downstream_instance_ports.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    pLine = pLine + '\n  // General control and status                                                                     '.format(pe) 
+    pLine = pLine + '\n  //  - doesnt seem to work if you use cb_test for observed signals                                 '.format(pe) 
+    pLine = pLine + '\n  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         '.format(pe) 
+    pLine = pLine + '\n        .sys__pe{0}__allSynchronized    ( SysOob2PeArray[{0}].cb_test.sys__pe__allSynchronized   ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__sys__thisSynchronized   ( SysOob2PeArray[{0}].pe__sys__thisSynchronized          ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__sys__ready              ( SysOob2PeArray[{0}].pe__sys__ready                     ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__sys__complete           ( SysOob2PeArray[{0}].pe__sys__complete                  ), '.format(pe) 
+    #                                                                                                    
+    pLine = pLine + '\n  // OOB controls how the lanes are interpreted                                                     '.format(pe) 
+    pLine = pLine + '\n  //  - doesnt seem to work if you use cb_test for observed signals                                 '.format(pe) 
+    pLine = pLine + '\n  //  - tried all combinations, e.g. cb_test to grab the signal and no cb for checking etc.         '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_cntl           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_cntl          ), '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_valid          ( SysOob2PeArray[{0}].cb_test.std__pe__oob_valid         ), '.format(pe) 
+    pLine = pLine + '\n        .pe{0}__std__oob_ready          ( SysOob2PeArray[{0}].pe__std__oob_ready                 ), '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_type           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_type          ), '.format(pe) 
+    pLine = pLine + '\n        .std__pe{0}__oob_data           ( SysOob2PeArray[{0}].cb_test.std__pe__oob_data          ), '.format(pe) 
+    # 
+    for lane in range (0, numOfExecLanes):
+      pLine = pLine + '\n        // PE {1}, Lane {0}                 '.format(lane,pe)
+      for strm in range (0, 2):
+        pLine = pLine + '\n        //  - doesnt seem to work if you use cb_test for observed signals                                                       '.format(pe) 
+        pLine = pLine + '\n        .pe{0}__std__lane{1}_strm{2}_ready         ( SysLane2PeArray[{0}][{1}].pe__std__lane_strm{2}_ready              ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_cntl          ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_cntl       ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data          ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data       ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_valid    ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid ),      '.format(pe,lane,strm)
+        #pLine = pLine + '\n        .std__pe{0}__lane{1}_strm{2}_data_mask     ( SysLane2PeArray[{0}][{1}].cb_test.std__pe__lane_strm{2}_data_mask  ),      '.format(pe,lane,strm)
+        pLine = pLine + '\n        '
+                                             
+  f.write(pLine)
+  f.close()
+
   f = open('../SIMULATION/common/TB_system_stack_bus_upstream_instance_ports.vh', 'w')
   pLine = ""
 
@@ -366,6 +401,37 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../SIMULATION/common/TB_PEonly_start_generators_and_drivers.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    pLine = pLine + '\n            begin'                                  
+    pLine = pLine + '\n              ldst_driver[{0}].run()  ;'.format(pe) 
+    pLine = pLine + '\n            end'
+    pLine = pLine + '\n            begin'                                  
+    pLine = pLine + '\n              mgr[{0}].run()  ;'.format(pe) 
+    pLine = pLine + '\n            end'
+    pLine = pLine + '\n            begin'                                  
+    pLine = pLine + '\n              oob_drv[{0}].run()  ;'.format(pe) 
+    pLine = pLine + '\n            end'
+    for lane in range (0, numOfExecLanes):
+      pLine = pLine + '\n            begin'
+      pLine = pLine + '\n              gen[{0}][{1}].run()  ;'.format(pe,lane) 
+      pLine = pLine + '\n            end'                                    
+      pLine = pLine + '\n            begin'                                  
+      pLine = pLine + '\n              drv[{0}][{1}].run()  ;'.format(pe,lane) 
+      pLine = pLine + '\n            end'
+      pLine = pLine + '\n            begin'                                  
+      pLine = pLine + '\n              mem_check[{0}][{1}].run()  ;'.format(pe,lane) 
+      pLine = pLine + '\n            end'
+      pLine = pLine + '\n            begin'                                  
+      pLine = pLine + '\n              rf_driver[{0}][{1}].run()  ;'.format(pe,lane) 
+      pLine = pLine + '\n            end'
+      pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
   f = open('../SIMULATION/common/TB_wait_for_final_operation.vh', 'w')
   pLine = ""
 
@@ -389,6 +455,21 @@ if __name__ == "__main__":
       pLine = pLine + '\n                @vDownstreamStackBusLane[{0}][{1}].cb_test                                      ;'.format(pe,lane) 
       for strm in range (0, 2):
         pLine = pLine + '\n                vDownstreamStackBusLane [{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid  <= 0  ;'.format(pe,lane,strm) 
+      pLine = pLine + '\n            end'                                         
+    pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../SIMULATION/common/TB_PEonly_quiesce_all_generators.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    for lane in range (0, numOfExecLanes):
+      pLine = pLine + '\n            begin'
+      pLine = pLine + '\n                @vSysLane2PeArray[{0}][{1}].cb_test                                      ;'.format(pe,lane) 
+      for strm in range (0, 2):
+        pLine = pLine + '\n                vSysLane2PeArray [{0}][{1}].cb_test.std__pe__lane_strm{2}_data_valid  <= 0  ;'.format(pe,lane,strm) 
       pLine = pLine + '\n            end'                                         
     pLine = pLine + '\n'
 
@@ -421,6 +502,27 @@ if __name__ == "__main__":
     pLine = pLine + '\n                */                                                                                                                                '.format(lane) 
     pLine = pLine + '\n                // now wait for generator                                                                                                         '.format(lane) 
     pLine = pLine + '\n                @mgr2gen_ack[{0}];                                                                                                                '.format(lane) 
+    pLine = pLine + '\n            join_none                                                                                                                             '.format(lane) 
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../SIMULATION/common/TB_manager_PEonly_send_operation_to_generators.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n            fork                                                                                                                                  '.format(lane) 
+    pLine = pLine + '\n                sys_operation_lane[{0}] = new sys_operation_mgr ;                                                                                 '.format(lane) 
+    pLine = pLine + '\n                sys_operation_lane[{0}].Id[1]  =  {0}      ;  // set lane for address generation                                                  '.format(lane) 
+    pLine = pLine + '\n                                                                                                                                                  '.format(lane) 
+    pLine = pLine + '\n                // Send to driver                                                                                                                 '.format(lane) 
+    pLine = pLine + '\n                //$display("@%0t:%s:%0d:LEE: sys_operation_mgr : {{%0d,{0}}}:%h\\n", $time, `__FILE__, `__LINE__, Id, sys_operation_mgr);            '.format(lane) 
+    pLine = pLine + '\n                mgr2gen[{0}].put(sys_operation_lane[{0}])                    ;                                                                    '.format(lane) 
+    pLine = pLine + '\n                                                                                                                                                  '.format(lane) 
+    pLine = pLine + '\n                // now wait for generator                                                                                                         '.format(lane) 
+    pLine = pLine + '\n                //sys_operation.displayOperation();                                                                                               '.format(lane) 
+    pLine = pLine + '\n                @mgr2gen_ack[{0}];                                                                                                              '.format(lane) 
     pLine = pLine + '\n            join_none                                                                                                                             '.format(lane) 
   pLine = pLine + '\n'
 

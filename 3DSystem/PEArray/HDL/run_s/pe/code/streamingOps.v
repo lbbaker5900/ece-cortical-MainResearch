@@ -215,9 +215,9 @@ module streamingOps (
   wire                                         sti__stOp__strm1_data_valid  ; 
 
   // Input FIFO
-  reg                                         strm0_fifo_data_valid    ;    // FIFO output pipe valid
+  wire                                        strm0_fifo_data_valid    ;    // FIFO output pipe valid
   reg                                         strm0_fifo_read               ;    
-  reg                                         strm1_fifo_data_valid    ;    
+  wire                                        strm1_fifo_data_valid    ;    
   reg                                         strm1_fifo_read               ;    
 
   reg  [`DMA_CONT_STRM_CNTL_RANGE     ]       strm0_cntl        ; 
@@ -666,9 +666,9 @@ module streamingOps (
       begin: fifo
         //`STREAMING_OP_INPUT_FIFO
 
-        reg    [`COMMON_STD_INTF_CNTL_RANGE   ]    write_cntl       ;
-        reg    [`STREAMING_OP_DATA_RANGE      ]    write_data       ; 
-        reg                                        write            ; 
+        wire    [`COMMON_STD_INTF_CNTL_RANGE   ]    write_cntl       ;
+        wire    [`STREAMING_OP_DATA_RANGE      ]    write_data       ; 
+        wire                                        write            ; 
 
         // Read data                                                       
         wire                                       pipe_valid       ; 

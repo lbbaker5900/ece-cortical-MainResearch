@@ -190,53 +190,53 @@ clean :
 	touch .system
 
 
-.definition :  ../../../PEArray/SIMULATION/sv/definition.sv
-	vlog -sv +define+TESTING        +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/definition.sv
+.definition :  ../../../System/SIMULATION/sv/definition.sv
+	vlog -sv +define+TESTING        +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/definition.sv
 	echo "definition"
 	touch .definition
 
-.base_operation : ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/base_operation.sv
-	vlog -sv +define+TESTING  +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/base_operation.sv
+.base_operation : ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/base_operation.sv
+	vlog -sv +define+TESTING  +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/base_operation.sv
 	echo "base_operation"
 	touch .base_operation
 
-.driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/driver.sv 
-	vlog -sv +define+TESTING        +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/driver.sv 
+.driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/driver.sv 
+	vlog -sv +define+TESTING        +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/driver.sv 
 	echo "driver"
 	touch .driver
 
-.oob_driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv ../../../Manager/HDL/common/manager.vh  ../../../PEArray/SIMULATION/sv/oob_driver.sv 
-	vlog -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/oob_driver.sv 
+.oob_driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv ../../../Manager/HDL/common/manager.vh  ../../../System/SIMULATION/sv/oob_driver.sv 
+	vlog -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/oob_driver.sv 
 	echo "oob_driver"
 	touch .oob_driver
 
-.generator : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/generator.sv
-	vlog -sv +define+TESTING +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/generator.sv
+.generator : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/generator.sv
+	vlog -sv +define+TESTING +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/generator.sv
 	echo "generator"
 	touch .generator
 
-.tb_manager : ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/manager.sv
-	vlog -sv +define+TESTING +define+TB_ENABLE_WUD_INITIATE_OP +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/manager.sv
+.tb_manager : ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/manager.sv
+	vlog -sv +define+TESTING +define+TB_ENABLE_WUD_INITIATE_OP +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/manager.sv
 	echo "manager.sv"
 	touch .tb_manager
 
-.mem_checker : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/mem_checker.sv
-	vlog -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/mem_checker.sv
+.mem_checker : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/mem_checker.sv
+	vlog -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/mem_checker.sv
 	echo "mem_checker"
 	touch .mem_checker
 
-.upstream_checker : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/upstream_checker.sv
-	vlog -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/upstream_checker.sv
+.upstream_checker : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/upstream_checker.sv
+	vlog -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/upstream_checker.sv
 	echo "upstream_checker"
 	touch .upstream_checker
 
-.regFile_driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/regFile_driver.sv
-	vlog -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/regFile_driver.sv
+.regFile_driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/regFile_driver.sv
+	vlog -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/regFile_driver.sv
 	echo "regFile_driver"
 	touch .regFile_driver
 
-.loadStore_driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/loadStore_driver.sv
-	vlog -sv +define+TESTING +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/loadStore_driver.sv
+.loadStore_driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/loadStore_driver.sv
+	vlog -sv +define+TESTING +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/loadStore_driver.sv
 	echo "loadStore_driver"
 	touch .loadStore_driver
 

@@ -1285,9 +1285,9 @@ if __name__ == "__main__":
   else:
       pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM_READ_ACCESS    {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit))
       pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS   {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit+1))
-      pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM0_READ_ACCESS   {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit))
-      pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS  {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit+1))
-      bit = bit+2
+      pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM0_READ_ACCESS   {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit+2))
+      pLine = pLine + '\n`define MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS  {1}\'d{2}'.format(dma,numOfBankFsmStateBits,pow(2,bit+3))
+      bit = bit+4
 
 
   f.write(pLine)
@@ -1562,61 +1562,82 @@ if __name__ == "__main__":
     pLine = pLine + '\n'
     if (~allowAnyBankAccess):
       if numOfBankMemoryPorts == 2:
-        pLine = pLine + '\n  assign bank_mem[{0:>2}].read_address  =  ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS   ) ? dma__memc__read_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                       ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS  ) ? dma__memc__read_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                                                                                                    ldst__memc__read_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] ;'.format(bank)
-        pLine = pLine + '\n  assign bank_mem[{0:>2}].write_address =  ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  ) ? dma__memc__write_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                       ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS ) ? dma__memc__write_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                                                                                                    ldst__memc__write_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] ;'.format(bank)
-        pLine = pLine + '\n  assign bank_mem[{0:>2}].write_data    =  ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  ) ? dma__memc__write_data{0}[`MEM_ACC_CONT_BANK_DATA_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                       ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS ) ? dma__memc__write_data0[`MEM_ACC_CONT_BANK_DATA_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                                                                                                    ldst__memc__write_data[`MEM_ACC_CONT_BANK_DATA_RANGE] ;'
-        pLine = pLine + '\n  assign bank_mem[{0:>2}].write_enable  =  ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  ) ? dma__memc__write_valid{0} :'.format(bank)
-        pLine = pLine + '\n                                       ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS ) ? dma__memc__write_valid0 :'.format(bank)
-        pLine = pLine + '\n                                                                                                                    ldst__memc__write_valid ;'
+        pLine = pLine + '\n  assign bank_mem[{0:>2}].read_address  =  '.format(bank)
+        pLine = pLine + '\n                                      {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS   )}}}} & dma__memc__read_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                      {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS  )}}}} & dma__memc__read_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                      {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_LDST_READ_ACCESS       )}}}} & dma__memc__read_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                      {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{1\'b0}}}} ;'
+        pLine = pLine + '\n'
+        pLine = pLine + '\n  assign bank_mem[{0:>2}].write_address =  '.format(bank)
+        pLine = pLine + '\n                                      {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  )}}}} & dma__memc__write_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                      {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS )}}}} & dma__memc__write_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                      {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_LDST_WRITE_ACCESS      )}}}} & dma__memc__write_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                      {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{1\'b0}}}} ;'
+        pLine = pLine + '\n'
+        pLine = pLine + '\n  assign bank_mem[{0:>2}].write_data    =  {{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  )}}}} ? dma__memc__write_data{0}[`MEM_ACC_CONT_BANK_DATA_RANGE] :'.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS )}}}} ? dma__memc__write_data0[`MEM_ACC_CONT_BANK_DATA_RANGE] :'.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_LDST_WRITE_ACCESS      )}}}} ? dma__memc__write_data{0}[`MEM_ACC_CONT_BANK_DATA_RANGE] :'.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{1\'b0}}}} ;'
+        pLine = pLine + '\n'
+        pLine = pLine + '\n  assign bank_mem[{0:>2}].write_enable  =  ( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  ) & dma__memc__write_valid{0}  |'.format(bank)
+        pLine = pLine + '\n                                           ( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS ) & dma__memc__write_valid0 |'.format(bank)
+        pLine = pLine + '\n                                           ( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_LDST_WRITE_ACCESS       ) & dma__memc__write_valid0 ;'.format(bank)
+        pLine = pLine + '\n                                                                                                                   ldst__memc__write_valid ;'
       else:
-        pLine = pLine + '\n  assign bank_mem[{0:>2}].address       =  ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS   ) ? dma__memc__read_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                       ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS  ) ? dma__memc__read_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                       ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_LDST_READ_ACCESS       ) ? ldst__memc__read_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                       ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  ) ? dma__memc__write_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                       ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS ) ? dma__memc__write_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                                                                                                    ldst__memc__write_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] ;'.format(bank)
-        pLine = pLine + '\n  assign bank_mem[{0:>2}].write_data    =  ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  ) ? dma__memc__write_data{0}[`MEM_ACC_CONT_BANK_DATA_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                       ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS ) ? dma__memc__write_data0[`MEM_ACC_CONT_BANK_DATA_RANGE] :'.format(bank)
-        pLine = pLine + '\n                                                                                                                    ldst__memc__write_data[`MEM_ACC_CONT_BANK_DATA_RANGE] ;'
-        pLine = pLine + '\n  assign bank_mem[{0:>2}].write_enable  =  ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  ) ? dma__memc__write_valid{0} :'.format(bank)
-        pLine = pLine + '\n                                       ( bank_fsm[0].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS ) ? dma__memc__write_valid0 :'.format(bank)
-        pLine = pLine + '\n                                                                                                                    ldst__memc__write_valid ;'
+        pLine = pLine + '\n  assign bank_mem[{0:>2}].address       =  {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS   )}}}} & dma__memc__read_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS  )}}}} & dma__memc__read_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_LDST_READ_ACCESS       )}}}} & ldst__memc__read_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  )}}}} & dma__memc__write_address{0}[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS )}}}} & dma__memc__write_address0[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_LDST_WRITE_ACCESS      )}}}} & ldst__memc__write_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_BANK_ADDRESS_WIDTH {{1\'b0}}}} ;'
+        pLine = pLine + '\n'
+        pLine = pLine + '\n  assign bank_mem[{0:>2}].write_data    =  '.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  )}}}} & dma__memc__write_data{0}[`MEM_ACC_CONT_BANK_DATA_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS )}}}} & dma__memc__write_data0[`MEM_ACC_CONT_BANK_DATA_RANGE] |'.format(bank)
+        pLine = pLine + '\n                                           {{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_LDST_WRITE_ACCESS      )}}}} & ldst__memc__write_data[`MEM_ACC_CONT_BANK_DATA_RANGE] ;'.format(bank)
+        pLine = pLine + '\n'
+        pLine = pLine + '\n  assign bank_mem[{0:>2}].write_enable  =  '.format(bank)
+        pLine = pLine + '\n                                           ( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM_WRITE_ACCESS  ) & dma__memc__write_valid{0} |'.format(bank)
+        pLine = pLine + '\n                                           ( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_DMA_STRM0_WRITE_ACCESS ) & dma__memc__write_valid0 |'.format(bank)
+        pLine = pLine + '\n                                           ( bank_fsm[{0:>2}].mem_acc_state_next == `MEM_ACC_CONT_LDST_WRITE_ACCESS      ) & ldst__memc__write_valid ;'.format(bank)
   pLine = pLine + '\n'
 
 
-  pLine = pLine + '\n  assign memc__ldst__read_data        = ( ldst_read_addr_to_bank0  & bank_mem[ 0].read_data )  | '
+  pLine = pLine + '\n  assign memc__ldst__read_data        = '
+  pLine = pLine + '\n                                           ({{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{(bank_fsm[ 0].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS )}}}} & bank_mem[ 0].read_data ) | '.format(bank,dma)
   for bank in range (1, numOfBanks-1):
-    pLine = pLine + '\n                                        ( ldst_read_addr_to_bank{0:<2} & bank_mem[{0:>2}].read_data )  | '.format(bank,dma)
-  pLine = pLine + '\n                                        ( ldst_read_addr_to_bank{0:<2} & bank_mem[{0:>2}].read_data )  ;'.format(numOfBanks-1)
+    pLine = pLine + '\n                                             ({{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{(bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)}}}} & bank_mem[{0:>2}].read_data ) | '.format(bank)
+  bank += 1
+  pLine = pLine + '\n                                             ({{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{(bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)}}}} & bank_mem[{0:>2}].read_data ) ; '.format(bank)
   pLine = pLine + '\n'
 
-  pLine = pLine + '\n  assign memc__ldst__read_data_valid  = (( ldst_read_addr_to_bank0  & (bank_fsm[ 0].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 0].read_data_ldst_valid) | '
+  pLine = pLine + '\n  assign memc__ldst__read_data_valid  = (( (bank_fsm[ 0].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[ 0].read_data_ldst_valid) | '
   for bank in range (1, numOfBanks):
-    pLine = pLine + '\n                                        (( ldst_read_addr_to_bank{0:<2} & (bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[{0:>2}].read_data_ldst_valid) |'.format(bank)
-  pLine = pLine + '\n                                                                                                                                          1\'b0                              ;'
+    pLine = pLine + '\n                                        (( (bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_LDST_READ_ACCESS)) & bank_mem[{0:>2}].read_data_ldst_valid) |'.format(bank)
+  pLine = pLine + '\n                                                                                                                        1\'b0                              ;'
 
 
   
   if (allowAnyBankAccess):
     for dma in range (0, numOfMemPorts):
       bank=0
-      pLine = pLine + '\n  assign memc__dma__read_data{1:<2}        = ( dma_read_addr{1}_to_bank{0} )  ?  bank_mem[{0:>2}].read_data             : '.format(bank,dma)
+      pLine = pLine + '\n  assign memc__dma__read_data{1:<2}        = '.format(dma)
+      pLine = pLine + '\n                                           ({{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{(bank_fsm[ 0].mem_acc_state == `MEM_ACC_CONT_DMA_STRM{1}_READ_ACCESS )}}}} & bank_mem[ 0].read_data ) | '.format(bank,dma)
       for bank in range (1, numOfBanks-1):                                                                                                    
-        pLine = pLine + '\n                                        ( dma_read_addr{1}_to_bank{0} )  ?  bank_mem[{0:>2}].read_data             : '.format(bank,dma)
-      pLine = pLine + '\n                                                                        bank_mem[{0}].read_data             ;'.format(numOfBanks-1)
+        pLine = pLine + '\n                                        ({{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{(bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_DMA_STRM{1}_READ_ACCESS)}}}} & bank_mem[{0:>2}].read_data ) | '.format(bank)
+      bank += 1
+      pLine = pLine + '\n                                             ({{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{(bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_DMA_STRM{1}_READ_ACCESS)}}}} & bank_mem[{0:>2}].read_data ) ; '.format(bank)
   else:
     for dma in range (0, numOfMemPorts):
       if dma == 0 :
         pLine = pLine + '\n  assign memc__dma__read_data{1:<2}        =  '.format(bank,dma)
-        for bank in range (1, numOfBanks):
-          pLine = pLine + '\n                                             ( dma_read_addr{1}_to_bank{0:<2} & bank_mem[{0:>2}].read_data ) | '.format(bank,dma)
-        pLine = pLine + '\n                                               ( dma_read_addr{0}_to_bank{0:<2} & bank_mem[{0:>2}].read_data ) ; '.format(dma)
+        pLine = pLine + '\n                                             ({{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{(bank_fsm[ 0].mem_acc_state == `MEM_ACC_CONT_DMA_STRM_READ_ACCESS )}}}} & bank_mem[ 0].read_data ) | '.format(bank,dma)
+        pLine = pLine + '\n                                             ({{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{(bank_fsm[ 0].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS)}}}} & bank_mem[ 0].read_data ) | '.format(bank,dma)
+        for bank in range (1, numOfBanks-1):
+          pLine = pLine + '\n                                             ({{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{(bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS)}}}} & bank_mem[{0:>2}].read_data ) | '.format(bank)
+        bank += 1
+        pLine = pLine + '\n                                             ({{`MEM_ACC_CONT_MEMORY_DATA_WIDTH {{(bank_fsm[{0:>2}].mem_acc_state == `MEM_ACC_CONT_DMA_STRM0_READ_ACCESS)}}}} & bank_mem[{0:>2}].read_data ) ; '.format(bank)
         pLine = pLine + '\n'
       else:
         pLine = pLine + '\n  assign memc__dma__read_data{0:<2}        = bank_mem[{0:>2}].read_data             ; '.format(dma)

@@ -48,6 +48,11 @@ class generator;
     event   gen2drv_ack      ;
 
     //----------------------------------------------------------------------------------------------------
+    //  Generator sends operation to Upstream checker for value check
+
+    mailbox gen2up                                   ;
+
+    //----------------------------------------------------------------------------------------------------
     event   new_operation    ;
     int     Id [2]           ; // PE, Lane
 
@@ -67,8 +72,8 @@ class generator;
     //----------------------------------------------------------------------------------------------------
     // Interfaces
 
-    vSysOob2PeArray_T    vSysOob2PeArray  ;  // FIXME OOB interface is a per PE i/f where generator is per lane
-    vSysLane2PeArray_T   vSysLane2PeArray ;
+    vDownstreamStackBusOOB_T    vDownstreamStackBusOOB  ;  // FIXME OOB interface is a per PE i/f where generator is per lane
+    vDownstreamStackBusLane_T   vDownstreamStackBusLane [`PE_NUM_OF_STREAMS] ;
 
     //----------------------------------------------------------------------------------------------------
     // Operation objects
@@ -96,10 +101,11 @@ class generator;
                   input mailbox               gen2oob           ,
                   input event                 gen2oob_ack       ,
                   input event                 new_operation     ,
-                  input vSysOob2PeArray_T     vSysOob2PeArray   ,
-                  input vSysLane2PeArray_T    vSysLane2PeArray  ,
+                  input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB   ,
+                  input vDownstreamStackBusLane_T    vDownstreamStackBusLane [`PE_NUM_OF_STREAMS] ,
                   input mailbox               gen2rfP           ,
-                  input event                 gen2rfP_ack       
+                  input event                 gen2rfP_ack       ,
+                  input mailbox               gen2up                         
                  );
 
         this.Id                = Id                 ;
@@ -110,10 +116,11 @@ class generator;
         this.gen2oob           = gen2oob            ;
         this.gen2oob_ack       = gen2oob_ack        ;
         this.new_operation     = new_operation      ;
-        this.vSysOob2PeArray   = vSysOob2PeArray    ;
-        this.vSysLane2PeArray  = vSysLane2PeArray   ;
+        this.vDownstreamStackBusOOB   = vDownstreamStackBusOOB    ;
+        this.vDownstreamStackBusLane  = vDownstreamStackBusLane   ;
         this.gen2rfP           = gen2rfP            ;
         this.gen2rfP_ack       = gen2rfP_ack        ;
+        this.gen2up            = gen2up             ;
 
     endfunction
 
@@ -121,24 +128,22 @@ class generator;
     // RUN
 
     task run ();
-        //$display("@%0t:%s:%0d: LEE: Running generator : {%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+        //$display("@%0t:%s:%0d: INFO: Running generator : {%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
         // wait a few cycles before starting
 
         sys_operation_gen        =  new ()  ;  // copy of operation gcreated in manager, Generator re-creates different operand values
         sys_operation_gen.Id     =  Id      ;  // randomize needs to know which PE and lane
 
-        repeat (20) @(vSysOob2PeArray.cb_test);  
+        repeat (20) @(vDownstreamStackBusOOB.cb_test);  
 
         forever
             begin
-                @(vSysOob2PeArray.cb_test);  
+                @(vDownstreamStackBusOOB.cb_test);  
                 if ( mgr2gen.num() != 0 )
                     begin
                         mgr2gen.peek(sys_operation_mgr);   //Taking the instruction from the manager
                         mgr2gen.get(sys_operation_mgr)  ;  //Removing the instruction from manager mailbox
-                        $display("@%0t:%s:%0d:LEE:Received operation from manager: {%0d,%0d}:%h", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation_mgr);
-//                        sys_operation_mgr.displayOperationFoo(`__FILE__, `__LINE__);
-                
+                        $display("@%0t:%s:%0d:INFO:Received operation from manager: {%0d,%0d}:%h", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation_mgr);
                         
                         // Create a base operation and all operation sent to driver will be copies of this
                         // This allows us to keep track of what has been generated
@@ -148,19 +153,25 @@ class generator;
 
 /*
                         // DEBUG
-
-                        $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        $display("@%0t:%s:%0d:INFO:DEBUG:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
                         sys_operation_gen.displayOperationFoo(`__FILE__, `__LINE__);
 
                         if ((Id[0]  == 63) && (Id[1] == 0) && (priorOperations.size > 0))
                             priorOperations[$].displayOperation();
                         else if ((Id[0]  == 63) && (Id[1] == 0))
-                            $display("@%0t:%s:%0d:LEE:DEBUG:No prior operation:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-
+                            $display("@%0t:%s:%0d:INFO:DEBUG:No prior operation:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
 */
 
-
                         // randomize again to create operand values
+                        sys_operation_gen.c_operationType_definedOrder .constraint_mode(0) ;
+                        sys_operation_gen.c_operationType_all          .constraint_mode(0) ;
+                        sys_operation_gen.c_operationType_fpMac        .constraint_mode(1) ;
+                        sys_operation_gen.c_operationType_copyStdToMem .constraint_mode(0) ;
+                        //
+                        sys_operation_gen.c_streamSize.constraint_mode(1)                 ;
+                        sys_operation_gen.c_operandValues.constraint_mode(1)              ;
+                        sys_operation_gen.c_memoryLocalized.constraint_mode(1)            ;
+                        //
                         assert(sys_operation_gen.randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
 
                        
@@ -185,7 +196,8 @@ class generator;
                         oob_packet_new.createFromOperation(0, sys_operation) ;
 
                         gen2oob.put(oob_packet_new)                          ;
-                        @gen2oob_ack                                         ;  // wait for OOB
+                        // Why wait
+                        //@gen2oob_ack                                         ;  // wait for OOB
 
                         //----------------------------------------------------------------------------------------------------
                         // Configure streamingCntl
@@ -194,17 +206,20 @@ class generator;
 
                         gen2rfP.put(oob_packet_new)                          ;  // OOB WU packet has been driven, now set regFile inputs
                         wait(gen2rfP_ack.triggered)                          ;  // wait for regFile inputs to be driven
-                        $display("@%0t:%s:%0d:LEE:{%0d,%0d} regFile driven", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        $display("@%0t:%s:%0d:INFO:{%0d,%0d} regFile driven", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
 
                         //----------------------------------------------------------------------------------------------------
 /*
-                        $display("@%0t:%s:%0d:LEE:DEBUG:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        $display("@%0t:%s:%0d:INFO:DEBUG:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
                         //if ((Id[0]  == 63) && (Id[1] == 0) )
                         sys_operation.displayOperationFoo(`__FILE__, `__LINE__);
 */
 
                         sys_operation.clearPriors();  // avoid nested pointers as we dont need here
                         priorOperations.push_back(sys_operation)                       ;  
+
+                        // send actual operation with expected result to upstream checker 
+                        gen2up.put(sys_operation)                      ; 
 
                         //----------------------------------------------------------------------------------------------------
                         // Stack Downstream Bus drive
@@ -218,7 +233,7 @@ class generator;
                         //sys_operation.displayOperation();
                         //@gen2drv_ack;
                         wait(gen2drv_ack.triggered);
-                        $display("@%0t:%s:%0d:LEE:{%0d,%0d} Driver ack", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        //$display("@%0t:%s:%0d:INFO:{%0d,%0d} Driver ack", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
 
 
                         //----------------------------------------------------------------------------------------------------

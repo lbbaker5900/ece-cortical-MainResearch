@@ -50,16 +50,16 @@ class driver;
     event strm_ack [`PE_NUM_OF_STREAMS  ]  ;
 
     // FIXME : doesnt need all interfaces
-    vSysOob2PeArray_T  vSysOob2PeArray  ;  // FIXME: OOB is a per PE interface but we have driver objects for all PE/Lanes
-    vSysLane2PeArray_T vSysLane2PeArray ;
+    vDownstreamStackBusOOB_T  vDownstreamStackBusOOB  ;  // FIXME: OOB is a per PE interface but we have driver objects for all PE/Lanes
+    vDownstreamStackBusLane_T vDownstreamStackBusLane [`PE_NUM_OF_STREAMS] ;
 
     function new (
                   input int                  Id[2]              ,
                   input mailbox              gen2drv            ,                  //Retrieving mailboxes and virtual system interface.
                   input event                gen2drv_ack        ,
                   input event                new_operation      ,
-                  input vSysOob2PeArray_T    vSysOob2PeArray    ,
-                  input vSysLane2PeArray_T   vSysLane2PeArray   ,
+                  input vDownstreamStackBusOOB_T    vDownstreamStackBusOOB    ,
+                  input vDownstreamStackBusLane_T   vDownstreamStackBusLane [`PE_NUM_OF_STREAMS] ,
                   input mailbox              drv2memP           ,
                   input event                drv2memP_ack       );
 
@@ -67,8 +67,8 @@ class driver;
         this.gen2drv             = gen2drv                    ;
         this.gen2drv_ack         = gen2drv_ack                ;
         this.new_operation       = new_operation              ;
-        this.vSysOob2PeArray     = vSysOob2PeArray            ;
-        this.vSysLane2PeArray    = vSysLane2PeArray           ;
+        this.vDownstreamStackBusOOB     = vDownstreamStackBusOOB            ;
+        this.vDownstreamStackBusLane    = vDownstreamStackBusLane           ;
         this.drv2memP            = drv2memP                   ;
         this.drv2memP_ack        = drv2memP_ack               ;
         this.drv2lane            = new[`PE_NUM_OF_STREAMS  ]  ;
@@ -96,7 +96,7 @@ class driver;
             begin
                 // take the transaction from the generator, splits it into two streams and sends a stream operation to both the processes
                 // and send the sys_operation to the OOB process
-                @(vSysLane2PeArray.cb_test);
+                @(vDownstreamStackBusLane[0].cb_test);
                 //$display("@%0t:%s:%0d:DEBUG {%0d,%0d} Check mailbox", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                 if ( gen2drv.num() != 0 )
                     begin
@@ -208,19 +208,18 @@ class driver;
                                                 $display("@%0t:%s:%0d:DEBUG:{%0d,%0d} Received stream 0 operation", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                                 while (transaction[0] < strm_operation[0].numberOfOperands)
                                                     begin
-                                                        @(vSysLane2PeArray.cb_test);
+                                                        @(vDownstreamStackBusLane[0].cb_test);
                                                     
-                                                        if (vSysLane2PeArray.cb_test.pe__std__lane_strm0_ready) 
+                                                        if (vDownstreamStackBusLane[0].pe__std__lane_strm_ready) 
                                                             begin
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 1  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm0_cntl        <= ((transaction[0] == 0) && (transaction[0] == (strm_operation[0].numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
+                                                                vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_data_valid  <= 1  ;
+                                                                vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_cntl        <= ((transaction[0] == 0) && (transaction[0] == (strm_operation[0].numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
                                                                                                                             ( transaction[0] == 0                                                               ) ?  `COMMON_STD_INTF_CNTL_SOM         :
                                                                                                                             ( transaction[0] == (strm_operation[0].numberOfOperands-1)                          ) ?  `COMMON_STD_INTF_CNTL_EOM         :
                                                                                                                                                                                                                      `COMMON_STD_INTF_CNTL_MOM         ;
                                                                 //if ((Id[0]==0)&&(Id[1]==0))
                                                                 //    $display("%s:%0d:DEBUG: operand%d , %h", `__FILE__, `__LINE__, transaction[0], strm_operation[0].operands[transaction[0]] ) ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm0_data        <= strm_operation[0].operands[transaction[0]]  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
+                                                                vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_data        <= strm_operation[0].operands[transaction[0]]  ;
                                                                 
                                                                 transaction[0] = transaction[0] + 1;
                                                                 
@@ -228,21 +227,20 @@ class driver;
                                                         else
                                                             begin
                                                                 //$display("@%0t:%s:%0d:DEBUG: {%d,%d} stream 0 flow controlled", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm0_cntl        <= 0  ;         //Passing the instruction to the system interface
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm0_data        <= 0  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_mask   <= 0  ;
+                                                                vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
+                                                                vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_cntl        <= 0  ;         //Passing the instruction to the system interface
+                                                                vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_data        <= 0  ;
                                                             end
                                                     end  //while (transaction[0] < strm_operation[0].numberOfOperands)
-                                                    @(vSysLane2PeArray.cb_test);
-                                                    vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
+                                                    @(vDownstreamStackBusLane[0].cb_test);
+                                                    vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
 
                                             end  //if ( drv2lane[0].num() != 0 )
                                         else
                                             // while we are waiting for the strm_operation, quiesce the bus
                                             begin 
-                                                @(vSysLane2PeArray.cb_test);
-                                                vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
+                                                @(vDownstreamStackBusLane[0].cb_test);
+                                                vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
                                             end   //if ( drv2lane[0].num() != 0 )
                            
                                         drv2lane[0].get(strm_operation[0])  ;  //Removing the instruction from generator mailbox
@@ -274,19 +272,18 @@ class driver;
                                                 $display("@%0t:%s:%0d:DEBUG:{%0d,%0d} Received stream 1 operation", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                                 while (transaction[1] < strm_operation[1].numberOfOperands)
                                                     begin
-                                                        @(vSysLane2PeArray.cb_test);
+                                                        @(vDownstreamStackBusLane[1].cb_test);
                                                     
-                                                        if (vSysLane2PeArray.cb_test.pe__std__lane_strm1_ready) 
+                                                        if (vDownstreamStackBusLane[1].pe__std__lane_strm_ready) 
                                                             begin
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 1  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm1_cntl        <= ((transaction[1] == 0) && (transaction[1] == (strm_operation[1].numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
+                                                                vDownstreamStackBusLane[1].cb_test.std__pe__lane_strm_data_valid  <= 1  ;
+                                                                vDownstreamStackBusLane[1].cb_test.std__pe__lane_strm_cntl        <= ((transaction[1] == 0) && (transaction[1] == (strm_operation[1].numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
                                                                                                                             ( transaction[1] == 0                                                               ) ?  `COMMON_STD_INTF_CNTL_SOM         :
                                                                                                                             ( transaction[1] == (strm_operation[1].numberOfOperands-1)                          ) ?  `COMMON_STD_INTF_CNTL_EOM         :
                                                                                                                                                                                                                      `COMMON_STD_INTF_CNTL_MOM         ;
                                                                 //if ((Id[0]==0)&&(Id[1]==0))
                                                                 //    $display("%s:%0d:DEBUG: operand%d , %h", `__FILE__, `__LINE__, transaction[1], strm_operation[1].operands[transaction[1]] ) ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm1_data        <= strm_operation[1].operands[transaction[1]]  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
+                                                                vDownstreamStackBusLane[1].cb_test.std__pe__lane_strm_data        <= strm_operation[1].operands[transaction[1]]  ;
                                                                 
                                                                 transaction[1] = transaction[1] + 1;
                                                                 
@@ -294,20 +291,19 @@ class driver;
                                                         else
                                                             begin
                                                                 //$display("@%0t:%s:%0d:DEBUG: {%d,%d} stream 1 flow controlled", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm1_cntl        <= 0  ;         //Passing the instruction to the system interface
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm1_data        <= 0  ;
-                                                                vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_mask   <= 0  ;
+                                                                vDownstreamStackBusLane[1].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
+                                                                vDownstreamStackBusLane[1].cb_test.std__pe__lane_strm_cntl        <= 0  ;         //Passing the instruction to the system interface
+                                                                vDownstreamStackBusLane[1].cb_test.std__pe__lane_strm_data        <= 0  ;
                                                             end
                                                     end  //while (transaction[1] < strm_operation[1].numberOfOperands)
-                                                    @(vSysLane2PeArray.cb_test);
-                                                    vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
+                                                    @(vDownstreamStackBusLane[1].cb_test);
+                                                    vDownstreamStackBusLane[1].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
                                             end  //if ( drv2lane[1].num() != 0 )
                                         else
                                             // while we are waiting for the strm_operation, quiesce the bus
                                             begin 
-                                                @(vSysLane2PeArray.cb_test);
-                                                vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
+                                                @(vDownstreamStackBusLane[1].cb_test);
+                                                vDownstreamStackBusLane[1].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
                                             end   //if ( drv2lane[1].num() != 0 )
                            
                                         drv2lane[1].get(strm_operation[1])  ;  //Removing the instruction from generator mailbox
@@ -337,9 +333,9 @@ class driver;
     task run_req();                                        //This task checks the busy signal and asserts/desserts the request signal.
         repeat (20)                                        //If busy is high, then request should remain low and if busy is low then request goes high.
             begin
-                vSysLane2PeArray.cb_test.std__pe__lane_strm0_data_valid  <= 0  ;
-                vSysLane2PeArray.cb_test.std__pe__lane_strm1_data_valid  <= 0  ;
-                @(vSysLane2PeArray.cb_test);
+                vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
+                vDownstreamStackBusLane[1].cb_test.std__pe__lane_strm_data_valid  <= 0  ;
+                @(vDownstreamStackBusLane[0].cb_test);
             end
     endtask
 

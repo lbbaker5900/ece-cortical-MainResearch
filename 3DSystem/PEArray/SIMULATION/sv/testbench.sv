@@ -16,14 +16,12 @@
 
 program automatic test (
         // array of interfaces, one for each pe/lane/stream
-        st_gen_ifc                               GenStackBus              [`PE_ARRAY_NUM_OF_PE]                        ,
-        std_oob_ifc                              DownstreamStackBusOOB    [`PE_ARRAY_NUM_OF_PE]                        ,
-        std_lane_ifc                             DownstreamStackBusLane   [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-        stu_ifc                                  UpstreamStackBus         [`PE_ARRAY_NUM_OF_PE]                        ,
-        pe_dma2mem_ifc                           Dma2Mem                  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-        regFileScalar2stOpCntl_ifc               RegFileScalar2StOpCntl   [`PE_ARRAY_NUM_OF_PE]                        ,
-        regFileLane2stOpCntl_ifc                 RegFileLane2StOpCntl     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
-        loadStore2memCntl_ifc                    LoadStore2memCntl        [`PE_ARRAY_NUM_OF_PE]                        ,
+        std_pe_oob_ifc.TB_SysOob2PeArray     SysOob2PeArray           [`PE_ARRAY_NUM_OF_PE]                        ,
+        std_pe_lane_ifc.TB_SysLane2PeArray   SysLane2PeArray          [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
+        pe_dma2mem_ifc.TB_Dma2Mem            Dma2Mem                  [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
+        regFileScalar2stOpCntl_ifc           RegFileScalar2StOpCntl   [`PE_ARRAY_NUM_OF_PE]                        ,
+        regFileLane2stOpCntl_ifc             RegFileLane2StOpCntl     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] ,
+        loadStore2memCntl_ifc                LoadStore2memCntl        [`PE_ARRAY_NUM_OF_PE]                        ,
         
         input logic reset
         );
@@ -31,7 +29,7 @@ program automatic test (
     Environment env;
 
     initial begin
-        env = new ( GenStackBus, DownstreamStackBusOOB, DownstreamStackBusLane, UpstreamStackBus, Dma2Mem, RegFileScalar2StOpCntl, RegFileLane2StOpCntl, LoadStore2memCntl    );
+        env = new ( SysOob2PeArray, SysLane2PeArray, Dma2Mem, RegFileScalar2StOpCntl, RegFileLane2StOpCntl, LoadStore2memCntl    );
         env.build();
         env.run();
         env.wrap_up();

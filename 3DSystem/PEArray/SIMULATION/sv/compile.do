@@ -27,10 +27,19 @@ then
 fi
 
 
-pushd ../../scripts  
+pushd ../../../PEArray/scripts  
 ./testbench.py  2>&1  | tee -a ../SIMULATION/sv/$1
 ./peArray.py 2>&1   | tee -a ../SIMULATION/sv/$1
 popd
+#pushd ../../../Manager/scripts  
+#./managerArray.py 2>&1   | tee -a ../SIMULATION/sv/$1
+#popd
+#pushd ../../scripts  
+#./testbench.py  2>&1  | tee -a ../SIMULATION/sv/$1
+#./system.py 2>&1   | tee -a ../SIMULATION/sv/$1
+#popd
+                                                                                                                                                                 
+
 
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                              definition.sv                                    2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                              interface.sv                                     2>&1   | tee -a $1  
@@ -41,9 +50,8 @@ vlog +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/commo
 vlog +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                              ../../HDL/run_s/pe/code/dma_cont.v               2>&1   | tee -a $1  
 vlog +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                              ../../HDL/run_s/pe/code/streamingOps.v           2>&1   | tee -a $1  
 vlog +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                              ../../HDL/run_s/pe/code/streamingOps_datapath.v  2>&1   | tee -a $1  
-vlog +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                              ../../HDL/run_s/pe/code/noc_cntl.v               2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                              ../../HDL/run_s/pe/code/stack_interface.v        2>&1   | tee -a $1  
-vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                              ../../HDL/run_s/pe/code/pe_cntl.v                2>&1   | tee -a $1  
+vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../System/HDL/common                                           ../../HDL/run_s/pe/code/pe_cntl.v                2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                              ../../HDL/run_s/pe/code/simd_wrapper.v           2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                              ../../HDL/run_s/pe/code/simd_upstream_intf.v     2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common                                                                              ../../HDL/run_s/pe/code/pe.v                     2>&1   | tee -a $1  
@@ -61,7 +69,6 @@ vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/commo
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common generator.sv                                                                                   2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common manager.sv                                                                                     2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common mem_checker.sv                                                                                 2>&1   | tee -a $1  
-vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common upstream_checker.sv                                                                            2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common regFile_driver.sv                                                                              2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common loadStore_driver.sv                                                                            2>&1   | tee -a $1  
 vlog +define+TESTING -sv +incdir+../../HDL/common +incdir+../../SIMULATION/common environment.sv                                                                                 2>&1   | tee -a $1  

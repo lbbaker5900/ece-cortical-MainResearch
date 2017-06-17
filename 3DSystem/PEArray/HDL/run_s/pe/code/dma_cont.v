@@ -806,9 +806,9 @@ module dma_cont (
     for (gvi=0; gvi<2; gvi=gvi+1) 
       begin: from_stOp_fifo
 
-        reg    [`COMMON_STD_INTF_CNTL_RANGE   ]    write_cntl       ;
-        reg    [`STREAMING_OP_DATA_RANGE      ]    write_data       ; 
-        reg                                        write            ; 
+        wire    [`COMMON_STD_INTF_CNTL_RANGE   ]    write_cntl       ;
+        wire    [`STREAMING_OP_DATA_RANGE      ]    write_data       ; 
+        wire                                        write            ; 
 
         // Read data                                                       
         wire                                       pipe_valid       ; 

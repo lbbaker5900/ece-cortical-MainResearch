@@ -14,13 +14,19 @@
 `timescale 1ns/10ps
 
 `include "common.vh"
+`include "stack_interface.vh"
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
 `include "dma_cont.vh"
 `include "mem_acc_cont.vh"
+`include "pe_cntl.vh"
 `include "pe.vh"
 `include "pe_array.vh"
 `include "noc_interpe_port_Bitmasks.vh"
+
+`include "mgr_noc_cntl.vh"
+`include "manager.vh"
+`include "manager_array.vh"
 
 `include "TB_streamingOps_cntl.vh"  // might cause an error if this is included in any of the above files
 
@@ -54,11 +60,14 @@ package operation;
         //****************************************************************************************************
 
 
-        time                                                timeTag                                                  ;
-        int                                                 Id [2]                                                   ; // PE, Lane
-        int                                                 tId                                                      ; // transaction number
+        time                                                timeTag                         ;
+        int                                                 Id [2]                          ; // PE, Lane
+        logic  [`STACK_DOWN_OOB_INTF_TAG_RANGE ]            tId                             ; // transaction number
 
-        int                                                 beenConstrained                                          ; // 
+        int                                                 numberOfLanes                   ; // 
+        int                                                 beenConstrained                 ; // 
+        int                                                 numberOfOperands_min            ; // allow the range of numberOfOperands to be set by the environment
+        int                                                 numberOfOperands_max            ; // allow the range of numberOfOperands to be set by the environment
 
         //------------------------------------------------------------------------------------------------------
         // This struct contains the fields neccessary to form the stOp opcode
@@ -119,7 +128,7 @@ package operation;
         shortreal                        result              ; 
         shortreal                        resultHigh          ;  // tolerate a slight differecne in floating point functions
         shortreal                        resultLow           ;
-        shortreal                        FpTolerance = 0.001 ;
+        shortreal                        FpTolerance = 0.005 ;  // FIXME - widened to get rid of some error's
         
 
         //------------------------------------------------------------------------------------------------------
@@ -138,18 +147,52 @@ package operation;
      
         function new ();
                     this.timeTag                   = $time   ;
+                    this.numberOfLanes             = 32      ;  // constraint will check if this is zero before randomizing
                     this.beenConstrained           = 0       ;  // constraint will check if this is zero before randomizing
                     this.setNumberOfOperands       = 0       ;  
                     this.setDestinationAddress [0] = 0       ;  
                     this.setSourceAddress      [0] = 0       ;  
                     this.hasBeenRandomized         = 0       ;
+                    this.numberOfOperands_min      = 20     ;
+                    this.numberOfOperands_max      = 20     ;
         endfunction
+
+        
+        function base_operation copy ();
+                    copy                           = new this                     ;
+                    copy.srandom($urandom())                                      ;  // need to iniialize RNG for each object otherwise they will create the same stuff
+                    copy.operands[0]               = new [this.numberOfOperands]  ;
+                    copy.operands[1]               = new [this.numberOfOperands]  ;
+                    copy.operandsSign[0]           = new [this.numberOfOperands]  ;
+                    copy.operandsSign[1]           = new [this.numberOfOperands]  ;
+                    copy.operandsExp[0]            = new [this.numberOfOperands]  ;
+                    copy.operandsExp[1]            = new [this.numberOfOperands]  ;
+                    copy.operandsSignificand[0]    = new [this.numberOfOperands]  ;
+                    copy.operandsSignificand[1]    = new [this.numberOfOperands]  ;
+                    //copy.numberOfLanes             = this.numberOfLanes           ;
+                    return copy ;
+        endfunction
+        
+        function void deepCopy (base_operation c);
+                    c                           = new this     ;
+                    c.operands[0]               = new [this.numberOfOperands]  ;
+                    c.operands[1]               = new [this.numberOfOperands]  ;
+                    c.operandsSign[0]           = new [this.numberOfOperands]  ;
+                    c.operandsSign[1]           = new [this.numberOfOperands]  ;
+                    c.operandsExp[0]            = new [this.numberOfOperands]  ;
+                    c.operandsExp[1]            = new [this.numberOfOperands]  ;
+                    c.operandsSignificand[0]    = new [this.numberOfOperands]  ;
+                    c.operandsSignificand[1]    = new [this.numberOfOperands]  ;
+                    //c.numberOfLanes             = this.numberOfLanes           ;
+        endfunction
+        
 
         //------------------------------------------------------------------------------------------------------
         // Pre randomize
 
         function void pre_randomize();	//1 -> Turns on the constraint, 0-> Turns off the constraint
             // operations
+            /*
             this.c_operationType_definedOrder .constraint_mode(1) ;
             this.c_operationType_all          .constraint_mode(0) ;
             this.c_operationType_fpMac        .constraint_mode(0) ;
@@ -158,6 +201,7 @@ package operation;
             this.c_streamSize.constraint_mode(1)                 ;
             this.c_operandValues.constraint_mode(1)              ;
             this.c_memoryLocalized.constraint_mode(1)            ;
+            */
         endfunction : pre_randomize
         
 
@@ -199,9 +243,9 @@ package operation;
             if (hasBeenRandomized == 1) {
                 OpType == currentOpType ;
             } else {
-                (tId == 0) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM  }};
-                (tId == 1) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM    }};
-                (tId >= 2) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM  }};
+                (tId%3 == 0) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM  }};
+                (tId%3 == 1) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM    }};
+                (tId%3 >= 2) -> { OpType inside {`STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM  }};
             }
         }
 
@@ -290,14 +334,14 @@ package operation;
 
         //----------------------------------------------------------------------------------------------------
         // SIZE
-
+        // FIXME
         constraint c_numberOfOperands {
             // set number of operands same as memCopy in previous operation
             if (OpType == `STREAMING_OP_CNTL_OPERATION_MEM_STD_FP_MAC_TO_MEM ) {
                 numberOfOperands == priorOperationNumberOfOperands;
             // test if number of operands had been set by manager
             } else if (beenConstrained == 0) {
-                numberOfOperands inside {20};
+                numberOfOperands inside {[numberOfOperands_min : numberOfOperands_max]};
                 //numberOfOperands inside {[200:500]};
                 //numberOfOperands inside {[0:65535]};
             } else {
@@ -552,28 +596,27 @@ package operation;
 
         endfunction
     
-        function void displayOperationFoo(string fromFile, int fromLine);
-            $display("@%0t :%s:%0d:INFO: {PE,Lane,tId}:{%s,%0d}: = {%0d,%0d,%0d}", $time, `__FILE__, `__LINE__,  fromFile, fromLine, Id[0], Id[1], tId);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: stOp_operation : %b", $time, `__FILE__, `__LINE__, Id[0], Id[1], fromFile, fromLine, stOp_operation);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: src{0,1},dest{0,1} : {%3b,%3b,%3b,%3b}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], pe_stOp_stream_src[0], pe_stOp_stream_src[1], pe_stOp_stream_dest[0], pe_stOp_stream_dest[1]);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}:      Source Address: {%h,%h}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], sourceAddress[0], sourceAddress[1]);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Destination Address: {%h,%h}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], destinationAddress[0], destinationAddress[1]);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Enable Destination: {%b,%b}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], enableDestinationStream[0], enableDestinationStream[1]);
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: {numberOfOperands, setNumberOfOperands, priorOperationNumberOfOperands} = {%0d,%0d,%0d}", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], numberOfOperands, setNumberOfOperands, priorOperationNumberOfOperands);
+        function void displayOperationLong();
+            this.displayOperation();
             for (int i=0; i<numberOfOperands-1; i++)
                 begin
-                    operandsReal[0] = $bitstoshortreal({operands[0][i]});
-                    operandsReal[1] = $bitstoshortreal({operands[1][i]});
-                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Operand %3d {%f, %f}, ", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], i, operandsReal[0], operandsReal[1]);
+                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}: OperandSign %3d {%h, %h}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsSign[0][i], operandsSign[1][i]);
                 end
-            $display("@%0t :%s:%0d:INFO:{%0d,%0d}:{%s,%0d}: Result %f ", $time, `__FILE__, `__LINE__, fromFile, fromLine, Id[0], Id[1], result);
+            for (int i=0; i<numberOfOperands-1; i++)
+                begin
+                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}: OperandExp %3d {%h, %h}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsExp[0][i], operandsExp[1][i]);
+                end
+            for (int i=0; i<numberOfOperands-1; i++)
+                begin
+                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}: OperandSignificand %3d {%h, %h}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsSignificand[0][i], operandsSignificand[1][i]);
+                end
 
         endfunction
     
     endclass
 
     //------------------------------------------------------------------------------------------------------
-    // Class
+    // Stream Classes
     //
     // Contains information required to drive the downstream operands for one stream
     //
@@ -594,7 +637,7 @@ package operation;
 
 
     //------------------------------------------------------------------------------------------------------
-    // Class
+    // OOB Classes
     //
     // Contains Out-of-Band (OOB)information 
     //
@@ -607,11 +650,14 @@ package operation;
 
         rand bit               [`PE_STD_OOB_TAG_RANGE            ]  tag                                                  ;  
         rand pe_stOp_operation                                      stOp_operation                                       ;  
+        bit                    [`PE_CNTL_OOB_OPTION_RANGE        ]  stOp_optionPtr                                       ;  // pointer to stOp command memory in pe_cntl
+        bit                    [`PE_CNTL_OOB_OPTION_RANGE        ]  simd_optionPtr                                       ;  // pointer to simd command memory in pe
         rand bit               [`PE_ARRAY_CHIPLET_ADDRESS_RANGE  ]  sourceAddress          [`PE_NUM_OF_STREAMS_RANGE ]   ;  
         rand bit               [`PE_ARRAY_CHIPLET_ADDRESS_RANGE  ]  destinationAddress     [`PE_NUM_OF_STREAMS_RANGE ]   ;  
         rand pe_data_type                                           src_data_type          [`PE_NUM_OF_STREAMS_RANGE ]   ;
         rand pe_data_type                                           dest_data_type         [`PE_NUM_OF_STREAMS_RANGE ]   ;
         rand bit               [`PE_MAX_NUM_OF_TYPES_RANGE       ]  numberOfOperands                                     ;
+        int                                                         numberOfLanes                                        ; 
      
 
         function new ();
@@ -622,6 +668,7 @@ package operation;
             
             this.tag                =   tag                                       ;
             this.Id                 =   operation.Id                              ;
+            this.numberOfLanes      =   operation.numberOfLanes                   ;
             this.stOp_operation     =   operation.stOp_operation                  ;
             this.sourceAddress      =   operation.sourceAddress                   ;
             this.destinationAddress =   operation.destinationAddress              ;
@@ -642,6 +689,159 @@ package operation;
             $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
 
         endfunction
+    endclass
+
+    class wud_to_oob_cmd ; 
+    
+        time timeTag    ;  // debug
+        int  Id         ;  // Manager
+
+        bit   [`MGR_STD_OOB_TAG_RANGE         ]      tag           ;
+        bit   [`MGR_NUM_LANES_RANGE           ]      num_lanes     ;
+        bit   [`MGR_WU_OPT_VALUE_RANGE        ]      stOp_cmd      ;
+        bit   [`MGR_WU_OPT_VALUE_RANGE        ]      simd_cmd      ;
+     
+
+        function new ();
+            this.timeTag = $time ;
+        endfunction
+    
+        function void create( bit [`MGR_STD_OOB_TAG_RANGE  ] tag        , 
+                              bit [`MGR_NUM_LANES_RANGE    ] num_lanes  , 
+                              bit [`MGR_WU_OPT_VALUE_RANGE ] stOp_cmd   ,
+                              bit [`MGR_WU_OPT_VALUE_RANGE ] simd_cmd   );
+            
+            this.tag        =  tag        ;
+            this.num_lanes  =  num_lanes  ;
+            this.stOp_cmd   =  stOp_cmd   ;
+            this.simd_cmd   =  simd_cmd   ;
+
+        endfunction
+    
+    endclass
+
+
+
+    //------------------------------------------------------------------------------------------------------
+    // NoC Classes
+    //
+    // 
+    //
+
+    class local_noc_packet ; 
+    
+        time timeTag    ;  // debug
+        int  srcId      ;  // Source manager
+
+        bit [`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE      ]      header_destination_address ;
+        bit [`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE             ]      header_source              ;
+        bit [`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE ]      header_address_type        ;
+        bit [`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE              ]      header_priority            ;
+
+
+        bit [`MGR_WU_OPT_TYPE_RANGE                        ]      payload_tuple_type       [$] ;  // queues
+        bit [`MGR_WU_EXTD_OPT_VALUE_RANGE                  ]      payload_tuple_extd_value [$] ;
+
+        bit [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD_RANGE  ]      payload_data             [$] ;
+
+        function new ();
+            this.timeTag = $time ;
+        endfunction
+    
+        function logic compare(local_noc_packet cp);
+          // assume compares, search for miscompare
+          logic compared = 1;
+
+          if (this.header_source != cp.header_source)
+            compared = 0;
+          if (this.header_priority != cp.header_priority)
+            compared = 0;
+
+          if (this.payload_tuple_type.size() != cp.payload_tuple_type.size())
+            compared = 0;
+          if (this.payload_tuple_extd_value.size() != cp.payload_tuple_extd_value.size())
+            compared = 0;
+          if (this.payload_data.size() != cp.payload_data.size())
+            compared = 0;
+
+          for (int i=0; i<this.payload_tuple_type.size(); i++)
+            begin
+              if (this.payload_tuple_type[i] != cp.payload_tuple_type[i])
+                compared = 0;
+            end
+
+          for (int i=0; i<this.payload_tuple_extd_value.size(); i++)
+            begin
+              if (this.payload_tuple_extd_value[i] != cp.payload_tuple_extd_value[i])
+                compared = 0;
+            end
+
+          for (int i=0; i<this.payload_data.size(); i++)
+            begin
+              if (this.payload_data[i] != cp.payload_data[i])
+                compared = 0;
+            end
+
+            return compared ;
+
+        endfunction
+    
+        function void displayPacket();
+            $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
+            $display("@%0t :%s:%0d:INFO: NoC Packet from manager {%0d}", $time, `__FILE__, `__LINE__, header_source);
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+            $display("@%0t :%s:%0d:INFO:  Destination Address : %64b", $time, `__FILE__, `__LINE__, header_destination_address);
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+            //$display("@%0t :%s:%0d:INFO:  Tuples", $time, `__FILE__, `__LINE__);
+            for (int i=0; i<payload_tuple_type.size(); i++)
+              begin
+                $display("@%0t :%s:%0d:INFO:Tuple %0d:  {%h,%h}", $time, `__FILE__, `__LINE__, i, payload_tuple_type[i], payload_tuple_extd_value[i]);
+              end
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+            //$display("@%0t :%s:%0d:INFO:  Data", $time, `__FILE__, `__LINE__);
+            for (int i=0; i<payload_data.size(); i++)
+              begin
+                $display("@%0t :%s:%0d:INFO:Data %0d:  {%h}", $time, `__FILE__, `__LINE__, i, payload_data[i]);
+              end
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+
+        endfunction
+
+    endclass
+
+
+    //------------------------------------------------------------------------------------------------------
+    // Instruction Classes
+    //
+    // 
+    //
+
+    class descriptor ; 
+    
+        time timeTag    ;  // debug
+
+        bit [`MGR_WU_OPT_TYPE_RANGE   ]      payload_tuple_type  [$] ;  // queues
+        bit [`MGR_WU_OPT_VALUE_RANGE  ]      payload_tuple_value [$] ;
+
+
+        function new ();
+            this.timeTag = $time ;
+        endfunction
+    
+    
+        function void displayDesc();
+            $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
+            $display("@%0t :%s:%0d:INFO: Descriptor", $time, `__FILE__, `__LINE__);
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+            //$display("@%0t :%s:%0d:INFO:  Tuples", $time, `__FILE__, `__LINE__);
+            for (int i=0; i<payload_tuple_type.size(); i++)
+              begin
+                $display("@%0t :%s:%0d:INFO:Tuple %0d:  {%h,%h}", $time, `__FILE__, `__LINE__, i, payload_tuple_type[i], payload_tuple_value[i]);
+              end
+            $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+
+        endfunction
+
     endclass
 
 

@@ -361,37 +361,6 @@ module mem_acc_cont (
      
         `include "mem_acc_cont_bank_mem_assignments.vh"
 
-        if (MEM_ACC_CONT_BANK_NUM_OF_PORTS == 2)
-          begin
-            generic_2port_memory #(.GENERIC_MEM_DEPTH          (`MEM_ACC_CONT_BANK_DEPTH        ),
-                                   .GENERIC_MEM_REGISTERED_OUT (0                               ),
-                                   .GENERIC_MEM_DATA_WIDTH     (`MEM_ACC_CONT_MEMORY_DATA_WIDTH )
-                            ) gmemory ( 
-                            
-                            //---------------------------------------------------------------
-                            // Port A
-                            .portA_address       ( write_address   ),
-                            .portA_write_data    ( write_data      ),
-                            .portA_read_data     (                 ),
-                            .portA_enable        ( 1'b1            ),
-                            .portA_write         ( write_enable    ),
-                            
-                            //---------------------------------------------------------------
-                            // Port B
-                            .portB_address       ( read_address    ),
-                            .portB_write_data    ( {`MEM_ACC_CONT_MEMORY_DATA_WIDTH {1'b0}} ),
-                            .portB_read_data     ( read_data       ),
-                            .portB_enable        ( 1'b1            ),
-                            .portB_write         ( 1'b0            ),
-                            
-                            //---------------------------------------------------------------
-                            // General
-                            .reset_poweron       ( reset_poweron   ),
-                            .clk                 ( clk             )
-                            ) ;
-          end
-        else
-          begin
             generic_1port_memory #(.GENERIC_MEM_DEPTH          (`MEM_ACC_CONT_BANK_DEPTH        ),
                                    .GENERIC_MEM_REGISTERED_OUT (0                               ),
                                    .GENERIC_MEM_DATA_WIDTH     (`MEM_ACC_CONT_MEMORY_DATA_WIDTH )
@@ -410,7 +379,6 @@ module mem_acc_cont (
                             .reset_poweron       ( reset_poweron   ),
                             .clk                 ( clk             )
                             ) ;
-          end
 
 /*
 `ifndef SYNTHESIS

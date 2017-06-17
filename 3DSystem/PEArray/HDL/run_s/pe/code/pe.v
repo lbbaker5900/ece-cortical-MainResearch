@@ -264,10 +264,7 @@ module pe (
             
             //-------------------------------
             // Configuration output
-            //   - comment out when PE configured by regFile driver
-            `ifndef TB_ENABLE_REGFILE_DRIVER
             `include "pe_cntl_simd_instance_ports.vh"
-            `endif
             .stOp_complete                        ( pe__sys__complete                 ),
             .cntl__simd__tag_valid                ( cntl__simd__tag_valid             ),
             .cntl__simd__tag                      ( cntl__simd__tag                   ),
