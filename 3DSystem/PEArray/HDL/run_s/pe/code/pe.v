@@ -324,6 +324,11 @@ module pe (
   // driving into the simd wrapper
   `include "simd_wrapper_scntl_to_simd_regfile_instance_assignments.vh"
 
+  wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  ldst__memc__write_address   ;
+  wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  ldst__memc__write_data      ; 
+  wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  ldst__memc__read_address    ;
+  wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__ldst__read_data       ; 
+
   simd_wrapper simd_wrapper (
 
             //-------------------------------
@@ -358,6 +363,23 @@ module pe (
             .simd__sui__regs_valid        ( simd__sui__regs_valid    ),
             .sui__simd__regs_complete     ( sui__simd__regs_complete ),
             .sui__simd__regs_ready        ( sui__simd__regs_ready    ),
+
+             //-------------------------------
+             // LD/ST Interface 
+            .ldst__memc__request           ( ldst__memc__request          ),
+            .memc__ldst__granted           ( memc__ldst__granted          ),
+            .ldst__memc__released          ( ldst__memc__released         ),
+             // Access
+            .ldst__memc__write_valid       ( ldst__memc__write_valid      ),
+            .ldst__memc__write_address     ( ldst__memc__write_address    ),
+            .ldst__memc__write_data        ( ldst__memc__write_data       ),
+            .memc__ldst__write_ready       ( memc__ldst__write_ready      ),  // output flow control to ldst
+            .ldst__memc__read_valid        ( ldst__memc__read_valid       ),
+            .ldst__memc__read_address      ( ldst__memc__read_address     ),
+            .memc__ldst__read_data         ( memc__ldst__read_data        ),
+            .memc__ldst__read_data_valid   ( memc__ldst__read_data_valid  ),
+            .memc__ldst__read_ready        ( memc__ldst__read_ready       ),  // output flow control to ldst
+            .ldst__memc__read_pause        ( ldst__memc__read_pause       ),  // pipeline flow control from ldst, dont send any more requests
 
             //-------------------------------
             // General
@@ -660,10 +682,6 @@ module pe (
   //-------------------------------------------------------------------------------------------------
   // Memory Controller
 
-  wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  ldst__memc__write_address   ;
-  wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  ldst__memc__write_data      ; 
-  wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  ldst__memc__read_address    ;
-  wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__ldst__read_data       ; 
 
   mem_acc_cont mem_acc_cont (
                                         
@@ -697,6 +715,8 @@ module pe (
             .reset_poweron               ( reset_poweron   )
 
     );
+
+
 
 
 endmodule

@@ -16,6 +16,7 @@
 *********************************************************************************************/
     
 `timescale 1ns/10ps
+`include "TB_common.vh"
 `include "common.vh"
 `include "pe_array.vh"
 `include "pe.vh"
@@ -160,7 +161,10 @@ module pe_cntl (
   //
   // Originally the control for the stOp was going to come from the simd registers, so we have maintain the register naming for the stOp although these should probably change.
   //
-
+`ifdef SYNTHESIS
+  `undef TB_ENABLE_REGFILE_DRIVER
+`endif
+`ifndef TB_ENABLE_REGFILE_DRIVER
   genvar pe, lane;
   generate
       for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
@@ -185,6 +189,7 @@ module pe_cntl (
               assign cntl__simd__rs1                      = cntl__simd__rs1_e1                ;
           end
   endgenerate
+`endif
 
   always @(posedge clk)
     begin

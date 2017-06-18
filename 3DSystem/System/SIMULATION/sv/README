@@ -2,6 +2,11 @@
 #Note:
 # - wu_fetch.v - stop when pc >=50
 # -  clock cycle is $time=1000
+#
+# Make sure to change PEArray/SIMULATION/common/TB_common.vh 
+vim ../../../PEArray/SIMULATION/common/TB_common.vh 
+  `define TB_ENABLE_REGFILE_DRIVER
+  `undef  TB_ENABLE_REGFILE_DRIVER
 
 grep ERROR transcript ; grep PASS transcript | wc -l
 echo 'Expect 20480'

@@ -128,7 +128,6 @@ set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
 #--------------------------------------------------------- 
 #set_dont_touch [get_cell DW_*]
 
-
 #---------------------------------------------------------
 # Dont touch on memories and regFiles
 #--------------------------------------------------------- 
@@ -136,6 +135,13 @@ set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
 set acells [get_cell -hier]
 set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ asdr.*"]
 set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ sass.*"]
+
+#---------------------------------------------------------
+# Other Dont touch 
+#  - SIMD core
+#--------------------------------------------------------- 
+set_dont_touch [get_cell simd_wrapper/simd_core]
+
 
 
 #------------------------------------------------------

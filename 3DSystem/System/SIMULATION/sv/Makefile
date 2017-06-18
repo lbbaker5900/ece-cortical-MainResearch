@@ -5,10 +5,10 @@ LIB_DIR=mti_lib
 #library: mti_lib
 #	vlib $(LIB_DIR)
 
-all : .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
+all : .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
 
 clean : 
-	/bin/rm .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
+	/bin/rm .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
 
 .peTbPy : ../../../PEArray/scripts/testbench.py
 	pushd ../../../PEArray/scripts; ./testbench.py  ; popd
@@ -98,7 +98,7 @@ clean :
 	echo "stack_interface"
 	touch .stack_interface
 
-.pe_cntl : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh ../../../PEArray/SIMULATION/common/*.vh        ../../../PEArray/HDL/run_s/pe/code/pe_cntl.v
+.pe_cntl : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh ../../../PEArray/SIMULATION/common/*.vh  ../../../PEArray/SIMULATION/common/*.vh      ../../../PEArray/HDL/run_s/pe/code/pe_cntl.v
 	vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common        ../../../PEArray/HDL/run_s/pe/code/pe_cntl.v
 	echo "pe_cntl"
 	touch .pe_cntl
@@ -107,6 +107,11 @@ clean :
 	vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common           ../../../PEArray/HDL/run_s/pe/code/simd_wrapper.v
 	echo "simd_wrapper"
 	touch .simd_wrapper
+
+.simd_core : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh           ../../../PEArray/HDL/run_s/pe/code/simd_core.v
+	vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common           ../../../PEArray/HDL/run_s/pe/code/simd_core.v
+	echo "simd_core"
+	touch .simd_core
 
 .simd_upstream_intf : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh           ../../../PEArray/HDL/run_s/pe/code/simd_upstream_intf.v
 	vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common           ../../../PEArray/HDL/run_s/pe/code/simd_upstream_intf.v
@@ -230,7 +235,7 @@ clean :
 	echo "upstream_checker"
 	touch .upstream_checker
 
-.regFile_driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/regFile_driver.sv
+.regFile_driver : ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv ../../../PEArray/SIMULATION/common/*.vh      ../../../System/SIMULATION/sv/regFile_driver.sv
 	vlog -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/regFile_driver.sv
 	echo "regFile_driver"
 	touch .regFile_driver
@@ -265,13 +270,13 @@ clean :
 	echo "testbench"
 	touch .testbench
 
-.top : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh        top.sv 
+.top : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh   ../../../PEArray/SIMULATION/common/*.vh      top.sv 
 	vlog -sv +define+TESTING +define+TB_SYSTEM_DRIVES_OOB_PACKET +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	#vlog -sv +define+TESTING +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	echo "top"
 	touch .top
 
-vsim : .peTbPy .pePy .mgrPy .sysTbPy .sysPy .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
+vsim : .peTbPy .pePy .mgrPy .sysTbPy .sysPy .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
 	vsim -c -sv_seed 3 -do "run.do" -novopt top 
 	grep ERROR transcript ; grep PASS transcript | wc -l
 	echo 'Expect 20480'
@@ -281,7 +286,7 @@ vsim : .peTbPy .pePy .mgrPy .sysTbPy .sysPy .generic_1port_memory .generic_2port
 	#395
 	#395
 
-gvsim : .peTbPy .pePy .mgrPy .sysTbPy .sysPy .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
+gvsim : .peTbPy .pePy .mgrPy .sysTbPy .sysPy .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
 	vsim    -sv_seed 3   -l gTranscript  -novopt top
 
 

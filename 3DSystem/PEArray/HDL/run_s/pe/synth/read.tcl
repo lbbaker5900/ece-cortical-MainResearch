@@ -122,6 +122,7 @@ read_sverilog $RTL_DIR/streamingOps_datapath.v
 read_sverilog $RTL_DIR/pe_cntl.v
 read_sverilog $RTL_DIR/simd_upstream_intf.v
 read_sverilog $RTL_DIR/simd_wrapper.v
+read_sverilog $RTL_DIR/simd_core.v
 read_sverilog $RTL_DIR/stack_interface.v
 read_sverilog $RTL_DIR/mem_acc_cont.v
 

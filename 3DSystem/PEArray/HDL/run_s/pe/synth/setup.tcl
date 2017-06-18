@@ -15,6 +15,7 @@ set clkname clk
 # set modname mem_acc_cont
 # set modname simd_upstream_intf
 # set modname simd_wrapper
+# set modname simd_core
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP

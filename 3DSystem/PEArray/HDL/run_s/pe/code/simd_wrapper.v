@@ -65,6 +65,23 @@ module simd_wrapper (
                           sui__simd__regs_complete ,
                           sui__simd__regs_ready    ,
 
+                          //-------------------------------
+                          // LD/ST Interface
+                          ldst__memc__request         ,
+                          memc__ldst__granted         ,
+                          ldst__memc__released        ,
+                       
+                          ldst__memc__write_valid     ,  // Valid must remain active for entire DMA
+                          ldst__memc__write_address   ,
+                          ldst__memc__write_data      ,
+                          memc__ldst__write_ready     ,  // output flow control to ldst
+                          ldst__memc__read_valid      ,
+                          ldst__memc__read_address    ,
+                          memc__ldst__read_data       ,
+                          memc__ldst__read_data_valid ,  // Valid must remain active for entire DMA, only accepted when ready is asserted
+                          memc__ldst__read_ready      ,  // output flow control to ldst, valid only "valid" when ready is asserted
+                          ldst__memc__read_pause      ,  // pipeline flow control from ldst, dont send any more requests
+
                           //--------------------------------------------------------
                           // System
                           peId              ,
@@ -110,6 +127,23 @@ module simd_wrapper (
   output  [`PE_NUM_OF_EXEC_LANES_RANGE ]      reg__scntl__ready                          ;
   //`include "simd_wrapper_scntl_to_simd_regfile_ports_declaration.vh"
 
+
+  //----------------------------------------------------------------------------------------------------
+  // interface to LD/ST unit                                         
+  output                                        ldst__memc__request          ;
+  input                                         memc__ldst__granted          ;
+  output                                        ldst__memc__released         ;
+  // 
+  output                                        ldst__memc__write_valid     ; 
+  output [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  ldst__memc__write_address   ;
+  output [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  ldst__memc__write_data      ; 
+  input                                         memc__ldst__write_ready     ;
+  output                                        ldst__memc__read_valid      ; 
+  output [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  ldst__memc__read_address    ;
+  input  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__ldst__read_data       ; 
+  input                                         memc__ldst__read_data_valid ; 
+  input                                         memc__ldst__read_ready      ; 
+  output                                        ldst__memc__read_pause      ; 
 
   //----------------------------------------------------------------------------------------------------
   // Registers/Wires
@@ -388,6 +422,37 @@ module simd_wrapper (
   assign  simd__sui__regs         =  from_stOp_reg_fifo_pipe_data   ;
 
 
+  //-------------------------------------------------------------------------------------------------
+  // SIMD core
+  // 
+  
+  simd_core simd_core (
+
+             //-------------------------------
+             // LD/ST Interface 
+            .ldst__memc__request           ( ldst__memc__request          ),
+            .memc__ldst__granted           ( memc__ldst__granted          ),
+            .ldst__memc__released          ( ldst__memc__released         ),
+             // Access
+            .ldst__memc__write_valid       ( ldst__memc__write_valid      ),
+            .ldst__memc__write_address     ( ldst__memc__write_address    ),
+            .ldst__memc__write_data        ( ldst__memc__write_data       ),
+            .memc__ldst__write_ready       ( memc__ldst__write_ready      ),  // output flow control to ldst
+            .ldst__memc__read_valid        ( ldst__memc__read_valid       ),
+            .ldst__memc__read_address      ( ldst__memc__read_address     ),
+            .memc__ldst__read_data         ( memc__ldst__read_data        ),
+            .memc__ldst__read_data_valid   ( memc__ldst__read_data_valid  ),
+            .memc__ldst__read_ready        ( memc__ldst__read_ready       ),  // output flow control to ldst
+            .ldst__memc__read_pause        ( ldst__memc__read_pause       ),  // pipeline flow control from ldst, dont send any more requests
+
+            //-------------------------------
+            // General
+            //
+            .peId                         ( peId                   ),
+            .clk                          ( clk                    ),
+            .reset_poweron                ( reset_poweron          )
+                          
+  );
 
   
 endmodule
