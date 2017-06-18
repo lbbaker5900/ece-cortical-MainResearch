@@ -73,22 +73,26 @@ module streamingOps (
                           dma__stOp__strm0_data        , 
                           dma__stOp__strm0_data_valid  , 
                           dma__stOp__strm0_data_mask   , 
-                          stOp__dma__strm1_ready       ,
-                          dma__stOp__strm1_cntl        , 
-                          dma__stOp__strm1_data        , 
-                          dma__stOp__strm1_data_valid  , 
-                          dma__stOp__strm1_data_mask   , 
 
                           dma__stOp__strm0_ready       ,
                           stOp__dma__strm0_cntl        , 
                           stOp__dma__strm0_data        , 
                           stOp__dma__strm0_data_mask   , 
                           stOp__dma__strm0_data_valid  , 
-                          dma__stOp__strm1_ready       ,
-                          stOp__dma__strm1_cntl        , 
-                          stOp__dma__strm1_data        , 
-                          stOp__dma__strm1_data_mask   , 
-                          stOp__dma__strm1_data_valid  , 
+
+                         `ifndef DMA_CONT_ONLY_ONE_PORT 
+                            stOp__dma__strm1_ready       ,
+                            dma__stOp__strm1_cntl        , 
+                            dma__stOp__strm1_data        , 
+                            dma__stOp__strm1_data_valid  , 
+                            dma__stOp__strm1_data_mask   , 
+                          
+                            dma__stOp__strm1_ready       ,
+                            stOp__dma__strm1_cntl        , 
+                            stOp__dma__strm1_data        , 
+                            stOp__dma__strm1_data_mask   , 
+                            stOp__dma__strm1_data_valid  , 
+                         `endif
 
 
                           // Downstream Stack interface
@@ -134,22 +138,26 @@ module streamingOps (
   input [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data        ; 
   input [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data_mask   ; 
   input                                        dma__stOp__strm0_data_valid  ; 
-  output                                       stOp__dma__strm1_ready       ;
-  input [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm1_cntl        ; 
-  input [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data        ; 
-  input [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data_mask   ; 
-  input                                        dma__stOp__strm1_data_valid  ; 
 
   input                                        dma__stOp__strm0_ready       ;
   output [`DMA_CONT_STRM_CNTL_RANGE     ]      stOp__dma__strm0_cntl        ; 
   output [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm0_data        ; 
   output [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm0_data_mask   ; 
   output                                       stOp__dma__strm0_data_valid  ; 
-  input                                        dma__stOp__strm1_ready       ;
-  output [`DMA_CONT_STRM_CNTL_RANGE     ]      stOp__dma__strm1_cntl        ; 
-  output [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm1_data        ; 
-  output [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm1_data_mask   ; 
-  output                                       stOp__dma__strm1_data_valid  ; 
+
+  `ifndef DMA_CONT_ONLY_ONE_PORT 
+    output                                       stOp__dma__strm1_ready       ;
+    input [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm1_cntl        ; 
+    input [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data        ; 
+    input [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data_mask   ; 
+    input                                        dma__stOp__strm1_data_valid  ; 
+    
+    input                                        dma__stOp__strm1_ready       ;
+    output [`DMA_CONT_STRM_CNTL_RANGE     ]      stOp__dma__strm1_cntl        ; 
+    output [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm1_data        ; 
+    output [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm1_data_mask   ; 
+    output                                       stOp__dma__strm1_data_valid  ; 
+  `endif
 
 
   // Downstream Stack interface
@@ -186,22 +194,28 @@ module streamingOps (
   reg    [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm0_data        ; 
   reg    [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm0_data_mask   ; 
   reg                                          stOp__dma__strm0_data_valid  ; 
-  wire                                         dma__stOp__strm1_ready       ;
-  reg    [`DMA_CONT_STRM_CNTL_RANGE     ]      stOp__dma__strm1_cntl        ; 
-  reg    [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm1_data        ; 
-  reg    [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm1_data_mask   ; 
-  reg                                          stOp__dma__strm1_data_valid  ; 
 
   reg                                          stOp__dma__strm0_ready       ;
   wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm0_cntl        ; 
   wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data        ; 
   wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data_mask   ; 
   wire                                         dma__stOp__strm0_data_valid  ; 
-  reg                                          stOp__dma__strm1_ready       ;
-  wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm1_cntl        ; 
-  wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data        ; 
-  wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data_mask   ; 
-  wire                                         dma__stOp__strm1_data_valid  ; 
+
+  `ifndef DMA_CONT_ONLY_ONE_PORT 
+    wire                                         dma__stOp__strm1_ready       ;
+    reg    [`DMA_CONT_STRM_CNTL_RANGE     ]      stOp__dma__strm1_cntl        ; 
+    reg    [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm1_data        ; 
+    reg    [`STREAMING_OP_DATA_RANGE      ]      stOp__dma__strm1_data_mask   ; 
+    reg                                          stOp__dma__strm1_data_valid  ; 
+  
+    reg                                          stOp__dma__strm1_ready       ;
+    wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm1_cntl        ; 
+    wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data        ; 
+    wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data_mask   ; 
+    wire                                         dma__stOp__strm1_data_valid  ; 
+  `endif
+
+
   // Downstream Stack interface
   reg                                          stOp__sti__strm0_ready       ;
   wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       sti__stOp__strm0_cntl        ; 
@@ -298,9 +312,13 @@ module streamingOps (
     stOp__dma__strm0_data        =    32'hFFFF_FFFF            ;
     stOp__dma__strm0_cntl        =   'd0                       ;
     stOp__dma__strm0_data_valid  =   'b0                       ;
-    stOp__dma__strm1_data        =    32'hFFFF_FFFF            ;
-    stOp__dma__strm1_cntl        =   'd0                       ;
-    stOp__dma__strm1_data_valid  =   'b0                       ;
+
+    `ifndef DMA_CONT_ONLY_ONE_PORT 
+      stOp__dma__strm1_data        =    32'hFFFF_FFFF            ;
+      stOp__dma__strm1_cntl        =   'd0                       ;
+      stOp__dma__strm1_data_valid  =   'b0                       ;
+    `endif
+
     // FIFO control
     strm0_fifo_read              =   'd0                       ;
     strm1_fifo_read              =   'd0                       ;
@@ -346,19 +364,21 @@ module streamingOps (
           stOp__dma__strm0_data_mask   =   32'hFFFF_FFFF              ;
           stOp__dma__strm0_cntl        =   strm0_fifo_read_cntl       ; // only one result
           stOp__dma__strm0_data_valid  =   strm0_enable & strm0_fifo_data_valid & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
-          //stOp__dma__strm0_data_valid  =   strm0_fifo_data_valid ;
-
-          stOp__dma__strm1_data        =   strm1_fifo_read_data       ;
-          stOp__dma__strm1_data_mask   =   32'hFFFF_FFFF              ;
-          stOp__dma__strm1_cntl        =   strm1_fifo_read_cntl       ; // only one result
-          stOp__dma__strm1_data_valid  =   strm1_enable & strm0_fifo_data_valid & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
-          //stOp__dma__strm1_data_valid  =   strm1_fifo_data_valid ;
 
           // FIFO control
           strm0_fifo_read              =   strm0_enable & strm0_fifo_data_valid & ~strm0_src_complete & ((strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm0_ready);
-          strm1_fifo_read              =   strm1_enable & strm1_fifo_data_valid & ~strm1_src_complete & ((strm1_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm1_ready); // FIXME add REG
           strm0_stOp_complete          =   strm0_src_complete ;
-          strm1_stOp_complete          =   strm1_enable & strm1_src_complete ;
+
+          `ifndef DMA_CONT_ONLY_ONE_PORT 
+            stOp__dma__strm1_data        =   strm1_fifo_read_data       ;
+            stOp__dma__strm1_data_mask   =   32'hFFFF_FFFF              ;
+            stOp__dma__strm1_cntl        =   strm1_fifo_read_cntl       ; // only one result
+            stOp__dma__strm1_data_valid  =   strm1_enable & strm0_fifo_data_valid & dma__stOp__strm0_ready;  // same as fifo read but cant use fifo read as this would be f/b in a mux
+
+            // FIFO control
+            strm1_fifo_read              =   strm1_enable & strm1_fifo_data_valid & ~strm1_src_complete & ((strm1_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & dma__stOp__strm1_ready); // FIXME add REG
+            strm1_stOp_complete          =   strm1_enable & strm1_src_complete ;
+          `endif
     
           // stOp control
         end
@@ -427,9 +447,12 @@ module streamingOps (
           stOp__dma__strm0_data        =    32'hFFFF_FFFF            ;
           stOp__dma__strm0_cntl        =   'd0                       ;
           stOp__dma__strm0_data_valid  =   'b0                       ;
-          stOp__dma__strm1_data        =    32'hFFFF_FFFF            ;
-          stOp__dma__strm1_cntl        =   'd0                       ;
-          stOp__dma__strm1_data_valid  =   'b0                       ;
+
+          `ifndef DMA_CONT_ONLY_ONE_PORT 
+            stOp__dma__strm1_data        =    32'hFFFF_FFFF            ;
+            stOp__dma__strm1_cntl        =   'd0                       ;
+            stOp__dma__strm1_data_valid  =   'b0                       ;
+          `endif
 
           // FIFO control
           strm0_fifo_read              =   'd0                       ;
@@ -509,14 +532,7 @@ module streamingOps (
             strm0_data_valid        =  sti__stOp__strm0_data_valid ; 
             stOp__sti__strm0_ready  = ~fifo[0].almost_full    ; 
           end
-/*
-        `STREAMING_OP_CNTL_OPERATION_FROM_NOC       : 
-          begin
-            strm0_cntl             =  noc__stOp__strm_cntl       ; 
-            strm0_data             =  noc__stOp__strm_data       ; 
-            strm0_data_valid       =  noc__stOp__strm_data_valid & ~noc__stOp__strm_id ; // from NoC can be strm0 or 1
-          end
-*/
+
         default                       : 
           begin
             strm0_cntl              =  'd0                         ; 
@@ -531,12 +547,16 @@ module streamingOps (
     begin
       stOp__sti__strm1_ready  = 'd0                          ; 
       casex (strm1_source)  // the strm1_source override the FROM in the operation
-        `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY       : 
-          begin
-            strm1_cntl              =  dma__stOp__strm1_cntl       ; 
-            strm1_data              =  dma__stOp__strm1_data       ; 
-            strm1_data_valid        =  dma__stOp__strm1_data_valid ; 
-          end
+
+        `ifndef DMA_CONT_ONLY_ONE_PORT 
+          `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY       : 
+            begin
+              strm1_cntl              =  dma__stOp__strm1_cntl       ; 
+              strm1_data              =  dma__stOp__strm1_data       ; 
+              strm1_data_valid        =  dma__stOp__strm1_data_valid ; 
+            end
+        `endif
+
         `STREAMING_OP_CNTL_OPERATION_FROM_STD : 
           begin
             strm1_cntl              =  sti__stOp__strm1_cntl       ; 
@@ -544,14 +564,7 @@ module streamingOps (
             strm1_data_valid        =  sti__stOp__strm1_data_valid ; 
             stOp__sti__strm1_ready  = ~fifo[1].almost_full    ; 
           end
-/*
-        `STREAMING_OP_CNTL_OPERATION_FROM_NOC       : 
-          begin
-            strm1_cntl             =  noc__stOp__strm_cntl       ; 
-            strm1_data             =  noc__stOp__strm_data       ; 
-            strm1_data_valid       =  noc__stOp__strm_data_valid & noc__stOp__strm_id ; // from NoC can be strm0 or 1
-          end
-*/
+
         default                       : 
           begin
             strm1_cntl              =  'd0                         ; 
@@ -572,40 +585,32 @@ module streamingOps (
         begin
           stOp__dma__strm0_ready  = 1'b0                  ;
         end
-/*
-      `STREAMING_OP_CNTL_OPERATION_TO_NOC       : 
-        begin
-          stOp__dma__strm0_ready = noc__stOp__strm_ready ;
-        end
-*/
+
       default                       : 
         begin
           stOp__dma__strm0_ready  = 1'b0                  ;
         end
     endcase // always @
 
-  // Stream 1
-  always @(*)
-    casex (strm1_destination)  // the strm1_source override the FROM in the operation
-      `STREAMING_OP_CNTL_OPERATION_TO_MEMORY       : 
-        begin
-          stOp__dma__strm1_ready  =  ~fifo[1].almost_full ;
-        end
-      `STREAMING_OP_CNTL_OPERATION_TO_STD : 
-        begin
-          stOp__dma__strm1_ready  = 1'b0                  ;
-        end
-/*
-      `STREAMING_OP_CNTL_OPERATION_TO_NOC       : 
-        begin
-          stOp__dma__strm1_ready = noc__stOp__strm_ready ;
-        end
-*/
-      default                       : 
-        begin
-          stOp__dma__strm1_ready  = 1'b0                  ;
-        end
-    endcase // always @
+  `ifndef DMA_CONT_ONLY_ONE_PORT 
+    // Stream 1
+    always @(*)
+      casex (strm1_destination)  // the strm1_source override the FROM in the operation
+        `STREAMING_OP_CNTL_OPERATION_TO_MEMORY       : 
+          begin
+            stOp__dma__strm1_ready  =  ~fifo[1].almost_full ;
+          end
+        `STREAMING_OP_CNTL_OPERATION_TO_STD : 
+          begin
+            stOp__dma__strm1_ready  = 1'b0                  ;
+          end
+    
+        default                       : 
+          begin
+            stOp__dma__strm1_ready  = 1'b0                  ;
+          end
+      endcase // always @
+  `endif
 
 
   // we dont fifo the data mask, so capture mask so it can be used when data
@@ -627,9 +632,7 @@ module streamingOps (
         end
       default                       : 
         begin
-          strm0_data_mask   <=  (reset_poweron                            ) ? 32'd0               :
-                                (dma__stOp__strm0_cntl == `DMA_CONT_STRM_CNTL_EOP) ? dma__stOp__strm0_data_mask :
-                                                                              strm0_data_mask     ;
+          strm0_data_mask   <=  32'd0 ;
         end
     endcase // always @
 
@@ -638,7 +641,9 @@ module streamingOps (
       `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY       : 
         begin
           strm1_data_mask   <=  (reset_poweron                                   ) ? 32'd0                      :
+          `ifndef DMA_CONT_ONLY_ONE_PORT 
                                 (dma__stOp__strm0_cntl == `DMA_CONT_STRM_CNTL_EOP) ? dma__stOp__strm1_data_mask :
+          `endif
                                                                                      strm1_data_mask            ;
         end
       `STREAMING_OP_CNTL_OPERATION_FROM_STD : 
@@ -649,9 +654,7 @@ module streamingOps (
         end
       default                       : 
         begin
-          strm1_data_mask   <=  (reset_poweron                            ) ? 32'd0               :
-                                (dma__stOp__strm0_cntl == `DMA_CONT_STRM_CNTL_EOP) ? dma__stOp__strm1_data_mask :
-                                                                              strm1_data_mask     ;
+          strm1_data_mask   <=  32'd0 ;
         end
     endcase // always @
 

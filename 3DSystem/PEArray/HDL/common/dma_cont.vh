@@ -92,7 +92,8 @@
 //------------------------------------------------
 // DMA_CONT_STREAMS
 //------------------------------------------------
-`define DMA_CONT_NUM_OF_STREAMS        2
+`define DMA_CONT_NUM_OF_STREAMS        1
+`define DMA_CONT_ONLY_ONE_PORT 
 
 
 //------------------------------------------------

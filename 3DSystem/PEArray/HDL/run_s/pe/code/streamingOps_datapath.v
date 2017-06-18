@@ -260,23 +260,26 @@ module streamingOps_datapath (
   wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data        ; 
   wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm0_data_mask   ; 
   wire                                         dma__stOp__strm0_data_valid  ; 
-  wire                                         stOp__dma__strm1_ready       ;
-  wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm1_cntl        ; 
-  wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data        ; 
-  wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data_mask   ; 
-  wire                                         dma__stOp__strm1_data_valid  ; 
 
-  // FIXME: Only need one streaming bus from stOp
   wire                                         dma__stOp__strm0_ready       ;
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]        stOp__dma__strm0_cntl        ; 
   wire [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm0_data        ; 
   wire [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm0_data_mask   ; 
   wire                                         stOp__dma__strm0_data_valid  ; 
-  wire                                         dma__stOp__strm1_ready       ;
-  wire [`DMA_CONT_STRM_CNTL_RANGE     ]        stOp__dma__strm1_cntl        ; 
-  wire [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm1_data        ; 
-  wire [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm1_data_mask   ; 
-  wire                                         stOp__dma__strm1_data_valid  ; 
+
+  `ifndef DMA_CONT_ONLY_ONE_PORT 
+    wire                                         stOp__dma__strm1_ready       ;
+    wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       dma__stOp__strm1_cntl        ; 
+    wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data        ; 
+    wire  [`STREAMING_OP_DATA_RANGE      ]       dma__stOp__strm1_data_mask   ; 
+    wire                                         dma__stOp__strm1_data_valid  ; 
+  
+    wire                                         dma__stOp__strm1_ready       ;
+    wire [`DMA_CONT_STRM_CNTL_RANGE     ]        stOp__dma__strm1_cntl        ; 
+    wire [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm1_data        ; 
+    wire [`STREAMING_OP_DATA_RANGE      ]        stOp__dma__strm1_data_mask   ; 
+    wire                                         stOp__dma__strm1_data_valid  ; 
+  `endif
 
   wire  [`STREAMING_OP_RESULT_RANGE   ]        stOp_result           ; 
 
@@ -304,27 +307,34 @@ module streamingOps_datapath (
                            .stOp__reg__cntl              ( stOp__reg__cntl             ),
 
                             // DMA interface
+                            //  - port 0
                            .stOp__dma__strm0_ready       ( stOp__dma__strm0_ready      ),
                            .dma__stOp__strm0_cntl        ( dma__stOp__strm0_cntl       ), 
                            .dma__stOp__strm0_data        ( dma__stOp__strm0_data       ), 
                            .dma__stOp__strm0_data_mask   ( dma__stOp__strm0_data_mask  ), 
                            .dma__stOp__strm0_data_valid  ( dma__stOp__strm0_data_valid ), 
-                           .stOp__dma__strm1_ready       ( stOp__dma__strm1_ready      ),
-                           .dma__stOp__strm1_cntl        ( dma__stOp__strm1_cntl       ), 
-                           .dma__stOp__strm1_data        ( dma__stOp__strm1_data       ), 
-                           .dma__stOp__strm1_data_mask   ( dma__stOp__strm1_data_mask  ), 
-                           .dma__stOp__strm1_data_valid  ( dma__stOp__strm1_data_valid ), 
-                            
+
                            .dma__stOp__strm0_ready       ( dma__stOp__strm0_ready      ),  // FIXME
                            .stOp__dma__strm0_cntl        ( stOp__dma__strm0_cntl       ), 
                            .stOp__dma__strm0_data        ( stOp__dma__strm0_data       ), 
                            .stOp__dma__strm0_data_mask   ( stOp__dma__strm0_data_mask  ), 
                            .stOp__dma__strm0_data_valid  ( stOp__dma__strm0_data_valid ), 
-                           .dma__stOp__strm1_ready       ( dma__stOp__strm1_ready      ),  // FIXME
-                           .stOp__dma__strm1_cntl        ( stOp__dma__strm1_cntl       ), 
-                           .stOp__dma__strm1_data        ( stOp__dma__strm1_data       ), 
-                           .stOp__dma__strm1_data_mask   ( stOp__dma__strm1_data_mask  ), 
-                           .stOp__dma__strm1_data_valid  ( stOp__dma__strm1_data_valid ), 
+
+                           `ifndef DMA_CONT_ONLY_ONE_PORT 
+                              // DMA interface
+                              //  - port 1
+                             .dma__stOp__strm1_ready       ( dma__stOp__strm1_ready      ),  // FIXME
+                             .stOp__dma__strm1_cntl        ( stOp__dma__strm1_cntl       ), 
+                             .stOp__dma__strm1_data        ( stOp__dma__strm1_data       ), 
+                             .stOp__dma__strm1_data_mask   ( stOp__dma__strm1_data_mask  ), 
+                             .stOp__dma__strm1_data_valid  ( stOp__dma__strm1_data_valid ), 
+                           
+                             .stOp__dma__strm1_ready       ( stOp__dma__strm1_ready      ),
+                             .dma__stOp__strm1_cntl        ( dma__stOp__strm1_cntl       ), 
+                             .dma__stOp__strm1_data        ( dma__stOp__strm1_data       ), 
+                             .dma__stOp__strm1_data_mask   ( dma__stOp__strm1_data_mask  ), 
+                             .dma__stOp__strm1_data_valid  ( dma__stOp__strm1_data_valid ), 
+                           `endif
                                                              
 
                             // Downstream Stack Bus
@@ -347,10 +357,13 @@ module streamingOps_datapath (
   wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  dma__memc__write_data0      ; 
   wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__read_address0    ;
   wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__dma__read_data0       ; 
-  wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__write_address1   ;
-  wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  dma__memc__write_data1      ; 
-  wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__read_address1    ;
-  wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__dma__read_data1       ; 
+
+  `ifndef DMA_CONT_ONLY_ONE_PORT 
+    wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__write_address1   ;
+    wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  dma__memc__write_data1      ; 
+    wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__read_address1    ;
+    wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__dma__read_data1       ; 
+  `endif
 
   dma_cont dma_cont (
              
@@ -368,18 +381,20 @@ module streamingOps_datapath (
             .strm0_write_complete        ( dma__scntl__strm0_write_complete      ),
             .strm0_write_start_address   ( scntl__dma__strm0_write_start_address ),
 
-            .num_of_types1               ( scntl__dma__num_of_types1             ),
-            .type1                       ( scntl__dma__type1                     ),
-
-            .strm1_read_enable           ( scntl__dma__strm1_read_enable         ),
-            .strm1_read_ready            ( dma__scntl__strm1_read_ready          ),
-            .strm1_read_complete         ( dma__scntl__strm1_read_complete       ),
-            .strm1_read_start_address    ( scntl__dma__strm1_read_start_address  ),
-
-            .strm1_write_enable          ( scntl__dma__strm1_write_enable        ),
-            .strm1_write_ready           ( dma__scntl__strm1_write_ready         ),
-            .strm1_write_complete        ( dma__scntl__strm1_write_complete      ),
-            .strm1_write_start_address   ( scntl__dma__strm1_write_start_address ),
+            `ifndef DMA_CONT_ONLY_ONE_PORT 
+              .num_of_types1               ( scntl__dma__num_of_types1             ),
+              .type1                       ( scntl__dma__type1                     ),
+             
+              .strm1_read_enable           ( scntl__dma__strm1_read_enable         ),
+              .strm1_read_ready            ( dma__scntl__strm1_read_ready          ),
+              .strm1_read_complete         ( dma__scntl__strm1_read_complete       ),
+              .strm1_read_start_address    ( scntl__dma__strm1_read_start_address  ),
+             
+              .strm1_write_enable          ( scntl__dma__strm1_write_enable        ),
+              .strm1_write_ready           ( dma__scntl__strm1_write_ready         ),
+              .strm1_write_complete        ( dma__scntl__strm1_write_complete      ),
+              .strm1_write_start_address   ( scntl__dma__strm1_write_start_address ),
+            `endif
 
             .operation                   ( scntl__dma__operation                 ),
                                                                                 
@@ -398,18 +413,20 @@ module streamingOps_datapath (
             .memc__dma__read_ready0      ( memc__dma__read_ready0               ),
             .dma__memc__read_pause0      ( dma__memc__read_pause0               ),
 
-             // Memory access 1                                                 
-            .dma__memc__write_valid1     ( dma__memc__write_valid1              ),
-            .dma__memc__write_address1   ( dma__memc__write_address1            ),
-            .dma__memc__write_data1      ( dma__memc__write_data1               ),
-            .memc__dma__write_ready1     ( memc__dma__write_ready1              ),
-
-            .dma__memc__read_valid1      ( dma__memc__read_valid1               ),
-            .dma__memc__read_address1    ( dma__memc__read_address1             ),
-            .memc__dma__read_data1       ( memc__dma__read_data1                ),
-            .memc__dma__read_data_valid1 ( memc__dma__read_data_valid1          ),
-            .memc__dma__read_ready1      ( memc__dma__read_ready1               ),
-            .dma__memc__read_pause1      ( dma__memc__read_pause1               ),
+            `ifndef DMA_CONT_ONLY_ONE_PORT 
+               // Memory access 1                                                 
+              .dma__memc__write_valid1     ( dma__memc__write_valid1              ),
+              .dma__memc__write_address1   ( dma__memc__write_address1            ),
+              .dma__memc__write_data1      ( dma__memc__write_data1               ),
+              .memc__dma__write_ready1     ( memc__dma__write_ready1              ),
+          
+              .dma__memc__read_valid1      ( dma__memc__read_valid1               ),
+              .dma__memc__read_address1    ( dma__memc__read_address1             ),
+              .memc__dma__read_data1       ( memc__dma__read_data1                ),
+              .memc__dma__read_data_valid1 ( memc__dma__read_data_valid1          ),
+              .memc__dma__read_ready1      ( memc__dma__read_ready1               ),
+              .dma__memc__read_pause1      ( dma__memc__read_pause1               ),
+            `endif
                                                                                 
              // Streaming Operation Interface                                   
             .stOp__dma__strm0_ready      ( stOp__dma__strm0_ready               ),  // FIXME
@@ -424,17 +441,19 @@ module streamingOps_datapath (
             .stOp__dma__strm0_data_mask   ( stOp__dma__strm0_data_mask          ), 
             .stOp__dma__strm0_data_valid  ( stOp__dma__strm0_data_valid         ), 
 
-            .stOp__dma__strm1_ready      ( stOp__dma__strm1_ready               ),  // FIXME
-            .dma__stOp__strm1_cntl       ( dma__stOp__strm1_cntl                ), 
-            .dma__stOp__strm1_data       ( dma__stOp__strm1_data                ), 
-            .dma__stOp__strm1_data_mask  ( dma__stOp__strm1_data_mask           ), 
-            .dma__stOp__strm1_data_valid ( dma__stOp__strm1_data_valid          ), 
-                                                                                
-            .dma__stOp__strm1_ready       ( dma__stOp__strm1_ready              ),
-            .stOp__dma__strm1_cntl        ( stOp__dma__strm1_cntl               ), 
-            .stOp__dma__strm1_data        ( stOp__dma__strm1_data               ), 
-            .stOp__dma__strm1_data_mask   ( stOp__dma__strm1_data_mask          ), 
-            .stOp__dma__strm1_data_valid  ( stOp__dma__strm1_data_valid         ), 
+            `ifndef DMA_CONT_ONLY_ONE_PORT 
+              .stOp__dma__strm1_ready      ( stOp__dma__strm1_ready               ),  // FIXME
+              .dma__stOp__strm1_cntl       ( dma__stOp__strm1_cntl                ), 
+              .dma__stOp__strm1_data       ( dma__stOp__strm1_data                ), 
+              .dma__stOp__strm1_data_mask  ( dma__stOp__strm1_data_mask           ), 
+              .dma__stOp__strm1_data_valid ( dma__stOp__strm1_data_valid          ), 
+                                                                                  
+              .dma__stOp__strm1_ready       ( dma__stOp__strm1_ready              ),
+              .stOp__dma__strm1_cntl        ( stOp__dma__strm1_cntl               ), 
+              .stOp__dma__strm1_data        ( stOp__dma__strm1_data               ), 
+              .stOp__dma__strm1_data_mask   ( stOp__dma__strm1_data_mask          ), 
+              .stOp__dma__strm1_data_valid  ( stOp__dma__strm1_data_valid         ), 
+            `endif
                                                              
             .clk                          ( clk                                 ),
             .reset_poweron                ( reset_poweron                       )

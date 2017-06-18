@@ -16,7 +16,9 @@
 *********************************************************************************************/
     
 `timescale 1ns/10ps
-`include "TB_common.vh"
+`ifndef SYNTHESIS
+  `include "TB_common.vh"
+`endif
 `include "common.vh"
 `include "pe_array.vh"
 `include "pe.vh"

@@ -1050,7 +1050,6 @@ if __name__ == "__main__":
         numOfExecLanes = int(data[2])
         FoundLanes = True
   searchFile.close()
-
   #numOfExecLanes = 16
   #numOfMemPorts = 32
   #numOfBanks = 64
@@ -1903,8 +1902,10 @@ if __name__ == "__main__":
 
   f = open('../HDL/common/pe_dma_to_memc_connections.vh', 'w')
   pLine = ""
-
-  for strm in range (0, 2):
+  # If number of mem ports is same as exec lanes, there is only one dma port
+  if (numOfExecLanes == numOfMemPorts)  :
+    dma_interfaces = 1
+  for strm in range (0, dma_interfaces ):
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n  assign  dma__memc__lane{0}_write_valid{1}            = stOp_lane[{0}].dma__memc__write_valid{1}    ;'.format(lane,strm)
       pLine = pLine + '\n  assign  dma__memc__lane{0}_write_address{1}          = stOp_lane[{0}].dma__memc__write_address{1}  ;'.format(lane,strm)
@@ -2085,6 +2086,7 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     offset = lane + 16
     pLine = pLine + '\n  assign scntl__sdp__lane{0}_stOp_operation = rs0[31:1]                                      ; '.format(lane)
+    pLine = pLine + '\n  assign scntl__sdp__lane{0}_dma_operation  = rs0[31:1]                                      ; '.format(lane)
     for strm in range (0, 2):
       pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_stOp_enable    = strm_control[{0}].strm{1}_stOp_enable     ; '.format(lane,strm)
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_stOp_ready      = sdp__scntl__lane{0}_strm{1}_stOp_ready     ; '.format(lane,strm)
