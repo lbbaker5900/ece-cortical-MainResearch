@@ -142,7 +142,7 @@ set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ sass.*"]
 #--------------------------------------------------------- 
 set_dont_touch [get_cell simd_wrapper/simd_core]
 
-
+set verilogout_show_unconnected_pins true
 
 #------------------------------------------------------
 # During the initial map (synthesis), Synopsys might   

@@ -11,7 +11,8 @@ set_structure true
 
 #compile -map_effort medium -boundary_optimization -auto_ungroup area
 compile -map_effort medium
-compile_ultra
+# compile_ultra \
+#      -no_autoungroup
 #report_fsm
 
 #---------------------------------------------------------
@@ -57,7 +58,10 @@ translate
 #
 set_fix_hold $clkname
 
-compile_ultra  -incremental -only_design_rule
+# compile_ultra  \
+#      -incremental \
+#      -only_design_rule \
+#      -no_autoungroup
 
 report_timing \
 	-delay min \

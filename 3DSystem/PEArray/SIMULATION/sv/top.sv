@@ -66,7 +66,6 @@ module top;
    
          // Downstream Stack bus Interface
          `include "TB_PEonly_system_stack_bus_downstream_instance_ports.vh"
-        .stu__pe63__ready           ( 1'b0       ),
        
         .clk               ( clk       ),
         .reset_poweron     ( reset_poweron     )

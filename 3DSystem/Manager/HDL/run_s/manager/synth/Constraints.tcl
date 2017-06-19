@@ -128,7 +128,6 @@ set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
 #--------------------------------------------------------- 
 #set_dont_touch [get_cell DW_*]
 
-
 #---------------------------------------------------------
 # Dont touch on memories and regFiles
 #--------------------------------------------------------- 
@@ -137,6 +136,13 @@ set acells [get_cell -hier]
 set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ asdr.*"]
 set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ sass.*"]
 
+#---------------------------------------------------------
+# Other Dont touch 
+#  - SIMD core
+#--------------------------------------------------------- 
+set_dont_touch [get_cell simd_wrapper/simd_core]
+
+set verilogout_show_unconnected_pins true
 
 #------------------------------------------------------
 # During the initial map (synthesis), Synopsys might   
@@ -160,8 +166,8 @@ set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ sass.*"]
 # warnings and errors. An error would imply the design is 
 # not compilable. See > man check_design for more information.
 #---------------------------------------------------------
-check_design
-
+check_design \
+	> ${modname}_${type}_check_design.rpt
 #---------------------------------------------------------
 # link performs check for presence of the design components 
 # instantiated within the design. It makes sure that all the 

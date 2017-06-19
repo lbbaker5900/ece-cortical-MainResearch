@@ -3213,6 +3213,7 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n    assign reg__scntl__lane{0}_ready = reg__scntl__ready [{0}]    ;'.format(lane)
     pLine = pLine + '\n    assign scntl__reg__valid [{0}]   = scntl__reg__lane{0}_valid  ;'.format(lane)
+    pLine = pLine + '\n    assign scntl__reg__cntl  [{0}]   = scntl__reg__lane{0}_cntl   ;'.format(lane)
     pLine = pLine + '\n    assign scntl__reg__data  [{0}]   = scntl__reg__lane{0}_data   ;'.format(lane)
     pLine = pLine + '\n'
   pLine = pLine + '\n'

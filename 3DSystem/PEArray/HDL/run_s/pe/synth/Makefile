@@ -1,5 +1,5 @@
 
-MODNAME = streamingOps_cntl
+MODNAME = pe
 RTL_DIR = ../code
 GATE_DIR = ../synth
 

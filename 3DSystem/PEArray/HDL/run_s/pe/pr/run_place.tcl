@@ -3,7 +3,7 @@ source setup.tcl
 set begintime [clock seconds]
 
 open_mw_lib ./work/${modname}
-open_mw_cel ${modname}_init
+open_mw_cel ${modname}_init_macros_placed
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # pr_tut
