@@ -16,17 +16,17 @@ set clkname clk
 # set modname simd_upstream_intf
 # set modname simd_wrapper
 # set modname simd_core
+# set modname pe
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
 
-set modname pe_cntl
+set modname streamingOps_cntl
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
 #
-# set modname pe
 # 
 
 # set variable "RTL_DIR" to the HDL directory w.r.t synthesis directory

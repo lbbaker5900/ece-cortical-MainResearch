@@ -133,7 +133,13 @@ module pe_cntl (
   wire                                            simd__cntl__tag_ready      ;
   reg                                             simd__cntl__tag_ready_d1   ;
 
+// Outputs will default as wires allowing them to be driven by the testbench
+`ifdef SYNTHESIS
+  `undef TB_ENABLE_REGFILE_DRIVER
+`endif
+`ifndef TB_ENABLE_REGFILE_DRIVER
   `include "pe_cntl_simd_instance_wires.vh"
+`endif
 
   reg   [`COMMON_STD_INTF_CNTL_RANGE     ]        sti__cntl__oob_cntl_d1         ;
   reg                                             sti__cntl__oob_valid_d1        ;
@@ -169,30 +175,40 @@ module pe_cntl (
 `ifndef TB_ENABLE_REGFILE_DRIVER
   genvar pe, lane;
   generate
+      always @(posedge clk)
+        begin
+          // FIXME: Could be wire and multicycle
+          cntl__simd__rs0[0]                   <= ( reset_poweron ) ? 'd0 : cntl__simd__rs0_e1[0]             ;
+          cntl__simd__rs0[31:1]                <= ( reset_poweron ) ? 'd0 : cntl__simd__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
+          cntl__simd__rs1                      <= ( reset_poweron ) ? 'd0 : cntl__simd__rs1_e1                ;
+        end
       for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
           begin
+
               wire  [`PE_CHIPLET_LANE_ADDR_BITS_RANGE ]     lane_from_genvar;
               assign lane_from_genvar                     = lane                  ;
 
               // From the manager, we use a common address for all lanes, so index into the lane memory
-              assign cntl__simd__lane_r130[lane]          = {cntl__simd__lane_r130_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r130_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign cntl__simd__lane_r134[lane]          = {cntl__simd__lane_r134_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r134_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign cntl__simd__lane_r132[lane][19:16]   = cntl__simd__lane_r132_e1[19:16]   ;  // type (bit, nibble, byte, word)
+              // FIXME: Could be wire and multicycle
+              always @(posedge clk)
+                begin
+                  cntl__simd__lane_r130[lane]          <= ( reset_poweron ) ? 'd0 : {cntl__simd__lane_r130_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r130_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+                  cntl__simd__lane_r134[lane]          <= ( reset_poweron ) ? 'd0 : {cntl__simd__lane_r134_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r134_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+                  cntl__simd__lane_r132[lane][19:16]   <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r132_e1[19:16]   ;  // type (bit, nibble, byte, word)
                                                                                               
-              assign cntl__simd__lane_r131[lane]          = {cntl__simd__lane_r131_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r131_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign cntl__simd__lane_r135[lane]          = {cntl__simd__lane_r135_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r135_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
-              assign cntl__simd__lane_r133[lane][19:16]   = cntl__simd__lane_r133_e1[19:16]   ;  // type (bit, nibble, byte, word)
+                  cntl__simd__lane_r131[lane]          <= ( reset_poweron ) ? 'd0 : {cntl__simd__lane_r131_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r131_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+                  cntl__simd__lane_r135[lane]          <= ( reset_poweron ) ? 'd0 : {cntl__simd__lane_r135_e1[`PE_CHIPLET_ADDR_BITS_RANGE ], lane_from_genvar,  cntl__simd__lane_r135_e1[`PE_CHIPLET_LANE_ADDRESS_RANGE ]} ;
+                  cntl__simd__lane_r133[lane][19:16]   <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r133_e1[19:16]   ;  // type (bit, nibble, byte, word)
                                                                                               
-              assign cntl__simd__lane_r133[lane][15: 0]   = cntl__simd__lane_r133_e1[15: 0]   ;
-              assign cntl__simd__lane_r132[lane][15: 0]   = cntl__simd__lane_r132_e1[15: 0]   ;  // num of types - for dma
+                  cntl__simd__lane_r133[lane][15: 0]   <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r133_e1[15: 0]   ;
+                  cntl__simd__lane_r132[lane][15: 0]   <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r132_e1[15: 0]   ;  // num of types - for dma
                                                                                               
-              assign cntl__simd__rs0[0]                   = cntl__simd__rs0_e1[0]             ;
-              assign cntl__simd__rs0[31:1]                = cntl__simd__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
-              assign cntl__simd__rs1                      = cntl__simd__rs1_e1                ;
+                end
           end
   endgenerate
 `endif
 
+`ifndef TB_ENABLE_REGFILE_DRIVER
   always @(posedge clk)
     begin
       cntl__simd__lane_r130_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? sourceAddress0                                      : cntl__simd__lane_r130_e1          ;
@@ -210,6 +226,7 @@ module pe_cntl (
       cntl__simd__rs0_e1[31:1]          <= (reset_poweron ) ? 31'd0                   : ( start_stOp_operation ) ? stOp_operation                                      : cntl__simd__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
       cntl__simd__rs1_e1                <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? {32{1'b1}}                                          : cntl__simd__rs1_e1                ;  // FIXME: Need to use numLanes from OOB packet
     end
+`endif
 
 
   //----------------------------------------------------------------------------------------------------

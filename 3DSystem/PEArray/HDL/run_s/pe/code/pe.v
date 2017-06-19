@@ -281,10 +281,11 @@ module pe (
   //-------------------------------------------------------------------------------------------------
   // SIMD Registers to Stack Up 
   // 
-  wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs   [`PE_NUM_OF_EXEC_LANES ] ;
-  wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid                      ;
-  wire                                    sui__simd__regs_complete                   ;
-  wire                                    sui__simd__regs_ready                      ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ;
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ;
+  wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid                          ;
+  wire                                    sui__simd__regs_complete                       ;
+  wire                                    sui__simd__regs_ready                          ;
 
   simd_upstream_intf simd_upstream_intf (
 
@@ -300,8 +301,9 @@ module pe (
 
                   //--------------------------------------------------
                   // Register(s) from simd
-                  .simd__sui__regs          ( simd__sui__regs          ),
                   .simd__sui__regs_valid    ( simd__sui__regs_valid    ),
+                  .simd__sui__regs_cntl     ( simd__sui__regs_cntl     ),
+                  .simd__sui__regs          ( simd__sui__regs          ),
                   .sui__simd__regs_complete ( sui__simd__regs_complete ),
                   .sui__simd__regs_ready    ( sui__simd__regs_ready    ),
 
@@ -348,6 +350,7 @@ module pe (
             //-------------------------------
             // Result from stOp to regFile
             .scntl__reg__valid         ( scntl__reg__valid       ),
+            .scntl__reg__cntl          ( scntl__reg__cntl        ),
             .scntl__reg__data          ( scntl__reg__data        ),
             .reg__scntl__ready         ( reg__scntl__ready       ),
             //`include "simd_wrapper_scntl_to_simd_regfile_instance_ports.vh"
@@ -359,8 +362,9 @@ module pe (
             //-------------------------------------------------------------------------------------------------
             // SIMD Registers to Stack Up 
             // 
-            .simd__sui__regs              ( simd__sui__regs          ),
             .simd__sui__regs_valid        ( simd__sui__regs_valid    ),
+            .simd__sui__regs_cntl         ( simd__sui__regs_cntl     ),
+            .simd__sui__regs              ( simd__sui__regs          ),
             .sui__simd__regs_complete     ( sui__simd__regs_complete ),
             .sui__simd__regs_ready        ( sui__simd__regs_ready    ),
 

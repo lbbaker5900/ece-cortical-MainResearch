@@ -34,16 +34,6 @@
 `include "dma_cont.vh"
 `include "mem_acc_cont.vh"
 
-`ifdef SYNTHESIS
-  `define STREAMINGOPS_CNTL_INCLUDE_REAL_MEMORY
-`endif
-
-`ifndef SYNTHESIS
-  `ifdef STREAMINGOPS_CNTL_INCLUDE_REAL_MEMORY
-    `include "sasslnpky2p32x35cm4sw0bk1ltlc1_fast_func.v"
-    `include "std_cells.v"
-  `endif
-`endif
 
 // FIXME':
 // Features to be added:

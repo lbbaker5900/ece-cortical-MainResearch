@@ -906,13 +906,15 @@ if ((GENERIC_MEM_DEPTH == 1024) && (GENERIC_MEM_DATA_WIDTH == 32) && (GENERIC_ME
 //
 if ((GENERIC_MEM_DEPTH == 256) && (GENERIC_MEM_DATA_WIDTH == 149) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 1))
   begin
+    // If a 1-port memory uses the regFile, we need to connect the read potA
+    // signals to the regFile read port (portB)
     asdrlnpky2p256x149cm1sw0         mem2prf256x149(
                    // Output
-                   .QB          ( int_portB_read_data_dly               ),
+                   .QB          ( int_portA_read_data_dly               ),
                    // Read Port
                    .CLKB        ( clk                                   ),
-                   .MEB         ( portB_enable_dly                      ),
-                   .ADRB        ( portB_address_dly                     ),
+                   .MEB         ( portA_enable_dly                      ),
+                   .ADRB        ( portA_address_dly                     ),
                    // Write Port
                    .CLKA        ( clk                                   ),
                    .WEA         ( portA_write_dly                       ),

@@ -1778,6 +1778,7 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  wire                                    reg__sdp__lane{0}_ready    ;'.format(lane)
     pLine = pLine + '\n  wire                                    sdp__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  wire   [`COMMON_STD_INTF_CNTL_RANGE  ]  sdp__reg__lane{0}_cntl     ;'.format(lane)
     pLine = pLine + '\n  wire   [`STREAMING_OP_RESULT_RANGE   ]  sdp__reg__lane{0}_data     ;'.format(lane)
   pLine = pLine + '\n'
 
@@ -1791,10 +1792,12 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  wire                                    reg__scntl__lane{0}_ready    ;'.format(lane)
     pLine = pLine + '\n  wire                                    scntl__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  wire   [`COMMON_STD_INTF_CNTL_RANGE  ]  scntl__reg__lane{0}_cntl     ;'.format(lane)
     pLine = pLine + '\n  wire   [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane{0}_data     ;'.format(lane)
   pLine = pLine + '\n'
 
   pLine = pLine + '\n wire   [`PE_NUM_OF_EXEC_LANES_RANGE ]      scntl__reg__valid                          ;'
+  pLine = pLine + '\n wire   [`COMMON_STD_INTF_CNTL_RANGE ]      scntl__reg__cntl  [`PE_NUM_OF_EXEC_LANES ] ;'
   pLine = pLine + '\n wire   [`PE_EXEC_LANE_WIDTH_RANGE   ]      scntl__reg__data  [`PE_NUM_OF_EXEC_LANES ] ;'
   pLine = pLine + '\n wire   [`PE_NUM_OF_EXEC_LANES_RANGE ]      reg__scntl__ready                          ;'
 
@@ -1892,6 +1895,7 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  assign stOp_lane[{0}].reg__stOp__ready = reg__sdp__lane{0}_ready          ;'.format(lane)
     pLine = pLine + '\n  assign sdp__reg__lane{0}_valid         = stOp_lane[{0}].stOp__reg__valid  ;'.format(lane)
+    pLine = pLine + '\n  assign sdp__reg__lane{0}_cntl          = stOp_lane[{0}].stOp__reg__cntl   ;'.format(lane)
     pLine = pLine + '\n  assign sdp__reg__lane{0}_data          = stOp_lane[{0}].stOp__reg__data   ;'.format(lane)
   pLine = pLine + '\n'
 
@@ -2214,6 +2218,7 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n    reg__sdp__lane{0}_ready    ,'.format(lane)
     pLine = pLine + '\n    sdp__reg__lane{0}_valid    ,'.format(lane)
+    pLine = pLine + '\n    sdp__reg__lane{0}_cntl     ,'.format(lane)
     pLine = pLine + '\n    sdp__reg__lane{0}_data     ,'.format(lane)
     pLine = pLine + '\n'
   pLine = pLine + '\n'
@@ -2228,6 +2233,7 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  output                                   reg__sdp__lane{0}_ready    ;'.format(lane)
     pLine = pLine + '\n  input                                    sdp__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  input   [`COMMON_STD_INTF_CNTL_RANGE  ]  sdp__reg__lane{0}_cntl     ;'.format(lane)
     pLine = pLine + '\n  input   [`STREAMING_OP_RESULT_RANGE   ]  sdp__reg__lane{0}_data     ;'.format(lane)
     pLine = pLine + '\n'
   pLine = pLine + '\n'
@@ -2242,6 +2248,7 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n    .reg__sdp__lane{0}_ready    ( reg__sdp__lane{0}_ready  ),'.format(lane)
     pLine = pLine + '\n    .sdp__reg__lane{0}_valid    ( sdp__reg__lane{0}_valid  ),'.format(lane)
+    pLine = pLine + '\n    .sdp__reg__lane{0}_cntl     ( sdp__reg__lane{0}_cntl   ),'.format(lane)
     pLine = pLine + '\n    .sdp__reg__lane{0}_data     ( sdp__reg__lane{0}_data   ),'.format(lane)
     pLine = pLine + '\n'
   pLine = pLine + '\n'
@@ -2254,7 +2261,8 @@ if __name__ == "__main__":
   pLine = ""
 
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  wire                                   reg__sdp__lane{0}_ready    ;'.format(lane)
+    pLine = pLine + '\n  reg                                    reg__sdp__lane{0}_ready    ;'.format(lane)
+    pLine = pLine + '\n  wire  [`COMMON_STD_INTF_CNTL_RANGE  ]  sdp__reg__lane{0}_cntl     ;'.format(lane)
     pLine = pLine + '\n  wire                                   sdp__reg__lane{0}_valid    ;'.format(lane)
     pLine = pLine + '\n  wire  [`STREAMING_OP_RESULT_RANGE   ]  sdp__reg__lane{0}_data     ;'.format(lane)
     pLine = pLine + '\n'
@@ -2273,6 +2281,7 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n    reg__scntl__lane{0}_ready    ,'.format(lane)
     pLine = pLine + '\n    scntl__reg__lane{0}_valid    ,'.format(lane)
+    pLine = pLine + '\n    scntl__reg__lane{0}_cntl     ,'.format(lane)
     pLine = pLine + '\n    scntl__reg__lane{0}_data     ,'.format(lane)
     pLine = pLine + '\n'
   pLine = pLine + '\n'
@@ -2287,6 +2296,7 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  input                                    reg__scntl__lane{0}_ready    ;'.format(lane)
     pLine = pLine + '\n  output                                   scntl__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  output  [`COMMON_STD_INTF_CNTL_RANGE  ]  scntl__reg__lane{0}_cntl     ;'.format(lane)
     pLine = pLine + '\n  output  [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane{0}_data     ;'.format(lane)
     pLine = pLine + '\n'
   pLine = pLine + '\n'
@@ -2301,6 +2311,7 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n    .reg__scntl__lane{0}_ready   ( reg__scntl__lane{0}_ready  ) ,'.format(lane)
     pLine = pLine + '\n    .scntl__reg__lane{0}_valid   ( scntl__reg__lane{0}_valid  ) ,'.format(lane)
+    pLine = pLine + '\n    .scntl__reg__lane{0}_cntl    ( scntl__reg__lane{0}_cntl   ) ,'.format(lane)
     pLine = pLine + '\n    .scntl__reg__lane{0}_data    ( scntl__reg__lane{0}_data   ) ,'.format(lane)
     pLine = pLine + '\n'
   pLine = pLine + '\n'
@@ -2313,8 +2324,9 @@ if __name__ == "__main__":
 
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n  wire                                    reg__scntl__lane{0}_ready    ;'.format(lane)
-    pLine = pLine + '\n  wire                                    scntl__reg__lane{0}_valid    ;'.format(lane)
-    pLine = pLine + '\n  wire   [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane{0}_data     ;'.format(lane)
+    pLine = pLine + '\n  reg                                     scntl__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n  reg    [`COMMON_STD_INTF_CNTL_RANGE  ]  scntl__reg__lane{0}_cntl     ;'.format(lane)
+    pLine = pLine + '\n  reg    [`STREAMING_OP_RESULT_RANGE   ]  scntl__reg__lane{0}_data     ;'.format(lane)
     pLine = pLine + '\n'
   pLine = pLine + '\n'
 
@@ -2326,9 +2338,13 @@ if __name__ == "__main__":
   pLine = ""
 
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n    assign reg__sdp__lane{0}_ready    =  reg__scntl__lane{0}_ready  ;'.format(lane)
-    pLine = pLine + '\n    assign scntl__reg__lane{0}_valid  =  sdp__reg__lane{0}_valid    ;'.format(lane)
-    pLine = pLine + '\n    assign scntl__reg__lane{0}_data   =  sdp__reg__lane{0}_data     ;'.format(lane)
+    pLine = pLine + '\n    always @(posedge clk)'
+    pLine = pLine + '\n      begin'
+    pLine = pLine + '\n       reg__sdp__lane{0}_ready    <= ( reset_poweron ) ? \'d0 :  reg__scntl__lane{0}_ready  ;'.format(lane)
+    pLine = pLine + '\n       scntl__reg__lane{0}_valid  <= ( reset_poweron ) ? \'d0 :  sdp__reg__lane{0}_valid    ;'.format(lane)
+    pLine = pLine + '\n       scntl__reg__lane{0}_cntl   <= ( reset_poweron ) ? \'d0 :  sdp__reg__lane{0}_cntl     ;'.format(lane)
+    pLine = pLine + '\n       scntl__reg__lane{0}_data   <= ( reset_poweron ) ? \'d0 :  sdp__reg__lane{0}_data     ;'.format(lane)
+    pLine = pLine + '\n      end'
     pLine = pLine + '\n'
   pLine = pLine + '\n'
 
@@ -3058,25 +3074,6 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/pe_cntl_simd_instance_wires.vh', 'w')
-  pLine = ""
-  # always create 16 sets of wires for the testbench
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs0  ;'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs1  ;'.format(lane)
-  pLine = pLine + '\n'
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n'
-
-
-  f.write(pLine)
-  f.close()
 
 
   #-------------------------------------------------------------------------------------------------------------------------------------
@@ -3303,10 +3300,11 @@ if __name__ == "__main__":
     msReg = regsPerCycle*(cycle+1)-1
     pLine = pLine + '\n    {0} :'.format(cycle)
     pLine = pLine + '\n      begin'.format(cycle)
-    pLine = pLine + '\n        to_Stu_Fifo[0].write_data   <= {{simd__sui__regs[{0}],  '.format(msReg)
-    for reg in range (1, regsPerCycle-1):
-      pLine = pLine + '\n                                        simd__sui__regs[{0}],  '.format(msReg-reg)
-    pLine = pLine + '\n                                        simd__sui__regs[{0}]}}; '.format(lsReg)
+    pLine = pLine + '\n        // FIXME: Condition on cntl. Not really needed but right now dont ant dc_shell to strip as I suspect we need the cntl signals'
+    pLine = pLine + '\n        to_Stu_Fifo[0].write_data   <= {{{{`PE_EXEC_LANE_WIDTH {{(simd__sui__regs_cntl_d1[{0:>2}] == `COMMON_STD_INTF_CNTL_SOM_EOM)}}}} & simd__sui__regs_d1[{0:>2}],  '.format(msReg)
+    for reg in range (1, regsPerCycle-1): 
+      pLine = pLine + '\n                                        {{`PE_EXEC_LANE_WIDTH {{(simd__sui__regs_cntl_d1[{0:>2}] == `COMMON_STD_INTF_CNTL_SOM_EOM)}}}} & simd__sui__regs_d1[{0:>2}],  '.format(msReg-reg)
+    pLine = pLine + '\n                                        {{`PE_EXEC_LANE_WIDTH {{(simd__sui__regs_cntl_d1[{0:>2}] == `COMMON_STD_INTF_CNTL_SOM_EOM)}}}} & simd__sui__regs_d1[{0:>2}]}}; '.format(lsReg)
     pLine = pLine + '\n      end '.format(cycle)
 
 
@@ -3422,20 +3420,20 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
 
   pLine = ""
-  # always create 16 sets of wires for the testbench
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  rs0  ;'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  rs1  ;'.format(lane)
+  # always create 16 sets of reg s for the testbench
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  rs0  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  rs1  ;'.format(lane)
   pLine = pLine + '\n'
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n// Lane {0}                 '.format(lane)
-    pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r128  ;'.format(lane)
-    pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r129  ;'.format(lane)
-    pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r130  ;'.format(lane)
-    pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r131  ;'.format(lane)
-    pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r132  ;'.format(lane)
-    pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r133  ;'.format(lane)
-    pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r134  ;'.format(lane)
-    pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r135  ;'.format(lane)
+    pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r128  ;'.format(lane)
+    pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r129  ;'.format(lane)
+    pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r130  ;'.format(lane)
+    pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r131  ;'.format(lane)
+    pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r132  ;'.format(lane)
+    pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r133  ;'.format(lane)
+    pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r134  ;'.format(lane)
+    pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  lane{0}_r135  ;'.format(lane)
     pLine = pLine + '\n'
 
   f.write(pLine)
@@ -3444,34 +3442,40 @@ if __name__ == "__main__":
   f = open('../HDL/common/streamingOps_cntl_simd_assignments.vh', 'w')
   pLine = ""
   # always create 16 sets of wires for the testbench
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs0  ;'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs1  ;'.format(lane)
-  pLine = pLine + '\n'
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n'
+  #pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs0  ;'.format(lane)
+  #pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs1  ;'.format(lane)
+  #pLine = pLine + '\n'
+  #pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  #pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  #pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  #pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  #pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  #pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  #pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  #pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  #pLine = pLine + '\n'
 
   pLine = ""
   # always create 16 sets of wires for the testbench
-  pLine = pLine + '\n  assign   rs0  = simd__scntl__rs0 ;'.format(lane)
-  pLine = pLine + '\n  assign   rs1  = simd__scntl__rs1 ;'.format(lane)
+  pLine = pLine + '\n  always @(posedge clk)'
+  pLine = pLine + '\n    begin'
+  pLine = pLine + '\n      rs0  <= (reset_poweron) ? \'d0 : simd__scntl__rs0 ;'.format(lane)
+  pLine = pLine + '\n      rs1  <= (reset_poweron) ? \'d0 : simd__scntl__rs1 ;'.format(lane)
+  pLine = pLine + '\n    end'
   pLine = pLine + '\n'
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n// Lane {0}                 '.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r128  =  simd__scntl__lane_r128 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r129  =  simd__scntl__lane_r129 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r130  =  simd__scntl__lane_r130 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r131  =  simd__scntl__lane_r131 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r132  =  simd__scntl__lane_r132 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r133  =  simd__scntl__lane_r133 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r134  =  simd__scntl__lane_r134 [{0}] ;'.format(lane)
-    pLine = pLine + '\n  assign   lane{0}_r135  =  simd__scntl__lane_r135 [{0}] ;'.format(lane)
+    pLine = pLine + '\n  always @(posedge clk)'
+    pLine = pLine + '\n    begin'
+    pLine = pLine + '\n      lane{0}_r128  <=  (reset_poweron) ? \'d0 : simd__scntl__lane_r128 [{0}] ;'.format(lane)
+    pLine = pLine + '\n      lane{0}_r129  <=  (reset_poweron) ? \'d0 : simd__scntl__lane_r129 [{0}] ;'.format(lane)
+    pLine = pLine + '\n      lane{0}_r130  <=  (reset_poweron) ? \'d0 : simd__scntl__lane_r130 [{0}] ;'.format(lane)
+    pLine = pLine + '\n      lane{0}_r131  <=  (reset_poweron) ? \'d0 : simd__scntl__lane_r131 [{0}] ;'.format(lane)
+    pLine = pLine + '\n      lane{0}_r132  <=  (reset_poweron) ? \'d0 : simd__scntl__lane_r132 [{0}] ;'.format(lane)
+    pLine = pLine + '\n      lane{0}_r133  <=  (reset_poweron) ? \'d0 : simd__scntl__lane_r133 [{0}] ;'.format(lane)
+    pLine = pLine + '\n      lane{0}_r134  <=  (reset_poweron) ? \'d0 : simd__scntl__lane_r134 [{0}] ;'.format(lane)
+    pLine = pLine + '\n      lane{0}_r135  <=  (reset_poweron) ? \'d0 : simd__scntl__lane_r135 [{0}] ;'.format(lane)
+    pLine = pLine + '\n    end'
     pLine = pLine + '\n'
 
   f.write(pLine)
@@ -4118,17 +4122,18 @@ if __name__ == "__main__":
   f = open('../HDL/common/pe_cntl_simd_instance_wires.vh', 'w')
   pLine = ""
   # always create 16 sets of wires for the testbench
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs0  ;'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs1  ;'.format(lane)
+  pLine = pLine + '\n  // FIXME: Made reg\'s to fix check design, but can gbe wires with multicycle path'
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs0  ;'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs1  ;'.format(lane)
   pLine = pLine + '\n'                                               
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
-  pLine = pLine + '\n  wire [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r128  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r129  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r130  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r131  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r132  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r133  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r134  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
+  pLine = pLine + '\n  reg  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r135  [`PE_NUM_OF_EXEC_LANES ];'.format(lane)
   pLine = pLine + '\n'
 
   # always create 16 sets of regs to latch the output of the configuration memory

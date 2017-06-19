@@ -115,24 +115,25 @@ elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=8192,GENERIC_MEM_RE
 #
 
 
-# read_sverilog $RTL_DIR/streamingOps.v
-# read_sverilog $RTL_DIR/streamingOps_cntl.v
-# read_sverilog $RTL_DIR/dma_cont.v
-# read_sverilog $RTL_DIR/streamingOps_datapath.v
-# read_sverilog $RTL_DIR/pe_cntl.v
-# read_sverilog $RTL_DIR/simd_upstream_intf.v
-# read_sverilog $RTL_DIR/simd_wrapper.v
-# read_sverilog $RTL_DIR/simd_core.v
-# read_sverilog $RTL_DIR/stack_interface.v
-# read_sverilog $RTL_DIR/mem_acc_cont.v
+#read_sverilog $RTL_DIR/streamingOps.v
+#read_sverilog $RTL_DIR/streamingOps_cntl.v
+#read_sverilog $RTL_DIR/dma_cont.v
+#read_sverilog $RTL_DIR/streamingOps_datapath.v
+#read_sverilog $RTL_DIR/pe_cntl.v
+#read_sverilog $RTL_DIR/simd_upstream_intf.v
+#read_sverilog $RTL_DIR/simd_wrapper.v
+#read_sverilog $RTL_DIR/simd_core.v
+#read_sverilog $RTL_DIR/stack_interface.v
+#read_sverilog $RTL_DIR/mem_acc_cont.v
 
-#read_sverilog $RTL_DIR/pe.v
+# read_sverilog $RTL_DIR/pe.v
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
 
-read_sverilog $RTL_DIR/pe_cntl.v
+read_sverilog $RTL_DIR/streamingOps_cntl.v
+
 
 
 #------------------------------------------------------------------------------------------------------------------------

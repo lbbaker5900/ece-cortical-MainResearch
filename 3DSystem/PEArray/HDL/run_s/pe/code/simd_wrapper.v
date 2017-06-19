@@ -53,6 +53,7 @@ module simd_wrapper (
                           //-------------------------------
                           // Result from stOp to regFile (via scntl)
                           scntl__reg__valid        ,
+                          scntl__reg__cntl         ,
                           scntl__reg__data         ,
                           reg__scntl__ready        ,
                           //`include "simd_wrapper_scntl_to_simd_regfile_ports.vh"
@@ -60,8 +61,9 @@ module simd_wrapper (
                           //--------------------------------------------------
                           // Register(s) to stack upstream
                           simd__sui__tag           ,
-                          simd__sui__regs          ,
                           simd__sui__regs_valid    ,
+                          simd__sui__regs_cntl     ,
+                          simd__sui__regs          ,
                           sui__simd__regs_complete ,
                           sui__simd__regs_ready    ,
 
@@ -103,11 +105,12 @@ module simd_wrapper (
   //-------------------------------------------------------------------------------------------
   // Register File interface to stack interface
   //
-  output  [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag                            ;
-  output  [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs  [`PE_NUM_OF_EXEC_LANES ] ;
-  output  [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                     ;
-  input                                              sui__simd__regs_complete                  ;
-  input                                              sui__simd__regs_ready                     ;
+  output  [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag                                 ;
+  output  [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                          ;
+  output  [`COMMON_STD_INTF_CNTL_RANGE   ]           simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ;
+  output  [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ;
+  input                                              sui__simd__regs_complete                       ;
+  input                                              sui__simd__regs_ready                          ;
    
   //----------------------------------------------------------------------------------------------------
   // RegFile Outputs to stOp controller
@@ -123,6 +126,7 @@ module simd_wrapper (
   // Result from stOp to regFile
 
   input   [`PE_NUM_OF_EXEC_LANES_RANGE ]      scntl__reg__valid                          ;
+  input   [`COMMON_STD_INTF_CNTL_RANGE ]      scntl__reg__cntl  [`PE_NUM_OF_EXEC_LANES ] ;
   input   [`PE_EXEC_LANE_WIDTH_RANGE   ]      scntl__reg__data  [`PE_NUM_OF_EXEC_LANES ] ;
   output  [`PE_NUM_OF_EXEC_LANES_RANGE ]      reg__scntl__ready                          ;
   //`include "simd_wrapper_scntl_to_simd_regfile_ports_declaration.vh"
@@ -155,8 +159,9 @@ module simd_wrapper (
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  allLanes_valid                                  ;
                                                                                           
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag                                  ;
-  wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs   [`PE_NUM_OF_EXEC_LANES ]      ;
   wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid                           ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__sui__regs_cntl   [`PE_NUM_OF_EXEC_LANES ] ;
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs        [`PE_NUM_OF_EXEC_LANES ] ;
   wire                                    sui__simd__regs_complete                        ;
   reg                                     sui__simd__regs_complete_d1                     ;
   wire                                    sui__simd__regs_ready                           ;
@@ -169,6 +174,7 @@ module simd_wrapper (
   reg   [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag_d1                              ; 
 
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  scntl__reg__valid_d1                            ;
+  reg   [`COMMON_STD_INTF_CNTL_RANGE   ]  scntl__reg__cntl_d1  [`PE_NUM_OF_EXEC_LANES ]   ;
   reg   [`PE_EXEC_LANE_WIDTH_RANGE     ]  scntl__reg__data_d1  [`PE_NUM_OF_EXEC_LANES ]   ;
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  reg__scntl__ready                               ;  // FIXME
   //wire   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  reg__scntl__ready                               ;  // FIXME
@@ -198,6 +204,7 @@ module simd_wrapper (
         always @(posedge clk)
           begin
             scntl__reg__valid_d1 [gvi]  <= ( reset_poweron ) ? 'd0 : scntl__reg__valid [gvi]  ;
+            scntl__reg__cntl_d1  [gvi]  <= ( reset_poweron ) ? 'd0 : scntl__reg__cntl  [gvi]  ;
             scntl__reg__data_d1  [gvi]  <= ( reset_poweron ) ? 'd0 : scntl__reg__data  [gvi]  ;
           end
       end
@@ -219,7 +226,8 @@ module simd_wrapper (
   wire [`PE_EXEC_LANE_WIDTH_RANGE      ]  from_stOp_reg_fifo_valids ;
   // create a vector of reads for the FSM
   wire [`PE_EXEC_LANE_WIDTH_RANGE      ]  from_stOp_reg_fifo_reads  ;
-  // create a vector of data for the FSM
+  // create a vector of cntl/data for the FSM
+  wire [`COMMON_STD_INTF_CNTL_RANGE    ]  from_stOp_reg_fifo_pipe_cntl [`PE_NUM_OF_EXEC_LANES ]   ;
   wire [`PE_EXEC_LANE_WIDTH_RANGE      ]  from_stOp_reg_fifo_pipe_data [`PE_NUM_OF_EXEC_LANES ]   ;
 
   generate
@@ -227,10 +235,12 @@ module simd_wrapper (
       begin: from_StOp_Reg_Fifo
 
         // Write data
+        wire   [`COMMON_STD_INTF_CNTL_RANGE    ]          write_cntl       ;
         wire   [`PE_EXEC_LANE_WIDTH_RANGE      ]          write_data       ;
                                                                            
         // Read data                                                       
         wire                                              pipe_valid       ; 
+        wire   [`COMMON_STD_INTF_CNTL_RANGE    ]          pipe_cntl        ;
         wire   [`PE_EXEC_LANE_WIDTH_RANGE      ]          pipe_data        ;
 
         // Control
@@ -239,19 +249,19 @@ module simd_wrapper (
         wire                                              pipe_read        ; 
         wire                                              write            ; 
 
-        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`SIMD_WRAP_REG_FROM_SCNTL_FIFO_DEPTH     ), 
-                       .GENERIC_FIFO_THRESHOLD  (`SIMD_WRAP_REG_FROM_SCNTL_FIFO_THRESHOLD ),
-                       .GENERIC_FIFO_DATA_WIDTH (`PE_EXEC_LANE_WIDTH                      )
-                        ) gpfifo (
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`SIMD_WRAP_REG_FROM_SCNTL_FIFO_DEPTH               ), 
+                                 .GENERIC_FIFO_THRESHOLD  (`SIMD_WRAP_REG_FROM_SCNTL_FIFO_THRESHOLD           ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`PE_EXEC_LANE_WIDTH    )
+                                  ) gpfifo (
                                           // Status
                                          .almost_full      ( almost_full                  ),
                                           // Write
                                          .write            ( write                        ),
-                                         .write_data       ( write_data                   ),
+                                         .write_data       ( {write_cntl, write_data}     ),
                                           // Read
                                          .pipe_valid       ( pipe_valid                   ),
                                          .pipe_read        ( pipe_read                    ),
-                                         .pipe_data        ( pipe_data                    ),
+                                         .pipe_data        ( {pipe_cntl, pipe_data}       ),
 
                                          // General
                                          .clear            ( clear                        ),
@@ -260,11 +270,13 @@ module simd_wrapper (
                                          );
 
         assign write                           =   scntl__reg__valid [gvi]   ;
+        assign write_cntl                      =   scntl__reg__cntl  [gvi]   ;
         assign write_data                      =   scntl__reg__data  [gvi]   ;
         assign clear                           =   1'b0                      ;  // just in case
 
         // The FSM needs a vector of pipe valid signals
         assign from_stOp_reg_fifo_valids    [gvi] = pipe_valid               ; 
+        assign from_stOp_reg_fifo_pipe_cntl [gvi] = pipe_cntl                ; 
         assign from_stOp_reg_fifo_pipe_data [gvi] = pipe_data                ; 
 
         assign reg__scntl__ready            [gvi] = ~almost_full             ;
@@ -417,8 +429,9 @@ module simd_wrapper (
   // read the FIFO and assert the valid to the stack upstream interface
   assign from_stOp_reg_fifo_reads = {`PE_EXEC_LANE_WIDTH { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA) }};
 
-  assign  simd__sui__regs_valid   =  {`PE_EXEC_LANE_WIDTH { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA) }};
   assign  simd__sui__tag          =  from_Cntl_Tag_Fifo[0].pipe_tag ;
+  assign  simd__sui__regs_valid   =  {`PE_EXEC_LANE_WIDTH { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA) }};
+  assign  simd__sui__regs_cntl    =  from_stOp_reg_fifo_pipe_cntl   ;
   assign  simd__sui__regs         =  from_stOp_reg_fifo_pipe_data   ;
 
 

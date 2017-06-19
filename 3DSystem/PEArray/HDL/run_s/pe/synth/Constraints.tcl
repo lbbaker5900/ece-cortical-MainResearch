@@ -166,8 +166,8 @@ set_dont_touch [get_cell simd_wrapper/simd_core]
 # warnings and errors. An error would imply the design is 
 # not compilable. See > man check_design for more information.
 #---------------------------------------------------------
-check_design
-
+check_design \
+	> ${modname}_${type}_check_design.rpt
 #---------------------------------------------------------
 # link performs check for presence of the design components 
 # instantiated within the design. It makes sure that all the 

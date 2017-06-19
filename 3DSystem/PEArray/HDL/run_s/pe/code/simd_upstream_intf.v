@@ -38,8 +38,9 @@ module simd_upstream_intf (
                   //--------------------------------------------------
                   // Register(s) from simd
                   simd__sui__tag           ,
-                  simd__sui__regs          ,
                   simd__sui__regs_valid    ,
+                  simd__sui__regs_cntl     ,
+                  simd__sui__regs          ,
                   sui__simd__regs_complete ,
                   sui__simd__regs_ready    ,
 
@@ -72,11 +73,12 @@ module simd_upstream_intf (
   //-------------------------------------------------------------------------------------------
   // Register File interface
   //
-  input  [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag                            ;
-  input  [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs  [`PE_NUM_OF_EXEC_LANES ] ;
-  input  [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                     ;
-  output                                            sui__simd__regs_complete                  ;
-  output                                            sui__simd__regs_ready                     ;
+  input  [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag                                 ;
+  input  [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                          ;
+  input  [`COMMON_STD_INTF_CNTL_RANGE   ]           simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ;
+  input  [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ;
+  output                                            sui__simd__regs_complete                       ;
+  output                                            sui__simd__regs_ready                          ;
    
   //-------------------------------------------------------------------------------------------
   // Wires and Register
@@ -90,8 +92,9 @@ module simd_upstream_intf (
   wire   [`STACK_UP_INTF_OOB_DATA_RANGE ]           sui__sti__oob_data         ;
 
   wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag                                 ;
-  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ;
   wire   [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                          ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE   ]           simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ;
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ;
   reg                                               sui__simd__regs_complete                       ;
   reg                                               sui__simd__regs_ready                          ;
 
@@ -101,16 +104,18 @@ module simd_upstream_intf (
   //  - all inputs must be registered
   //
   reg    [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag_d1                                 ;
-  reg    [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs_d1       [`PE_NUM_OF_EXEC_LANES ] ;
   reg    [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid_d1                          ;
+  reg    [`COMMON_STD_INTF_CNTL_RANGE   ]           simd__sui__regs_cntl_d1  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg    [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs_d1       [`PE_NUM_OF_EXEC_LANES ] ;
   genvar gvi;
   generate
     for (gvi=0; gvi<`PE_NUM_OF_EXEC_LANES ; gvi=gvi+1) 
       begin: regFile_load
         always @(posedge clk)
           begin
-            simd__sui__regs_d1       [gvi]  <=  ( reset_poweron ) ? 'd0 : simd__sui__regs       [gvi]  ;
             simd__sui__regs_valid_d1 [gvi]  <=  ( reset_poweron ) ? 'd0 : simd__sui__regs_valid [gvi]  ;
+            simd__sui__regs_cntl_d1  [gvi]  <=  ( reset_poweron ) ? 'd0 : simd__sui__regs_cntl  [gvi]  ;
+            simd__sui__regs_d1       [gvi]  <=  ( reset_poweron ) ? 'd0 : simd__sui__regs       [gvi]  ;
           end
       end
   endgenerate
