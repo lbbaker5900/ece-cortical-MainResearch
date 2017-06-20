@@ -97,6 +97,7 @@ module top;
                for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
                    begin
                        // only observe stream 0
+                       `ifndef TB_PE_ONLY_GATES
                        assign Dma2Mem[pe][lane].dma__memc__write_valid      = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_valid0        ;
                        assign Dma2Mem[pe][lane].dma__memc__write_address    = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_address0      ;
                        assign Dma2Mem[pe][lane].dma__memc__write_data       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_data0         ;
@@ -108,6 +109,7 @@ module top;
                        assign Dma2Mem[pe][lane].memc__dma__read_data        = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data0          ;
                        assign Dma2Mem[pe][lane].memc__dma__read_data_valid  = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data_valid0    ;
                        assign Dma2Mem[pe][lane].memc__dma__read_ready       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_ready0         ;
+                       `endif
                    end
            end
     endgenerate
@@ -120,20 +122,32 @@ module top;
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
+
                assign  RegFileScalar2StOpCntl[pe].ready                  =  pe_array_inst.pe_inst[pe].pe.pe__sys__ready    ;  //.TB_regFileScalarDrv2stOpCntl
                assign  RegFileScalar2StOpCntl[pe].complete               =  pe_array_inst.pe_inst[pe].pe.pe__sys__complete ;  //.TB_regFileScalarDrv2stOpCntl
-               assign  pe_array_inst.pe_inst[pe].pe.cntl__simd__rs0      =  RegFileScalar2StOpCntl[pe].rs0                 ;  //.TB_regFileScalarDrv2stOpCntl
-               assign  pe_array_inst.pe_inst[pe].pe.cntl__simd__rs1      =  RegFileScalar2StOpCntl[pe].rs1                 ;  //.TB_regFileScalarDrv2stOpCntl
+               assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__rs0      =  RegFileScalar2StOpCntl[pe].rs0                 ;  //.TB_regFileScalarDrv2stOpCntl
+               assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__rs1      =  RegFileScalar2StOpCntl[pe].rs1                 ;  //.TB_regFileScalarDrv2stOpCntl
                for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
                    begin
-                       assign  pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r128[lane] =   RegFileLane2StOpCntl[pe][lane].r128 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign  pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r129[lane] =   RegFileLane2StOpCntl[pe][lane].r129 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign  pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r130[lane] =   RegFileLane2StOpCntl[pe][lane].r130 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign  pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r131[lane] =   RegFileLane2StOpCntl[pe][lane].r131 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign  pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r132[lane] =   RegFileLane2StOpCntl[pe][lane].r132 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign  pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r133[lane] =   RegFileLane2StOpCntl[pe][lane].r133 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign  pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r134[lane] =   RegFileLane2StOpCntl[pe][lane].r134 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign  pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r135[lane] =   RegFileLane2StOpCntl[pe][lane].r135 ;  //.TB_regFileLaneDrv2stOpCntl
+                       `ifndef TB_PE_ONLY_GATES
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r128[lane] =   RegFileLane2StOpCntl[pe][lane].r128 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r129[lane] =   RegFileLane2StOpCntl[pe][lane].r129 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r130[lane] =   RegFileLane2StOpCntl[pe][lane].r130 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r131[lane] =   RegFileLane2StOpCntl[pe][lane].r131 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r132[lane] =   RegFileLane2StOpCntl[pe][lane].r132 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r133[lane] =   RegFileLane2StOpCntl[pe][lane].r133 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r134[lane] =   RegFileLane2StOpCntl[pe][lane].r134 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r135[lane] =   RegFileLane2StOpCntl[pe][lane].r135 ;  //.TB_regFileLaneDrv2stOpCntl
+                       `else
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r128[((lane*32+32)-1):lane*32] =   RegFileLane2StOpCntl[pe][lane].r128 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r129[((lane*32+32)-1):lane*32] =   RegFileLane2StOpCntl[pe][lane].r129 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r130[((lane*32+32)-1):lane*32] =   RegFileLane2StOpCntl[pe][lane].r130 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r131[((lane*32+32)-1):lane*32] =   RegFileLane2StOpCntl[pe][lane].r131 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r132[((lane*32+32)-1):lane*32] =   RegFileLane2StOpCntl[pe][lane].r132 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r133[((lane*32+32)-1):lane*32] =   RegFileLane2StOpCntl[pe][lane].r133 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r134[((lane*32+32)-1):lane*32] =   RegFileLane2StOpCntl[pe][lane].r134 ;  //.TB_regFileLaneDrv2stOpCntl
+                         assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__simd__lane_r135[((lane*32+32)-1):lane*32] =   RegFileLane2StOpCntl[pe][lane].r135 ;  //.TB_regFileLaneDrv2stOpCntl
+                       `endif
                    end
            end
     endgenerate
@@ -143,6 +157,7 @@ module top;
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
+               `ifndef TB_PE_ONLY_GATES
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__request        =   LoadStore2memCntl [pe].ldst__memc__request       ;
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__released       =   LoadStore2memCntl [pe].ldst__memc__released      ;
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__write_address  =   LoadStore2memCntl [pe].ldst__memc__write_address ;
@@ -150,9 +165,21 @@ module top;
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__read_address   =   LoadStore2memCntl [pe].ldst__memc__read_address  ;
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__write_valid    =   LoadStore2memCntl [pe].ldst__memc__write_valid   ;
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__read_valid     =   LoadStore2memCntl [pe].ldst__memc__read_valid    ;
+               `endif
            end
     endgenerate
 
+/*
+    `ifdef TB_PE_ONLY_GATES
+      initial
+        begin
+          for (int peId=0; peId<`PE_ARRAY_NUM_OF_PE; peId=peId+1)
+            begin
+              $readmemh($sformatf("./gatesInputFiles/pe%0d_pe_cntl_stOp_memory.dat", peId), pe_array_inst.pe[peId].pe_cntl.stOp_option_memory_0__gmemory.genblk23_mem2prf256x149.u0.mem_core_array);
+            end
+        end
+    `endif
+*/
 
     /*
     dut_probe_dma2mem probe_dma2mem(

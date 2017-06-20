@@ -7,16 +7,17 @@ set clkname clk
 # Done
 #
 
-# set modname streamingOps
-# set modname streamingOps_cntl
-# set modname dma_cont
-# set modname streamingOps_datapath
-# set modname pe_cntl
-# set modname mem_acc_cont
-# set modname simd_upstream_intf
-# set modname simd_wrapper
-# set modname simd_core
-# set modname pe
+#set modname stack_interface
+#set modname streamingOps
+#set modname streamingOps_cntl
+#set modname dma_cont
+#set modname streamingOps_datapath
+#set modname pe_cntl
+#set modname mem_acc_cont
+#set modname simd_upstream_intf
+#set modname simd_wrapper
+#set modname simd_core
+#set modname pe
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP

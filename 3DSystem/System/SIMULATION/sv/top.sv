@@ -332,18 +332,18 @@ module top;
            begin
                assign RegFileScalar2StOpCntl[pe].ready                  =  system_inst.pe_array_inst.pe_inst[pe].pe.pe__sys__ready    ;  //.TB_regFileScalarDrv2stOpCntl
                assign RegFileScalar2StOpCntl[pe].complete               =  system_inst.pe_array_inst.pe_inst[pe].pe.pe__sys__complete ;  //.TB_regFileScalarDrv2stOpCntl
-               assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__rs0      =  RegFileScalar2StOpCntl[pe].rs0                 ;  //.TB_regFileScalarDrv2stOpCntl
-               assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__rs1      =  RegFileScalar2StOpCntl[pe].rs1                 ;  //.TB_regFileScalarDrv2stOpCntl
+               assign system_inst.pe_array_inst.pe_inst[pe].pe.cntl__simd__rs0      =  RegFileScalar2StOpCntl[pe].rs0                 ;  //.TB_regFileScalarDrv2stOpCntl
+               assign system_inst.pe_array_inst.pe_inst[pe].pe.cntl__simd__rs1      =  RegFileScalar2StOpCntl[pe].rs1                 ;  //.TB_regFileScalarDrv2stOpCntl
                for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
                    begin
-                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r128[lane] =   RegFileLane2StOpCntl[pe][lane].r128 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r129[lane] =   RegFileLane2StOpCntl[pe][lane].r129 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r130[lane] =   RegFileLane2StOpCntl[pe][lane].r130 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r131[lane] =   RegFileLane2StOpCntl[pe][lane].r131 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r132[lane] =   RegFileLane2StOpCntl[pe][lane].r132 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r133[lane] =   RegFileLane2StOpCntl[pe][lane].r133 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r134[lane] =   RegFileLane2StOpCntl[pe][lane].r134 ;  //.TB_regFileLaneDrv2stOpCntl
-                       assign system_inst.pe_array_inst.pe_inst[pe].pe.simd__cntl__lane_r135[lane] =   RegFileLane2StOpCntl[pe][lane].r135 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r128[lane] =   RegFileLane2StOpCntl[pe][lane].r128 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r129[lane] =   RegFileLane2StOpCntl[pe][lane].r129 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r130[lane] =   RegFileLane2StOpCntl[pe][lane].r130 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r131[lane] =   RegFileLane2StOpCntl[pe][lane].r131 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r132[lane] =   RegFileLane2StOpCntl[pe][lane].r132 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r133[lane] =   RegFileLane2StOpCntl[pe][lane].r133 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r134[lane] =   RegFileLane2StOpCntl[pe][lane].r134 ;  //.TB_regFileLaneDrv2stOpCntl
+                       assign system_inst.pe_array_inst.pe_inst[pe].pe.cntl__simd__lane_r135[lane] =   RegFileLane2StOpCntl[pe][lane].r135 ;  //.TB_regFileLaneDrv2stOpCntl
                    end
            end
     endgenerate

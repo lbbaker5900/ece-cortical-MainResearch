@@ -1808,7 +1808,10 @@ if __name__ == "__main__":
   f = open('../HDL/common/pe_dma_memc_connection_wires.vh', 'w')
   pLine = ""
 
-  for strm in range (0, 2):
+  # If number of mem ports is same as exec lanes, there is only one dma port
+  if (numOfExecLanes == numOfMemPorts)  :
+    dma_interfaces = 1
+  for strm in range (0, dma_interfaces):
     for lane in range (0, numOfExecLanes):
       pLine = pLine + '\n  wire                                          dma__memc__lane{0}_write_valid{1}           ;'.format(lane,strm)
       pLine = pLine + '\n  wire   [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__lane{0}_write_address{1}         ;'.format(lane,strm)
@@ -1872,8 +1875,11 @@ if __name__ == "__main__":
     pLine = pLine + '\n  assign stOp_lane[{0}].scntl__dma__operation    = scntl__sdp__lane{0}_dma_operation ;'.format(lane)
   pLine = pLine + '\n'
 
+  # If number of mem ports is same as exec lanes, there is only one dma port
+  if (numOfExecLanes == numOfMemPorts)  :
+    dma_interfaces = 1
   for lane in range (0, numOfExecLanes):
-    for strm in range (0, 2):
+    for strm in range (0, dma_interfaces):
       pLine = pLine + '\n  assign stOp_lane[{0}].scntl__dma__strm{1}_read_enable         = scntl__sdp__lane{0}_strm{1}_read_enable            ;'.format(lane,strm)
       pLine = pLine + '\n  assign stOp_lane[{0}].scntl__dma__strm{1}_write_enable        = scntl__sdp__lane{0}_strm{1}_write_enable           ;'.format(lane,strm)
       pLine = pLine + '\n  assign sdp__scntl__lane{0}_strm{1}_read_ready                 = stOp_lane[{0}].dma__scntl__strm{1}_read_ready      ;'.format(lane,strm)
@@ -1958,8 +1964,11 @@ if __name__ == "__main__":
     pLine = pLine + '\n      scntl__sdp__lane{0}_dma_operation, '.format(lane)
   pLine = pLine + '\n'
 
+  # If number of mem ports is same as exec lanes, there is only one dma port
+  if (numOfExecLanes == numOfMemPorts)  :
+    dma_interfaces = 1
   for lane in range (0, numOfExecLanes):
-    for strm in range (0, 2):
+    for strm in range (0, dma_interfaces):
       pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_read_enable          ,  // enable the stream read mode       '.format(lane,strm)  
       pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_write_enable         ,  // enable the stream write mode      '.format(lane,strm)  
       pLine = pLine + '\n      sdp__scntl__lane{0}_strm{1}_read_ready           ,  // stream read mode ready            '.format(lane,strm)  
@@ -1970,6 +1979,11 @@ if __name__ == "__main__":
       pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_write_start_address  ,  // streaming op result start address '.format(lane,strm)
       pLine = pLine + '\n      scntl__sdp__lane{0}_type{1}                      ,                                       '.format(lane,strm)
       pLine = pLine + '\n      scntl__sdp__lane{0}_num_of_types{1}              ,                                       '.format(lane,strm)
+  pLine = pLine + '\n'
+
+  numOfStrms = 2
+  for lane in range (0, numOfExecLanes):
+    for strm in range (0, numOfStrms):
       pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_stOp_source          ,                                       '.format(lane,strm)
       pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_stOp_destination     ,                                       '.format(lane,strm)
       pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_stOp_enable          ,                                       '.format(lane,strm)
@@ -1991,8 +2005,11 @@ if __name__ == "__main__":
     pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_RANGE ]    scntl__sdp__lane{0}_dma_operation ; '.format(lane)
   pLine = pLine + '\n'
 
+  # If number of mem ports is same as exec lanes, there is only one dma port
+  if (numOfExecLanes == numOfMemPorts)  :
+    dma_interfaces = 1
   for lane in range (0, numOfExecLanes):
-    for strm in range (0, 2):
+    for strm in range (0, dma_interfaces):
       pLine = pLine + '\n   output                                       scntl__sdp__lane{0}_strm{1}_read_enable          ;                                       '.format(lane,strm)  
       pLine = pLine + '\n   output                                       scntl__sdp__lane{0}_strm{1}_write_enable         ;                                       '.format(lane,strm)  
       pLine = pLine + '\n   input                                        sdp__scntl__lane{0}_strm{1}_read_ready           ;                                       '.format(lane,strm)  
@@ -2003,15 +2020,22 @@ if __name__ == "__main__":
       pLine = pLine + '\n   output [`DMA_CONT_STRM_ADDRESS_RANGE]        scntl__sdp__lane{0}_strm{1}_write_start_address  ;  // streaming op result start address '.format(lane,strm)
       pLine = pLine + '\n   output [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]   scntl__sdp__lane{0}_num_of_types{1}              ;                                       '.format(lane,strm)
       pLine = pLine + '\n   output [`DMA_CONT_DATA_TYPES_RANGE ]         scntl__sdp__lane{0}_type{1}                      ;                                       '.format(lane,strm)
+    pLine = pLine + '\n'
+
+    numOfStrms = 2
+    for strm in range (0, numOfStrms):
       pLine = pLine + '\n   output                                       scntl__sdp__lane{0}_strm{1}_stOp_enable          ;                                       '.format(lane,strm)  
       pLine = pLine + '\n   input                                        sdp__scntl__lane{0}_strm{1}_stOp_ready           ;                                       '.format(lane,strm)  
       pLine = pLine + '\n   input                                        sdp__scntl__lane{0}_strm{1}_stOp_complete        ;                                       '.format(lane,strm)  
+      pLine = pLine + '\n'
       if strm == 0:
          pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
          pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
       else:
          pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
          pLine = pLine + '\n   output [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+      pLine = pLine + '\n'
+    pLine = pLine + '\n'
 
   f.write(pLine)
   f.close()
@@ -2019,8 +2043,11 @@ if __name__ == "__main__":
   f = open('../HDL/common/streamingOps_cntl_control_wires.vh', 'w')
   pLine = ""
 
+  # If number of mem ports is same as exec lanes, there is only one dma port
+  if (numOfExecLanes == numOfMemPorts)  :
+    dma_interfaces = 1
   for lane in range (0, numOfExecLanes):
-    for strm in range (0, 2):
+    for strm in range (0, dma_interfaces):
       pLine = pLine + '\n  wire                                         scntl__sdp__lane{0}_strm{1}_read_enable         ;'.format(lane,strm)
       pLine = pLine + '\n  wire                                         scntl__sdp__lane{0}_strm{1}_write_enable        ;'.format(lane,strm)
       pLine = pLine + '\n  wire                                         sdp__scntl__lane{0}_strm{1}_read_ready          ;  // from dma'.format(lane,strm)
@@ -2036,12 +2063,19 @@ if __name__ == "__main__":
       pLine = pLine + '\n  wire   [`DMA_CONT_DATA_TYPES_RANGE         ] lane{0}_type{1}                                ;'.format(lane,strm)
       pLine = pLine + '\n  wire   [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ] lane{0}_num_of_types{1}                        ;'.format(lane,strm)
       pLine = pLine + '\n  wire   [`PE_MAX_STAGGER_RANGE              ] lane{0}_stagger{1}                             ;'.format(lane,strm)
+    pLine = pLine + '\n'
+
+    numOfStrms = 2
+    for strm in range (0, numOfStrms):
       if strm == 0:
          pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_SRC_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
          pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ZERO_DEST_RANGE ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
       else:
          pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_SRC_RANGE   ]  scntl__sdp__lane{0}_strm{1}_stOp_source      ;                      '.format(lane,strm)
          pLine = pLine + '\n   wire [`STREAMING_OP_CNTL_OPERATION_STREAM_ONE_DEST_RANGE  ]  scntl__sdp__lane{0}_strm{1}_stOp_destination ;                      '.format(lane,strm)
+      pLine = pLine + '\n'
+    pLine = pLine + '\n'
+
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
@@ -2089,48 +2123,70 @@ if __name__ == "__main__":
 
   for lane in range (0, numOfExecLanes):
     offset = lane + 16
+    pLine = pLine + '\n  //----------------------------------------------------------------------------------------------------'
+    pLine = pLine + '\n  // Lane {0}'.format(lane)
     pLine = pLine + '\n  assign scntl__sdp__lane{0}_stOp_operation = rs0[31:1]                                      ; '.format(lane)
     pLine = pLine + '\n  assign scntl__sdp__lane{0}_dma_operation  = rs0[31:1]                                      ; '.format(lane)
-    for strm in range (0, 2):
+    pLine = pLine + '\n'
+    numOfStrms = 2
+    for strm in range (0, numOfStrms):
+      pLine = pLine + '\n  // Stream {0}'.format(strm)
       pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_stOp_enable    = strm_control[{0}].strm{1}_stOp_enable     ; '.format(lane,strm)
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_stOp_ready      = sdp__scntl__lane{0}_strm{1}_stOp_ready     ; '.format(lane,strm)
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_stOp_complete   = sdp__scntl__lane{0}_strm{1}_stOp_complete  ; '.format(lane,strm)
+      pLine = pLine + '\n'
   pLine = pLine + '\n'
 
+  # If number of mem ports is same as exec lanes, there is only one dma port
+  if (numOfExecLanes == numOfMemPorts)  :
+    dma_interfaces = 1
   for lane in range (0, numOfExecLanes):
-    for strm in range (0, 2):
-      pLine = pLine + '\n  // Connect lane operation information to stream fsm '
+    pLine = pLine + '\n  //----------------------------------------------------------------------------------------------------'
+    pLine = pLine + '\n  // Lane {0}'.format(lane)
+    pLine = pLine + '\n   '
+    for strm in range (0, dma_interfaces):
+      pLine = pLine + '\n  // DMA port {0}'.format(strm)
+      pLine = pLine + '\n  //  - Connect lane operation information to stream fsm '
       pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_read_enable         = strm_control[{0}].strm{1}_read_enable         ;  // FIXME'.format(lane,strm)
       pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_write_enable        = strm_control[{0}].strm{1}_write_enable        ;  // FIXME'.format(lane,strm)
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_read_ready           = sdp__scntl__lane{0}_strm{1}_read_ready         ;  // FIXME'.format(lane,strm)
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_write_ready          = sdp__scntl__lane{0}_strm{1}_write_ready        ;  // FIXME'.format(lane,strm)
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_read_complete        = sdp__scntl__lane{0}_strm{1}_read_complete      ;  // FIXME'.format(lane,strm)
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_write_complete       = sdp__scntl__lane{0}_strm{1}_write_complete     ;  // FIXME'.format(lane,strm)
+      pLine = pLine + '\n'
+    pLine = pLine + '\n'
     pLine = pLine + '\n  always @(*)'
     pLine = pLine + '\n    begin'
-    pLine = pLine + '\n      scntl__sdp__lane{0}_strm0_read_start_address  = lane{0}_r130[`DMA_CONT_STRM_ADDRESS_RANGE]              ;'.format(lane,strm)
-    pLine = pLine + '\n      scntl__sdp__lane{0}_strm1_read_start_address  = lane{0}_r131[`DMA_CONT_STRM_ADDRESS_RANGE]              ;'.format(lane,strm)
+    for strm in range (0, dma_interfaces):
+      pLine = pLine + '\n      scntl__sdp__lane{0}_strm{1}_read_start_address  = lane{0}_r13{1}[`DMA_CONT_STRM_ADDRESS_RANGE]              ;'.format(lane,strm)
     pLine = pLine + '\n    end'
-    pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm0_write_start_address = lane{0}_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
-    pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm1_write_start_address = lane{0}_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
-    pLine = pLine + '\n  assign scntl__sdp__lane{0}_type0                     = lane{0}_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane,strm)
-    pLine = pLine + '\n  assign scntl__sdp__lane{0}_type1                     = lane{0}_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane,strm)
-    pLine = pLine + '\n  assign scntl__sdp__lane{0}_num_of_types0             = lane{0}_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane,strm)
-    pLine = pLine + '\n  assign scntl__sdp__lane{0}_num_of_types1             = lane{0}_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane,strm)
-    pLine = pLine + '\n  assign lane{0}_strm0_read_start_address             = lane{0}_r130[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
-    pLine = pLine + '\n  assign lane{0}_strm1_read_start_address             = lane{0}_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
-    pLine = pLine + '\n  assign lane{0}_strm0_write_start_address            = lane{0}_r134[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
-    pLine = pLine + '\n  assign lane{0}_strm1_write_start_address            = lane{0}_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
-    pLine = pLine + '\n  assign lane{0}_type0                                = lane{0}_r132[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane,strm)
-    pLine = pLine + '\n  assign lane{0}_type1                                = lane{0}_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane,strm)
-    pLine = pLine + '\n  assign lane{0}_num_of_types0                        = lane{0}_r132[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane,strm)
-    pLine = pLine + '\n  assign lane{0}_num_of_types1                        = lane{0}_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane,strm)
-    pLine = pLine + '\n  assign lane{0}_stagger0                             = lane{0}_r132[`PE_MAX_STAGGER_RANGE]                                                                                    ;'.format(lane,strm)
-    pLine = pLine + '\n  assign lane{0}_stagger1                             = lane{0}_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;'.format(lane,strm)
+    pLine = pLine + '\n'
+
+    for strm in range (0, dma_interfaces):
+      pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_write_start_address = lane{0}_r13{2}[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane, strm, strm+4)
+      pLine = pLine + '\n  assign scntl__sdp__lane{0}_type0                     = lane{0}_r13{2}[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane, strm,strm+2)
+      pLine = pLine + '\n  assign scntl__sdp__lane{0}_num_of_types0             = lane{0}_r13{2}[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane, strm, strm+2)
+      pLine = pLine + '\n  assign lane{0}_strm0_read_start_address              = lane{0}_r13{2}[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane, strm, strm)
+      pLine = pLine + '\n'
+      pLine = pLine + '\n  assign lane{0}_strm{1}_write_start_address            = lane{0}_r13{2}[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane, strm, strm+4)
+      pLine = pLine + '\n  assign lane{0}_type0                                = lane{0}_r13{2}[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane, strm, strm+2)
+      pLine = pLine + '\n  assign lane{0}_num_of_types0                        = lane{0}_r13{2}[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane, strm, strm+2)
+      pLine = pLine + '\n  assign lane{0}_stagger0                             = lane{0}_r13{2}[`PE_MAX_STAGGER_RANGE]                                                                                    ;'.format(lane, strm, strm+2)
+
+    #    pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm1_write_start_address = lane{0}_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
+    #    pLine = pLine + '\n  assign scntl__sdp__lane{0}_type1                     = lane{0}_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane,strm)
+    #    pLine = pLine + '\n  assign scntl__sdp__lane{0}_num_of_types1             = lane{0}_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane,strm)
+    #    pLine = pLine + '\n  assign lane{0}_strm1_read_start_address             = lane{0}_r131[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
+    #
+    #    pLine = pLine + '\n  assign lane{0}_strm1_write_start_address            = lane{0}_r135[`DMA_CONT_STRM_ADDRESS_RANGE]  ;'.format(lane,strm)
+    #    pLine = pLine + '\n  assign lane{0}_type1                                = lane{0}_r133[`DMA_CONT_DATA_TYPES_MSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE : `DMA_CONT_DATA_TYPES_LSB+`DMA_CONT_MAX_NUM_OF_TYPES_SIZE] ;'.format(lane,strm)
+    #    pLine = pLine + '\n  assign lane{0}_num_of_types1                        = lane{0}_r133[`DMA_CONT_MAX_NUM_OF_TYPES_RANGE]                                                                                    ;'.format(lane,strm)
+    #    pLine = pLine + '\n  assign lane{0}_stagger1                             = lane{0}_r133[`PE_MAX_STAGGER_RANGE]                                                                                    ;'.format(lane,strm)
+    #    pLine = pLine + '\n'
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
-    for strm in range (0, 2):
+    for strm in range (0, dma_interfaces):
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_type         =  lane{0}_type{1}         ; '.format(lane,strm)
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_num_of_types =  lane{0}_num_of_types{1} ; '.format(lane,strm)
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_stagger      =  lane{0}_stagger{1}      ; '.format(lane,strm)
@@ -2143,11 +2199,11 @@ if __name__ == "__main__":
       pLine = pLine + '\n               (strm_control[{0}].strm_complete | ~exec_lane_active[{0}]) ; '.format(lane)
   pLine = pLine + '\n'
 
+  numOfStrms = 2
   for lane in range (0, numOfExecLanes):
-    pLine = pLine + '\n  assign  lane{0}_strm0_read_start_peId  = lane{0}_r130[`STREAMING_OP_CNTL_PE_DECODE_ADDRESS_RANGE]  ;'.format(lane)
-    pLine = pLine + '\n  assign  lane{0}_strm1_read_start_peId  = lane{0}_r131[`STREAMING_OP_CNTL_PE_DECODE_ADDRESS_RANGE]  ;'.format(lane)
-    pLine = pLine + '\n  assign  lane{0}_strm0_write_start_peId = lane{0}_r134[`STREAMING_OP_CNTL_PE_DECODE_ADDRESS_RANGE]  ;'.format(lane)
-    pLine = pLine + '\n  assign  lane{0}_strm1_write_start_peId = lane{0}_r135[`STREAMING_OP_CNTL_PE_DECODE_ADDRESS_RANGE]  ;'.format(lane)
+    for strm in range (0, numOfStrms):
+      pLine = pLine + '\n  assign  lane{0}_strm{1}_read_start_peId  = lane{0}_r13{2}[`STREAMING_OP_CNTL_PE_DECODE_ADDRESS_RANGE]  ;'.format(lane, strm, strm)
+      pLine = pLine + '\n  assign  lane{0}_strm{1}_write_start_peId = lane{0}_r13{2}[`STREAMING_OP_CNTL_PE_DECODE_ADDRESS_RANGE]  ;'.format(lane, strm, strm+4)
   pLine = pLine + '\n'
 
   # lane control fsm
@@ -2156,12 +2212,12 @@ if __name__ == "__main__":
   pLine = pLine + '\n'
 
   for lane in range (0, numOfExecLanes):
-    for strm in range (0, 2):
+    for strm in range (0, numOfStrms):
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_read_peId  =  lane{0}_strm{1}_read_start_peId  ; '.format(lane,strm)
       pLine = pLine + '\n  assign strm_control[{0}].strm{1}_write_peId =  lane{0}_strm{1}_write_start_peId ; '.format(lane,strm)
   pLine = pLine + '\n'
   for lane in range (0, numOfExecLanes):
-    for strm in range (0, 2):
+    for strm in range (0, numOfStrms):
       pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_stOp_source      = strm_control[{0}].strm{1}_stOp_src  ;'.format(lane,strm)
       pLine = pLine + '\n  assign scntl__sdp__lane{0}_strm{1}_stOp_destination = strm_control[{0}].strm{1}_stOp_dest ;'.format(lane,strm)
   pLine = pLine + '\n'
@@ -2174,6 +2230,11 @@ if __name__ == "__main__":
   f = open('../HDL/common/streamingOps_cntl_control_instance_ports.vh', 'w')
   pLine = ""
 
+  numOfStrms = 2
+  # If number of mem ports is same as exec lanes, there is only one dma port
+  if (numOfExecLanes == numOfMemPorts)  :
+    dma_interfaces = 1
+
   for lane in range (0,  numOfExecLanes):
     pLine = pLine + '\n      .scntl__sdp__lane{0}_stOp_operation         ( scntl__sdp__lane{0}_stOp_operation       ), '.format(lane)
   pLine = pLine + '\n'                                                                                          
@@ -2183,7 +2244,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n'                                                                                          
                                                                                                                 
   for lane in range (0, numOfExecLanes):
-    for strm in range (0, 2):
+    for strm in range (0, dma_interfaces):
       pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_read_enable           ( scntl__sdp__lane{0}_strm{1}_read_enable         ), '.format(lane,strm)
       pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_write_enable          ( scntl__sdp__lane{0}_strm{1}_write_enable        ), '.format(lane,strm)
       pLine = pLine + '\n      .sdp__scntl__lane{0}_strm{1}_read_ready            ( sdp__scntl__lane{0}_strm{1}_read_ready          ), '.format(lane,strm)
@@ -2194,6 +2255,8 @@ if __name__ == "__main__":
       pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_write_start_address   ( scntl__sdp__lane{0}_strm{1}_write_start_address ), '.format(lane,strm)
       pLine = pLine + '\n      .scntl__sdp__lane{0}_type{1}                       ( scntl__sdp__lane{0}_type{1}                     ), '.format(lane,strm)
       pLine = pLine + '\n      .scntl__sdp__lane{0}_num_of_types{1}               ( scntl__sdp__lane{0}_num_of_types{1}             ), '.format(lane,strm)
+
+    for strm in range (0, numOfStrms):
       pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_stOp_source           ( scntl__sdp__lane{0}_strm{1}_stOp_source         ), '.format(lane,strm)
       pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_stOp_destination      ( scntl__sdp__lane{0}_strm{1}_stOp_destination    ), '.format(lane,strm)
       pLine = pLine + '\n      .scntl__sdp__lane{0}_strm{1}_stOp_enable           ( scntl__sdp__lane{0}_strm{1}_stOp_enable         ), '.format(lane,strm)
@@ -3762,6 +3825,7 @@ if __name__ == "__main__":
      
   f.write(pLine)
   f.close()
+
   """
   f = open('../HDL/common/system_pe_stack_bus_downstream_instance_ports.vh', 'w')
   pLine = ""
@@ -3917,20 +3981,20 @@ if __name__ == "__main__":
 
   # Generate pe datapath stack bus connections
 
-  f = open('../HDL/common/pe_stack_bus_downstream_oob_ports.vh', 'w')
-  pLine = ""
-
-  #
-  pLine = pLine + '\n            // OOB controls how the lanes are interpreted  ,'.format(lane,pe,strm) 
-  pLine = pLine + '\n            std__pe__oob_cntl                           ,'.format(lane,pe,strm) 
-  pLine = pLine + '\n            std__pe__oob_valid                          ,'.format(lane,pe,strm) 
-  pLine = pLine + '\n            pe__std__oob_ready                          ,'.format(lane,pe,strm) 
-  pLine = pLine + '\n            std__pe__oob_type                           ,'.format(lane,pe,strm) 
-  pLine = pLine + '\n            std__pe__oob_data                           ,'.format(lane,pe,strm) 
-  pLine = pLine + '\n'
-
-  f.write(pLine)
-  f.close()
+#  f = open('../HDL/common/pe_stack_bus_downstream_oob_ports.vh', 'w')
+#  pLine = ""
+#
+#  #
+#  pLine = pLine + '\n            // OOB controls how the lanes are interpreted  '.format(lane,pe,strm) 
+#  pLine = pLine + '\n            std__pe__oob_cntl                           ,'.format(lane,pe,strm) 
+#  pLine = pLine + '\n            std__pe__oob_valid                          ,'.format(lane,pe,strm) 
+#  pLine = pLine + '\n            pe__std__oob_ready                          ,'.format(lane,pe,strm) 
+#  pLine = pLine + '\n            std__pe__oob_type                           ,'.format(lane,pe,strm) 
+#  pLine = pLine + '\n            std__pe__oob_data                           ,'.format(lane,pe,strm) 
+#  pLine = pLine + '\n'
+#
+#  f.write(pLine)
+#  f.close()
 
   f = open('../HDL/common/pe_stack_bus_downstream_ports.vh', 'w')
   pLine = ""
@@ -3950,20 +4014,20 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/pe_stack_bus_downstream_oob_port_declarations.vh', 'w')
-  pLine = ""
-
-  #
-  pLine = pLine + '\n  // OOB carries PE configuration                                           '.format(lane,pe,strm) 
-  pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;'.format(lane,pe,strm) 
-  pLine = pLine + '\n  input                                         std__pe__oob_valid           ;'.format(lane,pe,strm) 
-  pLine = pLine + '\n  output                                        pe__std__oob_ready           ;'.format(lane,pe,strm) 
-  pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;'.format(lane,pe,strm) 
-  pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe__oob_data            ;'.format(lane,pe,strm) 
-  pLine = pLine + '\n'
-
-  f.write(pLine)
-  f.close()
+#  f = open('../HDL/common/pe_stack_bus_downstream_oob_port_declarations.vh', 'w')
+#  pLine = ""
+#
+#  #
+#  pLine = pLine + '\n  // OOB carries PE configuration                                           '.format(lane,pe,strm) 
+#  pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;'.format(lane,pe,strm) 
+#  pLine = pLine + '\n  input                                         std__pe__oob_valid           ;'.format(lane,pe,strm) 
+#  pLine = pLine + '\n  output                                        pe__std__oob_ready           ;'.format(lane,pe,strm) 
+#  pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;'.format(lane,pe,strm) 
+#  pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe__oob_data            ;'.format(lane,pe,strm) 
+#  pLine = pLine + '\n'
+#
+#  f.write(pLine)
+#  f.close()
 
   f = open('../HDL/common/pe_stack_bus_downstream_port_declarations.vh', 'w')
   pLine = ""
@@ -3983,18 +4047,37 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
-  f = open('../HDL/common/pe_stack_bus_downstream_oob_instance_wires.vh', 'w')
+#  f = open('../HDL/common/pe_stack_bus_downstream_oob_instance_wires.vh', 'w')
+#  pLine = ""
+#
+#  pLine = pLine + '\n  // OOB carries PE configuration                                           '
+#  pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;' 
+#  pLine = pLine + '\n  wire                                        std__pe__oob_valid           ;' 
+#  pLine = pLine + '\n  wire                                        pe__std__oob_ready           ;' 
+#  pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;' 
+#  pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe__oob_data            ;' 
+#
+#  f.write(pLine)
+#  f.close()
+
+
+  f = open('../HDL/common/stack_interface_stack_bus_downstream_wires.vh', 'w')
   pLine = ""
 
-  pLine = pLine + '\n  // OOB carries PE configuration                                           '
-  pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;' 
-  pLine = pLine + '\n  wire                                        std__pe__oob_valid           ;' 
-  pLine = pLine + '\n  wire                                        pe__std__oob_ready           ;' 
-  pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;' 
-  pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe__oob_data            ;' 
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n  // Lane operand bus                 '.format(lane)
+    pLine = pLine + '\n  reg                                            pe__std__lane{0}_strm0_ready       ;'.format(lane)
+    pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE       ]      std__pe__lane{0}_strm0_cntl        ;'.format(lane) 
+    pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]      std__pe__lane{0}_strm0_data        ;'.format(lane) 
+    pLine = pLine + '\n  wire                                           std__pe__lane{0}_strm0_data_valid  ;'.format(lane) 
+    pLine = pLine + '\n  reg                                            pe__std__lane{0}_strm1_ready       ;'.format(lane)
+    pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE       ]      std__pe__lane{0}_strm1_cntl        ;'.format(lane) 
+    pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]      std__pe__lane{0}_strm1_data        ;'.format(lane) 
+    pLine = pLine + '\n  wire                                           std__pe__lane{0}_strm1_data_valid  ;'.format(lane) 
 
   f.write(pLine)
   f.close()
+
   f = open('../HDL/common/pe_stack_bus_downstream_instance_wires.vh', 'w')
   pLine = ""
 
@@ -4026,19 +4109,19 @@ if __name__ == "__main__":
 
 
 
-  f = open('../HDL/common/pe_stack_bus_downstream_oob_instance_ports.vh', 'w')
-  pLine = ""
-
-  pLine = pLine + '\n               // OOB carries PE configuration                                               '
-  pLine = pLine + '\n               .std__pe__oob_cntl                  ( std__pe__oob_cntl               ),      '
-  pLine = pLine + '\n               .std__pe__oob_valid                 ( std__pe__oob_valid              ),      '
-  pLine = pLine + '\n               .pe__std__oob_ready                 ( pe__std__oob_ready              ),      '
-  pLine = pLine + '\n               .std__pe__oob_type                  ( std__pe__oob_type               ),      '
-  pLine = pLine + '\n               .std__pe__oob_data                  ( std__pe__oob_data               ),      '
-  pLine = pLine + '\n'
-                                             
-  f.write(pLine)
-  f.close()
+#  f = open('../HDL/common/pe_stack_bus_downstream_oob_instance_ports.vh', 'w')
+#  pLine = ""
+#
+#  pLine = pLine + '\n               // OOB carries PE configuration                                               '
+#  pLine = pLine + '\n               .std__pe__oob_cntl                  ( std__pe__oob_cntl               ),      '
+#  pLine = pLine + '\n               .std__pe__oob_valid                 ( std__pe__oob_valid              ),      '
+#  pLine = pLine + '\n               .pe__std__oob_ready                 ( pe__std__oob_ready              ),      '
+#  pLine = pLine + '\n               .std__pe__oob_type                  ( std__pe__oob_type               ),      '
+#  pLine = pLine + '\n               .std__pe__oob_data                  ( std__pe__oob_data               ),      '
+#  pLine = pLine + '\n'
+#                                             
+#  f.write(pLine)
+#  f.close()
 
 
   f = open('../HDL/common/pe_stack_bus_downstream_instance_ports.vh', 'w')
@@ -4060,64 +4143,64 @@ if __name__ == "__main__":
 
 
 
-  f = open('../HDL/common/stack_interface_to_pe_cntl_downstream_ports.vh', 'w')
-  pLine = ""
-  #
-  pLine = pLine + '\n            // OOB carry general PE control for both streaming Ops and SIMD controls how the lanes are interpreted'.format(lane,pe,strm) 
-  pLine = pLine + '\n            sti__cntl__oob_cntl                           ,'.format(lane,pe,strm) 
-  pLine = pLine + '\n            sti__cntl__oob_valid                          ,'.format(lane,pe,strm) 
-  pLine = pLine + '\n            cntl__sti__oob_ready                          ,'.format(lane,pe,strm) 
-  pLine = pLine + '\n            sti__cntl__oob_type                           ,'.format(lane,pe,strm) 
-  pLine = pLine + '\n            sti__cntl__oob_data                           ,'.format(lane,pe,strm) 
-
-  f.write(pLine)
-  f.close()
-
-
-  f = open('../HDL/common/stack_interface_to_pe_cntl_downstream_port_declarations.vh', 'w')
-  pLine = ""
-  #
-  pLine = pLine + '\n  // OOB carries PE configuration                                           '.format(lane,pe,strm) 
-  pLine = pLine + '\n  input [`COMMON_STD_INTF_CNTL_RANGE     ]      sti__cntl__oob_cntl            ;'.format(lane,pe,strm) 
-  pLine = pLine + '\n  input                                         sti__cntl__oob_valid           ;'.format(lane,pe,strm) 
-  pLine = pLine + '\n  output                                        cntl__sti__oob_ready           ;'.format(lane,pe,strm) 
-  pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      sti__cntl__oob_type            ;'.format(lane,pe,strm) 
-  pLine = pLine + '\n  input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      sti__cntl__oob_data            ;'.format(lane,pe,strm) 
+#  f = open('../HDL/common/stack_interface_to_pe_cntl_downstream_ports.vh', 'w')
+#  pLine = ""
+#  #
+#  pLine = pLine + '\n            // OOB carry general PE control for both streaming Ops and SIMD controls how the lanes are interpreted'.format(lane,pe,strm) 
+#  pLine = pLine + '\n            sti__cntl__oob_cntl                           ,'.format(lane,pe,strm) 
+#  pLine = pLine + '\n            sti__cntl__oob_valid                          ,'.format(lane,pe,strm) 
+#  pLine = pLine + '\n            cntl__sti__oob_ready                          ,'.format(lane,pe,strm) 
+#  pLine = pLine + '\n            sti__cntl__oob_type                           ,'.format(lane,pe,strm) 
+#  pLine = pLine + '\n            sti__cntl__oob_data                           ,'.format(lane,pe,strm) 
+#
+#  f.write(pLine)
+#  f.close()
 
 
-  f.write(pLine)
-  f.close()
-
-
-
-  f = open('../HDL/common/stack_interface_to_pe_cntl_downstream_instance_ports.vh', 'w')
-  pLine = ""
-  #
-  pLine = pLine + '\n               // OOB carries PE configuration                                               '
-  pLine = pLine + '\n               .sti__cntl__oob_cntl                  ( sti__cntl__oob_cntl               ),      '
-  pLine = pLine + '\n               .sti__cntl__oob_valid                 ( sti__cntl__oob_valid              ),      '
-  pLine = pLine + '\n               .cntl__sti__oob_ready                 ( cntl__sti__oob_ready              ),      '
-  pLine = pLine + '\n               .sti__cntl__oob_type                  ( sti__cntl__oob_type               ),      '
-  pLine = pLine + '\n               .sti__cntl__oob_data                  ( sti__cntl__oob_data               ),      '
-
-  f.write(pLine)
-  f.close()
+#  f = open('../HDL/common/stack_interface_to_pe_cntl_downstream_port_declarations.vh', 'w')
+#  pLine = ""
+#  #
+#  pLine = pLine + '\n  // OOB carries PE configuration                                           '.format(lane,pe,strm) 
+#  pLine = pLine + '\n  output [`COMMON_STD_INTF_CNTL_RANGE     ]      sti__cntl__oob_cntl            ;'.format(lane,pe,strm) 
+#  pLine = pLine + '\n  output                                         sti__cntl__oob_valid           ;'.format(lane,pe,strm) 
+#  pLine = pLine + '\n  input                                          cntl__sti__oob_ready           ;'.format(lane,pe,strm) 
+#  pLine = pLine + '\n  output [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      sti__cntl__oob_type            ;'.format(lane,pe,strm) 
+#  pLine = pLine + '\n  output [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      sti__cntl__oob_data            ;'.format(lane,pe,strm) 
+#
+#
+#  f.write(pLine)
+#  f.close()
 
 
 
-  f = open('../HDL/common/stack_interface_to_pe_cntl_downstream_instance_wires.vh', 'w')
-  pLine = ""
-  #
-  pLine = pLine + '\n  // OOB carries PE configuration                                           '
-  pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      sti__cntl__oob_cntl            ;' 
-  pLine = pLine + '\n  wire                                        sti__cntl__oob_valid           ;' 
-  pLine = pLine + '\n  wire                                        cntl__sti__oob_ready           ;' 
-  pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      sti__cntl__oob_type            ;' 
-  pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      sti__cntl__oob_data            ;' 
+#  f = open('../HDL/common/stack_interface_to_pe_cntl_downstream_instance_ports.vh', 'w')
+#  pLine = ""
+#  #
+#  pLine = pLine + '\n               // OOB carries PE configuration                                               '
+#  pLine = pLine + '\n               .sti__cntl__oob_cntl                  ( sti__cntl__oob_cntl               ),      '
+#  pLine = pLine + '\n               .sti__cntl__oob_valid                 ( sti__cntl__oob_valid              ),      '
+#  pLine = pLine + '\n               .cntl__sti__oob_ready                 ( cntl__sti__oob_ready              ),      '
+#  pLine = pLine + '\n               .sti__cntl__oob_type                  ( sti__cntl__oob_type               ),      '
+#  pLine = pLine + '\n               .sti__cntl__oob_data                  ( sti__cntl__oob_data               ),      '
+#
+#  f.write(pLine)
+#  f.close()
+#
 
 
-  f.write(pLine)
-  f.close()
+#  f = open('../HDL/common/stack_interface_to_pe_cntl_downstream_instance_wires.vh', 'w')
+#  pLine = ""
+#  #
+#  pLine = pLine + '\n  // OOB carries PE configuration                                           '
+#  pLine = pLine + '\n  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      sti__cntl__oob_cntl            ;' 
+#  pLine = pLine + '\n  wire                                        sti__cntl__oob_valid           ;' 
+#  pLine = pLine + '\n  wire                                        cntl__sti__oob_ready           ;' 
+#  pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      sti__cntl__oob_type            ;' 
+#  pLine = pLine + '\n  wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      sti__cntl__oob_data            ;' 
+#
+#
+#  f.write(pLine)
+#  f.close()
 
 
   f = open('../HDL/common/pe_cntl_simd_instance_wires.vh', 'w')
@@ -4207,9 +4290,9 @@ if __name__ == "__main__":
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
       pLine = pLine + '\n  wire                                            stOp__sti__lane{0}_strm{1}_ready       ;'.format(lane,strm)
-      pLine = pLine + '\n  wire [`COMMON_STD_INTF_CNTL_RANGE       ]       sti__stOp__lane{0}_strm{1}_cntl        ;'.format(lane,strm) 
-      pLine = pLine + '\n  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       sti__stOp__lane{0}_strm{1}_data        ;'.format(lane,strm) 
-      pLine = pLine + '\n  wire                                            sti__stOp__lane{0}_strm{1}_data_valid  ;'.format(lane,strm) 
+      pLine = pLine + '\n  reg  [`COMMON_STD_INTF_CNTL_RANGE       ]       sti__stOp__lane{0}_strm{1}_cntl        ;'.format(lane,strm) 
+      pLine = pLine + '\n  reg  [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       sti__stOp__lane{0}_strm{1}_data        ;'.format(lane,strm) 
+      pLine = pLine + '\n  reg                                             sti__stOp__lane{0}_strm{1}_data_valid  ;'.format(lane,strm) 
       pLine = pLine + '\n'
       
   f.write(pLine)
@@ -4221,12 +4304,15 @@ if __name__ == "__main__":
 
   for lane in range (0, numOfExecLanes):
     for strm in range (0, 2):
-      pLine = pLine + '\n  assign    pe__std__lane{0}_strm{1}_ready         =  stOp__sti__lane{0}_strm{1}_ready   ;'.format(lane,strm)
-      pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_cntl        =  std__pe__lane{0}_strm{1}_cntl      ;'.format(lane,strm) 
-      pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_data        =  std__pe__lane{0}_strm{1}_data      ;'.format(lane,strm) 
+      pLine = pLine + '\n  always @(*)'
+      pLine = pLine + '\n    begin'
+      pLine = pLine + '\n      pe__std__lane{0}_strm{1}_ready         =  stOp__sti__lane{0}_strm{1}_ready   ;'.format(lane,strm)
+      pLine = pLine + '\n      sti__stOp__lane{0}_strm{1}_cntl        =  std__pe__lane{0}_strm{1}_cntl      ;'.format(lane,strm) 
+      pLine = pLine + '\n      sti__stOp__lane{0}_strm{1}_data        =  std__pe__lane{0}_strm{1}_data      ;'.format(lane,strm) 
       #FIXME : right now oob and lane buses are separate
-      pLine = pLine + '\n  assign    sti__stOp__lane{0}_strm{1}_data_valid  =  std__pe__lane{0}_strm{1}_data_valid ; '.format(lane,strm) 
-      pLine = pLine + '\n  //assign    sti__stOp__lane{0}_strm{1}_data_valid  =  std__pe__lane{0}_strm{1}_data_valid & ~std__pe__oob_valid   ; // not for stOp if OOB valid'.format(lane,strm) 
+      pLine = pLine + '\n      sti__stOp__lane{0}_strm{1}_data_valid  =  std__pe__lane{0}_strm{1}_data_valid ; '.format(lane,strm) 
+      pLine = pLine + '\n  //    sti__stOp__lane{0}_strm{1}_data_valid  =  std__pe__lane{0}_strm{1}_data_valid & ~std__pe__oob_valid   ; // not for stOp if OOB valid'.format(lane,strm) 
+      pLine = pLine + '\n    end'
       pLine = pLine + '\n'
 
   f.write(pLine)

@@ -182,7 +182,42 @@ module simd_wrapper (
   //----------------------------------------------------------------------------------------------------
   // Assignments
 
-  `include "pe_simd_wrapper_assignments.vh"
+  // Common (Scalar) Register(s)                
+  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs0   ;
+  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs1   ;
+
+  // Lane Register(s)                
+  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;
+  //`include "pe_simd_wrapper_assignments.vh"
+  genvar gvi;
+  generate
+    always @(posedge clk)
+      begin
+        simd__scntl__rs0  <= ( reset_poweron ) ? 'd0 : cntl__simd__rs0 ;
+        simd__scntl__rs1  <= ( reset_poweron ) ? 'd0 : cntl__simd__rs1 ;
+      end
+    for (gvi=0; gvi<`PE_NUM_OF_EXEC_LANES ; gvi=gvi+1) 
+      begin: scntl_output_regFile
+        always @(posedge clk)
+          begin
+            simd__scntl__lane_r128 [gvi]  <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r128 [gvi]  ;
+            simd__scntl__lane_r129 [gvi]  <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r129 [gvi]  ;
+            simd__scntl__lane_r130 [gvi]  <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r130 [gvi]  ;
+            simd__scntl__lane_r131 [gvi]  <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r131 [gvi]  ;
+            simd__scntl__lane_r132 [gvi]  <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r132 [gvi]  ;
+            simd__scntl__lane_r133 [gvi]  <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r133 [gvi]  ;
+            simd__scntl__lane_r134 [gvi]  <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r134 [gvi]  ;
+            simd__scntl__lane_r135 [gvi]  <= ( reset_poweron ) ? 'd0 : cntl__simd__lane_r135 [gvi]  ;
+          end
+      end
+  endgenerate
 
 
   //----------------------------------------------------------------------
@@ -197,7 +232,6 @@ module simd_wrapper (
 
     end
 
-  genvar gvi;
   generate
     for (gvi=0; gvi<`PE_NUM_OF_EXEC_LANES ; gvi=gvi+1) 
       begin: scntl_input_reg

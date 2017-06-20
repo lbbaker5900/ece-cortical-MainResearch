@@ -29,7 +29,13 @@ module stack_interface (
             //-------------------------------
             // Stack Bus - OOB Downstream
             //
-            `include "pe_stack_bus_downstream_oob_ports.vh"
+            // OOB controls how the lanes are interpreted  ,
+            std__pe__oob_cntl                           ,
+            std__pe__oob_valid                          ,
+            pe__std__oob_ready                          ,
+            std__pe__oob_type                           ,
+            std__pe__oob_data                           ,
+            //`include "pe_stack_bus_downstream_oob_ports.vh"
 
             //-------------------------------
             // Stack Bus - Downstream
@@ -39,7 +45,13 @@ module stack_interface (
             //-------------------------------
             // Stack Bus to PE control
             //
-            `include "stack_interface_to_pe_cntl_downstream_ports.vh"
+            // OOB carry general PE control for both streaming Ops and SIMD controls how the lanes are interpreted
+            sti__cntl__oob_cntl                           ,
+            sti__cntl__oob_valid                          ,
+            cntl__sti__oob_ready                          ,
+            sti__cntl__oob_type                           ,
+            sti__cntl__oob_data                           ,
+            //`include "stack_interface_to_pe_cntl_downstream_ports.vh"
 
             //-------------------------------
             // Stack Bus to Streaming Ops
@@ -87,7 +99,12 @@ module stack_interface (
   //---------------------------------------
   // OOB interface to Stack Bus - downstream
   //
-  `include "pe_stack_bus_downstream_oob_port_declarations.vh"
+  input [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;
+  input                                         std__pe__oob_valid           ;
+  output                                        pe__std__oob_ready           ;
+  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;
+  input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe__oob_data            ;
+  //`include "pe_stack_bus_downstream_oob_port_declarations.vh"
 
   //---------------------------------------
   // interface to streaming Ops - downstream
@@ -97,7 +114,13 @@ module stack_interface (
   //---------------------------------------
   // interface to PE control - downstream
   //
-  `include "stack_interface_to_pe_cntl_downstream_port_declarations.vh"
+  // OOB carries PE configuration                                           
+  output [`COMMON_STD_INTF_CNTL_RANGE     ]      sti__cntl__oob_cntl            ;
+  output                                         sti__cntl__oob_valid           ;
+  input                                          cntl__sti__oob_ready           ;
+  output [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      sti__cntl__oob_type            ;
+  output [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      sti__cntl__oob_data            ;
+  //`include "stack_interface_to_pe_cntl_downstream_port_declarations.vh"
 
   //-------------------------------
   // Stack Bus - Upstream
@@ -125,12 +148,17 @@ module stack_interface (
   //---------------------------------------
   // interface to Stack Bus - OOB downstream
   //
-  `include "pe_stack_bus_downstream_oob_instance_wires.vh"
+  wire  [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;
+  wire                                          std__pe__oob_valid           ;
+  reg                                           pe__std__oob_ready           ;
+  wire  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;
+  wire  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe__oob_data            ;
+  //`include "pe_stack_bus_downstream_oob_instance_wires.vh"
 
   //---------------------------------------
   // interface to Stack Bus - downstream
   //
-  `include "pe_stack_bus_downstream_instance_wires.vh"
+  `include "stack_interface_stack_bus_downstream_wires.vh"
 
   //---------------------------------------
   // interface to streaming Ops - downstream
@@ -140,7 +168,13 @@ module stack_interface (
   //---------------------------------------
   // interface to PE control - downstream
   //
-  `include "stack_interface_to_pe_cntl_downstream_instance_wires.vh"
+  // OOB carries PE configuration                                           
+  reg   [`COMMON_STD_INTF_CNTL_RANGE     ]      sti__cntl__oob_cntl            ;
+  reg                                           sti__cntl__oob_valid           ;
+  wire                                          cntl__sti__oob_ready           ;
+  reg   [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      sti__cntl__oob_type            ;
+  reg   [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      sti__cntl__oob_data            ;
+  //`include "stack_interface_to_pe_cntl_downstream_instance_wires.vh"
 
   //-------------------------------
   // Stack Bus - Upstream
@@ -169,11 +203,15 @@ module stack_interface (
 
   //-------------------------------
   // Downstream OOB carries PE configuration
-  assign  sti__cntl__oob_cntl      =  std__pe__oob_cntl    ;
-  assign  sti__cntl__oob_valid     =  std__pe__oob_valid   ;
-  assign  pe__std__oob_ready       =  cntl__sti__oob_ready ;
-  assign  sti__cntl__oob_type      =  std__pe__oob_type    ;
-  assign  sti__cntl__oob_data      =  std__pe__oob_data    ;
+  //
+  always @(posedge clk)
+    begin
+      sti__cntl__oob_cntl      <=  std__pe__oob_cntl    ;
+      sti__cntl__oob_valid     <=  std__pe__oob_valid   ;
+      pe__std__oob_ready       <=  cntl__sti__oob_ready ;
+      sti__cntl__oob_type      <=  std__pe__oob_type    ;
+      sti__cntl__oob_data      <=  std__pe__oob_data    ;
+    end
 
   //-------------------------------
   // Stack Bus - Upstream

@@ -53,8 +53,13 @@ module pe (
 
             //-------------------------------
             // Stack Bus - OOB Downstream
-            //
-            `include "pe_stack_bus_downstream_oob_ports.vh"
+            //   - OOB controls how the lanes are interpreted
+            std__pe__oob_cntl                           ,
+            std__pe__oob_valid                          ,
+            pe__std__oob_ready                          ,
+            std__pe__oob_type                           ,
+            std__pe__oob_data                           ,
+            //`include "pe_stack_bus_downstream_oob_ports.vh"
 
             //-------------------------------
             // Stack Bus - Downstream
@@ -101,8 +106,13 @@ module pe (
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - OOB Downstream
-
-  `include "pe_stack_bus_downstream_oob_port_declarations.vh"
+  //   - OOB carries PE configuration  
+  input [`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;
+  input                                         std__pe__oob_valid           ;
+  output                                        pe__std__oob_ready           ;
+  input [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;
+  input [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe__oob_data            ;
+  //`include "pe_stack_bus_downstream_oob_port_declarations.vh"
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
@@ -158,7 +168,7 @@ module pe (
   //`include "pe_noc_to_peArray_connection_wires.vh"
 
   //`include "pe_cntl_noc_connection_wires.vh"
-  `include "pe_cntl_to_stOp_connection_wires.vh"
+  //`include "pe_cntl_to_stOp_connection_wires.vh"
 
   `include "pe_stOp_control_to_stOp_wires.vh"
 
@@ -170,12 +180,31 @@ module pe (
   //---------------------------------------
   // Stack Interface Downstream to PE control
   //
-  `include "stack_interface_to_pe_cntl_downstream_instance_wires.vh"
+  // OOB carries PE configuration                                           
+  wire[`COMMON_STD_INTF_CNTL_RANGE     ]      sti__cntl__oob_cntl            ;
+  wire                                        sti__cntl__oob_valid           ;
+  wire                                        cntl__sti__oob_ready           ;
+  wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      sti__cntl__oob_type            ;
+  wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      sti__cntl__oob_data            ;
+  //`include "stack_interface_to_pe_cntl_downstream_instance_wires.vh"
 
   //---------------------------------------
   // PE Control
   // 
-  `include "pe_cntl_simd_instance_wires.vh"
+  // FIXME: Made reg's to fix check design, but can gbe wires with multicycle path
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs0  ;
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__rs1  ;
+
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r128  [`PE_NUM_OF_EXEC_LANES ];
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r129  [`PE_NUM_OF_EXEC_LANES ];
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r130  [`PE_NUM_OF_EXEC_LANES ];
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r131  [`PE_NUM_OF_EXEC_LANES ];
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r132  [`PE_NUM_OF_EXEC_LANES ];
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r133  [`PE_NUM_OF_EXEC_LANES ];
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r134  [`PE_NUM_OF_EXEC_LANES ];
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE]  cntl__simd__lane_r135  [`PE_NUM_OF_EXEC_LANES ];
+  //`include "pe_cntl_simd_instance_wires.vh"
+
   wire                                    cntl__simd__tag_valid      ;
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag            ;
   wire                                    simd__cntl__tag_ready      ;
@@ -231,8 +260,13 @@ module pe (
 
                         //---------------------------------------
                         // Downstream Stack OOB to PE control
-                        //
-                        `include "stack_interface_to_pe_cntl_downstream_instance_ports.vh"
+                        //   - OOB carries PE configuration                                               
+                        .sti__cntl__oob_cntl                  ( sti__cntl__oob_cntl               ),      
+                        .sti__cntl__oob_valid                 ( sti__cntl__oob_valid              ),      
+                        .cntl__sti__oob_ready                 ( cntl__sti__oob_ready              ),      
+                        .sti__cntl__oob_type                  ( sti__cntl__oob_type               ),      
+                        .sti__cntl__oob_data                  ( sti__cntl__oob_data               ),      
+                        //`include "stack_interface_to_pe_cntl_downstream_instance_ports.vh"
 
                         //---------------------------------------
                         // Downstream Stack to Streaming Op
@@ -479,33 +513,36 @@ module pe (
         wire                                         memc__dma__read_ready0       ;
         wire                                         dma__memc__read_pause0       ;
       
-        wire                                         dma__memc__write_valid1      ;
-        wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__write_address1    ;
-        wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  dma__memc__write_data1       ; 
-        wire                                         memc__dma__write_ready1      ;
-        wire                                         dma__memc__read_valid1       ;
-        wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__read_address1     ;
-        wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__dma__read_data1        ; 
-        wire                                         memc__dma__read_data_valid1  ;
-        wire                                         memc__dma__read_ready1       ;
-        wire                                         dma__memc__read_pause1       ;
- 
         wire                                         scntl__dma__strm0_read_enable         ;
-        wire                                         scntl__dma__strm1_read_enable         ;
         wire                                         scntl__dma__strm0_write_enable        ;
-        wire                                         scntl__dma__strm1_write_enable        ;
         wire                                         dma__scntl__strm0_read_complete       ;
-        wire                                         dma__scntl__strm1_read_complete       ;
         wire                                         dma__scntl__strm0_write_complete      ;
-        wire                                         dma__scntl__strm1_write_complete      ;
         wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  scntl__dma__strm0_read_start_address  ;  // streaming op arg0
-        wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  scntl__dma__strm1_read_start_address  ;  // streaming op arg1
         wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  scntl__dma__strm0_write_start_address ;  // streaiming op result start address
-        wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  scntl__dma__strm1_write_start_address ;  // streaiming op result start address
         wire  [`DMA_CONT_DATA_TYPES_RANGE         ]  scntl__dma__type0         ;
-        wire  [`DMA_CONT_DATA_TYPES_RANGE         ]  scntl__dma__type1         ;
         wire  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ]  scntl__dma__num_of_types0 ;
-        wire  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ]  scntl__dma__num_of_types1 ;
+
+        `ifndef DMA_CONT_ONLY_ONE_PORT 
+          wire                                         dma__memc__write_valid1      ;
+          wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__write_address1    ;
+          wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  dma__memc__write_data1       ; 
+          wire                                         memc__dma__write_ready1      ;
+          wire                                         dma__memc__read_valid1       ;
+          wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__read_address1     ;
+          wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__dma__read_data1        ; 
+          wire                                         memc__dma__read_data_valid1  ;
+          wire                                         memc__dma__read_ready1       ;
+          wire                                         dma__memc__read_pause1       ;
+ 
+          wire                                         scntl__dma__strm1_read_enable         ;
+          wire                                         scntl__dma__strm1_write_enable        ;
+          wire                                         dma__scntl__strm1_read_complete       ;
+          wire                                         dma__scntl__strm1_write_complete      ;
+          wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  scntl__dma__strm1_read_start_address  ;  // streaming op arg1
+          wire  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  scntl__dma__strm1_write_start_address ;  // streaiming op result start address
+          wire  [`DMA_CONT_DATA_TYPES_RANGE         ]  scntl__dma__type1         ;
+          wire  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ]  scntl__dma__num_of_types1 ;
+        `endif
    
         wire                                         reg__stOp__ready         ;
         wire                                         stOp__reg__valid         ;
@@ -584,21 +621,23 @@ module pe (
                                  .dma__scntl__strm0_write_complete      ( dma__scntl__strm0_write_complete      ),
                                  .scntl__dma__strm0_write_start_address ( scntl__dma__strm0_write_start_address ),
 
-                                 // Stream 1
-
-                                 .scntl__dma__type1                     ( scntl__dma__type1                     ),
-                                 .scntl__dma__num_of_types1             ( scntl__dma__num_of_types1             ),
-
-                                 // dma read
-                                 .scntl__dma__strm1_read_enable         ( scntl__dma__strm1_read_enable         ),
-                                 .dma__scntl__strm1_read_ready          ( dma__scntl__strm1_read_ready          ),
-                                 .dma__scntl__strm1_read_complete       ( dma__scntl__strm1_read_complete       ),
-                                 .scntl__dma__strm1_read_start_address  ( scntl__dma__strm1_read_start_address  ),
-                                 // dma write
-                                 .scntl__dma__strm1_write_enable        ( scntl__dma__strm1_write_enable        ),
-                                 .dma__scntl__strm1_write_ready         ( dma__scntl__strm1_write_ready         ),
-                                 .dma__scntl__strm1_write_complete      ( dma__scntl__strm1_write_complete      ),
-                                 .scntl__dma__strm1_write_start_address ( scntl__dma__strm1_write_start_address ),
+                                 `ifndef DMA_CONT_ONLY_ONE_PORT 
+                                   // Stream 1
+                                
+                                   .scntl__dma__type1                     ( scntl__dma__type1                     ),
+                                   .scntl__dma__num_of_types1             ( scntl__dma__num_of_types1             ),
+                                
+                                   // dma read
+                                   .scntl__dma__strm1_read_enable         ( scntl__dma__strm1_read_enable         ),
+                                   .dma__scntl__strm1_read_ready          ( dma__scntl__strm1_read_ready          ),
+                                   .dma__scntl__strm1_read_complete       ( dma__scntl__strm1_read_complete       ),
+                                   .scntl__dma__strm1_read_start_address  ( scntl__dma__strm1_read_start_address  ),
+                                   // dma write
+                                   .scntl__dma__strm1_write_enable        ( scntl__dma__strm1_write_enable        ),
+                                   .dma__scntl__strm1_write_ready         ( dma__scntl__strm1_write_ready         ),
+                                   .dma__scntl__strm1_write_complete      ( dma__scntl__strm1_write_complete      ),
+                                   .scntl__dma__strm1_write_start_address ( scntl__dma__strm1_write_start_address ),
+                                 `endif
                                                                 
                                                                                                   
                                  //--------------------------------------------------------------------------------
@@ -620,18 +659,20 @@ module pe (
                                  .memc__dma__read_ready0         ( memc__dma__read_ready0         ),
                                  .dma__memc__read_pause0         ( dma__memc__read_pause0         ),
 
-                                 // Memory 1                                              
-                                 .dma__memc__write_valid1        ( dma__memc__write_valid1        ),
-                                 .dma__memc__write_address1      ( dma__memc__write_address1      ),
-                                 .dma__memc__write_data1         ( dma__memc__write_data1         ),
-                                 .memc__dma__write_ready1        ( memc__dma__write_ready1        ),
-
-                                 .dma__memc__read_valid1         ( dma__memc__read_valid1         ),
-                                 .dma__memc__read_address1       ( dma__memc__read_address1       ),
-                                 .memc__dma__read_data1          ( memc__dma__read_data1          ),
-                                 .memc__dma__read_data_valid1    ( memc__dma__read_data_valid1    ),
-                                 .memc__dma__read_ready1         ( memc__dma__read_ready1         ),
-                                 .dma__memc__read_pause1         ( dma__memc__read_pause1         ),
+                                 `ifndef DMA_CONT_ONLY_ONE_PORT 
+                                   // Memory 1                                              
+                                   .dma__memc__write_valid1        ( dma__memc__write_valid1        ),
+                                   .dma__memc__write_address1      ( dma__memc__write_address1      ),
+                                   .dma__memc__write_data1         ( dma__memc__write_data1         ),
+                                   .memc__dma__write_ready1        ( memc__dma__write_ready1        ),
+                                 
+                                   .dma__memc__read_valid1         ( dma__memc__read_valid1         ),
+                                   .dma__memc__read_address1       ( dma__memc__read_address1       ),
+                                   .memc__dma__read_data1          ( memc__dma__read_data1          ),
+                                   .memc__dma__read_data_valid1    ( memc__dma__read_data_valid1    ),
+                                   .memc__dma__read_ready1         ( memc__dma__read_ready1         ),
+                                   .dma__memc__read_pause1         ( dma__memc__read_pause1         ),
+                                 `endif
                                                                                                   
                                  //--------------------------------------------------------------------------------
                                  // Result interface           

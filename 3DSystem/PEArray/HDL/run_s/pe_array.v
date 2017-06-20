@@ -120,7 +120,13 @@ module pe_array (
 
         //-------------------------------------------------------------------------------------------------
         // Stack Bus OOB downstream Interface
-        `include "pe_stack_bus_downstream_oob_instance_wires.vh"
+        //   - OOB carries PE configuration                                           
+        wire[`COMMON_STD_INTF_CNTL_RANGE     ]      std__pe__oob_cntl            ;
+        wire                                        std__pe__oob_valid           ;
+        wire                                        pe__std__oob_ready           ;
+        wire[`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      std__pe__oob_type            ;
+        wire[`STACK_DOWN_OOB_INTF_DATA_RANGE ]      std__pe__oob_data            ;
+        //`include "pe_stack_bus_downstream_oob_instance_wires.vh"
 
         //-------------------------------------------------------------------------------------------------
         // Stack Bus downstream Interface
@@ -164,7 +170,13 @@ module pe_array (
    
                 //-------------------------------
                 // Stack Bus OOB downstream Interface
-                `include "pe_stack_bus_downstream_oob_instance_ports.vh"
+                //   - OOB carries PE configuration                                         
+                .std__pe__oob_cntl                  ( std__pe__oob_cntl               ),
+                .std__pe__oob_valid                 ( std__pe__oob_valid              ),
+                .pe__std__oob_ready                 ( pe__std__oob_ready              ),
+                .std__pe__oob_type                  ( std__pe__oob_type               ),
+                .std__pe__oob_data                  ( std__pe__oob_data               ),
+                //`include "pe_stack_bus_downstream_oob_instance_ports.vh"
    
                 //-------------------------------
                 // Stack Bus downstream Interface
