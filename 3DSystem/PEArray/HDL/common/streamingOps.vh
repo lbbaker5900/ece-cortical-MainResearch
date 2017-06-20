@@ -48,7 +48,7 @@
 // STREAMING_OP FIFO
 //------------------------------------------------
 
-`define STREAMING_OP_INPUT_FIFO_DEPTH          8
+`define STREAMING_OP_INPUT_FIFO_DEPTH          10
 `define STREAMING_OP_INPUT_FIFO_DEPTH_MSB      (`STREAMING_OP_INPUT_FIFO_DEPTH) -1
 `define STREAMING_OP_INPUT_FIFO_DEPTH_LSB      0
 `define STREAMING_OP_INPUT_FIFO_DEPTH_SIZE     (`STREAMING_OP_INPUT_FIFO_DEPTH_MSB - `STREAMING_OP_INPUT_FIFO_DEPTH_LSB +1)
@@ -81,7 +81,7 @@
 
 // Threshold below full when we assert almost full
 // assert almost full when there are only this many entries available in the fifo
-`define STREAMING_OP_INPUT_FIFO_FIFO_ALMOST_FULL_THRESHOLD 4
+`define STREAMING_OP_INPUT_FIFO_FIFO_ALMOST_FULL_THRESHOLD 6
 //------------------------------------------------
 // STREAMING_OP Output
 //------------------------------------------------
