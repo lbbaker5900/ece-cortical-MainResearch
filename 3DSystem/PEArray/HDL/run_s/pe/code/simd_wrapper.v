@@ -158,11 +158,17 @@ module simd_wrapper (
   reg   [`PE_EXEC_LANE_WIDTH_RANGE     ]  allLanes_results  [`PE_NUM_OF_EXEC_LANES ]      ;
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  allLanes_valid                                  ;
                                                                                           
-  wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag                                  ;
-  wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid                           ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__sui__regs_cntl   [`PE_NUM_OF_EXEC_LANES ] ;
-  wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs        [`PE_NUM_OF_EXEC_LANES ] ;
-  wire                                    sui__simd__regs_complete                        ;
+  reg   [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag                                  ;
+  reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid                           ;
+  reg   [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__sui__regs_cntl   [`PE_NUM_OF_EXEC_LANES ] ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs        [`PE_NUM_OF_EXEC_LANES ] ;
+  reg                                     sui__simd__regs_complete                        ;
+
+  wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag_e1                                  ;
+  wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid_e1                           ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__sui__regs_cntl_e1   [`PE_NUM_OF_EXEC_LANES ] ;
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs_e1        [`PE_NUM_OF_EXEC_LANES ] ;
+
   reg                                     sui__simd__regs_complete_d1                     ;
   wire                                    sui__simd__regs_ready                           ;
   reg                                     sui__simd__regs_ready_d1                        ;
@@ -219,6 +225,21 @@ module simd_wrapper (
       end
   endgenerate
 
+  generate
+    always @(posedge clk)
+      begin
+        simd__sui__tag         <= ( reset_poweron ) ? 'd0 : simd__sui__tag_e1        ;
+        simd__sui__regs_valid  <= ( reset_poweron ) ? 'd0 : simd__sui__regs_valid_e1 ;
+      end
+    for (gvi=0; gvi<`PE_NUM_OF_EXEC_LANES ; gvi=gvi+1) 
+      begin: sui_output_regFile
+        always @(posedge clk)
+          begin
+            simd__sui__regs_cntl [gvi]  <= ( reset_poweron ) ? 'd0 :  simd__sui__regs_cntl_e1 [gvi];
+            simd__sui__regs      [gvi] <= ( reset_poweron ) ? 'd0 :  simd__sui__regs_e1      [gvi];
+          end
+      end
+  endgenerate
 
   //----------------------------------------------------------------------
   // Registered inputs
@@ -463,10 +484,10 @@ module simd_wrapper (
   // read the FIFO and assert the valid to the stack upstream interface
   assign from_stOp_reg_fifo_reads = {`PE_EXEC_LANE_WIDTH { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA) }};
 
-  assign  simd__sui__tag          =  from_Cntl_Tag_Fifo[0].pipe_tag ;
-  assign  simd__sui__regs_valid   =  {`PE_EXEC_LANE_WIDTH { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA) }};
-  assign  simd__sui__regs_cntl    =  from_stOp_reg_fifo_pipe_cntl   ;
-  assign  simd__sui__regs         =  from_stOp_reg_fifo_pipe_data   ;
+  assign  simd__sui__tag_e1          =  from_Cntl_Tag_Fifo[0].pipe_tag ;
+  assign  simd__sui__regs_valid_e1   =  {`PE_EXEC_LANE_WIDTH { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA) }};
+  assign  simd__sui__regs_cntl_e1    =  from_stOp_reg_fifo_pipe_cntl   ;
+  assign  simd__sui__regs_e1         =  from_stOp_reg_fifo_pipe_data   ;
 
 
   //-------------------------------------------------------------------------------------------------

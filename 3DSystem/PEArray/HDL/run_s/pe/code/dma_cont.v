@@ -279,11 +279,11 @@ module dma_cont (
   wire strm0_write_enable         ;
 
   // indicators to main streaming controller
-  wire strm0_read_complete        ;
-  wire strm0_read_ready           ;
+  reg  strm0_read_complete        ;
+  reg  strm0_read_ready           ;
 
-  wire strm0_write_complete       ;
-  wire strm0_write_ready          ;
+  reg  strm0_write_complete       ;
+  reg  strm0_write_ready          ;
 
   `ifndef DMA_CONT_ONLY_ONE_PORT 
     wire dma__memc__read_valid1     ;
@@ -299,11 +299,11 @@ module dma_cont (
     wire strm1_write_enable         ;
   
     // indicators to main streaming controller
-    wire strm1_read_complete        ;
-    wire strm1_read_ready           ;
+    reg  strm1_read_complete        ;
+    reg  strm1_read_ready           ;
   
-    wire strm1_write_complete       ;
-    wire strm1_write_ready          ;
+    reg  strm1_write_complete       ;
+    reg  strm1_write_ready          ;
   `endif
 
 
@@ -455,7 +455,10 @@ module dma_cont (
   assign read_strm[0].type_count_init          = strm_type_info[0].type_count_init    ;
   assign read_strm[0].types_in_last_data       = strm_type_info[0].types_in_last_data ;
   assign read_strm[0].to_stOp_valid            = dma__stOp__strm0_data_valid          ;
-  assign strm0_read_complete                   = read_strm[0].complete                ;
+  always @(posedge clk)
+    begin
+      strm0_read_complete                   = read_strm[0].complete                ;
+    end
 
   assign strm_first_read0                      = read_strm[0].first_read              ;
   assign strm_last_read0                       = read_strm[0].last_read               ;
@@ -468,7 +471,10 @@ module dma_cont (
     assign read_strm[1].type_count_init          = strm_type_info[1].type_count_init    ;
     assign read_strm[1].types_in_last_data       = strm_type_info[1].types_in_last_data ;
     assign read_strm[1].to_stOp_valid            = dma__stOp__strm1_data_valid          ;
-    assign strm1_read_complete                   = read_strm[1].complete                ;
+    always @(posedge clk)
+      begin
+        strm1_read_complete                   = read_strm[1].complete                ;
+      end
   
     assign strm_first_read1                      = read_strm[1].first_read              ;
     assign strm_last_read1                       = read_strm[1].last_read               ;
@@ -556,7 +562,10 @@ module dma_cont (
   assign write_strm[0].types_in_last_data      = strm_type_info[0].types_in_last_data ;
   assign write_strm[0].last_write_transaction  = strm0_from_stOp_fifo_valid & 
                                                 ((strm0_from_stOp_fifo_read_cntl ==  `COMMON_STD_INTF_CNTL_EOM) | (strm0_from_stOp_fifo_read_cntl ==  `COMMON_STD_INTF_CNTL_SOM_EOM))  ;
-  assign strm0_write_complete                  = write_strm[0].complete               ;
+  always @(posedge clk)
+    begin
+      strm0_write_complete                  = write_strm[0].complete               ;
+    end
 
   `ifndef DMA_CONT_ONLY_ONE_PORT 
     // Stream 1
@@ -567,7 +576,10 @@ module dma_cont (
     assign write_strm[1].types_in_last_data      = strm_type_info[1].types_in_last_data ;
     assign write_strm[1].last_write_transaction  = strm1_from_stOp_fifo_valid & 
                                                   ((strm1_from_stOp_fifo_read_cntl ==  `COMMON_STD_INTF_CNTL_EOM) | (strm1_from_stOp_fifo_read_cntl ==  `COMMON_STD_INTF_CNTL_SOM_EOM))  ;
-    assign strm1_write_complete                  = write_strm[1].complete               ;
+    always @(posedge clk)
+      begin
+        strm1_write_complete                  = write_strm[1].complete               ;
+      end
   `endif
 
   // FIXME: add interrupt if last transaction and fifo not empty
@@ -764,16 +776,22 @@ module dma_cont (
   wire   stOp__dma__strm0_ready       ;
   assign dma__memc__read_pause0   =  ~stOp__dma__strm0_ready  ;
 
-  assign strm0_read_ready  = strm0_read_enable ;  // FIXME
-  assign strm0_write_ready = strm0_write_enable;
+  always @(posedge clk)
+    begin
+      strm0_read_ready  <= strm0_read_enable ;  // FIXME
+      strm0_write_ready <= strm0_write_enable;
+    end
 
   `ifndef DMA_CONT_ONLY_ONE_PORT 
   // Stream 1
     wire   stOp__dma__strm1_ready       ;
     assign dma__memc__read_pause1   =  ~stOp__dma__strm1_ready  ;
   
-    assign strm1_read_ready  = strm1_read_enable ;
-    assign strm1_write_ready = strm1_write_enable;
+    always @(posedge clk)
+      begin
+        strm1_read_ready  <= strm1_read_enable ;  // FIXME
+        strm1_write_ready <= strm1_write_enable;
+      end
   `endif
 
 
