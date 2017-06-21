@@ -1,6 +1,6 @@
 
             fork                                                                                                                                  
-                sys_operation_lane[0] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[0] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[0].Id[1]  =  0      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -12,7 +12,7 @@
                 @mgr2gen_ack[0];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[1] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[1] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[1].Id[1]  =  1      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -24,7 +24,7 @@
                 @mgr2gen_ack[1];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[2] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[2] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[2].Id[1]  =  2      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -36,7 +36,7 @@
                 @mgr2gen_ack[2];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[3] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[3] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[3].Id[1]  =  3      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -48,7 +48,7 @@
                 @mgr2gen_ack[3];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[4] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[4] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[4].Id[1]  =  4      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -60,7 +60,7 @@
                 @mgr2gen_ack[4];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[5] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[5] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[5].Id[1]  =  5      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -72,7 +72,7 @@
                 @mgr2gen_ack[5];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[6] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[6] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[6].Id[1]  =  6      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -84,7 +84,7 @@
                 @mgr2gen_ack[6];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[7] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[7] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[7].Id[1]  =  7      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -96,7 +96,7 @@
                 @mgr2gen_ack[7];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[8] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[8] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[8].Id[1]  =  8      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -108,7 +108,7 @@
                 @mgr2gen_ack[8];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[9] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[9] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[9].Id[1]  =  9      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -120,7 +120,7 @@
                 @mgr2gen_ack[9];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[10] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[10] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[10].Id[1]  =  10      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -132,7 +132,7 @@
                 @mgr2gen_ack[10];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[11] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[11] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[11].Id[1]  =  11      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -144,7 +144,7 @@
                 @mgr2gen_ack[11];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[12] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[12] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[12].Id[1]  =  12      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -156,7 +156,7 @@
                 @mgr2gen_ack[12];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[13] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[13] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[13].Id[1]  =  13      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -168,7 +168,7 @@
                 @mgr2gen_ack[13];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[14] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[14] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[14].Id[1]  =  14      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -180,7 +180,7 @@
                 @mgr2gen_ack[14];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[15] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[15] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[15].Id[1]  =  15      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -192,7 +192,7 @@
                 @mgr2gen_ack[15];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[16] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[16] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[16].Id[1]  =  16      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -204,7 +204,7 @@
                 @mgr2gen_ack[16];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[17] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[17] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[17].Id[1]  =  17      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -216,7 +216,7 @@
                 @mgr2gen_ack[17];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[18] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[18] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[18].Id[1]  =  18      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -228,7 +228,7 @@
                 @mgr2gen_ack[18];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[19] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[19] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[19].Id[1]  =  19      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -240,7 +240,7 @@
                 @mgr2gen_ack[19];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[20] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[20] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[20].Id[1]  =  20      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -252,7 +252,7 @@
                 @mgr2gen_ack[20];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[21] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[21] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[21].Id[1]  =  21      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -264,7 +264,7 @@
                 @mgr2gen_ack[21];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[22] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[22] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[22].Id[1]  =  22      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -276,7 +276,7 @@
                 @mgr2gen_ack[22];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[23] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[23] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[23].Id[1]  =  23      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -288,7 +288,7 @@
                 @mgr2gen_ack[23];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[24] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[24] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[24].Id[1]  =  24      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -300,7 +300,7 @@
                 @mgr2gen_ack[24];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[25] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[25] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[25].Id[1]  =  25      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -312,7 +312,7 @@
                 @mgr2gen_ack[25];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[26] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[26] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[26].Id[1]  =  26      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -324,7 +324,7 @@
                 @mgr2gen_ack[26];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[27] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[27] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[27].Id[1]  =  27      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -336,7 +336,7 @@
                 @mgr2gen_ack[27];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[28] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[28] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[28].Id[1]  =  28      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -348,7 +348,7 @@
                 @mgr2gen_ack[28];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[29] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[29] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[29].Id[1]  =  29      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -360,7 +360,7 @@
                 @mgr2gen_ack[29];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[30] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[30] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[30].Id[1]  =  30      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 
@@ -372,7 +372,7 @@
                 @mgr2gen_ack[30];                                                                                                              
             join_none                                                                                                                             
             fork                                                                                                                                  
-                sys_operation_lane[31] = new sys_operation_mgr ;                                                                                 
+                sys_operation_lane[31] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
                 sys_operation_lane[31].Id[1]  =  31      ;  // set lane for address generation                                                  
                                                                                                                                                   
                 // Send to driver                                                                                                                 

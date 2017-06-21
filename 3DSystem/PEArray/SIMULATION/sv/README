@@ -1,6 +1,6 @@
 
 # Make sure to change PEArray/SIMULATION/common/TB_common.vh 
-vim  ../../../PEArray/SIMULATION/common/TB_common.vh 
+vim   ../../../PEArray/SIMULATION/common/TB_common.vh  ../../../PEArray/HDL/common/pe_array.vh 
   `undef  TB_ENABLE_REGFILE_DRIVER
   `define TB_ENABLE_REGFILE_DRIVER
 

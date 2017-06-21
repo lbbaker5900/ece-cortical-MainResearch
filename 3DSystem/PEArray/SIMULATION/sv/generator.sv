@@ -136,7 +136,7 @@ class generator;
                     begin
                         mgr2gen.peek(sys_operation_mgr);   //Taking the instruction from the manager
                         mgr2gen.get(sys_operation_mgr)  ;  //Removing the instruction from manager mailbox
-                        $display("@%0t:%s:%0d:LEE:Received operation from manager: {%0d,%0d}:%h", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation_mgr);
+                        $display("@%0t:%s:%0d:INFO:Received operation from manager: {%0d,%0d}:%h", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation_mgr);
 //                        sys_operation_mgr.displayOperationFoo(`__FILE__, `__LINE__);
                 
                         
@@ -161,6 +161,15 @@ class generator;
 
 
                         // randomize again to create operand values
+                        sys_operation_gen.c_operationType_definedOrder .constraint_mode(0) ;
+                        sys_operation_gen.c_operationType_all          .constraint_mode(0) ;
+                        sys_operation_gen.c_operationType_fpMac        .constraint_mode(1) ;
+                        sys_operation_gen.c_operationType_copyStdToMem .constraint_mode(0) ;
+                        //
+                        sys_operation_gen.c_streamSize.constraint_mode(1)                 ;
+                        sys_operation_gen.c_operandValues.constraint_mode(1)              ;
+                        sys_operation_gen.c_memoryLocalized.constraint_mode(1)            ;
+                        // 
                         assert(sys_operation_gen.randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
 
                        
@@ -212,6 +221,7 @@ class generator;
                         // Send operands to PE/Lanes
 
                         // Send to driver
+                        sys_operation.displayOperationLong();
                         gen2drv.put(sys_operation)                    ;
 
                         // now wait for driver to take our sequence of operations

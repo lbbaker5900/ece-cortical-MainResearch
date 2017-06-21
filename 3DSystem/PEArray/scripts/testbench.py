@@ -539,7 +539,7 @@ if __name__ == "__main__":
 
   for lane in range (0, numOfExecLanes):
     pLine = pLine + '\n            fork                                                                                                                                  '.format(lane) 
-    pLine = pLine + '\n                sys_operation_lane[{0}] = new sys_operation_mgr ;                                                                                 '.format(lane) 
+    pLine = pLine + '\n                sys_operation_lane[{0}] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      '.format(lane) 
     pLine = pLine + '\n                sys_operation_lane[{0}].Id[1]  =  {0}      ;  // set lane for address generation                                                  '.format(lane) 
     pLine = pLine + '\n                                                                                                                                                  '.format(lane) 
     pLine = pLine + '\n                // Send to driver                                                                                                                 '.format(lane) 

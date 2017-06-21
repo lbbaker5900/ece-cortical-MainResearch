@@ -137,6 +137,15 @@ class manager;
                 sys_operation_mgr.Id[1]  =  0       ;  // set to lane 0 to avoid error in randomize
 
                 // FIXME: currently the operation class decides what type of operation based on transaction ID
+                // FIXME: currently the operation class decides what type of operation based on transaction ID
+                sys_operation_mgr.c_operationType_definedOrder .constraint_mode(0) ;
+                sys_operation_mgr.c_operationType_all          .constraint_mode(0) ;
+                sys_operation_mgr.c_operationType_fpMac        .constraint_mode(1) ;
+                sys_operation_mgr.c_operationType_copyStdToMem .constraint_mode(0) ;
+                //
+                sys_operation_mgr.c_streamSize.constraint_mode(1)                 ;
+                sys_operation_mgr.c_operandValues.constraint_mode(1)              ;
+                sys_operation_mgr.c_memoryLocalized.constraint_mode(1)            ;
                 sys_operation_mgr.tId      = operationNum             ;
 
                 // create new operation

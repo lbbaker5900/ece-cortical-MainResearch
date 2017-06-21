@@ -586,7 +586,7 @@ package operation;
             $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Destination Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], destinationAddress[0], destinationAddress[1]);
             $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Enable Destination: {%b,%b}", $time, `__FILE__, `__LINE__, Id[0], Id[1], enableDestinationStream[0], enableDestinationStream[1]);
             $display("@%0t :%s:%0d:INFO:{%0d,%0d}: {numberOfOperands, setNumberOfOperands, priorOperationNumberOfOperands} = {%0d,%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], numberOfOperands, setNumberOfOperands, priorOperationNumberOfOperands);
-            for (int i=0; i<numberOfOperands-1; i++)
+            for (int i=0; i<numberOfOperands; i++)
                 begin
                     operandsReal[0] = $bitstoshortreal({operands[0][i]});
                     operandsReal[1] = $bitstoshortreal({operands[1][i]});
@@ -598,15 +598,15 @@ package operation;
     
         function void displayOperationLong();
             this.displayOperation();
-            for (int i=0; i<numberOfOperands-1; i++)
+            for (int i=0; i<numberOfOperands; i++)
                 begin
                     $display("@%0t :%s:%0d:INFO:{%0d,%0d}: OperandSign %3d {%h, %h}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsSign[0][i], operandsSign[1][i]);
                 end
-            for (int i=0; i<numberOfOperands-1; i++)
+            for (int i=0; i<numberOfOperands; i++)
                 begin
                     $display("@%0t :%s:%0d:INFO:{%0d,%0d}: OperandExp %3d {%h, %h}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsExp[0][i], operandsExp[1][i]);
                 end
-            for (int i=0; i<numberOfOperands-1; i++)
+            for (int i=0; i<numberOfOperands; i++)
                 begin
                     $display("@%0t :%s:%0d:INFO:{%0d,%0d}: OperandSignificand %3d {%h, %h}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsSignificand[0][i], operandsSignificand[1][i]);
                 end
