@@ -92,26 +92,28 @@ module top;
     // DMA to memory interface for result check
     genvar pe, lane;
     generate
-       for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
-           begin
-               for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
-                   begin
-                       // only observe stream 0
-                       `ifndef TB_PE_ONLY_GATES
-                       assign Dma2Mem[pe][lane].dma__memc__write_valid      = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_valid0        ;
-                       assign Dma2Mem[pe][lane].dma__memc__write_address    = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_address0      ;
-                       assign Dma2Mem[pe][lane].dma__memc__write_data       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_data0         ;
-                       assign Dma2Mem[pe][lane].dma__memc__read_valid       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_valid0         ;
-                       assign Dma2Mem[pe][lane].dma__memc__read_address     = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_address0       ;
-                       assign Dma2Mem[pe][lane].dma__memc__read_pause       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_pause0         ;
-
-                       assign Dma2Mem[pe][lane].memc__dma__write_ready      = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__write_ready0        ;
-                       assign Dma2Mem[pe][lane].memc__dma__read_data        = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data0          ;
-                       assign Dma2Mem[pe][lane].memc__dma__read_data_valid  = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data_valid0    ;
-                       assign Dma2Mem[pe][lane].memc__dma__read_ready       = pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_ready0         ;
-                       `endif
-                   end
-           end
+//      `ifndef TB_PE_ONLY_GATES
+//        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
+//          begin
+//            for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
+//              begin
+//                // only observe stream 0
+//                assign Dma2Mem[pe][lane].dma__memc__write_valid      = pe_array_inst.pe_inst[pe].pe.mem_acc_cont.dma__memc__write_valid0        ;
+//                assign Dma2Mem[pe][lane].dma__memc__write_address    = pe_array_inst.pe_inst[pe].pe.mem_acc_cont.dma__memc__write_address0      ;
+//                assign Dma2Mem[pe][lane].dma__memc__write_data       = pe_array_inst.pe_inst[pe].pe.mem_acc_cont.dma__memc__write_data0         ;
+//                assign Dma2Mem[pe][lane].dma__memc__read_valid       = pe_array_inst.pe_inst[pe].pe.mem_acc_cont.dma__memc__read_valid0         ;
+//                assign Dma2Mem[pe][lane].dma__memc__read_address     = pe_array_inst.pe_inst[pe].pe.mem_acc_cont.dma__memc__read_address0       ;
+//                assign Dma2Mem[pe][lane].dma__memc__read_pause       = pe_array_inst.pe_inst[pe].pe.mem_acc_cont.dma__memc__read_pause0         ;
+//
+//                assign Dma2Mem[pe][lane].memc__dma__write_ready      = pe_array_inst.pe_inst[pe].pe.mem_acc_cont.memc__dma__write_ready0        ;
+//                assign Dma2Mem[pe][lane].memc__dma__read_data        = pe_array_inst.pe_inst[pe].pe.mem_acc_cont.memc__dma__read_data0          ;
+//                assign Dma2Mem[pe][lane].memc__dma__read_data_valid  = pe_array_inst.pe_inst[pe].pe.mem_acc_cont.memc__dma__read_data_valid0    ;
+//                assign Dma2Mem[pe][lane].memc__dma__read_ready       = pe_array_inst.pe_inst[pe].pe.mem_acc_cont.memc__dma__read_ready0         ;
+//              end
+//        end
+//      `else
+        `include "TB_PEonly_connect_Dma2Mem.vh"
+//      `endif
     endgenerate
 
     //----------------------------------------------------------------------------------------------------
@@ -122,6 +124,10 @@ module top;
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
+               `ifdef TB_PE_ONLY_GATES
+                 // the pe_cntl is blank because the regFIle driver sets simd reg's
+                 assign  pe_array_inst.pe_inst[pe].pe.pe_cntl.cntl__sti__oob_ready      =  1'b1 ;
+               `endif 
 
                assign  RegFileScalar2StOpCntl[pe].ready                  =  pe_array_inst.pe_inst[pe].pe.pe__sys__ready    ;  //.TB_regFileScalarDrv2stOpCntl
                assign  RegFileScalar2StOpCntl[pe].complete               =  pe_array_inst.pe_inst[pe].pe.pe__sys__complete ;  //.TB_regFileScalarDrv2stOpCntl
@@ -157,7 +163,7 @@ module top;
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
-               `ifndef TB_PE_ONLY_GATES
+               //`ifndef TB_PE_ONLY_GATES
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__request        =   LoadStore2memCntl [pe].ldst__memc__request       ;
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__released       =   LoadStore2memCntl [pe].ldst__memc__released      ;
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__write_address  =   LoadStore2memCntl [pe].ldst__memc__write_address ;
@@ -165,7 +171,7 @@ module top;
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__read_address   =   LoadStore2memCntl [pe].ldst__memc__read_address  ;
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__write_valid    =   LoadStore2memCntl [pe].ldst__memc__write_valid   ;
                assign (supply1, supply0) pe_array_inst.pe_inst[pe].pe.ldst__memc__read_valid     =   LoadStore2memCntl [pe].ldst__memc__read_valid    ;
-               `endif
+               //`endif
            end
     endgenerate
 

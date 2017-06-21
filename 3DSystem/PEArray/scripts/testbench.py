@@ -328,6 +328,32 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../SIMULATION/common/TB_PEonly_connect_Dma2Mem.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    pLine = pLine + '\n                  //----------------------------------------------------------------------------------------------------'
+    pLine = pLine + '\n                  // PE {0}'.format(pe)
+    pLine = pLine + '\n                  // '
+    for lane in range (0, numOfExecLanes):
+      pLine = pLine + '\n                  //--------------------------------------------------'
+      pLine = pLine + '\n                  // Lane {1}'.format(pe, lane)
+      pLine = pLine + '\n                  assign Dma2Mem[{0}][{1}].dma__memc__write_valid      = pe_array_inst.pe_inst[{0}].pe.mem_acc_cont.dma__memc__write_valid{1}        ;'.format(pe, lane)
+      pLine = pLine + '\n                  assign Dma2Mem[{0}][{1}].dma__memc__write_address    = pe_array_inst.pe_inst[{0}].pe.mem_acc_cont.dma__memc__write_address{1}      ;'.format(pe, lane)
+      pLine = pLine + '\n                  assign Dma2Mem[{0}][{1}].dma__memc__write_data       = pe_array_inst.pe_inst[{0}].pe.mem_acc_cont.dma__memc__write_data{1}         ;'.format(pe, lane)
+      pLine = pLine + '\n                  assign Dma2Mem[{0}][{1}].dma__memc__read_valid       = pe_array_inst.pe_inst[{0}].pe.mem_acc_cont.dma__memc__read_valid{1}         ;'.format(pe, lane)
+      pLine = pLine + '\n                  assign Dma2Mem[{0}][{1}].dma__memc__read_address     = pe_array_inst.pe_inst[{0}].pe.mem_acc_cont.dma__memc__read_address{1}       ;'.format(pe, lane)
+      pLine = pLine + '\n                  assign Dma2Mem[{0}][{1}].dma__memc__read_pause       = pe_array_inst.pe_inst[{0}].pe.mem_acc_cont.dma__memc__read_pause{1}         ;'.format(pe, lane)
+      pLine = pLine + '\n'
+      pLine = pLine + '\n                  assign Dma2Mem[{0}][{1}].memc__dma__write_ready      = pe_array_inst.pe_inst[{0}].pe.mem_acc_cont.memc__dma__write_ready{1}        ;'.format(pe, lane)
+      pLine = pLine + '\n                  assign Dma2Mem[{0}][{1}].memc__dma__read_data        = pe_array_inst.pe_inst[{0}].pe.mem_acc_cont.memc__dma__read_data{1}          ;'.format(pe, lane)
+      pLine = pLine + '\n                  assign Dma2Mem[{0}][{1}].memc__dma__read_data_valid  = pe_array_inst.pe_inst[{0}].pe.mem_acc_cont.memc__dma__read_data_valid{1}    ;'.format(pe, lane)
+      pLine = pLine + '\n                  assign Dma2Mem[{0}][{1}].memc__dma__read_ready       = pe_array_inst.pe_inst[{0}].pe.mem_acc_cont.memc__dma__read_ready{1}         ;'.format(pe, lane)
+      pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
   #-------------------------------------------------------------------------------------------------------------------------------------
   #------------------------------------------------------------------------------------------------------------------------------------------------------
 

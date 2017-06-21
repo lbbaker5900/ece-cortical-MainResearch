@@ -96,11 +96,20 @@ class mem_checker;
                                                else 
 
                                                 // check address
-                                                if (vP_mem.cb.dma__memc__write_address != sys_operation.destinationAddress[0][`PE_CHIPLET_ADDRESS_RANGE ]) 
+                                                `ifndef TB_PE_ONLY_GATES
+                                                  if (vP_mem.cb.dma__memc__write_address != sys_operation.destinationAddress[0][`PE_CHIPLET_ADDRESS_RANGE ]) 
                                                     begin
                                                         $display ("@%0t:%s:%0d:ERROR:MEM_CHECKER :: incorrect address for {%0d,%0d}: expected %h, observed %h", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.destinationAddress[0][`PE_CHIPLET_ADDRESS_RANGE ], vP_mem.cb.dma__memc__write_address);
                                                         addressBad = 1 ;
                                                     end
+                                                `else
+                                                  // synthesis may remove bits, so only check actual address
+                                                  if (vP_mem.cb.dma__memc__write_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] != sys_operation.destinationAddress[0][`MEM_ACC_CONT_BANK_ADDRESS_RANGE]) 
+                                                    begin
+                                                        $display ("@%0t:%s:%0d:ERROR:MEM_CHECKER :: incorrect address for {%0d,%0d}: expected %h, observed %h", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.destinationAddress[0][`MEM_ACC_CONT_BANK_ADDRESS_RANGE], vP_mem.cb.dma__memc__write_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE]);
+                                                        addressBad = 1 ;
+                                                    end
+                                                `endif
 
 
                                                 if (~dataBad && ~addressBad)

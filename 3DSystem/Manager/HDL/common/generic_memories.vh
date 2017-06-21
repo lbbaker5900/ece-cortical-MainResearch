@@ -258,29 +258,36 @@ genvar gvi;
 //
 //------------------------------------------------------------------------------------------------------------------------
 //
+if ((GENERIC_MEM_DEPTH == 10) && (GENERIC_MEM_DATA_WIDTH == 32) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+  begin
+
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     reg10x32    [GENERIC_MEM_DEPTH-1 :0 ] ;
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg32                                 ;
+    wire [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg32_e1                              ;
+
+    always @(posedge clk)
+      begin
+        if (portA_enable_dly && portA_write_dly)
+          reg10x32 [portA_address_dly] <= portA_write_data_dly ;
+      end
+
+    assign   oreg32_e1  =  reg10x32 [portB_address_dly] ;
+
+    always @(posedge clk)
+      begin
+        oreg32   <= ( portB_enable_dly ) ? oreg32_e1 :
+                                          'd0      ;
+      end
+    assign int_portB_read_data_dly  = oreg32  ;
+    
+    
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
 if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 32) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
   begin
-/*
-    asdrlnpky2p8x32cm1sw0         mem2prf8x32(
-                   // Output
-                   .QB          ( int_portB_read_data_dly               ),
-                   // Read Port
-                   .CLKB        ( clk                                   ),
-                   .MEB         ( portB_enable_dly                      ),
-                   .ADRB        ( portB_address_dly                     ),
-                   // Write Port
-                   .CLKA        ( clk                                   ),
-                   .WEA         ( portA_write_dly                       ),
-                   .MEA         ( portA_enable_dly                      ),
-                   .ADRA        ( portA_address_dly                     ),
-                   .DA          ( portA_write_data_dly                  ),
-                   // Test
-                   .TEST1A      ( 1'b0     ), 
-                   .WMENA       ( 1'b0     ), // FIXME
-                   .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'b0011  ), 
-                   .RMEB        ( 1'b1     ));
-*/
+
     reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     reg8x32     [GENERIC_MEM_DEPTH-1 :0 ] ;
     reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg32                                 ;
     wire [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg32_e1                              ;
@@ -375,29 +382,35 @@ if ((GENERIC_MEM_DEPTH == 128) && (GENERIC_MEM_DATA_WIDTH == 12) && (GENERIC_MEM
 
 //------------------------------------------------------------------------------------------------------------------------
 //
+if ((GENERIC_MEM_DEPTH == 10) && (GENERIC_MEM_DATA_WIDTH == 34) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+  begin
+
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     reg10x34     [GENERIC_MEM_DEPTH-1 :0 ] ;
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg34                                 ;
+    wire [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg34_e1                              ;
+
+    always @(posedge clk)
+      begin
+        if (portA_enable_dly && portA_write_dly)
+          reg10x34 [portA_address_dly] <= portA_write_data_dly ;
+      end
+
+    assign   oreg34_e1  =  reg10x34 [portB_address_dly] ;
+
+    always @(posedge clk)
+      begin
+        oreg34   <= ( portB_enable_dly ) ? oreg34_e1 :
+                                           'd0       ;
+      end
+    assign int_portB_read_data_dly  = oreg34  ;
+    
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
 if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 34) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
   begin
-/*
-    asdrlnpky2p8x34cm1sw0         mem2prf8x34(
-                   // Output
-                   .QB          ( int_portB_read_data_dly               ),
-                   // Read Port
-                   .CLKB        ( clk                                   ),
-                   .MEB         ( portB_enable_dly                      ),
-                   .ADRB        ( portB_address_dly                     ),
-                   // Write Port
-                   .CLKA        ( clk                                   ),
-                   .WEA         ( portA_write_dly                       ),
-                   .MEA         ( portA_enable_dly                      ),
-                   .ADRA        ( portA_address_dly                     ),
-                   .DA          ( portA_write_data_dly                  ),
-                   // Test
-                   .TEST1A      ( 1'b0     ), 
-                   .WMENA       ( 1'b0     ), // FIXME
-                   .TEST1B      ( 1'b0     ), 
-                   .RMB         ( 4'b0011  ), 
-                   .RMEB        ( 1'b1     ));
-*/
+
     reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     reg8x34     [GENERIC_MEM_DEPTH-1 :0 ] ;
     reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg34                                 ;
     wire [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg34_e1                              ;

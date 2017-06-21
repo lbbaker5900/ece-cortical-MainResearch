@@ -38,7 +38,7 @@ clean :
 
 .dwPe    : ../../../PEArray/HDL/run_s/pe/synth/dw_memories/compout/views/*/std*.v 
 	vlog -sv +define+VIRAGE_FAST_VERILOG +define+MEM_CHECK_OFF +define+VIRAGE_IGNORE_RESET +incdir+../../../Manager/HDL/common ../../../PEArray/HDL/run_s/pe/synth/dw_memories/compout/views/*/*_fast_func.v           2>&1   | tee -a $1
-	vlog -sv +define+VIRAGE_FAST_VERILOG +define+MEM_CHECK_OFF +define+VIRAGE_IGNORE_RESET +define+VIRL_functiononly +incdir+../../../Manager/HDL/common  /home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/verilog/3.0/cp65npksdst.v       2>&1   | tee -a $1
+	vlog -sv +define+_fv +define+VIRAGE_FAST_VERILOG +define+MEM_CHECK_OFF +define+VIRAGE_IGNORE_RESET +define+VIRL_functiononly +incdir+../../../Manager/HDL/common  /home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/verilog/3.0/cp65npksdst.v       2>&1   | tee -a $1
 	touch .dwPe
 
 
@@ -93,7 +93,7 @@ clean :
 	echo "stack_interface"
 	touch .stack_interface
 
-.pe_cntl : .vsim_gates ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../System/HDL/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh ../../../PEArray/SIMULATION/common/*.vh        ../../../PEArray/HDL/run_s/pe/code/pe_cntl.v
+.pe_cntl : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../System/HDL/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh ../../../PEArray/SIMULATION/common/*.vh        ../../../PEArray/HDL/run_s/pe/code/pe_cntl.v
 	vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../System/HDL/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common        ../../../PEArray/HDL/run_s/pe/code/pe_cntl.v
 	echo "pe_cntl"
 	touch .pe_cntl
@@ -186,7 +186,7 @@ clean :
 	touch .testbench
 
 .top : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh  ../../../PEArray/SIMULATION/common/*.vh       top.sv 
-	vlog -sv +define+TESTING +define+TB_SYSTEM_DRIVES_OOB_PACKET +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
+	vlog -sv +define+TESTING +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	#vlog -sv +define+TESTING +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	echo "top"
 	touch .top
@@ -201,12 +201,13 @@ gvsim : .peTbPy .pePy .mgrPy .sysTbPy .sysPy .generic_1port_memory .generic_2por
 	vsim    -sv_seed 3   -l gTranscript  -novopt top
 
 
-.gates : ../../HDL/run_s/pe/synth/logs/pe/pe_final.v 
+.gates : ../../HDL/run_s/pe/synth/logs/pe/pe_final.v .top .mem_checker ./pe_cntl.v
 	vlog ../../HDL/run_s/pe/synth/logs/pe/pe_final.v 
-	vlog +define+TB_PE_ONLY_GATES -sv +define+TESTING +define+TB_SYSTEM_DRIVES_OOB_PACKET +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
+	vlog +define+TB_PE_ONLY_GATES -sv +define+TESTING +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
+	vlog +define+TB_PE_ONLY_GATES -sv +define+TESTING  +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../PEArray/SIMULATION/sv/mem_checker.sv
 	vlog pe_cntl.v
-	echo "vsim_gates"
-	touch .vsim_gates
+	echo "gates"
+	touch .gates
 
 vsimgates : .gates
 	vsim -c -sv_seed 3 -do "run.do" -novopt top 
