@@ -1,0 +1,3 @@
+pe_cntl.v
+ - empty module to allow the regFile driver to override outputs
+ - cut and paste from pe_final.v with contents removed

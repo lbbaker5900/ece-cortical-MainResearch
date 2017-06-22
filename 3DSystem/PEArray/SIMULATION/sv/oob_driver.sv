@@ -211,8 +211,10 @@ class oob_driver;
                               end
                             vSysOob2PeArray.cb_test.std__pe__oob_cntl         <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;  
                             vSysOob2PeArray.cb_test.sys__pe__allSynchronized  <= 1  ;
-                            vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
-                            vSysOob2PeArray.cb_test.std__pe__oob_data         <= STD_PACKET_OOB_DATA_PE_OP_CMD  ;
+                            `ifndef TB_PE_ONLY_GATES 
+                              vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_PE_OP_CMD  ;
+                              vSysOob2PeArray.cb_test.std__pe__oob_data         <= STD_PACKET_OOB_DATA_PE_OP_CMD  ;
+                            `endif
                             for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                               begin
                                   gen2oob.get(oob_packet_gen)  ;  // Removing the instruction from manager mailbox
@@ -239,8 +241,10 @@ class oob_driver;
                         @(vSysOob2PeArray.cb_test);
 
                         vSysOob2PeArray.cb_test.std__pe__oob_valid        <= 0  ;  // FIXME: temporary drive OOB to non-X
-                        vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_NA  ;
-                        vSysOob2PeArray.cb_test.std__pe__oob_data         <= STD_PACKET_OOB_DATA_NA  ;
+                        `ifndef TB_PE_ONLY_GATES 
+                          vSysOob2PeArray.cb_test.std__pe__oob_type         <= STD_PACKET_OOB_TYPE_NA  ;
+                          vSysOob2PeArray.cb_test.std__pe__oob_data         <= STD_PACKET_OOB_DATA_NA  ;
+                        `endif
                         for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                             begin
                                 gen2oob.get(oob_packet_gen)  ;  //Removing the instruction from manager mailbox

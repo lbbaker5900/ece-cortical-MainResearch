@@ -138,9 +138,9 @@ class manager;
 
                 // FIXME: currently the operation class decides what type of operation based on transaction ID
                 // FIXME: currently the operation class decides what type of operation based on transaction ID
-                sys_operation_mgr.c_operationType_definedOrder .constraint_mode(0) ;
+                sys_operation_mgr.c_operationType_definedOrder .constraint_mode(1) ;
                 sys_operation_mgr.c_operationType_all          .constraint_mode(0) ;
-                sys_operation_mgr.c_operationType_fpMac        .constraint_mode(1) ;
+                sys_operation_mgr.c_operationType_fpMac        .constraint_mode(0) ;
                 sys_operation_mgr.c_operationType_copyStdToMem .constraint_mode(0) ;
                 //
                 sys_operation_mgr.c_streamSize.constraint_mode(1)                 ;

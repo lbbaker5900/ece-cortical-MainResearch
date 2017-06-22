@@ -137,8 +137,13 @@ class mem_checker;
                                                     $display ("@%0t:%s:%0d:ERROR:MEM_CHECKER :: incorrect data for {%0d,%0d}: transaction %0d expected %h, observed %h", $time, `__FILE__, `__LINE__, Id[0], Id[1], transactionCount, sys_operation.operands[0][transactionCount], vP_mem.cb.dma__memc__write_data);
                                       
                                                 // check address
-                                                if (vP_mem.cb.dma__memc__write_address !=  write_address) 
-                                                    $display ("@%0t:%s:%0d:ERROR:MEM_CHECKER :: incorrect address for {%0d,%0d}: expected %h, observed %h", $time, `__FILE__, `__LINE__, Id[0], Id[1], write_address, vP_mem.cb.dma__memc__write_address);
+                                                `ifndef TB_PE_ONLY_GATES
+                                                  if (vP_mem.cb.dma__memc__write_address !=  write_address) 
+                                                      $display ("@%0t:%s:%0d:ERROR:MEM_CHECKER :: incorrect address for {%0d,%0d}: expected %h, observed %h", $time, `__FILE__, `__LINE__, Id[0], Id[1], write_address, vP_mem.cb.dma__memc__write_address);
+                                                `else
+                                                  if (vP_mem.cb.dma__memc__write_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE] !=  write_address[`MEM_ACC_CONT_BANK_ADDRESS_RANGE]) 
+                                                      $display ("@%0t:%s:%0d:ERROR:MEM_CHECKER :: incorrect address for {%0d,%0d}: expected %h, observed %h", $time, `__FILE__, `__LINE__, Id[0], Id[1], write_address, vP_mem.cb.dma__memc__write_address);
+                                                `endif
 
                                                 if (sys_operation.numberOfOperands == (transactionCount+1))
                                                     begin

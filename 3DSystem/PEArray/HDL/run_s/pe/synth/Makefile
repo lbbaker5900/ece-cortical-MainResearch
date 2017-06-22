@@ -8,7 +8,7 @@ $(GATE_DIR)/$(MODNAME)_final.v: $(RTL_DIR)/$(MODNAME).v
 	dc_shell-t -f run_synth.tcl |& tee run_synth.log ; \
 	mkdir logs/$(MODNAME) ; \
 	/bin/rm  logs/$(MODNAME) ; \
-	cp *rpt *log *.v logs/$(MODNAME)/. "
+	cp -p *rpt *log *.v logs/$(MODNAME)/. "
 
 .PHONY: pt ptsi
 
