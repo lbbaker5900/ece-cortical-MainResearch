@@ -5,12 +5,15 @@ LIB_DIR=mti_lib
 #library: mti_lib
 #	vlib $(LIB_DIR)
 
-all : .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .regFile_driver .loadStore_driver .environment .testbench .top 
+all : .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .regFile_driver .loadStore_driver .environment .testbench .top 
 
 clean : 
 	/bin/rm .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .regFile_driver .loadStore_driver .environment .testbench .top 
 	/bin/rm -rf mti_lib
 	vlib mti_lib
+
+cleanPy : 
+	/bin/rm .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy 
 
 .peTbPy : ../../../PEArray/scripts/testbench.py
 	pushd ../../../PEArray/scripts; ./testbench.py  ; popd
@@ -31,6 +34,9 @@ clean :
 .sysPy : ../../../System/scripts/system.py
 	pushd ../../../System/scripts; ./system.py  ; popd
 	touch .sysPy
+
+.Py : .sysPy .sysTbPy .mgrPy .pePy .peTbPy
+	touch .Py
 
 
 #FIXME  : MEM_CHECK_OFF ????
@@ -207,7 +213,7 @@ gvsim : .peTbPy .pePy .mgrPy .sysTbPy .sysPy .generic_1port_memory .generic_2por
 	vsim    -sv_seed 3   -l gTranscript  -novopt top
 
 
-.gates : ../../HDL/run_s/pe/synth/logs/pe/pe_final.v ./pe_cntl.v
+.gates : ../../HDL/run_s/pe/synth/logs/pe/pe_final.v ./simGates/pe_cntl.v
 	vlog ../../HDL/run_s/pe/synth/logs/pe/pe_final.v 
 	vlog -sv +define+TB_PE_ONLY_GATES+TB_ENABLE_REGFILE_DRIVER+TESTING +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common   top.sv 
 	echo "top"                                                                           

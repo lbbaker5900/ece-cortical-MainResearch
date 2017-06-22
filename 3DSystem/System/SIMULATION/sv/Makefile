@@ -5,12 +5,15 @@ LIB_DIR=mti_lib
 #library: mti_lib
 #	vlib $(LIB_DIR)
 
-all : .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
+all : .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
 
 clean : 
-	/bin/rm .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
+	/bin/rm .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .sram .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .mem_checker .upstream_checker .regFile_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .environment .testbench .top 
 	/bin/rm -rf mti_lib
 	vlib mti_lib
+
+cleanPy : 
+	/bin/rm .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy 
 
 .peTbPy : ../../../PEArray/scripts/testbench.py
 	pushd ../../../PEArray/scripts; ./testbench.py  ; popd
@@ -31,6 +34,10 @@ clean :
 .sysPy : ../../../System/scripts/system.py
 	pushd ../../../System/scripts; ./system.py  ; popd
 	touch .sysPy
+
+.Py : .sysPy .sysTbPy .mgrPy .pePy .peTbPy
+	touch .Py
+
 
 #FIXME  : MEM_CHECK_OFF ????
 .dwMgr    : ../../../Manager/HDL/run_s/manager/synth/dw_memories/compout/views/*/std*.v 
