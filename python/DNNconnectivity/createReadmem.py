@@ -761,11 +761,11 @@ def main():
       consJumpPtrWidth = int(math.log(localStorageDescMemoryDepth*cjToDescRatio*2,2))
       for c in range(len(sdAddress)):
         instruction = ''
-        instruction = bin(int(memAddress[c],16)).split('b')[1].zfill(numOfAddressBits) + instruction
-        print 'Instruction : {0}'.format(instruction)
         instruction = bin(int(accessOrder[c],16)).split('b')[1].zfill(optionOrderWidth) + instruction
         print 'Instruction : {0}'.format(instruction)
         instruction = bin(int(consJumpPtr[c],16)).split('b')[1].zfill(consJumpPtrWidth ) + instruction
+        print 'Instruction : {0}'.format(instruction)
+        instruction = bin(int(memAddress[c],16)).split('b')[1].zfill(numOfAddressBits) + instruction
         print 'Instruction : {0}'.format(instruction)
         if len(instruction)%4 == 0:
           lenInstInHex = len(instruction)/4
