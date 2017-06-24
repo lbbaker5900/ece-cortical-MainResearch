@@ -173,6 +173,9 @@ module streamingOps_cntl (
   `include "streamingOps_cntl_simd_wires.vh"
   `include "streamingOps_cntl_simd_assignments.vh"  // convert from multidimensional array
 
+  reg      pe__sys__thisSynchronized    ;  // this PE's streams are complete
+  wire     pe__sys__thisSynchronized_e1 ; 
+
   wire scntl__memc__request  ;
   wire memc__scntl__granted  ;
   wire scntl__memc__released ;
@@ -195,6 +198,15 @@ module streamingOps_cntl (
   `include "streamingOps_cntl_to_simd_regfile_wires.vh"
   `include "streamingOps_cntl_stOp_to_cntl_regfile_wires.vh"
 
+
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  // Registered Inputs and Outputs
+
+  always @(posedge clk)
+    begin
+      pe__sys__thisSynchronized    <= pe__sys__thisSynchronized_e1 ;
+    end
 
   //------------------------------------------------------------
   // Operation related fields

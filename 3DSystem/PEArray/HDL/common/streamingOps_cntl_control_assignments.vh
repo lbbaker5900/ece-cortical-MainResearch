@@ -1,7 +1,7 @@
 
   // pe__sys__thisSyncnronized basically means all the streams in the PE are complete
   // The PE controller will move to a 'final' state once it receives sys__pe__allSynchronized
-  assign pe__sys__thisSynchronized = ((strm_control[0].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[0].lane_enable) & 
+  assign pe__sys__thisSynchronized_e1 = ((strm_control[0].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[0].lane_enable) & 
                                      ((strm_control[1].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[1].lane_enable) &  
                                      ((strm_control[2].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[2].lane_enable) &  
                                      ((strm_control[3].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[3].lane_enable) &  

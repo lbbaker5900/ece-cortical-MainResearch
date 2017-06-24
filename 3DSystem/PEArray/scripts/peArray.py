@@ -2117,7 +2117,7 @@ if __name__ == "__main__":
   # Generate a signal indicating all lanes streams are done
   pLine = pLine + '\n  // pe__sys__thisSyncnronized basically means all the streams in the PE are complete'
   pLine = pLine + '\n  // The PE controller will move to a \'final\' state once it receives sys__pe__allSynchronized'
-  pLine = pLine + '\n  assign pe__sys__thisSynchronized = ((strm_control[0].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[0].lane_enable) & '.format(lane)
+  pLine = pLine + '\n  assign pe__sys__thisSynchronized_e1 = ((strm_control[0].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[0].lane_enable) & '.format(lane)
   for lane in range (1, (numOfExecLanes)-1):
     pLine = pLine + '\n                                     ((strm_control[{0}].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[{0}].lane_enable) &  '.format(lane)
   pLine = pLine + '\n                                     ((strm_control[{0}].so_cntl_strm_state == `STREAMING_OP_CNTL_STRM_WAIT_FOR_SYNC) | ~strm_control[{0}].lane_enable) ; '.format(numOfExecLanes-1)

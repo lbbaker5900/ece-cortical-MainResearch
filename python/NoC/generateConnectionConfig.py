@@ -116,7 +116,9 @@ xDim = numberOfPEsInXDirection
 
 peArray = PEarray(yDim, xDim);
 
-f = open('nocConfig_mesh8x8.txt', 'w')
+outputFile = "nocConfig_mesh{0}x{1}.txt".format(yDim, xDim)
+#f = open('nocConfig_mesh8x8.txt', 'w')
+f = open(outputFile, 'w')
 pLine = ""
 
 pLine = pLine + '\n'

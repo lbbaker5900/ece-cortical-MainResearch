@@ -144,6 +144,12 @@ set_dont_touch [get_cell simd_wrapper/simd_core]
 
 set verilogout_show_unconnected_pins true
 
+#---------------------------------------------------------
+# Other 
+#  - DW FP MAC timing can be ignored as we assume horowitz performance
+#--------------------------------------------------------- 
+set_disable_timing [get_cells  -hier *DW_fp_mac*]
+
 #------------------------------------------------------
 # During the initial map (synthesis), Synopsys might   
 # have built parts (such as adders) using its          

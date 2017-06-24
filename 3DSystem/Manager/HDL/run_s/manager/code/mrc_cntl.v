@@ -1273,7 +1273,7 @@ module mrc_cntl (
                         // Port 
                         .portA_address       ( local_storage_desc_ptr          ),
                         .portA_write_data    ( {`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_WIDTH {1'b0}} ),
-                        .portA_read_data     ( {sdmem_consJumpPtr, sdmem_AccessOrder, sdmem_Address}),
+                        .portA_read_data     ( {sdmem_Address, sdmem_consJumpPtr, sdmem_AccessOrder}),
                         .portA_enable        ( 1'b1                             ), 
                         .portA_write         ( 1'b0                             ),
                         
