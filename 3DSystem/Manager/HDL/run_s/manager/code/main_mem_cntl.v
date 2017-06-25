@@ -15,7 +15,8 @@
 `timescale 1ns/10ps
 
 `include "common.vh"
-`include "scheduler.vh"
+`include "manager.vh"
+`include "main_mem_cntl.vh"
 
 module main_mem_cntl (
 
@@ -90,9 +91,9 @@ module main_mem_cntl (
         end
     end
 
-    //----------------------------------------------------------------------------------------------------
-    //----------------------------------------------------------------------------------------------------
-    // Register inputs and outputs
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  // Request input FIFO
 
   genvar gvi ;
   generate
@@ -142,6 +143,20 @@ module main_mem_cntl (
       mmc__mrc__ready_e1     = ~request_fifo[0].almost_full ;
       request_fifo[0].write  = mrc__mmc__valid_d1           ;
     end
+
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  // Open Page registers
+
+  generate
+    for (gvi=0; gvi<MGR_DRAM_NUM_BANKS ; gvi=gvi+1) 
+      begin: bank_info
+
+        reg                                ]    a_page_is_open ;
+        reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    open_page_id   ;
+
+      end
+  endgenerate
 
 //--------------------------------------------------------------------------------
 // Page Final Queue
