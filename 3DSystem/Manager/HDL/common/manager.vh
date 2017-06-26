@@ -464,6 +464,15 @@
 `define MGR_DRAM_PAGE_SIZE                          4096
 `define MGR_DRAM_NUM_WORDS_PER_PAGE                 `MGR_DRAM_PAGE_SIZE/32
 
+// Define state of signals
+// CS, CMD1, CMD0
+`define MGR_DRAM_COMMAND_NOP    3'b000
+`define MGR_DRAM_COMMAND_PO     3'b011
+`define MGR_DRAM_COMMAND_PC     3'b010
+`define MGR_DRAM_COMMAND_PR     3'b001
+`define MGR_DRAM_COMMAND_CR     3'b010
+`define MGR_DRAM_COMMAND_CW     3'b011
+
 // cache line size 
 `define MGR_DRAM_NUM_WORDS_PER_LINE              (`MGR_DRAM_NUM_WORDS_PER_PAGE/2)
 `define MGR_DRAM_NUM_LINES                       (`MGR_DRAM_NUM_WORDS_PER_PAGE/`MGR_DRAM_NUM_WORDS_PER_LINE)

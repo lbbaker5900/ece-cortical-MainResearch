@@ -78,14 +78,6 @@ module mrc_cntl (
             input  wire                           reset_poweron  
                         );
 
-    /*
-     localparam MGR_DRAM_NUM_LINES = `MGR_DRAM_NUM_LINES ;
-     `undef MGR_DRAM_REQUEST_LT_PAGE
-     if (MGR_DRAM_NUM_LINES != 0)
-       begin
-        `define MGR_DRAM_REQUEST_LT_PAGE
-      end
-    */
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
     // Registers and Wires
