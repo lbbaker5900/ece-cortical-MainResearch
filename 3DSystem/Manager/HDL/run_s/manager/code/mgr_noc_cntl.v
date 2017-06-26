@@ -132,8 +132,6 @@ module mgr_noc_cntl (
   input  [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ] locl__noc__cp_desttype   ; 
   input                                             locl__noc__cp_pvalid     ; 
   input  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] locl__noc__cp_data       ; 
-  //input  [`PE_EXEC_LANE_ID_RANGE                  ] locl__noc__cp_laneId     ; 
-  //input                                             locl__noc__cp_strmId     ; 
   
   // Aggregate Data-path (dp) to NoC 
   input                                             locl__noc__dp_valid      ; 
@@ -144,8 +142,6 @@ module mgr_noc_cntl (
   input  [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ] locl__noc__dp_desttype   ; 
   input                                             locl__noc__dp_pvalid     ; 
   input  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] locl__noc__dp_data       ; 
-  //input  [`PE_EXEC_LANE_ID_RANGE                  ] locl__noc__dp_laneId     ; 
-  //input                                             locl__noc__dp_strmId     ; 
  
   // Aggregate Control-path (cp) from NoC 
   output                                            noc__locl__cp_valid      ; 
@@ -156,8 +152,6 @@ module mgr_noc_cntl (
   output [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] noc__locl__cp_data       ; 
   output                                            noc__locl__cp_pvalid     ; 
   output [`MGR_MGR_ID_RANGE                       ] noc__locl__cp_mgrId      ; 
-  //output [`PE_EXEC_LANE_ID_RANGE                  ] noc__locl__cp_laneId     ; 
-  //output                                            noc__locl__cp_strmId     ; 
 
   // Aggregate Data-path (dp) from NoC 
   output                                            noc__locl__dp_valid      ; 
@@ -168,8 +162,6 @@ module mgr_noc_cntl (
   output [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] noc__locl__dp_data       ; 
   output                                            noc__locl__dp_pvalid     ; 
   output [`MGR_MGR_ID_RANGE                       ] noc__locl__dp_mgrId      ; 
-  //output [`PE_EXEC_LANE_ID_RANGE                  ] noc__locl__dp_laneId     ; 
-  //output                                            noc__locl__dp_strmId     ; 
 
 
   `include "mgr_noc_cntl_noc_ports_declaration.vh"

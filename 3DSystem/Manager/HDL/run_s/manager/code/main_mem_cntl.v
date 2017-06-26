@@ -59,10 +59,10 @@ module main_mem_cntl (
             //-------------------------------
             // General
             //
-            input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
+            input   wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
 
-            input  wire                           clk             ,
-            input  wire                           reset_poweron  
+            input   wire                           clk             ,
+            input   wire                           reset_poweron  
  
               );   
 

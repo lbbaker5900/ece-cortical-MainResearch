@@ -257,6 +257,26 @@ if __name__ == "__main__":
 
   searchFile.close()
   
+  f = open('../HDL/common/manager_noc_cntl_noc_ports_and_declaration.vh', 'w')
+  pLine = ""
+
+  for port in range (0, numOfPorts):
+    pLine = pLine + '\n            // NoC port {0}'.format(port)
+    pLine = pLine + '\n            output   wire                                         mgr__noc__port{0}_valid            ,'.format(port)
+    pLine = pLine + '\n            output   wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  mgr__noc__port{0}_cntl             ,'.format(port)
+    pLine = pLine + '\n            output   wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  mgr__noc__port{0}_data             ,'.format(port)
+    pLine = pLine + '\n            input    wire                                         noc__mgr__port{0}_fc               ,'.format(port)
+    pLine = pLine + '\n            input    wire                                         noc__mgr__port{0}_valid            ,'.format(port)
+    pLine = pLine + '\n            input    wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port{0}_cntl             ,'.format(port)
+    pLine = pLine + '\n            input    wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port{0}_data             ,'.format(port)
+    pLine = pLine + '\n            output   wire                                         mgr__noc__port{0}_fc               ,'.format(port)
+    pLine = pLine + '\n            input    wire   [`MGR_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port{0}_destinationMask  ,'.format(port)
+    pLine = pLine + '\n'        
+  pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
   f = open('../HDL/common/manager_noc_cntl_noc_ports.vh', 'w')
   pLine = ""
 
@@ -283,15 +303,15 @@ if __name__ == "__main__":
 
   for port in range (0, numOfPorts):
     pLine = pLine + '\n  // NoC port {0}'.format(port)
-    pLine = pLine + '\n  output                                   mgr__noc__port{0}_valid           ;'.format(port)
-    pLine = pLine + '\n  output [`COMMON_STD_INTF_CNTL_RANGE ]  mgr__noc__port{0}_cntl            ;'.format(port)
-    pLine = pLine + '\n  output [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  mgr__noc__port{0}_data            ;'.format(port)
-    pLine = pLine + '\n  input                                    noc__mgr__port{0}_fc              ;'.format(port)
-    pLine = pLine + '\n  input                                    noc__mgr__port{0}_valid           ;'.format(port)
-    pLine = pLine + '\n  input  [`COMMON_STD_INTF_CNTL_RANGE ]  noc__mgr__port{0}_cntl            ;'.format(port)
-    pLine = pLine + '\n  input  [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port{0}_data            ;'.format(port)
-    pLine = pLine + '\n  output                                   mgr__noc__port{0}_fc              ;'.format(port)
-    pLine = pLine + '\n  input  [`MGR_MGR_ID_BITMASK_RANGE     ]  sys__mgr__port{0}_destinationMask ;'.format(port)
+    pLine = pLine + '\n  output                                         mgr__noc__port{0}_valid           ;'.format(port)
+    pLine = pLine + '\n  output   [`COMMON_STD_INTF_CNTL_RANGE       ]  mgr__noc__port{0}_cntl            ;'.format(port)
+    pLine = pLine + '\n  output   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  mgr__noc__port{0}_data            ;'.format(port)
+    pLine = pLine + '\n  input                                          noc__mgr__port{0}_fc              ;'.format(port)
+    pLine = pLine + '\n  input                                          noc__mgr__port{0}_valid           ;'.format(port)
+    pLine = pLine + '\n  input    [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port{0}_cntl            ;'.format(port)
+    pLine = pLine + '\n  input    [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port{0}_data            ;'.format(port)
+    pLine = pLine + '\n  output                                         mgr__noc__port{0}_fc              ;'.format(port)
+    pLine = pLine + '\n  input    [`MGR_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port{0}_destinationMask ;'.format(port)
     pLine = pLine + '\n'        
   pLine = pLine + '\n'
 
@@ -1254,6 +1274,26 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../HDL/common/system_manager_stack_bus_downstream_ports_and_declaration.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    #
+    pLine = pLine + '\n            //-----------------------------------------------------------'
+    pLine = pLine + '\n            // Manager Lane arguments to the PE                          '
+    pLine = pLine + '\n'
+    for lane in range (0, numOfExecLanes):
+      for strm in range (0, 2):
+        pLine = pLine + '\n            // manager {0}, lane {1}, stream {2}      '.format(pe,lane,strm) 
+        pLine = pLine + '\n            input   wire                                        std__mgr{0}__lane{1}_strm{2}_ready       ,'.format(pe,lane,strm)
+        pLine = pLine + '\n            output  wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   mgr{0}__std__lane{1}_strm{2}_cntl        ,'.format(pe,lane,strm) 
+        pLine = pLine + '\n            output  wire  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mgr{0}__std__lane{1}_strm{2}_data        ,'.format(pe,lane,strm) 
+        pLine = pLine + '\n            output  wire                                        mgr{0}__std__lane{1}_strm{2}_data_valid  ,'.format(pe,lane,strm) 
+        pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
   f = open('../HDL/common/system_manager_stack_bus_downstream_ports.vh', 'w')
   pLine = ""
 
@@ -1524,6 +1564,24 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+
+  f = open('../HDL/common/manager_stack_bus_downstream_ports_and_declaration.vh', 'w')
+  pLine = ""
+
+  for lane in range (0, numOfExecLanes):
+    pLine = pLine + '\n            // Lane operand bus                  '.format(lane)
+    pLine = pLine + '\n           input   wire                                            std__mgr__lane{0}_strm0_ready       ,'.format(lane)
+    pLine = pLine + '\n           output  wire [`COMMON_STD_INTF_CNTL_RANGE       ]       mgr__std__lane{0}_strm0_cntl        ,'.format(lane) 
+    pLine = pLine + '\n           output  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       mgr__std__lane{0}_strm0_data        ,'.format(lane) 
+    pLine = pLine + '\n           output  wire                                            mgr__std__lane{0}_strm0_data_valid  ,'.format(lane) 
+    pLine = pLine + '\n           input   wire                                            std__mgr__lane{0}_strm1_ready       ,'.format(lane)
+    pLine = pLine + '\n           output  wire [`COMMON_STD_INTF_CNTL_RANGE       ]       mgr__std__lane{0}_strm1_cntl        ,'.format(lane) 
+    pLine = pLine + '\n           output  wire [`STACK_DOWN_INTF_STRM_DATA_RANGE  ]       mgr__std__lane{0}_strm1_data        ,'.format(lane) 
+    pLine = pLine + '\n           output  wire                                            mgr__std__lane{0}_strm1_data_valid  ,'.format(lane) 
+    pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
 
   f = open('../HDL/common/manager_stack_bus_downstream_ports.vh', 'w')
   pLine = ""

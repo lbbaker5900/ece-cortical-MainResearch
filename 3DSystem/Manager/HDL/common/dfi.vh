@@ -1,10 +1,15 @@
+`ifndef _dfi_vh
+`define _dfi_vh
+
 /*****************************************************************
 
     File name   : dfi.vh
     Author      : Lee Baker
     Affiliation : North Carolina State University, Raleigh, NC
-    Date        : Apr 2016
+    Date        : June 2017
     email       : lbbaker@ncsu.edu
+
+      Note: leveraged from https://github.ncsu.edu/ECE-Memory-Controller-IS/ece-diram4-memory-controller/blob/master/HDL/run_s/dfi
 
 *****************************************************************/
 
@@ -28,3 +33,8 @@
 `define DFI_TOP_DIRAM4_DATA_LSB             0
 `define DFI_TOP_DIRAM4_DATA_RANGE           `DFI_TOP_DIRAM4_DATA_MSB : `DFI_TOP_DIRAM4_DATA_LSB
 
+//---------------------------------------------------------------------------------------------------------------------
+
+
+
+`endif

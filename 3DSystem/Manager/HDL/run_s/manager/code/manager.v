@@ -36,114 +36,87 @@
 
 module manager (
 
+            //--------------------------------------------------------------------------------
+            // DFI Interface
+            // - provide per channel signals
+            // - DFI will handle SDR->DDR conversion
+            /*
+            input   wire                                           dfi__mmc__init_done                                                              ,
+            input   wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      dfi__mmc__chan_data  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ,
+            input   wire                                           dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]                                   ,
+            output  wire                                           mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]                                   ,
+            output  wire                                           mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]                                   ,
+            output  wire                                           mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]                                   ,
+            output  wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ,
+            output  wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]                                   ,
+            output  wire  [ `MGR_DRAM_ADDRESS_RANGE         ]      mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]                                   ,
+            */
+
             //-------------------------------
             // NoC
             //
-            `include "manager_noc_cntl_noc_ports.vh"
+            `include "manager_noc_cntl_noc_ports_and_declaration.vh"
  
 
             //-------------------------------
             // Stack Bus - OOB Downstream
             //
             // OOB controls how the lanes are interpreted
-            mgr__std__oob_cntl        , 
-            mgr__std__oob_valid       , 
-            std__mgr__oob_ready       , 
-            mgr__std__oob_type        , 
-            mgr__std__oob_data        , 
+            output  wire [`COMMON_STD_INTF_CNTL_RANGE     ]    mgr__std__oob_cntl        , 
+            output  wire                                       mgr__std__oob_valid       , 
+            input   wire                                       std__mgr__oob_ready       , 
+            output  wire [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]    mgr__std__oob_type        , 
+            output  wire [`STACK_DOWN_OOB_INTF_DATA_RANGE ]    mgr__std__oob_data        , 
 
             //-------------------------------
             // Stack Bus - Downstream
             //
-            `include "manager_stack_bus_downstream_ports.vh"
+            `include "manager_stack_bus_downstream_ports_and_declaration.vh"
 
             //-------------------------------
             // Stack Bus - Upstream
             //
-            stu__mgr__valid         ,
-            stu__mgr__cntl          ,
-            mgr__stu__ready         ,
-            stu__mgr__type          ,  // Control or Data, Vector or scalar
-            stu__mgr__data          ,
-            stu__mgr__oob_data      ,
+            input   wire                                    stu__mgr__valid         ,
+            input   wire [`COMMON_STD_INTF_CNTL_RANGE   ]   stu__mgr__cntl          ,
+            output  wire                                    mgr__stu__ready         ,
+            input   wire [`STACK_UP_INTF_TYPE_RANGE     ]   stu__mgr__type          ,  // Control or Data, Vector or scalar
+            input   wire [`STACK_UP_INTF_DATA_RANGE     ]   stu__mgr__data          ,
+            input   wire [`STACK_UP_INTF_OOB_DATA_RANGE ]   stu__mgr__oob_data      ,
  
             //-------------------------------
             // General control and status 
-            sys__mgr__mgrId               , 
-            mgr__sys__allSynchronized     , 
-            sys__mgr__thisSynchronized    , 
-            sys__mgr__ready               , 
-            sys__mgr__complete            , 
-
-            clk                    ,
-            reset_poweron    
+            output  wire   mgr__sys__allSynchronized     , 
+            input   wire   sys__mgr__thisSynchronized    , 
+            input   wire   sys__mgr__ready               , 
+            input   wire   sys__mgr__complete            , 
+                    
+            input   wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
+                    
+            input   wire                           clk             ,
+            input   wire                           reset_poweron  
  
     );
 
-  input                               clk                ;
-  input                               reset_poweron      ;
 
-  // General control and status                                
-  input   [`MGR_MGR_ID_RANGE    ]     sys__mgr__mgrId               ;
-  output                              mgr__sys__allSynchronized     ;
-  input                               sys__mgr__thisSynchronized    ; 
-  input                               sys__mgr__ready               ; 
-  input                               sys__mgr__complete            ; 
-
-
-
-  //-------------------------------------------------------------------------------------------------
-  // Stack Bus - OOB Downstream
-
-  // OOB carries PE configuration    
-  output  [`COMMON_STD_INTF_CNTL_RANGE     ]      mgr__std__oob_cntl            ; 
-  output                                          mgr__std__oob_valid           ; 
-  input                                           std__mgr__oob_ready           ; 
-  output  [`STACK_DOWN_OOB_INTF_TYPE_RANGE ]      mgr__std__oob_type            ; 
-  output  [`STACK_DOWN_OOB_INTF_DATA_RANGE ]      mgr__std__oob_data            ; 
 
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Downstream
 
   // carries lane arguments
-  `include "manager_stack_bus_downstream_port_declarations.vh"
-
-  //-------------------------------------------------------------------------------------------------
-  // Stack Bus - Upstream
-  //
-  input                                          stu__mgr__valid       ;
-  input   [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr__cntl        ;
-  output                                         mgr__stu__ready       ;
-  input   [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr__type        ;  // Control or Data, Vector or scalar
-  input   [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr__data        ;
-  input   [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data    ;
- 
-
-
+  //`include "manager_stack_bus_downstream_port_declarations.vh"
 
 
   //-------------------------------------------------------------------------------------------------
   //-------------------------------------------------------------------------------------------------
   // Regs and Wires
   
-  wire    [`MGR_MGR_ID_RANGE    ]     sys__mgr__mgrId    ;
 
-  //-------------------------------------------------------------------------------------------------
-  // Stack Bus - Upstream
-  //
-  wire                                           stu__mgr__valid       ;
-  wire    [`COMMON_STD_INTF_CNTL_RANGE   ]       stu__mgr__cntl        ;
-  wire                                           mgr__stu__ready       ;
-  wire    [`STACK_UP_INTF_TYPE_RANGE     ]       stu__mgr__type        ;  // Control or Data, Vector or scalar
-  wire    [`STACK_UP_INTF_DATA_RANGE     ]       stu__mgr__data        ;
-  wire    [`STACK_UP_INTF_OOB_DATA_RANGE ]       stu__mgr__oob_data    ;
- 
   //-------------------------------------------------------------------------------------------------
   // NoC
   //
-  `include "manager_noc_cntl_noc_ports_declaration.vh"
+  //`include "manager_noc_cntl_noc_ports_declaration.vh"
 
-  `include "noc_to_mgrArray_connection_wires.vh"
+  //`include "noc_to_mgrArray_connection_wires.vh"
 
   `include "manager_noc_connection_wires.vh"
 
@@ -453,6 +426,77 @@ module manager (
       end
   endgenerate
 
+  //-------------------------------
+  // Main Memory Controller interface
+  //
+  wire                                           mrc__mmc__valid   [`MGR_NUM_OF_STREAMS ]     ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl    [`MGR_NUM_OF_STREAMS ]     ;
+  wire                                           mmc__mrc__ready   [`MGR_NUM_OF_STREAMS ]     ;
+  wire  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      mrc__mmc__channel [`MGR_NUM_OF_STREAMS ]     ;
+  wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mrc__mmc__bank    [`MGR_NUM_OF_STREAMS ]     ;
+  wire  [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      mrc__mmc__page    [`MGR_NUM_OF_STREAMS ]     ;
+  wire  [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      mrc__mmc__word    [`MGR_NUM_OF_STREAMS ]     ;
+                                                                          
+  // MMC provides data from each DRAM channel
+  // - response must be in order of request
+  wire                                           mmc__mrc__valid   [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ]                                   ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mmc__mrc__cntl    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ]                                   ;
+  wire                                           mrc__mmc__ready   [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ]                                   ;
+  wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      mmc__mrc__data    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
+
+
+  wire                                           dfi__mmc__init_done                                                              ;
+  wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      dfi__mmc__chan_data  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
+  wire                                           dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]                                   ;
+  wire                                           mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]                                   ;
+  wire                                           mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
+  wire                                           mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
+  wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
+  wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
+  wire  [ `MGR_DRAM_ADDRESS_RANGE         ]      mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
+
+  main_mem_cntl main_mem_cntl (
+
+                //-------------------------------
+                // Main Memory Controller interface
+                //
+                .mrc__mmc__valid      ( mrc__mmc__valid      ),
+                .mrc__mmc__cntl       ( mrc__mmc__cntl       ),
+                .mmc__mrc__ready      ( mmc__mrc__ready      ),
+                .mrc__mmc__channel    ( mrc__mmc__channel    ),
+                .mrc__mmc__bank       ( mrc__mmc__bank       ),
+                .mrc__mmc__page       ( mrc__mmc__page       ),
+                .mrc__mmc__word       ( mrc__mmc__word       ),
+                                                        
+                                                          
+                .mmc__mrc__valid      ( mmc__mrc__valid      ),
+                .mmc__mrc__cntl       ( mmc__mrc__cntl       ),
+                .mrc__mmc__ready      ( mrc__mmc__ready      ),
+                .mmc__mrc__data       ( mmc__mrc__data       ),
+              
+                //--------------------------------------------------------------------------------
+                // DFI Interface
+                // - provide per channel signals
+                // - DFI will handle SDR->DDR conversion
+                .dfi__mmc__init_done     ( dfi__mmc__init_done    ),
+                .dfi__mmc__chan_data     ( dfi__mmc__chan_data    ),
+                .dfi__mmc__valid         ( dfi__mmc__valid        ),
+                .mmc__dfi__cs            ( mmc__dfi__cs           ),
+                .mmc__dfi__cmd0          ( mmc__dfi__cmd0         ),
+                .mmc__dfi__cmd1          ( mmc__dfi__cmd1         ),
+                .mmc__dfi__data          ( mmc__dfi__data         ),
+                .mmc__dfi__bank          ( mmc__dfi__bank         ),
+                .mmc__dfi__addr          ( mmc__dfi__addr         ),
+
+  
+                //-------------------------------
+                // General
+                //
+                .sys__mgr__mgrId         ( sys__mgr__mgrId         ),
+                .clk                     ( clk                     ),
+                .reset_poweron           ( reset_poweron           ) 
+ 
+              );   
   //******************************
   // ****  DEBUG  ****
   // FIXME
