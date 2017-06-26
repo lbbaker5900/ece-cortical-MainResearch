@@ -485,6 +485,12 @@
 //****************************************************************************************************
   
 
+`define MGR_DRAM_INTF_WIDTH                          2048
+`define MGR_DRAM_INTF_MSB                         `MGR_DRAM_INTF_WIDTH-1
+`define MGR_DRAM_INTF_LSB                         0
+`define MGR_DRAM_INTF_SIZE                        (`MGR_DRAM_INTF_MSB - `MGR_DRAM_INTF_LSB +1)
+`define MGR_DRAM_INTF_RANGE                        `MGR_DRAM_INTF_MSB : `MGR_DRAM_INTF_LSB
+
 `define MGR_DRAM_NUM_CHANNELS_VECTOR_WIDTH                       `MGR_DRAM_NUM_CHANNELS
 `define MGR_DRAM_NUM_CHANNELS_VECTOR_MSB                         `MGR_DRAM_NUM_CHANNELS_VECTOR_WIDTH-1
 `define MGR_DRAM_NUM_CHANNELS_VECTOR_LSB                         0
@@ -495,7 +501,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 // MMC to MRC
 
-`define MGR_MMC_TO_MRC_INTF_WIDTH                          2048
+`define MGR_MMC_TO_MRC_INTF_WIDTH                       `MGR_DRAM_INTF_WIDTH
 `define MGR_MMC_TO_MRC_INTF_MSB                         `MGR_MMC_TO_MRC_INTF_WIDTH-1
 `define MGR_MMC_TO_MRC_INTF_LSB                         0
 `define MGR_MMC_TO_MRC_INTF_SIZE                        (`MGR_MMC_TO_MRC_INTF_MSB - `MGR_MMC_TO_MRC_INTF_LSB +1)
