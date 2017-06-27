@@ -100,28 +100,45 @@ module main_mem_cntl (
   reg                                         mrc__mmc__ready_d1   [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ]                                 ;
   reg  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]    mmc__mrc__data_e1    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
 
-  always @(posedge clk) 
-    begin
-      for (int chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
+  genvar chan, strm, word ;
+      for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
         begin: mem_response
-          for (int strm=0; strm<`MGR_NUM_OF_STREAMS ; strm++)
+          for (strm=0; strm<`MGR_NUM_OF_STREAMS ; strm++)
             begin: mem_response
-              mmc__mrc__valid    [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__valid_e1 [chan] [strm ] ; 
-              mmc__mrc__cntl     [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__cntl_e1  [chan] [strm ] ; 
-              mrc__mmc__ready_d1 [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__ready    [chan] [strm ] ; 
-              for (int word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
+              always @(posedge clk)
+                begin
+                  mmc__mrc__valid    [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__valid_e1 [chan] [strm ] ; 
+                  mmc__mrc__cntl     [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__cntl_e1  [chan] [strm ] ; 
+                  mrc__mmc__ready_d1 [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__ready    [chan] [strm ] ; 
+                end
+              for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
                 begin: mem_response
-                  mmc__mrc__data     [chan] [strm] [word] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__data_e1  [chan] [strm] [word] ; 
+                  always @(posedge clk)
+                    begin
+                      mmc__mrc__data     [chan] [strm] [word] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__data_e1  [chan] [strm] [word] ; 
+                    end
                 end
             end
         end
-    end
+
+  // FIXME
+  generate
+      for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
+        begin: fixme1
+          for (strm=0; strm<`MGR_NUM_OF_STREAMS ; strm++)
+            begin: fixme2
+              always @(posedge clk)
+                begin
+                  mmc__mrc__valid_e1 [chan][strm] <= 0;
+                end
+            end
+        end
+  endgenerate
 
   //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
   // Request input FIFO
 
-  genvar strm ;
   generate
     for (strm=0; strm<`MGR_NUM_OF_STREAMS ; strm=strm+1) 
       begin: request_fifo
@@ -130,7 +147,7 @@ module main_mem_cntl (
         wire  almost_full  ;
         reg                                            write        ;
         wire                                           pipe_valid   ;
-        wire                                           pipe_read    ;
+        reg                                            pipe_read    ;
 
         wire  [ `COMMON_STD_INTF_CNTL_RANGE     ]      pipe_cntl     ;
         wire  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      pipe_channel  ;
@@ -158,7 +175,7 @@ module main_mem_cntl (
                                 .clk              ( clk                   )
                                 );
 
-        wire   pipe_som     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ); 
+        wire   pipe_som     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM); 
         wire   pipe_eom     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (pipe_cntl == `COMMON_STD_INTF_CNTL_EOM);
 
         always @(*)
@@ -166,6 +183,8 @@ module main_mem_cntl (
             mmc__mrc__ready_e1 [strm] = ~almost_full              ;
             write                     = mrc__mmc__valid_d1 [strm] ;
           end
+
+        assign clear = 1'b0 ;
 
       end
   endgenerate
@@ -176,10 +195,13 @@ module main_mem_cntl (
   // Open Page registers
 
   // Remember, cannot use a variable to index into a generate, so create a variable outside the generate, set that variable inside the generate and index the variable with a variable
-  wire [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    channel_bank_open_page       [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]     ;
-  wire                                    channel_bank_a_page_is_open  [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]     ;
+  wire [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    channel_bank_open_page       [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  wire                                    channel_bank_a_page_is_open  [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg                                     set_a_page_is_open           [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg                                     clear_a_page_is_open         [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    opening_page_id              [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
 
-  genvar chan, bank ;
+  genvar bank ;
   generate
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
       begin: chan_bank_info
@@ -188,26 +210,22 @@ module main_mem_cntl (
         
             reg                                     a_page_is_open       ;
             reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    open_page_id         ;
-            wire [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    opening_page_id      ;
-        
-            wire                                    set_a_page_is_open   ;
-            wire                                    clear_a_page_is_open ;
         
             always @(posedge clk)
               begin
-                a_page_is_open  <= ( reset_poweron        ) ? 1'b0           :
-                                   ( set_a_page_is_open   ) ? 1'b1           :
-                                   ( clear_a_page_is_open ) ? 1'b0           :
-                                                              a_page_is_open ; 
+                a_page_is_open  <= ( reset_poweron                    ) ? 1'b0           :
+                                   ( set_a_page_is_open   [chan][bank]) ? 1'b1           :
+                                   ( clear_a_page_is_open [chan][bank]) ? 1'b0           :
+                                                                          a_page_is_open ; 
         
-                open_page_id    <= ( reset_poweron        ) ?  'd0            :
-                                   ( set_a_page_is_open   ) ? opening_page_id :
-                                                              open_page_id    ; 
+                open_page_id    <= ( reset_poweron                  ) ?  'd0                         :
+                                   ( set_a_page_is_open [chan][bank]) ? opening_page_id [chan][bank] :
+                                                                        open_page_id                 ;
               end
 
             // use because we cannot index the generate with a variable
-            assign  channel_bank_a_page_is_open [chan] [bank] = open_page_id   ; 
-            assign  channel_bank_open_page      [chan] [bank] = a_page_is_open ; 
+            assign  channel_bank_a_page_is_open [chan] [bank] = a_page_is_open ; 
+            assign  channel_bank_open_page      [chan] [bank] = open_page_id   ; 
         
           end
       end
@@ -242,6 +260,13 @@ module main_mem_cntl (
             //--------------------------------------------------
             // Assumptions:
             //  - 
+
+            wire                                    pipe_read            ;
+            wire [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    open_page_id         ;
+            wire [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    opening_page_id      ;
+            wire                                    set_a_page_is_open   ;
+            wire                                    clear_a_page_is_open ;
+
             //   
             
             always @(*)
@@ -255,7 +280,10 @@ module main_mem_cntl (
                                                     ( channel_bank_a_page_is_open[chan] [request_fifo[strm].pipe_bank] && (channel_bank_open_page [chan][request_fifo[strm].pipe_bank] == request_fifo[strm].pipe_page)) ) ?   `MMC_CNTL_CMD_GEN_OPEN_PAGE_MATCH     :
                                                    (( request_fifo[strm].pipe_valid                                                                                                                                                     ) && 
                                                     ( request_fifo[strm].pipe_channel == chan                                                                                                                                           ) && 
-                                                    ( channel_bank_a_page_is_open[chan] [request_fifo[strm].pipe_bank] && (channel_bank_open_page [chan][request_fifo[strm].pipe_bank] == request_fifo[strm].pipe_page)) ) ?   `MMC_CNTL_CMD_GEN_OPEN_PAGE_MISMATCH  :
+                                                    ( channel_bank_a_page_is_open[chan] [request_fifo[strm].pipe_bank] && (channel_bank_open_page [chan][request_fifo[strm].pipe_bank] != request_fifo[strm].pipe_page)) ) ?   `MMC_CNTL_CMD_GEN_OPEN_PAGE_MISMATCH  :
+                                                   (( request_fifo[strm].pipe_valid                                                                                                                                                     ) && 
+                                                    ( request_fifo[strm].pipe_channel == chan                                                                                                                                           ) && 
+                                                    (~channel_bank_a_page_is_open[chan] [request_fifo[strm].pipe_bank]                                                                                                 ) ) ?   `MMC_CNTL_CMD_GEN_PAGE_OPEN           :
                                                                                                                                                                                                                                `MMC_CNTL_CMD_GEN_WAIT                ;
        
                   `MMC_CNTL_CMD_GEN_OPEN_PAGE_MATCH: 
@@ -271,9 +299,12 @@ module main_mem_cntl (
                     mmc_cntl_cmd_gen_state_next =  `MMC_CNTL_CMD_GEN_LINE_READ       ;
        
                   `MMC_CNTL_CMD_GEN_LINE_READ: 
-                    mmc_cntl_cmd_gen_state_next =  `MMC_CNTL_CMD_GEN_WAIT       ;
+                    mmc_cntl_cmd_gen_state_next =  `MMC_CNTL_CMD_GEN_COMPLETE       ;
        
                   `MMC_CNTL_CMD_GEN_LINE_WRITE: 
+                    mmc_cntl_cmd_gen_state_next =  `MMC_CNTL_CMD_GEN_COMPLETE       ;
+       
+                  `MMC_CNTL_CMD_GEN_COMPLETE: 
                     mmc_cntl_cmd_gen_state_next =  `MMC_CNTL_CMD_GEN_WAIT       ;
        
                   `MMC_CNTL_CMD_GEN_ERR: 
@@ -288,9 +319,64 @@ module main_mem_cntl (
             //--------------------------------------------------
             // Control
             //  - 
-            //assign  storagePtr_LocalFifo[0].pipe_read       = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_START_PTR    ) & wr_destinations_ready |
-            //                                                  (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_APPEND_PTR   ) & wr_destinations_ready |
-            //                                                  (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_TRANSFER_PTRS) & wr_destinations_ready ;
+            
+            assign  pipe_read             = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_COMPLETE ) ;
+
+            assign  opening_page_id       = request_fifo[strm].pipe_page & {`MGR_DRAM_PAGE_ADDRESS_WIDTH { mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_OPEN }} ;
+            assign  set_a_page_is_open    = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_OPEN  ) ;
+            assign  clear_a_page_is_open  = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_CLOSE ) ;
+
+          end
+      end
+  endgenerate
+
+  // ead the request fifo if either fsm is reading
+  generate
+    for (strm=0; strm<`MGR_NUM_OF_STREAMS ; strm=strm+1) 
+      begin: read_request_fifo
+        always @(*)
+          begin
+            request_fifo[strm].pipe_read = chan_cmd_gen_fsm[0].strm_fsm[strm].pipe_read | chan_cmd_gen_fsm[1].strm_fsm[strm].pipe_read ;
+          end
+      end
+  endgenerate
+
+  // Examine state of stream FSMs and set channel bank/page state
+  generate
+    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
+      begin: set_chan_bank_info
+        always @(*)
+          begin
+            for (int bank=0; bank<`MGR_DRAM_NUM_BANKS ; bank=bank+1) 
+              begin: default_bank_info
+                opening_page_id      [chan][bank] =   'd0   ;
+                set_a_page_is_open   [chan][bank] =  1'b0   ;
+                clear_a_page_is_open [chan][bank] =  1'b0   ;
+              end
+            // [channel:0] 
+            case({chan_cmd_gen_fsm[chan].strm_fsm[0].set_a_page_is_open, chan_cmd_gen_fsm[chan].strm_fsm[1].set_a_page_is_open})
+              2'b01:
+                begin
+                  opening_page_id      [chan][request_fifo[1].pipe_bank] =  request_fifo[1].pipe_page ;
+                  set_a_page_is_open   [chan][request_fifo[1].pipe_bank] =  1'b1                      ;
+                end
+      
+              2'b10:
+                begin
+                  opening_page_id      [chan][request_fifo[1].pipe_bank] =  request_fifo[1].pipe_page ;
+                  set_a_page_is_open   [chan][request_fifo[1].pipe_bank] =  1'b1                      ;
+                end
+      
+              default:
+                begin
+                  for (int bank=0; bank<`MGR_DRAM_NUM_BANKS ; bank=bank+1) 
+                    begin: default_bank_info
+                      opening_page_id      [chan][bank] =   'd0   ;
+                      set_a_page_is_open   [chan][bank] =  1'b0   ;
+                      clear_a_page_is_open [chan][bank] =  1'b0   ;
+                    end
+                end
+            endcase
           end
       end
   endgenerate

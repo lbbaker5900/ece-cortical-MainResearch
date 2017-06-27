@@ -35,6 +35,7 @@
 `define MMC_CNTL_CMD_GEN_PAGE_OPEN                   11'b000_0001_0000
 `define MMC_CNTL_CMD_GEN_LINE_READ                   11'b000_0010_0000
 `define MMC_CNTL_CMD_GEN_LINE_WRITE                  11'b000_0100_0000
+`define MMC_CNTL_CMD_GEN_COMPLETE                    11'b000_1000_0000
 `define MMC_CNTL_CMD_GEN_ERR                         11'b100_0000_0000
 
 

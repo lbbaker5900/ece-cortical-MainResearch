@@ -34,24 +34,28 @@ program automatic test (
         regFileLane2stOpCntl_ifc                 RegFileLane2StOpCntl     [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES]  ,
         loadStore2memCntl_ifc                    LoadStore2memCntl        [`PE_ARRAY_NUM_OF_PE]                         ,
         
+        // dram interface                                                                                             
+        diram_ifc                                DramIfc                  [`MGR_ARRAY_NUM_OF_MGR]                       ,
+
         input logic reset
         );
 
     Environment env;
 
     initial begin
-        env = new ( GenStackBus            , 
-                    DownstreamStackBusOOB  , 
-                    DownstreamStackBusLane , 
-                    UpstreamStackBus       , 
-                    LocalToNocIfc          , 
-                    LocalFromNocIfc        , 
-                    WudToOobIfc            ,
-                    WudToMrcIfc            ,
-                    Dma2Mem                , 
-                    RegFileScalar2StOpCntl , 
-                    RegFileLane2StOpCntl   , 
-                    LoadStore2memCntl      );
+        env = new ( .vGenStackBus                ( GenStackBus            ), 
+                    .vDownstreamStackBusOOB      ( DownstreamStackBusOOB  ), 
+                    .vDownstreamStackBusLane     ( DownstreamStackBusLane ), 
+                    .vUpstreamStackBus           ( UpstreamStackBus       ), 
+                    .vLocalToNoC                 ( LocalToNocIfc          ), 
+                    .vLocalFromNoC               ( LocalFromNocIfc        ), 
+                    .vWudToOobIfc                ( WudToOobIfc            ),
+                    .vWudToMrcIfc                ( WudToMrcIfc            ),
+                    .vDma2Mem                    ( Dma2Mem                ), 
+                    .vRegFileScalarDrv2stOpCntl  ( RegFileScalar2StOpCntl ), 
+                    .vRegFileLaneDrv2stOpCntl    ( RegFileLane2StOpCntl   ), 
+                    .vLoadStoreDrv2memCntl       ( LoadStore2memCntl      ),
+                    .vDramIfc                    ( DramIfc                ));
         env.build();
         env.run();
         env.wrap_up();

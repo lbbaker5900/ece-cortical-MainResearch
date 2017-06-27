@@ -116,7 +116,7 @@ module dfi(
 
     end
 
-wire #5 clk_diram2x_dly = clk_diram2x;
+wire #0.05 clk_diram2x_dly = clk_diram2x;
 reg                                    dfi__mmc__valid_e1 ;
 reg     [`MGR_DRAM_INTF_RANGE ]        dfi__mmc__data_e1  ;    
 reg                                    dfi__mmc__valid_e2 ;

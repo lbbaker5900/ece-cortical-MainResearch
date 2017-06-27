@@ -93,6 +93,12 @@ module top;
     loadStore2memCntl_ifc       LoadStore2memCntl         [`PE_ARRAY_NUM_OF_PE]                        (clk);
 
     //----------------------------------------------------------------------------------------------------
+    // DRAM
+    diram_ifc   DramIfc        [`MGR_ARRAY_NUM_OF_MGR] (.clk   ( clk  ),
+                                                        .clk2x ( clk2x)
+                                                       ); 
+
+    //----------------------------------------------------------------------------------------------------
     // System
     //
 
@@ -137,6 +143,9 @@ module top;
                    .RegFileScalar2StOpCntl     ( RegFileScalar2StOpCntl    ) ,  // array of driver probes for the RegFile Scalar registers to stOp Controller for each PE
                    .RegFileLane2StOpCntl       ( RegFileLane2StOpCntl      ) ,  // array of driver probes for the RegFile Vector registers to stOp Controller for each PE/Lane
                    .LoadStore2memCntl          ( LoadStore2memCntl         ) ,  // array of driver probes for the Load/Store from SIMD to memory controller for each PE
+
+                   // DRAM
+                   .DramIfc                    ( DramIfc                   ) ,  // array of dram interfaces
 
                    .reset                      ( reset_poweron             ) 
                   );
@@ -310,6 +319,27 @@ module top;
     endgenerate
 
     //------------------------------------------------------------
+    // DRAM
+
+    generate
+       for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+           begin
+             assign DramIfc[mgr].clk_diram_ck          = system_inst.clk_diram_ck     [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cs          = system_inst.dfi__phy__cs     [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cmd1        = system_inst.dfi__phy__cmd1   [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cmd0        = system_inst.dfi__phy__cmd0   [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__data        = system_inst.dfi__phy__data   [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__addr        = system_inst.dfi__phy__addr   [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__bank        = system_inst.dfi__phy__bank   [mgr]   ;
+
+             assign system_inst.clk_diram_cq    [mgr]  =  DramIfc[mgr].clk_diram_cq           ;
+             assign system_inst.phy__dfi__valid [mgr]  =  DramIfc[mgr].phy__dfi__valid        ;
+             assign system_inst.phy__dfi__data  [mgr]  =  DramIfc[mgr].phy__dfi__data         ;
+
+           end
+    endgenerate
+
+    //------------------------------------------------------------
     // Memory Read to Stack Downstream Interfaces
 /*
     genvar el;
@@ -385,6 +415,8 @@ module top;
     endgenerate
 
 
+  //******************************
+  //******************************
     /*
     dut_probe_dma2mem probe_dma2mem(
              `include "TB_probe_dma2mem_connection.vh" 

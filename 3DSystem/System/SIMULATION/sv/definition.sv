@@ -15,8 +15,9 @@ package virtual_interface;
     typedef virtual wud_to_mrc_ifc                          vWudToMrc_T                   ;
     typedef virtual descriptor_ifc                          vDesc_T                       ;
 
-    typedef virtual mrc_to_std_ifc                          vMrcToStd_T                    ;
+    typedef virtual mrc_to_std_ifc                          vMrcToStd_T                   ;
 
+    typedef virtual diram_ifc                               vDiRam_T                      ;
 
 
     typedef virtual pe_dma2mem_ifc                             vDma2Mem_T                    ;
