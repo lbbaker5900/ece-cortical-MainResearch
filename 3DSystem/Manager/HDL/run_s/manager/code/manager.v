@@ -37,20 +37,22 @@
 module manager (
 
             //--------------------------------------------------------------------------------
-            // DFI Interface
-            // - provide per channel signals
-            // - DFI will handle SDR->DDR conversion
-            /*
-            input   wire                                           dfi__mmc__init_done                                                              ,
-            input   wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      dfi__mmc__chan_data  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ,
-            input   wire                                           dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]                                   ,
-            output  wire                                           mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]                                   ,
-            output  wire                                           mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]                                   ,
-            output  wire                                           mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]                                   ,
-            output  wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ,
-            output  wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]                                   ,
-            output  wire  [ `MGR_DRAM_ADDRESS_RANGE         ]      mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]                                   ,
-            */
+            // DFI Interface to DRAM
+            //
+            output   wire                                       clk_diram_ck   ,
+            output   wire                                       dfi__phy__cs   ,
+            output   wire                                       dfi__phy__cmd1 ,
+            output   wire                                       dfi__phy__cmd0 ,
+            output   wire  [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data ,
+            output   wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__addr ,
+            output   wire  [ `MGR_DRAM_ADDRESS_RANGE         ]  dfi__phy__bank ,
+
+            //--------------------------------------------------------------------------------
+            // DFI Interface from DRAM
+            //
+            input   wire                                        clk_diram_cq    ,
+            input   wire                                        phy__dfi__valid ,
+            input   wire   [ `MGR_DRAM_INTF_RANGE            ]  phy__dfi__data  ,
 
             //-------------------------------
             // NoC
@@ -85,15 +87,25 @@ module manager (
  
             //-------------------------------
             // General control and status 
-            output  wire   mgr__sys__allSynchronized     , 
-            input   wire   sys__mgr__thisSynchronized    , 
-            input   wire   sys__mgr__ready               , 
-            input   wire   sys__mgr__complete            , 
+            output  wire                                    mgr__sys__allSynchronized     , 
+            input   wire                                    sys__mgr__thisSynchronized    , 
+            input   wire                                    sys__mgr__ready               , 
+            input   wire                                    sys__mgr__complete            , 
                     
-            input   wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
+            //-------------------------------
+            // General
+            //
+            input   wire  [`MGR_MGR_ID_RANGE            ]   sys__mgr__mgrId ,
                     
-            input   wire                           clk             ,
-            input   wire                           reset_poweron  
+            //--------------------------------------------------------------------------------
+            // Clocks for SDR/DDR
+            input   wire                                    clk_diram       ,
+            input   wire                                    clk_diram2x     ,
+                                                           
+            //--------------------------------------------------------------------------------
+            // General
+            input   wire                                    clk             ,
+            input   wire                                    reset_poweron  
  
     );
 
@@ -446,7 +458,7 @@ module manager (
 
 
   wire                                           dfi__mmc__init_done                                                              ;
-  wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      dfi__mmc__chan_data  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
+  wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
   wire                                           dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]                                   ;
   wire                                           mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]                                   ;
   wire                                           mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
@@ -479,7 +491,7 @@ module manager (
                 // - provide per channel signals
                 // - DFI will handle SDR->DDR conversion
                 .dfi__mmc__init_done     ( dfi__mmc__init_done    ),
-                .dfi__mmc__chan_data     ( dfi__mmc__chan_data    ),
+                .dfi__mmc__data          ( dfi__mmc__data         ),
                 .dfi__mmc__valid         ( dfi__mmc__valid        ),
                 .mmc__dfi__cs            ( mmc__dfi__cs           ),
                 .mmc__dfi__cmd0          ( mmc__dfi__cmd0         ),
@@ -497,6 +509,56 @@ module manager (
                 .reset_poweron           ( reset_poweron           ) 
  
               );   
+
+  dfi dfi( 
+                //--------------------------------------------------------------------------------
+                // DFI Interface from MMC
+                // - provide per channel signals
+                // - DFI will handle SDR->DDR conversion
+                //
+                .dfi__mmc__init_done  ( dfi__mmc__init_done    ),
+                .dfi__mmc__data       ( dfi__mmc__data         ),
+                .dfi__mmc__valid      ( dfi__mmc__valid        ),
+                .mmc__dfi__cs         ( mmc__dfi__cs           ),
+                .mmc__dfi__cmd0       ( mmc__dfi__cmd0         ),
+                .mmc__dfi__cmd1       ( mmc__dfi__cmd1         ),
+                .mmc__dfi__data       ( mmc__dfi__data         ),
+                .mmc__dfi__bank       ( mmc__dfi__bank         ),
+                .mmc__dfi__addr       ( mmc__dfi__addr         ),
+                
+                
+                //--------------------------------------------------------------------------------
+                // DFI Interface to DRAM
+                //
+                .clk_diram_ck         ( clk_diram_ck      ), 
+                .dfi__phy__cs         ( dfi__phy__cs      ),
+                .dfi__phy__cmd1       ( dfi__phy__cmd1    ),
+                .dfi__phy__cmd0       ( dfi__phy__cmd0    ),
+                .dfi__phy__data       ( dfi__phy__data    ),
+                .dfi__phy__addr       ( dfi__phy__addr    ),
+                .dfi__phy__bank       ( dfi__phy__bank    ),
+
+                //--------------------------------------------------------------------------------
+                // DFI Interface from DRAM
+                //
+                .clk_diram_cq         ( clk_diram_cq       ),
+                .phy__dfi__valid      ( phy__dfi__valid    ),
+                .phy__dfi__data       ( phy__dfi__data     ),
+                
+                //--------------------------------------------------------------------------------
+                // Clocks for SDR/DDR
+                .clk_diram            ( clk_diram      ),
+                .clk_diram2x          ( clk_diram2x    ),
+
+                //-------------------------------
+                // General
+                //
+                .clk                     ( clk                     ),
+                .reset_poweron           ( reset_poweron           ) 
+ 
+
+                );
+    
   //******************************
   // ****  DEBUG  ****
   // FIXME

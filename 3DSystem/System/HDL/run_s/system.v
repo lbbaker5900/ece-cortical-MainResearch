@@ -30,6 +30,11 @@
 
 module system (
 
+        //--------------------------------------------------------------------------------
+        // Clocks for SDR/DDR
+        clk_diram       ,
+        clk_diram2x     ,
+
         //-------------------------------------------------------------------------------------------
         // General
         clk              ,
@@ -37,9 +42,13 @@ module system (
  
 );
 
-  //-------------------------------------------------------------------------------------------
-  // Ports
 
+  //--------------------------------------------------------------------------------
+  // Clocks for SDR/DDR
+  input                      clk_diram      ;
+  input                      clk_diram2x    ;
+  
+  //-------------------------------------------------------------------------------------------
   // General
   input                      clk            ;
   input                      reset_poweron  ;
@@ -49,6 +58,24 @@ module system (
   //-------------------------------------------------------------------------------------------
   //-------------------------------------------------------------------------------------------
   // Regs and wires
+
+  //--------------------------------------------------------------------------------
+  // DFI Interface to DRAM
+  //
+  wire                                          clk_diram_ck   [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire                                          dfi__phy__cs   [`MGR_ARRAY_NUM_OF_MGR ] ; 
+  wire                                          dfi__phy__cmd1 [`MGR_ARRAY_NUM_OF_MGR ] ; 
+  wire                                          dfi__phy__cmd0 [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire     [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire     [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__addr [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire     [ `MGR_DRAM_ADDRESS_RANGE         ]  dfi__phy__bank [`MGR_ARRAY_NUM_OF_MGR ] ;
+
+  //--------------------------------------------------------------------------------
+  // DFI Interface from DRAM
+  //
+  wire                                          clk_diram_cq    [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire                                          phy__dfi__valid [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire     [ `MGR_DRAM_INTF_RANGE            ]  phy__dfi__data  [`MGR_ARRAY_NUM_OF_MGR ] ;
 
   //-------------------------------------------------------------------------------------------
   // NoC
@@ -78,6 +105,24 @@ module system (
 
   manager_array manager_array_inst (
   
+        //--------------------------------------------------------------------------------
+        // DFI Interface to DRAM
+        //
+        .clk_diram_ck         ( clk_diram_ck      ), 
+        .dfi__phy__cs         ( dfi__phy__cs      ),
+        .dfi__phy__cmd1       ( dfi__phy__cmd1    ),
+        .dfi__phy__cmd0       ( dfi__phy__cmd0    ),
+        .dfi__phy__data       ( dfi__phy__data    ),
+        .dfi__phy__addr       ( dfi__phy__addr    ),
+        .dfi__phy__bank       ( dfi__phy__bank    ),
+
+        //--------------------------------------------------------------------------------
+        // DFI Interface from DRAM
+        //
+        .clk_diram_cq         ( clk_diram_cq       ),
+        .phy__dfi__valid      ( phy__dfi__valid    ),
+        .phy__dfi__data       ( phy__dfi__data     ),
+
         //-------------------------------------------------------------------------------------------
         // Stack Bus - General
         `include "system_manager_array_sys_general_instance_ports.vh"
@@ -94,9 +139,14 @@ module system (
         // Stack Bus - Upstream
         `include "system_manager_array_stack_bus_upstream_instance_ports.vh"
 
+        //--------------------------------------------------------------------------------
+        // Clocks for SDR/DDR
+        .clk_diram       ( clk_diram     ),
+        .clk_diram2x     ( clk_diram2x   ),
+
         //-------------------------------------------------------------------------------------------
         // General
-        .clk             ( clk           ) ,
+        .clk             ( clk           ),
         .reset_poweron   ( reset_poweron )
         );
  

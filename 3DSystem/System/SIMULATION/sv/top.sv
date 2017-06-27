@@ -33,8 +33,11 @@ module top;
     // system clock and reset
     logic reset_poweron       ;
     logic clk    =  0 ;
+    logic clk2x  =  0 ;
 
-    always #5ns clk=~clk;
+    always #2.5ns clk2x = ~clk2x;
+    always @(posedge clk2x)
+      clk = ~clk;
 
     initial begin
         reset_poweron            = 1;
@@ -95,8 +98,16 @@ module top;
 
     system system_inst (
        
-        .clk               ( clk       ),
-        .reset_poweron     ( reset_poweron     )
+        //-------------------------------
+        // Clocks for SDR/DDR
+        .clk_diram         ( clk           ),
+        .clk_diram2x       ( clk2x         ),
+
+        //-------------------------------
+        // General
+        //
+        .clk               ( clk            ),
+        .reset_poweron     ( reset_poweron  )
     );
 
 

@@ -31,6 +31,22 @@
 module manager_array (
 
         //-------------------------------------------------------------------------------------------
+        // DFI Interface to DRAM
+        clk_diram_ck   ,  
+        dfi__phy__cs   ,
+        dfi__phy__cmd1 ,
+        dfi__phy__cmd0 ,
+        dfi__phy__data ,
+        dfi__phy__addr ,
+        dfi__phy__bank ,
+
+        //-------------------------------------------------------------------------------------------
+        // DFI Interface from DRAM
+        clk_diram_cq    , 
+        phy__dfi__valid ,
+        phy__dfi__data  ,
+
+        //-------------------------------------------------------------------------------------------
         // Stack Bus - General
         `include "system_manager_sys_general_ports.vh"
 
@@ -46,6 +62,11 @@ module manager_array (
         // Stack Bus - Upstream
         `include "system_manager_stack_bus_upstream_ports.vh"
 
+        //--------------------------------------------------------------------------------
+        // Clocks for SDR/DDR
+        clk_diram       ,
+        clk_diram2x     ,
+
         //-------------------------------------------------------------------------------------------
         // General
         clk              ,
@@ -53,12 +74,35 @@ module manager_array (
  
 );
 
-  //-------------------------------------------------------------------------------------------
-  // Ports
 
+  //--------------------------------------------------------------------------------
+  // Clocks for SDR/DDR
+  input                      clk_diram      ;
+  input                      clk_diram2x    ;
+  
+  //-------------------------------------------------------------------------------------------
   // General
+
   input                      clk            ;
   input                      reset_poweron  ;
+
+  //--------------------------------------------------------------------------------
+  // DFI Interface to DRAM
+  //
+  output                                        clk_diram_ck   [`MGR_ARRAY_NUM_OF_MGR ] ;
+  output                                        dfi__phy__cs   [`MGR_ARRAY_NUM_OF_MGR ] ; 
+  output                                        dfi__phy__cmd1 [`MGR_ARRAY_NUM_OF_MGR ] ; 
+  output                                        dfi__phy__cmd0 [`MGR_ARRAY_NUM_OF_MGR ] ;
+  output   [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data [`MGR_ARRAY_NUM_OF_MGR ] ;
+  output   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__addr [`MGR_ARRAY_NUM_OF_MGR ] ;
+  output   [ `MGR_DRAM_ADDRESS_RANGE         ]  dfi__phy__bank [`MGR_ARRAY_NUM_OF_MGR ] ;
+
+  //--------------------------------------------------------------------------------
+  // DFI Interface from DRAM
+  //
+  input                                         clk_diram_cq    [`MGR_ARRAY_NUM_OF_MGR ] ;
+  input                                         phy__dfi__valid [`MGR_ARRAY_NUM_OF_MGR ] ;
+  input    [ `MGR_DRAM_INTF_RANGE            ]  phy__dfi__data  [`MGR_ARRAY_NUM_OF_MGR ] ;
 
   //-------------------------------------------------------------------------------------------
   // Stack Bus - General
@@ -107,6 +151,24 @@ module manager_array (
     for (gvi=0; gvi<`MGR_ARRAY_NUM_OF_MGR; gvi=gvi+1) 
       begin: mgr_inst
 
+        //--------------------------------------------------------------------------------
+        // DFI Interface to DRAM
+        //
+        wire                                       clk_diram_ck   ;
+        wire                                       dfi__phy__cs   ; 
+        wire                                       dfi__phy__cmd1 ; 
+        wire                                       dfi__phy__cmd0 ;
+        wire  [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data ;
+        wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__addr ;
+        wire  [ `MGR_DRAM_ADDRESS_RANGE         ]  dfi__phy__bank ;
+
+        //--------------------------------------------------------------------------------
+        // DFI Interface from DRAM
+        //
+        wire                                       clk_diram_cq    ;
+        wire                                       phy__dfi__valid ;
+        wire  [ `MGR_DRAM_INTF_RANGE            ]  phy__dfi__data  ;
+
         //-------------------------------------------------------------------------------------------------
         // General control and status 
         wire [`PE_PE_ID_RANGE                 ]     sys__mgr__mgrId               ; 
@@ -146,6 +208,24 @@ module manager_array (
 
         manager manager (
    
+                //--------------------------------------------------------------------------------
+                // DFI Interface to DRAM
+                //
+                .clk_diram_ck         ( clk_diram_ck      ), 
+                .dfi__phy__cs         ( dfi__phy__cs      ),
+                .dfi__phy__cmd1       ( dfi__phy__cmd1    ),
+                .dfi__phy__cmd0       ( dfi__phy__cmd0    ),
+                .dfi__phy__data       ( dfi__phy__data    ),
+                .dfi__phy__addr       ( dfi__phy__addr    ),
+                .dfi__phy__bank       ( dfi__phy__bank    ),
+
+                //--------------------------------------------------------------------------------
+                // DFI Interface from DRAM
+                //
+                .clk_diram_cq         ( clk_diram_cq       ),
+                .phy__dfi__valid      ( phy__dfi__valid    ),
+                .phy__dfi__data       ( phy__dfi__data     ),
+                
                 //-------------------------------
                 // NoC Interface
                 `include "manager_noc_instance_ports.vh"
@@ -180,10 +260,39 @@ module manager_array (
                 .sys__mgr__ready              ( sys__mgr__ready             ), 
                 .sys__mgr__complete           ( sys__mgr__complete          ), 
                 //`include "manager_sys_general_instance_ports.vh"
+
+                //-------------------------------
+                // Clocks for SDR/DDR
+                .clk_diram            ( clk_diram      ),
+                .clk_diram2x          ( clk_diram2x    ),
+
+
+                //-------------------------------
+                // General
                 //
                 .clk                          ( clk                         ),
                 .reset_poweron                ( reset_poweron               )
               );
+      end
+  endgenerate
+
+  //-------------------------------------------------------------------------------------------
+  // DRAM connectivity
+  genvar mgr;
+  generate
+    for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1) 
+      begin: dram_connect
+        assign   clk_diram_ck   [mgr]   =  mgr_inst[mgr].clk_diram_ck   ;
+        assign   dfi__phy__cs   [mgr]   =  mgr_inst[mgr].dfi__phy__cs   ;
+        assign   dfi__phy__cmd1 [mgr]   =  mgr_inst[mgr].dfi__phy__cmd1 ;
+        assign   dfi__phy__cmd0 [mgr]   =  mgr_inst[mgr].dfi__phy__cmd0 ;
+        assign   dfi__phy__data [mgr]   =  mgr_inst[mgr].dfi__phy__data ;
+        assign   dfi__phy__addr [mgr]   =  mgr_inst[mgr].dfi__phy__addr ;
+        assign   dfi__phy__bank [mgr]   =  mgr_inst[mgr].dfi__phy__bank ;
+
+        assign   mgr_inst[mgr].clk_diram_cq     =  clk_diram_cq    [mgr] ;
+        assign   mgr_inst[mgr].phy__dfi__valid  =  phy__dfi__valid [mgr] ;
+        assign   mgr_inst[mgr].phy__dfi__data   =  phy__dfi__data  [mgr] ;
       end
   endgenerate
 

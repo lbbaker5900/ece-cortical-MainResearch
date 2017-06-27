@@ -97,7 +97,7 @@ if __name__ == "__main__":
     if FoundNumOfBitsPerMmcIntf == False:
       data = re.split(r'\s{1,}', line)
       # check define is in 2nd field
-      if "MGR_MMC_TO_MRC_INTF_WIDTH" in data[1]:
+      if "MGR_DRAM_INTF_WIDTH" in data[1]:
         numOfBitsPerMmcIntf = int(data[2])
         FoundNumOfBitsPerMmcIntf = True
   searchFile.close()
