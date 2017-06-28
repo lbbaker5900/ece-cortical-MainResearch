@@ -68,57 +68,67 @@ module dram_access_timer(
   reg [`DRAM_ACC_TIMER_RANGE ]  cache_write  [`DRAM_ACC_NUM_OF_CACHE_DEPENDENCIES_RANGE ] ;        // for cw
   reg [`DRAM_ACC_TIMER_RANGE ]  page_refresh [`DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_RANGE  ] ;
   
+  reg [`DRAM_ACC_NUM_OF_CMDS_VECTOR ] cmd_can_go  ; // vector in order of DRAM_ACC_CMD_IS_*
+
+  wire                          request_page_open     = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_PO); 
+  wire                          request_page_close    = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_PC); 
+  wire                          request_cache_read    = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_CR); 
+  wire                          request_cache_write   = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_CW); 
+  wire                          request_page_refresh  = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_PR); 
   
   always @(posedge clk)
   begin
     if(reset_poweron)
       begin
-        for (int i=0; i<`DRAM_ACC_NUM_OF_CMDS; i++)
+        for (int i=0; i<`DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES ; i++)
           begin
             page_close   [i]   <= 'd0  ;
-            page_open    [i]   <=   0  ;
-            cache_read   [i]   <=   0  ;
-            cache_write  [i]   <=   0  ;
-            page_refresh [i]   <=   0  ;
+            page_open    [i]   <= 'd0  ;
+            page_refresh [i]   <= 'd0  ;
+          end
+        for (int i=0; i<`DRAM_ACC_NUM_OF_CACHE_DEPENDENCIES ; i++)
+          begin
+            cache_read   [i]   <= 'd0  ;
+            cache_write  [i]   <= 'd0  ;
           end
       end
     else 
       begin
         //------------------------------------------------------------------------------------------------------------------------
         // PO
-        page_open    [`DRAM_ACC_CMD_IS_PO ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PO) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PO      ) : ((|page_open    [`DRAM_ACC_CMD_IS_PO ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PO ] )));
-        page_close   [`DRAM_ACC_CMD_IS_PO ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PO) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PC      ) : ((|page_close   [`DRAM_ACC_CMD_IS_PO ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PO ] )));
-        cache_read   [`DRAM_ACC_CMD_IS_PO ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PO) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2CR      ) : ((|cache_read   [`DRAM_ACC_CMD_IS_PO ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PO ] )));
-        cache_write  [`DRAM_ACC_CMD_IS_PO ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PO) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2CW      ) : ((|cache_write  [`DRAM_ACC_CMD_IS_PO ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PO ] )));
-        page_refresh [`DRAM_ACC_CMD_IS_PO ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PO) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PR      ) : ((|page_refresh [`DRAM_ACC_CMD_IS_PO ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PO ] )));
+        page_open    [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && can_go     ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_PO ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PO ] ));
+        page_close   [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && can_go     ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_PO ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PO ] ));
+        cache_read   [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && can_go     ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_PO ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PO ] ));
+        cache_write  [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && can_go     ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_PO ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PO ] ));
+        page_refresh [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && can_go     ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_PO ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PO ] ));
         //------------------------------------------------------------------------------------------------------------------------
         // PC
-        page_open    [`DRAM_ACC_CMD_IS_PC ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PC) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PO      ) : ((|page_open    [`DRAM_ACC_CMD_IS_PC ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PC ] )));
-        page_close   [`DRAM_ACC_CMD_IS_PC ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PC) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PC      ) : ((|page_close   [`DRAM_ACC_CMD_IS_PC ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PC ] )));
-        cache_read   [`DRAM_ACC_CMD_IS_PC ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PC) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2CR      ) : ((|cache_read   [`DRAM_ACC_CMD_IS_PC ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PC ] )));
-        cache_write  [`DRAM_ACC_CMD_IS_PC ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PC) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2CW      ) : ((|cache_write  [`DRAM_ACC_CMD_IS_PC ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PC ] )));
-        page_refresh [`DRAM_ACC_CMD_IS_PC ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PC) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PR      ) : ((|page_refresh [`DRAM_ACC_CMD_IS_PC ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PC ] )));
+        page_open    [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_PC ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PC ] ));
+        page_close   [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_PC ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PC ] ));
+        cache_read   [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_PC ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PC ] ));
+        cache_write  [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_PC ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PC ] ));
+        page_refresh [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_PC ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PC ] ));
         //------------------------------------------------------------------------------------------------------------------------
         // CR                                                                           
-        page_open    [`DRAM_ACC_CMD_IS_CR ] <= (((request_cmd == `DRAM_ACC_CMD_IS_CR) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PO      ) : ((|page_open    [`DRAM_ACC_CMD_IS_CR ] ) ? (page_open    [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_CR ] )));
-        page_close   [`DRAM_ACC_CMD_IS_CR ] <= (((request_cmd == `DRAM_ACC_CMD_IS_CR) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PC      ) : ((|page_close   [`DRAM_ACC_CMD_IS_CR ] ) ? (page_close   [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_CR ] )));
-        cache_read   [`DRAM_ACC_CMD_IS_CR ] <= (((request_cmd == `DRAM_ACC_CMD_IS_CR) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2CR      ) : ((|cache_read   [`DRAM_ACC_CMD_IS_CR ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_CR ] )));
-        cache_write  [`DRAM_ACC_CMD_IS_CR ] <= (((request_cmd == `DRAM_ACC_CMD_IS_CR) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2CW      ) : ((|cache_write  [`DRAM_ACC_CMD_IS_CR ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_CR ] )));
-        page_refresh [`DRAM_ACC_CMD_IS_CR ] <= (((request_cmd == `DRAM_ACC_CMD_IS_CR) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PR      ) : ((|page_refresh [`DRAM_ACC_CMD_IS_CR ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_CR ] )));
+        page_open    [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_CR ] ) ? (page_open    [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_CR ] ));
+        page_close   [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_CR ] ) ? (page_close   [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_CR ] ));
+        cache_read   [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_CR ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_CR ] ));
+        cache_write  [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_CR ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_CR ] ));
+        page_refresh [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_CR ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_CR ] ));
         //------------------------------------------------------------------------------------------------------------------------
         // CW                                                                                
-        page_open    [`DRAM_ACC_CMD_IS_CW ] <= (((request_cmd == `DRAM_ACC_CMD_IS_CW) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PO      ) : ((|page_open    [`DRAM_ACC_CMD_IS_CW ] ) ? (page_open    [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_CW ] )));
-        page_close   [`DRAM_ACC_CMD_IS_CW ] <= (((request_cmd == `DRAM_ACC_CMD_IS_CW) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PC      ) : ((|page_close   [`DRAM_ACC_CMD_IS_CW ] ) ? (page_close   [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_CW ] )));
-        cache_read   [`DRAM_ACC_CMD_IS_CW ] <= (((request_cmd == `DRAM_ACC_CMD_IS_CW) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2CR      ) : ((|cache_read   [`DRAM_ACC_CMD_IS_CW ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_CW ] )));
-        cache_write  [`DRAM_ACC_CMD_IS_CW ] <= (((request_cmd == `DRAM_ACC_CMD_IS_CW) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2CW      ) : ((|cache_write  [`DRAM_ACC_CMD_IS_CW ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_CW ] )));
-        page_refresh [`DRAM_ACC_CMD_IS_CW ] <= (((request_cmd == `DRAM_ACC_CMD_IS_CW) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PR      ) : ((|page_refresh [`DRAM_ACC_CMD_IS_CW ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_CW ] )));
+        page_open    [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_CW ] ) ? (page_open    [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_CW ] ));
+        page_close   [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_CW ] ) ? (page_close   [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_CW ] ));
+        cache_read   [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_CW ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_CW ] ));
+        cache_write  [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_CW ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_CW ] ));
+        page_refresh [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_CW ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_CW ] ));
         //------------------------------------------------------------------------------------------------------------------------
         // PR
-        page_open    [`DRAM_ACC_CMD_IS_PR ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PR) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PO      ) : ((|page_open    [`DRAM_ACC_CMD_IS_PR ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PR ] )));
-        page_close   [`DRAM_ACC_CMD_IS_PR ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PR) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PC      ) : ((|page_close   [`DRAM_ACC_CMD_IS_PR ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PR ] )));
-        cache_read   [`DRAM_ACC_CMD_IS_PR ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PR) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2CR      ) : ((|cache_read   [`DRAM_ACC_CMD_IS_PR ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PR ] )));
-        cache_write  [`DRAM_ACC_CMD_IS_PR ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PR) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2CW      ) : ((|cache_write  [`DRAM_ACC_CMD_IS_PR ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PR ] )));
-        page_refresh [`DRAM_ACC_CMD_IS_PR ] <= (((request_cmd == `DRAM_ACC_CMD_IS_PR) && can_go  ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PR      ) : ((|page_refresh [`DRAM_ACC_CMD_IS_PR ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PR ] )));
+        page_open    [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PO : ((|page_open    [`DRAM_ACC_CMD_IS_PR ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PR ] ));
+        page_close   [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PC : ((|page_close   [`DRAM_ACC_CMD_IS_PR ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PR ] ));
+        cache_read   [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2CR : ((|cache_read   [`DRAM_ACC_CMD_IS_PR ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PR ] ));
+        cache_write  [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2CW : ((|cache_write  [`DRAM_ACC_CMD_IS_PR ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PR ] ));
+        page_refresh [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PR : ((|page_refresh [`DRAM_ACC_CMD_IS_PR ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PR ] ));
         //------------------------------------------------------------------------------------------------------------------------
         // Adjacent Bank
         page_open    [`DRAM_ACC_CMD_IS_ADJ ] <= ((adjacent_bank_request ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_INTER_BANK ) : ((|page_open    [`DRAM_ACC_CMD_IS_ADJ ] ) ? (page_open    [`DRAM_ACC_CMD_IS_ADJ ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_ADJ ] )));
@@ -127,56 +137,53 @@ module dram_access_timer(
       end
   end
   
+  // we will need immediate feedback, so minimize logic
+  always @(posedge clk)
+    begin
+       cmd_can_go[`DRAM_ACC_CMD_IS_PO ] <= (request_page_open  && can_go) ? 1'b0 :
+                                                                            ((page_open   [0] == 0) & (page_open   [1] == 0) & (page_open   [2] == 0) & (page_open   [3] == 0) & (page_open   [4] == 0) & (page_open   [5] == 0)) ;
+
+       cmd_can_go[`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go) ? 1'b0 :
+                                                                            ((page_close  [0] == 0) & (page_close  [1] == 0) & (page_close  [2] == 0) & (page_close  [3] == 0) & (page_close  [4] == 0) & (page_close  [5] == 0)) ;
+
+       cmd_can_go[`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go) ? 1'b0 :
+                                                                            ((cache_read  [0] == 0) & (cache_read  [1] == 0) & (cache_read  [2] == 0) & (cache_read  [3] == 0) & (cache_read  [4] == 0) ) ;
+
+       cmd_can_go[`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go) ? 1'b0 :
+                                                                            ((cache_write [0] == 0) & (cache_write [1] == 0) & (cache_write [2] == 0) & (cache_write [3] == 0) & (cache_write [4] == 0) ) ;
+
+       cmd_can_go[`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go) ? 1'b0 :
+                                                                            ((page_refresh[0] == 0) & (page_refresh[1] == 0) & (page_refresh[2] == 0) & (page_refresh[3] == 0) & (page_refresh[4] == 0) & (page_refresh[5] == 0)) ;
+
+    end
+
   always @(*)
     begin
       can_go = 0;
       case(request_cmd)
         `DRAM_ACC_CMD_IS_PO:
           begin
-            can_go = ((page_open[0] == 0) & 
-                      (page_open[1] == 0) & 
-                      (page_open[2] == 0) & 
-                      (page_open[3] == 0) & 
-                      (page_open[4] == 0) & 
-                      (page_open[5] == 0)) ;
+            can_go = cmd_can_go [`DRAM_ACC_CMD_IS_PO ] ;
           end
 
         `DRAM_ACC_CMD_IS_PC:
           begin
-            can_go = ((page_close[0] == 0) & 
-                      (page_close[1] == 0) & 
-                      (page_close[2] == 0) & 
-                      (page_close[3] == 0) & 
-                      (page_close[4] == 0) & 
-                      (page_close[5] == 0)) ;
+            can_go = cmd_can_go [`DRAM_ACC_CMD_IS_PC ] ;
           end
 
         `DRAM_ACC_CMD_IS_CR:
           begin
-            can_go = ((cache_read[0] == 0) & 
-                      (cache_read[1] == 0) & 
-                      (cache_read[2] == 0) & 
-                      (cache_read[3] == 0) & 
-                      (cache_read[4] == 0)) ;
+            can_go = cmd_can_go [`DRAM_ACC_CMD_IS_CR ] ;
           end
 
         `DRAM_ACC_CMD_IS_CW:
           begin
-            can_go = ((cache_write[0] == 0) & 
-                      (cache_write[1] == 0) & 
-                      (cache_write[2] == 0) & 
-                      (cache_write[3] == 0) & 
-                      (cache_write[4] == 0)) ;
+            can_go = cmd_can_go [`DRAM_ACC_CMD_IS_CW ] ;
           end
 
         `DRAM_ACC_CMD_IS_PR:
           begin
-            can_go = ((page_refresh[0] == 0) & 
-                      (page_refresh[1] == 0) & 
-                      (page_refresh[2] == 0) & 
-                      (page_refresh[3] == 0) & 
-                      (page_refresh[4] == 0) & 
-                      (page_refresh[5] == 0)) ;
+            can_go = cmd_can_go [`DRAM_ACC_CMD_IS_PR ] ;
           end
       endcase
     end

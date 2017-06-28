@@ -28,19 +28,19 @@
 //  etc.
 // 
 
-`define MMC_CNTL_CMD_GEN_WAIT                        11'b000_0000_0001
-`define MMC_CNTL_CMD_GEN_OPEN_PAGE_MATCH             11'b000_0000_0010
-`define MMC_CNTL_CMD_GEN_OPEN_PAGE_MISMATCH          11'b000_0000_0100
-`define MMC_CNTL_CMD_GEN_PAGE_CLOSE                  11'b000_0000_1000
-`define MMC_CNTL_CMD_GEN_PAGE_OPEN                   11'b000_0001_0000
-`define MMC_CNTL_CMD_GEN_LINE_READ                   11'b000_0010_0000
-`define MMC_CNTL_CMD_GEN_LINE_WRITE                  11'b000_0100_0000
-`define MMC_CNTL_CMD_GEN_COMPLETE                    11'b000_1000_0000
-`define MMC_CNTL_CMD_GEN_ERR                         11'b100_0000_0000
+`define MMC_CNTL_CMD_GEN_WAIT                        8'b0000_0001
+`define MMC_CNTL_CMD_GEN_OPEN_PAGE_MATCH             8'b0000_0010
+`define MMC_CNTL_CMD_GEN_OPEN_PAGE_MISMATCH          8'b0000_0100
+`define MMC_CNTL_CMD_GEN_PAGE_CLOSE                  8'b0000_1000
+`define MMC_CNTL_CMD_GEN_PAGE_OPEN                   8'b0001_0000
+`define MMC_CNTL_CMD_GEN_LINE_READ                   8'b0010_0000
+`define MMC_CNTL_CMD_GEN_LINE_WRITE                  8'b0100_0000
+//`define MMC_CNTL_CMD_GEN_COMPLETE                    8'b000_1000_0000
+`define MMC_CNTL_CMD_GEN_ERR                         8'b1000_0000
 
 
 
-`define MMC_CNTL_CMD_GEN_STATE_WIDTH         11
+`define MMC_CNTL_CMD_GEN_STATE_WIDTH         8
 `define MMC_CNTL_CMD_GEN_STATE_MSB           `MMC_CNTL_CMD_GEN_STATE_WIDTH-1
 `define MMC_CNTL_CMD_GEN_STATE_LSB           0
 `define MMC_CNTL_CMD_GEN_STATE_SIZE          (`MMC_CNTL_CMD_GEN_STATE_MSB - `MMC_CNTL_CMD_GEN_STATE_LSB +1)
@@ -67,6 +67,23 @@
 `define MMC_CNTL_DFI_SEQ_STATE_LSB           0
 `define MMC_CNTL_DFI_SEQ_STATE_SIZE          (`MMC_CNTL_DFI_SEQ_STATE_MSB - `MMC_CNTL_DFI_SEQ_STATE_LSB +1)
 `define MMC_CNTL_DFI_SEQ_STATE_RANGE          `MMC_CNTL_DFI_SEQ_STATE_MSB : `MMC_CNTL_DFI_SEQ_STATE_LSB
+
+//--------------------------------------------------------
+// Stream select FSM
+//  - select which stream should gain access to the channel
+// 
+
+`define MMC_CNTL_STRM_SEL_WAIT                            5'b0_0001
+`define MMC_CNTL_STRM_SEL_STRM0                           5'b0_0010
+`define MMC_CNTL_STRM_SEL_STRM1                           5'b0_0100
+
+`define MMC_CNTL_STRM_SEL_ERR                             5'b1_0000
+
+`define MMC_CNTL_STRM_SEL_STATE_WIDTH         5
+`define MMC_CNTL_STRM_SEL_STATE_MSB           `MMC_CNTL_STRM_SEL_STATE_WIDTH-1
+`define MMC_CNTL_STRM_SEL_STATE_LSB           0
+`define MMC_CNTL_STRM_SEL_STATE_SIZE          (`MMC_CNTL_STRM_SEL_STATE_MSB - `MMC_CNTL_STRM_SEL_STATE_LSB +1)
+`define MMC_CNTL_STRM_SEL_STATE_RANGE          `MMC_CNTL_STRM_SEL_STATE_MSB : `MMC_CNTL_STRM_SEL_STATE_LSB
 
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------

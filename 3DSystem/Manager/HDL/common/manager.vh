@@ -56,6 +56,7 @@
 `define MGR_NUM_OF_STREAMS_LSB            0
 `define MGR_NUM_OF_STREAMS_SIZE           (`MGR_NUM_OF_STREAMS_MSB - `MGR_NUM_OF_STREAMS_LSB +1)
 `define MGR_NUM_OF_STREAMS_RANGE           `MGR_NUM_OF_STREAMS_MSB : `MGR_NUM_OF_STREAMS_LSB
+`define MGR_NUM_OF_STREAMS_VECTOR        `PE_NUM_OF_STREAMS-1 : 0
 
 //------------------------------------------------
 // MGR Execution Lane 
@@ -496,6 +497,12 @@
 `define MGR_DRAM_NUM_CHANNELS_VECTOR_LSB                         0
 `define MGR_DRAM_NUM_CHANNELS_VECTOR_SIZE                        (`MGR_DRAM_NUM_CHANNELS_VECTOR_MSB - `MGR_DRAM_NUM_CHANNELS_VECTOR_LSB +1)
 `define MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE                        `MGR_DRAM_NUM_CHANNELS_VECTOR_MSB : `MGR_DRAM_NUM_CHANNELS_VECTOR_LSB
+
+`define MGR_DRAM_NUM_BANKS_VECTOR_WIDTH                       `MGR_DRAM_NUM_BANKS
+`define MGR_DRAM_NUM_BANKS_VECTOR_MSB                         `MGR_DRAM_NUM_BANKS_VECTOR_WIDTH-1
+`define MGR_DRAM_NUM_BANKS_VECTOR_LSB                         0
+`define MGR_DRAM_NUM_BANKS_VECTOR_SIZE                        (`MGR_DRAM_NUM_BANKS_VECTOR_MSB - `MGR_DRAM_NUM_BANKS_VECTOR_LSB +1)
+`define MGR_DRAM_NUM_BANKS_VECTOR_RANGE                        `MGR_DRAM_NUM_BANKS_VECTOR_MSB : `MGR_DRAM_NUM_BANKS_VECTOR_LSB
 
 
 //---------------------------------------------------------------------------------------------------------------------

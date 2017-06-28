@@ -18,7 +18,16 @@
 `define DRAM_ACC_NUM_OF_CMDS_LSB          0
 `define DRAM_ACC_NUM_OF_CMDS_SIZE         (`DRAM_ACC_NUM_OF_CMDS_MSB - `DRAM_ACC_NUM_OF_CMDS_LSB +1)
 `define DRAM_ACC_NUM_OF_CMDS_RANGE         `DRAM_ACC_NUM_OF_CMDS_MSB : `DRAM_ACC_NUM_OF_CMDS_LSB
+`define DRAM_ACC_NUM_OF_CMDS_VECTOR        `DRAM_ACC_NUM_OF_CMDS-1 : 0
   
+`define DRAM_ACC_CMD_IS_PO       0
+`define DRAM_ACC_CMD_IS_PC       1
+`define DRAM_ACC_CMD_IS_CR       2
+`define DRAM_ACC_CMD_IS_CW       3
+`define DRAM_ACC_CMD_IS_PR       4
+`define DRAM_ACC_CMD_IS_NOP      5
+`define DRAM_ACC_CMD_IS_ADJ      6
+
 `define DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES              6  // commands plus adjacent bank
 `define DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_WIDTH        `DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES
 `define DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_MSB          `DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_WIDTH-1
@@ -75,12 +84,6 @@
 
 `define DRAM_ACC_DIRAM4_REQMTS_TIMER_INTER_BANK            19
 
-`define DRAM_ACC_CMD_IS_PO       0
-`define DRAM_ACC_CMD_IS_PC       1
-`define DRAM_ACC_CMD_IS_CR       2
-`define DRAM_ACC_CMD_IS_CW       3
-`define DRAM_ACC_CMD_IS_PR       4
-`define DRAM_ACC_CMD_IS_ADJ      5
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 // FSM's
