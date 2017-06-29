@@ -12,12 +12,14 @@ set clkname clk
 # set modname  wu_decode
 # set modname  stu_cntl
 # set modname  wu_memory
+# set modname  mgr_noc_cntl
+# set modname  dram_access_timer
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
 
-set modname  mgr_noc_cntl
+set modname  main_mem_cntl
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD

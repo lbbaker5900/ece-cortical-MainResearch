@@ -73,13 +73,17 @@
 //  - select which stream should gain access to the channel
 // 
 
-`define MMC_CNTL_STRM_SEL_WAIT                            5'b0_0001
-`define MMC_CNTL_STRM_SEL_STRM0                           5'b0_0010
-`define MMC_CNTL_STRM_SEL_STRM1                           5'b0_0100
+`define MMC_CNTL_STRM_SEL_WAIT                            8'b0000_0001
+`define MMC_CNTL_STRM_SEL_STRM0                           8'b0000_0010
+`define MMC_CNTL_STRM_SEL_STRM1                           8'b0000_0100
+`define MMC_CNTL_STRM_SEL_STRM01                          8'b0000_1000
+`define MMC_CNTL_STRM_SEL_STRM10                          8'b0001_0000
+`define MMC_CNTL_STRM_SEL_SEND0_NEXT                      8'b0010_0000
+`define MMC_CNTL_STRM_SEL_SEND1_NEXT                      8'b0100_0000
+                                                               
+`define MMC_CNTL_STRM_SEL_ERR                             8'b1000_0000
 
-`define MMC_CNTL_STRM_SEL_ERR                             5'b1_0000
-
-`define MMC_CNTL_STRM_SEL_STATE_WIDTH         5
+`define MMC_CNTL_STRM_SEL_STATE_WIDTH         8
 `define MMC_CNTL_STRM_SEL_STATE_MSB           `MMC_CNTL_STRM_SEL_STATE_WIDTH-1
 `define MMC_CNTL_STRM_SEL_STATE_LSB           0
 `define MMC_CNTL_STRM_SEL_STATE_SIZE          (`MMC_CNTL_STRM_SEL_STATE_MSB - `MMC_CNTL_STRM_SEL_STATE_LSB +1)

@@ -1,11 +1,14 @@
 
-MODNAME = mgr_noc_cntl
+MODNAME = main_mem_cntl
 RTL_DIR = ../code
 GATE_DIR = ../synth
 
 $(GATE_DIR)/$(MODNAME)_final.v: $(RTL_DIR)/$(MODNAME).v
 	tcsh -c "add synopsys2015 ; \
-	dc_shell-t -f run_synth.tcl |& tee run_synth.log"
+	dc_shell-t -f run_synth.tcl |& tee run_synth.log ; \
+	mkdir logs/$(MODNAME) ; \
+	/bin/rm  logs/$(MODNAME) ; \
+	cp -p *rpt *log *.v logs/$(MODNAME)/. "
 
 .PHONY: pt ptsi
 

@@ -140,20 +140,20 @@ module dram_access_timer(
   // we will need immediate feedback, so minimize logic
   always @(posedge clk)
     begin
-       cmd_can_go[`DRAM_ACC_CMD_IS_PO ] <= (request_page_open  && can_go) ? 1'b0 :
-                                                                            ((page_open   [0] == 0) & (page_open   [1] == 0) & (page_open   [2] == 0) & (page_open   [3] == 0) & (page_open   [4] == 0) & (page_open   [5] == 0)) ;
-
-       cmd_can_go[`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go) ? 1'b0 :
-                                                                            ((page_close  [0] == 0) & (page_close  [1] == 0) & (page_close  [2] == 0) & (page_close  [3] == 0) & (page_close  [4] == 0) & (page_close  [5] == 0)) ;
-
-       cmd_can_go[`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go) ? 1'b0 :
-                                                                            ((cache_read  [0] == 0) & (cache_read  [1] == 0) & (cache_read  [2] == 0) & (cache_read  [3] == 0) & (cache_read  [4] == 0) ) ;
-
-       cmd_can_go[`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go) ? 1'b0 :
-                                                                            ((cache_write [0] == 0) & (cache_write [1] == 0) & (cache_write [2] == 0) & (cache_write [3] == 0) & (cache_write [4] == 0) ) ;
-
-       cmd_can_go[`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go) ? 1'b0 :
-                                                                            ((page_refresh[0] == 0) & (page_refresh[1] == 0) & (page_refresh[2] == 0) & (page_refresh[3] == 0) & (page_refresh[4] == 0) & (page_refresh[5] == 0)) ;
+       cmd_can_go[`DRAM_ACC_CMD_IS_PO ] <= (/*request_page_open    &&*/ can_go) ? 1'b0 :
+                                                                              ((page_open   [0] == 0) & (page_open   [1] == 0) & (page_open   [2] == 0) & (page_open   [3] == 0) & (page_open   [4] == 0) & (page_open   [5] == 0)) ;
+                                                                       
+       cmd_can_go[`DRAM_ACC_CMD_IS_PC ] <= (/*request_page_close   &&*/ can_go) ? 1'b0 :
+                                                                              ((page_close  [0] == 0) & (page_close  [1] == 0) & (page_close  [2] == 0) & (page_close  [3] == 0) & (page_close  [4] == 0) & (page_close  [5] == 0)) ;
+                                                                       
+       cmd_can_go[`DRAM_ACC_CMD_IS_CR ] <= (/*request_cache_read   &&*/ can_go) ? 1'b0 :
+                                                                              ((cache_read  [0] == 0) & (cache_read  [1] == 0) & (cache_read  [2] == 0) & (cache_read  [3] == 0) & (cache_read  [4] == 0) ) ;
+                                                                       
+       cmd_can_go[`DRAM_ACC_CMD_IS_CW ] <= (/*request_cache_write  &&*/ can_go) ? 1'b0 :
+                                                                             ((cache_write [0] == 0) & (cache_write [1] == 0) & (cache_write [2] == 0) & (cache_write [3] == 0) & (cache_write [4] == 0) ) ;
+                                                                       
+       cmd_can_go[`DRAM_ACC_CMD_IS_PR ] <= (/*request_page_refresh &&*/ can_go) ? 1'b0 :
+                                                                             ((page_refresh[0] == 0) & (page_refresh[1] == 0) & (page_refresh[2] == 0) & (page_refresh[3] == 0) & (page_refresh[4] == 0) & (page_refresh[5] == 0)) ;
 
     end
 

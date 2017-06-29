@@ -141,10 +141,10 @@ module main_mem_cntl (
   // Request input FIFO
 
   // Remember, cannot use a variable to index into a generate, so create a variable outside the generate, set that variable inside the generate and index the variable with a variable
-  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE ]    requested_bank       [`MGR_NUM_OF_STREAMS] [`MGR_DRAM_NUM_CHANNELS] ;
-  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    requested_page       [`MGR_NUM_OF_STREAMS] [`MGR_DRAM_NUM_CHANNELS] ;
-  reg                                     request_valid        [`MGR_NUM_OF_STREAMS] [`MGR_DRAM_NUM_CHANNELS] ;
-  reg  [`MGR_NUM_OF_STREAMS_VECTOR   ]    request_pipe_read                          [`MGR_DRAM_NUM_CHANNELS] ;
+  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE        ]   requested_bank       [`MGR_NUM_OF_STREAMS] [`MGR_DRAM_NUM_CHANNELS] ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]   requested_page       [`MGR_NUM_OF_STREAMS] [`MGR_DRAM_NUM_CHANNELS] ;
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   request_valid        [`MGR_NUM_OF_STREAMS]                          ;
+  reg  [`MGR_NUM_OF_STREAMS_VECTOR          ]   request_pipe_read                          [`MGR_DRAM_NUM_CHANNELS] ;
 
   generate
     for (strm=0; strm<`MGR_NUM_OF_STREAMS ; strm=strm+1) 
@@ -194,11 +194,14 @@ module main_mem_cntl (
         assign clear = 1'b0 ;
  
         // Note: couldnt do this with net and assign, had to use procedural block and reg
-        always @(*)
+        for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
           begin
-            request_valid  [strm] [pipe_channel] = pipe_valid  ;
-            requested_bank [strm] [pipe_channel] = pipe_bank  ;
-            requested_page [strm] [pipe_channel] = pipe_page  ;
+            always @(*)
+              begin
+                request_valid  [strm] [chan]  = pipe_valid & (pipe_channel == chan) ;
+                requested_bank [strm] [chan]  = pipe_bank  ;
+                requested_page [strm] [chan]  = pipe_page  ;
+              end
           end
 
         always @(*)
@@ -230,17 +233,18 @@ module main_mem_cntl (
   //  - contains dram access timer for bank
 
   // Remember, cannot use a variable to index into a generate, so create a variable outside the generate, set that variable inside the generate and index the variable with a variable
-  wire [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    channel_bank_open_page       [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
-  wire [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    channel_bank_a_page_is_open  [`MGR_DRAM_NUM_CHANNELS]                          ;
-  reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    set_a_page_is_open           [`MGR_DRAM_NUM_CHANNELS]                          ;
-  reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    clear_a_page_is_open         [`MGR_DRAM_NUM_CHANNELS]                          ;
-  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    opening_page_id              [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    channel_bank_open_page       [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    channel_bank_a_page_is_open  [`MGR_DRAM_NUM_CHANNELS]                          ;
+  //reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    set_a_page_is_open           [`MGR_DRAM_NUM_CHANNELS]                          ;
+  //reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    clear_a_page_is_open         [`MGR_DRAM_NUM_CHANNELS]                          ;
+  //reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    opening_page_id              [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
                                          
-  reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    access_request_valid         [`MGR_DRAM_NUM_CHANNELS]                          ; 
+  reg                                         access_request_valid         [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
   reg  [`MGR_NUM_OF_STREAMS_RANGE        ]    access_request_strm          [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
   reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE      ]    access_request_cmd           [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
-  reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    can_go                       [`MGR_DRAM_NUM_CHANNELS]                          ;
-  reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    adjacent_bank_request        [`MGR_DRAM_NUM_CHANNELS]                          ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    access_request_page          [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg                                         can_go                       [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg                                         adjacent_bank_request        [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
 
   // FIXME :tie off adjacent bank request
   generate
@@ -265,30 +269,29 @@ module main_mem_cntl (
             reg                                     a_page_is_open       ;
             reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    open_page_id         ;
         
+            reg                                     chan_bank_request_valid         ;
+            reg   [`DRAM_ACC_NUM_OF_CMDS_RANGE  ]   chan_bank_request_cmd           ;
+            reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE ]   chan_bank_request_page          ;
+            reg                                     chan_bank_adjacent_bank_request ;
+
+            wire                                    chan_bank_can_go                ;
+
             always @(posedge clk)
               begin
-                a_page_is_open  <= ( reset_poweron                    ) ? 1'b0           :
-                                   ( set_a_page_is_open   [chan][bank]) ? 1'b1           :
-                                   ( clear_a_page_is_open [chan][bank]) ? 1'b0           :
-                                                                          a_page_is_open ; 
+                a_page_is_open  <= ( reset_poweron                                                     )  ? 1'b0           :
+                                   ((chan_bank_request_cmd == `DRAM_ACC_CMD_IS_PO ) && chan_bank_can_go)  ? 1'b1           :
+                                   ((chan_bank_request_cmd == `DRAM_ACC_CMD_IS_PC ) && chan_bank_can_go)  ? 1'b0           :
+                                                                                                            a_page_is_open ; 
         
-                open_page_id    <= ( reset_poweron                  ) ?  'd0                         :
-                                   ( set_a_page_is_open [chan][bank]) ? opening_page_id [chan][bank] :
-                                                                        open_page_id                 ;
+                open_page_id    <= ( reset_poweron                                                     )  ? {`MGR_DRAM_PAGE_ADDRESS_WIDTH {1'b1 }} :
+                                   ((chan_bank_request_cmd == `DRAM_ACC_CMD_IS_PO ) && chan_bank_can_go)  ? chan_bank_request_page                 :
+                                   ((chan_bank_request_cmd == `DRAM_ACC_CMD_IS_PC ) && chan_bank_can_go)  ? {`MGR_DRAM_PAGE_ADDRESS_WIDTH {1'b1 }} :
+                                                                                                            open_page_id                           ; 
               end
 
-            // use because we cannot index the generate with a variable
-            assign  channel_bank_a_page_is_open [chan] [bank] = a_page_is_open ; 
-            assign  channel_bank_open_page      [chan] [bank] = open_page_id   ; 
-        
             //----------------------------------------------------------------------------------------------------
-            //Bank ACcess timer
+            //Bank Access timer
             // - provide command, timer grants permission to place command in final queue
-
-            wire                                  chan_bank_request_valid           ;
-            wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE ]  chan_bank_request_cmd             ;
-            wire                                  chan_bank_can_go                  ;
-            wire                                  chan_bank_adjacent_bank_request   ;
 
             dram_access_timer dram_access_timer(
 
@@ -312,10 +315,23 @@ module main_mem_cntl (
 
                 );   
             
-            assign chan_bank_request_valid         = access_request_valid  [chan] [bank] ;
-            assign chan_bank_request_cmd           = access_request_cmd    [chan] [bank] ;
-            assign can_go [chan] [bank]            = chan_bank_can_go                    ;
-            assign chan_bank_adjacent_bank_request = adjacent_bank_request [chan] [bank] ;
+            always @(*)
+              begin
+                chan_bank_request_valid         = access_request_valid  [chan] [bank] ;
+                chan_bank_request_cmd           = access_request_cmd    [chan] [bank] ;
+                chan_bank_request_page          = access_request_page   [chan] [bank] ;
+                chan_bank_adjacent_bank_request = adjacent_bank_request [chan] [bank] ;
+              end
+
+            // use because we cannot index the generate with a variable
+            always @(*)
+              begin
+                can_go                      [chan] [bank] = chan_bank_can_go ;
+                channel_bank_a_page_is_open [chan] [bank] = a_page_is_open   ; 
+                channel_bank_open_page      [chan] [bank] = open_page_id     ; 
+              end
+        
+
           end
       end
   endgenerate
@@ -335,7 +351,8 @@ module main_mem_cntl (
   reg  [`MGR_NUM_OF_STREAMS_VECTOR   ]    strm_access_valid    [`MGR_DRAM_NUM_CHANNELS]                        ;
   reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE  ]    strm_access_cmd      [`MGR_DRAM_NUM_CHANNELS] [`MGR_NUM_OF_STREAMS ] ;
   reg  [`MGR_DRAM_BANK_ADDRESS_RANGE ]    strm_access_bank     [`MGR_DRAM_NUM_CHANNELS] [`MGR_NUM_OF_STREAMS ] ;
-  reg  [`MGR_NUM_OF_STREAMS_VECTOR   ]    strm_selected        [`MGR_DRAM_NUM_CHANNELS]                        ;  // channel has granted stream access
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    strm_access_page     [`MGR_DRAM_NUM_CHANNELS] [`MGR_NUM_OF_STREAMS ] ;
+  reg  [`MGR_NUM_OF_STREAMS_VECTOR   ]    strm_enabled         [`MGR_DRAM_NUM_CHANNELS]                        ;  // channel has granted stream access. Access granted to both streams if accessing different banks
      
   generate
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
@@ -358,60 +375,56 @@ module main_mem_cntl (
             //  - 
 
             // local bank commands, outside this genblk the commands are merged and sent to bank info genblk
-            wire [`MGR_DRAM_PAGE_ADDRESS_RANGE ]    opening_page_id      ;
-            wire                                    set_a_page_is_open   ;
-            wire                                    clear_a_page_is_open ;
+            //wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE ]   opening_page_id      ;
+            //wire                                    set_a_page_is_open   ;
+            //wire                                    clear_a_page_is_open ;
 
             // As this fsm determines the command, it requests access to the final queue via the access timer in the
             // bank info genblk
-            wire                                    strm_request_valid   ;  // command to access timer
-            wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE  ]   strm_request_cmd     ;
-            wire  [`MGR_DRAM_BANK_ADDRESS_RANGE ]   strm_request_bank    ;
+            wire                                       strm_request_valid   ;  // command to access timer
+            wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE     ]   strm_request_cmd     ;
+            wire  [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   strm_request_bank    ;
+            wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   strm_request_page    ;
+            wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   strm_request_chan    ;
             //   
             
             always @(*)
               begin
                 case (mmc_cntl_cmd_gen_state)
                   
-                  // Wait for data from all the sources before transferring to NoC
                   `MMC_CNTL_CMD_GEN_WAIT: 
-                    mmc_cntl_cmd_gen_state_next =  (( request_fifo[strm].pipe_valid                                                                                                                ) && 
-                                                    ( request_fifo[strm].pipe_channel == chan                                                                                                      ) && 
-                                                    ( channel_bank_a_page_is_open[chan] [strm_request_bank] && (channel_bank_open_page [chan][strm_request_bank] == request_fifo[strm].pipe_page)) ) ?   `MMC_CNTL_CMD_GEN_OPEN_PAGE_MATCH     :
-                                                   (( request_fifo[strm].pipe_valid                                                                                                                ) && 
-                                                    ( request_fifo[strm].pipe_channel == chan                                                                                                      ) && 
-                                                    ( channel_bank_a_page_is_open[chan] [strm_request_bank] && (channel_bank_open_page [chan][strm_request_bank] != request_fifo[strm].pipe_page)) ) ?   `MMC_CNTL_CMD_GEN_OPEN_PAGE_MISMATCH  :
-                                                   (( request_fifo[strm].pipe_valid                                                                                                                ) && 
-                                                    ( request_fifo[strm].pipe_channel == chan                                                                                                      ) && 
-                                                    (~channel_bank_a_page_is_open[chan] [request_fifo[strm].pipe_bank]                                                                           ) ) ?   `MMC_CNTL_CMD_GEN_PAGE_OPEN           :
-                                                                                                                                                                                                         `MMC_CNTL_CMD_GEN_WAIT                ;
-       
+                    // The channel stream select logic will not enable this fsm unless this streams request fifo is requesting this channel
+                    mmc_cntl_cmd_gen_state_next =  ( strm_enabled [chan][strm] && ( channel_bank_a_page_is_open[chan] [strm_request_bank] && (channel_bank_open_page [chan][strm_request_bank] == strm_request_page))                                    ) ?   `MMC_CNTL_CMD_GEN_LINE_READ  :
+                                                   ( strm_enabled [chan][strm] && ( channel_bank_a_page_is_open[chan] [strm_request_bank] && (channel_bank_open_page [chan][strm_request_bank] != strm_request_page)) && can_go [chan][strm_request_bank]) ?   `MMC_CNTL_CMD_GEN_LINE_READ  :  // PC accepted, jump right to line read
+                                                   ( strm_enabled [chan][strm] && ( channel_bank_a_page_is_open[chan] [strm_request_bank] && (channel_bank_open_page [chan][strm_request_bank] != strm_request_page))                                    ) ?   `MMC_CNTL_CMD_GEN_PAGE_CLOSE :
+                                                   ( strm_enabled [chan][strm] && (~channel_bank_a_page_is_open[chan] [strm_request_bank]                                                                           ) && can_go [chan][strm_request_bank]) ?   `MMC_CNTL_CMD_GEN_LINE_READ  :  // PO accepted, jump right to line read
+                                                   ( strm_enabled [chan][strm] && (~channel_bank_a_page_is_open[chan] [strm_request_bank]                                                                           )                                    ) ?   `MMC_CNTL_CMD_GEN_PAGE_OPEN  :
+                                                                                                                                                                                                                                                               `MMC_CNTL_CMD_GEN_WAIT       ;
+/*
                   `MMC_CNTL_CMD_GEN_OPEN_PAGE_MATCH: 
                     mmc_cntl_cmd_gen_state_next =  `MMC_CNTL_CMD_GEN_LINE_READ       ;
        
                   `MMC_CNTL_CMD_GEN_OPEN_PAGE_MISMATCH: 
                     mmc_cntl_cmd_gen_state_next =  `MMC_CNTL_CMD_GEN_PAGE_CLOSE      ;
+*/
        
                   `MMC_CNTL_CMD_GEN_PAGE_CLOSE: 
-                    mmc_cntl_cmd_gen_state_next =  ( strm_selected [chan][strm] && can_go [chan][strm_request_bank]) ? `MMC_CNTL_CMD_GEN_PAGE_OPEN  :
-                                                                                                                       `MMC_CNTL_CMD_GEN_PAGE_CLOSE ;
+                    mmc_cntl_cmd_gen_state_next =  ( strm_enabled [chan][strm] && can_go [chan][strm_request_bank]) ? `MMC_CNTL_CMD_GEN_PAGE_OPEN  :
+                                                                                                                      `MMC_CNTL_CMD_GEN_PAGE_CLOSE ;
        
                   `MMC_CNTL_CMD_GEN_PAGE_OPEN: 
-                    mmc_cntl_cmd_gen_state_next =  ( strm_selected [chan][strm] && can_go [chan][strm_request_bank]) ? `MMC_CNTL_CMD_GEN_LINE_READ  :
-                                                                                                                       `MMC_CNTL_CMD_GEN_PAGE_OPEN  ;
+                    mmc_cntl_cmd_gen_state_next =  ( strm_enabled [chan][strm] && can_go [chan][strm_request_bank]) ? `MMC_CNTL_CMD_GEN_LINE_READ  :
+                                                                                                                      `MMC_CNTL_CMD_GEN_PAGE_OPEN  ;
        
        
                   `MMC_CNTL_CMD_GEN_LINE_READ: 
-                    mmc_cntl_cmd_gen_state_next =  ( strm_selected [chan][strm] && can_go [chan][strm_request_bank]) ? `MMC_CNTL_CMD_GEN_WAIT       :
-                                                                                                                       `MMC_CNTL_CMD_GEN_LINE_READ  ;
+                    mmc_cntl_cmd_gen_state_next =  ( strm_enabled [chan][strm] && can_go [chan][strm_request_bank]) ? `MMC_CNTL_CMD_GEN_WAIT       :
+                                                                                                                      `MMC_CNTL_CMD_GEN_LINE_READ  ;
        
                   `MMC_CNTL_CMD_GEN_LINE_WRITE: 
-                    mmc_cntl_cmd_gen_state_next =  ( strm_selected [chan][strm] && can_go [chan][strm_request_bank]) ? `MMC_CNTL_CMD_GEN_WAIT       :
-                                                                                                                       `MMC_CNTL_CMD_GEN_LINE_WRITE ;
+                    mmc_cntl_cmd_gen_state_next =  ( strm_enabled [chan][strm] && can_go [chan][strm_request_bank]) ? `MMC_CNTL_CMD_GEN_WAIT       :
+                                                                                                                      `MMC_CNTL_CMD_GEN_LINE_WRITE ;
        
-       
-  //                `MMC_CNTL_CMD_GEN_COMPLETE: 
-  //                  mmc_cntl_cmd_gen_state_next =  `MMC_CNTL_CMD_GEN_WAIT       ;
        
                   `MMC_CNTL_CMD_GEN_ERR: 
                     mmc_cntl_cmd_gen_state_next =  `MMC_CNTL_CMD_GEN_ERR       ;
@@ -425,30 +438,37 @@ module main_mem_cntl (
             //--------------------------------------------------
             // Control
             //  - 
-            
-            assign  request_pipe_read [chan][strm]  = strm_selected [chan][strm] & can_go [chan][strm_request_bank] & ((mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_LINE_READ ) | (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_LINE_WRITE )) ;
+            always @(*)
+              begin
+                request_pipe_read [chan][strm]  = can_go [chan][strm_request_bank] & ((mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_LINE_READ ) | (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_LINE_WRITE )) ;
+              end
 
-            assign  opening_page_id       = request_fifo[strm].pipe_page & {`MGR_DRAM_PAGE_ADDRESS_WIDTH { mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_OPEN }} ;
-            assign  set_a_page_is_open    = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_OPEN  ) ;
-            assign  clear_a_page_is_open  = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_CLOSE ) ;
+            //assign  opening_page_id       = request_fifo[strm].pipe_page & {`MGR_DRAM_PAGE_ADDRESS_WIDTH { mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_OPEN }} ;
+            //assign  set_a_page_is_open    = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_OPEN  ) ;
+            //assign  clear_a_page_is_open  = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_CLOSE ) ;
 
-            assign  strm_request_valid    = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_OPEN    ) |
-                                            (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_CLOSE   ) |
-                                            (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_LINE_READ    ) |
-                                            (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_LINE_WRITE   ) ;
+            // The stream request valid is sent to the channel select logic which in turn will enable this fsm
+            //  - stream is valid if waiting and the streams request fifo wants this channel or
+            //  - the stream has not yet been granted cache access
+            assign  strm_request_valid    = ((mmc_cntl_cmd_gen_state != `MMC_CNTL_CMD_GEN_WAIT ) & (((mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_LINE_READ ) & ~can_go [chan][strm_request_bank]) | ((mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_LINE_WRITE) & ~can_go [chan][strm_request_bank]))) |  // as soon as the line request can go, deassert request
+                                            ((mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_WAIT ) & request_fifo[strm].pipe_valid && (strm_request_chan == chan)) ;
 
             assign  strm_request_cmd      = ({`DRAM_ACC_NUM_OF_CMDS_WIDTH {(mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_OPEN    )}} & `DRAM_ACC_NUM_OF_CMDS_WIDTH 'd`DRAM_ACC_CMD_IS_PO) |
                                             ({`DRAM_ACC_NUM_OF_CMDS_WIDTH {(mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PAGE_CLOSE   )}} & `DRAM_ACC_NUM_OF_CMDS_WIDTH 'd`DRAM_ACC_CMD_IS_PC) |
                                             ({`DRAM_ACC_NUM_OF_CMDS_WIDTH {(mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_LINE_READ    )}} & `DRAM_ACC_NUM_OF_CMDS_WIDTH 'd`DRAM_ACC_CMD_IS_CR) |
                                             ({`DRAM_ACC_NUM_OF_CMDS_WIDTH {(mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_LINE_WRITE   )}} & `DRAM_ACC_NUM_OF_CMDS_WIDTH 'd`DRAM_ACC_CMD_IS_CW)  ;
 
-            assign  strm_request_bank     = request_fifo[strm].pipe_bank  ;
+            assign  strm_request_chan     = request_fifo[strm].pipe_channel ;
+            assign  strm_request_bank     = request_fifo[strm].pipe_bank    ;
+            assign  strm_request_page     = request_fifo[strm].pipe_page    ;
+            assign  strm_request_page     = request_fifo[strm].pipe_page    ;
 
             always @(*)
               begin
                 strm_access_valid [chan] [strm] = strm_request_valid ;
                 strm_access_cmd   [chan] [strm] = strm_request_cmd   ;
                 strm_access_bank  [chan] [strm] = strm_request_bank  ;
+                strm_access_page  [chan] [strm] = strm_request_page  ;
               end
           end
       end
@@ -479,30 +499,55 @@ module main_mem_cntl (
         //--------------------------------------------------
         // Assumptions:
         //  - 
-        wire  [`MGR_NUM_OF_STREAMS_RANGE    ]      request_strm    ;
-        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE ]      requested_bank  ;
-        wire                                       request_valid   ;
+        //reg   [`MGR_NUM_OF_STREAMS_VECTOR   ]      request_valid                          ;
 
         always @(*)
           begin
             case (mmc_cntl_strm_sel_state)
               
               // Wait for data from all the sources before transferring to NoC
+              //  - we select stream 0  first if streams request together
+              //  - maybe add wait state that has knowledge of last stream processed e.g. WAIT_STRM0_LAST -> transiton to STRM10
               `MMC_CNTL_STRM_SEL_WAIT: 
-                mmc_cntl_strm_sel_state_next =  ( strm_access_valid [chan] [0] ) ?  `MMC_CNTL_STRM_SEL_STRM0  :
-                                                ( strm_access_valid [chan] [1] ) ?  `MMC_CNTL_STRM_SEL_STRM1  :
-                                                                                    `MMC_CNTL_STRM_SEL_WAIT   ;
+                // let both channel streams continue if they are accessing different banks
+                mmc_cntl_strm_sel_state_next =  ( strm_access_valid [chan] [0] && strm_access_valid [chan] [1] && (strm_access_bank [chan][0] != strm_access_bank [chan][1]) ) ?  `MMC_CNTL_STRM_SEL_STRM01 :  // default to letting stream 0 go first
+                                                ( strm_access_valid [chan] [0]                                                                                               ) ?  `MMC_CNTL_STRM_SEL_STRM0  :
+                                                ( strm_access_valid [chan] [1]                                                                                               ) ?  `MMC_CNTL_STRM_SEL_STRM1  :
+                                                                                                                                                                                  `MMC_CNTL_STRM_SEL_WAIT   ;
       
               `MMC_CNTL_STRM_SEL_STRM0: 
-                mmc_cntl_strm_sel_state_next =  ( can_go [chan] [strm_access_bank [chan] [0]] && strm_access_valid [chan] [1] ) ?  `MMC_CNTL_STRM_SEL_STRM1    :
-                                                ( can_go [chan] [strm_access_bank [chan] [1]] && strm_access_valid [chan] [0] ) ?  `MMC_CNTL_STRM_SEL_STRM0    :
-                                                                                                                                    `MMC_CNTL_STRM_SEL_WAIT     ;
+                mmc_cntl_strm_sel_state_next =  ( strm_access_valid [chan] [0] && strm_access_valid [chan] [1] && (strm_access_bank [chan][0] != strm_access_bank [chan][1]) ) ?  `MMC_CNTL_STRM_SEL_STRM01 :  // if a stream 1 request occured after we transitioned here
+                                                (~strm_access_valid [chan] [0] && strm_access_valid [chan] [1] ) ?  `MMC_CNTL_STRM_SEL_STRM1  :
+                                                (~strm_access_valid [chan] [0]                                 ) ?  `MMC_CNTL_STRM_SEL_WAIT   :
+                                                                                                                    `MMC_CNTL_STRM_SEL_STRM0  ;
+                                                                                                                                              
+              `MMC_CNTL_STRM_SEL_STRM1:                                                                                                       
+                mmc_cntl_strm_sel_state_next =  ( strm_access_valid [chan] [1] && strm_access_valid [chan] [0] && (strm_access_bank [chan][0] != strm_access_bank [chan][1]) ) ?  `MMC_CNTL_STRM_SEL_STRM10 :  // if a stream 0 request occured after we transitioned here
+                                                (~strm_access_valid [chan] [1] && strm_access_valid [chan] [0] ) ?  `MMC_CNTL_STRM_SEL_STRM0  :
+                                                (~strm_access_valid [chan] [1]                                 ) ?  `MMC_CNTL_STRM_SEL_WAIT   :
+                                                                                                                    `MMC_CNTL_STRM_SEL_STRM1  ;
+                                                                                                                                              
+                                                                                                                                              
+              // If streams are accessing different banks in the same channel, maintain order in which streams gain access to the channel using the state
+              //  - STRM01 - stream 0 is first
+              //  - STRM10 - stream 1 is first
+              `MMC_CNTL_STRM_SEL_STRM01:                                                                                                      
+                mmc_cntl_strm_sel_state_next =  (~strm_access_valid [chan] [0] && ~strm_access_valid [chan] [1]) ?  `MMC_CNTL_STRM_SEL_SEND1_NEXT   :  // we will send stream0's command then stream1's next
+                                                ( strm_access_valid [chan] [0] && ~strm_access_valid [chan] [1]) ?  `MMC_CNTL_STRM_SEL_STRM0  :
+                                                (~strm_access_valid [chan] [0] &&  strm_access_valid [chan] [1]) ?  `MMC_CNTL_STRM_SEL_STRM1  :
+                                                                                                                    `MMC_CNTL_STRM_SEL_STRM01 ;
       
+              `MMC_CNTL_STRM_SEL_STRM10:                                                                                                      
+                mmc_cntl_strm_sel_state_next =  (~strm_access_valid [chan] [0] && ~strm_access_valid [chan] [1]) ?  `MMC_CNTL_STRM_SEL_SEND0_NEXT   :  // we will send stream1's command then stream0's next
+                                                ( strm_access_valid [chan] [0] && ~strm_access_valid [chan] [1]) ?  `MMC_CNTL_STRM_SEL_STRM0  :
+                                                (~strm_access_valid [chan] [0] &&  strm_access_valid [chan] [1]) ?  `MMC_CNTL_STRM_SEL_STRM1  :
+                                                                                                                    `MMC_CNTL_STRM_SEL_STRM10 ;
       
-              `MMC_CNTL_STRM_SEL_STRM1: 
-                mmc_cntl_strm_sel_state_next =  ( can_go [chan] [strm_access_bank [chan] [1]] && strm_access_valid [chan] [0] ) ?  `MMC_CNTL_STRM_SEL_STRM0    :
-                                                ( can_go [chan] [strm_access_bank [chan] [0]] && strm_access_valid [chan] [1] ) ?  `MMC_CNTL_STRM_SEL_STRM1    :
-                                                                                                                                    `MMC_CNTL_STRM_SEL_WAIT     ;
+              `MMC_CNTL_STRM_SEL_SEND0_NEXT: 
+                mmc_cntl_strm_sel_state_next =  `MMC_CNTL_STRM_SEL_WAIT       ;
+      
+              `MMC_CNTL_STRM_SEL_SEND1_NEXT: 
+                mmc_cntl_strm_sel_state_next =  `MMC_CNTL_STRM_SEL_WAIT       ;
       
               `MMC_CNTL_STRM_SEL_ERR: 
                 mmc_cntl_strm_sel_state_next =  `MMC_CNTL_STRM_SEL_ERR       ;
@@ -516,37 +561,42 @@ module main_mem_cntl (
         //--------------------------------------------------
         // Control
         //  - 
-        assign  request_strm   = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;  // 1 = strm1, 0 = strm0
 
         for (strm=0; strm<`MGR_NUM_OF_STREAMS ; strm=strm+1) 
           begin: strm
             always @(*)
               begin
-                strm_selected [chan][strm] = (request_strm == strm) ;
+                strm_enabled  [chan][strm] = ((strm == 0) & (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM0)) | ((strm == 1) & (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1)) | (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM01) | (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM10);
               end
           end
 
-        assign  request_valid  = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM0) | (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
-
-        assign  requested_bank = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM0) ? strm_access_bank [chan] [0] :
-                                                                                         strm_access_bank [chan] [1] ;
-                                
         for (bank=0; bank<`MGR_DRAM_NUM_BANKS ; bank++) 
           begin: bank
             always @(*)
               begin
-                access_request_valid [chan][bank] = (request_valid & (request_strm == 1'b0) & (requested_bank == bank)) | 
-                                                    (request_valid & (request_strm == 1'b1) & (requested_bank == bank)) ;
+                access_request_valid [chan][bank] = (strm_enabled[chan][0] & (requested_bank[0][chan] == bank)) | 
+                                                    (strm_enabled[chan][1] & (requested_bank[1][chan] == bank)) ;
               
-                access_request_cmd   [chan][bank] = ((request_strm == 1'b0) && (requested_bank == bank)) ? strm_access_cmd [chan][0] :
-                                                    ((request_strm == 1'b1) && (requested_bank == bank)) ? strm_access_cmd [chan][1] : 
-                                                                                                           `DRAM_ACC_CMD_IS_NOP      ;
+                access_request_cmd   [chan][bank] = ( strm_enabled[chan][0] && (strm_access_bank [chan][0] == bank)) ? strm_access_cmd [chan][0] :
+                                                    ( strm_enabled[chan][1] && (strm_access_bank [chan][1] == bank)) ? strm_access_cmd [chan][1] : 
+                                                                                                                       `DRAM_ACC_CMD_IS_NOP      ;
+
+                access_request_page  [chan][bank] = ( strm_enabled[chan][0] && (strm_access_bank [chan][0] == bank)) ? strm_access_page [chan][0] :
+                                                    ( strm_enabled[chan][1] && (strm_access_bank [chan][1] == bank)) ? strm_access_page [chan][1] : 
+                                                                                                                       {`MGR_DRAM_PAGE_ADDRESS_WIDTH {1'b1 }} ;  // make clear using all 1's
               end
           end
+
+        wire                                       final_queue_valid   ;  // write to final queue
+        wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE     ]   final_queue_cmd     ;
+        wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   final_queue_chan    ;
+        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   final_queue_bank    ;
+        wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   final_queue_page    ;
       end
   endgenerate
 
 
+/*
 
   // Examine state of stream FSMs and set channel bank/page state
   generate
@@ -578,6 +628,7 @@ module main_mem_cntl (
           end
       end
   endgenerate
+*/
 
   
   //----------------------------------------------------------------------------------------------------
