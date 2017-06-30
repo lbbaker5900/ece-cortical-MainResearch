@@ -1,0 +1,65 @@
+
+
+//-------------------------------                 
+// Network Configuration                          
+                                                  
+[Config]                                          
+Number of PEs in X direction = 2                
+Number of PEs in Y direction = 2                
+                                                  
+[PE]                                              
+Type = Normal                                     
+                                                  
+//----------------------------------------------------------             
+[PE 0 0]                                                             
+Type = Normal                                                            
+Number of Ports = 2                      
+// PE <0,0> Port East Connected to Node <0,1> port West 
+Port 0 Connected to Node = 0 1 1                      
+// PE <0,0> Port South Connected to Node <1,0> port North 
+Port 1 Connected to Node = 1 0 0                      
+
+//----------------------------------------------------------             
+[PE 0 1]                                                             
+Type = Normal                                                            
+Number of Ports = 2                      
+// PE <0,1> Port South Connected to Node <1,1> port North 
+Port 0 Connected to Node = 1 1 0                      
+// PE <0,1> Port West Connected to Node <0,0> port East 
+Port 1 Connected to Node = 0 0 0                      
+
+//----------------------------------------------------------             
+[PE 1 0]                                                             
+Type = Normal                                                            
+Number of Ports = 2                      
+// PE <1,0> Port North Connected to Node <0,0> port South 
+Port 0 Connected to Node = 0 0 1                      
+// PE <1,0> Port East Connected to Node <1,1> port West 
+Port 1 Connected to Node = 1 1 1                      
+
+//----------------------------------------------------------             
+[PE 1 1]                                                             
+Type = Normal                                                            
+Number of Ports = 2                      
+// PE <1,1> Port North Connected to Node <0,1> port South 
+Port 0 Connected to Node = 0 1 0                      
+// PE <1,1> Port West Connected to Node <1,0> port East 
+Port 1 Connected to Node = 1 0 1                      
+
+//-------------------------------
+
+
+//-------------------------------
+// Parameters
+
+[Parameters]
+
+
+//-------------------------------
+// Debug
+
+[Debug]
+
+// verbosity
+Verbosity Level = 3
+

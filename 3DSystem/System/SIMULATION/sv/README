@@ -9,6 +9,9 @@ vim   ../../../PEArray/SIMULATION/common/TB_common.vh  ../../../PEArray/HDL/comm
   `undef  TB_ENABLE_REGFILE_DRIVER
 cp ../../../Manager/scripts/nocConfig_mesh2x2.txt ../../../Manager/scripts/nocConfig.txt
 
+# back to 8x8
+git checkout ../../../Manager/scripts/nocConfig.txt
+
 grep ERROR transcript ; grep PASS transcript | wc -l
 echo 'Expect 20480'
 #20480

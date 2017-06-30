@@ -58,6 +58,11 @@
 `define MGR_NUM_OF_STREAMS_RANGE           `MGR_NUM_OF_STREAMS_MSB : `MGR_NUM_OF_STREAMS_LSB
 `define MGR_NUM_OF_STREAMS_VECTOR        `PE_NUM_OF_STREAMS-1 : 0
 
+`define MGR_STREAM_ADDRESS_WIDTH          (`CLOG2(`MGR_NUM_OF_STREAMS))
+`define MGR_STREAM_ADDRESS_MSB           `MGR_STREAM_ADDRESS_WIDTH-1
+`define MGR_STREAM_ADDRESS_LSB            0
+`define MGR_STREAM_ADDRESS_SIZE           (`MGR_STREAM_ADDRESS_MSB - `MGR_STREAM_ADDRESS_LSB +1)
+`define MGR_STREAM_ADDRESS_RANGE           `MGR_STREAM_ADDRESS_MSB : `MGR_STREAM_ADDRESS_LSB
 //------------------------------------------------
 // MGR Execution Lane 
 //------------------------------------------------
