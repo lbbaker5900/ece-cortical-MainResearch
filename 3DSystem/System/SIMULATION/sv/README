@@ -8,9 +8,13 @@ vim   ../../../PEArray/SIMULATION/common/TB_common.vh  ../../../PEArray/HDL/comm
   `define TB_ENABLE_REGFILE_DRIVER
   `undef  TB_ENABLE_REGFILE_DRIVER
 cp ../../../Manager/scripts/nocConfig_mesh2x2.txt ../../../Manager/scripts/nocConfig.txt
+cp ../common/noc_interMgr_port_Bitmasks_2x2.vh ../../../Manager/HDL/common/noc_interMgr_port_Bitmasks.vh
+
 
 # back to 8x8
 git checkout ../../../Manager/scripts/nocConfig.txt
+git checkout ../../../Manager/HDL/common/noc_interMgr_port_Bitmasks.vh
+git checkout ../../../PEArray/HDL/common/pe_array.vh 
 
 grep ERROR transcript ; grep PASS transcript | wc -l
 echo 'Expect 20480'
