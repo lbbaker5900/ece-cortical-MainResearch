@@ -17,6 +17,7 @@
 
 import sys
 import os
+import inspect
 import math
 import random
 import re
@@ -26,6 +27,38 @@ import numpy as np
 
 PortConnectionSides = {'North' : 'South', 'South' : 'North', 'East' : 'West', 'West' : 'East'}
 
+FoundNumOfPes   = False
+searchFile = open("../../github/ece-cortical-MainResearch/3DSystem/PEArray/HDL/common/pe_array.vh", "r")
+for line in searchFile:
+  if FoundNumOfPes == False :
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "PE_ARRAY_NUM_OF_PE" in data[1]:
+      numOfPes       = int(data[2])
+      FoundNumOfPes  = True
+searchFile.close()
+
+########################################################################################################################
+## Create __FILE__ and __LINE__ for prints
+## citation:http://stackoverflow.com/questions/6810999/how-to-determine-file-function-and-line-number
+def __LINE__():
+    try:
+        raise Exception
+    except:
+        return sys.exc_info()[2].tb_frame.f_back.f_lineno
+
+def __FILE__():
+    return inspect.currentframe().f_code.co_filename
+
+class __LINE__(object):
+    import sys
+
+    def __repr__(self):
+        try:
+            raise Exception
+        except:
+            return str(sys.exc_info()[2].tb_frame.f_back.f_lineno)
+########################################################################################################################
 
 class Port():
 
@@ -109,8 +142,11 @@ class PEarray():
         self.pe[peId[0]][peId[1]].addCell(layerId, cellId)
 
 
-numberOfPEsInYDirection = 8
-numberOfPEsInXDirection = 8
+peY = int(math.sqrt(numOfPes))
+peX = int(math.sqrt(numOfPes))
+print '{0}:{1}:Generate connections for a network with a {2} X {3} array of Managers/PEs'.format(__FILE__(), __LINE__(), peY, peX)
+numberOfPEsInYDirection = peY
+numberOfPEsInXDirection = peX
 yDim = numberOfPEsInYDirection 
 xDim = numberOfPEsInXDirection 
 

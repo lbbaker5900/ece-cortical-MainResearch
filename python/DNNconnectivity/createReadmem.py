@@ -145,12 +145,21 @@ FoundOperationWidth = False
 FoundOptOrderWidth = False
 FoundConsJumpPtrWidth = False
 FoundLocalStorageDescMemoryDepth = False
+FoundLocalConsJumpMemoryDepth = False
 FoundDescToCJRatio = False
 FoundCJWidth = False
+FoundInstructionMemoryDepth = False
 
 
 
 for line in searchFile:
+  if FoundInstructionMemoryDepth == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_WU_MEMORY_DEPTH" in data[1]:
+      instructionMemoryDepth  = int(data[2])
+      FoundInstructionMemoryDepth = True
+  #
   if FoundOperationWidth== False:
     data = re.split(r'\s{1,}', line)
     # check define is in 2nd field
@@ -194,19 +203,19 @@ for line in searchFile:
       localStorageDescMemoryDepth = int(data[2])
       FoundLocalStorageDescMemoryDepth = True
 
-  #*
-  if FoundDescToCJRatio == False:
+  if FoundLocalConsJumpMemoryDepth == False:
     data = re.split(r'\s{1,}', line)
     # check define is in 2nd field
-    if "MGR_LOCAL_STORAGE_DESC_CONSJUMP_PER_DESC" in data[1]:
-      cjToDescRatio = int(data[2])
-      FoundDescToCJRatio = True
+    if "MGR_INST_CONS_JUMP_DEPTH" in data[1]:
+      localConsJumpMemoryDepth = int(data[2])
+      FoundLocalConsJumpMemoryDepth = True
+
   #
   if FoundCJWidth == False:
     data = re.split(r'\s{1,}', line)
     # check define is in 2nd field
-    if "MGR_INST_CONS_JUMP_WIDTH" in data[1]:
-      cjWidth = int(data[2])
+    if "MGR_INST_CONS_JUMP_DEPTH" in data[1]:
+      cjWidth = int(math.log(int(data[2]),2))
       FoundCJWidth = True
   #
  
@@ -580,7 +589,7 @@ def main():
         outputFile = mgrDirStr + "manager_{0}_layer{1}_instruction_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
         oFile = open(outputFile, 'w')
 
-        for c in range(len(icntl)):
+        for c in range(min(len(icntl), instructionMemoryDepth)):
           instruction = ''
           instruction = bin(int(str(icntl[c]),16)).split('b')[1].zfill(bitsPerCntl) + instruction
           instruction = bin(int(str(dcntl[c]),16)).split('b')[1].zfill(bitsPerCntl) + instruction
@@ -757,9 +766,9 @@ def main():
       mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
       outputFile = mgrDirStr + "manager_{0}_layer{1}_storageDescriptor_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
       oFile = open(outputFile, 'w')
-
-      consJumpPtrWidth = int(math.log(localStorageDescMemoryDepth*cjToDescRatio*2,2))
+      consJumpPtrWidth = int(math.log(localConsJumpMemoryDepth ,2))
       for c in range(len(sdAddress)):
+        print 'Storage Descriptor Entry : {0}'.format(c)
         instruction = ''
         instruction = bin(int(accessOrder[c],16)).split('b')[1].zfill(optionOrderWidth) + instruction
         print 'Instruction : {0}'.format(instruction)
@@ -781,7 +790,8 @@ def main():
       mgrDirStr = dirStr + 'manager_{0}_{1}/'.format(mgrY, mgrX)
       outputFile = mgrDirStr + "manager_{0}_layer{1}_storageDescriptorConsJump_readmem.dat".format(mgrY*arrayX+mgrX, layerID)
       oFile = open(outputFile, 'w')
-      for c in range(len(cjCntl)):
+      for c in range(min(len(cjCntl), localConsJumpMemoryDepth)):
+        print 'Cons/Jump Entry : {0} : of {1} entries'.format(c, len(cjCntl))
         instruction = ''
         instruction = bin(int(consJumpMemory[c],16)).split('b')[1].zfill(cjWidth ) + instruction
         print 'Instruction : {0}'.format(instruction)

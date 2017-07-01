@@ -3677,7 +3677,11 @@ def main():
     # This only creates a network class with a few empty fields such as number of layers
     # The number of PE's are defaulted to 8x8 (peY=8, peX=8). These can be changed by providing values in the arguments.
     # No objects
-    network = dc.Network()
+    
+    peY = int(math.sqrt(numOfPes))
+    peX = int(math.sqrt(numOfPes))
+    print '{0}:{1}:Create network with a {2} X {3} array of Managers/PEs'.format(__FILE__(), __LINE__(), peY, peX)
+    network = dc.Network(peY, peX)
 
     #------------------------------------------------------------------------------------------------------------------------
     # Create Layers

@@ -3,10 +3,13 @@ jupyter notebook
 
 python -i test.py
 
+# To change array size, edit
+vim /Users/lbbaker/Documents/workspace/github/ece-cortical-MainResearch/3DSystem/PEArray/HDL/common/pe_array.vh
+
 scp verilogFiles/latest/*.vh   lbbaker@olympia.ece.ncsu.edu:/home/lbbaker/Cortical/MyResearch/3DSystem/System/HDL/common/.
 scp outputFiles/latest/*/*.dat lbbaker@olympia.ece.ncsu.edu:/home/lbbaker/Cortical/MyResearch/3DSystem/System/SIMULATION/sv/inputFiles/.
 
-scp verilogFiles/latest/*.vh   lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/System/HDL/common/.
+scp verilogFiles/latest/*.vh   lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/System/HDL/common/. ; \
 scp outputFiles/latest/*/*.dat lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/System/SIMULATION/sv/inputFiles/.
 
 bsub -W 2:00 < script.csh
