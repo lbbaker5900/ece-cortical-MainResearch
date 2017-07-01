@@ -44,7 +44,7 @@ module dfi(
             input   wire                                           mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]                                    ,
             input   wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ]  ,
             input   wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]                                    ,
-            input   wire  [ `MGR_DRAM_ADDRESS_RANGE         ]      mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]                                    ,
+            input   wire  [ `MGR_DRAM_PHY_ADDRESS_RANGE     ]      mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]                                    ,
 
   
             //--------------------------------------------------------------------------------
@@ -55,8 +55,8 @@ module dfi(
             output   reg   dfi__phy__cmd1                                      , 
             output   reg   dfi__phy__cmd0                                      ,
             output   reg   [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data ,
-            output   reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__addr ,
-            output   reg   [ `MGR_DRAM_ADDRESS_RANGE         ]  dfi__phy__bank ,
+            output   reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank ,
+            output   reg   [ `MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr ,
 
             //--------------------------------------------------------------------------------
             // DFI Interface from DRAM
@@ -80,14 +80,50 @@ module dfi(
                     );
     
 
+  reg  init_done    ;
+  reg  init_done_d1 ;
 
   always @(posedge clk)
     begin
-      dfi__mmc__init_done = ~reset_poweron ;  // FIXME
+      init_done   <=   ~reset_poweron ;  // FIXME
+    end
+
+  always @(posedge clk)
+    begin
+      dfi__mmc__init_done     <=  init_done ;
+      init_done_d1            <=  init_done ;
     end
          
   assign   clk_diram_ck       = clk               ;
 
+  //----------------------------------------------------------------------------------------------------
+  // Wires and registers
+  reg                                        dfi__phy__cs_e1     ; 
+  reg                                        dfi__phy__cmd1_e1   ; 
+  reg                                        dfi__phy__cmd0_e1   ;
+  reg   [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data_e1   ;
+  reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank_e1   ;
+  reg   [ `MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr_e1   ;
+  //----------------------------------------------------------------------------------------------------
+  // Control page and cache clock phases
+  reg dram_cmd_mode ;
+  reg dram_chan_mode;
+
+  always@(posedge clk_diram2x)
+  begin
+    if(reset_poweron || !init_done_d1)
+       dram_chan_mode <= 1'b1;
+    else
+       dram_chan_mode <= ~dram_chan_mode; 
+  end
+  always@(posedge clk_diram)
+  begin
+    if(reset_poweron || !init_done_d1)
+       dram_cmd_mode <= 1'b1;
+    else
+       dram_cmd_mode <= ~dram_cmd_mode; 
+  end
+  
   genvar word ;
   generate
     for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS; word=word+1) 
@@ -103,20 +139,39 @@ module dfi(
 
   always @(posedge clk_diram2x)
     begin
-      dfi__phy__cs      <= ( ~clk_diram_ck ) ? mmc__dfi__cs   [0] :
-                                               mmc__dfi__cs   [1] ;
-      dfi__phy__cmd1    <= ( ~clk_diram_ck ) ? mmc__dfi__cmd1 [0] :
-                                               mmc__dfi__cmd1 [1] ;
-      dfi__phy__cmd0    <= ( ~clk_diram_ck ) ? mmc__dfi__cmd0 [0] :
-                                               mmc__dfi__cmd0 [1] ;
-      dfi__phy__addr    <= ( ~clk_diram_ck ) ? mmc__dfi__addr [0] :
-                                               mmc__dfi__addr [1] ;
-      dfi__phy__bank    <= ( ~clk_diram_ck ) ? mmc__dfi__bank [0] :
-                                               mmc__dfi__bank [1] ;
+      case (dram_chan_mode)  // synopsys parallel_case
+        1'b1 :
+          begin
+            dfi__phy__cs_e1       <=   mmc__dfi__cs   [0] ;
+            dfi__phy__cmd1_e1     <=   mmc__dfi__cmd1 [0] ;
+            dfi__phy__cmd0_e1     <=   mmc__dfi__cmd0 [0] ;
+            dfi__phy__bank_e1     <=   mmc__dfi__bank [0] ;
+            dfi__phy__addr_e1     <=   mmc__dfi__addr [0] ;
+          end
+         
+        1'b0 :
+          begin
+            dfi__phy__cs_e1       <=   mmc__dfi__cs   [1] ;
+            dfi__phy__cmd1_e1     <=   mmc__dfi__cmd1 [1] ;
+            dfi__phy__cmd0_e1     <=   mmc__dfi__cmd0 [1] ;
+            dfi__phy__bank_e1     <=   mmc__dfi__bank [1] ;
+            dfi__phy__addr_e1     <=   mmc__dfi__addr [1] ;
+          end
 
+      endcase
+
+    end
+  always @(posedge clk_diram2x)
+    begin
+      dfi__phy__cs      <=  dfi__phy__cs_e1   ;
+      dfi__phy__cmd1    <=  dfi__phy__cmd1_e1 ;
+      dfi__phy__cmd0    <=  dfi__phy__cmd0_e1 ;
+      dfi__phy__bank    <=  dfi__phy__bank_e1 ;
+      dfi__phy__addr    <=  dfi__phy__addr_e1 ;
     end
 
 wire #0.05 clk_diram2x_dly = clk_diram2x;
+
 reg                                    dfi__mmc__valid_e1 ;
 reg     [`MGR_DRAM_INTF_RANGE ]        dfi__mmc__data_e1  ;    
 reg                                    dfi__mmc__valid_e2 ;

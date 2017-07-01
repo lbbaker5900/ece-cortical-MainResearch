@@ -44,8 +44,8 @@ module manager (
             output   wire                                       dfi__phy__cmd1 ,
             output   wire                                       dfi__phy__cmd0 ,
             output   wire  [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data ,
-            output   wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__addr ,
-            output   wire  [ `MGR_DRAM_ADDRESS_RANGE         ]  dfi__phy__bank ,
+            output   wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank ,
+            output   wire  [ `MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr ,
 
             //--------------------------------------------------------------------------------
             // DFI Interface from DRAM
@@ -465,7 +465,7 @@ module manager (
   wire                                           mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
   wire  [`MGR_EXEC_LANE_WIDTH_RANGE       ]      mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-  wire  [`MGR_DRAM_ADDRESS_RANGE          ]      mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
+  wire  [`MGR_DRAM_PHY_ADDRESS_RANGE      ]      mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
 
   main_mem_cntl main_mem_cntl (
 

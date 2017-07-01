@@ -16,7 +16,7 @@
   // so if the RW command fifo isnt empty and the RW command is a write, we need to read the target data fifo based on the
   // "peeked" RW bank address so the write data can be available during the 'Page' phase
   
-  if (final_cache_cmd_fifo[chan].pipe_peek_cmd == `MMC_CNTL_CACHE_CMD_FINAL_FIFO_TYPE_CW)
+  if (!final_page_cmd_fifo[chan].pipe_valid )
     begin
       // Command fifo empty so just jump to the NOP PG phase
       mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NOP_PAGE_CMD;

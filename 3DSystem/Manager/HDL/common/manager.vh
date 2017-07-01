@@ -491,6 +491,12 @@
 //****************************************************************************************************
   
 
+`define MGR_DRAM_PHY_ADDRESS_WIDTH                      `MGR_DRAM_PAGE_ADDRESS_WIDTH 
+`define MGR_DRAM_PHY_ADDRESS_MSB                         `MGR_DRAM_PHY_ADDRESS_WIDTH-1
+`define MGR_DRAM_PHY_ADDRESS_LSB                         0
+`define MGR_DRAM_PHY_ADDRESS_SIZE                        (`MGR_DRAM_PHY_ADDRESS_MSB - `MGR_DRAM_PHY_ADDRESS_LSB +1)
+`define MGR_DRAM_PHY_ADDRESS_RANGE                        `MGR_DRAM_PHY_ADDRESS_MSB : `MGR_DRAM_PHY_ADDRESS_LSB
+
 `define MGR_DRAM_INTF_WIDTH                          2048
 `define MGR_DRAM_INTF_MSB                         `MGR_DRAM_INTF_WIDTH-1
 `define MGR_DRAM_INTF_LSB                         0

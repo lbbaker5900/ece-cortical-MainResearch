@@ -94,8 +94,8 @@ module manager_array (
   output                                        dfi__phy__cmd1 [`MGR_ARRAY_NUM_OF_MGR ] ; 
   output                                        dfi__phy__cmd0 [`MGR_ARRAY_NUM_OF_MGR ] ;
   output   [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data [`MGR_ARRAY_NUM_OF_MGR ] ;
-  output   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__addr [`MGR_ARRAY_NUM_OF_MGR ] ;
-  output   [ `MGR_DRAM_ADDRESS_RANGE         ]  dfi__phy__bank [`MGR_ARRAY_NUM_OF_MGR ] ;
+  output   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank [`MGR_ARRAY_NUM_OF_MGR ] ;
+  output   [ `MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr [`MGR_ARRAY_NUM_OF_MGR ] ;
 
   //--------------------------------------------------------------------------------
   // DFI Interface from DRAM
@@ -159,8 +159,8 @@ module manager_array (
         wire                                       dfi__phy__cmd1 ; 
         wire                                       dfi__phy__cmd0 ;
         wire  [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data ;
-        wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__addr ;
-        wire  [ `MGR_DRAM_ADDRESS_RANGE         ]  dfi__phy__bank ;
+        wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank ;
+        wire  [ `MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr ;
 
         //--------------------------------------------------------------------------------
         // DFI Interface from DRAM
