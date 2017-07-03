@@ -54,6 +54,9 @@
           // Page command fifo not empty and the next RW command is a Write, so pre-read the RW fifo so the write data is available during the next 'page' phase
           mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_PAGE_CMD_WITH_WR_DATA;
       
+          final_page_cmd_fifo [chan].pipe_read  = 1'b1 ;
+          final_cache_cmd_fifo[chan].pipe_read  = 1'b1 ;
+                    
           // need to prepare write data to be output one cycle early with page command
           // we are gonna select the data fifo from the command entry that is the enrty after the next PG entry
           //`include "sch_driver_peek_select_data_fifo.vh"  
@@ -63,6 +66,9 @@
     begin
       // Page command fifo not empty and the RW command afterward isnt a write, so its a normal PG phase
       mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_PAGE_CMD;
+      
+     final_page_cmd_fifo [chan].pipe_read  = 1'b1 ;
+     final_cache_cmd_fifo[chan].pipe_read  = 1'b1 ;
     end
 
 
