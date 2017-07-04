@@ -12,7 +12,7 @@
 *****************************************************************/
 
 
-`define DRAM_ACC_NUM_OF_CMDS              5
+`define DRAM_ACC_NUM_OF_CMDS              7
 `define DRAM_ACC_NUM_OF_CMDS_WIDTH        3   // need to account for 5
 `define DRAM_ACC_NUM_OF_CMDS_MSB          `DRAM_ACC_NUM_OF_CMDS_WIDTH-1
 `define DRAM_ACC_NUM_OF_CMDS_LSB          0
@@ -28,6 +28,31 @@
 `define DRAM_ACC_CMD_IS_NOP      5
 `define DRAM_ACC_CMD_IS_ADJ      6
 
+`define DRAM_ACC_CMD_SEQ_IS_POCR     0
+`define DRAM_ACC_CMD_SEQ_IS_POCW     1
+`define DRAM_ACC_CMD_SEQ_IS_PCPOCR   2
+`define DRAM_ACC_CMD_SEQ_IS_PCPOCW   3
+`define DRAM_ACC_CMD_SEQ_IS_CR       4
+`define DRAM_ACC_CMD_SEQ_IS_CW       5
+`define DRAM_ACC_CMD_SEQ_IS_PR       6
+`define DRAM_ACC_CMD_SEQ_IS_PCPR     7  // the stream fsm's will reopen the page, so dont need PCPRPO
+`define DRAM_ACC_CMD_SEQ_IS_NOP      8
+
+`define DRAM_ACC_CMD_SEQ_MAX_LENGTH      4  // last is always NOP
+`define DRAM_ACC_CMD_SEQ_COUNT_WIDTH              (`CLOG2(`DRAM_ACC_CMD_SEQ_MAX_LENGTH))
+`define DRAM_ACC_CMD_SEQ_COUNT_MSB                `DRAM_ACC_CMD_SEQ_COUNT_WIDTH-1
+`define DRAM_ACC_CMD_SEQ_COUNT_LSB                0
+`define DRAM_ACC_CMD_SEQ_COUNT_SIZE               (`DRAM_ACC_CMD_SEQ_COUNT_MSB - `DRAM_ACC_CMD_SEQ_COUNT_LSB +1)
+`define DRAM_ACC_CMD_SEQ_COUNT_RANGE               `DRAM_ACC_CMD_SEQ_COUNT_MSB : `DRAM_ACC_CMD_SEQ_COUNT_LSB
+
+
+
+`define DRAM_ACC_NUM_CMD_SEQS               9
+`define DRAM_ACC_CMD_SEQ_WIDTH              4  
+`define DRAM_ACC_CMD_SEQ_MSB                `DRAM_ACC_CMD_SEQ_WIDTH-1
+`define DRAM_ACC_CMD_SEQ_LSB                0
+`define DRAM_ACC_CMD_SEQ_SIZE               (`DRAM_ACC_CMD_SEQ_MSB - `DRAM_ACC_CMD_SEQ_LSB +1)
+`define DRAM_ACC_CMD_SEQ_RANGE               `DRAM_ACC_CMD_SEQ_MSB : `DRAM_ACC_CMD_SEQ_LSB
 
 `define DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES              6  // commands plus adjacent bank
 `define DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_WIDTH        `DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES
