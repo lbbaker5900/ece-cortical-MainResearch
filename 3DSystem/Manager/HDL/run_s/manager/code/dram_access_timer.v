@@ -44,6 +44,8 @@ module dram_access_timer(
             //-------------------------------
             // Outputs
             output reg                           can_go             ,
+            output reg                           can_go_valid       ,  // We need to pipeline to meet timing, so stall can_go if another command is in process
+            output reg                           ready              ,  // immediately deassert ready if we are getting a request while one is still being processed
 
             //-------------------------------
             // Inputs
@@ -62,19 +64,48 @@ module dram_access_timer(
             );   
  
 
-  reg [`DRAM_ACC_TIMER_RANGE ]  page_open    [`DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_RANGE  ] ;        //column for page open, first row - page open, second row - page close, third - cr, 4 - cw
-  reg [`DRAM_ACC_TIMER_RANGE ]  page_close   [`DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_RANGE  ] ;        // for pc
-  reg [`DRAM_ACC_TIMER_RANGE ]  cache_read   [`DRAM_ACC_NUM_OF_CACHE_DEPENDENCIES_RANGE ] ;        // for cr      //each row is 5 bit number to hold the timings
-  reg [`DRAM_ACC_TIMER_RANGE ]  cache_write  [`DRAM_ACC_NUM_OF_CACHE_DEPENDENCIES_RANGE ] ;        // for cw
-  reg [`DRAM_ACC_TIMER_RANGE ]  page_refresh [`DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_RANGE  ] ;
+  reg [`DRAM_ACC_TIMER_RANGE        ]  page_open    [`DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_RANGE  ] ;        //column for page open, first row - page open, second row - page close, third - cr, 4 - cw
+  reg [`DRAM_ACC_TIMER_RANGE        ]  page_close   [`DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_RANGE  ] ;        // for pc
+  reg [`DRAM_ACC_TIMER_RANGE        ]  cache_read   [`DRAM_ACC_NUM_OF_CACHE_DEPENDENCIES_RANGE ] ;        // for cr      //each row is 5 bit number to hold the timings
+  reg [`DRAM_ACC_TIMER_RANGE        ]  cache_write  [`DRAM_ACC_NUM_OF_CACHE_DEPENDENCIES_RANGE ] ;        // for cw
+  reg [`DRAM_ACC_TIMER_RANGE        ]  page_refresh [`DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_RANGE  ] ;
   
-  reg [`DRAM_ACC_NUM_OF_CMDS_VECTOR ] cmd_can_go  ; // vector in order of DRAM_ACC_CMD_IS_*
+  reg [`DRAM_ACC_NUM_OF_CMDS_VECTOR ]  cmd_can_go                                                ; // vector in order of DRAM_ACC_CMD_IS_*
+                                                                                                 
+  reg                                  request_page_open                                         ; 
+  reg                                  request_page_close                                        ; 
+  reg                                  request_cache_read                                        ; 
+  reg                                  request_cache_write                                       ; 
+  reg                                  request_page_refresh                                      ; 
+  
+  reg [1:0]  int_request_valid ;
+  genvar gvi;
+  generate
+    for (gvi=0; gvi<2; gvi++)
+      begin
+        always @(posedge clk)
+          begin
+            if (gvi == 0)
+              int_request_valid[gvi] = request_valid            ;
+            else
+              int_request_valid[gvi] = int_request_valid[gvi-1] ;
+          end
+      end
+  endgenerate
 
-  wire                          request_page_open     = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_PO); 
-  wire                          request_page_close    = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_PC); 
-  wire                          request_cache_read    = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_CR); 
-  wire                          request_cache_write   = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_CW); 
-  wire                          request_page_refresh  = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_PR); 
+  always @(*) 
+    begin
+      ready = |int_request_valid ;
+    end
+
+  always @(*)
+    begin
+      request_page_open     = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_PO); 
+      request_page_close    = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_PC); 
+      request_cache_read    = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_CR); 
+      request_cache_write   = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_CW); 
+      request_page_refresh  = request_valid && (request_cmd == `DRAM_ACC_CMD_IS_PR); 
+    end
   
   always @(posedge clk)
   begin
@@ -140,26 +171,27 @@ module dram_access_timer(
   // we will need immediate feedback, so minimize logic
   always @(posedge clk)
     begin
-       cmd_can_go[`DRAM_ACC_CMD_IS_PO ] <= (/*request_page_open    &&*/ can_go) ? 1'b0 :
+       cmd_can_go[`DRAM_ACC_CMD_IS_PO ] <= (request_page_open    && can_go) ? 1'b0 :
                                                                               ((page_open   [0] == 0) & (page_open   [1] == 0) & (page_open   [2] == 0) & (page_open   [3] == 0) & (page_open   [4] == 0) & (page_open   [5] == 0)) ;
-                                                                       
-       cmd_can_go[`DRAM_ACC_CMD_IS_PC ] <= (/*request_page_close   &&*/ can_go) ? 1'b0 :
+                                                                   
+       cmd_can_go[`DRAM_ACC_CMD_IS_PC ] <= (request_page_close   && can_go) ? 1'b0 :
                                                                               ((page_close  [0] == 0) & (page_close  [1] == 0) & (page_close  [2] == 0) & (page_close  [3] == 0) & (page_close  [4] == 0) & (page_close  [5] == 0)) ;
-                                                                       
-       cmd_can_go[`DRAM_ACC_CMD_IS_CR ] <= (/*request_cache_read   &&*/ can_go) ? 1'b0 :
+                                                                   
+       cmd_can_go[`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read   && can_go) ? 1'b0 :
                                                                               ((cache_read  [0] == 0) & (cache_read  [1] == 0) & (cache_read  [2] == 0) & (cache_read  [3] == 0) & (cache_read  [4] == 0) ) ;
-                                                                       
-       cmd_can_go[`DRAM_ACC_CMD_IS_CW ] <= (/*request_cache_write  &&*/ can_go) ? 1'b0 :
-                                                                             ((cache_write [0] == 0) & (cache_write [1] == 0) & (cache_write [2] == 0) & (cache_write [3] == 0) & (cache_write [4] == 0) ) ;
-                                                                       
-       cmd_can_go[`DRAM_ACC_CMD_IS_PR ] <= (/*request_page_refresh &&*/ can_go) ? 1'b0 :
-                                                                             ((page_refresh[0] == 0) & (page_refresh[1] == 0) & (page_refresh[2] == 0) & (page_refresh[3] == 0) & (page_refresh[4] == 0) & (page_refresh[5] == 0)) ;
+                                                                   
+       cmd_can_go[`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write  && can_go) ? 1'b0 :
+                                                                              ((cache_write [0] == 0) & (cache_write [1] == 0) & (cache_write [2] == 0) & (cache_write [3] == 0) & (cache_write [4] == 0) ) ;
+                                                                   
+       cmd_can_go[`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go) ? 1'b0 :
+                                                                              ((page_refresh[0] == 0) & (page_refresh[1] == 0) & (page_refresh[2] == 0) & (page_refresh[3] == 0) & (page_refresh[4] == 0) & (page_refresh[5] == 0)) ;
 
     end
 
   always @(*)
     begin
       can_go = 0;
+      can_go_valid = 1;  // FIXME
       case(request_cmd)
         `DRAM_ACC_CMD_IS_PO:
           begin

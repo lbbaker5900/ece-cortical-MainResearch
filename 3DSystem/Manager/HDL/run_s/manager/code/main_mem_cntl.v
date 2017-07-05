@@ -335,24 +335,33 @@ module main_mem_cntl (
   //  - contains dram access timer for bank
 
   // Remember, cannot use a variable to index into a generate, so create a variable outside the generate, set that variable inside the generate and index the variable with a variable
-  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    channel_bank_open_page       [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
-  reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    channel_bank_a_page_is_open  [`MGR_DRAM_NUM_CHANNELS]                          ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    channel_bank_open_page        [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    channel_bank_a_page_is_open   [`MGR_DRAM_NUM_CHANNELS]                          ;
   //reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    set_a_page_is_open           [`MGR_DRAM_NUM_CHANNELS]                          ;
   //reg  [`MGR_DRAM_NUM_BANKS_VECTOR_RANGE ]    clear_a_page_is_open         [`MGR_DRAM_NUM_CHANNELS]                          ;
   //reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    opening_page_id              [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
                                          
   // Set the page status. Either stream can set the page status but only one will be activve at a time
   // So genearte the page status by ORing the access_set_valid [chan][bank]
-  reg  [`MGR_NUM_OF_STREAMS_RANGE        ]    access_set_valid             [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
-  reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE      ]    access_set_cmd               [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ] [`MGR_NUM_OF_STREAMS] ;
-  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    access_set_page              [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ] [`MGR_NUM_OF_STREAMS] ;
+  reg  [`MGR_NUM_OF_STREAMS_RANGE        ]    access_set_valid              [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE      ]    access_set_cmd                [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ] [`MGR_NUM_OF_STREAMS] ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    access_set_page               [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ] [`MGR_NUM_OF_STREAMS] ;
+  reg  [`MGR_NUM_OF_STREAMS_RANGE        ]    access_set_strm               [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
 
-  reg  [`MGR_NUM_OF_STREAMS_RANGE        ]    access_set_strm              [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
-  reg                                         access_request_valid         [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
-  reg  [`MGR_NUM_OF_STREAMS_RANGE        ]    access_request_strm          [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
-  reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE      ]    access_request_cmd           [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
-  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    access_request_page          [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  // The checker fsm will check page and cache commands separately but never to the same bank at the same time
+  // So the checker will or the requests
+  reg                                         page_cmd_grant_request_valid  [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg  [`MGR_NUM_OF_STREAMS_RANGE        ]    page_cmd_grant_request_strm   [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE      ]    page_cmd_grant_request_cmd    [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    page_cmd_grant_request_page   [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+
+  reg                                         cache_cmd_grant_request_valid [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg  [`MGR_NUM_OF_STREAMS_RANGE        ]    cache_cmd_grant_request_strm  [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE      ]    cache_cmd_grant_request_cmd   [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    cache_cmd_grant_request_page  [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+
   reg                                         can_go                       [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
+  reg                                         can_go_checker_ready         [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
   reg                                         adjacent_bank_request        [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
 
   // FIXME :tie off adjacent bank request
@@ -385,7 +394,9 @@ module main_mem_cntl (
             reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE ]   chan_bank_request_page          ;
             reg                                     chan_bank_adjacent_bank_request ;
 
+            wire                                    chan_bank_can_go_valid          ;
             wire                                    chan_bank_can_go                ;
+            wire                                    chan_bank_checker_ready         ;
 
             always @(posedge clk)
               begin
@@ -408,7 +419,9 @@ module main_mem_cntl (
 
                 //-------------------------------
                 // Outputs
-                .can_go                  ( chan_bank_can_go  ),
+                .can_go                  ( chan_bank_can_go        ),
+                .can_go_valid            ( chan_bank_can_go_valid  ),
+                .ready                   ( chan_bank_checker_ready ),
 
                 //-------------------------------
                 // Inputs
@@ -428,15 +441,22 @@ module main_mem_cntl (
 
             always @(*)
               begin
-                chan_bank_request_valid         = access_request_valid  [chan] [bank] ;
-                chan_bank_request_cmd           = access_request_cmd    [chan] [bank] ;
-                chan_bank_request_page          = access_request_page   [chan] [bank] ;
+                // The checker fsm performs the grant request as it pulls commands from the sequence fifo, but it wont simultaneously to the same bank
+                chan_bank_request_valid         =  page_cmd_grant_request_valid  [chan] [bank] | cache_cmd_grant_request_valid [chan] [bank] ;
+
+                chan_bank_request_cmd           = (page_cmd_grant_request_valid  [chan] [bank]) ? page_cmd_grant_request_cmd   [chan] [bank] :
+                                                                                                  cache_cmd_grant_request_cmd  [chan] [bank] ;
+
+                chan_bank_request_page           = (page_cmd_grant_request_valid [chan] [bank]) ? page_cmd_grant_request_page  [chan] [bank] :
+                                                                                                  cache_cmd_grant_request_page [chan] [bank] ;
+
                 chan_bank_adjacent_bank_request = adjacent_bank_request [chan] [bank] ;
               end
 
+            // The CMD_SEQ fsm sets the page status
             always @(*)
               begin
-                chan_bank_set_valid         = |access_set_valid  [chan] [bank] ;
+                chan_bank_set_valid         = |access_set_valid  [chan] [bank] ; // either stream
 
                 chan_bank_set_cmd           = access_set_valid  [chan] [bank] [0] ? access_set_cmd  [chan] [bank] [0] :
                                                                                     access_set_cmd  [chan] [bank] [1] ;             
@@ -448,7 +468,8 @@ module main_mem_cntl (
             // use because we cannot index the generate with a variable
             always @(*)
               begin
-                can_go                      [chan] [bank] = chan_bank_can_go ;
+                can_go                      [chan] [bank] = chan_bank_can_go & chan_bank_can_go_valid ;
+                can_go_checker_ready        [chan] [bank] = chan_bank_checker_ready                   ;
                 channel_bank_a_page_is_open [chan] [bank] = a_page_is_open   ; 
                 channel_bank_open_page      [chan] [bank] = open_page_id     ; 
               end
@@ -475,6 +496,7 @@ module main_mem_cntl (
   // The select FSM will use these signals to start a selection
   reg  [`MGR_NUM_OF_STREAMS_VECTOR     ]    strm_access_request   [`MGR_DRAM_NUM_CHANNELS]                        ;
   reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE    ]    strm_access_cmd       [`MGR_DRAM_NUM_CHANNELS] [`MGR_NUM_OF_STREAMS ] ;
+  reg  [`DRAM_ACC_SEQ_TYPE_RANGE       ]    strm_access_sequence  [`MGR_DRAM_NUM_CHANNELS] [`MGR_NUM_OF_STREAMS ] ;
   reg  [`MGR_DRAM_BANK_ADDRESS_RANGE   ]    strm_access_bank      [`MGR_DRAM_NUM_CHANNELS] [`MGR_NUM_OF_STREAMS ] ;
   reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE   ]    strm_access_page      [`MGR_DRAM_NUM_CHANNELS] [`MGR_NUM_OF_STREAMS ] ;
   `ifdef  MGR_DRAM_REQUEST_LT_PAGE                              
@@ -496,6 +518,7 @@ module main_mem_cntl (
                                                                
   reg  [`MGR_NUM_OF_STREAMS_VECTOR     ]    strm_enable           [`MGR_DRAM_NUM_CHANNELS]                        ;  // channel has granted stream access. Access granted to both streams if accessing different banks
   reg  [`MMC_CNTL_CMD_GEN_TAG_RANGE    ]    strm_tag              [`MGR_DRAM_NUM_CHANNELS]                        ;  // this tag goes with page and cache commands generate by a strm fsm
+  reg  [`DRAM_ACC_SEQ_TYPE_RANGE       ]    strm_seq_type         [`MGR_DRAM_NUM_CHANNELS]                        ;  
      
   generate
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
@@ -529,6 +552,7 @@ module main_mem_cntl (
             wire                                       strm_request_is_write ;
             wire                                       strm_request_done     ;  // command to access timer
             wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE     ]   strm_request_cmd      ;
+            wire  [`DRAM_ACC_SEQ_TYPE_RANGE        ]   strm_request_sequence ;
             wire  [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   strm_request_bank     ;
             wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   strm_request_page     ;
             wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   strm_request_chan     ;
@@ -545,8 +569,6 @@ module main_mem_cntl (
             reg                                        strm_page_cmd_write      ;  // write the command to the sequence fifo
             reg                                        strm_cache_cmd_write     ;  // write the command to the sequence fifo
 
-            assign  strm_request_is_read  = 1'b1 ; // FIXME
-            assign  strm_request_is_write = 1'b0 ; // FIXME
 
             always @(*)
               begin
@@ -624,15 +646,28 @@ module main_mem_cntl (
             // Control
             //  - 
 
-            always @(posedge clk)
-              begin
-                access_set_valid  [chan] [strm_bank_latched[chan][strm]] [strm] = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PO) | 
-                                                                                  (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PC) ;
-                access_set_cmd    [chan] [strm_bank_latched[chan][strm]] [strm] = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PO) ?  `DRAM_ACC_CMD_IS_PO  :
-                                                                                  (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PC) ?  `DRAM_ACC_CMD_IS_PO  :
-                                                                                                                                      `DRAM_ACC_CMD_IS_NOP ;
-                access_set_page   [chan] [strm_bank_latched[chan][strm]] [strm] = strm_page_latched[chan][strm] ;
-              end
+          for (bank=0; bank<`MGR_DRAM_NUM_BANKS ; bank=bank+1) 
+            begin: set_bank_info
+              always @(posedge clk)
+                begin
+                 if (bank == strm_bank_latched[chan][strm])
+                   begin
+                     access_set_valid  [chan] [bank] [strm] <= (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PO) | 
+                                                               (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PC) ;
+                     access_set_cmd    [chan] [bank] [strm] <= (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PO) ?  `DRAM_ACC_CMD_IS_PO  :
+                                                               (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_PC) ?  `DRAM_ACC_CMD_IS_PO  :
+                                                                                                                   `DRAM_ACC_CMD_IS_NOP ;
+                     access_set_page   [chan] [bank] [strm] <= strm_page_latched[chan][strm] ;
+                   end
+                 else
+                   begin
+                     access_set_valid  [chan] [bank] [strm] <= 1'b0 ;
+                     access_set_cmd    [chan] [bank] [strm] <= 'd0  ;
+                     access_set_page   [chan] [bank] [strm] <= 'd0  ;
+                   end
+                end
+            end
+         
 
             // Write to the sequence fifo
             always @(*)
@@ -760,6 +795,7 @@ module main_mem_cntl (
             assign  strm_request_done          = (strm_cmd_sequence_codes [strm_cmd_index] == `DRAM_ACC_CMD_IS_NOP ) ;  // when we hit NOP, we are done
                                                
             assign  strm_request_cmd           = strm_cmd_sequence_codes [strm_cmd_index] ;
+            assign  strm_request_sequence      = strm_cmd_sequence                        ;
                                                
             assign  strm_request_is_read       = request_fifo[strm].pipe_is_read  ;
             assign  strm_request_is_write      = request_fifo[strm].pipe_is_write ;
@@ -773,13 +809,14 @@ module main_mem_cntl (
 
             always @(*)
               begin
-                strm_access_request [chan] [strm] = strm_request       ;
-                strm_access_done    [chan] [strm] = strm_request_done  ;
-                strm_access_cmd     [chan] [strm] = strm_request_cmd   ;
-                strm_access_bank    [chan] [strm] = strm_request_bank  ;
-                strm_access_page    [chan] [strm] = strm_request_page  ;
-                `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-                  strm_access_line  [chan] [strm] = strm_request_line  ;
+                strm_access_request  [chan] [strm] = strm_request              ;
+                strm_access_done     [chan] [strm] = strm_request_done         ;
+                strm_access_cmd      [chan] [strm] = strm_request_cmd          ;
+                strm_access_sequence [chan] [strm] = strm_request_sequence     ;
+                strm_access_bank     [chan] [strm] = strm_request_bank         ;
+                strm_access_page     [chan] [strm] = strm_request_page         ;
+                `ifdef  MGR_DRAM_REQUEST_LT_PAGE                               
+                  strm_access_line   [chan] [strm] = strm_request_line         ;
                 `endif
 
               end
@@ -912,27 +949,30 @@ module main_mem_cntl (
             case ({chan_cmd_gen_fsm [chan].strm_fsm[0].strm_page_cmd_write, chan_cmd_gen_fsm [chan].strm_fsm[1].strm_page_cmd_write})  // synopsys parallel_case
               2'b10 :
                 begin
-                  cmd_seq_page_fifo  [chan].write_cmd   = chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_code_write_next ;
-                  cmd_seq_page_fifo  [chan].write_bank  = strm_bank_latched [chan][0] ;
-                  cmd_seq_page_fifo  [chan].write_page  = strm_page_latched [chan][0] ;
-                  cmd_seq_page_fifo  [chan].write_tag   = strm_tag [chan] ;
-                  cmd_seq_page_fifo  [chan].write_strm  = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
-                end
-              2'b01 :
-                begin
-                  cmd_seq_page_fifo  [chan].write_cmd   = chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_code_write_next ;
-                  cmd_seq_page_fifo  [chan].write_bank  = strm_bank_latched [chan][1] ;
-                  cmd_seq_page_fifo  [chan].write_page  = strm_page_latched [chan][1] ;
-                  cmd_seq_page_fifo  [chan].write_tag   = strm_tag [chan] ;
-                  cmd_seq_page_fifo  [chan].write_strm  = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
-                end
-              default:
-                begin
-                  cmd_seq_page_fifo  [chan].write_cmd   = 1'b0 ;
-                  cmd_seq_page_fifo  [chan].write_bank  = 'd0 ;
-                  cmd_seq_page_fifo  [chan].write_page  = 'd0 ;
-                  cmd_seq_page_fifo  [chan].write_tag   = strm_tag [chan] ;
-                  cmd_seq_page_fifo  [chan].write_strm  = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
+                  cmd_seq_page_fifo  [chan].write_cmd       = chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_code_write_next ;
+                  cmd_seq_page_fifo  [chan].write_bank      = strm_bank_latched [chan][0] ;
+                  cmd_seq_page_fifo  [chan].write_page      = strm_page_latched [chan][0] ;
+                  cmd_seq_page_fifo  [chan].write_tag       = strm_tag [chan] ;
+                  cmd_seq_page_fifo  [chan].write_seq_type  = strm_access_sequence [chan][0] ;
+                  cmd_seq_page_fifo  [chan].write_strm      = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
+                end                                         
+              2'b01 :                                       
+                begin                                       
+                  cmd_seq_page_fifo  [chan].write_cmd       = chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_code_write_next ;
+                  cmd_seq_page_fifo  [chan].write_bank      = strm_bank_latched [chan][1] ;
+                  cmd_seq_page_fifo  [chan].write_page      = strm_page_latched [chan][1] ;
+                  cmd_seq_page_fifo  [chan].write_tag       = strm_tag [chan] ;
+                  cmd_seq_page_fifo  [chan].write_seq_type  = strm_access_sequence [chan][1] ;
+                  cmd_seq_page_fifo  [chan].write_strm      = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
+                end                                         
+              default:                                      
+                begin                                       
+                  cmd_seq_page_fifo  [chan].write_cmd       = 1'b0 ;
+                  cmd_seq_page_fifo  [chan].write_bank      = 'd0 ;
+                  cmd_seq_page_fifo  [chan].write_page      = 'd0 ;
+                  cmd_seq_page_fifo  [chan].write_tag       = strm_tag [chan] ;
+                  cmd_seq_page_fifo  [chan].write_seq_type  = `DRAM_ACC_CMD_SEQ_IS_NOP  ;
+                  cmd_seq_page_fifo  [chan].write_strm      = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
                 end
             endcase
 
@@ -940,32 +980,35 @@ module main_mem_cntl (
             case ({chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cache_cmd_write, chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cache_cmd_write})  // synopsys parallel_case
               2'b10 :
                 begin
-                  cmd_seq_cache_fifo  [chan].write_cmd   = chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_code_write_next ;
-                  //cmd_seq_cache_fifo  [chan].write_cmd   = chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_sequence_codes [chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_index ] ;
-                  cmd_seq_cache_fifo  [chan].write_bank  = strm_bank_latched [chan][0] ;
-                  cmd_seq_cache_fifo  [chan].write_page  = strm_page_latched [chan][0] ;
-                  cmd_seq_cache_fifo  [chan].write_line  = strm_line_latched [chan][0] ;
-                  cmd_seq_cache_fifo  [chan].write_tag   = strm_tag [chan] ;
-                  cmd_seq_cache_fifo  [chan].write_strm  = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
-                end
-              2'b01 :
-                begin
-                  cmd_seq_cache_fifo  [chan].write_cmd   = chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_code_write_next ;
-                  //cmd_seq_cache_fifo  [chan].write_cmd   = chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_sequence_codes [chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_index ] ;
-                  cmd_seq_cache_fifo  [chan].write_bank  = strm_bank_latched [chan][1] ;
-                  cmd_seq_cache_fifo  [chan].write_page  = strm_page_latched [chan][1] ;
-                  cmd_seq_cache_fifo  [chan].write_line  = strm_line_latched [chan][1] ;
-                  cmd_seq_cache_fifo  [chan].write_tag   = strm_tag [chan] ;
-                  cmd_seq_cache_fifo  [chan].write_strm  = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
-                end
-              default:
-                begin
-                  cmd_seq_cache_fifo  [chan].write_cmd   = 1'b0 ;
-                  cmd_seq_cache_fifo  [chan].write_bank  = 'd0 ;
-                  cmd_seq_cache_fifo  [chan].write_page  = 'd0 ;
-                  cmd_seq_cache_fifo  [chan].write_line  = 'd0 ;
-                  cmd_seq_cache_fifo  [chan].write_tag   = strm_tag [chan] ;
-                  cmd_seq_cache_fifo  [chan].write_strm  = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
+                  cmd_seq_cache_fifo  [chan].write_cmd       = chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_code_write_next ;
+                  //cmd_seq_cache_fifo  [chan].write_cmd       = chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_sequence_codes [chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_index ] ;
+                  cmd_seq_cache_fifo  [chan].write_bank      = strm_bank_latched [chan][0] ;
+                  cmd_seq_cache_fifo  [chan].write_page      = strm_page_latched [chan][0] ;
+                  cmd_seq_cache_fifo  [chan].write_line      = strm_line_latched [chan][0] ;
+                  cmd_seq_cache_fifo  [chan].write_tag       = strm_tag [chan] ;
+                  cmd_seq_cache_fifo  [chan].write_seq_type  = strm_access_sequence [chan][0] ;
+                  cmd_seq_cache_fifo  [chan].write_strm      = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
+                end                                          
+              2'b01 :                                        
+                begin                                        
+                  cmd_seq_cache_fifo  [chan].write_cmd       = chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_code_write_next ;
+                  //cmd_seq_cache_fifo  [chan].write_cmd       = chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_sequence_codes [chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_index ] ;
+                  cmd_seq_cache_fifo  [chan].write_bank      = strm_bank_latched [chan][1] ;
+                  cmd_seq_cache_fifo  [chan].write_page      = strm_page_latched [chan][1] ;
+                  cmd_seq_cache_fifo  [chan].write_line      = strm_line_latched [chan][1] ;
+                  cmd_seq_cache_fifo  [chan].write_tag       = strm_tag [chan] ;
+                  cmd_seq_cache_fifo  [chan].write_seq_type  = strm_access_sequence [chan][1] ;
+                  cmd_seq_cache_fifo  [chan].write_strm      = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
+                end                                          
+              default:                                       
+                begin                                        
+                  cmd_seq_cache_fifo  [chan].write_cmd       = 1'b0 ;
+                  cmd_seq_cache_fifo  [chan].write_bank      = 'd0 ;
+                  cmd_seq_cache_fifo  [chan].write_page      = 'd0 ;
+                  cmd_seq_cache_fifo  [chan].write_line      = 'd0 ;
+                  cmd_seq_cache_fifo  [chan].write_tag       = strm_tag [chan] ;
+                  cmd_seq_cache_fifo  [chan].write_seq_type  = `DRAM_ACC_CMD_SEQ_IS_NOP  ;
+                  cmd_seq_cache_fifo  [chan].write_strm      = (mmc_cntl_strm_sel_state == `MMC_CNTL_STRM_SEL_STRM1) ;
                 end
             endcase
 
@@ -989,6 +1032,7 @@ module main_mem_cntl (
         reg                                                    write                 ;
         wire  [`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   write_data            ;
         reg   [`MMC_CNTL_CMD_GEN_TAG_RANGE                 ]   write_tag             ;
+        reg   [`DRAM_ACC_SEQ_TYPE_RANGE                    ]   write_seq_type        ;
         reg   [`MGR_STREAM_ADDRESS_RANGE                   ]   write_strm            ;
         reg   [`DRAM_ACC_NUM_OF_CMDS_RANGE                 ]   write_cmd             ;
         reg   [`MGR_DRAM_BANK_ADDRESS_RANGE                ]   write_bank            ;
@@ -999,6 +1043,7 @@ module main_mem_cntl (
                                                                                 
         wire  [`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   pipe_data             ;
         wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                 ]   pipe_tag              ;
+        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                    ]   pipe_seq_type         ;
         wire  [`MGR_STREAM_ADDRESS_RANGE                   ]   pipe_strm             ;
         wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                 ]   pipe_cmd              ;
         wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                ]   pipe_bank             ;
@@ -1007,6 +1052,7 @@ module main_mem_cntl (
         wire  [`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   pipe_peek_data        ;
         wire                                                   pipe_peek_valid       ;
         wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                 ]   pipe_peek_tag         ;
+        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                    ]   pipe_peek_seq_type    ;
         wire  [`MGR_STREAM_ADDRESS_RANGE                   ]   pipe_peek_strm        ;
         wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                 ]   pipe_peek_cmd         ;
         wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                ]   pipe_peek_bank        ;
@@ -1015,6 +1061,7 @@ module main_mem_cntl (
         wire                                                   pipe_peek_twoIn_valid ;
         wire  [`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   pipe_peek_twoIn_data  ;
         wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                 ]   pipe_peek_twoIn_tag   ;
+        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                    ]   pipe_peek_twoIn_seq_type ;
         wire  [`MGR_STREAM_ADDRESS_RANGE                   ]   pipe_peek_twoIn_strm  ;
         wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                 ]   pipe_peek_twoIn_cmd   ;
         wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                ]   pipe_peek_twoIn_bank  ;
@@ -1046,11 +1093,11 @@ module main_mem_cntl (
                                 .clk                   ( clk                   )
                                 );
 
-          assign write_data  = {write_strm, write_tag, write_cmd, write_bank, write_page} ;
+          assign write_data  = {write_strm, write_tag, write_seq_type, write_cmd, write_bank, write_page} ;
 
-          assign {pipe_strm,            pipe_tag,            pipe_cmd,            pipe_bank,            pipe_page           } = pipe_data            ;
-          assign {pipe_peek_strm,       pipe_peek_tag,       pipe_peek_cmd,       pipe_peek_bank,       pipe_peek_page      } = pipe_peek_data       ;
-          assign {pipe_peek_twoIn_strm, pipe_peek_twoIn_tag, pipe_peek_twoIn_cmd, pipe_peek_twoIn_bank, pipe_peek_twoIn_page} = pipe_peek_twoIn_data ;
+          assign {pipe_strm,            pipe_tag,            pipe_seq_type,            pipe_cmd,            pipe_bank,            pipe_page           } = pipe_data            ;
+          assign {pipe_peek_strm,       pipe_peek_tag,       pipe_peek_seq_type,       pipe_peek_cmd,       pipe_peek_bank,       pipe_peek_page      } = pipe_peek_data       ;
+          assign {pipe_peek_twoIn_strm, pipe_peek_twoIn_tag, pipe_peek_twoIn_seq_type, pipe_peek_twoIn_cmd, pipe_peek_twoIn_bank, pipe_peek_twoIn_page} = pipe_peek_twoIn_data ;
 
         assign clear = 1'b0 ;
  
@@ -1072,6 +1119,7 @@ module main_mem_cntl (
         reg                                                     write                 ;
         wire  [`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   write_data            ;
         reg   [`MMC_CNTL_CMD_GEN_TAG_RANGE                  ]   write_tag             ;
+        reg   [`DRAM_ACC_SEQ_TYPE_RANGE                     ]   write_seq_type        ;
         reg   [`MGR_STREAM_ADDRESS_RANGE                    ]   write_strm            ;
         reg   [`DRAM_ACC_NUM_OF_CMDS_RANGE                  ]   write_cmd             ;
         reg   [`MGR_DRAM_BANK_ADDRESS_RANGE                 ]   write_bank            ;
@@ -1085,6 +1133,7 @@ module main_mem_cntl (
                                                                                 
         wire  [`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   pipe_data             ;
         wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                  ]   pipe_tag              ;
+        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                     ]   pipe_seq_type         ;
         wire  [`MGR_STREAM_ADDRESS_RANGE                    ]   pipe_strm             ;
         wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                  ]   pipe_cmd              ;
         wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                 ]   pipe_bank             ;
@@ -1096,6 +1145,7 @@ module main_mem_cntl (
         wire  [`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   pipe_peek_data        ;
         wire                                                    pipe_peek_valid       ;
         wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                  ]   pipe_peek_tag         ;
+        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                     ]   pipe_peek_seq_type    ;
         wire  [`MGR_STREAM_ADDRESS_RANGE                    ]   pipe_peek_strm        ;
         wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                  ]   pipe_peek_cmd         ;
         wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                 ]   pipe_peek_bank        ;
@@ -1104,15 +1154,16 @@ module main_mem_cntl (
           wire  [`MGR_DRAM_LINE_ADDRESS_RANGE               ]   pipe_peek_line        ;
         `endif                                              
                                                             
-        wire                                                    pipe_peek_twoIn_valid ;
-        wire  [`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   pipe_peek_twoIn_data  ;
-        wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                  ]   pipe_peek_twoIn_tag   ;
-        wire  [`MGR_STREAM_ADDRESS_RANGE                    ]   pipe_peek_twoIn_strm  ;
-        wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                  ]   pipe_peek_twoIn_cmd   ;
-        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                 ]   pipe_peek_twoIn_bank  ;
-        wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE                 ]   pipe_peek_twoIn_page  ;
-        `ifdef  MGR_DRAM_REQUEST_LT_PAGE                    
-          wire  [`MGR_DRAM_LINE_ADDRESS_RANGE               ]   pipe_peek_twoIn_line  ;
+        wire                                                    pipe_peek_twoIn_valid    ;
+        wire  [`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   pipe_peek_twoIn_data     ;
+        wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                  ]   pipe_peek_twoIn_tag      ;
+        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                     ]   pipe_peek_twoIn_seq_type ;
+        wire  [`MGR_STREAM_ADDRESS_RANGE                    ]   pipe_peek_twoIn_strm     ;
+        wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                  ]   pipe_peek_twoIn_cmd      ;
+        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                 ]   pipe_peek_twoIn_bank     ;
+        wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE                 ]   pipe_peek_twoIn_page     ;
+        `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                                 
+          wire  [`MGR_DRAM_LINE_ADDRESS_RANGE               ]   pipe_peek_twoIn_line     ;
         `endif
 
 
@@ -1142,26 +1193,21 @@ module main_mem_cntl (
                                 );
 
         `ifdef  MGR_DRAM_REQUEST_LT_PAGE                       
-          assign write_data  = {write_strm, write_tag, write_cmd, write_bank, write_page, write_line} ;
+          assign write_data  = {write_strm, write_tag, write_seq_type, write_cmd, write_bank, write_page, write_line} ;
 
-          assign {pipe_strm,            pipe_tag,            pipe_cmd,            pipe_bank,            pipe_page,            pipe_line           } = pipe_data            ;
-          assign {pipe_peek_strm,       pipe_peek_tag,       pipe_peek_cmd,       pipe_peek_bank,       pipe_peek_page,       pipe_peek_line      } = pipe_peek_data       ;
-          assign {pipe_peek_twoIn_strm, pipe_peek_twoIn_tag, pipe_peek_twoIn_cmd, pipe_peek_twoIn_bank, pipe_peek_twoIn_page, pipe_peek_twoIn_line} = pipe_peek_twoIn_data ;
+          assign {pipe_strm,            pipe_tag,            pipe_seq_type,            pipe_cmd,            pipe_bank,            pipe_page,            pipe_line           } = pipe_data            ;
+          assign {pipe_peek_strm,       pipe_peek_tag,       pipe_peek_seq_type,       pipe_peek_cmd,       pipe_peek_bank,       pipe_peek_page,       pipe_peek_line      } = pipe_peek_data       ;
+          assign {pipe_peek_twoIn_strm, pipe_peek_twoIn_tag, pipe_peek_twoIn_seq_type, pipe_peek_twoIn_cmd, pipe_peek_twoIn_bank, pipe_peek_twoIn_page, pipe_peek_twoIn_line} = pipe_peek_twoIn_data ;
         `else
           assign write_data  = {write_strm, write_tag, write_cmd, write_bank, write_page} ;
 
-          assign {pipe_strm,            pipe_tag,            pipe_cmd,            pipe_bank,            pipe_page           } = pipe_data            ;
-          assign {pipe_peek_strm,       pipe_peek_tag,       pipe_peek_cmd,       pipe_peek_bank,       pipe_peek_page      } = pipe_peek_data       ;
-          assign {pipe_peek_twoIn_strm, pipe_peek_twoIn_tag, pipe_peek_twoIn_cmd, pipe_peek_twoIn_bank, pipe_peek_twoIn_page} = pipe_peek_twoIn_data ;
+          assign {pipe_strm,            pipe_tag,            pipe_seq_type,            pipe_cmd,            pipe_bank,            pipe_page           } = pipe_data            ;
+          assign {pipe_peek_strm,       pipe_peek_tag,       pipe_peek_seq_type,       pipe_peek_cmd,       pipe_peek_bank,       pipe_peek_page      } = pipe_peek_data       ;
+          assign {pipe_peek_twoIn_strm, pipe_peek_twoIn_tag, pipe_peek_twoIn_seq_type, pipe_peek_twoIn_cmd, pipe_peek_twoIn_bank, pipe_peek_twoIn_page} = pipe_peek_twoIn_data ;
         `endif
 
         assign clear = 1'b0 ;
  
-        always @(*)
-          begin
-            pipe_read = pipe_valid ;
-          end
-
       end
   endgenerate
 
@@ -1181,8 +1227,6 @@ module main_mem_cntl (
     reg   [`MGR_DRAM_LINE_ADDRESS_RANGE  ]   chan_final_queue_line    [`MGR_DRAM_NUM_CHANNELS]  ;
   `endif
 
-  reg   [`MGR_NUM_OF_STREAMS_VECTOR      ]   strm_tobe_selected                                 ;
-  reg   [`MGR_NUM_OF_STREAMS_VECTOR      ]   strm_tobe_deselected                               ;
 
   // Select and steer the access timer request
   generate
@@ -1200,35 +1244,76 @@ module main_mem_cntl (
           end
         
         //--------------------------------------------------
-        // Assumptions:
+        // Control signals
         //  - 
-        //reg   [`MGR_NUM_OF_STREAMS_VECTOR   ]      request_valid                          ;
+
+        reg   [`MMC_CNTL_CMD_GEN_TAG_RANGE                  ]   last_page_tag         ;  // last read tag
+        reg   [`MMC_CNTL_CMD_GEN_TAG_RANGE                  ]   last_cache_tag        ;  // last read tag
+        reg   [`MMC_CNTL_CMD_GEN_TAG_RANGE                  ]   delta_tag             ;  // keep track of difference between page and cache reads
+                                                                                         // >0 means page is ahead
+        wire                                                    delta_tag_gt0         ;
+        wire                                                    tags_synced           ; // if last tag is the same in both
+
+        wire                                                    page_cmd_requested    ; // 
+        wire                                                    cache_cmd_requested   ; // 
 
         always @(*)
           begin
             case (mmc_cntl_cmd_check_state)
               
-              // Wait for data from all the sources before transferring to NoC
-              //  - we select stream 0  first if streams request together
-              //  - maybe add wait state that has knowledge of last stream processed e.g. WAIT_STRM0_LAST -> transiton to STRM10
-              //
-              //  FIXME: Should we consider both streams accessing the same bank/page/line ??
+              // Page Open commands over cache commands
+              // When we see a page close, we need to stop and wait until all cache commands have been serviced up to the page close tag 
+              // cache commands can only be serviced up to the current page command tag. 
+              // e.g. dont let cache commands jump ahead (I dont think that can happen anyway)
+              //  - keep track of which fifo is ahead by tracking the tag
+              // e.g. deltaTag <=0
 
               `MMC_CNTL_CMD_CHECK_WAIT: 
-                // let both channel streams continue if they are accessing different banks
-                mmc_cntl_cmd_check_state_next =  ( cmd_seq_page_fifo  [chan].pipe_valid                  ) ?  `MMC_CNTL_CMD_CHECK_PAGE_CMD   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid                  ) ?  `MMC_CNTL_CMD_CHECK_CACHE_CMD  :
-                                                                                                              `MMC_CNTL_CMD_CHECK_WAIT       ;
-              `MMC_CNTL_CMD_CHECK_PAGE_CMD: 
-                // let both channel streams continue if they are accessing different banks
-                mmc_cntl_cmd_check_state_next =  ( cmd_seq_page_fifo  [chan].pipe_valid                  ) ?  `MMC_CNTL_CMD_CHECK_PAGE_CMD   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid                  ) ?  `MMC_CNTL_CMD_CHECK_CACHE_CMD  :
-                                                                                                              `MMC_CNTL_CMD_CHECK_WAIT       ;
-              `MMC_CNTL_CMD_CHECK_CACHE_CMD: 
-                // let both channel streams continue if they are accessing different banks
-                mmc_cntl_cmd_check_state_next =  ( cmd_seq_page_fifo  [chan].pipe_valid                  ) ?  `MMC_CNTL_CMD_CHECK_PAGE_CMD   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid                  ) ?  `MMC_CNTL_CMD_CHECK_CACHE_CMD  :
-                                                                                                              `MMC_CNTL_CMD_CHECK_WAIT       ;
+                // Always make sure we start on a PO - this is a debug state, we dont come back here
+                mmc_cntl_cmd_check_state_next =  ( cmd_seq_page_fifo [chan].pipe_valid && (cmd_seq_page_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)) ?  `MMC_CNTL_CMD_CHECK_INIT   :
+                                                 ( cmd_seq_page_fifo [chan].pipe_valid && (cmd_seq_page_fifo [chan].pipe_cmd != `DRAM_ACC_CMD_IS_PO)) ?  `MMC_CNTL_CMD_CHECK_ERR    :  // cant start with non PO
+                                                 ( cmd_seq_cache_fifo[chan].pipe_valid                                                              ) ?  `MMC_CNTL_CMD_CHECK_ERR    :  // cant start with a cache command
+                                                                                                                                                         `MMC_CNTL_CMD_CHECK_WAIT   ;
+              `MMC_CNTL_CMD_CHECK_INIT: 
+                // Always make sure we start on a PO
+                mmc_cntl_cmd_check_state_next =  ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+                                                                                                                                                                          `MMC_CNTL_CMD_CHECK_INIT ;
+                                                                                                    
+              `MMC_CNTL_CMD_CHECK_PO: 
+                // Always make sure we start on a PO
+                mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_page_fifo [chan].pipe_bank]                                                                 ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+                                                                                                                                                                          `MMC_CNTL_CMD_CHECK_INIT ;
+              `MMC_CNTL_CMD_CHECK_PC: 
+                // Always make sure we start on a PO
+                mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_page_fifo [chan].pipe_bank]                                                                 ) ?  `MMC_CNTL_CMD_CHECK_PC   :
+                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+                                                                                                                                                                          `MMC_CNTL_CMD_CHECK_INIT ;
+              `MMC_CNTL_CMD_CHECK_CR: 
+                // Always make sure we start on a PO
+                mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_cache_fifo [chan].pipe_bank]                                                                ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+                                                                                                                                                                          `MMC_CNTL_CMD_CHECK_INIT ;
+              `MMC_CNTL_CMD_CHECK_CW: 
+                // Always make sure we start on a PO
+                mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_cache_fifo [chan].pipe_bank]                                                                ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+                                                                                                                                                                          `MMC_CNTL_CMD_CHECK_INIT ;
       
               `MMC_CNTL_CMD_CHECK_ERR: 
                 mmc_cntl_cmd_check_state_next =  `MMC_CNTL_CMD_CHECK_ERR       ;
@@ -1243,97 +1328,81 @@ module main_mem_cntl (
         // Control
         //  - 
 
+        assign  delta_tag_gt0  =  delta_tag[`MMC_CNTL_CMD_GEN_TAG_MSB ] ;  // value is negative if msb=1
+        assign  tags_synced    =  last_page_tag == last_cache_tag ;
+
+        assign  page_cmd_requested   = (mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_PO) | (mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_PC) | (mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_PR) ;
+        assign  cache_cmd_requested  = (mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_CR) | (mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_CW) ;
+
+        // we need to account for the fact that a page tag might have two cmds associated with it
+        always @(posedge clk)
+          begin
+            last_page_tag       <= (reset_poweron                      ) ? 'd0                                :
+                                   (cmd_seq_page_fifo [chan].pipe_read ) ? cmd_seq_page_fifo [chan].pipe_tag  :
+                                                                           last_page_tag                      ;
+
+            last_cache_tag      <= (reset_poweron                      ) ? 'd0                                :
+                                   (cmd_seq_cache_fifo [chan].pipe_read) ? cmd_seq_cache_fifo [chan].pipe_tag :
+                                                                           last_cache_tag                     ;
+
+            delta_tag           <= (reset_poweron                                                                                ) ? 'd0             :
+                                   (cmd_seq_page_fifo  [chan].pipe_read && (cmd_seq_page_fifo [chan].pipe_tag  != last_page_tag )) ? delta_tag + 'd1 :
+                                   (cmd_seq_cache_fifo [chan].pipe_read && (cmd_seq_cache_fifo [chan].pipe_tag != last_cache_tag)) ? delta_tag - 'd1 :
+                                                                                                                                     delta_tag       ;
+
+          end
 
         for (bank=0; bank<`MGR_DRAM_NUM_BANKS ; bank++) 
-          begin: bank_access
+          begin: set_access_req
             always @(posedge clk)
               begin
-                access_request_valid [chan][bank] =  ( strm_tobe_deselected [0] && (access_request_strm  [chan][bank] == 1'b0)) ? 1'b0                              :
-                                                     ( strm_tobe_deselected [1] && (access_request_strm  [chan][bank] == 1'b1)) ? 1'b0                              :
-                                                     ((strm_tobe_selected   [0] && (requested_bank[0][chan] == bank)) | 
-                                                     ( strm_tobe_selected   [1] && (requested_bank[1][chan] == bank))         ) ? 1'b1                              :
-                                                                                                                                  access_request_valid [chan][bank] ;
-              
-                access_request_strm  [chan][bank] = (strm_tobe_selected [0] && (strm_access_bank [chan][0] == bank)) ? 1'b0                              :
-                                                    (strm_tobe_selected [1] && (strm_access_bank [chan][1] == bank)) ? 1'b1                              :
-                                                                                                                       access_request_strm [chan][bank]  ;                                                                        
-                access_request_cmd   [chan][bank] = (strm_tobe_selected [0] && (strm_access_bank [chan][0] == bank)) ? strm_access_cmd  [chan][0]        :
-                                                    (strm_tobe_selected [1] && (strm_access_bank [chan][1] == bank)) ? strm_access_cmd  [chan][1]        : 
-                                                                                                                       access_request_cmd [chan][bank]   ;                                                                        
-
-                access_request_page  [chan][bank] = (strm_tobe_selected [0] && (strm_access_bank [chan][0] == bank)) ? strm_access_page [chan][0]        :
-                                                    (strm_tobe_selected [1] && (strm_access_bank [chan][1] == bank)) ? strm_access_page [chan][1]        : 
-                                                                                                                       access_request_page [chan][bank]  ;                                                                       
+                page_cmd_grant_request_valid [chan][bank] <=  can_go_checker_ready [chan][bank] & page_cmd_requested & (cmd_seq_page_fifo [chan].pipe_bank == bank) ;
+                                                                                                                                                                                                        
+                page_cmd_grant_request_strm  [chan][bank] <= { `DRAM_ACC_NUM_OF_CMDS_WIDTH {page_cmd_requested }} & { `DRAM_ACC_NUM_OF_CMDS_WIDTH  {cmd_seq_page_fifo [chan].pipe_bank == bank}} & cmd_seq_page_fifo [chan].pipe_strm  ;
+                                                                                                    
+                page_cmd_grant_request_page  [chan][bank] <= { `DRAM_ACC_NUM_OF_CMDS_WIDTH {page_cmd_requested }} & { `DRAM_ACC_NUM_OF_CMDS_WIDTH  {cmd_seq_page_fifo [chan].pipe_bank == bank}} & cmd_seq_page_fifo [chan].pipe_page  ;
+                                                                                                    
+                page_cmd_grant_request_cmd   [chan][bank] <= { `DRAM_ACC_NUM_OF_CMDS_WIDTH {page_cmd_requested }} & { `DRAM_ACC_NUM_OF_CMDS_WIDTH  {cmd_seq_page_fifo [chan].pipe_bank == bank}} & cmd_seq_page_fifo [chan].pipe_cmd   ;
+                                                                                                    
+                cache_cmd_grant_request_valid[chan][bank] <=  can_go_checker_ready [chan][bank] & cache_cmd_requested & (cmd_seq_cache_fifo [chan].pipe_bank == bank) ;
+                                                                                                                                                                                                        
+                cache_cmd_grant_request_strm [chan][bank] <= { `DRAM_ACC_NUM_OF_CMDS_WIDTH {cache_cmd_requested}} & { `DRAM_ACC_NUM_OF_CMDS_WIDTH  {cmd_seq_cache_fifo[chan].pipe_bank == bank}} & cmd_seq_cache_fifo[chan].pipe_strm  ;
+                                                                                                   
+                cache_cmd_grant_request_page [chan][bank] <= { `DRAM_ACC_NUM_OF_CMDS_WIDTH {cache_cmd_requested}} & { `DRAM_ACC_NUM_OF_CMDS_WIDTH  {cmd_seq_cache_fifo[chan].pipe_bank == bank}} & cmd_seq_cache_fifo[chan].pipe_page  ;
+                                                                                                    
+                cache_cmd_grant_request_cmd  [chan][bank] <= { `DRAM_ACC_NUM_OF_CMDS_WIDTH {cache_cmd_requested}} & { `DRAM_ACC_NUM_OF_CMDS_WIDTH  {cmd_seq_cache_fifo[chan].pipe_bank == bank}} & cmd_seq_cache_fifo[chan].pipe_cmd   ;
+                                                                                                    
               end
           end
 
-        reg                                        final_queue_valid        ;  // write to final queue
-        reg   [`DRAM_ACC_NUM_OF_CMDS_RANGE     ]   final_queue_cmd          ;
-        reg   [`MGR_STREAM_ADDRESS_RANGE       ]   final_queue_strm         ;
-        reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   final_queue_bank         ;
-        reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   final_queue_page         ;
-        `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                    
-          reg   [`MGR_DRAM_LINE_ADDRESS_RANGE  ]   final_queue_line         ;
-        `endif
-
-        reg                                        next_final_queue_valid   ;  // write to final queue after other stream
-        reg   [`DRAM_ACC_NUM_OF_CMDS_RANGE     ]   next_final_queue_cmd     ;
-        reg   [`MGR_STREAM_ADDRESS_RANGE       ]   next_final_queue_strm    ;
-        reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   next_final_queue_bank    ;
-        reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   next_final_queue_page    ;
-        `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-          reg   [`MGR_DRAM_LINE_ADDRESS_RANGE  ]   next_final_queue_line    ;
-        `endif
-   
-        always @(posedge clk)
+        // Read sequence fifos
+        always @(*)
           begin
-            // FIXME - can make if ~WAIT
-            final_queue_valid   <= ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_PAGE_CMD ) /*& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][0]]) |
-                                   ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_CACHE_CMD) /*& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][1]]) ;
-                                                    
-            final_queue_cmd     <= ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_CACHE_CMD) /*&& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][0]] )  ? strm_access_cmd [chan][0]     :
-                                   ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_PAGE_CMD ) /*&& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][0]] )  ? strm_access_cmd [chan][0]     :
-                                                                                                                                                                               `MMC_CNTL_PAGE_CMD_FINAL_FIFO_TYPE_NOP ;
-                                                    
-            final_queue_strm    <= ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_CACHE_CMD) /*&& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][0]] )  ? 'd0     :
-                                   ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_PAGE_CMD ) /*&& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][0]] )  ? 'd0     :
-                                                                                                                                                                               'd0     ;
-
-            final_queue_bank    <= ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_CACHE_CMD) /*&& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][0]] )  ? strm_access_bank [chan][0]     :
-                                   ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_PAGE_CMD ) /*&& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][0]] )  ? strm_access_bank [chan][0]     :
-                                                                                                                                                                               'd0                            ;
-
-            final_queue_page    <= ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_CACHE_CMD) /*&& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][0]] )  ? strm_access_page [chan][0]     :
-                                   ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_PAGE_CMD ) /*&& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][0]] )  ? strm_access_page [chan][0]     :
-                                                                                                                                                                               'd0                            ;
-
-            `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-              final_queue_line    <= ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_CACHE_CMD) /*&& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][0]] )  ? strm_access_line [chan][0]     :
-                                     ((mmc_cntl_cmd_check_state == `MMC_CNTL_CMD_CHECK_PAGE_CMD ) /*&& ~strm_access_valid [chan][0]*/ & can_go [chan][strm_access_bank[chan][0]] )  ? strm_access_line [chan][0]     :
-                                                                                                                                                                                 'd0                            ;
-            `endif
-            
+            cmd_seq_page_fifo [chan].pipe_read   =  page_cmd_requested  && can_go [chan][cmd_seq_page_fifo [chan].pipe_bank] ;
+            cmd_seq_cache_fifo [chan].pipe_read  =  cache_cmd_requested && can_go [chan][cmd_seq_cache_fifo[chan].pipe_bank] ;
           end
 
+
+
         always @(posedge clk)
           begin
-            chan_final_queue_valid   [chan]   <=  final_queue_valid ;
+            chan_final_queue_valid [chan]   <=    cmd_seq_page_fifo [chan].pipe_read | 
+                                                  cmd_seq_cache_fifo[chan].pipe_read ;
 
-            chan_final_queue_cmd     [chan]   <=  ( final_queue_valid      )  ? final_queue_cmd      : 
-                                                                                final_queue_cmd      ; 
+            chan_final_queue_cmd   [chan]   <=  ( cmd_seq_page_fifo [chan].pipe_read ) ? cmd_seq_page_fifo [chan].pipe_cmd :
+                                                                                         cmd_seq_cache_fifo[chan].pipe_cmd ;
 
-            chan_final_queue_strm    [chan]   <=  ( final_queue_valid      )  ? final_queue_strm     : 
-                                                                                final_queue_strm     ; 
+            chan_final_queue_strm  [chan]   <=  ( cmd_seq_page_fifo [chan].pipe_read ) ? cmd_seq_page_fifo [chan].pipe_strm :
+                                                                                         cmd_seq_cache_fifo[chan].pipe_strm ;
 
-            chan_final_queue_bank    [chan]   <=  ( final_queue_valid      )  ? final_queue_bank     : 
-                                                                                final_queue_bank     ; 
+            chan_final_queue_bank  [chan]   <=  ( cmd_seq_page_fifo [chan].pipe_read ) ? cmd_seq_page_fifo [chan].pipe_bank :
+                                                                                         cmd_seq_cache_fifo[chan].pipe_bank ;
 
-            chan_final_queue_page    [chan]   <=  ( final_queue_valid      )  ? final_queue_page     : 
-                                                                                final_queue_page     ; 
+            chan_final_queue_page  [chan]   <=  ( cmd_seq_page_fifo [chan].pipe_read ) ? cmd_seq_page_fifo [chan].pipe_page :
+                                                                                         cmd_seq_cache_fifo[chan].pipe_page ;
 
             `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                    
-              chan_final_queue_line    [chan]   <=  ( final_queue_valid      )  ? final_queue_line     : 
-                                                                                  final_queue_line     ; 
+              chan_final_queue_line[chan]   <=  cmd_seq_cache_fifo[chan].pipe_line ;
             `endif
           end
 

@@ -28,6 +28,11 @@
 `define DRAM_ACC_CMD_IS_NOP      5
 `define DRAM_ACC_CMD_IS_ADJ      6
 
+//----------------------------------------------------------------------------------------------------
+// Command sequence
+//
+`define DRAM_ACC_NUM_OF_SEQ_TYPES    16  // include some pad
+
 `define DRAM_ACC_CMD_SEQ_IS_POCR     0
 `define DRAM_ACC_CMD_SEQ_IS_POCW     1
 `define DRAM_ACC_CMD_SEQ_IS_PCPOCR   2
@@ -36,7 +41,13 @@
 `define DRAM_ACC_CMD_SEQ_IS_CW       5
 `define DRAM_ACC_CMD_SEQ_IS_PR       6
 `define DRAM_ACC_CMD_SEQ_IS_PCPR     7  // the stream fsm's will reopen the page, so dont need PCPRPO
-`define DRAM_ACC_CMD_SEQ_IS_NOP      8
+`define DRAM_ACC_CMD_SEQ_IS_NOP      8  // make sure this is the last
+
+`define DRAM_ACC_SEQ_TYPE_WIDTH        (`CLOG2(`DRAM_ACC_NUM_OF_SEQ_TYPES))
+`define DRAM_ACC_SEQ_TYPE_MSB          `DRAM_ACC_SEQ_TYPE_WIDTH-1
+`define DRAM_ACC_SEQ_TYPE_LSB          0
+`define DRAM_ACC_SEQ_TYPE_SIZE         (`DRAM_ACC_SEQ_TYPE_MSB - `DRAM_ACC_SEQ_TYPE_LSB +1)
+`define DRAM_ACC_SEQ_TYPE_RANGE         `DRAM_ACC_SEQ_TYPE_MSB : `DRAM_ACC_SEQ_TYPE_LSB
 
 `define DRAM_ACC_CMD_SEQ_MAX_LENGTH      4  // last is always NOP
 `define DRAM_ACC_CMD_SEQ_COUNT_WIDTH              (`CLOG2(`DRAM_ACC_CMD_SEQ_MAX_LENGTH))
@@ -45,6 +56,7 @@
 `define DRAM_ACC_CMD_SEQ_COUNT_SIZE               (`DRAM_ACC_CMD_SEQ_COUNT_MSB - `DRAM_ACC_CMD_SEQ_COUNT_LSB +1)
 `define DRAM_ACC_CMD_SEQ_COUNT_RANGE               `DRAM_ACC_CMD_SEQ_COUNT_MSB : `DRAM_ACC_CMD_SEQ_COUNT_LSB
 
+//----------------------------------------------------------------------------------------------------
 
 
 `define DRAM_ACC_NUM_CMD_SEQS               9

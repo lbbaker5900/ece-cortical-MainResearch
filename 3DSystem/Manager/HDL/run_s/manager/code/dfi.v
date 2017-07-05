@@ -104,6 +104,7 @@ module dfi(
   reg   [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data_e1   ;
   reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank_e1   ;
   reg   [ `MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr_e1   ;
+
   //----------------------------------------------------------------------------------------------------
   // Control page and cache clock phases
   reg dram_cmd_mode ;
@@ -131,8 +132,10 @@ module dfi(
         always @(posedge clk_diram2x)
           begin
             // FIXME : 32
-            dfi__phy__data[(word+1)*32-1 : word*32]  <= ( ~clk_diram_ck ) ? mmc__dfi__data [0][word] :
-                                                                            mmc__dfi__data [1][word] ;
+            dfi__phy__data_e1 [(word+1)*32-1 : word*32]  <= ( ~clk_diram_ck ) ? mmc__dfi__data [0][word] :
+                                                                                mmc__dfi__data [1][word] ;
+
+            dfi__phy__data    [(word+1)*32-1 : word*32]  <= dfi__phy__data_e1 ;
           end
       end
   endgenerate

@@ -57,13 +57,17 @@
 //  - ensures the commands in the command sequence fifos can_go
 // 
 
-`define MMC_CNTL_CMD_CHECK_WAIT                            8'b0000_0001
-`define MMC_CNTL_CMD_CHECK_PAGE_CMD                        8'b0000_0010
-`define MMC_CNTL_CMD_CHECK_CACHE_CMD                       8'b0000_0100
+`define MMC_CNTL_CMD_CHECK_WAIT                 9'b0_0000_0001
+`define MMC_CNTL_CMD_CHECK_INIT                 9'b0_0000_0010
+`define MMC_CNTL_CMD_CHECK_PO                   9'b0_0000_0100
+`define MMC_CNTL_CMD_CHECK_PC                   9'b0_0000_1000
+`define MMC_CNTL_CMD_CHECK_CR                   9'b0_0001_0000
+`define MMC_CNTL_CMD_CHECK_CW                   9'b0_0010_0000
+`define MMC_CNTL_CMD_CHECK_PR                   9'b0_0100_0000
                                                                
-`define MMC_CNTL_CMD_CHECK_ERR                             8'b1000_0000
+`define MMC_CNTL_CMD_CHECK_ERR                  9'b1_0000_0000
 
-`define MMC_CNTL_CMD_CHECK_STATE_WIDTH         8
+`define MMC_CNTL_CMD_CHECK_STATE_WIDTH         9
 `define MMC_CNTL_CMD_CHECK_STATE_MSB           `MMC_CNTL_CMD_CHECK_STATE_WIDTH-1
 `define MMC_CNTL_CMD_CHECK_STATE_LSB           0
 `define MMC_CNTL_CMD_CHECK_STATE_SIZE          (`MMC_CNTL_CMD_CHECK_STATE_MSB - `MMC_CNTL_CMD_CHECK_STATE_LSB +1)
@@ -228,8 +232,15 @@
 `define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_DRAM_CMD_SIZE                        (`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_DRAM_CMD_MSB - `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_DRAM_CMD_LSB +1)
 `define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_DRAM_CMD_RANGE                        `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_DRAM_CMD_MSB : `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_DRAM_CMD_LSB
 
+// carry which sequence the dram command is associated with
+`define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_WIDTH                       `DRAM_ACC_SEQ_TYPE_WIDTH  
+`define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_LSB                         `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_DRAM_CMD_MSB+1
+`define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_MSB                         `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_LSB+`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_WIDTH-1
+`define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_SIZE                        (`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_MSB - `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_LSB +1)
+`define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_RANGE                        `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_MSB : `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_LSB
+
 `define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_WIDTH                       `MMC_CNTL_CMD_GEN_TAG_WIDTH 
-`define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_LSB                         `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_DRAM_CMD_MSB+1
+`define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_LSB                         `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_MSB+1
 `define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_MSB                         `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_LSB+`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_WIDTH-1
 `define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_SIZE                        (`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_MSB - `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_LSB +1)
 `define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_RANGE                        `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_MSB : `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_LSB
@@ -244,6 +255,7 @@
 `define MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_FIFO_WIDTH     `MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_PAGE_WIDTH      \
                                                       +`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_BANK_WIDTH      \
                                                       +`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_DRAM_CMD_WIDTH  \
+                                                      +`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_SEQ_TYPE_WIDTH  \
                                                       +`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_TAG_WIDTH       \
                                                       +`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_STRM_WIDTH 
 
@@ -302,8 +314,15 @@
 `define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_DRAM_CMD_SIZE                        (`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_DRAM_CMD_MSB - `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_DRAM_CMD_LSB +1)
 `define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_DRAM_CMD_RANGE                        `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_DRAM_CMD_MSB : `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_DRAM_CMD_LSB
 
+// carry which sequence the dram command is associated with
+`define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_WIDTH                       `DRAM_ACC_SEQ_TYPE_WIDTH  
+`define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_LSB                         `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_DRAM_CMD_MSB+1
+`define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_MSB                         `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_LSB+`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_WIDTH-1
+`define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_SIZE                        (`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_MSB - `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_LSB +1)
+`define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_RANGE                        `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_MSB : `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_LSB
+
 `define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_WIDTH                       `MMC_CNTL_CMD_GEN_TAG_WIDTH
-`define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_LSB                         `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_DRAM_CMD_MSB+1
+`define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_LSB                         `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_MSB+1
 `define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_MSB                         `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_LSB+`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_WIDTH-1
 `define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_SIZE                        (`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_MSB - `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_LSB +1)
 `define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_RANGE                        `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_MSB : `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_LSB
@@ -320,12 +339,14 @@
                                                          +`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_PAGE_WIDTH      \
                                                          +`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_BANK_WIDTH      \
                                                          +`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_DRAM_CMD_WIDTH  \
+                                                         +`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_WIDTH  \
                                                          +`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_WIDTH       \
                                                          +`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_STRM_WIDTH 
 `else
   `define MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_FIFO_WIDTH     `MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_PAGE_WIDTH      \
                                                          +`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_BANK_WIDTH      \
                                                          +`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_DRAM_CMD_WIDTH  \
+                                                         +`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_SEQ_TYPE_WIDTH  \
                                                          +`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_TAG_WIDTH       \
                                                          +`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_STRM_WIDTH 
 `endif
