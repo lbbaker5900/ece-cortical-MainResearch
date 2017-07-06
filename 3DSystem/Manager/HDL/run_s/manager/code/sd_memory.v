@@ -46,7 +46,9 @@ module sd_memory (
 
                            clk
                         );
-
+************************
+NOT USED
+***********************
     input                                       clk                            ;
     input                                       valid                          ;
     input   [`MGR_MGR_ID_RANGE    ]             sys__mgr__mgrId                ;

@@ -379,18 +379,18 @@ module manager (
 
         //----------------------------------------------------------------------------------------------------
         // Main memory Controller
-        wire                                           mrc__mmc__valid                                     ;
-        wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl                                      ;
-        wire                                           mmc__mrc__ready                                     ;
-        wire  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      mrc__mmc__channel                                   ;
-        wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mrc__mmc__bank                                      ;
-        wire  [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      mrc__mmc__page                                      ;
-        wire  [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      mrc__mmc__word                                      ;
+        wire                                           mrc__mmc__valid      ;
+        wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl       ;
+        wire                                           mmc__mrc__ready      ;
+        wire  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      mrc__mmc__channel    ;
+        wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mrc__mmc__bank       ;
+        wire  [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      mrc__mmc__page       ;
+        wire  [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      mrc__mmc__word       ;
                                                                                                            
-        wire                                           mmc__mrc__valid   [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-        wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mmc__mrc__cntl    [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-        wire                                           mrc__mmc__ready   [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-        wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      mmc__mrc__data    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
+        wire                                                                        mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ] ;
+        wire  [`COMMON_STD_INTF_CNTL_RANGE        ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] ;
+        wire                                                                        mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ] ;
+        wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] ;
 
         mrc_cntl mrc_cntl (
         
@@ -451,21 +451,22 @@ module manager (
                                                                           
   // MMC provides data from each DRAM channel
   // - response must be in order of request
-  wire                                           mmc__mrc__valid   [`MGR_NUM_OF_STREAMS ] [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mmc__mrc__cntl    [`MGR_NUM_OF_STREAMS ] [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-  wire                                           mrc__mmc__ready   [`MGR_NUM_OF_STREAMS ] [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-  wire  [`MGR_EXEC_LANE_WIDTH_RANGE       ]      mmc__mrc__data    [`MGR_NUM_OF_STREAMS ] [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
+  wire  [`MGR_NUM_OF_STREAMS_RANGE          ]                                 mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ]                        ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE        ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
+  wire  [`MGR_NUM_OF_STREAMS_RANGE          ]                                 mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ]                        ;
+  wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
 
 
-  wire                                           dfi__mmc__init_done                                                              ;
-  wire  [`MGR_EXEC_LANE_WIDTH_RANGE       ]      dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
-  wire                                           dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-  wire                                           mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-  wire                                           mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-  wire                                           mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-  wire  [`MGR_EXEC_LANE_WIDTH_RANGE       ]      mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
-  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
-  wire  [`MGR_DRAM_PHY_ADDRESS_RANGE      ]      mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]                                   ;
+  wire                                                                        dfi__mmc__init_done                              ;
+  wire                                                                        dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE        ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire                                                                        mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire                                                                        mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire                                                                        mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE       ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_DRAM_PHY_ADDRESS_RANGE        ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]   ;
 
   main_mem_cntl main_mem_cntl (
 
@@ -491,8 +492,9 @@ module manager (
                 // - provide per channel signals
                 // - DFI will handle SDR->DDR conversion
                 .dfi__mmc__init_done     ( dfi__mmc__init_done    ),
-                .dfi__mmc__data          ( dfi__mmc__data         ),
                 .dfi__mmc__valid         ( dfi__mmc__valid        ),
+                .dfi__mmc__cntl          ( dfi__mmc__cntl         ),
+                .dfi__mmc__data          ( dfi__mmc__data         ),
                 .mmc__dfi__cs            ( mmc__dfi__cs           ),
                 .mmc__dfi__cmd0          ( mmc__dfi__cmd0         ),
                 .mmc__dfi__cmd1          ( mmc__dfi__cmd1         ),
@@ -513,20 +515,26 @@ module manager (
   genvar chan, strm, word ;
   generate
     for (strm=0; strm<`MGR_NUM_OF_STREAMS; strm=strm+1) 
+      begin: mrc_mmc_connect
+        assign    mrc__mmc__valid   [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__valid   ;
+        assign    mrc__mmc__cntl    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__cntl    ;
+        assign    mrc__mmc__channel [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__channel ;
+        assign    mrc__mmc__bank    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__bank    ;
+        assign    mrc__mmc__page    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__page    ;
+        assign    mrc__mmc__word    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__word    ;
+        assign    mrc_cntl_strm_inst[strm].mmc__mrc__ready =   mmc__mrc__ready   [strm]                   ;
+      end
+  endgenerate
+  generate
+    for (strm=0; strm<`MGR_NUM_OF_STREAMS; strm=strm+1) 
       begin: mmc_mrc_connect
-        assign    mrc__mmc__valid   [strm]   =   mrc_cntl_strm_inst[strm].mrc__mmc__valid   ;
-        assign    mrc__mmc__cntl    [strm]   =   mrc_cntl_strm_inst[strm].mrc__mmc__cntl    ;
-        assign    mrc_cntl_strm_inst[strm].mmc__mrc__ready   =   mmc__mrc__ready   [strm]   ;
-        assign    mrc__mmc__channel [strm]   =   mrc_cntl_strm_inst[strm].mrc__mmc__channel ;
-        assign    mrc__mmc__bank    [strm]   =   mrc_cntl_strm_inst[strm].mrc__mmc__bank    ;
-        assign    mrc__mmc__page    [strm]   =   mrc_cntl_strm_inst[strm].mrc__mmc__page    ;
-        assign    mrc__mmc__word    [strm]   =   mrc_cntl_strm_inst[strm].mrc__mmc__word    ;
-                                                                
-        assign    mrc_cntl_strm_inst[strm].mmc__mrc__valid   =   mmc__mrc__valid   [strm] ;
-        assign    mrc_cntl_strm_inst[strm].mmc__mrc__cntl    =   mmc__mrc__cntl    [strm] ;
-        assign    mrc__mmc__ready   [strm]                   =   mrc_cntl_strm_inst[strm].mrc__mmc__ready ;
-
-        assign   mrc_cntl_strm_inst[strm].mmc__mrc__data   =  mmc__mrc__data [strm]  ;
+        for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
+          begin: mmc_mrc_chan_connect
+            assign    mrc_cntl_strm_inst[strm].mmc__mrc__valid[chan] =   mmc__mrc__valid  [chan] [strm]                   ;
+            assign    mrc_cntl_strm_inst[strm].mmc__mrc__cntl [chan] =   mmc__mrc__cntl   [chan] [strm]                   ;
+            assign    mrc_cntl_strm_inst[strm].mmc__mrc__data [chan] =   mmc__mrc__data   [chan] [strm]                   ;
+            assign    mrc__mmc__ready   [strm]                [chan] =   mrc_cntl_strm_inst[strm].mrc__mmc__ready[chan]   ;
+          end
       end
   endgenerate
 
@@ -537,8 +545,9 @@ module manager (
                 // - DFI will handle SDR->DDR conversion
                 //
                 .dfi__mmc__init_done  ( dfi__mmc__init_done    ),
-                .dfi__mmc__data       ( dfi__mmc__data         ),
                 .dfi__mmc__valid      ( dfi__mmc__valid        ),
+                .dfi__mmc__cntl       ( dfi__mmc__cntl         ),
+                .dfi__mmc__data       ( dfi__mmc__data         ),
                 .mmc__dfi__cs         ( mmc__dfi__cs           ),
                 .mmc__dfi__cmd0       ( mmc__dfi__cmd0         ),
                 .mmc__dfi__cmd1       ( mmc__dfi__cmd1         ),

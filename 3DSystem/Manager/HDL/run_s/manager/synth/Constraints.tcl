@@ -43,9 +43,16 @@
 # Specify a 5000ps clock period with 50% duty cycle     
 # and a skew of 50ps                                 
 #---------------------------------------------------------
- #set CLK_PER  5
- set CLK_SKEW 0.05
- create_clock -name $clkname -period $CLK_PER -waveform "0 [expr $CLK_PER / 2]" $clkname
+#set CLK_PER  5
+set CLK_SKEW 0.05
+
+
+create_clock -name $clkname -period $CLK_PER -waveform "0 [expr $CLK_PER / 2]" $clkname
+
+create_generated_clock [get_ports clk_diram2x ] -name [format "%s%s" clk_diram" "2x" ] -source [get_ports clk] -master_clock clk -add -combinational -multiply_by 2
+create_generated_clock [get_ports clk_diram   ] -name [format "%s%s" clk_diram" ""   ] -source [get_ports clk] -master_clock clk -add -combinational -multiply_by 1
+create_generated_clock [get_ports clk_diram_cq] -name [format "%s%s" clk_diram" "_cq"] -source [get_ports clk] -master_clock clk -add -combinational -multiply_by 1
+
  set_clock_uncertainty $CLK_SKEW $clkname
 
 #---------------------------------------------------------

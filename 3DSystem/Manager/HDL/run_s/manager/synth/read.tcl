@@ -214,30 +214,33 @@ elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=4096,GENERIC_MEM_RE
 # read_sverilog  $RTL_DIR/stu_cntl.v
 # read_sverilog  $RTL_DIR/wu_memory.v
 # read_sverilog  $RTL_DIR/mgr_noc_cntl.v
+# read_sverilog  $RTL_DIR/dram_access_timer.v
+# read_sverilog  $RTL_DIR/main_mem_cntl.v
+# read_sverilog  $RTL_DIR/wu_fetch.v
+# read_sverilog  $RTL_DIR/dfi.v
 
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
 
+read_sverilog  $RTL_DIR/mrc_cntl.v
+read_sverilog  $RTL_DIR/rdp_cntl.v
+read_sverilog  $RTL_DIR/oob_downstream_cntl.v
+read_sverilog  $RTL_DIR/wu_decode.v
+read_sverilog  $RTL_DIR/stu_cntl.v
+read_sverilog  $RTL_DIR/wu_memory.v
+read_sverilog  $RTL_DIR/mgr_noc_cntl.v
 read_sverilog  $RTL_DIR/dram_access_timer.v
-
-read_sverilog  $RTL_DIR/mmc_final_queue.v
-analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=8,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=9  $RTL_DIR/mmc_final_queue.v
-elaborate mmc_final_queue -parameter "GENERIC_FIFO_DEPTH=8,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=9"
-analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=8,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=20  $RTL_DIR/mmc_final_queue.v
-elaborate mmc_final_queue -parameter "GENERIC_FIFO_DEPTH=8,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=20"
-
-
 read_sverilog  $RTL_DIR/main_mem_cntl.v
+read_sverilog  $RTL_DIR/wu_fetch.v
+read_sverilog  $RTL_DIR/dfi.v
+read_sverilog  $RTL_DIR/manager.v
 
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
 #
-# read_sverilog  $RTL_DIR/sd_memory.v
-# read_sverilog  $RTL_DIR/wu_fetch.v
-# read_sverilog  $RTL_DIR/manager.v
 
 
 #suppress_message LINT-28

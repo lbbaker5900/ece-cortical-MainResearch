@@ -14,19 +14,20 @@ set clkname clk
 # set modname  wu_memory
 # set modname  mgr_noc_cntl
 # set modname  dram_access_timer
+# set modname  main_mem_cntl
+# set modname  wu_fetch
+# set modname  dfi
+
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
 
-set modname  main_mem_cntl
+set modname  manager
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
 #
-# set modname  sd_memory
-# set modname  wu_fetch
-# set modname  manager
 # 
 
 # set variable "RTL_DIR" to the HDL directory w.r.t synthesis directory

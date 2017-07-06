@@ -64,10 +64,10 @@ module mrc_cntl (
             output  reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      mrc__mmc__word                                    ,
                                                                                                                     
             // MMC provides data from each DRAM channel
-            input   wire                                           mmc__mrc__valid   [`MGR_DRAM_NUM_CHANNELS ]                                 ,
-            input   wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mmc__mrc__cntl    [`MGR_DRAM_NUM_CHANNELS ]                                 ,
-            output  reg                                            mrc__mmc__ready   [`MGR_DRAM_NUM_CHANNELS ]                                 ,
-            input   wire  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]      mmc__mrc__data    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ,
+            input   wire                                                                        mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ] ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE        ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] ,
+            output  reg                                                                         mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ] ,
+            input   wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] ,
 
             //-------------------------------
             // General
@@ -106,7 +106,7 @@ module mrc_cntl (
     reg                                         mmc__mrc__valid_d1   [`MGR_DRAM_NUM_CHANNELS ]                                 ;
     reg  [`COMMON_STD_INTF_CNTL_RANGE      ]    mmc__mrc__cntl_d1    [`MGR_DRAM_NUM_CHANNELS ]                                 ;
     wire                                        mrc__mmc__ready_e1   [`MGR_DRAM_NUM_CHANNELS ]                                 ;
-    reg  [ `MGR_EXEC_LANE_WIDTH_RANGE      ]    mmc__mrc__data_d1    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_MMC_TO_MRC_INTF_NUM_WORDS ] ;
+    reg  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__mrc__data_d1  [`MGR_DRAM_NUM_CHANNELS ]  ;
 
     //--------------------------------------------------
     // to Main Memory Controller

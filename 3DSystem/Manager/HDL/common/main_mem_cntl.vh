@@ -100,21 +100,38 @@
 //  - select which stream should gain access to the channel
 // 
 
-`define MMC_CNTL_STRM_SEL_WAIT                            8'b0000_0001
-`define MMC_CNTL_STRM_SEL_STRM0                           8'b0000_0010
-`define MMC_CNTL_STRM_SEL_STRM1                           8'b0000_0100
-`define MMC_CNTL_STRM_SEL_STRM01                          8'b0000_1000
-`define MMC_CNTL_STRM_SEL_STRM10                          8'b0001_0000
-`define MMC_CNTL_STRM_SEL_SEND0_NEXT                      8'b0010_0000
-`define MMC_CNTL_STRM_SEL_SEND1_NEXT                      8'b0100_0000
+`define MMC_CNTL_STRM_SEL_WAIT                            5'b0_0001
+`define MMC_CNTL_STRM_SEL_STRM0                           5'b0_0010
+`define MMC_CNTL_STRM_SEL_STRM1                           5'b0_0100
+//`define MMC_CNTL_STRM_SEL_STRM01                          5'b0000_1000
+//`define MMC_CNTL_STRM_SEL_STRM10                          5'b0001_0000
+//`define MMC_CNTL_STRM_SEL_SEND0_NEXT                      5'b0010_0000
+//`define MMC_CNTL_STRM_SEL_SEND1_NEXT                      5'b0100_0000
                                                                
-`define MMC_CNTL_STRM_SEL_ERR                             8'b1000_0000
+`define MMC_CNTL_STRM_SEL_ERR                             5'b1_0000
 
-`define MMC_CNTL_STRM_SEL_STATE_WIDTH         8
+`define MMC_CNTL_STRM_SEL_STATE_WIDTH         5
 `define MMC_CNTL_STRM_SEL_STATE_MSB           `MMC_CNTL_STRM_SEL_STATE_WIDTH-1
 `define MMC_CNTL_STRM_SEL_STATE_LSB           0
 `define MMC_CNTL_STRM_SEL_STATE_SIZE          (`MMC_CNTL_STRM_SEL_STATE_MSB - `MMC_CNTL_STRM_SEL_STATE_LSB +1)
 `define MMC_CNTL_STRM_SEL_STATE_RANGE          `MMC_CNTL_STRM_SEL_STATE_MSB : `MMC_CNTL_STRM_SEL_STATE_LSB
+
+//--------------------------------------------------------
+// Readpath FSL
+//  - combine the channel return data with the requesting stream
+// 
+
+`define MMC_CNTL_RDP_WAIT                            5'b0_0001
+`define MMC_CNTL_RDP_STRM0                           5'b0_0010
+`define MMC_CNTL_RDP_STRM1                           5'b0_0100
+                                                            
+`define MMC_CNTL_RDP_ERR                             5'b1_0000
+
+`define MMC_CNTL_RDP_STATE_WIDTH         5
+`define MMC_CNTL_RDP_STATE_MSB           `MMC_CNTL_RDP_STATE_WIDTH-1
+`define MMC_CNTL_RDP_STATE_LSB           0
+`define MMC_CNTL_RDP_STATE_SIZE          (`MMC_CNTL_RDP_STATE_MSB - `MMC_CNTL_RDP_STATE_LSB +1)
+`define MMC_CNTL_RDP_STATE_RANGE          `MMC_CNTL_RDP_STATE_MSB : `MMC_CNTL_RDP_STATE_LSB
 
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
@@ -508,6 +525,94 @@
 // assert almost full when there are only this many entries available in the fifo
 `define MMC_CNTL_CACHE_CMD_FINAL_FIFO_ALMOST_FULL_THRESHOLD 4
 
+
+
+//--------------------------------------------------------
+//--------------------------------------------------------
+// ReadPath FIFOs
+
+//--------------------------------------------------------
+// From DFI
+
+// FIXME: Its possible to have 32 outstanding requests, need to think about this fifo and the fifo in the mrc_cntl
+//`define MRC_CNTL_FROM_MMC_FIFO_DEPTH          32
+//`define MMC_CNTL_FROM_DFI_FIFO_DEPTH          8
+`define MMC_CNTL_FROM_DFI_FIFO_DEPTH          32
+`define MMC_CNTL_FROM_DFI_FIFO_DEPTH_MSB      (`MMC_CNTL_FROM_DFI_FIFO_DEPTH) -1
+`define MMC_CNTL_FROM_DFI_FIFO_DEPTH_LSB      0
+`define MMC_CNTL_FROM_DFI_FIFO_DEPTH_SIZE     (`MMC_CNTL_FROM_DFI_FIFO_DEPTH_MSB - `MMC_CNTL_FROM_DFI_FIFO_DEPTH_LSB +1)
+`define MMC_CNTL_FROM_DFI_FIFO_DEPTH_RANGE     `MMC_CNTL_FROM_DFI_FIFO_DEPTH_MSB : `MMC_CNTL_FROM_DFI_FIFO_DEPTH_LSB
+`define MMC_CNTL_FROM_DFI_FIFO_MSB            ((`CLOG2(`MMC_CNTL_FROM_DFI_FIFO_DEPTH)) -1)
+`define MMC_CNTL_FROM_DFI_FIFO_LSB            0
+`define MMC_CNTL_FROM_DFI_FIFO_SIZE           (`MMC_CNTL_FROM_DFI_FIFO_MSB - `MMC_CNTL_FROM_DFI_FIFO_LSB +1)
+`define MMC_CNTL_FROM_DFI_FIFO_RANGE           `MMC_CNTL_FROM_DFI_FIFO_MSB : `MMC_CNTL_FROM_DFI_FIFO_LSB
+
+// For AGGREGATE_FIFO implemented as single memory, define field ranges
+`define MMC_CNTL_FROM_DFI_AGGREGATE_DATA_WIDTH    (`MGR_MMC_TO_MRC_INTF_NUM_WORDS*`MGR_EXEC_LANE_WIDTH)
+`define MMC_CNTL_FROM_DFI_AGGREGATE_DATA_MSB      `MMC_CNTL_FROM_DFI_AGGREGATE_DATA_WIDTH-1
+`define MMC_CNTL_FROM_DFI_AGGREGATE_DATA_LSB      0
+`define MMC_CNTL_FROM_DFI_AGGREGATE_DATA_SIZE     (`MMC_CNTL_FROM_DFI_AGGREGATE_DATA_MSB - `MMC_CNTL_FROM_DFI_AGGREGATE_DATA_LSB +1)
+`define MMC_CNTL_FROM_DFI_AGGREGATE_DATA_RANGE     `MMC_CNTL_FROM_DFI_AGGREGATE_DATA_MSB : `MMC_CNTL_FROM_DFI_AGGREGATE_DATA_LSB
+
+`define MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_MSB      (`MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_LSB+`COMMON_STD_INTF_CNTL_WIDTH) -1
+`define MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_LSB      `MMC_CNTL_FROM_DFI_AGGREGATE_DATA_MSB+1
+`define MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_SIZE     (`MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_MSB - `MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_LSB +1)
+`define MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_RANGE     `MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_MSB : `MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_LSB
+
+`define MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_WIDTH     `COMMON_STD_INTF_CNTL_WIDTH \
+                                                   +`MMC_CNTL_FROM_DFI_AGGREGATE_DATA_WIDTH
+
+`define MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_MSB            `MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_WIDTH -1
+`define MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_LSB            0
+`define MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_SIZE           (`MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_MSB - `MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_LSB +1)
+`define MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_RANGE           `MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_MSB : `MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_LSB
+
+
+// Threshold below full when we assert almost full
+// assert almost full when there are only this many entries available in the fifo
+`define MMC_CNTL_FROM_DFI_FIFO_ALMOST_FULL_THRESHOLD 4
+
+
+//--------------------------------------------------------
+// Strm/Tag FIFO
+
+
+`define MMC_CNTL_READPATH_TAG_FIFO_DEPTH          8
+`define MMC_CNTL_READPATH_TAG_FIFO_DEPTH_MSB      (`MMC_CNTL_READPATH_TAG_FIFO_DEPTH) -1
+`define MMC_CNTL_READPATH_TAG_FIFO_DEPTH_LSB      0
+`define MMC_CNTL_READPATH_TAG_FIFO_DEPTH_SIZE     (`MMC_CNTL_READPATH_TAG_FIFO_DEPTH_MSB - `MMC_CNTL_READPATH_TAG_FIFO_DEPTH_LSB +1)
+`define MMC_CNTL_READPATH_TAG_FIFO_DEPTH_RANGE     `MMC_CNTL_READPATH_TAG_FIFO_DEPTH_MSB : `MMC_CNTL_READPATH_TAG_FIFO_DEPTH_LSB
+`define MMC_CNTL_READPATH_TAG_FIFO_MSB            ((`CLOG2(`MMC_CNTL_READPATH_TAG_FIFO_DEPTH)) -1)
+`define MMC_CNTL_READPATH_TAG_FIFO_LSB            0
+`define MMC_CNTL_READPATH_TAG_FIFO_SIZE           (`MMC_CNTL_READPATH_TAG_FIFO_MSB - `MMC_CNTL_READPATH_TAG_FIFO_LSB +1)
+`define MMC_CNTL_READPATH_TAG_FIFO_RANGE           `MMC_CNTL_READPATH_TAG_FIFO_MSB : `MMC_CNTL_READPATH_TAG_FIFO_LSB
+
+
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_WIDTH                       `MMC_CNTL_CMD_GEN_TAG_WIDTH
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_LSB                         0
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_MSB                         `MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_LSB+`MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_WIDTH-1
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_SIZE                        (`MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_MSB - `MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_LSB +1)
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_RANGE                        `MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_MSB : `MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_LSB
+
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_WIDTH                       `MGR_STREAM_ADDRESS_WIDTH 
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_LSB                         `MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_MSB+1
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_MSB                         `MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_LSB+`MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_WIDTH-1
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_SIZE                        (`MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_MSB - `MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_LSB +1)
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_RANGE                        `MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_MSB : `MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_LSB
+
+
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_FIFO_WIDTH    `MMC_CNTL_READPATH_TAG_AGGREGATE_TAG_WIDTH    \
+                                                     +`MMC_CNTL_READPATH_TAG_AGGREGATE_STRM_WIDTH   
+
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_FIFO_MSB            `MMC_CNTL_READPATH_TAG_AGGREGATE_FIFO_WIDTH -1
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_FIFO_LSB            0
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_FIFO_SIZE           (`MMC_CNTL_READPATH_TAG_AGGREGATE_FIFO_MSB - `MMC_CNTL_READPATH_TAG_AGGREGATE_FIFO_LSB +1)
+`define MMC_CNTL_READPATH_TAG_AGGREGATE_FIFO_RANGE           `MMC_CNTL_READPATH_TAG_AGGREGATE_FIFO_MSB : `MMC_CNTL_READPATH_TAG_AGGREGATE_FIFO_LSB
+
+
+// Threshold below full when we assert almost full
+// assert almost full when there are only this many entries available in the fifo
+`define MMC_CNTL_READPATH_TAG_FIFO_ALMOST_FULL_THRESHOLD 4
 
 
 
