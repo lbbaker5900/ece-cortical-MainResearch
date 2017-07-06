@@ -1,5 +1,5 @@
 
-MODNAME=mgr_noc_cntl
+MODNAME=manager
 
 all: route
 
