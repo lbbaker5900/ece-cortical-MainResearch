@@ -2142,7 +2142,7 @@ module main_mem_cntl (
             always @(*)
               begin
                 // FIXME : 32
-                write_data [(word+1)*32-1 : word*32]   = dfi__mmc__data_d1 [chan][(word+1)*32-1 : word*32] ;
+                write_data [(word+1)*32-1 : word*32]   = dfi__mmc__data_d1 [chan][word] ;
               end
           end
 

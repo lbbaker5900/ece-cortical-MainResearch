@@ -248,7 +248,7 @@ module dfi(
             always @(posedge clk)
               begin
                 // FIXME : 32
-                dfi__mmc__data [chan][(word+1)*32-1 : word*32] <= dfi__mmc__data_e3 [chan][(word+1)*32-1 : word*32] ;
+                dfi__mmc__data [chan][word] <= dfi__mmc__data_e3 [chan][(word+1)*32-1 : word*32] ;
               end
           end
       end
