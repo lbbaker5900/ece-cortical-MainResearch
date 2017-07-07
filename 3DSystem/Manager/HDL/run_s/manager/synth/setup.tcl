@@ -17,6 +17,7 @@ set clkname clk
 # set modname  main_mem_cntl
 # set modname  wu_fetch
 # set modname  dfi
+# set modname  manager
 
 
 #------------------------------------------------------------------------------------------------------------------------
