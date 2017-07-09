@@ -55,7 +55,20 @@ set_fp_placement_strategy \
       -min_distance_between_macros ${MIN_DISTANCE_BETWEEN_MACROS} \
       -sliver_size ${SLIVER_DISTANCE_BETWEEN_MACROS}
 
-create_floorplan \
+if {$modname == "pe" || $modname == "manager"} {
+
+  create_floorplan                      \
+        -control_type width_and_height  \
+        -core_width ${CHIPLET_WIDTH}    \
+        -core_height ${CHIPLET_HEIGHT}  \
+        -left_io2core 5                 \
+        -bottom_io2core 5               \
+        -right_io2core 5                \
+        -top_io2core 5
+
+} else {
+
+  create_floorplan \
 	-core_utilization ${CORE_UTILIZATION} \
         -core_aspect_ratio ${CORE_ASPECT_RATIO} \
 	-left_io2core 5 \
@@ -83,6 +96,9 @@ create_floorplan \
 #	-keep_std_cell_place \
 #	-min_pad_height \
 #	-pad_limit 
+#
+}
+
 #
 #
 #################################################################
