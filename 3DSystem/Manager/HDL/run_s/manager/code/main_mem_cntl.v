@@ -105,25 +105,25 @@ module main_mem_cntl (
 
   genvar chan, strm, word, bank ;
   generate
-      for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
-        begin: mem_response
-          for (strm=0; strm<`MGR_NUM_OF_STREAMS ; strm++)
-            begin: mem_response
-              always @(posedge clk)
-                begin
-                  mmc__mrc__valid    [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__valid_e1 [chan] [strm ] ; 
-                  mmc__mrc__cntl     [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__cntl_e1  [chan] [strm ] ; 
-                  mrc__mmc__ready_d1 [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__ready    [chan] [strm ] ; 
-                end
-              for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
-                begin: mem_response
-                  always @(posedge clk)
-                    begin
-                      mmc__mrc__data     [chan] [strm] [word] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__data_e1  [chan] [strm] [word] ; 
-                    end
-                end
-            end
-        end
+    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
+      begin: mem_response
+        for (strm=0; strm<`MGR_NUM_OF_STREAMS ; strm++)
+          begin: mem_response
+            always @(posedge clk)
+              begin
+                mmc__mrc__valid    [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__valid_e1 [chan] [strm ] ; 
+                mmc__mrc__cntl     [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__cntl_e1  [chan] [strm ] ; 
+                mrc__mmc__ready_d1 [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__ready    [chan] [strm ] ; 
+              end
+            for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
+              begin: mem_response
+                always @(posedge clk)
+                  begin
+                    mmc__mrc__data     [chan] [strm] [word] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__data_e1  [chan] [strm] [word] ; 
+                  end
+              end
+          end
+      end
   endgenerate
 
   // FIXME

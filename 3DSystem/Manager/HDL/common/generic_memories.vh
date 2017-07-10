@@ -285,6 +285,33 @@ if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 20) && (GENERIC_MEM_R
 
 //------------------------------------------------------------------------------------------------------------------------
 //
+if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 8) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+  begin
+
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     reg8x8    [GENERIC_MEM_DEPTH-1 :0 ] ;
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg8                                 ;
+    wire [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg8_e1                              ;
+
+    always @(posedge clk)
+      begin
+        if (portA_enable_dly && portA_write_dly)
+          reg8x8 [portA_address_dly] <= portA_write_data_dly ;
+      end
+
+    assign   oreg8_e1  =  reg8x8 [portB_address_dly] ;
+
+    always @(posedge clk)
+      begin
+        oreg8   <= ( portB_enable_dly ) ? oreg8_e1 :
+                                           oreg8    ;  // dw memory datasheet specifies previous data is maintained with ME=0
+      end
+    assign int_portB_read_data_dly  = oreg8  ;
+    
+    
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
 if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 9) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
   begin
 

@@ -144,6 +144,7 @@ foreach_in_collection tsv $data_up {
 # from DRAM
 
 set obj [sort_collection [get_terminals -quiet -filter "name =~ phy__dfi__*"] -descending {name }]
+set obj [add_to_collection $obj [get_terminals -quiet -filter "name =~ clk_diram_*cq*"] ]
 
 set sx [expr [lindex [lindex $c_area 0] 0] +50]
 set sy [expr [lindex [lindex $c_area 0] 0] +50]
@@ -184,6 +185,7 @@ foreach_in_collection tsv $obj {
 # to DRAM
 
 set obj [sort_collection [get_terminals -quiet -filter "name =~ dfi__phy__*"] -descending {name }]
+set obj [add_to_collection $obj [get_terminals -quiet -filter "name =~ clk_diram_*ck*"] ]
 
 set sy [expr $top +$dy]
 
@@ -492,4 +494,63 @@ foreach_in_collection tsv $mask_noc_port3 {
   set y [expr $y + $dy]
 
 }
+#--------------------------------------------------
+# General
+#
+#
+set dx 1.2
+set dy 1.2
+set lx 0.05
+set ly 0.05
+
+# place on edge sx = 1.2, sy = 0
+# top right dx = 1.8
+#           dy = 1.8
+set trx 1.8
+set try 1.8
+# top left  dx = 1.2
+#           dy = 1.8
+set tlx 1.2
+set tly 1.8
+# Bot left  dx = 1.2
+#           dy = 1.2
+set blx 1.2
+set bly 1.2
+# Bot right dx = 1.8
+#           dy = 1.2
+set brx 1.8
+set bry 1.2
+
+set gen [get_terminals -quiet -filter "name =~ *sys__mgr__mgrId*"]
+set gen [add_to_collection $gen [get_terminals -quiet -filter "name =~ sys__mgr__ready"] ]
+set gen [add_to_collection $gen [get_terminals -quiet -filter "name =~ sys__mgr__complete"] ]
+set gen [add_to_collection $gen [get_terminals -quiet -filter "name =~ sys__mgr__thisSynchronized"] ]
+set gen [add_to_collection $gen [get_terminals -quiet -filter "name =~ mgr__sys__allSynchronized"] ]
+set gen [add_to_collection $gen [get_terminals -quiet -filter "name =~ clk_diram"] ]
+set gen [add_to_collection $gen [get_terminals -quiet -filter "name =~ clk_diram2x"] ]
+set gen [add_to_collection $gen [get_terminals -quiet -filter "name =~ clk"] ]
+set gen [add_to_collection $gen [get_terminals -quiet -filter "name =~ reset_poweron"] ]
+
+
+# put top left down
+set sy [expr [ lindex [lindex $d_area 1] 1] -$tly ]
+set sx [expr [ lindex [lindex $d_area 0] 0] +0    ]
+
+set x $sx
+set y $sy
+
+
+sort_collection $gen    -descending {name }
+
+foreach_in_collection tsv $gen {
+
+  set bbox [list [list [expr $x +0] [expr $y - $ly ]] [list [expr $x + [expr $lx *2]] [expr $y + $ly]]]
+  set_attribute -quiet $tsv bbox $bbox
+  set_attribute -quiet $tsv status Fixed
+
+  set idx [expr $idx + 1]
+  set y [expr $y - $dy]
+
+}
+
 

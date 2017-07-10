@@ -51,20 +51,22 @@ module dfi(
             //--------------------------------------------------------------------------------
             // DFI Interface to DRAM
             //
-            output   reg                                       clk_diram_ck   ,
-            output   reg                                       dfi__phy__cs   , 
-            output   reg                                       dfi__phy__cmd1 , 
-            output   reg                                       dfi__phy__cmd0 ,
-            output   reg   [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data ,
-            output   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank ,
-            output   reg   [`MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr ,
+            output   reg                                        clk_diram_cntl_ck ,  // Control group clock
+            output   reg                                        dfi__phy__cs      , 
+            output   reg                                        dfi__phy__cmd1    , 
+            output   reg                                        dfi__phy__cmd0    ,
+            output   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   dfi__phy__bank    ,
+            output   reg   [`MGR_DRAM_PHY_ADDRESS_RANGE     ]   dfi__phy__addr    ,
+                                                                                  
+            output   reg   [`MGR_DRAM_CLK_GROUP_RANGE       ]   clk_diram_data_ck ,  // Data group clocks
+            output   reg   [`MGR_DRAM_INTF_RANGE            ]   dfi__phy__data    ,
 
             //--------------------------------------------------------------------------------
             // DFI Interface from DRAM
             //
-            input   wire                                        clk_diram_cq    ,
-            input   wire                                        phy__dfi__valid ,
-            input   wire  [ `MGR_DRAM_INTF_RANGE            ]   phy__dfi__data  ,
+            input   wire  [`MGR_DRAM_CLK_GROUP_RANGE        ]   clk_diram_cq      ,
+            input   wire  [`MGR_DRAM_CLK_GROUP_RANGE        ]   phy__dfi__valid   ,
+            input   wire  [`MGR_DRAM_INTF_RANGE             ]   phy__dfi__data    ,
 
             //--------------------------------------------------------------------------------
             // Clocks for SDR/DDR
@@ -95,7 +97,21 @@ module dfi(
       init_done_d1            <=  init_done ;
     end
          
-  assign   clk_diram_ck       = clk               ;
+  genvar grp ;
+  generate
+    for (grp=0; grp<`MGR_DRAM_BUS_NUM_CLK_GROUPS ; grp++)
+      begin
+        always @(*)
+          begin
+            clk_diram_data_ck [grp] = clk ;
+          end
+      end
+  endgenerate
+
+  always @(*)
+    begin
+      clk_diram_cntl_ck   = clk ;
+    end
 
   //----------------------------------------------------------------------------------------------------
   // Wires and registers
@@ -135,7 +151,7 @@ module dfi(
         always @(posedge clk_diram2x)
           begin
             // FIXME : 32
-            dfi__phy__data_e1 [(word+1)*32-1 : word*32]  <= ( ~clk_diram_ck ) ? mmc__dfi__data [0][word] :
+            dfi__phy__data_e1 [(word+1)*32-1 : word*32]  <= ( ~clk ) ? mmc__dfi__data [0][word] :
                                                                                 mmc__dfi__data [1][word] ;
 
             dfi__phy__data    [(word+1)*32-1 : word*32]  <= dfi__phy__data_e1 ;

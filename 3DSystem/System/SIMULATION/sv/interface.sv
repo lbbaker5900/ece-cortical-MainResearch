@@ -441,20 +441,22 @@ interface diram_ifc(
     //--------------------------------------------------------------------------------
     // DFI Interface to DRAM
     //
-    logic                                      clk_diram_ck   ;
-    logic                                      dfi__phy__cs   ; 
-    logic                                      dfi__phy__cmd1 ; 
-    logic                                      dfi__phy__cmd0 ;
-    logic [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data ;
-    logic [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__addr ;
-    logic [ `MGR_DRAM_ADDRESS_RANGE         ]  dfi__phy__bank ;
+    logic                                      clk_diram_cntl_ck   ;
+    logic                                      dfi__phy__cs        ; 
+    logic                                      dfi__phy__cmd1      ; 
+    logic                                      dfi__phy__cmd0      ;
+    logic [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   dfi__phy__addr      ;
+    logic [`MGR_DRAM_ADDRESS_RANGE         ]   dfi__phy__bank      ;
+
+    logic [`MGR_DRAM_CLK_GROUP_RANGE       ]   clk_diram_data_ck   ;
+    logic [`MGR_DRAM_INTF_RANGE            ]   dfi__phy__data      ;
 
     //--------------------------------------------------------------------------------
     // DFI Interface from DRAM
     //
-    logic                                      clk_diram_cq    ;
-    logic                                      phy__dfi__valid ;
-    logic [ `MGR_DRAM_INTF_RANGE            ]  phy__dfi__data  ;
+    logic [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_cq         ;
+    logic [`MGR_DRAM_CLK_GROUP_RANGE       ]  phy__dfi__valid      ;
+    logic [`MGR_DRAM_INTF_RANGE            ]  phy__dfi__data       ;
 
 
   clocking cb_out @(posedge clk2x);

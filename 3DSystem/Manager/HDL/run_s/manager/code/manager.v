@@ -39,20 +39,22 @@ module manager (
             //--------------------------------------------------------------------------------
             // DFI Interface to DRAM
             //
-            output   wire                                       clk_diram_ck   ,
-            output   wire                                       dfi__phy__cs   ,
-            output   wire                                       dfi__phy__cmd1 ,
-            output   wire                                       dfi__phy__cmd0 ,
-            output   wire  [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data ,
-            output   wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank ,
-            output   wire  [ `MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr ,
+            output   wire                                      clk_diram_cntl_ck ,  // Control group clock
+            output   wire                                      dfi__phy__cs      ,
+            output   wire                                      dfi__phy__cmd1    ,
+            output   wire                                      dfi__phy__cmd0    ,
+            output   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank    ,
+            output   wire  [`MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr    ,
+
+            output   reg   [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck ,  // Data group clocks
+            output   wire  [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data    ,
 
             //--------------------------------------------------------------------------------
             // DFI Interface from DRAM
             //
-            input   wire                                        clk_diram_cq    ,
-            input   wire                                        phy__dfi__valid ,
-            input   wire   [ `MGR_DRAM_INTF_RANGE            ]  phy__dfi__data  ,
+            input   wire  [`MGR_DRAM_CLK_GROUP_RANGE        ]  clk_diram_cq    ,
+            input   wire  [`MGR_DRAM_CLK_GROUP_RANGE        ]  phy__dfi__valid ,
+            input   wire  [`MGR_DRAM_INTF_RANGE             ]  phy__dfi__data  ,
 
             //-------------------------------
             // NoC
@@ -382,10 +384,10 @@ module manager (
         wire                                           mrc__mmc__valid      ;
         wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl       ;
         wire                                           mmc__mrc__ready      ;
-        wire  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      mrc__mmc__channel    ;
-        wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mrc__mmc__bank       ;
-        wire  [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      mrc__mmc__page       ;
-        wire  [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      mrc__mmc__word       ;
+        wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      mrc__mmc__channel    ;
+        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      mrc__mmc__bank       ;
+        wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      mrc__mmc__page       ;
+        wire  [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      mrc__mmc__word       ;
                                                                                                            
         wire                                                                        mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ] ;
         wire  [`COMMON_STD_INTF_CNTL_RANGE        ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] ;
@@ -449,6 +451,16 @@ module manager (
   wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      mrc__mmc__page    [`MGR_NUM_OF_STREAMS ]     ;
   wire  [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      mrc__mmc__word    [`MGR_NUM_OF_STREAMS ]     ;
                                                                           
+  wire                                           mwc__mmc__valid      ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mwc__mmc__cntl       ;
+  wire                                           mmc__mwc__ready      ;
+  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      mwc__mmc__channel    ;
+  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      mwc__mmc__bank       ;
+  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      mwc__mmc__page       ;
+  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      mwc__mmc__word       ;
+  wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data  [`MGR_DRAM_NUM_CHANNELS ] ;
+                                                                                                     
+
   // MMC provides data from each DRAM channel
   // - response must be in order of request
   wire  [`MGR_NUM_OF_STREAMS_RANGE          ]                                 mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ]                        ;
@@ -559,13 +571,14 @@ module manager (
                 //--------------------------------------------------------------------------------
                 // DFI Interface to DRAM
                 //
-                .clk_diram_ck         ( clk_diram_ck      ), 
+                .clk_diram_cntl_ck    ( clk_diram_cntl_ck ), 
                 .dfi__phy__cs         ( dfi__phy__cs      ),
                 .dfi__phy__cmd1       ( dfi__phy__cmd1    ),
                 .dfi__phy__cmd0       ( dfi__phy__cmd0    ),
-                .dfi__phy__data       ( dfi__phy__data    ),
                 .dfi__phy__addr       ( dfi__phy__addr    ),
                 .dfi__phy__bank       ( dfi__phy__bank    ),
+                .clk_diram_data_ck    ( clk_diram_data_ck ), 
+                .dfi__phy__data       ( dfi__phy__data    ),
 
                 //--------------------------------------------------------------------------------
                 // DFI Interface from DRAM
@@ -770,16 +783,16 @@ module manager (
                        .noc__locl__cp_data           ( noc__mcntl__cp_data          ), 
                        .noc__locl__cp_pvalid         ( noc__mcntl__cp_pvalid        ), 
                        .noc__locl__cp_mgrId          ( noc__mcntl__cp_mgrId         ), 
-                       
-                        // Data-Path (dp) from NoC 
-                       .noc__locl__dp_valid          ( noc__mcntl__dp_valid         ), 
-                       .locl__noc__dp_ready          ( mcntl__noc__dp_ready         ), 
-                       .noc__locl__dp_cntl           ( noc__mcntl__dp_cntl          ), 
-                       .noc__locl__dp_type           ( noc__mcntl__dp_type          ), 
-                       .noc__locl__dp_ptype          ( noc__mcntl__dp_ptype         ), 
-                       .noc__locl__dp_data           ( noc__mcntl__dp_data          ), 
-                       .noc__locl__dp_pvalid         ( noc__mcntl__dp_pvalid        ), 
-                       .noc__locl__dp_mgrId          ( noc__mcntl__dp_mgrId         ), 
+                                                                                  
+                        // Data-Path (dp) from NoC                                
+                       .noc__locl__dp_valid          ( noc__mwc__dp_valid           ), 
+                       .locl__noc__dp_ready          ( mwc__noc__dp_ready           ), 
+                       .noc__locl__dp_cntl           ( noc__mwc__dp_cntl            ), 
+                       .noc__locl__dp_type           ( noc__mwc__dp_type            ), 
+                       .noc__locl__dp_ptype          ( noc__mwc__dp_ptype           ), 
+                       .noc__locl__dp_data           ( noc__mwc__dp_data            ), 
+                       .noc__locl__dp_pvalid         ( noc__mwc__dp_pvalid          ), 
+                       .noc__locl__dp_mgrId          ( noc__mwc__dp_mgrId           ), 
 
                         // Connections to external NoC
                         `include "manager_noc_cntl_noc_ports_instance_ports.vh"
@@ -792,9 +805,54 @@ module manager (
 
   // FIXME
   assign mcntl__noc__cp_ready = 1;
-  assign mcntl__noc__dp_ready = 1;
 
 
+  //-------------------------------------------------------------------------------------------------
+  // Memory Read Controller 
+  //  - instance for each argument
+
+
+
+  //----------------------------------------------------------------------------------------------------
+  // Memory Write Controller
+
+  mwc_cntl mwc_cntl (
+  
+  
+           //-------------------------------
+           // Data-Path (dp) from NoC                                
+          .noc__mwc__dp_valid      ( noc__mwc__dp_valid           ), 
+          .mwc__noc__dp_ready      ( mwc__noc__dp_ready           ), 
+          .noc__mwc__dp_cntl       ( noc__mwc__dp_cntl            ), 
+          .noc__mwc__dp_type       ( noc__mwc__dp_type            ), 
+          .noc__mwc__dp_ptype      ( noc__mwc__dp_ptype           ), 
+          .noc__mwc__dp_data       ( noc__mwc__dp_data            ), 
+          .noc__mwc__dp_pvalid     ( noc__mwc__dp_pvalid          ), 
+          .noc__mwc__dp_mgrId      ( noc__mwc__dp_mgrId           ), 
+
+          //-------------------------------
+          // to MMC
+          //
+          .mwc__mmc__valid         ( mwc__mmc__valid         ),                         
+          .mwc__mmc__cntl          ( mwc__mmc__cntl          ),                         
+          .mmc__mwc__ready         ( mmc__mwc__ready         ),                         
+          .mwc__mmc__channel       ( mwc__mmc__channel       ),                         
+          .mwc__mmc__bank          ( mwc__mmc__bank          ),                         
+          .mwc__mmc__page          ( mwc__mmc__page          ),                         
+          .mwc__mmc__word          ( mwc__mmc__word          ),                         
+          .mwc__mmc__data          ( mwc__mmc__data          ),                         
+                                                                                     
+
+          //-------------------------------
+          // General
+          //
+          .sys__mgr__mgrId         ( sys__mgr__mgrId         ),
+          .clk                     ( clk                     ),
+          .reset_poweron           ( reset_poweron           ) 
+        );
+
+// FIXME
+assign  mmc__mwc__ready  = 1'b1 ;
 
 
 endmodule

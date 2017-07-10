@@ -494,17 +494,27 @@
 //****************************************************************************************************
   
 
-`define MGR_DRAM_PHY_ADDRESS_WIDTH                      `MGR_DRAM_PAGE_ADDRESS_WIDTH 
-`define MGR_DRAM_PHY_ADDRESS_MSB                         `MGR_DRAM_PHY_ADDRESS_WIDTH-1
-`define MGR_DRAM_PHY_ADDRESS_LSB                         0
-`define MGR_DRAM_PHY_ADDRESS_SIZE                        (`MGR_DRAM_PHY_ADDRESS_MSB - `MGR_DRAM_PHY_ADDRESS_LSB +1)
-`define MGR_DRAM_PHY_ADDRESS_RANGE                        `MGR_DRAM_PHY_ADDRESS_MSB : `MGR_DRAM_PHY_ADDRESS_LSB
+`define MGR_DRAM_PHY_ADDRESS_WIDTH               `MGR_DRAM_PAGE_ADDRESS_WIDTH 
+`define MGR_DRAM_PHY_ADDRESS_MSB                 `MGR_DRAM_PHY_ADDRESS_WIDTH-1
+`define MGR_DRAM_PHY_ADDRESS_LSB                  0
+`define MGR_DRAM_PHY_ADDRESS_SIZE                (`MGR_DRAM_PHY_ADDRESS_MSB - `MGR_DRAM_PHY_ADDRESS_LSB +1)
+`define MGR_DRAM_PHY_ADDRESS_RANGE                `MGR_DRAM_PHY_ADDRESS_MSB : `MGR_DRAM_PHY_ADDRESS_LSB
 
 `define MGR_DRAM_INTF_WIDTH                          2048
 `define MGR_DRAM_INTF_MSB                         `MGR_DRAM_INTF_WIDTH-1
 `define MGR_DRAM_INTF_LSB                         0
 `define MGR_DRAM_INTF_SIZE                        (`MGR_DRAM_INTF_MSB - `MGR_DRAM_INTF_LSB +1)
 `define MGR_DRAM_INTF_RANGE                        `MGR_DRAM_INTF_MSB : `MGR_DRAM_INTF_LSB
+
+`define MGR_DRAM_INTF_BITS_PER_CLOCK_GROUP          32
+`define MGR_DRAM_BUS_NUM_CLK_GROUPS                 `MGR_DRAM_INTF_WIDTH / `MGR_DRAM_INTF_BITS_PER_CLOCK_GROUP
+`define MGR_DRAM_CLK_GROUP_WIDTH                    `MGR_DRAM_BUS_NUM_CLK_GROUPS 
+`define MGR_DRAM_CLK_GROUP_MSB                      `MGR_DRAM_CLK_GROUP_WIDTH-1
+`define MGR_DRAM_CLK_GROUP_LSB                      0
+`define MGR_DRAM_CLK_GROUP_SIZE                     (`MGR_DRAM_CLK_GROUP_MSB - `MGR_DRAM_CLK_GROUP_LSB +1)
+`define MGR_DRAM_CLK_GROUP_RANGE                    `MGR_DRAM_CLK_GROUP_MSB : `MGR_DRAM_CLK_GROUP_LSB
+
+
 
 `define MGR_DRAM_NUM_CHANNELS_VECTOR_WIDTH                       `MGR_DRAM_NUM_CHANNELS
 `define MGR_DRAM_NUM_CHANNELS_VECTOR_MSB                         `MGR_DRAM_NUM_CHANNELS_VECTOR_WIDTH-1

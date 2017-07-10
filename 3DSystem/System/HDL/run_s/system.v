@@ -62,20 +62,22 @@ module system (
   //--------------------------------------------------------------------------------
   // DFI Interface to DRAM
   //
-  wire                                          clk_diram_ck   [`MGR_ARRAY_NUM_OF_MGR ] ;
-  wire                                          dfi__phy__cs   [`MGR_ARRAY_NUM_OF_MGR ] ; 
-  wire                                          dfi__phy__cmd1 [`MGR_ARRAY_NUM_OF_MGR ] ; 
-  wire                                          dfi__phy__cmd0 [`MGR_ARRAY_NUM_OF_MGR ] ;
-  wire     [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data [`MGR_ARRAY_NUM_OF_MGR ] ;
-  wire     [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank [`MGR_ARRAY_NUM_OF_MGR ] ;
-  wire     [ `MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire                                         clk_diram_cntl_ck   [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire                                         dfi__phy__cs        [`MGR_ARRAY_NUM_OF_MGR ] ; 
+  wire                                         dfi__phy__cmd1      [`MGR_ARRAY_NUM_OF_MGR ] ; 
+  wire                                         dfi__phy__cmd0      [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire     [`MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank      [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire     [`MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr      [`MGR_ARRAY_NUM_OF_MGR ] ;
+
+  wire     [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck   [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire     [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data      [`MGR_ARRAY_NUM_OF_MGR ] ;
 
   //--------------------------------------------------------------------------------
   // DFI Interface from DRAM
   //
-  wire                                          clk_diram_cq    [`MGR_ARRAY_NUM_OF_MGR ] ;
-  wire                                          phy__dfi__valid [`MGR_ARRAY_NUM_OF_MGR ] ;
-  wire     [ `MGR_DRAM_INTF_RANGE            ]  phy__dfi__data  [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire     [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_cq        [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire     [`MGR_DRAM_CLK_GROUP_RANGE       ]  phy__dfi__valid     [`MGR_ARRAY_NUM_OF_MGR ] ;
+  wire     [`MGR_DRAM_INTF_RANGE            ]  phy__dfi__data      [`MGR_ARRAY_NUM_OF_MGR ] ;
 
   //-------------------------------------------------------------------------------------------
   // NoC
@@ -108,13 +110,15 @@ module system (
         //--------------------------------------------------------------------------------
         // DFI Interface to DRAM
         //
-        .clk_diram_ck         ( clk_diram_ck      ), 
+        .clk_diram_cntl_ck    ( clk_diram_cntl_ck ), 
         .dfi__phy__cs         ( dfi__phy__cs      ),
         .dfi__phy__cmd1       ( dfi__phy__cmd1    ),
         .dfi__phy__cmd0       ( dfi__phy__cmd0    ),
-        .dfi__phy__data       ( dfi__phy__data    ),
         .dfi__phy__addr       ( dfi__phy__addr    ),
         .dfi__phy__bank       ( dfi__phy__bank    ),
+
+        .clk_diram_data_ck    ( clk_diram_data_ck ), 
+        .dfi__phy__data       ( dfi__phy__data    ),
 
         //--------------------------------------------------------------------------------
         // DFI Interface from DRAM

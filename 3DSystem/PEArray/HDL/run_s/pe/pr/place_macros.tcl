@@ -1,4 +1,12 @@
 
+# Get core area to define placement boundaries
+set c_area [get_attr [get_core_area] bbox]
+
+set g 20
+set fg 50
+set x 50
+set y 50 
+
 # move_objects -delta {630.590 -1434.220} [get_selection]
 # move_objects -delta {-354.295 322.200} [get_selection]
 # move_objects -delta {-178.775 41.400} [get_selection]
@@ -104,58 +112,47 @@ foreach_in_collection hcell [get_selection] {
 }
 
 
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+# PE_CNTL 
+#
+#--------------------------------------------------
+# Option memory 
+
+set hcell [get_cells -hier -filter "full_name =~ pe_cntl/stOp_option_memory* && ref_name =~ asdr*"]
+
+set ref_inst [get_attr $hcell full_name] 
+set refH [get_attr $hcell height]
+set refW [get_attr $hcell width]
+
+set x 300
+set y 400
+
+set llx [expr $x]
+set lly [expr $y]
+
+set hcell_inst [get_attr $hcell full_name] 
+set org "$llx $lly"
+eval set_attr $hcell_inst origin {$org}
+
+set y [expr [expr $lly + [get_attr $hcell height]] +$fg]
+set x [expr [expr $x + 0] + 0]
 
 
-#set_attr $hcell_inst origin {$llx $lly}
-#  change_selection $hcell
-#  move_objects -ignore_fixed -x $llx -y $lly [get_selection]
-  #move_objects $hcell -x 500 -y 500
-#set hcell [get_cells -hier -filter "full_name =~ mem_acc_cont/bank_mem*gmemory/genblk*_mem1p*"]
-#set_attr $hcell origin {500 500}
+#--------------------------------------------------
+# STD OOB
 
-#   set mName [get_attribute ${macro} full_name]
-#   set mType [get_attribute ${mName} ref_name]
-#   set mBbox [lindex [get_attribute ${mName} bbox] 0]
-#   set mOrient [get_attribute ${mName} orientation]
-#   set_attribute -quiet $hcell origin {50 50}
-# # Copy termical size from PLL BCK termical (12x12)
-# set port [get_port LPLL_BCK0_P]
-# set pname [get_attr $port name];
-# set term [get_attr [get_terminal $pname] name];
-# set layer [get_attr [get_terminal $pname] layer];
-# set dtype 2;
-# 
-# set lx [get_attr [get_terminal $term] bbox_llx];
-# set ly [get_attr [get_terminal $term] bbox_lly];
-# set ux [get_attr [get_terminal $term] bbox_urx];
-# set uy [get_attr [get_terminal $term] bbox_ury];
-# 
-# set cx [expr $lx + [expr ($ux-$lx)/2]];
-# set cy [expr $ly + [expr ($uy-$ly)/2]];
-# set dx [expr $ux-$lx];
-# set dy [expr $uy-$ly];
-# 
-# # Now change terminal layer to tm1 (from c4b) and terminal bbox size
-# 
-# set listCMLPorts [get_ports {LS_TX_REFCLK3_ILK_REFCLK_P LS_TX_REFCLK3_ILK_REFCLK_N LS_TX_REFCLK2_P LS_TX_REFCLK2_N LS_TX_REFCLK1_P LS_TX_REFCLK1_N LS_TX_REFCLK0_P LS_TX_REFCLK0_N LS_RX_REFCLK_P LS_RX_REFCLK_N }]
-# foreach_in_collection port $listCMLPorts {
-#     set pname [get_attr $port name]; 
-#     set term [get_attr [get_terminal $pname] name];
-#     set_attribute [get_terminal $term] layer tm1
-#     set lx [get_attr [get_terminal $term] bbox_llx];
-#     set ly [get_attr [get_terminal $term] bbox_lly];
-#     set ux [get_attr [get_terminal $term] bbox_urx];
-#     set uy [get_attr [get_terminal $term] bbox_ury];
-#     set cx [expr $lx + [expr ($ux-$lx)/2]];
-#     set cy [expr $ly + [expr ($uy-$ly)/2]];
-#     set lx [expr $cx - [expr $dx/2]];
-#     set ly [expr $cy - [expr $dy/2]];
-#     set ux [expr $cx + [expr $dx/2]];
-#     set uy [expr $cy + [expr $dy/2]];
-#     set_attr [get_terminal $term] bbox_llx $lx;
-#     set_attr [get_terminal $term] bbox_lly $ly;
-#     set_attr [get_terminal $term] bbox_urx $ux;
-#     set_attr [get_terminal $term] bbox_ury $uy;
-# }
+set hcell [get_cells -hier -filter "full_name =~ pe_cntl/from_Sti_OOB* && ref_name =~ asdr*"]
+
+set llx [expr $x]
+set lly [expr $y]
+
+set hcell_inst [get_attr $hcell full_name] 
+set org "$llx $lly"
+eval set_attr $hcell_inst origin {$org}
+
+set y [expr [expr $lly + [get_attr $hcell height]] +$fg]
+set x [expr [expr $x + 0] + 0]
+
+
 
 

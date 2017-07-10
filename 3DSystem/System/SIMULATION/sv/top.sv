@@ -324,17 +324,19 @@ module top;
     generate
        for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
            begin
-             assign DramIfc[mgr].clk_diram_ck          = system_inst.clk_diram_ck     [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__cs          = system_inst.dfi__phy__cs     [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__cmd1        = system_inst.dfi__phy__cmd1   [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__cmd0        = system_inst.dfi__phy__cmd0   [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__data        = system_inst.dfi__phy__data   [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__addr        = system_inst.dfi__phy__addr   [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__bank        = system_inst.dfi__phy__bank   [mgr]   ;
+             assign DramIfc[mgr].clk_diram_cntl_ck     = system_inst.clk_diram_cntl_ck  [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cs          = system_inst.dfi__phy__cs       [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cmd1        = system_inst.dfi__phy__cmd1     [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cmd0        = system_inst.dfi__phy__cmd0     [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__addr        = system_inst.dfi__phy__addr     [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__bank        = system_inst.dfi__phy__bank     [mgr]   ;
 
-             assign system_inst.clk_diram_cq    [mgr]  =  DramIfc[mgr].clk_diram_cq           ;
-             assign system_inst.phy__dfi__valid [mgr]  =  DramIfc[mgr].phy__dfi__valid        ;
-             assign system_inst.phy__dfi__data  [mgr]  =  DramIfc[mgr].phy__dfi__data         ;
+             assign DramIfc[mgr].clk_diram_data_ck     = system_inst.clk_diram_data_ck  [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__data        = system_inst.dfi__phy__data     [mgr]   ;
+
+             assign system_inst.clk_diram_cq    [mgr]  =  DramIfc[mgr].clk_diram_cq             ;
+             assign system_inst.phy__dfi__valid [mgr]  =  DramIfc[mgr].phy__dfi__valid          ;
+             assign system_inst.phy__dfi__data  [mgr]  =  DramIfc[mgr].phy__dfi__data           ;
 
            end
     endgenerate
