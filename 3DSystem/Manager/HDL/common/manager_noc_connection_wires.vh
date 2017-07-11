@@ -30,11 +30,11 @@
    wire [`MGR_MGR_ID_RANGE                       ]  noc__mcntl__cp_mgrId    ; 
 
    // Data-Path (dp) from NoC 
-   wire                                             noc__mwc__dp_valid      ; 
-   wire [`COMMON_STD_INTF_CNTL_RANGE             ]  noc__mwc__dp_cntl       ; 
-   wire                                             mwc__noc__dp_ready      ; 
-   wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  noc__mwc__dp_type       ; 
-   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  noc__mwc__dp_ptype      ; 
-   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  noc__mwc__dp_data       ; 
-   wire                                             noc__mwc__dp_pvalid     ; 
-   wire [`MGR_MGR_ID_RANGE                       ]  noc__mwc__dp_mgrId      ; 
+   wire                                             noc__mcntl__dp_valid      ; 
+   wire [`COMMON_STD_INTF_CNTL_RANGE             ]  noc__mcntl__dp_cntl       ; 
+   wire                                             mcntl__noc__dp_ready      ; 
+   wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  noc__mcntl__dp_type       ; 
+   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  noc__mcntl__dp_ptype      ; 
+   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  noc__mcntl__dp_data       ; 
+   wire                                             noc__mcntl__dp_pvalid     ; 
+   wire [`MGR_MGR_ID_RANGE                       ]  noc__mcntl__dp_mgrId      ; 

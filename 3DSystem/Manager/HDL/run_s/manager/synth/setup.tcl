@@ -6,6 +6,8 @@ set clkname clk
 #------------------------------------------------------------------------------------------------------------------------
 # Done
 #
+# set modname  mwc_cntl
+# set modname  mgr_cntl
 # set modname  mrc_cntl
 # set modname  rdp_cntl
 # set modname  oob_downstream_cntl

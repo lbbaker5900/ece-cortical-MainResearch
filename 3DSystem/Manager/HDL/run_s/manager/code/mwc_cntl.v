@@ -6,7 +6,11 @@
     Date        : Apr 2017
     email       : lbbaker@ncsu.edu
 
-    Description :Contains the WU instructions
+    Description : Receives memory descriptors and data from the NoC and writes data to main memory
+                  Introduce a custom access to teh DRAM known as "masked" cache write
+                  The burst of two will be broken into a mask and a data phase or a phase with mask and data
+                  e.g. we would like byte-wise masks
+                  The cache line may be 256 bytes, so we break the cache line into two chunks and provide a mask/data phase 
 
 *********************************************************************************************/
     
@@ -18,25 +22,35 @@
 `include "manager_array.vh"
 `include "manager.vh"
 `include "mgr_noc_cntl.vh"
-`include "mrc_cntl.vh"
-`include "mwc_cntl.vh"
+`include "mgr_cntl.vh"
 `include "python_typedef.vh"
 
 
 module mwc_cntl (  
 
-            //-------------------------------
+            //-------------------------------------------------------------------------------------------------
             // from NoC 
-            input  wire                                              noc__mwc__dp_valid      , 
-            input  wire [`COMMON_STD_INTF_CNTL_RANGE           ]     noc__mwc__dp_cntl       , 
-            output reg                                               mwc__noc__dp_ready      , 
-            input  wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     noc__mwc__dp_type       , 
-            input  wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     noc__mwc__dp_ptype      , 
-            input  wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     noc__mwc__dp_data       , 
-            input  wire                                              noc__mwc__dp_pvalid     , 
-            input  wire [`MGR_MGR_ID_RANGE                     ]     noc__mwc__dp_mgrId      , 
+            input  wire                                              mcntl__mwc__valid      , 
+            input  wire [`COMMON_STD_INTF_CNTL_RANGE           ]     mcntl__mwc__cntl       , 
+            output reg                                               mwc__mcntl__ready      , 
+            input  wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     mcntl__mwc__type       , 
+            input  wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     mcntl__mwc__ptype      , 
+            input  wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     mcntl__mwc__data       , 
+            input  wire                                              mcntl__mwc__pvalid     , 
+            input  wire [`MGR_MGR_ID_RANGE                     ]     mcntl__mwc__mgrId      , 
 
-            //-------------------------------
+            //-------------------------------------------------------------------------------------------------
+            // Return Data Processor Interface
+            //
+            // - Data and memory write descriptors
+            input   wire                                             rdp__mwc__valid      , 
+            input   wire [`COMMON_STD_INTF_CNTL_RANGE          ]     rdp__mwc__cntl       , 
+            output  reg                                              mwc__rdp__ready      , 
+            input   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]     rdp__mwc__ptype      , 
+            input   wire                                             rdp__mwc__pvalid     , 
+            input   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]     rdp__mwc__data       , 
+  
+            //-------------------------------------------------------------------------------------------------
             // Main Memory Controller interface
             //
             output  reg                                                                         mwc__mmc__valid                           ,
@@ -50,7 +64,7 @@ module mwc_cntl (
             output  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data  [`MGR_DRAM_NUM_CHANNELS ] ,
                                                                                                                     
 
-            //-------------------------------
+            //-------------------------------------------------------------------------------------------------
             // General
             //
             input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
@@ -97,9 +111,11 @@ module mwc_cntl (
   // FIXME
   always @(posedge clk)
     begin
-      mwc__noc__dp_ready  <= 1'b1 ;
+      mwc__mcntl__ready  <= 1'b1 ;
+      mwc__rdp__ready    <= 1'b1 ;
     end
 
+//`define MGR_STORAGE_DESC_MGR_ID_FIELD_RANGE    `MGR_STORAGE_DESC_MGR_ID_FIELD_MSB : `MGR_STORAGE_DESC_MGR_ID_FIELD_LSB
 
 
 endmodule

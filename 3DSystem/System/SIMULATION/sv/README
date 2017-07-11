@@ -14,7 +14,10 @@ cp ../common/noc_interMgr_port_Bitmasks_2x2.vh ../../../Manager/HDL/common/noc_i
 cp inputFiles.2x2/* inputFiles/.
 
 # restrict number of instructions
-gvim inputFiles/manager_3_layer1_instruction_readmem.dat
+gvim inputFiles/manager_3_layer1_instruction_readmem.dat \
+     inputFiles/manager_2_layer1_instruction_readmem.dat \
+     inputFiles/manager_1_layer1_instruction_readmem.dat \
+     inputFiles/manager_0_layer1_instruction_readmem.dat 
 
 
 

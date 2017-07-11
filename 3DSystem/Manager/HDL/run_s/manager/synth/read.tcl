@@ -226,6 +226,8 @@ elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=1024,GENERIC_MEM_RE
 #------------------------------------------------------------------------------------------------------------------------
 # Done
 #
+# read_sverilog  $RTL_DIR/mgr_cntl.v
+# read_sverilog  $RTL_DIR/mwc_cntl.v
 # read_sverilog  $RTL_DIR/mrc_cntl.v
 # read_sverilog  $RTL_DIR/rdp_cntl.v
 # read_sverilog  $RTL_DIR/oob_downstream_cntl.v
@@ -243,6 +245,8 @@ elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=1024,GENERIC_MEM_RE
 # WIP
 #
 
+read_sverilog  $RTL_DIR/mgr_cntl.v
+read_sverilog  $RTL_DIR/mwc_cntl.v
 read_sverilog  $RTL_DIR/mrc_cntl.v
 read_sverilog  $RTL_DIR/rdp_cntl.v
 read_sverilog  $RTL_DIR/oob_downstream_cntl.v
