@@ -37,26 +37,26 @@ module main_mem_cntl (
                                                                                     
             // MMC provides data from each DRAM channel
             // - response must be in order of request
-            output  reg   [`MGR_NUM_OF_STREAMS_RANGE          ]                                 mmc__mrc__valid   [`MGR_DRAM_NUM_CHANNELS ]                        ,
-            output  reg   [`COMMON_STD_INTF_CNTL_RANGE        ]                                 mmc__mrc__cntl    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ,
-            input   wire  [`MGR_NUM_OF_STREAMS_RANGE          ]                                 mrc__mmc__ready   [`MGR_DRAM_NUM_CHANNELS ]                        ,
-            output  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__mrc__data    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ,
+            output  reg   [`MGR_NUM_OF_STREAMS_RANGE            ]                                 mmc__mrc__valid   [`MGR_DRAM_NUM_CHANNELS ]                        ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mmc__mrc__cntl    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ,
+            input   wire  [`MGR_NUM_OF_STREAMS_RANGE            ]                                 mrc__mmc__ready   [`MGR_DRAM_NUM_CHANNELS ]                        ,
+            output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__mrc__data    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ,
 
             //--------------------------------------------------------------------------------
             // DFI Interface
             // - provide per channel signals
             // - DFI will handle SDR->DDR conversion
-            input   wire                                                                        dfi__mmc__init_done                             ,
-            input   wire                                                                        dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]  ,
-            input   wire  [`COMMON_STD_INTF_CNTL_RANGE        ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ]  ,
-            input   wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            input   wire                                                                          dfi__mmc__init_done                             ,
+            input   wire                                                                          dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]  ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            input   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ]  ,
 
-            output  reg                                                                         mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]  ,
-            output  reg                                                                         mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]  ,
-            output  reg                                                                         mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]  ,
-            output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE       ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]  ,
-            output  reg   [`MGR_DRAM_PHY_ADDRESS_RANGE        ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]  ,
-            output  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg                                                                           mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg                                                                           mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg                                                                           mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg   [`MGR_DRAM_PHY_ADDRESS_RANGE          ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ]  ,
 
   
             //-------------------------------
@@ -98,10 +98,10 @@ module main_mem_cntl (
         end
     end
 
-  reg  [`MGR_NUM_OF_STREAMS_RANGE          ]                                   mmc__mrc__valid_e1   [`MGR_DRAM_NUM_CHANNELS ]                        ;
-  reg  [`COMMON_STD_INTF_CNTL_RANGE        ]                                   mmc__mrc__cntl_e1    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
-  reg  [`MGR_NUM_OF_STREAMS_RANGE          ]                                   mrc__mmc__ready_d1   [`MGR_DRAM_NUM_CHANNELS ]                        ;
-  reg  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__mrc__data_e1    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
+  reg  [`MGR_NUM_OF_STREAMS_RANGE            ]                                   mmc__mrc__valid_e1   [`MGR_DRAM_NUM_CHANNELS ]                        ;
+  reg  [`COMMON_STD_INTF_CNTL_RANGE          ]                                   mmc__mrc__cntl_e1    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
+  reg  [`MGR_NUM_OF_STREAMS_RANGE            ]                                   mrc__mmc__ready_d1   [`MGR_DRAM_NUM_CHANNELS ]                        ;
+  reg  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__mrc__data_e1    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
 
   genvar chan, strm, word, bank ;
   generate
@@ -144,7 +144,7 @@ module main_mem_cntl (
   reg                                                                          dfi__mmc__init_done_d1                            ;
   reg                                                                          dfi__mmc__valid_d1      [`MGR_DRAM_NUM_CHANNELS ] ;
   reg   [`COMMON_STD_INTF_CNTL_RANGE        ]                                  dfi__mmc__cntl_d1       [`MGR_DRAM_NUM_CHANNELS ] ;
-  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]    dfi__mmc__data_d1       [`MGR_DRAM_NUM_CHANNELS ] ;
+  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]    dfi__mmc__data_d1       [`MGR_DRAM_NUM_CHANNELS ] ;
 
   always @(posedge clk)
     begin
@@ -176,7 +176,7 @@ module main_mem_cntl (
   reg                                                                          mmc__dfi__cmd1_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE       ]                                  mmc__dfi__bank_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
   reg   [`MGR_DRAM_PHY_ADDRESS_RANGE        ]                                  mmc__dfi__addr_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
-  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__dfi__data_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__dfi__data_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
 
   always @(posedge clk)
     begin
@@ -1108,7 +1108,7 @@ module main_mem_cntl (
  
         always @(*)
           begin
-            pipe_read = pipe_valid ;
+            pipe_read = pipe_valid ;  // FIXME - may be ok
           end
 
       end
@@ -2218,7 +2218,7 @@ module main_mem_cntl (
         assign read_data_fifo  =  (set_send_to_stream [0][chan] | set_send_to_stream [1][chan]) | (mmc_cntl_rdp_state != `MMC_CNTL_RDP_WAIT );  // if not waiting, we are sending
 
         // add a pipeline to data to align with the read signal
-        reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   strm_data    ;
+        reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   strm_data    ;
         for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS; word=word+1) 
           begin: strm_data_reg
             always @(posedge clk)
@@ -2249,8 +2249,8 @@ module main_mem_cntl (
 
 
   // For each stream, grab the data from the sending channel
-  reg                                                                         strm_data_valid    [`MGR_NUM_OF_STREAMS ] ;
-  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   strm_data          [`MGR_NUM_OF_STREAMS ] ;
+  reg                                                                           strm_data_valid    [`MGR_NUM_OF_STREAMS ] ;
+  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   strm_data          [`MGR_NUM_OF_STREAMS ] ;
 
   generate
     for (strm=0; strm<`MGR_NUM_OF_STREAMS; strm=strm+1) 

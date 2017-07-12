@@ -1,3 +1,20 @@
+#*********************************************************************************************
+#
+#    File name   : import.tcl
+#    Author      : Lee Baker
+#    Affiliation : North Carolina State University, Raleigh, NC
+#    Date        : Apr 2017
+#    email       : lbbaker@ncsu.edu
+#
+#    Description : 
+#
+#    leveraged from file supplied by: 
+#    Dr. Rhett Davis, North Carolina State University, Raleigh, NC, email: wdavis@ncsu.edu
+#    joshua Schabel, North Carolina State University, Raleigh, NC, email: jcledfo3@ncsu.edu
+#
+#*********************************************************************************************
+
+
 
 #----------------------------------------------------------------------------------------------------
 # pr_tut

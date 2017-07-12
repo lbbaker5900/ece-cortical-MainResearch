@@ -19,6 +19,8 @@ gvim inputFiles/manager_3_layer1_instruction_readmem.dat \
      inputFiles/manager_1_layer1_instruction_readmem.dat \
      inputFiles/manager_0_layer1_instruction_readmem.dat 
 
+# placed these files in tmp/.
+
 
 
 # back to 8x8

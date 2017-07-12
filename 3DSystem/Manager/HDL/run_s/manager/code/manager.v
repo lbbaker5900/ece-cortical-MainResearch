@@ -385,10 +385,10 @@ module manager (
         wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      mrc__mmc__page       ;
         wire  [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      mrc__mmc__word       ;
                                                                                                            
-        wire                                                                        mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ] ;
-        wire  [`COMMON_STD_INTF_CNTL_RANGE        ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] ;
-        wire                                                                        mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ] ;
-        wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] ;
+        wire                                                                          mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ] ;
+        wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] ;
+        wire                                                                          mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ] ;
+        wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] ;
 
         mrc_cntl mrc_cntl (
         
@@ -447,34 +447,34 @@ module manager (
   wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      mrc__mmc__page    [`MGR_NUM_OF_STREAMS ]     ;
   wire  [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      mrc__mmc__word    [`MGR_NUM_OF_STREAMS ]     ;
                                                                           
-  wire                                                                        mwc__mmc__valid                              ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE      ]                                   mwc__mmc__cntl                               ;
-  wire                                                                        mmc__mwc__ready                              ;
-  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]                                   mwc__mmc__channel                            ;
-  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE     ]                                   mwc__mmc__bank                               ;
-  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]                                   mwc__mmc__page                               ;
-  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE     ]                                   mwc__mmc__word                               ;
-  wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data     [`MGR_DRAM_NUM_CHANNELS ] ;
+  wire                                                                          mwc__mmc__valid                              ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mwc__mmc__cntl                               ;
+  wire                                                                          mmc__mwc__ready                              ;
+  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__channel                            ;
+  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mwc__mmc__bank                               ;
+  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 mwc__mmc__page                               ;
+  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 mwc__mmc__word                               ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data     [`MGR_DRAM_NUM_CHANNELS ] ;
                                                                                                      
 
   // MMC provides data from each DRAM channel
   // - response must be in order of request
-  wire  [`MGR_NUM_OF_STREAMS_RANGE          ]                                 mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ]                        ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE        ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
-  wire  [`MGR_NUM_OF_STREAMS_RANGE          ]                                 mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ]                        ;
-  wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
+  wire  [`MGR_NUM_OF_STREAMS_RANGE            ]                                 mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ]                        ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
+  wire  [`MGR_NUM_OF_STREAMS_RANGE            ]                                 mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ]                        ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
 
 
-  wire                                                                        dfi__mmc__init_done                              ;
-  wire                                                                        dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE        ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire                                                                        mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire                                                                        mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire                                                                        mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE       ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire  [`MGR_DRAM_PHY_ADDRESS_RANGE        ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire                                                                          dfi__mmc__init_done                              ;
+  wire                                                                          dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire                                                                          mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire                                                                          mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire                                                                          mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_DRAM_PHY_ADDRESS_RANGE          ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]   ;
 
   main_mem_cntl main_mem_cntl (
 

@@ -1,3 +1,17 @@
+#*********************************************************************************************
+#
+#    File name   : Makefile
+#    Author      : Lee Baker
+#    Affiliation : North Carolina State University, Raleigh, NC
+#    Date        : Apr 2017
+#    email       : lbbaker@ncsu.edu
+#
+#    Description : 
+#
+#    leveraged from file supplied by: 
+#    Dr. Rhett Davis, North Carolina State University, Raleigh, NC, email: wdavis@ncsu.edu
+#
+#*********************************************************************************************
 
 MODNAME=manager
 
