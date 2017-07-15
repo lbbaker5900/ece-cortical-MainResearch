@@ -365,6 +365,7 @@ module main_mem_cntl (
   reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE      ]    cache_cmd_grant_request_cmd   [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
   reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    cache_cmd_grant_request_page  [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
 
+  reg  [`DRAM_ACC_NUM_OF_CMDS_VECTOR     ]    cmd_can_go                    [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
   reg                                         can_go                        [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
   reg                                         can_go_checker_ready          [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
   reg                                         adjacent_bank_request         [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
@@ -399,6 +400,7 @@ module main_mem_cntl (
             reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE ]   chan_bank_request_page          ;
             reg                                     chan_bank_adjacent_bank_request ;
 
+            wire  [`DRAM_ACC_NUM_OF_CMDS_VECTOR ]   chan_bank_cmd_can_go            ; // vector in order of DRAM_ACC_CMD_IS_*
             wire                                    chan_bank_can_go_valid          ;
             wire                                    chan_bank_can_go                ;
             wire                                    chan_bank_checker_ready         ;
@@ -424,6 +426,7 @@ module main_mem_cntl (
 
                 //-------------------------------
                 // Outputs
+                .cmd_can_go              ( chan_bank_cmd_can_go    ),
                 .can_go                  ( chan_bank_can_go        ),
                 .can_go_valid            ( chan_bank_can_go_valid  ),
                 .ready                   ( chan_bank_checker_ready ),
@@ -473,10 +476,11 @@ module main_mem_cntl (
             // use because we cannot index the generate with a variable
             always @(*)
               begin
+                cmd_can_go                  [chan] [bank] = chan_bank_cmd_can_go                      ;
                 can_go                      [chan] [bank] = chan_bank_can_go & chan_bank_can_go_valid ;
                 can_go_checker_ready        [chan] [bank] = chan_bank_checker_ready                   ;
-                channel_bank_a_page_is_open [chan] [bank] = a_page_is_open   ; 
-                channel_bank_open_page      [chan] [bank] = open_page_id     ; 
+                channel_bank_a_page_is_open [chan] [bank] = a_page_is_open                            ; 
+                channel_bank_open_page      [chan] [bank] = open_page_id                              ; 
               end
         
 
@@ -1106,11 +1110,6 @@ module main_mem_cntl (
 
         assign clear = 1'b0 ;
  
-        always @(*)
-          begin
-            pipe_read = pipe_valid ;  // FIXME - may be ok
-          end
-
       end
   endgenerate
 
@@ -1175,7 +1174,7 @@ module main_mem_cntl (
         generic_pipelined_w_peek_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_CACHE_CMD_SEQ_FIFO_DEPTH                 ),
                                         .GENERIC_FIFO_THRESHOLD  (`MMC_CNTL_CACHE_CMD_SEQ_FIFO_ALMOST_FULL_THRESHOLD ),
                                         .GENERIC_FIFO_DATA_WIDTH (`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_FIFO_WIDTH       )
-                        ) page_cmd_gpfifo (
+                        ) cache_cmd_gpfifo (
                                  // Status
                                 .almost_full           ( almost_full           ),
                                  // Write                                      
@@ -1290,34 +1289,34 @@ module main_mem_cntl (
               `MMC_CNTL_CMD_CHECK_PO: 
                 // Always make sure we start on a PO
                 mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_page_fifo [chan].pipe_bank]                                                                 ) ?  `MMC_CNTL_CMD_CHECK_PO   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+//                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+//                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+//                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+//                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
                                                                                                                                                                           `MMC_CNTL_CMD_CHECK_INIT ;
               `MMC_CNTL_CMD_CHECK_PC: 
                 // Always make sure we start on a PO
                 mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_page_fifo [chan].pipe_bank]                                                                 ) ?  `MMC_CNTL_CMD_CHECK_PC   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+ //                                                ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+ //                                                ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+ //                                                ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+ //                                                ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
                                                                                                                                                                           `MMC_CNTL_CMD_CHECK_INIT ;
               `MMC_CNTL_CMD_CHECK_CR: 
                 // Always make sure we start on a PO
                 mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_cache_fifo [chan].pipe_bank]                                                                ) ?  `MMC_CNTL_CMD_CHECK_CR   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+  //                                               ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+  //                                               ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+  //                                               ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+  //                                               ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
                                                                                                                                                                           `MMC_CNTL_CMD_CHECK_INIT ;
               `MMC_CNTL_CMD_CHECK_CW: 
                 // Always make sure we start on a PO
                 mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_cache_fifo [chan].pipe_bank]                                                                ) ?  `MMC_CNTL_CMD_CHECK_CW   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+ //                                                ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+ //                                                ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+ //                                                ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+ //                                                ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
                                                                                                                                                                           `MMC_CNTL_CMD_CHECK_INIT ;
       
               `MMC_CNTL_CMD_CHECK_ERR: 

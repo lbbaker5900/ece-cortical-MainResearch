@@ -35,12 +35,12 @@
 
 module sdp_cntl (  
 
-            input  wire                                        xxx__sdp__storage_desc_processing_enable     ,
-            output reg                                         sdp__xxx__storage_desc_processing_complete   ,
-            input  wire  [`MGR_STORAGE_DESC_ADDRESS_RANGE ]    xxx__sdp__storage_desc_ptr                   ,  // pointer to local storage descriptor although msb's contain manager ID, so remove
-            input  wire  [`MGR_NUM_LANES_RANGE            ]    xxx__sdp__num_lanes                          ,
-            input  wire  [`MGR_INST_OPTION_TRANSFER_RANGE ]    xxx__sdp__txfer_type                         ,
-            input  wire  [`MGR_INST_OPTION_TGT_RANGE      ]    xxx__sdp__target                             ,
+            input   wire                                           xxx__sdp__storage_desc_processing_enable     ,
+            output  reg                                            sdp__xxx__storage_desc_processing_complete   ,
+            input   wire  [`MGR_STORAGE_DESC_ADDRESS_RANGE  ]      xxx__sdp__storage_desc_ptr                   ,  // pointer to local storage descriptor although msb's contain manager ID, so remove
+            input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes                          ,
+            input   wire  [`MGR_INST_OPTION_TRANSFER_RANGE  ]      xxx__sdp__txfer_type                         ,
+            input   wire  [`MGR_INST_OPTION_TGT_RANGE       ]      xxx__sdp__target                             ,
 
             //-------------------------------
             // Main Memory Controller interface
@@ -53,6 +53,8 @@ module sdp_cntl (
             output  reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      sdp__xxx__mem_request_bank               ,
             output  reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      sdp__xxx__mem_request_page               ,
             output  reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      sdp__xxx__mem_request_word               ,
+
+            input   wire [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    xxx__sdp__mem_request_channel_data_valid ,  // valid data from channel data fifo
                                                                                                                     
             //-------------------------------
             // General
@@ -109,12 +111,12 @@ module sdp_cntl (
   //   So we need to form an address using only the chan, bank and page based on the increment order of page,bank,chan and increment and request this chan/bank/page also
       
   // State register 
-  reg [`SCP_CNTL_PROC_STORAGE_DESC_STATE_RANGE ] sdp_cntl_proc_storage_desc_state      ; // state flop
-  reg [`SCP_CNTL_PROC_STORAGE_DESC_STATE_RANGE ] sdp_cntl_proc_storage_desc_state_next ;
+  reg [`SDP_CNTL_PROC_STORAGE_DESC_STATE_RANGE ] sdp_cntl_proc_storage_desc_state      ; // state flop
+  reg [`SDP_CNTL_PROC_STORAGE_DESC_STATE_RANGE ] sdp_cntl_proc_storage_desc_state_next ;
 
   always @(posedge clk)
     begin
-      sdp_cntl_proc_storage_desc_state <= ( reset_poweron ) ? `SCP_CNTL_PROC_STORAGE_DESC_WAIT        :
+      sdp_cntl_proc_storage_desc_state <= ( reset_poweron ) ? `SDP_CNTL_PROC_STORAGE_DESC_WAIT        :
                                                                sdp_cntl_proc_storage_desc_state_next  ;
     end
   
@@ -142,22 +144,22 @@ module sdp_cntl (
 
   wire                                                     to_strm_fsm_fifo_ready    ;
 
-  reg                                                      generate_mem_request      ;
   reg                                                      requests_complete         ;
   reg                                                      generate_requests         ;
-  reg   [`SCP_CNTL_CHAN_BIT_RANGE                       ]  channel_requested         ;  // which channels have been requested with current bank/page
+  reg   [`SDP_CNTL_CHAN_BIT_RANGE                       ]  channel_requested         ;  // which channels have been requested with current bank/page
   reg                                                      bank_change               ;  // check current increment vs previous last request
   reg                                                      page_change               ;
   reg                                                      channel_change            ;
   `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-    reg    [`SCP_CNTL_LINE_BIT_RANGE                    ]  line_requested            ;  // which lines have been requested with current bank/page
+    reg    [`SDP_CNTL_LINE_BIT_RANGE                    ]  line_requested            ;  // which lines have been requested with current bank/page
     reg                                                    line_change               ;
   `endif
 
-  // The SCP_CNTL_DESC FSM extracts the decriptor and handles memory requests
-  // The SCP_CNTL_STRM FSM increments thru the words in the from_mmc_fifo
+  // The SDP_CNTL_DESC FSM extracts the decriptor and handles memory requests
+  // The SDP_CNTL_STRM FSM increments thru the words in the from_mmc_fifo
   //
-  wire completed_streaming ;  // strm fsm has completed the cons/jump memory tuples
+  reg  desc_processor_strm_ack  ;  // ack the strm fsm to allow both fsm's to complete together
+  reg  completed_streaming      ;  // strm fsm has completed the cons/jump memory tuples
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -167,22 +169,22 @@ module sdp_cntl (
     begin
       case (sdp_cntl_proc_storage_desc_state)
         
-        `SCP_CNTL_PROC_STORAGE_DESC_WAIT: 
-          sdp_cntl_proc_storage_desc_state_next =   ( xxx__sdp__storage_desc_processing_enable ) ? `SCP_CNTL_PROC_STORAGE_DESC_READ : 
-                                                                                         `SCP_CNTL_PROC_STORAGE_DESC_WAIT ;
+        `SDP_CNTL_PROC_STORAGE_DESC_WAIT: 
+          sdp_cntl_proc_storage_desc_state_next =   ( xxx__sdp__storage_desc_processing_enable ) ? `SDP_CNTL_PROC_STORAGE_DESC_READ : 
+                                                                                         `SDP_CNTL_PROC_STORAGE_DESC_WAIT ;
   
 
 /*
-        `SCP_CNTL_PROC_STORAGE_DESC_WAIT: 
-          sdp_cntl_proc_storage_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid && ~from_Wud_Fifo[0].pipe_som ) ? `SCP_CNTL_PROC_STORAGE_DESC_ERR           :  // right now assume MR desciptors are multi-cycle
-                                       ( from_Wud_Fifo[0].pipe_valid                               ) ? `SCP_CNTL_PROC_STORAGE_DESC_EXTRACT  :  // pull all we need from the descriptor then start memory access
-                                                                                                       `SCP_CNTL_PROC_STORAGE_DESC_WAIT     ;
+        `SDP_CNTL_PROC_STORAGE_DESC_WAIT: 
+          sdp_cntl_proc_storage_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid && ~from_Wud_Fifo[0].pipe_som ) ? `SDP_CNTL_PROC_STORAGE_DESC_ERR           :  // right now assume MR desciptors are multi-cycle
+                                       ( from_Wud_Fifo[0].pipe_valid                               ) ? `SDP_CNTL_PROC_STORAGE_DESC_EXTRACT  :  // pull all we need from the descriptor then start memory access
+                                                                                                       `SDP_CNTL_PROC_STORAGE_DESC_WAIT     ;
   
         // Cycle thru memory descriptor grabing num_lanes, txfer_type, target and storage descriptor pointer
         // Dont leave this state until we see the end-of-descriptor
-        `SCP_CNTL_PROC_STORAGE_DESC_EXTRACT: 
-          sdp_cntl_proc_storage_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid && from_Wud_Fifo[0].pipe_eom ) ? `SCP_CNTL_PROC_STORAGE_DESC_READ    :  // read the descriptor
-                                                                                                      `SCP_CNTL_PROC_STORAGE_DESC_EXTRACT ;
+        `SDP_CNTL_PROC_STORAGE_DESC_EXTRACT: 
+          sdp_cntl_proc_storage_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid && from_Wud_Fifo[0].pipe_eom ) ? `SDP_CNTL_PROC_STORAGE_DESC_READ    :  // read the descriptor
+                                                                                                      `SDP_CNTL_PROC_STORAGE_DESC_EXTRACT ;
 */
         //----------------------------------------------------------------------------------------------------
         // We have cycled thru the descriptor and extracted all information
@@ -194,72 +196,72 @@ module sdp_cntl (
   
         // The storage descriptor pointer is valid in this state, the memory is registered so it will be valid next state
         // - send the storage descriptor address field to the main system memory (DRAM)
-        `SCP_CNTL_PROC_STORAGE_DESC_READ: 
-          sdp_cntl_proc_storage_desc_state_next =  `SCP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID ;
+        `SDP_CNTL_PROC_STORAGE_DESC_READ: 
+          sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID ;
                                       
         // Storage Descriptor address is valid so we can send the memory request
         // Pointer to cons/jump memory will be valid, now wait one clk for output of consequtive/jump memory to be valid
         // Always generate requests first time in, so jump to GENERATE_REQ
-        `SCP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID: 
-          sdp_cntl_proc_storage_desc_state_next =  `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA;
+        `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID: 
+          sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA;
                                       
         // Memory requests will occur if the consequtive increment moves to another page
         // Make sure we transition right thru this state
-        `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA : 
-       //   sdp_cntl_proc_storage_desc_state_next =  `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB   ;
-          sdp_cntl_proc_storage_desc_state_next =  `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC      ;
+        `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA : 
+       //   sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB   ;
+          sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC      ;
 
-       // `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB : 
-       //   sdp_cntl_proc_storage_desc_state_next =  `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC      ;
+       // `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB : 
+       //   sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC      ;
 
         // Make sure strm fifo can take cons/jump before reading
         // - mem_end currently points to beginning of next consequtive phase
-        `SCP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO : 
-          sdp_cntl_proc_storage_desc_state_next =  ( to_strm_fsm_fifo_ready) ? `SCP_CNTL_PROC_STORAGE_DESC_CONS_FIELD           :
-                                                                  `SCP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO      ;
+        `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO : 
+          sdp_cntl_proc_storage_desc_state_next =  ( to_strm_fsm_fifo_ready) ? `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD           :
+                                                                  `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO      ;
 
 
         // Cycle thru all cons/jump fields
         //
-        `SCP_CNTL_PROC_STORAGE_DESC_CONS_FIELD: 
-          sdp_cntl_proc_storage_desc_state_next =  `SCP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS ;
+        `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD: 
+          sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS ;
 
         // we now have the start address and end of cons/jump phase address
         // set pbc_inc to start and pbc_end to boundaries of consequtive phase.
-        `SCP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS: 
-          sdp_cntl_proc_storage_desc_state_next =  `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC ;
+        `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS: 
+          sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC ;
 
         // start points to first consequtive address, end points to last consequtive address
         // pbc_last_end points to last address of previous consequtive phase
         // pbc_inc is the first address of the current consequtive phase
         // CHeck if last_end != inc. If so, generate requests and set last_end = inc
-        `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC: 
-          sdp_cntl_proc_storage_desc_state_next =  ( first_time_thru                              ) ? `SCP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO  :  // we will get here first time thru after the initial request
-                                      ( generate_requests                            ) ? `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA :
-                                      ( requests_complete  && ~consJumpMemory_eom    ) ? `SCP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD       :
-                                      ( requests_complete  &&  consJumpMemory_eom    ) ? `SCP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE  :
-                                                                                         `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC          ;
+        `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC: 
+          sdp_cntl_proc_storage_desc_state_next =  ( first_time_thru                              ) ? `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO  :  // we will get here first time thru after the initial request
+                                      ( generate_requests                            ) ? `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA :
+                                      ( requests_complete  && ~consJumpMemory_eom    ) ? `SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD       :
+                                      ( requests_complete  &&  consJumpMemory_eom    ) ? `SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE  :
+                                                                                         `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC          ;
 
-        `SCP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD: 
-          sdp_cntl_proc_storage_desc_state_next =  `SCP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO    ;
+        `SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD: 
+          sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO    ;
 
         // Cycle thru all cons/jump fields
-        `SCP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE: 
-          sdp_cntl_proc_storage_desc_state_next =  (completed_streaming)  ? `SCP_CNTL_PROC_STORAGE_DESC_COMPLETE             :
-                                                                            `SCP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE ;
+        `SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE: 
+          sdp_cntl_proc_storage_desc_state_next =  (completed_streaming)  ? `SDP_CNTL_PROC_STORAGE_DESC_COMPLETE             :
+                                                                            `SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE ;
 
-        `SCP_CNTL_PROC_STORAGE_DESC_COMPLETE: 
-          sdp_cntl_proc_storage_desc_state_next =   (~xxx__sdp__storage_desc_processing_enable ) ? `SCP_CNTL_PROC_STORAGE_DESC_WAIT : 
-                                                                                         `SCP_CNTL_PROC_STORAGE_DESC_COMPLETE ;
+        `SDP_CNTL_PROC_STORAGE_DESC_COMPLETE: 
+          sdp_cntl_proc_storage_desc_state_next =   (~xxx__sdp__storage_desc_processing_enable ) ? `SDP_CNTL_PROC_STORAGE_DESC_WAIT : 
+                                                                                         `SDP_CNTL_PROC_STORAGE_DESC_COMPLETE ;
   
   
         // May not need all these states, but it will help with debug
         // Latch state on error
-        `SCP_CNTL_PROC_STORAGE_DESC_ERR:
-          sdp_cntl_proc_storage_desc_state_next = `SCP_CNTL_PROC_STORAGE_DESC_ERR ;
+        `SDP_CNTL_PROC_STORAGE_DESC_ERR:
+          sdp_cntl_proc_storage_desc_state_next = `SDP_CNTL_PROC_STORAGE_DESC_ERR ;
   
         default:
-          sdp_cntl_proc_storage_desc_state_next = `SCP_CNTL_PROC_STORAGE_DESC_WAIT ;
+          sdp_cntl_proc_storage_desc_state_next = `SDP_CNTL_PROC_STORAGE_DESC_WAIT ;
     
       endcase // case (sdp_cntl_proc_storage_desc_state)
     end // always @ (*)
@@ -270,7 +272,14 @@ module sdp_cntl (
   always @(posedge clk)
     begin
       sdp__xxx__storage_desc_processing_complete  <= ( reset_poweron )  ? 1'b0 : 
-                                                                ( sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_COMPLETE) ;
+                                                                ( sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_COMPLETE) ;
+
+    end
+
+  always @(posedge clk)
+    begin
+      desc_processor_strm_ack  <= ( reset_poweron )  ? 1'b0 : 
+                                                       ( sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE) ;
 
     end
 
@@ -338,22 +347,22 @@ module sdp_cntl (
   `endif
 
 /*
-  assign from_Wud_Fifo[0].pipe_read = (from_Wud_Fifo[0].pipe_valid && (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_WAIT   ) && ~from_Wud_Fifo[0].pipe_som ) |
-                                      (from_Wud_Fifo[0].pipe_valid && (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_EXTRACT)                               ) ;
+  assign from_Wud_Fifo[0].pipe_read = (from_Wud_Fifo[0].pipe_valid && (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT   ) && ~from_Wud_Fifo[0].pipe_som ) |
+                                      (from_Wud_Fifo[0].pipe_valid && (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_EXTRACT)                               ) ;
 */
 
   always @(posedge clk)
     begin
-      first_time_thru <= (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_WAIT    ) ? 1'b1            :
-                         (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC ) ? 1'b0            :
+      first_time_thru <= (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT    ) ? 1'b1            :
+                         (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC ) ? 1'b0            :
                                                                             first_time_thru ;  
     end
 
   reg create_mem_request ;
   always @(*)
     begin 
-      create_mem_request  = ((sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA  ))  ; //|
-//                             (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB )) ;
+      create_mem_request  = ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA  ))  ; //|
+//                             (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB )) ;
     end
 
 `ifdef  MGR_DRAM_REQUEST_LT_PAGE
@@ -373,7 +382,7 @@ module sdp_cntl (
             channel_change    =  (pbc_last_end_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] != pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] ) ;  
             line_change       =  (pbc_last_end_addr[`MGR_DRAM_PBCL_LINE_FIELD_RANGE ] != pbc_inc_addr[`MGR_DRAM_PBCL_LINE_FIELD_RANGE ] ) ;  
             
-            generate_requests =  (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC                     ) &
+            generate_requests =  (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC                     ) &
                                  (  bank_change                                                      |
                                     page_change                                                      |
                                     ( channel_change & (~channel_requested[pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ]])) |
@@ -392,7 +401,7 @@ module sdp_cntl (
             channel_change    =  (pbc_last_end_addr[`MGR_DRAM_PBLC_CHAN_FIELD_RANGE ] != pbc_inc_addr[`MGR_DRAM_PBLC_CHAN_FIELD_RANGE ] ) ;  
             line_change       =  (pbc_last_end_addr[`MGR_DRAM_PBLC_LINE_FIELD_RANGE ] != pbc_inc_addr[`MGR_DRAM_PBLC_LINE_FIELD_RANGE ] ) ;  
             
-            generate_requests =  (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC                     ) &
+            generate_requests =  (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC                     ) &
                                  (  bank_change                                                      |
                                     page_change                                                      |
                                     ( channel_change & (~channel_requested[pbc_inc_addr[`MGR_DRAM_PBLC_CHAN_FIELD_RANGE ]])) |
@@ -413,7 +422,7 @@ module sdp_cntl (
       page_change       =  (pbc_last_end_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] != pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ) ;  
       channel_change    =  (pbc_last_end_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] != pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ) ;  
       
-      generate_requests =  (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC                     ) &
+      generate_requests =  (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC                     ) &
                            (  bank_change                                                      |
                               page_change                                                      |
                               ( channel_change & (~channel_requested[pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ]]))) ;
@@ -430,7 +439,7 @@ module sdp_cntl (
   // desc memory is valid but then use address from fsm
   always @(posedge clk)
     begin
-      consJumpPtr <= ( sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID  ) ? storage_desc_consJumpPtr : // grab cons/jump ptr from descriptor
+      consJumpPtr <= ( sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID  ) ? storage_desc_consJumpPtr : // grab cons/jump ptr from descriptor
                      ( inc_consJumpPtr                                      ) ? consJumpPtr+1            :
                                                                                 consJumpPtr              ;
          
@@ -439,8 +448,8 @@ module sdp_cntl (
   // increment the ptr each time we are about to enter that the state that uses the output
   always @(*)
     begin
-      inc_consJumpPtr     =  ((sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC          ) &  requests_complete & ~generate_requests & ~consJumpMemory_som & ~consJumpMemory_eom ) |  // transition to JUMP state
-                             ((sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO  ) &  to_strm_fsm_fifo_ready                                       & ~consJumpMemory_eom ) ;  // transition to CONS state
+      inc_consJumpPtr     =  ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC          ) &  requests_complete & ~generate_requests & ~consJumpMemory_som & ~consJumpMemory_eom ) |  // transition to JUMP state
+                             ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO  ) &  to_strm_fsm_fifo_ready                                       & ~consJumpMemory_eom ) ;  // transition to CONS state
     end
 
   //----------------------------------------------------------------------------------------------------
@@ -455,23 +464,23 @@ module sdp_cntl (
   always @(posedge clk)
     begin
       // Initialize starting increment address
-      if ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) && (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID ))
+      if ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) && (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID ))
         begin
           mem_end_address      <=  {storage_desc_page, storage_desc_bank, storage_desc_channel, storage_desc_word, 2'b00} ;  // byte address
         end
-      else if ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) && (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID ))
+      else if ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) && (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID ))
         begin
           mem_end_address      <=  {storage_desc_page, storage_desc_bank, storage_desc_word, storage_desc_channel, 2'b00} ;  // byte address
         end
       // increment using number of consequtive onyy if strm fsm can take the cons/jump
-      else if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_CONS_FIELD ) 
+      else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD ) 
         begin
           // FIXME: Need to accomodate a consequtive value traversing multiple bank/pages
           // Jump value is from previous end location so add consequtive and jump to start address to get next start address
           mem_end_address      <=  mem_end_address + {consJumpMemory_value, 2'b00} ;  // account for byte address 
         end
       // increment using jump 
-      else if ((sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD ) && ~consJumpMemory_eom)
+      else if ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD ) && ~consJumpMemory_eom)
         begin
           // Jump value is from previous inc location
           mem_end_address   <=  mem_end_address + {consJumpMemory_value, 2'b00} ;  // account for byte address
@@ -480,12 +489,12 @@ module sdp_cntl (
 
   always @(posedge clk)
     begin
-      if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID )
+      if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID )
         begin
           mem_start_address <=  {storage_desc_channel, storage_desc_bank, storage_desc_page, storage_desc_word, 2'b00} ;
         end
       // when we enter the CHECK_STRM state the mem_end address points to beginning of next consequtive phase
-      else if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO )
+      else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO )
         begin
           mem_start_address <=  {mem_end_channel, mem_end_bank, mem_end_page, mem_end_word, 2'b00} ;
         end
@@ -493,7 +502,7 @@ module sdp_cntl (
 
   always @(posedge clk)
     begin
-      if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID )
+      if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID )
         begin
           if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
             begin
@@ -512,7 +521,7 @@ module sdp_cntl (
               `endif
             end
         end
-      else if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS )
+      else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS )
         begin
           if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
             begin
@@ -532,13 +541,13 @@ module sdp_cntl (
             end
         end
       // increment during first request to generate second request chan/bank/page
-      else if ((sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC ) && ~generate_requests)
+      else if ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC ) && ~generate_requests)
         begin
           pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
         end
 
       // the request may occur with inc == end, so dont increment past end
-      else if ((sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA ) && ~requests_complete)
+      else if ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA ) && ~requests_complete)
         begin
           pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
         end
@@ -550,17 +559,17 @@ module sdp_cntl (
       begin: chan_requested
         always @(posedge clk)
           begin
-            if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_WAIT )
+            if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT )
               begin
                 channel_requested[chan]    <=  1'b0    ;
               end
-            if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS )
+            if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS )
               begin
                 channel_requested[chan]    <= (mem_start_bank != mem_last_end_bank) ? 1'b0                    :
                                               (mem_start_page != mem_last_end_page) ? 1'b0                    :
                                                                                       channel_requested[chan] ;
               end
-            else if ((sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC ) && generate_requests)
+            else if ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC ) && generate_requests)
               begin
                 channel_requested[chan]    <= (bank_change                                                               ) ? 1'b0                    :
                                               (page_change                                                               ) ? 1'b0                    :
@@ -569,7 +578,7 @@ module sdp_cntl (
                                               `endif
                                                                                                                              channel_requested[chan] ;
               end
-            else if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA )
+            else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA )
               begin
                 // if we are about to request <chan>, make sure it hasnt been requested already with this bank and page
                 if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
@@ -604,25 +613,25 @@ module sdp_cntl (
       begin: line_req
         always @(posedge clk)
           begin
-            if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_WAIT )
+            if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT )
               begin
                 line_requested[line]    <=  1'b0    ;
               end
-            if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS )
+            if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS )
               begin
                 line_requested[line]    <= (mem_start_bank    != mem_last_end_bank   ) ? 1'b0                 :
                                            (mem_start_page    != mem_last_end_page   ) ? 1'b0                 :
                                            (mem_start_channel != mem_last_end_channel) ? 1'b0                 :
                                                                                          line_requested[line] ;
               end
-            else if ((sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_INC_PBC ) && generate_requests)
+            else if ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC ) && generate_requests)
               begin
                 line_requested[line]    <= (bank_change                                                                ) ? 1'b0                 :
                                            (page_change                                                                ) ? 1'b0                 :
                                            ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) && channel_change ) ? 1'b0                 :
                                                                                                                            line_requested[line] ;
               end
-            else if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA )
+            else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA )
               begin
                 // if we are about to request <line>, make sure it hasnt been requested already with this bank and page
                 line_requested[line]    <=  ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) && (pbc_inc_addr[`MGR_DRAM_PBCL_LINE_FIELD_RANGE ] == line)) ? 1'b1                 :
@@ -637,7 +646,7 @@ module sdp_cntl (
 
   always @(posedge clk)
     begin
-      if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID )
+      if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID )
         begin
           // set req == end to generate the first requests
           `ifdef  MGR_DRAM_REQUEST_LT_PAGE
@@ -653,7 +662,7 @@ module sdp_cntl (
             pbc_end_addr <=  {storage_desc_page, storage_desc_bank, storage_desc_channel};
           `endif
         end
-      else if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS )
+      else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS )
         begin
           `ifdef  MGR_DRAM_REQUEST_LT_PAGE
             if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
@@ -672,11 +681,11 @@ module sdp_cntl (
 
   always @(posedge clk)
     begin
-      if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID )
+      if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID )
         begin
           mem_last_end_address <=  {storage_desc_channel, storage_desc_bank, storage_desc_page, storage_desc_word, 2'b00} ;
         end
-      else if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD )
+      else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD )
         begin
           // mem_addr is current set to end of CONS phase, so set last req to end of previous consequtive phase
           mem_last_end_address <=  {mem_end_channel, mem_end_bank, mem_end_page, mem_end_word, 2'b00} ;
@@ -685,7 +694,7 @@ module sdp_cntl (
 
   always @(posedge clk)
     begin
-      if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID )
+      if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID )
         begin
           if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
             begin
@@ -704,7 +713,7 @@ module sdp_cntl (
               `endif
             end
         end
-      else if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD )
+      else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD )
         begin
           // mem_addr is current set to end of CONS phase, so set last req to end of previous consequtive phase
           if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
@@ -724,8 +733,8 @@ module sdp_cntl (
               `endif
             end
         end
-      //else if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB )
-      else if (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA )
+      //else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB )
+      else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA )
         begin
           // mem_addr is current set to end of CONS phase, so set last req to end of previous consequtive phase
           if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
@@ -859,14 +868,14 @@ module sdp_cntl (
         wire  clear        ;
         wire  almost_full  ;
         wire                                                 write        ;
-        wire  [`SCP_CNTL_CJ_TO_STRM_AGGREGATE_FIFO_RANGE ]   write_data   ;
+        wire  [`SDP_CNTL_CJ_TO_STRM_AGGREGATE_FIFO_RANGE ]   write_data   ;
         wire                                                 pipe_valid   ;
         wire                                                 pipe_read    ;
-        wire  [`SCP_CNTL_CJ_TO_STRM_AGGREGATE_FIFO_RANGE ]   pipe_data    ;
+        wire  [`SDP_CNTL_CJ_TO_STRM_AGGREGATE_FIFO_RANGE ]   pipe_data    ;
 
-        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`SCP_CNTL_CJ_TO_STRM_FIFO_DEPTH                 ),
-                                 .GENERIC_FIFO_THRESHOLD  (`SCP_CNTL_CJ_TO_STRM_FIFO_ALMOST_FULL_THRESHOLD ),
-                                 .GENERIC_FIFO_DATA_WIDTH (`SCP_CNTL_CJ_TO_STRM_AGGREGATE_FIFO_WIDTH       )
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`SDP_CNTL_CJ_TO_STRM_FIFO_DEPTH                 ),
+                                 .GENERIC_FIFO_THRESHOLD  (`SDP_CNTL_CJ_TO_STRM_FIFO_ALMOST_FULL_THRESHOLD ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`SDP_CNTL_CJ_TO_STRM_AGGREGATE_FIFO_WIDTH       )
                         ) gpfifo (
                                  // Status
                                 .almost_full      ( almost_full           ),
@@ -897,7 +906,7 @@ module sdp_cntl (
   reg  to_strm_fsm_fifo_write ;
   always @(*)
     begin
-     to_strm_fsm_fifo_write  = (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_CONS_FIELD) | (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD) ;
+     to_strm_fsm_fifo_write  = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD) | (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD) ;
     end
 
   assign  consJump_to_strm_fsm_fifo[0].clear       = 1'b0    ;
@@ -914,14 +923,14 @@ module sdp_cntl (
         wire  clear        ;
         wire  almost_full  ;
         wire                                                   write        ;
-        wire  [`SCP_CNTL_ADDR_TO_STRM_AGGREGATE_FIFO_RANGE ]   write_data   ;
+        wire  [`SDP_CNTL_ADDR_TO_STRM_AGGREGATE_FIFO_RANGE ]   write_data   ;
         wire                                                   pipe_valid   ;
         wire                                                   pipe_read    ;
-        wire  [`SCP_CNTL_ADDR_TO_STRM_AGGREGATE_FIFO_RANGE ]   pipe_data    ;
+        wire  [`SDP_CNTL_ADDR_TO_STRM_AGGREGATE_FIFO_RANGE ]   pipe_data    ;
 
-        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`SCP_CNTL_ADDR_TO_STRM_FIFO_DEPTH                 ),
-                                 .GENERIC_FIFO_THRESHOLD  (`SCP_CNTL_ADDR_TO_STRM_FIFO_ALMOST_FULL_THRESHOLD ),
-                                 .GENERIC_FIFO_DATA_WIDTH (`SCP_CNTL_ADDR_TO_STRM_AGGREGATE_FIFO_WIDTH       )
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`SDP_CNTL_ADDR_TO_STRM_FIFO_DEPTH                 ),
+                                 .GENERIC_FIFO_THRESHOLD  (`SDP_CNTL_ADDR_TO_STRM_FIFO_ALMOST_FULL_THRESHOLD ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`SDP_CNTL_ADDR_TO_STRM_AGGREGATE_FIFO_WIDTH       )
                         ) gpfifo (
                                  // Status
                                 .almost_full      ( almost_full           ),
@@ -951,7 +960,7 @@ module sdp_cntl (
   endgenerate
 
   assign  addr_to_strm_fsm_fifo[0].clear       = 1'b0    ;
-  assign  addr_to_strm_fsm_fifo[0].write       = (sdp_cntl_proc_storage_desc_state == `SCP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID) ;
+  assign  addr_to_strm_fsm_fifo[0].write       = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID) ;
   assign  addr_to_strm_fsm_fifo[0].write_data  = {xxx__sdp__num_lanes, xxx__sdp__txfer_type, xxx__sdp__target, storage_desc_accessOrder, storage_desc_local_address} ;
 
 
@@ -1094,12 +1103,12 @@ module sdp_cntl (
   // - The stream fsm will keep a register for channel 0 and channel 1 and  draw from these two registers as required when incrementing
       
   // State register 
-  reg [`SCP_CNTL_STRM_STATE_RANGE ] sdp_cntl_stream_state      ; // state flop
-  reg [`SCP_CNTL_STRM_STATE_RANGE ] sdp_cntl_stream_state_next ;
+  reg [`SDP_CNTL_STRM_STATE_RANGE ] sdp_cntl_stream_state      ; // state flop
+  reg [`SDP_CNTL_STRM_STATE_RANGE ] sdp_cntl_stream_state_next ;
 
   always @(posedge clk)
     begin
-      sdp_cntl_stream_state <= ( reset_poweron ) ? `SCP_CNTL_STRM_WAIT          :
+      sdp_cntl_stream_state <= ( reset_poweron ) ? `SDP_CNTL_STRM_WAIT          :
                                                     sdp_cntl_stream_state_next  ;
     end
   
@@ -1107,10 +1116,9 @@ module sdp_cntl (
   // FSM Registers
   //
 
-  reg  [`SCP_CNTL_CONS_COUNTER_RANGE        ]     consequtive_counter        ;
+  reg  [`SDP_CNTL_CONS_COUNTER_RANGE        ]     consequtive_counter        ;
   reg  [`MGR_INST_CONS_JUMP_RANGE           ]     consequtive_value_for_strm ;  // latched consequtive and jump values so we can calculate the next consequitve start address while we are running thru cons phase
   reg  [`MGR_INST_CONS_JUMP_RANGE           ]     jump_value_for_strm        ;
-  wire [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]     channel_data_valid         ;  // valid data from channel data fifo
   reg                                             current_channel            ;  // currently taking data from channel fifo n
   reg                                             next_channel               ;  // about to access data from channel fifo n
 
@@ -1121,49 +1129,47 @@ module sdp_cntl (
     begin
       case (sdp_cntl_stream_state)
         
-        `SCP_CNTL_STRM_WAIT: 
-          sdp_cntl_stream_state_next =  ( addr_to_strm_fsm_fifo[0].pipe_valid && consJump_to_strm_fsm_fifo[0].pipe_valid) ? `SCP_CNTL_STRM_LOAD_FIRST_CONS_COUNT :  // load consequtive words counter
-                                                                                                                            `SCP_CNTL_STRM_WAIT        ;
+        `SDP_CNTL_STRM_WAIT: 
+          sdp_cntl_stream_state_next =  ( addr_to_strm_fsm_fifo[0].pipe_valid && consJump_to_strm_fsm_fifo[0].pipe_valid) ? `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT :  // load consequtive words counter
+                                                                                                                            `SDP_CNTL_STRM_WAIT        ;
   
         // wait for consequtive counter to time out
         //  - transition straight thru this state
-        `SCP_CNTL_STRM_LOAD_FIRST_CONS_COUNT: 
-          sdp_cntl_stream_state_next =  (consJump_to_strm_fsm_fifo[0].pipe_eom ) ? `SCP_CNTL_STRM_COUNT_CONS      :  // we know pipe is valid
-                                                                                   `SCP_CNTL_STRM_LOAD_JUMP_VALUE ;
+        `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT: 
+          sdp_cntl_stream_state_next =  (xxx__sdp__mem_request_channel_data_valid [current_channel] && consJump_to_strm_fsm_fifo[0].pipe_eom ) ? `SDP_CNTL_STRM_COUNT_CONS      :  // we know pipe is valid
+                                                                                                                                                 `SDP_CNTL_STRM_LOAD_JUMP_VALUE ;
 
         // a) Start streaming
         // b) Save jump value to pre-calculate next start address
         // If we dont yet have a jump value and the counter terminates, then we stay here
         // We are always in this state when we are expecting the next jump value
-        `SCP_CNTL_STRM_LOAD_JUMP_VALUE: 
-          sdp_cntl_stream_state_next =  ( consJump_to_strm_fsm_fifo[0].pipe_valid) ? `SCP_CNTL_STRM_COUNT_CONS      : 
-                                                                                     `SCP_CNTL_STRM_LOAD_JUMP_VALUE ;
+        `SDP_CNTL_STRM_LOAD_JUMP_VALUE: 
+          sdp_cntl_stream_state_next =  (xxx__sdp__mem_request_channel_data_valid [current_channel] && consJump_to_strm_fsm_fifo[0].pipe_valid) ? `SDP_CNTL_STRM_COUNT_CONS      : 
+                                                                                                                                                  `SDP_CNTL_STRM_LOAD_JUMP_VALUE ;
 
         // Pre-calculate next consequtive phase start adderss
-      //  `SCP_CNTL_STRM_CALC_NEXT_START_ADDR: 
-      //    sdp_cntl_stream_state_next =  `SCP_CNTL_STRM_COUNT_CONS ;  
-
         // wait for consequtive counter to time out
         // we are always in this state when we are expecting the next consequtive value
-        `SCP_CNTL_STRM_COUNT_CONS: 
-          sdp_cntl_stream_state_next =  ((consequtive_counter == 'd0                              ) && consJump_to_strm_fsm_fifo[0].pipe_valid && consJump_to_strm_fsm_fifo[0].pipe_eom) ? `SCP_CNTL_STRM_COMPLETE        :
-                                        ((consequtive_counter[`SCP_CNTL_CONS_COUNTER_MSB]  == 1'b1) && consJump_to_strm_fsm_fifo[0].pipe_valid && consJump_to_strm_fsm_fifo[0].pipe_eom) ? `SCP_CNTL_STRM_COMPLETE        :  // check for negative
-                                        ((consequtive_counter == 'd0                              ) && consJump_to_strm_fsm_fifo[0].pipe_valid                                         ) ? `SCP_CNTL_STRM_LOAD_JUMP_VALUE :
-                                        ((consequtive_counter[`SCP_CNTL_CONS_COUNTER_MSB]  == 1'b1) && consJump_to_strm_fsm_fifo[0].pipe_valid                                         ) ? `SCP_CNTL_STRM_LOAD_JUMP_VALUE :  // check for negative
-                                                                                                                                                                                           `SCP_CNTL_STRM_COUNT_CONS      ;
+        `SDP_CNTL_STRM_COUNT_CONS: 
+          sdp_cntl_stream_state_next =  ((consequtive_counter == 'd0                              ) && consJump_to_strm_fsm_fifo[0].pipe_valid && consJump_to_strm_fsm_fifo[0].pipe_eom) ? `SDP_CNTL_STRM_COMPLETE        :
+                                        ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB]  == 1'b1) && consJump_to_strm_fsm_fifo[0].pipe_valid && consJump_to_strm_fsm_fifo[0].pipe_eom) ? `SDP_CNTL_STRM_COMPLETE        :  // check for negative
+                                        ((consequtive_counter == 'd0                              ) && consJump_to_strm_fsm_fifo[0].pipe_valid                                         ) ? `SDP_CNTL_STRM_LOAD_JUMP_VALUE :
+                                        ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB]  == 1'b1) && consJump_to_strm_fsm_fifo[0].pipe_valid                                         ) ? `SDP_CNTL_STRM_LOAD_JUMP_VALUE :  // check for negative
+                                                                                                                                                                                           `SDP_CNTL_STRM_COUNT_CONS      ;
 
 
-        `SCP_CNTL_STRM_COMPLETE: 
-          sdp_cntl_stream_state_next =  `SCP_CNTL_STRM_WAIT ;
+        `SDP_CNTL_STRM_COMPLETE: 
+          sdp_cntl_stream_state_next =  (desc_processor_strm_ack) ? `SDP_CNTL_STRM_WAIT     :
+                                                                    `SDP_CNTL_STRM_COMPLETE ;
                                       
   
         // May not need all these states, but it will help with debug
         // Latch state on error
-        `SCP_CNTL_STRM_ERR:
-          sdp_cntl_stream_state_next = `SCP_CNTL_STRM_ERR ;
+        `SDP_CNTL_STRM_ERR:
+          sdp_cntl_stream_state_next = `SDP_CNTL_STRM_ERR ;
   
         default:
-          sdp_cntl_stream_state_next = `SCP_CNTL_STRM_WAIT ;
+          sdp_cntl_stream_state_next = `SDP_CNTL_STRM_WAIT ;
     
       endcase // case (sdp_cntl_stream_state)
     end // always @ (*)
@@ -1171,23 +1177,28 @@ module sdp_cntl (
   //----------------------------------------------------------------------------------------------------
 
   // Dont read address until we are done. That way the pipe_addr is the valid start address
-  assign  addr_to_strm_fsm_fifo[0].pipe_read           =  (sdp_cntl_stream_state == `SCP_CNTL_STRM_COMPLETE);
+  assign  addr_to_strm_fsm_fifo[0].pipe_read           =  (sdp_cntl_stream_state == `SDP_CNTL_STRM_COMPLETE);
 
-  assign  consJump_to_strm_fsm_fifo[0].pipe_read       = ((sdp_cntl_stream_state == `SCP_CNTL_STRM_LOAD_FIRST_CONS_COUNT) & ~consJump_to_strm_fsm_fifo[0].pipe_eom  ) |  // leave consJump fifo output alone so we keep valid and eom 
-                                                         ((sdp_cntl_stream_state == `SCP_CNTL_STRM_LOAD_JUMP_VALUE      ) &  consJump_to_strm_fsm_fifo[0].pipe_valid) |
-                                                         ((sdp_cntl_stream_state == `SCP_CNTL_STRM_COUNT_CONS           ) &  consJump_to_strm_fsm_fifo[0].pipe_valid  & ((consequtive_counter == 'd0) | (consequtive_counter[`SCP_CNTL_CONS_COUNTER_MSB]  == 1'b1))) ;
+  assign  consJump_to_strm_fsm_fifo[0].pipe_read       = ((sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT) & ~consJump_to_strm_fsm_fifo[0].pipe_eom  ) |  // leave consJump fifo output alone so we keep valid and eom 
+                                                         ((sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE      ) &  consJump_to_strm_fsm_fifo[0].pipe_valid) |
+                                                         ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           ) &  consJump_to_strm_fsm_fifo[0].pipe_valid  & ((consequtive_counter == 'd0) | (consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB]  == 1'b1))) ;
 
 
-  assign completed_streaming = (sdp_cntl_stream_state == `SCP_CNTL_STRM_COMPLETE) ;
+  always @(posedge clk)
+    begin
+      completed_streaming <= ( reset_poweron )  ? 1'b0 : 
+                                                  (sdp_cntl_stream_state == `SDP_CNTL_STRM_COMPLETE) ;
+    end
+
 
   always @(posedge clk)
     begin
       consequtive_counter <=  ( reset_poweron                                                                                                                                                             )  ? 'd0                                                        :
-                              (~channel_data_valid [current_channel]                                                                                                                                      ) ? consequtive_counter                                         :  // data not yet available
-                              (                                                                                                            (sdp_cntl_stream_state == `SCP_CNTL_STRM_LOAD_FIRST_CONS_COUNT)) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
-                              ((consequtive_counter                             ==  'd0) &&  consJump_to_strm_fsm_fifo[0].pipe_valid    && (sdp_cntl_stream_state == `SCP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
-                              ((consequtive_counter[`SCP_CNTL_CONS_COUNTER_MSB] == 1'b1) &&  consJump_to_strm_fsm_fifo[0].pipe_valid    && (sdp_cntl_stream_state == `SCP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
-                              ((consequtive_counter                             ==  'd0) || (consequtive_counter[`SCP_CNTL_CONS_COUNTER_MSB] == 1'b1)                                                     ) ? consequtive_counter                                         :  // jump data not yet available
+                              (                                                                                                            (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT)) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
+                              (~xxx__sdp__mem_request_channel_data_valid [current_channel]                                                                                                                                      ) ? consequtive_counter                                         :  // data not yet available
+                              ((consequtive_counter                             ==  'd0) &&  consJump_to_strm_fsm_fifo[0].pipe_valid    && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
+                              ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB] == 1'b1) &&  consJump_to_strm_fsm_fifo[0].pipe_valid    && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
+                              ((consequtive_counter                             ==  'd0) || (consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB] == 1'b1)                                                     ) ? consequtive_counter                                         :  // jump data not yet available
                               ( addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST                                                                                                ) ? consequtive_counter-1                                       :
                               ( addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR                                                                                               ) ? consequtive_counter-addr_to_strm_fsm_fifo[0].pipe_num_lanes :
                                                                                                                                                                                                               consequtive_counter                                         ;  // will only occur with error
@@ -1233,8 +1244,8 @@ module sdp_cntl (
   reg                                        get_next_line                ;  // look for line, page or bank changes and read data fifo
   always @(*) 
     begin
-      get_next_line = ((sdp_cntl_stream_state == `SCP_CNTL_STRM_LOAD_JUMP_VALUE ) |
-                       (sdp_cntl_stream_state == `SCP_CNTL_STRM_COUNT_CONS      )) 
+      get_next_line = ((sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE ) |
+                       (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS      )) 
                      &((strm_inc_channel != strm_inc_channel_e1) |
                        (strm_inc_bank    != strm_inc_bank_e1   ) |
                        (strm_inc_page    != strm_inc_page_e1   ) |
@@ -1258,7 +1269,7 @@ module sdp_cntl (
 
       case (sdp_cntl_stream_state)
 
-        `SCP_CNTL_STRM_WAIT :
+        `SDP_CNTL_STRM_WAIT :
           begin
             // extract fields from start address
             strm_inc_channel_e1 =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ]  ;
@@ -1275,14 +1286,13 @@ module sdp_cntl (
               end
             else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
               begin
-                strm_inc_address_e1 =  {strm_inc_page_e1, strm_inc_bank_e1, strm_inc_channel_e1, strm_inc_word_e1, 2'b00};
+                strm_inc_address_e1 =  {strm_inc_page_e1, strm_inc_bank_e1, strm_inc_word_e1, strm_inc_channel_e1, 2'b00};
               end
           end
 
-        `SCP_CNTL_STRM_LOAD_JUMP_VALUE  :
+        `SDP_CNTL_STRM_LOAD_JUMP_VALUE  :
           begin
-            strm_inc_address_e1   = (~channel_data_valid [current_channel]                                      ) ? strm_inc_address                                           :
-//                                    ( strm_inc_channel    && ~from_mmc_fifo[1].pipe_valid                       ) ? strm_inc_address                                           :
+            strm_inc_address_e1   = (~xxx__sdp__mem_request_channel_data_valid [current_channel]                                      ) ? strm_inc_address                                           :
                                     (addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR) ? strm_inc_address + {addr_to_strm_fsm_fifo[0].pipe_num_lanes, 2'b00} :
                                     (addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST ) ? strm_inc_address + 'd4                                     :
                                                                                                                     strm_inc_address                                           ;
@@ -1311,10 +1321,10 @@ module sdp_cntl (
           end
 
 
-        `SCP_CNTL_STRM_COUNT_CONS:
+        `SDP_CNTL_STRM_COUNT_CONS:
           begin
-            strm_inc_address_e1   = (~channel_data_valid [current_channel]                                                   ) ? strm_inc_address                                                    :
-                                    (consequtive_counter ==  'd0) || (consequtive_counter[`SCP_CNTL_CONS_COUNTER_MSB] == 1'b1) ? strm_next_cons_start_address                                        :
+            strm_inc_address_e1   = (~xxx__sdp__mem_request_channel_data_valid [current_channel]                                                   ) ? strm_inc_address                                                    :
+                                    (consequtive_counter ==  'd0) || (consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB] == 1'b1) ? strm_next_cons_start_address                                        :
                                     (addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR             ) ? strm_inc_address + {addr_to_strm_fsm_fifo[0].pipe_num_lanes, 2'b00} :
                                     (addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST              ) ? strm_inc_address + 'd4                                              :
                                                                                                                                  strm_inc_address                                                    ;
@@ -1364,27 +1374,27 @@ module sdp_cntl (
 
       case (sdp_cntl_stream_state)
         
-        `SCP_CNTL_STRM_WAIT: 
+        `SDP_CNTL_STRM_WAIT: 
           begin
             strm_next_cons_start_address <= strm_inc_address_e1 ;  // address already ordered
           end
 
-        `SCP_CNTL_STRM_LOAD_FIRST_CONS_COUNT: 
+        `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT: 
           begin
             strm_next_cons_start_address <= strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00}  ;
           end
 
-        `SCP_CNTL_STRM_LOAD_JUMP_VALUE: 
+        `SDP_CNTL_STRM_LOAD_JUMP_VALUE: 
           begin
             strm_next_cons_start_address <= ( consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_cons_start_address + {jump_value_for_strm, 2'b00}  : // remember its a byte address
                                                                                          strm_next_cons_start_address                                 ;
           end
 
-        `SCP_CNTL_STRM_COUNT_CONS :
+        `SDP_CNTL_STRM_COUNT_CONS :
           begin
             // next inc address loaded with start in FIRST_CONS_COUNT state
             strm_next_cons_start_address <= ((consequtive_counter == 'd0                              ) && consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00}  :
-                                            ((consequtive_counter[`SCP_CNTL_CONS_COUNTER_MSB]  == 1'b1) && consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00}  :
+                                            ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB]  == 1'b1) && consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00}  :
                                                                                                                                                       strm_next_cons_start_address                               ;
           end
 
@@ -1453,6 +1463,32 @@ module sdp_cntl (
       strm_accessOrder      =  addr_to_strm_fsm_fifo[0].pipe_order ;
     end
 
+
+
+
+  // Pointer to word in a page
+  //  - initially set to storage pointer word address offset by lane ID
+  //  - increment by number of active lanes
+  reg  [ `STACK_DOWN_INTF_STRM_DATA_RANGE   ]      lane_word        [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; // value driven to downstream stack bus
+  reg  [ `MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ]      lane_word_ptr    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; 
+  reg  [ `MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ]      lane_word_inc    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; // value to increment the pointer by
+  reg  [ `MGR_NUM_OF_EXEC_LANES_RANGE       ]      lane_word_enable                                 ;  // vector of lane enables based on number of active lanes
+  //genvar lane ;
+  //generate
+  always @(posedge clk)
+    begin
+      for (int lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
+        begin: word_ptrs
+          lane_word_enable[lane]  <= (sdp_cntl_stream_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID) ? (xxx__sdp__num_lanes >  lane)        :
+                                                                                                            lane_word_enable[lane]     ;
+          lane_word_ptr   [lane]  <= (sdp_cntl_stream_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID) ? strm_inc_word + lane       :
+                                                                                                            lane_word_ptr[lane]        ;
+          lane_word_inc   [lane]  <= (sdp_cntl_stream_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID) ? xxx__sdp__num_lanes                  :
+                                                                                                            lane_word_inc[lane]        ;
+        end
+    end
+  //endgenerate
+  
 
   //----------------------------------------------------------------------------------------------------
   //

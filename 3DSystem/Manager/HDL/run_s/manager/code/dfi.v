@@ -126,7 +126,6 @@ module dfi(
 
   //----------------------------------------------------------------------------------------------------
   // Control page and cache clock phases
-  reg dram_cmd_mode ;
   reg dram_chan_mode;
 
   always@(posedge clk_diram2x)
@@ -135,13 +134,6 @@ module dfi(
        dram_chan_mode <= 1'b1;
     else
        dram_chan_mode <= ~dram_chan_mode; 
-  end
-  always@(posedge clk_diram)
-  begin
-    if(reset_poweron || !init_done_d1)
-       dram_cmd_mode <= 1'b1;
-    else
-       dram_cmd_mode <= ~dram_cmd_mode; 
   end
   
   genvar word ;
