@@ -461,9 +461,15 @@ interface diram_ifc(
 
   clocking cb_out @(posedge clk2x);
 
-      output       clk_diram_cq    , 
-                   phy__dfi__valid ,
-                   phy__dfi__data  ;
+    input   clk_diram_cntl_ck   ;
+    input   dfi__phy__cs        ; 
+    input   dfi__phy__cmd1      ; 
+    input   dfi__phy__cmd0      ;
+    input   dfi__phy__addr      ;
+    input   dfi__phy__bank      ;
+
+    input   clk_diram_data_ck   ;
+    input   dfi__phy__data      ;
 
   endclocking : cb_out
 

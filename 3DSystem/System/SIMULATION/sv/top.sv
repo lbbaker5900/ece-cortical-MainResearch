@@ -200,6 +200,9 @@ module top;
         begin : diram
             for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1) 
               begin : diram_port_arrays
+ 
+                wire  qvld ;
+                wire  cq   ;
                 diram4   #(.DQ_WIDTH    (`MGR_DRAM_INTF_WIDTH),
                            .PORT_COUNT  (                   1),
                            .DO_MEM_INIT (                   1)
@@ -215,11 +218,15 @@ module top;
                                     .baddr     ( dfi__phy__bank  [mgr] ),
                                                                  
                                     .d         ( dfi__phy__data  [mgr] ),
+                                    //.q         ( ),
                                     .q         ( phy__dfi__data  [mgr] ),
-                                    .cq_n      (),
-                                    .cq        (),
-                                    .qvld      ( phy__dfi__valid [mgr] )
+                                    .cq_n      (                       ),
+                                    .cq        ( cq                    ),
+                                    .qvld      ( qvld                  )
                                     );
+
+                assign  phy__dfi__valid [mgr] = {`MGR_DRAM_CLK_GROUP_WIDTH {qvld}} ;
+                assign  clk_diram_cq    [mgr] = {`MGR_DRAM_CLK_GROUP_WIDTH {cq  }} ;
               end
         end
     endgenerate
@@ -397,19 +404,19 @@ module top;
     generate
        for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
            begin
-             assign DramIfc[mgr].clk_diram_cntl_ck     = system_inst.clk_diram_cntl_ck  [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__cs          = system_inst.dfi__phy__cs       [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__cmd1        = system_inst.dfi__phy__cmd1     [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__cmd0        = system_inst.dfi__phy__cmd0     [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__addr        = system_inst.dfi__phy__addr     [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__bank        = system_inst.dfi__phy__bank     [mgr]   ;
+             assign DramIfc[mgr].clk_diram_cntl_ck     = clk_diram_cntl_ck  [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cs          = dfi__phy__cs       [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cmd1        = dfi__phy__cmd1     [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cmd0        = dfi__phy__cmd0     [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__addr        = dfi__phy__addr     [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__bank        = dfi__phy__bank     [mgr]   ;
 
-             assign DramIfc[mgr].clk_diram_data_ck     = system_inst.clk_diram_data_ck  [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__data        = system_inst.dfi__phy__data     [mgr]   ;
+             assign DramIfc[mgr].clk_diram_data_ck     = clk_diram_data_ck  [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__data        = dfi__phy__data     [mgr]   ;
 
-             assign system_inst.clk_diram_cq    [mgr]  =  DramIfc[mgr].clk_diram_cq             ;
-             assign system_inst.phy__dfi__valid [mgr]  =  DramIfc[mgr].phy__dfi__valid          ;
-             assign system_inst.phy__dfi__data  [mgr]  =  DramIfc[mgr].phy__dfi__data           ;
+             assign DramIfc[mgr].clk_diram_cq          = clk_diram_cq       [mgr]   ;
+             assign DramIfc[mgr].phy__dfi__valid       = phy__dfi__valid    [mgr]   ;
+             assign DramIfc[mgr].phy__dfi__data        = phy__dfi__data     [mgr]   ;
 
            end
     endgenerate

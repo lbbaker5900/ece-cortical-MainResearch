@@ -2081,6 +2081,8 @@ module main_mem_cntl (
                                 .clk              ( clk                   )
                                 );
 
+        assign  clear      =  1'b0  ;
+
         assign  write      =  cmd_seq_cache_fifo[chan].pipe_read ;
         assign  write_data =  {cmd_seq_cache_fifo[chan].pipe_strm, cmd_seq_cache_fifo[chan].pipe_tag};
 
@@ -2088,6 +2090,8 @@ module main_mem_cntl (
         wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE  ]   pipe_tag      ;
 
         assign  {pipe_strm, pipe_tag}  =  pipe_data  ;
+
+        assign  pipe_read = rdp_fsm[chan].read_id_fifo ;
 
       end
   endgenerate
@@ -2145,6 +2149,8 @@ module main_mem_cntl (
               end
           end
 
+        assign  pipe_read = rdp_fsm[chan].read_data_fifo ;
+
         assign  pipe_cntl      =  pipe_data[`MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_RANGE ];
         assign  pipe_dram_data =  pipe_data[`MMC_CNTL_FROM_DFI_AGGREGATE_DATA_RANGE ];
 
@@ -2181,7 +2187,7 @@ module main_mem_cntl (
                 // FIXME - using hard value for stream id
                 mmc_cntl_rdp_state_next =  (from_dfi_fifo[chan].pipe_valid && (data_return_id[chan].pipe_strm == 'd0) && ~|sending_to_stream[0] && mrc__mmc__ready_d1[0] ) ?  `MMC_CNTL_RDP_STRM0  :
                                            (from_dfi_fifo[chan].pipe_valid && (data_return_id[chan].pipe_strm == 'd1) && ~|sending_to_stream[1] && mrc__mmc__ready_d1[1] ) ?  `MMC_CNTL_RDP_STRM1  :
-                                                                                                                                                                             `MMC_CNTL_RDP_WAIT   ;
+                                                                                                                                                                              `MMC_CNTL_RDP_WAIT   ;
                 end
 
               `MMC_CNTL_RDP_STRM0: 
@@ -2203,15 +2209,15 @@ module main_mem_cntl (
 
         always @(*)
           begin
-            set_send_to_stream [0][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT ) & (data_return_id[chan].pipe_strm == 'd0) & ~|sending_to_stream[0] & mrc__mmc__ready_d1[0]  ;
-            set_send_to_stream [1][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT ) & (data_return_id[chan].pipe_strm == 'd1) & ~|sending_to_stream[1] & mrc__mmc__ready_d1[1]  ;
-
-            clear_send_to_stream [0][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM0 ) & from_dfi_fifo[chan].pipe_eom ;
-            clear_send_to_stream [1][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1 ) & from_dfi_fifo[chan].pipe_eom ;
+            set_send_to_stream [0][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT ) & data_return_id[chan].pipe_valid & (data_return_id[chan].pipe_strm == 'd0) & ~|sending_to_stream[0] & mrc__mmc__ready_d1[0]  ;
+            set_send_to_stream [1][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT ) & data_return_id[chan].pipe_valid & (data_return_id[chan].pipe_strm == 'd1) & ~|sending_to_stream[1] & mrc__mmc__ready_d1[1]  ;
+                                                                                                                           
+            clear_send_to_stream [0][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM0 ) & from_dfi_fifo[chan].pipe_valid & from_dfi_fifo[chan].pipe_eom ;
+            clear_send_to_stream [1][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1 ) & from_dfi_fifo[chan].pipe_valid & from_dfi_fifo[chan].pipe_eom ;
           end
 
-        wire  read_id_fifo     ;  // read the tag/strm ID fifo
-        wire  read_data_fifo   ;  // read the dfi data fifo
+        wire      read_id_fifo     ;  // read the tag/strm ID fifo
+        wire      read_data_fifo   ;  // read the dfi data fifo
 
         assign read_id_fifo    =   set_send_to_stream [0][chan] | set_send_to_stream [1][chan] ;
         assign read_data_fifo  =  (set_send_to_stream [0][chan] | set_send_to_stream [1][chan]) | (mmc_cntl_rdp_state != `MMC_CNTL_RDP_WAIT );  // if not waiting, we are sending
