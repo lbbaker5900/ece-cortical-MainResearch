@@ -18,31 +18,48 @@
 // FSM's
 //------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------
-// WU Instruction Decode FSM
+// Storage Descriptor Extract FSM
 
-`define MRC_CNTL_DESC_WAIT                         16'b0000_0000_0000_0001
+`define MRC_CNTL_EXTRACT_DESC_WAIT                         5'b0_0001
                                                  
-`define MRC_CNTL_DESC_EXTRACT                      16'b0000_0000_0000_0010
-`define MRC_CNTL_DESC_READ                         16'b0000_0000_0000_0100
-`define MRC_CNTL_DESC_MEM_OUT_VALID                16'b0000_0000_0000_1000
-`define MRC_CNTL_DESC_GENERATE_REQ_CHA             16'b0000_0000_0001_0000
-`define MRC_CNTL_DESC_GENERATE_REQ_CHB             16'b0000_0000_0010_0000
-`define MRC_CNTL_DESC_CHECK_STRM_FIFO              16'b0000_0000_0100_0000
-`define MRC_CNTL_DESC_CONS_FIELD                   16'b0000_0000_1000_0000
-`define MRC_CNTL_DESC_JUMP_FIELD                   16'b0000_0001_0000_0000
-`define MRC_CNTL_DESC_CALC_NUM_REQS                16'b0000_0010_0000_0000
-`define MRC_CNTL_DESC_INC_PBC                      16'b0000_0100_0000_0000
-`define MRC_CNTL_DESC_WAIT_STREAM_COMPLETE         16'b0000_1000_0000_0000
-
-`define MRC_CNTL_DESC_COMPLETE                     16'b0100_0000_0000_0000
+`define MRC_CNTL_EXTRACT_DESC_EXTRACT                      5'b0_0010
+`define MRC_CNTL_EXTRACT_DESC_START_PROCESSING             5'b0_0100
+`define MRC_CNTL_EXTRACT_DESC_COMPLETE                     5'b0_1000
                                                   
-`define MRC_CNTL_DESC_ERR                          16'b1000_0000_0000_0000
+`define MRC_CNTL_EXTRACT_DESC_ERR                          5'b1_0000
 
-`define MRC_CNTL_DESC_STATE_WIDTH         16
-`define MRC_CNTL_DESC_STATE_MSB           `MRC_CNTL_DESC_STATE_WIDTH-1
-`define MRC_CNTL_DESC_STATE_LSB           0
-`define MRC_CNTL_DESC_STATE_SIZE          (`MRC_CNTL_DESC_STATE_MSB - `MRC_CNTL_DESC_STATE_LSB +1)
-`define MRC_CNTL_DESC_STATE_RANGE          `MRC_CNTL_DESC_STATE_MSB : `MRC_CNTL_DESC_STATE_LSB
+`define MRC_CNTL_EXTRACT_DESC_STATE_WIDTH         5
+`define MRC_CNTL_EXTRACT_DESC_STATE_MSB           `MRC_CNTL_EXTRACT_DESC_STATE_WIDTH-1
+`define MRC_CNTL_EXTRACT_DESC_STATE_LSB           0
+`define MRC_CNTL_EXTRACT_DESC_STATE_SIZE          (`MRC_CNTL_EXTRACT_DESC_STATE_MSB - `MRC_CNTL_EXTRACT_DESC_STATE_LSB +1)
+`define MRC_CNTL_EXTRACT_DESC_STATE_RANGE          `MRC_CNTL_EXTRACT_DESC_STATE_MSB : `MRC_CNTL_EXTRACT_DESC_STATE_LSB
+
+//--------------------------------------------------------
+// Storage Descriptor Process FSM
+
+`define MRC_CNTL_PROC_STORAGE_DESC_WAIT                         16'b0000_0000_0000_0001
+                                                 
+`define MRC_CNTL_PROC_STORAGE_DESC_EXTRACT                      16'b0000_0000_0000_0010
+`define MRC_CNTL_PROC_STORAGE_DESC_READ                         16'b0000_0000_0000_0100
+`define MRC_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID                16'b0000_0000_0000_1000
+`define MRC_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA             16'b0000_0000_0001_0000
+`define MRC_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB             16'b0000_0000_0010_0000
+`define MRC_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO              16'b0000_0000_0100_0000
+`define MRC_CNTL_PROC_STORAGE_DESC_CONS_FIELD                   16'b0000_0000_1000_0000
+`define MRC_CNTL_PROC_STORAGE_DESC_JUMP_FIELD                   16'b0000_0001_0000_0000
+`define MRC_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS                16'b0000_0010_0000_0000
+`define MRC_CNTL_PROC_STORAGE_DESC_INC_PBC                      16'b0000_0100_0000_0000
+`define MRC_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE         16'b0000_1000_0000_0000
+
+`define MRC_CNTL_PROC_STORAGE_DESC_COMPLETE                     16'b0100_0000_0000_0000
+                                                  
+`define MRC_CNTL_PROC_STORAGE_DESC_ERR                          16'b1000_0000_0000_0000
+
+`define MRC_CNTL_PROC_STORAGE_DESC_STATE_WIDTH         16
+`define MRC_CNTL_PROC_STORAGE_DESC_STATE_MSB           `MRC_CNTL_PROC_STORAGE_DESC_STATE_WIDTH-1
+`define MRC_CNTL_PROC_STORAGE_DESC_STATE_LSB           0
+`define MRC_CNTL_PROC_STORAGE_DESC_STATE_SIZE          (`MRC_CNTL_PROC_STORAGE_DESC_STATE_MSB - `MRC_CNTL_PROC_STORAGE_DESC_STATE_LSB +1)
+`define MRC_CNTL_PROC_STORAGE_DESC_STATE_RANGE          `MRC_CNTL_PROC_STORAGE_DESC_STATE_MSB : `MRC_CNTL_PROC_STORAGE_DESC_STATE_LSB
 
 //--------------------------------------------------------
 // Stream Data FSM

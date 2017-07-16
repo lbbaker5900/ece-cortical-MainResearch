@@ -1,0 +1,48 @@
+################################################################################
+# Copyright 2016 Tezzaron Semiconductor
+#    All Rights Reserved
+#    This file includes the confidential information of Tezzaron Semiconductor.
+#    The receiver of this confidential information shall not disclose it
+#    to any third party and shall protect its confidentiality.
+#---------------------------------------------------------------------------
+#   Warranty:
+#   Use all material in this file at your own risk. 
+#   Tezzaron Semiconductor makes no claims about any material
+#   contained in this file.
+################################################################################
+# Two possible ways to configure the memory files:- 
+#     [1] BL_2 mode (default) 
+#     [2] BL_8 mode
+#
+# In BL_2 mode:-
+# --------------
+# Format the file as hex values and in the following order:
+# --------+---------+---------+-----------+---------+-------------------
+#         | Odd or  |         |   Row or  | Cache   | Data, for example
+# Port    | Even    |   Bank  |   Page    | Line    | fedcba9876543210
+# Address | Channel |   Id    |   Id      | Address |
+# --------+---------+---------+-----------+---------+-------------------
+# 0 to 63 | 0 or 1  | 0 to 31 | 0 to 4095 | 0 to 63 | <64-bit HEX DATA>
+# 0  0x3f | 0  0x1  | 0  0x1f | 0   0xfff | 0  0x3f | 
+# --------+---------+---------+-----------+---------+-------------------
+#
+# Example of BL_2 (Default) mode
+
+0 0 0 0 0 cafebabebeefdead
+0 0 0 0 1 deadbeefbabecafe
+0 1 0 0 0 aa5500ffdeadbeef
+0 1 0 0 1 55aa00ee01234567
+0 0 14 9f2 22 3bc244b33e1501bb
+
+# record: 1
+#         port_id    = 0x0
+#         channel_id = 0x0
+#         bank_id    = 0x14
+#         page_id    = 0x9f2
+#         cache_addr = 0x22
+#         data       = 0x3bc244b33e1501bb
+#
+
+#===============================================================================
+#                                   THE END
+#===============================================================================

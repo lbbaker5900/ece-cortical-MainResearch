@@ -36,16 +36,16 @@ module dfi(
             // - provide per channel signals
             // - DFI will handle SDR->DDR conversion
             //
-            output  reg                                                                         dfi__mmc__init_done                            ,
-            output  reg                                                                         dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ] ,
-            output  reg   [`COMMON_STD_INTF_CNTL_RANGE        ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ] ,
-            output  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire                                                                        mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire                                                                        mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire                                                                        mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE       ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire  [`MGR_DRAM_PHY_ADDRESS_RANGE        ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ] ,
+            output  reg                                                                           dfi__mmc__init_done                            ,
+            output  reg                                                                           dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ] ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE          ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ] ,
+            output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ] ,
+            input   wire                                                                          mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ] ,
+            input   wire                                                                          mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ] ,
+            input   wire                                                                          mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ] ,
+            input   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ] ,
+            input   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ] ,
+            input   wire  [`MGR_DRAM_PHY_ADDRESS_RANGE          ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ] ,
 
   
             //--------------------------------------------------------------------------------
@@ -126,7 +126,6 @@ module dfi(
 
   //----------------------------------------------------------------------------------------------------
   // Control page and cache clock phases
-  reg dram_cmd_mode ;
   reg dram_chan_mode;
 
   always@(posedge clk_diram2x)
@@ -135,13 +134,6 @@ module dfi(
        dram_chan_mode <= 1'b1;
     else
        dram_chan_mode <= ~dram_chan_mode; 
-  end
-  always@(posedge clk_diram)
-  begin
-    if(reset_poweron || !init_done_d1)
-       dram_cmd_mode <= 1'b1;
-    else
-       dram_cmd_mode <= ~dram_cmd_mode; 
   end
   
   genvar word ;

@@ -30,28 +30,36 @@
 
 module system (
 
-        //--------------------------------------------------------------------------------
-        // Clocks for SDR/DDR
-        clk_diram       ,
-        clk_diram2x     ,
+        //-----------------------------------------------------------------------------------------------------
+        // DFI Interface to DRAM
+        output  wire                                           clk_diram_cntl_ck   [`MGR_ARRAY_NUM_OF_MGR ] ,
+        output  wire                                           dfi__phy__cs        [`MGR_ARRAY_NUM_OF_MGR ] , 
+        output  wire                                           dfi__phy__cmd1      [`MGR_ARRAY_NUM_OF_MGR ] , 
+        output  wire                                           dfi__phy__cmd0      [`MGR_ARRAY_NUM_OF_MGR ] ,
+        output  wire       [`MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank      [`MGR_ARRAY_NUM_OF_MGR ] ,
+        output  wire       [`MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr      [`MGR_ARRAY_NUM_OF_MGR ] ,
+        
+        output  wire       [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck   [`MGR_ARRAY_NUM_OF_MGR ] ,
+        output  wire       [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data      [`MGR_ARRAY_NUM_OF_MGR ] ,
+        
+        //-----------------------------------------------------------------------------------------------------
+        // DFI Interface from DRAM
+        //
+        input   wire       [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_cq        [`MGR_ARRAY_NUM_OF_MGR ] ,
+        input   wire       [`MGR_DRAM_CLK_GROUP_RANGE       ]  phy__dfi__valid     [`MGR_ARRAY_NUM_OF_MGR ] ,
+        input   wire       [`MGR_DRAM_INTF_RANGE            ]  phy__dfi__data      [`MGR_ARRAY_NUM_OF_MGR ] ,
 
-        //-------------------------------------------------------------------------------------------
-        // General
-        clk              ,
-        reset_poweron    
+        //-----------------------------------------------------------------------------------------------------
+        // Clocks for SDR/DDR
+        input   wire                                           clk_diram                                    ,
+        input   wire                                           clk_diram2x                                  ,
+                                                                                                         
+        //-----------------------------------------------------------------------------------------------------
+        // General                                                                                       
+        input   wire                                           clk                                          ,
+        input   wire                                           reset_poweron                                
  
 );
-
-
-  //--------------------------------------------------------------------------------
-  // Clocks for SDR/DDR
-  input                      clk_diram      ;
-  input                      clk_diram2x    ;
-  
-  //-------------------------------------------------------------------------------------------
-  // General
-  input                      clk            ;
-  input                      reset_poweron  ;
 
 
 
@@ -62,6 +70,7 @@ module system (
   //--------------------------------------------------------------------------------
   // DFI Interface to DRAM
   //
+  /*
   wire                                         clk_diram_cntl_ck   [`MGR_ARRAY_NUM_OF_MGR ] ;
   wire                                         dfi__phy__cs        [`MGR_ARRAY_NUM_OF_MGR ] ; 
   wire                                         dfi__phy__cmd1      [`MGR_ARRAY_NUM_OF_MGR ] ; 
@@ -78,6 +87,7 @@ module system (
   wire     [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_cq        [`MGR_ARRAY_NUM_OF_MGR ] ;
   wire     [`MGR_DRAM_CLK_GROUP_RANGE       ]  phy__dfi__valid     [`MGR_ARRAY_NUM_OF_MGR ] ;
   wire     [`MGR_DRAM_INTF_RANGE            ]  phy__dfi__data      [`MGR_ARRAY_NUM_OF_MGR ] ;
+  */
 
   //-------------------------------------------------------------------------------------------
   // NoC

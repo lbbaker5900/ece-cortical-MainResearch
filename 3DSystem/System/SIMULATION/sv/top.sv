@@ -102,18 +102,58 @@ module top;
     // System
     //
 
+    //--------------------------------------------------------------------------------
+    // DFI Interface to DRAM
+    //
+    wire                                         clk_diram_cntl_ck   [`MGR_ARRAY_NUM_OF_MGR ] ;
+    wire                                         dfi__phy__cs        [`MGR_ARRAY_NUM_OF_MGR ] ; 
+    wire                                         dfi__phy__cmd1      [`MGR_ARRAY_NUM_OF_MGR ] ; 
+    wire                                         dfi__phy__cmd0      [`MGR_ARRAY_NUM_OF_MGR ] ;
+    wire     [`MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank      [`MGR_ARRAY_NUM_OF_MGR ] ;
+    wire     [`MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr      [`MGR_ARRAY_NUM_OF_MGR ] ;
+    
+    wire     [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck   [`MGR_ARRAY_NUM_OF_MGR ] ;
+    wire     [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data      [`MGR_ARRAY_NUM_OF_MGR ] ;
+    
+    //--------------------------------------------------------------------------------
+    // DFI Interface from DRAM
+    //
+    wire     [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_cq        [`MGR_ARRAY_NUM_OF_MGR ] ;
+    wire     [`MGR_DRAM_CLK_GROUP_RANGE       ]  phy__dfi__valid     [`MGR_ARRAY_NUM_OF_MGR ] ;
+    wire     [`MGR_DRAM_INTF_RANGE            ]  phy__dfi__data      [`MGR_ARRAY_NUM_OF_MGR ] ;
+
     system system_inst (
        
-        //-------------------------------
-        // Clocks for SDR/DDR
-        .clk_diram         ( clk           ),
-        .clk_diram2x       ( clk2x         ),
+        //--------------------------------------------------------------------------------
+        // DFI Interface to DRAM
+        //
+        .clk_diram_cntl_ck    ( clk_diram_cntl_ck  ), 
+        .dfi__phy__cs         ( dfi__phy__cs       ),
+        .dfi__phy__cmd1       ( dfi__phy__cmd1     ),
+        .dfi__phy__cmd0       ( dfi__phy__cmd0     ),
+        .dfi__phy__addr       ( dfi__phy__addr     ),
+        .dfi__phy__bank       ( dfi__phy__bank     ),
+                                                   
+        .clk_diram_data_ck    ( clk_diram_data_ck  ), 
+        .dfi__phy__data       ( dfi__phy__data     ),
 
-        //-------------------------------
+        //--------------------------------------------------------------------------------
+        // DFI Interface from DRAM
+        //
+        .clk_diram_cq         ( clk_diram_cq       ),
+        .phy__dfi__valid      ( phy__dfi__valid    ),
+        .phy__dfi__data       ( phy__dfi__data     ),
+
+        //--------------------------------------------------------------------------------
+        // Clocks for SDR/DDR
+        .clk_diram            ( clk                ),
+        .clk_diram2x          ( clk2x              ),
+
+        //--------------------------------------------------------------------------------
         // General
         //
-        .clk               ( clk            ),
-        .reset_poweron     ( reset_poweron  )
+        .clk                  ( clk                ),
+        .reset_poweron        ( reset_poweron      )
     );
 
 
@@ -150,6 +190,47 @@ module top;
                    .reset                      ( reset_poweron             ) 
                   );
 
+    //----------------------------------------------------------------------------------------------------
+    // DiRAM4
+    //
+    genvar mgr;
+    localparam MGR_ARRAY_NUM_OF_MGR = `MGR_ARRAY_NUM_OF_MGR ;
+    generate
+      if (MGR_ARRAY_NUM_OF_MGR <= 4)
+        begin : diram
+            for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1) 
+              begin : diram_port_arrays
+ 
+                wire  qvld ;
+                wire  cq   ;
+                diram4   #(.DQ_WIDTH    (`MGR_DRAM_INTF_WIDTH),
+                           .PORT_COUNT  (                   1),
+                           .DO_MEM_INIT (                   1)
+                          )
+                          diram_inst(
+                                    .clk       ( clk ),
+                                    .clk_n     (~clk ),
+                                                
+                                    .cs_n      ( dfi__phy__cs    [mgr] ),                     
+                                    .cmd1      ( dfi__phy__cmd1  [mgr] ), 
+                                    .cmd0      ( dfi__phy__cmd0  [mgr] ), 
+                                    .addr      ( dfi__phy__addr  [mgr] ),
+                                    .baddr     ( dfi__phy__bank  [mgr] ),
+                                                                 
+                                    .d         ( dfi__phy__data  [mgr] ),
+                                    //.q         ( ),
+                                    .q         ( phy__dfi__data  [mgr] ),
+                                    .cq_n      (                       ),
+                                    .cq        ( cq                    ),
+                                    .qvld      ( qvld                  )
+                                    );
+
+                assign  phy__dfi__valid [mgr] = {`MGR_DRAM_CLK_GROUP_WIDTH {qvld}} ;
+                assign  clk_diram_cq    [mgr] = {`MGR_DRAM_CLK_GROUP_WIDTH {cq  }} ;
+              end
+        end
+    endgenerate
+    
     //-------------------------------------------------------------------------------------------
     // General system connectivity
     //  - loop thisSync to allSync from st_gen_ifc
@@ -207,7 +288,6 @@ module top;
 
     //------------------------------------------------------------
     // Local NoC Interfaces
-    genvar mgr;
     generate
        for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
            begin
@@ -324,19 +404,19 @@ module top;
     generate
        for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
            begin
-             assign DramIfc[mgr].clk_diram_cntl_ck     = system_inst.clk_diram_cntl_ck  [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__cs          = system_inst.dfi__phy__cs       [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__cmd1        = system_inst.dfi__phy__cmd1     [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__cmd0        = system_inst.dfi__phy__cmd0     [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__addr        = system_inst.dfi__phy__addr     [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__bank        = system_inst.dfi__phy__bank     [mgr]   ;
+             assign DramIfc[mgr].clk_diram_cntl_ck     = clk_diram_cntl_ck  [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cs          = dfi__phy__cs       [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cmd1        = dfi__phy__cmd1     [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__cmd0        = dfi__phy__cmd0     [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__addr        = dfi__phy__addr     [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__bank        = dfi__phy__bank     [mgr]   ;
 
-             assign DramIfc[mgr].clk_diram_data_ck     = system_inst.clk_diram_data_ck  [mgr]   ;
-             assign DramIfc[mgr].dfi__phy__data        = system_inst.dfi__phy__data     [mgr]   ;
+             assign DramIfc[mgr].clk_diram_data_ck     = clk_diram_data_ck  [mgr]   ;
+             assign DramIfc[mgr].dfi__phy__data        = dfi__phy__data     [mgr]   ;
 
-             assign system_inst.clk_diram_cq    [mgr]  =  DramIfc[mgr].clk_diram_cq             ;
-             assign system_inst.phy__dfi__valid [mgr]  =  DramIfc[mgr].phy__dfi__valid          ;
-             assign system_inst.phy__dfi__data  [mgr]  =  DramIfc[mgr].phy__dfi__data           ;
+             assign DramIfc[mgr].clk_diram_cq          = clk_diram_cq       [mgr]   ;
+             assign DramIfc[mgr].phy__dfi__valid       = phy__dfi__valid    [mgr]   ;
+             assign DramIfc[mgr].phy__dfi__data        = phy__dfi__data     [mgr]   ;
 
            end
     endgenerate

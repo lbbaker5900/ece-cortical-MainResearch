@@ -37,26 +37,26 @@ module main_mem_cntl (
                                                                                     
             // MMC provides data from each DRAM channel
             // - response must be in order of request
-            output  reg   [`MGR_NUM_OF_STREAMS_RANGE          ]                                 mmc__mrc__valid   [`MGR_DRAM_NUM_CHANNELS ]                        ,
-            output  reg   [`COMMON_STD_INTF_CNTL_RANGE        ]                                 mmc__mrc__cntl    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ,
-            input   wire  [`MGR_NUM_OF_STREAMS_RANGE          ]                                 mrc__mmc__ready   [`MGR_DRAM_NUM_CHANNELS ]                        ,
-            output  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__mrc__data    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ,
+            output  reg   [`MGR_NUM_OF_STREAMS_RANGE            ]                                 mmc__mrc__valid   [`MGR_DRAM_NUM_CHANNELS ]                        ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mmc__mrc__cntl    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ,
+            input   wire  [`MGR_NUM_OF_STREAMS_RANGE            ]                                 mrc__mmc__ready   [`MGR_DRAM_NUM_CHANNELS ]                        ,
+            output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__mrc__data    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ,
 
             //--------------------------------------------------------------------------------
             // DFI Interface
             // - provide per channel signals
             // - DFI will handle SDR->DDR conversion
-            input   wire                                                                        dfi__mmc__init_done                             ,
-            input   wire                                                                        dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]  ,
-            input   wire  [`COMMON_STD_INTF_CNTL_RANGE        ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ]  ,
-            input   wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            input   wire                                                                          dfi__mmc__init_done                             ,
+            input   wire                                                                          dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]  ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            input   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ]  ,
 
-            output  reg                                                                         mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]  ,
-            output  reg                                                                         mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]  ,
-            output  reg                                                                         mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]  ,
-            output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE       ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]  ,
-            output  reg   [`MGR_DRAM_PHY_ADDRESS_RANGE        ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]  ,
-            output  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg                                                                           mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg                                                                           mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg                                                                           mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg   [`MGR_DRAM_PHY_ADDRESS_RANGE          ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ]  ,
 
   
             //-------------------------------
@@ -98,10 +98,10 @@ module main_mem_cntl (
         end
     end
 
-  reg  [`MGR_NUM_OF_STREAMS_RANGE          ]                                   mmc__mrc__valid_e1   [`MGR_DRAM_NUM_CHANNELS ]                        ;
-  reg  [`COMMON_STD_INTF_CNTL_RANGE        ]                                   mmc__mrc__cntl_e1    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
-  reg  [`MGR_NUM_OF_STREAMS_RANGE          ]                                   mrc__mmc__ready_d1   [`MGR_DRAM_NUM_CHANNELS ]                        ;
-  reg  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__mrc__data_e1    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
+  reg  [`MGR_NUM_OF_STREAMS_RANGE            ]                                   mmc__mrc__valid_e1   [`MGR_DRAM_NUM_CHANNELS ]                        ;
+  reg  [`COMMON_STD_INTF_CNTL_RANGE          ]                                   mmc__mrc__cntl_e1    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
+  reg  [`MGR_NUM_OF_STREAMS_RANGE            ]                                   mrc__mmc__ready_d1   [`MGR_DRAM_NUM_CHANNELS ]                        ;
+  reg  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__mrc__data_e1    [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
 
   genvar chan, strm, word, bank ;
   generate
@@ -144,7 +144,7 @@ module main_mem_cntl (
   reg                                                                          dfi__mmc__init_done_d1                            ;
   reg                                                                          dfi__mmc__valid_d1      [`MGR_DRAM_NUM_CHANNELS ] ;
   reg   [`COMMON_STD_INTF_CNTL_RANGE        ]                                  dfi__mmc__cntl_d1       [`MGR_DRAM_NUM_CHANNELS ] ;
-  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]    dfi__mmc__data_d1       [`MGR_DRAM_NUM_CHANNELS ] ;
+  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]    dfi__mmc__data_d1       [`MGR_DRAM_NUM_CHANNELS ] ;
 
   always @(posedge clk)
     begin
@@ -176,7 +176,7 @@ module main_mem_cntl (
   reg                                                                          mmc__dfi__cmd1_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE       ]                                  mmc__dfi__bank_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
   reg   [`MGR_DRAM_PHY_ADDRESS_RANGE        ]                                  mmc__dfi__addr_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
-  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__dfi__data_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__dfi__data_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
 
   always @(posedge clk)
     begin
@@ -365,6 +365,7 @@ module main_mem_cntl (
   reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE      ]    cache_cmd_grant_request_cmd   [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
   reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    cache_cmd_grant_request_page  [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
 
+  reg  [`DRAM_ACC_NUM_OF_CMDS_VECTOR     ]    cmd_can_go                    [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
   reg                                         can_go                        [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
   reg                                         can_go_checker_ready          [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
   reg                                         adjacent_bank_request         [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]  ;
@@ -399,6 +400,7 @@ module main_mem_cntl (
             reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE ]   chan_bank_request_page          ;
             reg                                     chan_bank_adjacent_bank_request ;
 
+            wire  [`DRAM_ACC_NUM_OF_CMDS_VECTOR ]   chan_bank_cmd_can_go            ; // vector in order of DRAM_ACC_CMD_IS_*
             wire                                    chan_bank_can_go_valid          ;
             wire                                    chan_bank_can_go                ;
             wire                                    chan_bank_checker_ready         ;
@@ -424,6 +426,7 @@ module main_mem_cntl (
 
                 //-------------------------------
                 // Outputs
+                .cmd_can_go              ( chan_bank_cmd_can_go    ),
                 .can_go                  ( chan_bank_can_go        ),
                 .can_go_valid            ( chan_bank_can_go_valid  ),
                 .ready                   ( chan_bank_checker_ready ),
@@ -473,10 +476,11 @@ module main_mem_cntl (
             // use because we cannot index the generate with a variable
             always @(*)
               begin
+                cmd_can_go                  [chan] [bank] = chan_bank_cmd_can_go                      ;
                 can_go                      [chan] [bank] = chan_bank_can_go & chan_bank_can_go_valid ;
                 can_go_checker_ready        [chan] [bank] = chan_bank_checker_ready                   ;
-                channel_bank_a_page_is_open [chan] [bank] = a_page_is_open   ; 
-                channel_bank_open_page      [chan] [bank] = open_page_id     ; 
+                channel_bank_a_page_is_open [chan] [bank] = a_page_is_open                            ; 
+                channel_bank_open_page      [chan] [bank] = open_page_id                              ; 
               end
         
 
@@ -1106,11 +1110,6 @@ module main_mem_cntl (
 
         assign clear = 1'b0 ;
  
-        always @(*)
-          begin
-            pipe_read = pipe_valid ;
-          end
-
       end
   endgenerate
 
@@ -1175,7 +1174,7 @@ module main_mem_cntl (
         generic_pipelined_w_peek_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_CACHE_CMD_SEQ_FIFO_DEPTH                 ),
                                         .GENERIC_FIFO_THRESHOLD  (`MMC_CNTL_CACHE_CMD_SEQ_FIFO_ALMOST_FULL_THRESHOLD ),
                                         .GENERIC_FIFO_DATA_WIDTH (`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_FIFO_WIDTH       )
-                        ) page_cmd_gpfifo (
+                        ) cache_cmd_gpfifo (
                                  // Status
                                 .almost_full           ( almost_full           ),
                                  // Write                                      
@@ -1290,34 +1289,34 @@ module main_mem_cntl (
               `MMC_CNTL_CMD_CHECK_PO: 
                 // Always make sure we start on a PO
                 mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_page_fifo [chan].pipe_bank]                                                                 ) ?  `MMC_CNTL_CMD_CHECK_PO   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+//                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+//                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+//                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+//                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
                                                                                                                                                                           `MMC_CNTL_CMD_CHECK_INIT ;
               `MMC_CNTL_CMD_CHECK_PC: 
                 // Always make sure we start on a PO
                 mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_page_fifo [chan].pipe_bank]                                                                 ) ?  `MMC_CNTL_CMD_CHECK_PC   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+ //                                                ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+ //                                                ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+ //                                                ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+ //                                                ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
                                                                                                                                                                           `MMC_CNTL_CMD_CHECK_INIT ;
               `MMC_CNTL_CMD_CHECK_CR: 
                 // Always make sure we start on a PO
                 mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_cache_fifo [chan].pipe_bank]                                                                ) ?  `MMC_CNTL_CMD_CHECK_CR   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+  //                                               ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+  //                                               ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+  //                                               ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+  //                                               ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
                                                                                                                                                                           `MMC_CNTL_CMD_CHECK_INIT ;
               `MMC_CNTL_CMD_CHECK_CW: 
                 // Always make sure we start on a PO
                 mmc_cntl_cmd_check_state_next =  (~can_go [chan][cmd_seq_cache_fifo [chan].pipe_bank]                                                                ) ?  `MMC_CNTL_CMD_CHECK_CW   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
-                                                 ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
-                                                 ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
+ //                                                ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PO)               ) ?  `MMC_CNTL_CMD_CHECK_PO   :
+ //                                                ( cmd_seq_page_fifo  [chan].pipe_valid && (cmd_seq_page_fifo  [chan].pipe_cmd == `DRAM_ACC_CMD_IS_PC) && tags_synced) ?  `MMC_CNTL_CMD_CHECK_PC   :
+ //                                                ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR)               ) ?  `MMC_CNTL_CMD_CHECK_CR   :
+ //                                                ( cmd_seq_cache_fifo [chan].pipe_valid && (cmd_seq_cache_fifo [chan].pipe_cmd == `DRAM_ACC_CMD_IS_CW)               ) ?  `MMC_CNTL_CMD_CHECK_CW   :
                                                                                                                                                                           `MMC_CNTL_CMD_CHECK_INIT ;
       
               `MMC_CNTL_CMD_CHECK_ERR: 
@@ -2082,6 +2081,8 @@ module main_mem_cntl (
                                 .clk              ( clk                   )
                                 );
 
+        assign  clear      =  1'b0  ;
+
         assign  write      =  cmd_seq_cache_fifo[chan].pipe_read ;
         assign  write_data =  {cmd_seq_cache_fifo[chan].pipe_strm, cmd_seq_cache_fifo[chan].pipe_tag};
 
@@ -2089,6 +2090,8 @@ module main_mem_cntl (
         wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE  ]   pipe_tag      ;
 
         assign  {pipe_strm, pipe_tag}  =  pipe_data  ;
+
+        assign  pipe_read = rdp_fsm[chan].read_id_fifo ;
 
       end
   endgenerate
@@ -2146,6 +2149,8 @@ module main_mem_cntl (
               end
           end
 
+        assign  pipe_read = rdp_fsm[chan].read_data_fifo ;
+
         assign  pipe_cntl      =  pipe_data[`MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_RANGE ];
         assign  pipe_dram_data =  pipe_data[`MMC_CNTL_FROM_DFI_AGGREGATE_DATA_RANGE ];
 
@@ -2182,7 +2187,7 @@ module main_mem_cntl (
                 // FIXME - using hard value for stream id
                 mmc_cntl_rdp_state_next =  (from_dfi_fifo[chan].pipe_valid && (data_return_id[chan].pipe_strm == 'd0) && ~|sending_to_stream[0] && mrc__mmc__ready_d1[0] ) ?  `MMC_CNTL_RDP_STRM0  :
                                            (from_dfi_fifo[chan].pipe_valid && (data_return_id[chan].pipe_strm == 'd1) && ~|sending_to_stream[1] && mrc__mmc__ready_d1[1] ) ?  `MMC_CNTL_RDP_STRM1  :
-                                                                                                                                                                             `MMC_CNTL_RDP_WAIT   ;
+                                                                                                                                                                              `MMC_CNTL_RDP_WAIT   ;
                 end
 
               `MMC_CNTL_RDP_STRM0: 
@@ -2204,21 +2209,21 @@ module main_mem_cntl (
 
         always @(*)
           begin
-            set_send_to_stream [0][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT ) & (data_return_id[chan].pipe_strm == 'd0) & ~|sending_to_stream[0] & mrc__mmc__ready_d1[0]  ;
-            set_send_to_stream [1][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT ) & (data_return_id[chan].pipe_strm == 'd1) & ~|sending_to_stream[1] & mrc__mmc__ready_d1[1]  ;
-
-            clear_send_to_stream [0][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM0 ) & from_dfi_fifo[chan].pipe_eom ;
-            clear_send_to_stream [1][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1 ) & from_dfi_fifo[chan].pipe_eom ;
+            set_send_to_stream [0][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT ) & data_return_id[chan].pipe_valid & (data_return_id[chan].pipe_strm == 'd0) & ~|sending_to_stream[0] & mrc__mmc__ready_d1[0]  ;
+            set_send_to_stream [1][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT ) & data_return_id[chan].pipe_valid & (data_return_id[chan].pipe_strm == 'd1) & ~|sending_to_stream[1] & mrc__mmc__ready_d1[1]  ;
+                                                                                                                           
+            clear_send_to_stream [0][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM0 ) & from_dfi_fifo[chan].pipe_valid & from_dfi_fifo[chan].pipe_eom ;
+            clear_send_to_stream [1][chan] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1 ) & from_dfi_fifo[chan].pipe_valid & from_dfi_fifo[chan].pipe_eom ;
           end
 
-        wire  read_id_fifo     ;  // read the tag/strm ID fifo
-        wire  read_data_fifo   ;  // read the dfi data fifo
+        wire      read_id_fifo     ;  // read the tag/strm ID fifo
+        wire      read_data_fifo   ;  // read the dfi data fifo
 
         assign read_id_fifo    =   set_send_to_stream [0][chan] | set_send_to_stream [1][chan] ;
         assign read_data_fifo  =  (set_send_to_stream [0][chan] | set_send_to_stream [1][chan]) | (mmc_cntl_rdp_state != `MMC_CNTL_RDP_WAIT );  // if not waiting, we are sending
 
         // add a pipeline to data to align with the read signal
-        reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   strm_data    ;
+        reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   strm_data    ;
         for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS; word=word+1) 
           begin: strm_data_reg
             always @(posedge clk)
@@ -2249,8 +2254,8 @@ module main_mem_cntl (
 
 
   // For each stream, grab the data from the sending channel
-  reg                                                                         strm_data_valid    [`MGR_NUM_OF_STREAMS ] ;
-  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   strm_data          [`MGR_NUM_OF_STREAMS ] ;
+  reg                                                                           strm_data_valid    [`MGR_NUM_OF_STREAMS ] ;
+  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   strm_data          [`MGR_NUM_OF_STREAMS ] ;
 
   generate
     for (strm=0; strm<`MGR_NUM_OF_STREAMS; strm=strm+1) 
