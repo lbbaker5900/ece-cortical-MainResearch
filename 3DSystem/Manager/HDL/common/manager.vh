@@ -529,7 +529,7 @@
 `define MGR_DRAM_NUM_BANKS_VECTOR_RANGE                        `MGR_DRAM_NUM_BANKS_VECTOR_MSB : `MGR_DRAM_NUM_BANKS_VECTOR_LSB
 
 
-`define MGR_DRAM_PHY_BURST_WIDTH                      `MGR_DRAM_BURST_SIZE 
+`define MGR_DRAM_PHY_BURST_WIDTH                      (`CLOG2(`MGR_DRAM_BURST_SIZE ))
 `define MGR_DRAM_PHY_BURST_MSB                         `MGR_DRAM_PHY_BURST_WIDTH-1
 `define MGR_DRAM_PHY_BURST_LSB                         0
 `define MGR_DRAM_PHY_BURST_SIZE                        (`MGR_DRAM_PHY_BURST_MSB - `MGR_DRAM_PHY_BURST_LSB +1)

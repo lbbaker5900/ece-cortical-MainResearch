@@ -121,13 +121,16 @@
 //  - combine the channel return data with the requesting stream
 // 
 
-`define MMC_CNTL_RDP_WAIT                            5'b0_0001
-`define MMC_CNTL_RDP_STRM0                           5'b0_0010
-`define MMC_CNTL_RDP_STRM1                           5'b0_0100
+`define MMC_CNTL_RDP_WAIT_P0                         8'b0000_0001
+`define MMC_CNTL_RDP_WAIT_P1                         8'b0000_0010
+`define MMC_CNTL_RDP_STRM0_P0                        8'b0000_0100
+`define MMC_CNTL_RDP_STRM0_P1                        8'b0000_1000
+`define MMC_CNTL_RDP_STRM1_P0                        8'b0001_0000
+`define MMC_CNTL_RDP_STRM1_P1                        8'b0010_0000
                                                             
-`define MMC_CNTL_RDP_ERR                             5'b1_0000
+`define MMC_CNTL_RDP_ERR                             8'b1000_0000
 
-`define MMC_CNTL_RDP_STATE_WIDTH         5
+`define MMC_CNTL_RDP_STATE_WIDTH         8
 `define MMC_CNTL_RDP_STATE_MSB           `MMC_CNTL_RDP_STATE_WIDTH-1
 `define MMC_CNTL_RDP_STATE_LSB           0
 `define MMC_CNTL_RDP_STATE_SIZE          (`MMC_CNTL_RDP_STATE_MSB - `MMC_CNTL_RDP_STATE_LSB +1)

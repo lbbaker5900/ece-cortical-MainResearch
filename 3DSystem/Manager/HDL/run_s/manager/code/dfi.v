@@ -197,12 +197,13 @@ module dfi(
   genvar chan ;
   generate
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
-      begin
-        always @(posedge clk_diram2x)
+      begin : burst_cnt
+        always @(posedge clk)
           begin
-            burst_count [chan]  <= (reset_poweron             ) ? 'd0                      :
-                                   (dfi__mmc__valid_e3 [chan] ) ? burst_count [chan] + 'd1 :
-                                                                  burst_count [chan]       ;
+            burst_count [chan]  <= (reset_poweron                                                              ) ? 'd0                      :
+                                   (dfi__mmc__valid_e3 [chan] && (burst_count [chan] == `MGR_DRAM_BURST_SIZE-1)) ? 'd0                      :
+                                   (dfi__mmc__valid_e3 [chan]                                                  ) ? burst_count [chan] + 'd1 :
+                                                                                                                   burst_count [chan]       ;
       
           end
       end
@@ -221,7 +222,7 @@ module dfi(
 
   generate
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
-      begin
+      begin : ddr2sdr
         always @(posedge clk_diram2x)
           begin
             dfi__mmc__valid_e3 [chan]  <= (clk_diram == chan ) ? dfi__mmc__valid_e2        :
@@ -235,14 +236,13 @@ module dfi(
 
   generate
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
-      begin
+      begin : validAndcntl
         always @(posedge clk)
           begin
             dfi__mmc__valid [chan] <= dfi__mmc__valid_e3 [chan] ;
          
             dfi__mmc__cntl  [chan] <= (burst_count [chan] == 'd0                    ) ? `COMMON_STD_INTF_CNTL_SOM : 
                                       (burst_count [chan] == `MGR_DRAM_BURST_SIZE-1 ) ? `COMMON_STD_INTF_CNTL_EOM : 
-                                      (burst_count [chan] == `MGR_DRAM_BURST_SIZE   ) ? `COMMON_STD_INTF_CNTL_SOM : 
                                                                                         `COMMON_STD_INTF_CNTL_MOM ;
           end
       end
