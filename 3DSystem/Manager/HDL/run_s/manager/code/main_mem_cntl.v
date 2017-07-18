@@ -512,8 +512,9 @@ module main_mem_cntl (
     reg  [`MGR_DRAM_LINE_ADDRESS_RANGE ]    strm_line_latched     [`MGR_DRAM_NUM_CHANNELS] [`MGR_NUM_OF_STREAMS ] ;
   `endif                                                       
                                                                
-  reg  [`MGR_NUM_OF_STREAMS_VECTOR     ]    strm_enable           [`MGR_DRAM_NUM_CHANNELS]                        ;  // channel has granted stream access. Access granted to both streams if accessing different banks
-  reg  [`MMC_CNTL_CMD_GEN_TAG_RANGE    ]    strm_tag              [`MGR_DRAM_NUM_CHANNELS]                        ;  // this tag goes with page and cache commands generate by a strm fsm
+  reg  [`MGR_NUM_OF_STREAMS_VECTOR     ]    strm_enable           [`MGR_DRAM_NUM_CHANNELS]                        ;  // Channel has granted stream access. Access granted to both streams if accessing different banks
+  reg  [`MMC_CNTL_CMD_GEN_TAG_RANGE    ]    strm_tag              [`MGR_DRAM_NUM_CHANNELS]                        ;  // This tag goes with page and cache commands generate by a strm fsm
+                                                                                                                     // The tag may prove useful is we experience ordering deadlock 
   reg  [`DRAM_ACC_SEQ_TYPE_RANGE       ]    strm_seq_type         [`MGR_DRAM_NUM_CHANNELS]                        ;  
      
   generate
@@ -717,7 +718,7 @@ module main_mem_cntl (
                       strm_cmd_sequence_codes[0]  <=  'd `DRAM_ACC_CMD_IS_PC         ;
                       strm_cmd_sequence_codes[1]  <=  'd `DRAM_ACC_CMD_IS_PO         ;
                       strm_cmd_sequence_codes[2]  <=  'd `DRAM_ACC_CMD_IS_CR         ;
-                      strm_cmd_sequence_codes[4]  <=  'd `DRAM_ACC_CMD_IS_NOP        ;
+                      strm_cmd_sequence_codes[3]  <=  'd `DRAM_ACC_CMD_IS_NOP        ;
                     end
 
                   5'b11001 :
@@ -726,7 +727,7 @@ module main_mem_cntl (
                       strm_cmd_sequence_codes[0]  <=  'd `DRAM_ACC_CMD_IS_PC         ;
                       strm_cmd_sequence_codes[1]  <=  'd `DRAM_ACC_CMD_IS_PO         ;
                       strm_cmd_sequence_codes[2]  <=  'd `DRAM_ACC_CMD_IS_CW         ;
-                      strm_cmd_sequence_codes[4]  <=  'd `DRAM_ACC_CMD_IS_NOP        ;
+                      strm_cmd_sequence_codes[3]  <=  'd `DRAM_ACC_CMD_IS_NOP        ;
                     end
 
                   // if we are not reading or writing, then assume its a page refresh
@@ -851,27 +852,26 @@ module main_mem_cntl (
           begin
             case (mmc_cntl_strm_sel_state)
               
-              // Wait for data from all the sources before transferring to NoC
-              //  - we select stream 0  first if streams request together
+              //  - we select stream 0 first if streams request together
               //  - maybe add wait state that has knowledge of last stream processed e.g. WAIT_STRM0_LAST -> transiton to STRM10
               //
               //  FIXME: Should we consider both streams accessing the same bank/page/line ??
 
               `MMC_CNTL_STRM_SEL_WAIT: 
                 // let both channel streams continue if they are accessing different banks
-                mmc_cntl_strm_sel_state_next =  ( strm_access_request [chan][0]                                                                                                ) ?  `MMC_CNTL_STRM_SEL_STRM0  :
-                                                ( strm_access_request [chan][1]                                                                                                ) ?  `MMC_CNTL_STRM_SEL_STRM1  :
-                                                                                                                                                                                    `MMC_CNTL_STRM_SEL_WAIT   ;
+                mmc_cntl_strm_sel_state_next =  ( strm_access_request [chan][0]                                ) ?  `MMC_CNTL_STRM_SEL_STRM0  :
+                                                ( strm_access_request [chan][1]                                ) ?  `MMC_CNTL_STRM_SEL_STRM1  :
+                                                                                                                    `MMC_CNTL_STRM_SEL_WAIT   ;
       
               `MMC_CNTL_STRM_SEL_STRM0: 
-                mmc_cntl_strm_sel_state_next =  ( strm_access_done  [chan][0] &&  strm_access_request [chan][1]                                                 ) ?  `MMC_CNTL_STRM_SEL_STRM1  :
-                                                ( strm_access_done  [chan][0]                                                                                   ) ?  `MMC_CNTL_STRM_SEL_WAIT   :
-                                                                                                                                                                     `MMC_CNTL_STRM_SEL_STRM0  ;
-                                                                                                                                            
-              `MMC_CNTL_STRM_SEL_STRM1:                                                                                                     
-                mmc_cntl_strm_sel_state_next =  ( strm_access_done  [chan][1] && strm_access_request [chan][0]                                                 ) ?  `MMC_CNTL_STRM_SEL_STRM0  :
-                                                ( strm_access_done  [chan][1]                                                                                  ) ?  `MMC_CNTL_STRM_SEL_WAIT   :
-                                                                                                                                                                    `MMC_CNTL_STRM_SEL_STRM1  ;
+                mmc_cntl_strm_sel_state_next =  ( strm_access_done  [chan][0] && strm_access_request [chan][1] ) ?  `MMC_CNTL_STRM_SEL_STRM1  :
+                                                ( strm_access_done  [chan][0]                                  ) ?  `MMC_CNTL_STRM_SEL_WAIT   :
+                                                                                                                    `MMC_CNTL_STRM_SEL_STRM0  ;
+                                                                                                               
+              `MMC_CNTL_STRM_SEL_STRM1:                                                                        
+                mmc_cntl_strm_sel_state_next =  ( strm_access_done  [chan][1] && strm_access_request [chan][0] ) ?  `MMC_CNTL_STRM_SEL_STRM0  :
+                                                ( strm_access_done  [chan][1]                                  ) ?  `MMC_CNTL_STRM_SEL_WAIT   :
+                                                                                                                    `MMC_CNTL_STRM_SEL_STRM1  ;
                                                                                                                                               
                                                                                                                                               
               // If streams are accessing different banks in the same channel, maintain order in which streams gain access to the channel using the state
@@ -1205,7 +1205,7 @@ module main_mem_cntl (
   //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
   // Pass command sequence fifos
-  //  - test if command at head of sequence fifo can_go
+  //  - test if command at head of sequence fifo can_go using dram_access_timer status
   //  - 
   //  -
       
@@ -2028,10 +2028,10 @@ module main_mem_cntl (
   //
 
   
-  reg  [`MGR_NUM_OF_STREAMS_VECTOR          ]   grant_send_to_stream     [`MGR_DRAM_NUM_CHANNELS ] ;  // indicates a channel return data fsm is sending
-
-  reg  [`MGR_NUM_OF_STREAMS_VECTOR          ]   request_send_to_stream   [`MGR_DRAM_NUM_CHANNELS ] ;  // the channel return data fsm sets this if it is sending to the stream
-  reg  [`MGR_NUM_OF_STREAMS_VECTOR          ]   clear_send_to_stream     [`MGR_DRAM_NUM_CHANNELS ] ;  
+  reg  [`MGR_NUM_OF_STREAMS_VECTOR          ]   grant_send_to_stream       [`MGR_DRAM_NUM_CHANNELS ] ;  // indicates a channel return data fsm is sending
+                                                                          
+  reg  [`MGR_NUM_OF_STREAMS_VECTOR          ]   request_send_to_stream     [`MGR_DRAM_NUM_CHANNELS ] ;  // the channel return data fsm sets this if it is sending to the stream
+  reg  [`MGR_NUM_OF_STREAMS_VECTOR          ]   waiting_to_send_to_stream  [`MGR_DRAM_NUM_CHANNELS ] ;  // make sure the other channel is waiting for a stream 
 
   //------------------------------------------
   // Target stream fifo
@@ -2183,61 +2183,76 @@ module main_mem_cntl (
               // What about conflicts?
               // a) In the high priority (HP) state, this channel goes first, but it goes to the low priority(LP) state
               // b) In the low priority (LP) state, ther channel waits but it goes to the high priority(LP) state
+              //
+              // Be careful, when both channels are in the WAIT state, only one will be granted access to a channel conflict.
+              // However, the other channel may be granted to a stream because its not yet in the WAIT state, so dont proceed until we see the other channel isnt granted
+              // e.g. ther other channels grant will be deasserted once it comes back to the WAIT state
+              //
+              // Note: Should we simply use tag??? FIXME
+              //  - what when most requests are from one stream???
 
               `MMC_CNTL_RDP_WAIT_P0: 
                 begin
                 if (chan == 0)
                   begin
-                    mmc_cntl_rdp_state_next =  (request_send_to_stream [chan][0] &&  request_send_to_stream [chan+1][0] && grant_send_to_stream[chan][0] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_WAIT_P1   :
-                                               (request_send_to_stream [chan][0] && ~request_send_to_stream [chan+1][0] && grant_send_to_stream[chan][0] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_WAIT_P0   :
-                                               (request_send_to_stream [chan][1] &&  request_send_to_stream [chan+1][1] && grant_send_to_stream[chan][1] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_WAIT_P1   :
-                                               (request_send_to_stream [chan][1] && ~request_send_to_stream [chan+1][1] && grant_send_to_stream[chan][1] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_WAIT_P0   :
-                                               (request_send_to_stream [chan][0] &&  request_send_to_stream [chan+1][0] && grant_send_to_stream[chan][0] &&                                 mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_STRM0_P1  :
-                                               (request_send_to_stream [chan][0] && ~request_send_to_stream [chan+1][0] && grant_send_to_stream[chan][0] &&                                 mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_STRM0_P0  :
-                                               (request_send_to_stream [chan][1] &&  request_send_to_stream [chan+1][1] && grant_send_to_stream[chan][1] &&                                 mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_STRM1_P1   :
-                                               (request_send_to_stream [chan][1] && ~request_send_to_stream [chan+1][1] && grant_send_to_stream[chan][1] &&                                 mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_STRM1_P0   :
-                                                                                                                                                                                                                    `MMC_CNTL_RDP_WAIT_P0   ;
-                  end                                                                                                                                
-                else if (chan == 1)                                                                                                                  
-                  begin                                                                                                                              
-                    mmc_cntl_rdp_state_next =  (request_send_to_stream [chan][0] &&  request_send_to_stream [chan-1][0] && grant_send_to_stream[chan][0] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_WAIT_P1   :
-                                               (request_send_to_stream [chan][0] && ~request_send_to_stream [chan-1][0] && grant_send_to_stream[chan][0] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_WAIT_P0   :
-                                               (request_send_to_stream [chan][1] &&  request_send_to_stream [chan-1][1] && grant_send_to_stream[chan][1] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_WAIT_P1   :
-                                               (request_send_to_stream [chan][1] && ~request_send_to_stream [chan-1][1] && grant_send_to_stream[chan][1] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_WAIT_P0   :
-                                               (request_send_to_stream [chan][0] &&  request_send_to_stream [chan-1][0] && grant_send_to_stream[chan][0] &&                                 mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_WAIT_P1   :
-                                               (request_send_to_stream [chan][0] && ~request_send_to_stream [chan-1][0] && grant_send_to_stream[chan][0] &&                                 mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_STRM0_P0  :
-                                               (request_send_to_stream [chan][1] &&  request_send_to_stream [chan-1][1] && grant_send_to_stream[chan][1] &&                                 mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_WAIT_P1   :
-                                               (request_send_to_stream [chan][1] && ~request_send_to_stream [chan-1][1] && grant_send_to_stream[chan][1] &&                                 mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_STRM1_P0  :
-                                                                                                                                                                                                                    `MMC_CNTL_RDP_WAIT_P0   ;
-                  end                                                                                                                                
-                end                                                                                                                                  
-                                                                                                                                                     
-              // Note: We have swapped the if, P0<->P1 and +<->-                                                                                     
-              `MMC_CNTL_RDP_WAIT_P1:                                                                                                                 
-                begin                                                                                                                                
-                if (chan == 1)                                                                                                                       
-                  begin                                                                                                                              
-                    mmc_cntl_rdp_state_next =  (request_send_to_stream [chan][0] &&  request_send_to_stream [chan-1][0] && grant_send_to_stream[chan][0] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_WAIT_P0   :
-                                               (request_send_to_stream [chan][0] && ~request_send_to_stream [chan-1][0] && grant_send_to_stream[chan][0] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_WAIT_P1   :
-                                               (request_send_to_stream [chan][1] &&  request_send_to_stream [chan-1][1] && grant_send_to_stream[chan][1] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_WAIT_P0   :
-                                               (request_send_to_stream [chan][1] && ~request_send_to_stream [chan-1][1] && grant_send_to_stream[chan][1] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_WAIT_P1   :
-                                               (request_send_to_stream [chan][0] &&  request_send_to_stream [chan-1][0] && grant_send_to_stream[chan][0] &&                                 mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_STRM0_P0  :
-                                               (request_send_to_stream [chan][0] && ~request_send_to_stream [chan-1][0] && grant_send_to_stream[chan][0] &&                                 mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_STRM0_P1  :
-                                               (request_send_to_stream [chan][1] &&  request_send_to_stream [chan-1][1] && grant_send_to_stream[chan][1] &&                                 mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_STRM1_P0  :
-                                               (request_send_to_stream [chan][1] && ~request_send_to_stream [chan-1][1] && grant_send_to_stream[chan][1] &&                                 mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_STRM1_P1  :
-                                                                                                                                                                                                                       `MMC_CNTL_RDP_WAIT_P1   ;
-                  end                                                                                                                                
-                else if (chan == 0)                                                                                                                  
-                  begin                                                                                                                              
-                    mmc_cntl_rdp_state_next =  (request_send_to_stream [chan][0] &&  request_send_to_stream [chan+1][0] && grant_send_to_stream[chan][0] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_WAIT_P0   :
-                                               (request_send_to_stream [chan][0] && ~request_send_to_stream [chan+1][0] && grant_send_to_stream[chan][0] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_WAIT_P1   :
-                                               (request_send_to_stream [chan][1] &&  request_send_to_stream [chan+1][1] && grant_send_to_stream[chan][1] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_WAIT_P0   :
-                                               (request_send_to_stream [chan][1] && ~request_send_to_stream [chan+1][1] && grant_send_to_stream[chan][1] && from_dfi_fifo[chan].pipe_eom && mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_WAIT_P1   :
-                                               (request_send_to_stream [chan][0] &&  request_send_to_stream [chan+1][0] && grant_send_to_stream[chan][0] &&                                 mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_WAIT_P0   :
-                                               (request_send_to_stream [chan][0] && ~request_send_to_stream [chan+1][0] && grant_send_to_stream[chan][0] &&                                 mrc__mmc__ready_d1[chan][0] ) ?  `MMC_CNTL_RDP_STRM0_P1  :
-                                               (request_send_to_stream [chan][1] &&  request_send_to_stream [chan+1][1] && grant_send_to_stream[chan][1] &&                                 mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_WAIT_P0   :
-                                               (request_send_to_stream [chan][1] && ~request_send_to_stream [chan+1][1] && grant_send_to_stream[chan][1] &&                                 mrc__mmc__ready_d1[chan][1] ) ?  `MMC_CNTL_RDP_WAIT_P0   :
-                                                                                                                                                                                                                       `MMC_CNTL_RDP_WAIT_P1   ;
+                    mmc_cntl_rdp_state_next =  (request_send_to_stream [chan  ][0] &&  request_send_to_stream [chan+1][0] && ~grant_send_to_stream[chan+1][0] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_WAIT_P1   :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][0] && ~request_send_to_stream [chan+1][0] && ~grant_send_to_stream[chan+1][0] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_WAIT_P0   :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][1] &&  request_send_to_stream [chan+1][1] && ~grant_send_to_stream[chan+1][1] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_WAIT_P1   :    //&& grant_send_to_stream[chan  ][1] 
+                                               (request_send_to_stream [chan  ][1] && ~request_send_to_stream [chan+1][1] && ~grant_send_to_stream[chan+1][1] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_WAIT_P0   :    //&& grant_send_to_stream[chan  ][1] 
+                                                                                                                                                                                                                                                                                                 
+                                               (request_send_to_stream [chan  ][0] &&  request_send_to_stream [chan+1][0] && ~grant_send_to_stream[chan+1][0] &&                                  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_STRM0_P1  :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][0] && ~request_send_to_stream [chan+1][0] && ~grant_send_to_stream[chan+1][0] &&                                  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_STRM0_P0  :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][1] &&  request_send_to_stream [chan+1][1] && ~grant_send_to_stream[chan+1][1] &&                                  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_STRM1_P1  :    //&& grant_send_to_stream[chan  ][1] 
+                                               (request_send_to_stream [chan  ][1] && ~request_send_to_stream [chan+1][1] && ~grant_send_to_stream[chan+1][1] &&                                  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_STRM1_P0  :    //&& grant_send_to_stream[chan  ][1] 
+                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                               `MMC_CNTL_RDP_WAIT_P0   ;                                         
+                  end                                                                                                                                                                                                                                                                    
+                else if (chan == 1)                                                                                                                                                                                                                                                      
+                  begin                                                                                                                                                                                                                                                                  
+                    mmc_cntl_rdp_state_next =  (request_send_to_stream [chan  ][0] &&  request_send_to_stream [chan-1][0] &&  grant_send_to_stream[chan-1][0] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_WAIT_P1   :    //&& grant_send_to_stream[chan-1][0] 
+                                               (request_send_to_stream [chan  ][0] && ~request_send_to_stream [chan-1][0] && ~grant_send_to_stream[chan-1][0] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_WAIT_P0   :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][1] &&  request_send_to_stream [chan-1][1] &&  grant_send_to_stream[chan-1][1] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_WAIT_P1   :    //&& grant_send_to_stream[chan-1][1] 
+                                               (request_send_to_stream [chan  ][1] && ~request_send_to_stream [chan-1][1] && ~grant_send_to_stream[chan-1][1] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_WAIT_P0   :    //&& grant_send_to_stream[chan  ][1] 
+                                                                                                                                                                                                                                                                                                 
+                                               (request_send_to_stream [chan  ][0] &&  request_send_to_stream [chan-1][0] &&  grant_send_to_stream[chan-1][0] &&                                  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_WAIT_P1   :    //&& grant_send_to_stream[chan-1][0] 
+                                               (request_send_to_stream [chan  ][0] && ~request_send_to_stream [chan-1][0] && ~grant_send_to_stream[chan-1][0] &&                                  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_STRM0_P0  :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][1] &&  request_send_to_stream [chan-1][1] &&  grant_send_to_stream[chan-1][1] &&                                  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_WAIT_P1   :    //&& grant_send_to_stream[chan-1][1] 
+                                               (request_send_to_stream [chan  ][1] && ~request_send_to_stream [chan-1][1] && ~grant_send_to_stream[chan-1][1] &&                                  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_STRM1_P0  :    //&& grant_send_to_stream[chan  ][1] 
+                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                               `MMC_CNTL_RDP_WAIT_P0   ;                                         
+                  end                                                                                                                                                                                                                                                                    
+                end                                                                                                                                                                                                                                                                      
+                                                                                                                                                                                                                                                                                         
+              // Note:    // We have swapped the if, P0<->P1 and +<->-                                                                                                                                                                                                                         
+              `MMC_CNTL_RDP_WAIT_P1:    //                                                                                                                                                                                                                                                     
+                begin                                                                                                                                                                                                                                                                    
+                if (chan == 1)                                                                                                                                                                                                                                                           
+                  begin                                                                                                                                                                                                                                                                  
+                    mmc_cntl_rdp_state_next =  (request_send_to_stream [chan  ][0] &&  request_send_to_stream [chan-1][0] && ~grant_send_to_stream[chan-1][0] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_WAIT_P0   :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][0] && ~request_send_to_stream [chan-1][0] && ~grant_send_to_stream[chan-1][0] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_WAIT_P1   :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][1] &&  request_send_to_stream [chan-1][1] && ~grant_send_to_stream[chan-1][1] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_WAIT_P0   :    //&& grant_send_to_stream[chan  ][1] 
+                                               (request_send_to_stream [chan  ][1] && ~request_send_to_stream [chan-1][1] && ~grant_send_to_stream[chan-1][1] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_WAIT_P1   :    //&& grant_send_to_stream[chan  ][1] 
+                                                                                                                                                                                                                                                                                                 
+                                               (request_send_to_stream [chan  ][0] &&  request_send_to_stream [chan-1][0] && ~grant_send_to_stream[chan-1][0] &&                                  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_STRM0_P0  :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][0] && ~request_send_to_stream [chan-1][0] && ~grant_send_to_stream[chan-1][0] &&                                  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_STRM0_P1  :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][1] &&  request_send_to_stream [chan-1][1] && ~grant_send_to_stream[chan-1][1] &&                                  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_STRM1_P0  :    //&& grant_send_to_stream[chan  ][1] 
+                                               (request_send_to_stream [chan  ][1] && ~request_send_to_stream [chan-1][1] && ~grant_send_to_stream[chan-1][1] &&                                  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_STRM1_P1  :    //&& grant_send_to_stream[chan  ][1] 
+                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                         `MMC_CNTL_RDP_WAIT_P1   ;                                               
+                  end                                                                                                                                                                                                                                                                    
+                else if (chan == 0)                                                                                                                                                                                                                                                      
+                  begin                                                                                                                                                                                                                                                                  
+                    mmc_cntl_rdp_state_next =  (request_send_to_stream [chan  ][0] &&  request_send_to_stream [chan+1][0] &&  grant_send_to_stream[chan+1][0] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_WAIT_P0   :    //&& grant_send_to_stream[chan+1][0] 
+                                               (request_send_to_stream [chan  ][0] && ~request_send_to_stream [chan+1][0] && ~grant_send_to_stream[chan+1][0] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_WAIT_P1   :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][1] &&  request_send_to_stream [chan+1][1] &&  grant_send_to_stream[chan+1][1] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_WAIT_P0   :    //&& grant_send_to_stream[chan+1][1] 
+                                               (request_send_to_stream [chan  ][1] && ~request_send_to_stream [chan+1][1] && ~grant_send_to_stream[chan+1][1] && from_dfi_fifo[chan].pipe_eom &&  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_WAIT_P1   :    //&& grant_send_to_stream[chan  ][1] 
+                                                                                                                                                                                                                                                                                                 
+                                               (request_send_to_stream [chan  ][0] &&  request_send_to_stream [chan+1][0] &&  grant_send_to_stream[chan+1][0] &&                                  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_WAIT_P0   :    //&& grant_send_to_stream[chan+1][0] 
+                                               (request_send_to_stream [chan  ][0] && ~request_send_to_stream [chan+1][0] && ~grant_send_to_stream[chan+1][0] &&                                  mrc__mmc__ready_d1[chan  ][0] ) ?  `MMC_CNTL_RDP_STRM0_P1  :    //&& grant_send_to_stream[chan  ][0] 
+                                               (request_send_to_stream [chan  ][1] &&  request_send_to_stream [chan+1][1] &&  grant_send_to_stream[chan+1][1] &&                                  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_WAIT_P0   :    //&& grant_send_to_stream[chan+1][1] 
+                                               (request_send_to_stream [chan  ][1] && ~request_send_to_stream [chan+1][1] && ~grant_send_to_stream[chan+1][1] &&                                  mrc__mmc__ready_d1[chan  ][1] ) ?  `MMC_CNTL_RDP_STRM1_P1  :    //&& grant_send_to_stream[chan  ][1] 
+                                                                                                                                                                                                                                                             
+                                                                                                                                                                                    `MMC_CNTL_RDP_WAIT_P1   ;                                               
                   end
                 end
 
@@ -2272,11 +2287,12 @@ module main_mem_cntl (
           begin
             always @(*)
               begin
-                request_send_to_stream [chan][0] = from_dfi_fifo[chan].pipe_valid & data_return_id[chan].pipe_valid & (data_return_id[chan].pipe_strm == 'd0) ;
-                request_send_to_stream [chan][1] = from_dfi_fifo[chan].pipe_valid & data_return_id[chan].pipe_valid & (data_return_id[chan].pipe_strm == 'd1) ;
-                                                                                                                               
-                grant_send_to_stream   [chan][0] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM0_P0) | (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM0_P1) | (request_send_to_stream [chan][0] & ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P0) | ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P1) & ~request_send_to_stream [chan+1][0]))) ;
-                grant_send_to_stream   [chan][1] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1_P0) | (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1_P1) | (request_send_to_stream [chan][1] & ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P0) | ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P1) & ~request_send_to_stream [chan+1][1]))) ;
+           
+                request_send_to_stream      [chan][0] = from_dfi_fifo[chan].pipe_valid & data_return_id[chan].pipe_valid & (data_return_id[chan].pipe_strm == 'd0) ;
+                request_send_to_stream      [chan][1] = from_dfi_fifo[chan].pipe_valid & data_return_id[chan].pipe_valid & (data_return_id[chan].pipe_strm == 'd1) ;
+                                                                                                                                    
+                grant_send_to_stream        [chan][0] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM0_P0) | (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM0_P1) | (request_send_to_stream [chan][0] & ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P0) | ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P1) & ~request_send_to_stream [chan+1][0]))) ;
+                grant_send_to_stream        [chan][1] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1_P0) | (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1_P1) | (request_send_to_stream [chan][1] & ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P0) | ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P1) & ~request_send_to_stream [chan+1][1]))) ;
               end
           end
         else if (chan == 1)
@@ -2291,6 +2307,12 @@ module main_mem_cntl (
                 grant_send_to_stream   [chan][1] = (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1_P0) | (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1_P1) | (request_send_to_stream [chan][1] & ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P1) | ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P0) & ~request_send_to_stream [chan-1][1]))) ;
               end
           end
+        // Have a flag to indicating a channel is in the wait state requesting a particular stream
+        always @(*)
+          begin
+                waiting_to_send_to_stream   [chan][0] = ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P0) | (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P1));
+                waiting_to_send_to_stream   [chan][1] = ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P0) | (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P1));
+          end
 
 
         wire      read_id_fifo     ;  // read the tag/strm ID fifo
@@ -2298,16 +2320,16 @@ module main_mem_cntl (
 
         if (chan == 0)
           begin
-            assign read_id_fifo    =  ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P0 ) & mrc__mmc__ready_d1 [chan][0] & ( request_send_to_stream [chan][0] |  request_send_to_stream [chan  ][1])) |
-                                      ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P1 ) & ((mrc__mmc__ready_d1 [chan][0] & request_send_to_stream [chan][0] & ~request_send_to_stream [chan+1][0]) | (mrc__mmc__ready_d1 [chan][1] & request_send_to_stream [chan][1] & ~request_send_to_stream [chan+1][1])));
+            assign read_id_fifo    =  ( (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P0 ) & ((mrc__mmc__ready_d1 [chan][0] &  request_send_to_stream [chan][0] & ~grant_send_to_stream [chan+1][0]                                      ) | (mrc__mmc__ready_d1 [chan][1] & request_send_to_stream [chan  ][1] & ~grant_send_to_stream [chan+1][1]                                      ))) |
+                                       ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P1 ) & ((mrc__mmc__ready_d1 [chan][0] &  request_send_to_stream [chan][0] & ~grant_send_to_stream [chan+1][0] & ~request_send_to_stream [chan+1][0]) | (mrc__mmc__ready_d1 [chan][1] & request_send_to_stream [chan  ][1] & ~grant_send_to_stream [chan+1][1] & ~request_send_to_stream [chan+1][1])));
                                                                                                     
             // We flow control on the first read but take the entire burst after that
-            assign read_data_fifo  =  from_dfi_fifo[chan].pipe_valid & (read_id_fifo | (mmc_cntl_rdp_state != `MMC_CNTL_RDP_WAIT_P0 ) | (mmc_cntl_rdp_state != `MMC_CNTL_RDP_WAIT_P1));  // if not waiting, we are sending
+            assign read_data_fifo  =  from_dfi_fifo[chan].pipe_valid & (read_id_fifo | ((mmc_cntl_rdp_state != `MMC_CNTL_RDP_WAIT_P0 ) & (mmc_cntl_rdp_state != `MMC_CNTL_RDP_WAIT_P1)));  // if not waiting, we are sending
           end
         else if (chan == 1)
           begin
-            assign read_id_fifo    =  ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P1 ) & ( request_send_to_stream [chan][0] |  request_send_to_stream [chan  ][1])) |
-                                      ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P0 ) & ((request_send_to_stream [chan][0] & ~request_send_to_stream [chan-1][0]) | (request_send_to_stream [chan][1] & ~request_send_to_stream [chan-1][1])));
+            assign read_id_fifo    =  ( (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P1 ) & ((mrc__mmc__ready_d1 [chan][0] &  request_send_to_stream [chan][0] & ~grant_send_to_stream [chan-1][0]                                      ) | (mrc__mmc__ready_d1 [chan][1] & request_send_to_stream [chan  ][1] & ~grant_send_to_stream [chan-1][1]                                      ))) |
+                                       ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT_P0 ) & ((mrc__mmc__ready_d1 [chan][0] &  request_send_to_stream [chan][0] & ~grant_send_to_stream [chan-1][0] & ~request_send_to_stream [chan-1][0]) | (mrc__mmc__ready_d1 [chan][1] & request_send_to_stream [chan  ][1] & ~grant_send_to_stream [chan-1][1] & ~request_send_to_stream [chan-1][1])));
                                                                                                     
             assign read_data_fifo  =  from_dfi_fifo[chan].pipe_valid & (read_id_fifo | ((mmc_cntl_rdp_state != `MMC_CNTL_RDP_WAIT_P0 ) & (mmc_cntl_rdp_state != `MMC_CNTL_RDP_WAIT_P1)));  // if not waiting, we are sending
           end
@@ -2317,11 +2339,27 @@ module main_mem_cntl (
         reg   [`COMMON_STD_INTF_CNTL_RANGE          ]                                 strm_cntl  ;
         reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   strm_data  ;
 
-        always @(posedge clk)
+        //----------------------------------------------------------------------------------------------------
+        // Be careful, because the other channel may be granted to a stream because its not in the WAIT state
+        //  - e.g. a channel may get granted if its in the wait statet but will not proceed until it sees the other 
+        //  channel isnt granted, but the other channels grant will be deasserted once it goes to the WAIT state
+        if (chan == 0)
           begin
-            strm_valid[0]   <= grant_send_to_stream[chan][0] ;
-            strm_valid[1]   <= grant_send_to_stream[chan][1] ;
-            strm_cntl       <= from_dfi_fifo[chan].pipe_cntl ;
+            always @(posedge clk)
+              begin
+                strm_valid[0]   <= grant_send_to_stream[chan][0] & waiting_to_send_to_stream[chan+1][0] ;
+                strm_valid[1]   <= grant_send_to_stream[chan][1] & waiting_to_send_to_stream[chan+1][1] ;
+                strm_cntl       <= from_dfi_fifo[chan].pipe_cntl ;
+              end
+          end
+        else if (chan == 1)
+          begin
+            always @(posedge clk)
+              begin
+                strm_valid[0]   <= grant_send_to_stream[chan][0] & waiting_to_send_to_stream[chan-1][0] ;
+                strm_valid[1]   <= grant_send_to_stream[chan][1] & waiting_to_send_to_stream[chan-1][1] ;
+                strm_cntl       <= from_dfi_fifo[chan].pipe_cntl ;
+              end
           end
 
         for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS; word=word+1) 
