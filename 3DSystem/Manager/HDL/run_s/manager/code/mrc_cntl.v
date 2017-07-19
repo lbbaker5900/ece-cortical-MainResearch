@@ -55,18 +55,18 @@ module mrc_cntl (
             // Main Memory Controller interface
             // - response must be in order
             //
-            output  wire                                           mrc__mmc__valid                                   ,
-            output  wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl                                    ,
+            output  reg                                            mrc__mmc__valid                                   ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl                                    ,
             input   wire                                           mmc__mrc__ready                                   ,
-            output  wire  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      mrc__mmc__channel                                 ,
-            output  wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mrc__mmc__bank                                    ,
-            output  wire  [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      mrc__mmc__page                                    ,
-            output  wire  [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      mrc__mmc__word                                    ,
+            output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      mrc__mmc__channel                                 ,
+            output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      mrc__mmc__bank                                    ,
+            output  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      mrc__mmc__page                                    ,
+            output  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      mrc__mmc__word                                    ,
                                                                                                                     
             // MMC provides data from each DRAM channel
-            input   wire                                                                        mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire  [`COMMON_STD_INTF_CNTL_RANGE        ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] ,
-            output  reg                                                                         mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ] ,
+            input   wire                                                                          mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ] ,
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] ,
+            output  reg                                                                           mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ] ,
             input   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] ,
 
             //-------------------------------
@@ -110,7 +110,7 @@ module mrc_cntl (
 
   //--------------------------------------------------
   // to Main Memory Controller
-  /*
+
   reg                                            mrc__mmc__valid_e1      ;
   reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl_e1       ;
   reg                                            mmc__mrc__ready_d1      ;
@@ -118,7 +118,7 @@ module mrc_cntl (
   reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mrc__mmc__bank_e1       ;
   reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      mrc__mmc__page_e1       ;
   reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      mrc__mmc__word_e1       ;
-*/
+
 
   //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
@@ -178,7 +178,7 @@ module mrc_cntl (
     end
     //--------------------------------------------------
     // to Main Memory Controller
-    /*
+
     always @(posedge clk) 
       begin
         mrc__mmc__valid      <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__valid_e1   ;
@@ -189,7 +189,7 @@ module mrc_cntl (
         mrc__mmc__page       <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__page_e1    ;
         mrc__mmc__word       <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__word_e1    ;
       end
-*/
+
 
   //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
@@ -475,8 +475,18 @@ module mrc_cntl (
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // - Generate memory requests from tuple options
 
-  wire [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]     mem_request_channel_data_valid         ;  // valid data from channel data fifo
-  wire [ `MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ]     sdp__xxx__lane_word_ptr    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; 
+  wire  [ `MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ]   sdp__xxx__lane_word_ptr                  [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; 
+
+  wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   mem_request_channel_data_valid                                           ;  // valid data from channel data fifo
+  wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__get_next_line                                                  ;
+
+  // Associate this address with the response from the MMC
+  wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   xxx__sdp__mem_request_valid                                              ;
+//  wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__mem_request_ack                                                ;  // actually a read to the request feedback fifo
+  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]   xxx__sdp__mem_request_channel            [`MGR_DRAM_NUM_CHANNELS ]       ;
+  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE        ]   xxx__sdp__mem_request_bank               [`MGR_DRAM_NUM_CHANNELS ]       ;
+  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]   xxx__sdp__mem_request_page               [`MGR_DRAM_NUM_CHANNELS ]       ;
+  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE        ]   xxx__sdp__mem_request_word               [`MGR_DRAM_NUM_CHANNELS ]       ;
 
   sdp_cntl sdp_cntl (  
 
@@ -491,25 +501,23 @@ module mrc_cntl (
            // Main Memory Controller interface
            // - response must be in order
            //
-           .sdp__xxx__mem_request_valid                  ( mrc__mmc__valid                   ),
-           .sdp__xxx__mem_request_cntl                   ( mrc__mmc__cntl                    ),
-           .xxx__sdp__mem_request_ready                  ( mmc__mrc__ready                   ),
-           .sdp__xxx__mem_request_channel                ( mrc__mmc__channel                 ),
-           .sdp__xxx__mem_request_bank                   ( mrc__mmc__bank                    ),
-           .sdp__xxx__mem_request_page                   ( mrc__mmc__page                    ),
-           .sdp__xxx__mem_request_word                   ( mrc__mmc__word                    ),
-           .xxx__sdp__mem_request_channel_data_valid     ( mem_request_channel_data_valid    ),
+           .sdp__xxx__mem_request_valid                  ( mrc__mmc__valid_e1                ),
+           .sdp__xxx__mem_request_cntl                   ( mrc__mmc__cntl_e1                 ),
+           .xxx__sdp__mem_request_ready                  ( mmc__mrc__ready_d1 & ~request_fifo_fb[0].almost_full & ~request_fifo_fb[1].almost_full ),  // stop requests if MMC or feedback fifo not ready
+           .sdp__xxx__mem_request_channel                ( mrc__mmc__channel_e1              ),
+           .sdp__xxx__mem_request_bank                   ( mrc__mmc__bank_e1                 ),
+           .sdp__xxx__mem_request_page                   ( mrc__mmc__page_e1                 ),
+           .sdp__xxx__mem_request_word                   ( mrc__mmc__word_e1                 ),
 
-/*
-           .sdp__xxx__mem_request_valid                  ( ),
-           .sdp__xxx__mem_request_cntl                   ( ),
-           .xxx__sdp__mem_request_ready                  ( 1'b1 ),
-           .sdp__xxx__mem_request_channel                ( ),
-           .sdp__xxx__mem_request_bank                   ( ),
-           .sdp__xxx__mem_request_page                   ( ),
-           .sdp__xxx__mem_request_word                   ( ),
-           .xxx__sdp__mem_request_channel_data_valid     ( mem_request_channel_data_valid                 ),
-*/
+           .xxx__sdp__mem_request_channel_data_valid     ( mem_request_channel_data_valid    ),
+           .xxx__sdp__mem_request_valid                  ( xxx__sdp__mem_request_valid       ),
+           //.sdp__xxx__mem_request_ack                    ( sdp__xxx__mem_request_ack         ),
+           .xxx__sdp__mem_request_channel                ( xxx__sdp__mem_request_channel     ),
+           .xxx__sdp__mem_request_bank                   ( xxx__sdp__mem_request_bank        ),
+           .xxx__sdp__mem_request_page                   ( xxx__sdp__mem_request_page        ),
+           .xxx__sdp__mem_request_word                   ( xxx__sdp__mem_request_word        ),
+
+
 
            //-------------------------------
            // from MMC fifo Control
@@ -1914,10 +1922,99 @@ module mrc_cntl (
 ////////    end
 ////////  //endgenerate
 ////////  //-------------------------------------------------------------------------------------------
+
+
+
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  // Request FIFO
+  //
+  //  - this fifo has the address of each channel read data
+  //  - the sdp_cntl will use this to check if the current consequtive stream address is at the head of the from_mmc fifo
+
+
+  generate
+    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
+      begin: request_fifo_fb
+
+        wire                                               clear         ;
+        wire                                               almost_full   ;
+                                                           
+        reg                                                write         ;
+        reg   [`MRC_CNTL_REQUEST_AGGREGATE_FIFO_RANGE ]    write_data    ;
+                                                           
+        reg   [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE       ]    write_channel ;
+        reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE          ]    write_bank    ;
+        reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE          ]    write_page    ;
+        reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE          ]    write_word    ;
+                                                           
+        reg                                                pipe_read     ;
+        reg   [`MRC_CNTL_REQUEST_AGGREGATE_FIFO_RANGE ]    pipe_data     ;
+                                                           
+        wire                                               pipe_valid    ;
+        reg   [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE       ]    pipe_channel  ;
+        reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE          ]    pipe_bank     ;
+        reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE          ]    pipe_page     ;
+        reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE          ]    pipe_word     ;
+
+
+
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MRC_CNTL_REQUEST_FIFO_DEPTH                 ),
+                                 .GENERIC_FIFO_THRESHOLD  (`MRC_CNTL_REQUEST_FIFO_ALMOST_FULL_THRESHOLD ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`MRC_CNTL_REQUEST_AGGREGATE_FIFO_WIDTH       )
+                        ) gpfifo (
+                                 // Status
+                                .almost_full      ( almost_full           ),
+
+                                 // Write                                 
+                                .write            ( write                 ),
+                                .write_data       ( write_data            ),
+                                 // Read                                  
+                                .pipe_valid       ( pipe_valid            ),
+                                .pipe_data        ( pipe_data             ),
+                                .pipe_read        ( pipe_read             ),
+
+                                // General
+                                .clear            ( clear                 ),
+                                .reset_poweron    ( reset_poweron         ),
+                                .clk              ( clk                   )
+                                );
+
+        assign  clear = 1'b0 ;
+
+
+        always @(*)
+          begin
+            write         =  mrc__mmc__valid_e1 & (mrc__mmc__channel_e1 == chan) ;
+            write_channel =  mrc__mmc__channel_e1                                ;
+            write_bank    =  mrc__mmc__bank_e1                                   ;
+            write_page    =  mrc__mmc__page_e1                                   ;
+            write_word    =  mrc__mmc__word_e1                                   ;
+          end
+        always @(*)
+          begin
+            write_data  =  {write_channel, write_bank, write_page, write_word};
+          end
+        always @(*)
+          begin
+            {pipe_channel, pipe_bank, pipe_page, pipe_word} = pipe_data ;
+          end
+
+        assign    xxx__sdp__mem_request_valid  [chan]  = pipe_valid                       ;         
+        assign    xxx__sdp__mem_request_channel[chan]  = pipe_channel                     ;
+        assign    xxx__sdp__mem_request_bank   [chan]  = pipe_bank                        ;
+        assign    xxx__sdp__mem_request_page   [chan]  = pipe_page                        ;
+        assign    xxx__sdp__mem_request_word   [chan]  = pipe_word                        ;
+        assign    pipe_read                            = sdp__xxx__get_next_line[chan]    ;
+
+      end
+  endgenerate
+
+
   //------------------------------------------
   // Main Memory Controller FIFO's
   //
-  // these are the big memroies so we can absorb data from back-to-back page opens and provide data during back-to-back page closes
+  // these are the big memories so we can absorb data from back-to-back page opens and provide data during back-to-back page closes
   // see  https://github.ncsu.edu/lbbaker/ece-cortical-MainResearch/tree/master/3DSystem/DOC/DramReadBuffer.pdf
 
   generate
@@ -1971,7 +2068,7 @@ module mrc_cntl (
           end
         assign from_mmc_fifo[chan].write   =   mmc__mrc__valid_d1 [chan]       ;
         assign  mrc__mmc__ready_e1 [chan]  =  ~from_mmc_fifo[chan].almost_full ;
-        assign from_mmc_fifo[chan].pipe_read = (sdp__xxx__current_channel == chan) & sdp__xxx__get_next_line & from_mmc_fifo[chan].pipe_valid;
+        assign from_mmc_fifo[chan].pipe_read = sdp__xxx__get_next_line[chan] & from_mmc_fifo[chan].pipe_valid;
       end
   endgenerate
 

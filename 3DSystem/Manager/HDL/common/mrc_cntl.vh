@@ -276,4 +276,63 @@
 `define MRC_CNTL_ADDR_TO_STRM_FIFO_ALMOST_FULL_THRESHOLD 4
 //------------------------------------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
+// Request fifo
+//  - for associating each channel return data with an address
+//
+`define MRC_CNTL_REQUEST_FIFO_DEPTH          32
+`define MRC_CNTL_REQUEST_FIFO_DEPTH_MSB      (`MRC_CNTL_REQUEST_FIFO_DEPTH) -1
+`define MRC_CNTL_REQUEST_FIFO_DEPTH_LSB      0
+`define MRC_CNTL_REQUEST_FIFO_DEPTH_SIZE     (`MRC_CNTL_REQUEST_FIFO_DEPTH_MSB - `MRC_CNTL_REQUEST_FIFO_DEPTH_LSB +1)
+`define MRC_CNTL_REQUEST_FIFO_DEPTH_RANGE     `MRC_CNTL_REQUEST_FIFO_DEPTH_MSB : `MRC_CNTL_REQUEST_FIFO_DEPTH_LSB
+`define MRC_CNTL_REQUEST_FIFO_MSB            ((`CLOG2(`MRC_CNTL_REQUEST_FIFO_DEPTH)) -1)
+`define MRC_CNTL_REQUEST_FIFO_LSB            0
+`define MRC_CNTL_REQUEST_FIFO_SIZE           (`MRC_CNTL_REQUEST_FIFO_MSB - `MRC_CNTL_REQUEST_FIFO_LSB +1)
+`define MRC_CNTL_REQUEST_FIFO_RANGE           `MRC_CNTL_REQUEST_FIFO_MSB : `MRC_CNTL_REQUEST_FIFO_LSB
+
+// For AGGREGATE_FIFO implemented as single memory, define field ranges
+`define MRC_CNTL_REQUEST_AGGREGATE_WORD_WIDTH                       `MGR_DRAM_WORD_ADDRESS_WIDTH
+`define MRC_CNTL_REQUEST_AGGREGATE_WORD_LSB                         2  // account for byte address
+`define MRC_CNTL_REQUEST_AGGREGATE_WORD_MSB                         `MRC_CNTL_REQUEST_AGGREGATE_WORD_LSB+`MRC_CNTL_REQUEST_AGGREGATE_WORD_WIDTH-1
+`define MRC_CNTL_REQUEST_AGGREGATE_WORD_SIZE                        (`MRC_CNTL_REQUEST_AGGREGATE_WORD_MSB - `MRC_CNTL_REQUEST_AGGREGATE_WORD_LSB +1)
+`define MRC_CNTL_REQUEST_AGGREGATE_WORD_RANGE                        `MRC_CNTL_REQUEST_AGGREGATE_WORD_MSB : `MRC_CNTL_REQUEST_AGGREGATE_WORD_LSB
+
+`define MRC_CNTL_REQUEST_AGGREGATE_PAGE_WIDTH                       `MGR_DRAM_PAGE_ADDRESS_WIDTH
+`define MRC_CNTL_REQUEST_AGGREGATE_PAGE_LSB                         `MRC_CNTL_REQUEST_AGGREGATE_WORD_MSB+1
+`define MRC_CNTL_REQUEST_AGGREGATE_PAGE_MSB                         `MRC_CNTL_REQUEST_AGGREGATE_PAGE_LSB+`MRC_CNTL_REQUEST_AGGREGATE_PAGE_WIDTH-1
+`define MRC_CNTL_REQUEST_AGGREGATE_PAGE_SIZE                        (`MRC_CNTL_REQUEST_AGGREGATE_PAGE_MSB - `MRC_CNTL_REQUEST_AGGREGATE_PAGE_LSB +1)
+`define MRC_CNTL_REQUEST_AGGREGATE_PAGE_RANGE                        `MRC_CNTL_REQUEST_AGGREGATE_PAGE_MSB : `MRC_CNTL_REQUEST_AGGREGATE_PAGE_LSB
+
+`define MRC_CNTL_REQUEST_AGGREGATE_BANK_WIDTH                       `MGR_DRAM_BANK_ADDRESS_WIDTH
+`define MRC_CNTL_REQUEST_AGGREGATE_BANK_LSB                         `MRC_CNTL_REQUEST_AGGREGATE_PAGE_MSB+1
+`define MRC_CNTL_REQUEST_AGGREGATE_BANK_MSB                         `MRC_CNTL_REQUEST_AGGREGATE_BANK_LSB+`MRC_CNTL_REQUEST_AGGREGATE_BANK_WIDTH-1
+`define MRC_CNTL_REQUEST_AGGREGATE_BANK_SIZE                        (`MRC_CNTL_REQUEST_AGGREGATE_BANK_MSB - `MRC_CNTL_REQUEST_AGGREGATE_BANK_LSB +1)
+`define MRC_CNTL_REQUEST_AGGREGATE_BANK_RANGE                        `MRC_CNTL_REQUEST_AGGREGATE_BANK_MSB : `MRC_CNTL_REQUEST_AGGREGATE_BANK_LSB
+
+`define MRC_CNTL_REQUEST_AGGREGATE_CHAN_WIDTH                       `MGR_DRAM_CHANNEL_ADDRESS_WIDTH
+`define MRC_CNTL_REQUEST_AGGREGATE_CHAN_LSB                         `MRC_CNTL_REQUEST_AGGREGATE_BANK_MSB+1
+`define MRC_CNTL_REQUEST_AGGREGATE_CHAN_MSB                         `MRC_CNTL_REQUEST_AGGREGATE_CHAN_LSB+`MRC_CNTL_REQUEST_AGGREGATE_CHAN_WIDTH-1
+`define MRC_CNTL_REQUEST_AGGREGATE_CHAN_SIZE                        (`MRC_CNTL_REQUEST_AGGREGATE_CHAN_MSB - `MRC_CNTL_REQUEST_AGGREGATE_CHAN_LSB +1)
+`define MRC_CNTL_REQUEST_AGGREGATE_CHAN_RANGE                        `MRC_CNTL_REQUEST_AGGREGATE_CHAN_MSB : `MRC_CNTL_REQUEST_AGGREGATE_CHAN_LSB
+
+
+`define MRC_CNTL_REQUEST_AGGREGATE_FIFO_WIDTH    `MRC_CNTL_REQUEST_AGGREGATE_WORD_WIDTH      \
+                                                 +`MRC_CNTL_REQUEST_AGGREGATE_PAGE_WIDTH      \
+                                                 +`MRC_CNTL_REQUEST_AGGREGATE_BANK_WIDTH      \
+                                                 +`MRC_CNTL_REQUEST_AGGREGATE_CHAN_WIDTH 
+
+`define MRC_CNTL_REQUEST_AGGREGATE_FIFO_MSB            `MRC_CNTL_REQUEST_AGGREGATE_FIFO_WIDTH -1
+`define MRC_CNTL_REQUEST_AGGREGATE_FIFO_LSB            0
+`define MRC_CNTL_REQUEST_AGGREGATE_FIFO_SIZE           (`MRC_CNTL_REQUEST_AGGREGATE_FIFO_MSB - `MRC_CNTL_REQUEST_AGGREGATE_FIFO_LSB +1)
+`define MRC_CNTL_REQUEST_AGGREGATE_FIFO_RANGE           `MRC_CNTL_REQUEST_AGGREGATE_FIFO_MSB : `MRC_CNTL_REQUEST_AGGREGATE_FIFO_LSB
+
+
+// Threshold below full when we assert almost full
+// assert almost full when there are only this many entries available in the fifo
+`define MRC_CNTL_REQUEST_FIFO_ALMOST_FULL_THRESHOLD 4
+
+//------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 `endif

@@ -708,6 +708,29 @@ if ((GENERIC_MEM_DEPTH == 64) && (GENERIC_MEM_DATA_WIDTH == 40) && (GENERIC_MEM_
               mem2p32x2_topBits [portA_address_dly] <= portA_write_data_dly [2049:2048] ;
           end
         assign int_portB_read_data_dly [2049:2048] = mem2p32x2_topBits [portB_address_dly] ;
+
+
+/*
+        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     reg32x2050     [GENERIC_MEM_DEPTH-1 :0 ] ;
+        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg2050                                 ;
+        wire [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg2050_e1                              ;
+       
+        always @(posedge clk)
+          begin
+            if (portA_enable_dly && portA_write_dly)
+              reg32x2050 [portA_address_dly] <= portA_write_data_dly ;
+          end
+       
+        assign   oreg2050_e1  =  reg32x2050 [portB_address_dly] ;
+       
+        always @(posedge clk)
+          begin
+            oreg2050   <= ( portB_enable_dly ) ? oreg2050_e1 :
+                                               oreg2050    ;  // dw memory datasheet specifies previous data is maintained with ME=0
+          end
+        assign int_portB_read_data_dly  = oreg2050  ;
+*/
+
       end
   endgenerate
 

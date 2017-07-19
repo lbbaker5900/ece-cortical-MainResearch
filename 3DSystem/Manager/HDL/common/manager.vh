@@ -709,7 +709,7 @@
 // The memory requestor will always open the next channel/bank/page based on the current address
 // If a memory request provides an entire page, then to determine whether we
 // need a request, just form an adrress based on page/bank/channel and increment 
-// If a memry request is a partial page (line), then form an address based on PBLC or PBCL
+// If a memory request is a partial page (line), then form an address based on PBLC or PBCL
 //
 // 1) Line same size as page, so only increment page/bank/channel
 // PBC

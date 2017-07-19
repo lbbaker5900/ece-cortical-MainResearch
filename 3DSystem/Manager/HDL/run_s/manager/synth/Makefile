@@ -1,5 +1,5 @@
 
-MODNAME = manager
+MODNAME = main_mem_cntl
 RTL_DIR = ../code
 GATE_DIR = ../synth
 
