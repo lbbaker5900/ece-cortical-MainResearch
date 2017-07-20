@@ -2,262 +2,518 @@
 
   // Extract the word from the interface page line
   // Convert the mgrId of the pointer to a bit mask
-      case ( select ) // synopsys parallel_case
-      6'd0 :
+      case ( {{chan_select, word_select}} ) // synopsys parallel_case
+      {1'd0,6'd0} :
         begin
-          out = in[ 31:  0] ; 
+          out = chan0[ 31:  0] ; 
         end
-      6'd1 :
+      {1'd0,6'd1} :
         begin
-          out = in[ 63: 32] ; 
+          out = chan0[ 63: 32] ; 
         end
-      6'd2 :
+      {1'd0,6'd2} :
         begin
-          out = in[ 95: 64] ; 
+          out = chan0[ 95: 64] ; 
         end
-      6'd3 :
+      {1'd0,6'd3} :
         begin
-          out = in[127: 96] ; 
+          out = chan0[127: 96] ; 
         end
-      6'd4 :
+      {1'd0,6'd4} :
         begin
-          out = in[159:128] ; 
+          out = chan0[159:128] ; 
         end
-      6'd5 :
+      {1'd0,6'd5} :
         begin
-          out = in[191:160] ; 
+          out = chan0[191:160] ; 
         end
-      6'd6 :
+      {1'd0,6'd6} :
         begin
-          out = in[223:192] ; 
+          out = chan0[223:192] ; 
         end
-      6'd7 :
+      {1'd0,6'd7} :
         begin
-          out = in[255:224] ; 
+          out = chan0[255:224] ; 
         end
-      6'd8 :
+      {1'd0,6'd8} :
         begin
-          out = in[287:256] ; 
+          out = chan0[287:256] ; 
         end
-      6'd9 :
+      {1'd0,6'd9} :
         begin
-          out = in[319:288] ; 
+          out = chan0[319:288] ; 
         end
-      6'd10 :
+      {1'd0,6'd10} :
         begin
-          out = in[351:320] ; 
+          out = chan0[351:320] ; 
         end
-      6'd11 :
+      {1'd0,6'd11} :
         begin
-          out = in[383:352] ; 
+          out = chan0[383:352] ; 
         end
-      6'd12 :
+      {1'd0,6'd12} :
         begin
-          out = in[415:384] ; 
+          out = chan0[415:384] ; 
         end
-      6'd13 :
+      {1'd0,6'd13} :
         begin
-          out = in[447:416] ; 
+          out = chan0[447:416] ; 
         end
-      6'd14 :
+      {1'd0,6'd14} :
         begin
-          out = in[479:448] ; 
+          out = chan0[479:448] ; 
         end
-      6'd15 :
+      {1'd0,6'd15} :
         begin
-          out = in[511:480] ; 
+          out = chan0[511:480] ; 
         end
-      6'd16 :
+      {1'd0,6'd16} :
         begin
-          out = in[543:512] ; 
+          out = chan0[543:512] ; 
         end
-      6'd17 :
+      {1'd0,6'd17} :
         begin
-          out = in[575:544] ; 
+          out = chan0[575:544] ; 
         end
-      6'd18 :
+      {1'd0,6'd18} :
         begin
-          out = in[607:576] ; 
+          out = chan0[607:576] ; 
         end
-      6'd19 :
+      {1'd0,6'd19} :
         begin
-          out = in[639:608] ; 
+          out = chan0[639:608] ; 
         end
-      6'd20 :
+      {1'd0,6'd20} :
         begin
-          out = in[671:640] ; 
+          out = chan0[671:640] ; 
         end
-      6'd21 :
+      {1'd0,6'd21} :
         begin
-          out = in[703:672] ; 
+          out = chan0[703:672] ; 
         end
-      6'd22 :
+      {1'd0,6'd22} :
         begin
-          out = in[735:704] ; 
+          out = chan0[735:704] ; 
         end
-      6'd23 :
+      {1'd0,6'd23} :
         begin
-          out = in[767:736] ; 
+          out = chan0[767:736] ; 
         end
-      6'd24 :
+      {1'd0,6'd24} :
         begin
-          out = in[799:768] ; 
+          out = chan0[799:768] ; 
         end
-      6'd25 :
+      {1'd0,6'd25} :
         begin
-          out = in[831:800] ; 
+          out = chan0[831:800] ; 
         end
-      6'd26 :
+      {1'd0,6'd26} :
         begin
-          out = in[863:832] ; 
+          out = chan0[863:832] ; 
         end
-      6'd27 :
+      {1'd0,6'd27} :
         begin
-          out = in[895:864] ; 
+          out = chan0[895:864] ; 
         end
-      6'd28 :
+      {1'd0,6'd28} :
         begin
-          out = in[927:896] ; 
+          out = chan0[927:896] ; 
         end
-      6'd29 :
+      {1'd0,6'd29} :
         begin
-          out = in[959:928] ; 
+          out = chan0[959:928] ; 
         end
-      6'd30 :
+      {1'd0,6'd30} :
         begin
-          out = in[991:960] ; 
+          out = chan0[991:960] ; 
         end
-      6'd31 :
+      {1'd0,6'd31} :
         begin
-          out = in[1023:992] ; 
+          out = chan0[1023:992] ; 
         end
-      6'd32 :
+      {1'd0,6'd32} :
         begin
-          out = in[1055:1024] ; 
+          out = chan0[1055:1024] ; 
         end
-      6'd33 :
+      {1'd0,6'd33} :
         begin
-          out = in[1087:1056] ; 
+          out = chan0[1087:1056] ; 
         end
-      6'd34 :
+      {1'd0,6'd34} :
         begin
-          out = in[1119:1088] ; 
+          out = chan0[1119:1088] ; 
         end
-      6'd35 :
+      {1'd0,6'd35} :
         begin
-          out = in[1151:1120] ; 
+          out = chan0[1151:1120] ; 
         end
-      6'd36 :
+      {1'd0,6'd36} :
         begin
-          out = in[1183:1152] ; 
+          out = chan0[1183:1152] ; 
         end
-      6'd37 :
+      {1'd0,6'd37} :
         begin
-          out = in[1215:1184] ; 
+          out = chan0[1215:1184] ; 
         end
-      6'd38 :
+      {1'd0,6'd38} :
         begin
-          out = in[1247:1216] ; 
+          out = chan0[1247:1216] ; 
         end
-      6'd39 :
+      {1'd0,6'd39} :
         begin
-          out = in[1279:1248] ; 
+          out = chan0[1279:1248] ; 
         end
-      6'd40 :
+      {1'd0,6'd40} :
         begin
-          out = in[1311:1280] ; 
+          out = chan0[1311:1280] ; 
         end
-      6'd41 :
+      {1'd0,6'd41} :
         begin
-          out = in[1343:1312] ; 
+          out = chan0[1343:1312] ; 
         end
-      6'd42 :
+      {1'd0,6'd42} :
         begin
-          out = in[1375:1344] ; 
+          out = chan0[1375:1344] ; 
         end
-      6'd43 :
+      {1'd0,6'd43} :
         begin
-          out = in[1407:1376] ; 
+          out = chan0[1407:1376] ; 
         end
-      6'd44 :
+      {1'd0,6'd44} :
         begin
-          out = in[1439:1408] ; 
+          out = chan0[1439:1408] ; 
         end
-      6'd45 :
+      {1'd0,6'd45} :
         begin
-          out = in[1471:1440] ; 
+          out = chan0[1471:1440] ; 
         end
-      6'd46 :
+      {1'd0,6'd46} :
         begin
-          out = in[1503:1472] ; 
+          out = chan0[1503:1472] ; 
         end
-      6'd47 :
+      {1'd0,6'd47} :
         begin
-          out = in[1535:1504] ; 
+          out = chan0[1535:1504] ; 
         end
-      6'd48 :
+      {1'd0,6'd48} :
         begin
-          out = in[1567:1536] ; 
+          out = chan0[1567:1536] ; 
         end
-      6'd49 :
+      {1'd0,6'd49} :
         begin
-          out = in[1599:1568] ; 
+          out = chan0[1599:1568] ; 
         end
-      6'd50 :
+      {1'd0,6'd50} :
         begin
-          out = in[1631:1600] ; 
+          out = chan0[1631:1600] ; 
         end
-      6'd51 :
+      {1'd0,6'd51} :
         begin
-          out = in[1663:1632] ; 
+          out = chan0[1663:1632] ; 
         end
-      6'd52 :
+      {1'd0,6'd52} :
         begin
-          out = in[1695:1664] ; 
+          out = chan0[1695:1664] ; 
         end
-      6'd53 :
+      {1'd0,6'd53} :
         begin
-          out = in[1727:1696] ; 
+          out = chan0[1727:1696] ; 
         end
-      6'd54 :
+      {1'd0,6'd54} :
         begin
-          out = in[1759:1728] ; 
+          out = chan0[1759:1728] ; 
         end
-      6'd55 :
+      {1'd0,6'd55} :
         begin
-          out = in[1791:1760] ; 
+          out = chan0[1791:1760] ; 
         end
-      6'd56 :
+      {1'd0,6'd56} :
         begin
-          out = in[1823:1792] ; 
+          out = chan0[1823:1792] ; 
         end
-      6'd57 :
+      {1'd0,6'd57} :
         begin
-          out = in[1855:1824] ; 
+          out = chan0[1855:1824] ; 
         end
-      6'd58 :
+      {1'd0,6'd58} :
         begin
-          out = in[1887:1856] ; 
+          out = chan0[1887:1856] ; 
         end
-      6'd59 :
+      {1'd0,6'd59} :
         begin
-          out = in[1919:1888] ; 
+          out = chan0[1919:1888] ; 
         end
-      6'd60 :
+      {1'd0,6'd60} :
         begin
-          out = in[1951:1920] ; 
+          out = chan0[1951:1920] ; 
         end
-      6'd61 :
+      {1'd0,6'd61} :
         begin
-          out = in[1983:1952] ; 
+          out = chan0[1983:1952] ; 
         end
-      6'd62 :
+      {1'd0,6'd62} :
         begin
-          out = in[2015:1984] ; 
+          out = chan0[2015:1984] ; 
         end
-      6'd63 :
+      {1'd0,6'd63} :
         begin
-          out = in[2047:2016] ; 
+          out = chan0[2047:2016] ; 
+        end
+      {1'd1,6'd0} :
+        begin
+          out = chan1[ 31:  0] ; 
+        end
+      {1'd1,6'd1} :
+        begin
+          out = chan1[ 63: 32] ; 
+        end
+      {1'd1,6'd2} :
+        begin
+          out = chan1[ 95: 64] ; 
+        end
+      {1'd1,6'd3} :
+        begin
+          out = chan1[127: 96] ; 
+        end
+      {1'd1,6'd4} :
+        begin
+          out = chan1[159:128] ; 
+        end
+      {1'd1,6'd5} :
+        begin
+          out = chan1[191:160] ; 
+        end
+      {1'd1,6'd6} :
+        begin
+          out = chan1[223:192] ; 
+        end
+      {1'd1,6'd7} :
+        begin
+          out = chan1[255:224] ; 
+        end
+      {1'd1,6'd8} :
+        begin
+          out = chan1[287:256] ; 
+        end
+      {1'd1,6'd9} :
+        begin
+          out = chan1[319:288] ; 
+        end
+      {1'd1,6'd10} :
+        begin
+          out = chan1[351:320] ; 
+        end
+      {1'd1,6'd11} :
+        begin
+          out = chan1[383:352] ; 
+        end
+      {1'd1,6'd12} :
+        begin
+          out = chan1[415:384] ; 
+        end
+      {1'd1,6'd13} :
+        begin
+          out = chan1[447:416] ; 
+        end
+      {1'd1,6'd14} :
+        begin
+          out = chan1[479:448] ; 
+        end
+      {1'd1,6'd15} :
+        begin
+          out = chan1[511:480] ; 
+        end
+      {1'd1,6'd16} :
+        begin
+          out = chan1[543:512] ; 
+        end
+      {1'd1,6'd17} :
+        begin
+          out = chan1[575:544] ; 
+        end
+      {1'd1,6'd18} :
+        begin
+          out = chan1[607:576] ; 
+        end
+      {1'd1,6'd19} :
+        begin
+          out = chan1[639:608] ; 
+        end
+      {1'd1,6'd20} :
+        begin
+          out = chan1[671:640] ; 
+        end
+      {1'd1,6'd21} :
+        begin
+          out = chan1[703:672] ; 
+        end
+      {1'd1,6'd22} :
+        begin
+          out = chan1[735:704] ; 
+        end
+      {1'd1,6'd23} :
+        begin
+          out = chan1[767:736] ; 
+        end
+      {1'd1,6'd24} :
+        begin
+          out = chan1[799:768] ; 
+        end
+      {1'd1,6'd25} :
+        begin
+          out = chan1[831:800] ; 
+        end
+      {1'd1,6'd26} :
+        begin
+          out = chan1[863:832] ; 
+        end
+      {1'd1,6'd27} :
+        begin
+          out = chan1[895:864] ; 
+        end
+      {1'd1,6'd28} :
+        begin
+          out = chan1[927:896] ; 
+        end
+      {1'd1,6'd29} :
+        begin
+          out = chan1[959:928] ; 
+        end
+      {1'd1,6'd30} :
+        begin
+          out = chan1[991:960] ; 
+        end
+      {1'd1,6'd31} :
+        begin
+          out = chan1[1023:992] ; 
+        end
+      {1'd1,6'd32} :
+        begin
+          out = chan1[1055:1024] ; 
+        end
+      {1'd1,6'd33} :
+        begin
+          out = chan1[1087:1056] ; 
+        end
+      {1'd1,6'd34} :
+        begin
+          out = chan1[1119:1088] ; 
+        end
+      {1'd1,6'd35} :
+        begin
+          out = chan1[1151:1120] ; 
+        end
+      {1'd1,6'd36} :
+        begin
+          out = chan1[1183:1152] ; 
+        end
+      {1'd1,6'd37} :
+        begin
+          out = chan1[1215:1184] ; 
+        end
+      {1'd1,6'd38} :
+        begin
+          out = chan1[1247:1216] ; 
+        end
+      {1'd1,6'd39} :
+        begin
+          out = chan1[1279:1248] ; 
+        end
+      {1'd1,6'd40} :
+        begin
+          out = chan1[1311:1280] ; 
+        end
+      {1'd1,6'd41} :
+        begin
+          out = chan1[1343:1312] ; 
+        end
+      {1'd1,6'd42} :
+        begin
+          out = chan1[1375:1344] ; 
+        end
+      {1'd1,6'd43} :
+        begin
+          out = chan1[1407:1376] ; 
+        end
+      {1'd1,6'd44} :
+        begin
+          out = chan1[1439:1408] ; 
+        end
+      {1'd1,6'd45} :
+        begin
+          out = chan1[1471:1440] ; 
+        end
+      {1'd1,6'd46} :
+        begin
+          out = chan1[1503:1472] ; 
+        end
+      {1'd1,6'd47} :
+        begin
+          out = chan1[1535:1504] ; 
+        end
+      {1'd1,6'd48} :
+        begin
+          out = chan1[1567:1536] ; 
+        end
+      {1'd1,6'd49} :
+        begin
+          out = chan1[1599:1568] ; 
+        end
+      {1'd1,6'd50} :
+        begin
+          out = chan1[1631:1600] ; 
+        end
+      {1'd1,6'd51} :
+        begin
+          out = chan1[1663:1632] ; 
+        end
+      {1'd1,6'd52} :
+        begin
+          out = chan1[1695:1664] ; 
+        end
+      {1'd1,6'd53} :
+        begin
+          out = chan1[1727:1696] ; 
+        end
+      {1'd1,6'd54} :
+        begin
+          out = chan1[1759:1728] ; 
+        end
+      {1'd1,6'd55} :
+        begin
+          out = chan1[1791:1760] ; 
+        end
+      {1'd1,6'd56} :
+        begin
+          out = chan1[1823:1792] ; 
+        end
+      {1'd1,6'd57} :
+        begin
+          out = chan1[1855:1824] ; 
+        end
+      {1'd1,6'd58} :
+        begin
+          out = chan1[1887:1856] ; 
+        end
+      {1'd1,6'd59} :
+        begin
+          out = chan1[1919:1888] ; 
+        end
+      {1'd1,6'd60} :
+        begin
+          out = chan1[1951:1920] ; 
+        end
+      {1'd1,6'd61} :
+        begin
+          out = chan1[1983:1952] ; 
+        end
+      {1'd1,6'd62} :
+        begin
+          out = chan1[2015:1984] ; 
+        end
+      {1'd1,6'd63} :
+        begin
+          out = chan1[2047:2016] ; 
         end
       default:
         begin

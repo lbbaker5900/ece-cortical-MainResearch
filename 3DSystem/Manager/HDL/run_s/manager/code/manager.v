@@ -362,10 +362,10 @@ module manager (
 
         //----------------------------------------------------------------------------------------------------
         // Stack Downstream
-        wire                                        std__mrc__lane_ready  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+        wire  [`MGR_NUM_OF_EXEC_LANES_RANGE     ]   std__mrc__lane_ready                                 ;
         wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__std__lane_cntl   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
         wire  [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mrc__std__lane_data   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
-        wire                                        mrc__std__lane_valid  [`MGR_NUM_OF_EXEC_LANES_RANGE ];
+        wire  [`MGR_NUM_OF_EXEC_LANES_RANGE     ]   mrc__std__lane_valid                                 ;
       
         //----------------------------------------------------------------------------------------------------
         // WU Decoder

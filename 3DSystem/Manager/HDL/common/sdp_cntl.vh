@@ -64,18 +64,17 @@
 //--------------------------------------------------------
 // Stream Data FSM
 
-`define SDP_CNTL_STRM_WAIT                    8'b0000_0001
+`define SDP_CNTL_STRM_WAIT                    6'b00_0001
 
-`define SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT   8'b0000_0010
-`define SDP_CNTL_STRM_LOAD_JUMP_VALUE         8'b0000_0100
-//`define SDP_CNTL_STRM_CALC_NEXT_START_ADDR    8'b0000_1000
-`define SDP_CNTL_STRM_COUNT_CONS              8'b0001_0000
+`define SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT   6'b00_0010
+`define SDP_CNTL_STRM_LOAD_JUMP_VALUE         6'b00_0100
+`define SDP_CNTL_STRM_COUNT_CONS              6'b00_1000
 
-`define SDP_CNTL_STRM_COMPLETE                8'b0100_0000
+`define SDP_CNTL_STRM_COMPLETE                6'b10_0000
 
-`define SDP_CNTL_STRM_ERR                     8'b1000_0000
+`define SDP_CNTL_STRM_ERR                     6'b00_0000
 
-`define SDP_CNTL_STRM_STATE_WIDTH         8
+`define SDP_CNTL_STRM_STATE_WIDTH         6
 `define SDP_CNTL_STRM_STATE_MSB           `SDP_CNTL_STRM_STATE_WIDTH-1
 `define SDP_CNTL_STRM_STATE_LSB           0
 `define SDP_CNTL_STRM_STATE_SIZE          (`SDP_CNTL_STRM_STATE_MSB - `SDP_CNTL_STRM_STATE_LSB +1)

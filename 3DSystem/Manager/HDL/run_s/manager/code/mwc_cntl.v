@@ -214,7 +214,7 @@ module mwc_cntl (
         // Extract read data
         wire [`COMMON_STD_INTF_CNTL_RANGE           ]     pipe_cntl        ; 
         wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     pipe_ptype       ; 
-        wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     pipe_mem_data     ; 
+        wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     pipe_mem_data    ; 
         wire                                              pipe_pvalid      ; 
 
         assign {pipe_cntl, pipe_ptype, pipe_pvalid, pipe_mem_data} = pipe_data ;
@@ -287,7 +287,7 @@ module mwc_cntl (
         // Extract read data
         wire [`COMMON_STD_INTF_CNTL_RANGE           ]     pipe_cntl        ; 
         wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     pipe_ptype       ; 
-        wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     pipe_mem_data     ; 
+        wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     pipe_mem_data    ; 
         wire                                              pipe_pvalid      ; 
 
         assign {pipe_cntl, pipe_ptype, pipe_pvalid, pipe_mem_data} = pipe_data ;

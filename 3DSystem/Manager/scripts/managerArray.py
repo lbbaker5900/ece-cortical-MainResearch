@@ -103,6 +103,17 @@ if __name__ == "__main__":
   searchFile.close()
   numOfWordsPerMmcIntf = numOfBitsPerMmcIntf/bitsPerLane
 
+  FoundNumOfChannelsPerDram = False
+  searchFile = open("../../Manager/HDL/common/manager.vh", "r")
+  for line in searchFile:
+    if FoundNumOfChannelsPerDram == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "MGR_DRAM_NUM_CHANNELS" in data[1]:
+        numOfChannelsPerDram = int(data[2])
+        FoundNumOfChannelsPerDram = True
+  searchFile.close()
+
 
 
   #------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1643,17 +1654,22 @@ if __name__ == "__main__":
 
   # Extract the word from the page line
   numOfMmcWordAddressBits = int(math.log(numOfWordsPerMmcIntf,2))
+  numOfChanAddressBits = int(math.log(numOfChannelsPerDram,2))
   pLine = pLine + '\n'
   pLine = pLine + '\n  // Extract the word from the interface page line'
   pLine = pLine + '\n  // Convert the mgrId of the pointer to a bit mask'
-  pLine = pLine + '\n      case ( select ) // synopsys parallel_case'
-  for word in range (numOfWordsPerMmcIntf):
-    pLine = pLine + '\n      {1}\'d{0} :'.format(word,numOfMmcWordAddressBits )
-    pLine = pLine + '\n        begin'
-    lsb = word*bitsPerLane
-    msb = (word+1)*bitsPerLane-1
-    pLine = pLine + '\n          out = in[{1:>3}:{2:>3}] ; '.format(word, msb, lsb )
-    pLine = pLine + '\n        end'
+  pLine = pLine + '\n      case ( {{chan_select, word_select}} ) // synopsys parallel_case'
+  for chan in range (numOfChannelsPerDram ):
+    for word in range (numOfWordsPerMmcIntf):
+      pLine = pLine + '\n      {{{1}\'d{0},{3}\'d{2}}} :'.format(chan,numOfChanAddressBits,word,numOfMmcWordAddressBits )
+      pLine = pLine + '\n        begin'
+      lsb = word*bitsPerLane
+      msb = (word+1)*bitsPerLane-1
+      if (chan == 0):
+        pLine = pLine + '\n          out = chan0[{1:>3}:{2:>3}] ; '.format(word, msb, lsb )
+      else:
+        pLine = pLine + '\n          out = chan1[{1:>3}:{2:>3}] ; '.format(word, msb, lsb )
+      pLine = pLine + '\n        end'
   pLine = pLine + '\n      default:'
   pLine = pLine + '\n        begin'
   pLine = pLine + '\n          out = {0}\'d0 ; '.format(bitsPerLane)

@@ -573,8 +573,8 @@ module main_mem_cntl (
                   
                   `MMC_CNTL_CMD_GEN_WAIT: 
                     // The channel stream select logic will not enable this fsm unless this streams request fifo is requesting this channel
-                    mmc_cntl_cmd_gen_state_next =  ( strm_enable  [chan][strm] ) ?   `MMC_CNTL_CMD_GEN_DECODE_SEQUENCE  :
-                                                                                     `MMC_CNTL_CMD_GEN_WAIT             ;
+                    mmc_cntl_cmd_gen_state_next =  ( strm_enable [chan][strm] && ~from_dfi_fifo[0].almost_full) ?   `MMC_CNTL_CMD_GEN_DECODE_SEQUENCE  :
+                                                                                                                    `MMC_CNTL_CMD_GEN_WAIT             ;
        
                   `MMC_CNTL_CMD_GEN_DECODE_SEQUENCE: 
                     mmc_cntl_cmd_gen_state_next =  strm_cmd_code_state_next ;

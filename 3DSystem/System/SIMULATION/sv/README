@@ -20,11 +20,11 @@ gvim inputFiles/manager_3_layer1_instruction_readmem.dat \
      inputFiles/manager_0_layer1_instruction_readmem.dat 
 
 # or placed these files in tmp/.
-cp   inputFiles/manager_3_layer1_instruction_readmem.dat \
-     inputFiles/manager_2_layer1_instruction_readmem.dat \
-     inputFiles/manager_1_layer1_instruction_readmem.dat \
-     inputFiles/manager_0_layer1_instruction_readmem.dat \
-     tmp/.
+cp   tmp/manager_3_layer1_instruction_readmem.dat \
+     tmp/manager_2_layer1_instruction_readmem.dat \
+     tmp/manager_1_layer1_instruction_readmem.dat \
+     tmp/manager_0_layer1_instruction_readmem.dat \
+     inputFiles/.
 
 
 

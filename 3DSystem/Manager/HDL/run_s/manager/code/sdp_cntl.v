@@ -65,8 +65,15 @@ module sdp_cntl (
             //-------------------------------
             // from MMC fifo Control
             output  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__get_next_line                                    ,
-            output  reg  [ `MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE  ]   sdp__xxx__lane_word_ptr    [`MGR_NUM_OF_EXEC_LANES_RANGE ] , 
+            output  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdp__xxx__lane_valid                                       ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE         ]   sdp__xxx__lane_cntl                                        ,
+            output  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdp__xxx__lane_enable                                      ,
+            output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]   sdp__xxx__lane_channel_ptr [`MGR_NUM_OF_EXEC_LANES_RANGE ] ,
+            output  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE  ]   sdp__xxx__lane_word_ptr    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ,
             output  reg                                            sdp__xxx__current_channel                                  ,
+            input   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   xxx__sdp__lane_ready                                       ,
+           
+
             //
             //-------------------------------
             // General
@@ -186,18 +193,6 @@ module sdp_cntl (
                                                                                          `SDP_CNTL_PROC_STORAGE_DESC_WAIT ;
   
 
-/*
-        `SDP_CNTL_PROC_STORAGE_DESC_WAIT: 
-          sdp_cntl_proc_storage_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid && ~from_Wud_Fifo[0].pipe_som ) ? `SDP_CNTL_PROC_STORAGE_DESC_ERR           :  // right now assume MR desciptors are multi-cycle
-                                       ( from_Wud_Fifo[0].pipe_valid                               ) ? `SDP_CNTL_PROC_STORAGE_DESC_EXTRACT  :  // pull all we need from the descriptor then start memory access
-                                                                                                       `SDP_CNTL_PROC_STORAGE_DESC_WAIT     ;
-  
-        // Cycle thru memory descriptor grabing num_lanes, txfer_type, target and storage descriptor pointer
-        // Dont leave this state until we see the end-of-descriptor
-        `SDP_CNTL_PROC_STORAGE_DESC_EXTRACT: 
-          sdp_cntl_proc_storage_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid && from_Wud_Fifo[0].pipe_eom ) ? `SDP_CNTL_PROC_STORAGE_DESC_READ    :  // read the descriptor
-                                                                                                      `SDP_CNTL_PROC_STORAGE_DESC_EXTRACT ;
-*/
         //----------------------------------------------------------------------------------------------------
         // We have cycled thru the descriptor and extracted all information
         // e.g.
@@ -358,11 +353,6 @@ module sdp_cntl (
     reg  [ `MGR_DRAM_LINE_ADDRESS_RANGE     ]    mem_last_end_line          ;
   `endif
 
-/*
-  assign from_Wud_Fifo[0].pipe_read = (from_Wud_Fifo[0].pipe_valid && (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT   ) && ~from_Wud_Fifo[0].pipe_som ) |
-                                      (from_Wud_Fifo[0].pipe_valid && (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_EXTRACT)                               ) ;
-*/
-
   always @(posedge clk)
     begin
       first_time_thru <= (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT    ) ? 1'b1            :
@@ -374,7 +364,6 @@ module sdp_cntl (
   always @(*)
     begin 
       create_mem_request  = ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA  ))  ; //|
-//                             (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB )) ;
     end
 
 `ifdef  MGR_DRAM_REQUEST_LT_PAGE
@@ -980,6 +969,21 @@ module sdp_cntl (
   assign  to_strm_fsm_fifo_ready    = ~consJump_to_strm_fsm_fifo[0].almost_full & ~addr_to_strm_fsm_fifo[0].almost_full ;
 
 
+  //----------------------------------------------------------------------------------------------------
+  // Output of addr_to_strm_fsm_fifo
+  //
+  reg  [`MGR_INST_OPTION_ORDER_RANGE    ]   strm_accessOrder             ;
+  reg  [`MGR_INST_OPTION_TRANSFER_RANGE ]   strm_transfer_type           ;
+
+  // access order and transfer_type stays static during increment phase
+  always @(*)
+    begin
+      strm_accessOrder      =  addr_to_strm_fsm_fifo[0].pipe_order         ;
+      strm_transfer_type    =  addr_to_strm_fsm_fifo[0].pipe_transfer_type ;
+    end
+  //----------------------------------------------------------------------------------------------------
+
+
 
   // end of to stream fifo's
   //---------------------------------------------------------------------------------
@@ -1134,6 +1138,8 @@ module sdp_cntl (
   reg  [`MGR_INST_CONS_JUMP_RANGE           ]     consequtive_value_for_strm ;  // latched consequtive and jump values so we can calculate the next consequitve start address while we are running thru cons phase
   reg  [`MGR_INST_CONS_JUMP_RANGE           ]     jump_value_for_strm        ;
   reg                                             next_channel               ;  // about to access data from channel fifo n
+  reg                                             ok_to_send                 ;  // if from_mmc data is available and the downsteram is ready
+
 
   //--------------------------------------------------
   // State Transitions
@@ -1149,17 +1155,17 @@ module sdp_cntl (
         // wait for consequtive counter to time out
         //  - transition straight thru this state
         `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT: 
-          sdp_cntl_stream_state_next =  (xxx__sdp__mem_request_channel_data_valid [sdp__xxx__current_channel] && consJump_to_strm_fsm_fifo[0].pipe_eom ) ? `SDP_CNTL_STRM_COUNT_CONS            :
-                                        (xxx__sdp__mem_request_channel_data_valid [sdp__xxx__current_channel]                                          ) ? `SDP_CNTL_STRM_LOAD_JUMP_VALUE       :
-                                                                                                                                                           `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT ;
+          sdp_cntl_stream_state_next =  (ok_to_send && consJump_to_strm_fsm_fifo[0].pipe_eom ) ? `SDP_CNTL_STRM_COUNT_CONS            :
+                                        (ok_to_send                                          ) ? `SDP_CNTL_STRM_LOAD_JUMP_VALUE       :
+                                                                                                 `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT ;
 
         // a) Start streaming
         // b) Save jump value to pre-calculate next start address
         // If we dont yet have a jump value and the counter terminates, then we stay here
         // We are always in this state when we are expecting the next jump value
         `SDP_CNTL_STRM_LOAD_JUMP_VALUE: 
-          sdp_cntl_stream_state_next =  (xxx__sdp__mem_request_channel_data_valid [sdp__xxx__current_channel] && consJump_to_strm_fsm_fifo[0].pipe_valid) ? `SDP_CNTL_STRM_COUNT_CONS      : 
-                                                                                                                                                            `SDP_CNTL_STRM_LOAD_JUMP_VALUE ;
+          sdp_cntl_stream_state_next =  (ok_to_send && consJump_to_strm_fsm_fifo[0].pipe_valid) ? `SDP_CNTL_STRM_COUNT_CONS      : 
+                                                                                                  `SDP_CNTL_STRM_LOAD_JUMP_VALUE ;
 
         // Pre-calculate next consequtive phase start adderss
         // wait for consequtive counter to time out
@@ -1192,9 +1198,11 @@ module sdp_cntl (
   // Dont read address until we are done. That way the pipe_addr is the valid start address
   assign  addr_to_strm_fsm_fifo[0].pipe_read           =  (sdp_cntl_stream_state == `SDP_CNTL_STRM_COMPLETE);
 
-  assign  consJump_to_strm_fsm_fifo[0].pipe_read       = ((sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT) &  xxx__sdp__mem_request_channel_data_valid [sdp__xxx__current_channel] & ~consJump_to_strm_fsm_fifo[0].pipe_eom                                                                                         ) |  // leave consJump fifo output alone so we keep valid and eom 
-                                                         ((sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE      ) &  xxx__sdp__mem_request_channel_data_valid [sdp__xxx__current_channel] &                                          consJump_to_strm_fsm_fifo[0].pipe_valid                                               ) |
-                                                         ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           ) &                                                                                                                  consJump_to_strm_fsm_fifo[0].pipe_valid  & consequtive_counter_le0 & ~last_consequtive) ;
+  assign  consJump_to_strm_fsm_fifo[0].pipe_read       = ((sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT) &  ok_to_send & ~consJump_to_strm_fsm_fifo[0].pipe_eom                                                                                         ) |  // leave consJump fifo output alone so we keep valid and eom 
+                                                         ((sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE      ) &  ok_to_send &                                          consJump_to_strm_fsm_fifo[0].pipe_valid                                               ) |
+                                                         ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           ) &                                              consJump_to_strm_fsm_fifo[0].pipe_valid  & consequtive_counter_le0 & ~last_consequtive) ;
+
+  assign ok_to_send  = xxx__sdp__mem_request_channel_data_valid [sdp__xxx__current_channel] & (&xxx__sdp__lane_ready) ;
 
   always @(*)
     begin
@@ -1219,12 +1227,18 @@ module sdp_cntl (
     begin
       consequtive_counter <=  ( reset_poweron                                                                                                                                                             )  ? 'd0                                                        :
                               (                                                                                                            (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT)) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
-                              (~xxx__sdp__mem_request_channel_data_valid [sdp__xxx__current_channel]                                                                                                      ) ? consequtive_counter                                         :  // data not yet available
+                              (~ok_to_send                                                                                                     ) ? consequtive_counter                                         :  // data not yet available
+
+                              ( consequtive_counter_le0  &&  consJump_to_strm_fsm_fifo[0].pipe_valid  && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
+                              ( consequtive_counter_le0                                                                                                                 ) ? consequtive_counter                                         :  // jump data not yet available
+/*
+
                               ((consequtive_counter                             ==  'd0) &&  consJump_to_strm_fsm_fifo[0].pipe_valid    && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
                               ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB] == 1'b1) &&  consJump_to_strm_fsm_fifo[0].pipe_valid    && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
                               ((consequtive_counter                             ==  'd0) || (consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB] == 1'b1)                                                     ) ? consequtive_counter                                         :  // jump data not yet available
-                              ( addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST                                                                                                ) ? consequtive_counter-1                                       :
-                              ( addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR                                                                                               ) ? consequtive_counter-addr_to_strm_fsm_fifo[0].pipe_num_lanes :
+*/
+                              ( strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST                                                                                                ) ? consequtive_counter-1                                       :
+                              ( strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR                                                                                               ) ? consequtive_counter-addr_to_strm_fsm_fifo[0].pipe_num_lanes :
                                                                                                                                                                                                               consequtive_counter                                         ;  // will only occur with error
     end
 
@@ -1234,8 +1248,6 @@ module sdp_cntl (
       consequtive_value_for_strm  = consJump_to_strm_fsm_fifo[0].pipe_consJumpValue  ;
       jump_value_for_strm         = consJump_to_strm_fsm_fifo[0].pipe_consJumpValue  ;
     end
-
-  reg  [`MGR_INST_OPTION_ORDER_RANGE    ]   strm_accessOrder             ;
 
   reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]   strm_next_cons_start_address ;  // pre-calculated next consequtive phase address
   reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]   strm_inc_address             ;  // address we increment for each jump
@@ -1284,6 +1296,10 @@ module sdp_cntl (
         end
     endgenerate
   `endif                                                                  
+
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Check the output of the channel request ID fifo to determine if the output of the from_mmc fifo is the line bank/page/line we need
+  // - use the "next" stream address
   generate
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
       always @(*) 
@@ -1302,7 +1318,7 @@ module sdp_cntl (
   always @(*)
     begin
       sdp__xxx__current_channel     =  strm_inc_channel    ;
-      next_channel        =  strm_inc_channel_e1 ;
+      next_channel                  =  strm_inc_channel_e1 ;
     end
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1349,10 +1365,10 @@ module sdp_cntl (
 
         `SDP_CNTL_STRM_LOAD_JUMP_VALUE  :
           begin
-            strm_inc_address_e1   = (~xxx__sdp__mem_request_channel_data_valid [sdp__xxx__current_channel]      ) ? strm_inc_address                                                    :
-                                    (addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR) ? strm_inc_address + {addr_to_strm_fsm_fifo[0].pipe_num_lanes, 2'b00} :
-                                    (addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST ) ? strm_inc_address + 'd4                                              :
-                                                                                                                    strm_inc_address                                                    ;
+            strm_inc_address_e1   = (~ok_to_send                                         ) ? strm_inc_address                                                    :
+                                    (strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR  ) ? strm_inc_address + {addr_to_strm_fsm_fifo[0].pipe_num_lanes, 2'b00} :
+                                    (strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST   ) ? strm_inc_address + 'd4                                              :
+                                                                                             strm_inc_address                                                    ;
             // Extract fields (mainly for debug)
             if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
               begin
@@ -1380,11 +1396,11 @@ module sdp_cntl (
 
         `SDP_CNTL_STRM_COUNT_CONS:
           begin
-            strm_inc_address_e1   = (~xxx__sdp__mem_request_channel_data_valid [sdp__xxx__current_channel]       ) ? strm_inc_address                                                    :
-                                    (consequtive_counter_le0                                                     ) ? strm_next_cons_start_address                                        :
-                                    (addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR ) ? strm_inc_address + {addr_to_strm_fsm_fifo[0].pipe_num_lanes, 2'b00} :
-                                    (addr_to_strm_fsm_fifo[0].pipe_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) ? strm_inc_address + 'd4                                              :
-                                                                                                                     strm_inc_address                                                    ;
+            strm_inc_address_e1   = (~ok_to_send                                        ) ? strm_inc_address                                                    :
+                                    (consequtive_counter_le0                            ) ? strm_next_cons_start_address                                        :
+                                    (strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR ) ? strm_inc_address + {addr_to_strm_fsm_fifo[0].pipe_num_lanes, 2'b00} :
+                                    (strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) ? strm_inc_address + 'd4                                              :
+                                                                                            strm_inc_address                                                    ;
 
             if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
               begin
@@ -1424,51 +1440,12 @@ module sdp_cntl (
       endcase
     end
 
-  
-  // While we are running thru the consequtive phase, pre-calculate the next cons phase start address
+  // Register the stream address
   always @(posedge clk)
     begin
 
-      case (sdp_cntl_stream_state)
-        
-        `SDP_CNTL_STRM_WAIT: 
-          begin
-            strm_next_cons_start_address <= strm_inc_address_e1 ;  // address already ordered
-          end
+      strm_inc_address     <=  ( reset_poweron ) ? 'd0 : strm_inc_address_e1 ;
 
-        `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT: 
-          begin
-            strm_next_cons_start_address <= (xxx__sdp__mem_request_channel_data_valid [sdp__xxx__current_channel]) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00} :
-                                                                                                                     strm_next_cons_start_address                                       ;
-          end
-
-        `SDP_CNTL_STRM_LOAD_JUMP_VALUE: 
-          begin
-            strm_next_cons_start_address <= (~xxx__sdp__mem_request_channel_data_valid [sdp__xxx__current_channel]) ? strm_next_cons_start_address                                 : 
-                                            ( consJump_to_strm_fsm_fifo[0].pipe_valid                             ) ? strm_next_cons_start_address + {jump_value_for_strm, 2'b00}  : // remember its a byte address
-                                                                                                                      strm_next_cons_start_address                                 ;
-          end
-
-        `SDP_CNTL_STRM_COUNT_CONS :
-          begin
-            // next inc address loaded with start in FIRST_CONS_COUNT state
-            strm_next_cons_start_address <= ((consequtive_counter == 'd0                              ) && consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00}  :
-                                            ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB]  == 1'b1) && consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00}  :
-                                                                                                                                                      strm_next_cons_start_address                               ;
-          end
-
-        default:
-          begin
-            strm_next_cons_start_address <=  ( reset_poweron ) ? 'd0 : strm_next_cons_start_address ;
-          end
-
-      endcase // case (sdp_cntl_stream_state)
-    end // always @ (*)
-  
-
-  always @(posedge clk)
-    begin
-      strm_inc_address             <=  ( reset_poweron ) ? 'd0 : strm_inc_address_e1          ;
       if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
         begin
           strm_inc_channel             <=  strm_inc_channel_e1 ;
@@ -1490,6 +1467,52 @@ module sdp_cntl (
           `endif
         end
     end // always @ (*)
+  
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //
+  // While we are running thru the consequtive phase, pre-calculate the next cons phase start address
+  //  - this address will be transferred to the stream address at a consequtive boundary
+
+  always @(posedge clk)
+    begin
+
+      case (sdp_cntl_stream_state)
+        
+        `SDP_CNTL_STRM_WAIT: 
+          begin
+            strm_next_cons_start_address <= strm_inc_address_e1 ;  // address already ordered
+          end
+
+        `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT: 
+          begin
+            strm_next_cons_start_address <= (ok_to_send) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00} :
+                                                           strm_next_cons_start_address                                       ;
+          end
+
+        `SDP_CNTL_STRM_LOAD_JUMP_VALUE: 
+          begin
+            strm_next_cons_start_address <= (~ok_to_send                               ) ? strm_next_cons_start_address                                 : 
+                                            ( consJump_to_strm_fsm_fifo[0].pipe_valid  ) ? strm_next_cons_start_address + {jump_value_for_strm, 2'b00}  : // remember its a byte address
+                                                                                           strm_next_cons_start_address                                 ;
+          end
+
+        `SDP_CNTL_STRM_COUNT_CONS :
+          begin
+            // next inc address loaded with start in FIRST_CONS_COUNT state
+            strm_next_cons_start_address <= ((consequtive_counter == 'd0                              ) && consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00}  :
+                                            ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB]  == 1'b1) && consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00}  :
+                                                                                                                                                      strm_next_cons_start_address                               ;
+          end
+
+        default:
+          begin
+            strm_next_cons_start_address <=  ( reset_poweron ) ? 'd0 : strm_next_cons_start_address ;
+          end
+
+      endcase // case (sdp_cntl_stream_state)
+    end // always @ (*)
+  
   
   always @(*)
     begin
@@ -1515,44 +1538,62 @@ module sdp_cntl (
         end
     end
 
-
-  // access order stays static during increment phase
-  always @(*)
-    begin
-      strm_accessOrder      =  addr_to_strm_fsm_fifo[0].pipe_order ;
-    end
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-
-
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
   // Pointer to word in a page
   //  - initially set to storage pointer word address offset by lane ID
   //  - increment by number of active lanes
-  reg  [ `MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ]      lane_word_ptr    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; 
-  reg  [ `MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ]      lane_word_inc    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; // value to increment the pointer by
-  reg  [ `MGR_NUM_OF_EXEC_LANES_RANGE       ]      lane_word_enable                                 ;  // vector of lane enables based on number of active lanes
+
+  reg  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE    ]      lane_channel_ptr [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; 
+  reg  [`MGR_NUM_OF_EXEC_LANES_RANGE ]            lane_valid                                       ; 
+  reg  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ]      lane_word_ptr    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; 
+  reg  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ]      lane_word_inc    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; // value to increment the pointer by
+  reg  [`MGR_NUM_OF_EXEC_LANES_RANGE ]            lane_enable                                      ;  // vector of lane enables based on number of active lanes
+  reg  [`COMMON_STD_INTF_CNTL_RANGE        ]      lane_cntl                                        ;
   //genvar lane ;
   //generate
   always @(posedge clk)
     begin
+      lane_cntl  <=  ((sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT)                                                )  ? `COMMON_STD_INTF_CNTL_SOM :
+                     ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           ) && consequtive_counter_le0 && last_consequtive )  ? `COMMON_STD_INTF_CNTL_EOM :
+                                                                                                                                          `COMMON_STD_INTF_CNTL_MOM ;
+          
       for (int lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
         begin: word_ptrs
-          lane_word_enable[lane]  <= (reset_poweron                                     ) ?  'd0                           :
-                                     (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) ? (xxx__sdp__num_lanes >  lane)  :
-                                                                                             lane_word_enable[lane]        ;
-          lane_word_ptr   [lane]  <= (reset_poweron                                     ) ?  'd0                           :
-                                     (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) ?  strm_inc_word + lane          :
-                                                                                             lane_word_ptr[lane]           ;
-          lane_word_inc   [lane]  <= (reset_poweron                                     ) ?  'd0                           :
-                                     (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) ?  xxx__sdp__num_lanes           :
-                                                                                             lane_word_inc[lane]           ;
+          lane_enable     [lane]  <= (reset_poweron                                                                                                    ) ?  'd0                           :
+                                     ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) || (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE)) ? (xxx__sdp__num_lanes >  lane)  :
+                                                                                                                                                            lane_enable[lane]             ;
+
+          lane_valid      [lane]  <= (reset_poweron                                                                                                    ) ?  'd0                           :                                      
+                                     ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) || (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE)) ?  ok_to_send                    :
+                                                                                                                                                            'd0                           ;
+
+          lane_channel_ptr[lane]  <= (reset_poweron                                                                                                    ) ?  'd0                           :
+                                     ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) || (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE)) ?  strm_inc_channel              :
+                                                                                                                                                            lane_channel_ptr[lane]        ;
+
+          lane_word_ptr   [lane]  <= (reset_poweron                                                                                                                                                              ) ?  'd0                           :
+                                     (((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) || (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE)) && (strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR)) ?  strm_inc_word + lane          :
+                                                                                                                                                                                                                      lane_word_ptr[lane]           ;
+
+          lane_word_inc   [lane]  <= (reset_poweron                                                                                                    ) ?  'd0                           :
+                                     ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) || (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE)) ?  xxx__sdp__num_lanes           :
+                                                                                                                                                            lane_word_inc[lane]           ;
         end
     end
   //endgenerate
   
   always @(*)
     begin
-      sdp__xxx__lane_word_ptr  =  lane_word_ptr ;
+      sdp__xxx__lane_valid        =  lane_valid       ;
+      sdp__xxx__lane_cntl         =  lane_cntl        ;
+      sdp__xxx__lane_enable       =  lane_enable      ;
+      sdp__xxx__lane_channel_ptr  =  lane_channel_ptr ;
+      sdp__xxx__lane_word_ptr     =  lane_word_ptr    ;
     end
   //----------------------------------------------------------------------------------------------------
   //
