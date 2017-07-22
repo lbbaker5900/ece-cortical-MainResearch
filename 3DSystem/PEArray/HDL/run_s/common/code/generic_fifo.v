@@ -52,26 +52,19 @@ module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
 
              );
 
-  // 
-  //localparam GENERIC_FIFO_ADDR_WIDTH       = $clog2(GENERIC_FIFO_DEPTH) ;
-
-
 
   //--------------------------------------------------------
   // Regs/Wires
   //
 
-    
-  wire [GENERIC_FIFO_DATA_WIDTH-1 :0  ]       int_read_data                            ;
-  reg  [GENERIC_FIFO_ADDR_WIDTH-1 :0  ]       wp                                       ; 
-  reg  [GENERIC_FIFO_ADDR_WIDTH-1 :0  ]       rp                                       ; 
-  //`ifdef TESTING
-  reg                                         full                                     ;   // latch the full condition for debug
-  // `endif
+  wire [GENERIC_FIFO_DATA_WIDTH-1 :0  ]       int_read_data     ;
+  reg  [GENERIC_FIFO_ADDR_WIDTH-1 :0  ]       wp                ; 
+  reg  [GENERIC_FIFO_ADDR_WIDTH-1 :0  ]       rp                ; 
+
+  /*
+  reg                                         full              ;   // latch the full condition for debug
+  */
   
-//  The necessary delays and SYNTHESIS modes are now handled in the generic
-//  memory
-//  `ifdef SYNTHESIS
     generic_2port_memory #(.GENERIC_MEM_DEPTH          (GENERIC_FIFO_DEPTH     ),
                            .GENERIC_MEM_REGISTERED_OUT (0                      ),
                            .GENERIC_MEM_DATA_WIDTH     (GENERIC_FIFO_DATA_WIDTH)
@@ -97,9 +90,6 @@ module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
                     .reset_poweron       ( reset_poweron             ),
                     .clk                 ( clk                       )
                     ) ;
-//  `else
-//    reg  [GENERIC_FIFO_DATA_WIDTH-1 :0 ]       fifo_data     [GENERIC_FIFO_DEPTH-1 :0 ] ;
-//  `endif
 
   always @(posedge clk)
     begin
@@ -107,13 +97,6 @@ module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
                             ( clear           ) ? 'd0           : 
                             ( write           ) ?  wp + 'd1     :
                                                    wp           ;
-  
-//  The necessary delays and SYNTHESIS modes are now handled in the generic
-//  memory
-//      `ifndef SYNTHESIS
-//        fifo_data[wp]      <= ( write           ) ? write_data    : 
-//                                                    fifo_data[wp] ;
-//      `endif
   
       rp                 <= ( reset_poweron   ) ? 'd0           : 
                             ( clear           ) ? 'd0           : 
@@ -127,54 +110,18 @@ module generic_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
                                                   depth         ;
   
       // latch the exception - FIXME - not a port yet - maybe add port `ifdef TESTING
+      /*
       full               <= ( reset_poweron || clear        ) ? 1'b0 : 
                             ( depth == GENERIC_FIFO_DEPTH-1 ) ? 1'b1 :
                                                                 full ;
-  
+      */
+
     end
 
-  //--------------------------------------------------------
-  // Registered outputs
-  // - in non-pipe mode, actual memory presents it output after the MENA is clocked
-  /*
-                          ______        ______        ______        ______        ______        ______
-                    _____|      |______|      |______|      |______|      |______|      |______|      
-                                       ^             ^             ^
-                                     sample        sample        sample
-                                     enable     non-piped data  piped data         
-                                 _____________  
-            MEA     ____________|             |_______________________________________________________
-                                       ^
-                                    enable
-                                 _____________
-           Address  ------------|_____________|-------------------------------------------------------
-                                        
-                                          ___________
-  Non-piped Data    -------------------<<|___________|>>---------------------------
-                                       ^       
-                                  non-pipe data 
-                                     output
-                                                        ___________
-      Piped Data    ---------------------------------<<|___________|>---------------------------
-                                                     ^            
-                                                 pipe data 
-                                                  output
-  */
-//  The necessary delays and SYNTHESIS modes are now handled in the generic
-//  memory
-// 
-//  `ifndef SYNTHESIS
-//    always @(posedge clk)
-//      begin
-//        read_data         <= ( read             ) ? int_read_data  :
-//                                                    read_data      ;
-//      end
-//  `else
     always @(*)
       begin
         read_data         =  int_read_data  ;
       end
-//  `endif
       
   //--------------------------------------------------------
   // Keep track of almost full and empty

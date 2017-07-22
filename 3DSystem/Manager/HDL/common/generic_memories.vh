@@ -258,6 +258,31 @@ genvar gvi;
 //
 //------------------------------------------------------------------------------------------------------------------------
 //
+if ((GENERIC_MEM_DEPTH == 32) && (GENERIC_MEM_DATA_WIDTH == 25) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+  begin
+    asdrlnpky2p32x25cm1sw0         mem2prf32x25(
+                   // Output
+                   .QB          ( int_portB_read_data_dly               ),
+                   // Read Port
+                   .CLKB        ( clk                                   ),
+                   .MEB         ( portB_enable_dly                      ),
+                   .ADRB        ( portB_address_dly                     ),
+                   // Write Port
+                   .CLKA        ( clk                                   ),
+                   .WEA         ( portA_write_dly                       ),
+                   .MEA         ( portA_enable_dly                      ),
+                   .ADRA        ( portA_address_dly                     ),
+                   .DA          ( portA_write_data_dly                  ),
+                   // Test
+                   .TEST1A      ( 1'b0     ), 
+                   .WMENA       ( 1'b0     ), // FIXME
+                   .TEST1B      ( 1'b0     ), 
+                   .RMB         ( 4'b0011    ), 
+                   .RMEB        ( 1'b1     ));
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
 if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 20) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
   begin
 
@@ -647,6 +672,34 @@ if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 34) && (GENERIC_MEM_R
     
   end
 
+//------------------------------------------------------------------------------------------------------------------------
+//
+// Use regFile for wide/shallow FIFO's
+  generate
+    if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 2050) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+      begin
+
+        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     reg8x2050     [GENERIC_MEM_DEPTH-1 :0 ] ;
+        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg2050                                 ;
+        wire [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg2050_e1                              ;
+       
+        always @(posedge clk)
+          begin
+            if (portA_enable_dly && portA_write_dly)
+              reg8x2050 [portA_address_dly] <= portA_write_data_dly ;
+          end
+       
+        assign   oreg2050_e1  =  reg8x2050 [portB_address_dly] ;
+       
+        always @(posedge clk)
+          begin
+            oreg2050   <= ( portB_enable_dly ) ? oreg2050_e1 :
+                                                 oreg2050    ;  // dw memory datasheet specifies previous data is maintained with ME=0
+          end
+        assign int_portB_read_data_dly  = oreg2050  ;
+
+      end
+  endgenerate
 //------------------------------------------------------------------------------------------------------------------------
 //
 if ((GENERIC_MEM_DEPTH == 64) && (GENERIC_MEM_DATA_WIDTH == 40) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))

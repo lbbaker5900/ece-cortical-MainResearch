@@ -112,14 +112,14 @@ module main_mem_cntl (
             always @(posedge clk)
               begin
                 mmc__mrc__valid    [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__valid_e1 [chan] [strm ] ; 
-                mmc__mrc__cntl     [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__cntl_e1  [chan] [strm ] ; 
-                mrc__mmc__ready_d1 [chan] [strm ] <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__ready    [chan] [strm ] ; 
+                mmc__mrc__cntl     [chan] [strm ] <=                                 mmc__mrc__cntl_e1  [chan] [strm ] ; 
+                mrc__mmc__ready_d1 [chan] [strm ] <=                                 mrc__mmc__ready    [chan] [strm ] ; 
               end
             for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
               begin: mem_response
                 always @(posedge clk)
                   begin
-                    mmc__mrc__data     [chan] [strm] [word] <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__data_e1  [chan] [strm] [word] ; 
+                    mmc__mrc__data     [chan] [strm] [word] <=   mmc__mrc__data_e1  [chan] [strm] [word] ; 
                   end
               end
           end
@@ -131,7 +131,7 @@ module main_mem_cntl (
   reg                                                                          dfi__mmc__init_done_d1                            ;
   reg                                                                          dfi__mmc__valid_d1      [`MGR_DRAM_NUM_CHANNELS ] ;
   reg   [`COMMON_STD_INTF_CNTL_RANGE        ]                                  dfi__mmc__cntl_d1       [`MGR_DRAM_NUM_CHANNELS ] ;
-  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]    dfi__mmc__data_d1       [`MGR_DRAM_NUM_CHANNELS ] ;
+  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]  dfi__mmc__data_d1       [`MGR_DRAM_NUM_CHANNELS ] ;
 
   always @(posedge clk)
     begin
@@ -163,7 +163,7 @@ module main_mem_cntl (
   reg                                                                          mmc__dfi__cmd1_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE       ]                                  mmc__dfi__bank_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
   reg   [`MGR_DRAM_PHY_ADDRESS_RANGE        ]                                  mmc__dfi__addr_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
-  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]    mmc__dfi__data_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]  mmc__dfi__data_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
 
   always @(posedge clk)
     begin
@@ -573,8 +573,8 @@ module main_mem_cntl (
                   
                   `MMC_CNTL_CMD_GEN_WAIT: 
                     // The channel stream select logic will not enable this fsm unless this streams request fifo is requesting this channel
-                    mmc_cntl_cmd_gen_state_next =  ( strm_enable [chan][strm] && ~from_dfi_fifo[0].almost_full) ?   `MMC_CNTL_CMD_GEN_DECODE_SEQUENCE  :
-                                                                                                                    `MMC_CNTL_CMD_GEN_WAIT             ;
+                    mmc_cntl_cmd_gen_state_next =  ( strm_enable [chan][strm] ) ?   `MMC_CNTL_CMD_GEN_DECODE_SEQUENCE  :
+                                                                                    `MMC_CNTL_CMD_GEN_WAIT             ;
        
                   `MMC_CNTL_CMD_GEN_DECODE_SEQUENCE: 
                     mmc_cntl_cmd_gen_state_next =  strm_cmd_code_state_next ;
@@ -787,7 +787,7 @@ module main_mem_cntl (
             // The stream request valid is sent to the channel select logic which in turn will enable this fsm
             //  - stream is valid if waiting and the streams request fifo wants this channel or
             //  - the stream has not yet been granted cache access
-            assign  strm_request               = ((mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_WAIT ) & request_fifo[strm].pipe_valid && (strm_request_chan == chan)) ;
+            assign  strm_request               = ((mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_WAIT ) & request_fifo[strm].pipe_valid & (strm_request_chan == chan) & ~from_dfi_fifo[chan].almost_full) ;
                                                
             assign  strm_request_done          = (strm_cmd_sequence_codes [strm_cmd_index] == `DRAM_ACC_CMD_IS_NOP ) ;  // when we hit NOP, we are done
                                                
@@ -2345,28 +2345,28 @@ module main_mem_cntl (
         //  channel isnt granted, but the other channels grant will be deasserted once it goes to the WAIT state
         if (chan == 0)
           begin
-            always @(posedge clk)
+            always @(*)
               begin
-                strm_valid[0]   <= grant_send_to_stream[chan][0] & waiting_to_send_to_stream[chan+1][0] ;
-                strm_valid[1]   <= grant_send_to_stream[chan][1] & waiting_to_send_to_stream[chan+1][1] ;
-                strm_cntl       <= from_dfi_fifo[chan].pipe_cntl ;
+                strm_valid[0]   = grant_send_to_stream[chan][0] & waiting_to_send_to_stream[chan+1][0] ;
+                strm_valid[1]   = grant_send_to_stream[chan][1] & waiting_to_send_to_stream[chan+1][1] ;
+                strm_cntl       = from_dfi_fifo[chan].pipe_cntl ;
               end
           end
         else if (chan == 1)
           begin
-            always @(posedge clk)
+            always @(*)
               begin
-                strm_valid[0]   <= grant_send_to_stream[chan][0] & waiting_to_send_to_stream[chan-1][0] ;
-                strm_valid[1]   <= grant_send_to_stream[chan][1] & waiting_to_send_to_stream[chan-1][1] ;
-                strm_cntl       <= from_dfi_fifo[chan].pipe_cntl ;
+                strm_valid[0]   = grant_send_to_stream[chan][0] & waiting_to_send_to_stream[chan-1][0] ;
+                strm_valid[1]   = grant_send_to_stream[chan][1] & waiting_to_send_to_stream[chan-1][1] ;
+                strm_cntl       = from_dfi_fifo[chan].pipe_cntl ;
               end
           end
 
         for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS; word=word+1) 
           begin: strm_data_reg
-            always @(posedge clk)
+            always @(*)
               begin
-                strm_data  [word] <= from_dfi_fifo[chan].pipe_dram_data [(word+1)*32-1 : word*32] ;
+                strm_data  [word] = from_dfi_fifo[chan].pipe_dram_data [(word+1)*32-1 : word*32] ;
               end
           end
 
@@ -2383,10 +2383,9 @@ module main_mem_cntl (
       begin
         for (strm=0; strm<`MGR_NUM_OF_STREAMS; strm=strm+1) 
           begin
-            always @(posedge clk)
+            always @(*)
               begin
-                mmc__mrc__valid_e1 [chan][strm]  <=  (reset_poweron ) ? 1'b0                           :
-                                                                        rdp_fsm[chan].strm_valid[strm] ;
+                mmc__mrc__valid_e1 [chan][strm]  =  rdp_fsm[chan].strm_valid[strm] ;
               end
           end
       end
@@ -2397,15 +2396,15 @@ module main_mem_cntl (
       begin
         for (strm=0; strm<`MGR_NUM_OF_STREAMS; strm=strm+1) 
           begin
-            always @(posedge clk)
+            always @(*)
               begin
-                mmc__mrc__cntl_e1 [chan][strm] <= rdp_fsm[chan].strm_cntl ;
+                mmc__mrc__cntl_e1 [chan][strm] = rdp_fsm[chan].strm_cntl ;
               end 
             for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS; word=word+1) 
               begin: return_data
-                always @(posedge clk)
+                always @(*)
                   begin
-                    mmc__mrc__data_e1 [chan][strm][word] <= rdp_fsm[chan].strm_data[word] ;
+                    mmc__mrc__data_e1 [chan][strm][word] = rdp_fsm[chan].strm_data[word] ;
                   end 
               end
           end

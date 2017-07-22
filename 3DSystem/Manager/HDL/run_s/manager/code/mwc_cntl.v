@@ -168,7 +168,7 @@ module mwc_cntl (
   genvar gvi;
   generate
     for (gvi=0; gvi<1; gvi=gvi+1) 
-      begin: from_Mcntl_Fifo
+      begin: from_Mcntl_fifo
 
 
         wire  clear        ;
@@ -208,7 +208,7 @@ module mwc_cntl (
         //----------------------------------------------------------------------------------------------------
         // Write data fields
         assign write       =  mcntl__mwc__valid_d1 ;
-        assign write_data  = {mcntl__mwc__cntl_d1, mcntl__mwc__ptype_d1, mcntl__mwc__pvalid, mcntl__mwc__data_d1};
+        assign write_data  = {mcntl__mwc__cntl_d1, mcntl__mwc__ptype_d1, mcntl__mwc__pvalid_d1, mcntl__mwc__data_d1};
 
         //----------------------------------------------------------------------------------------------------
         // Extract read data
@@ -241,7 +241,7 @@ module mwc_cntl (
 
   generate
     for (gvi=0; gvi<1; gvi=gvi+1) 
-      begin: from_Rdp_Fifo
+      begin: from_Rdp_fifo
 
 
         wire  clear        ;
@@ -281,7 +281,7 @@ module mwc_cntl (
         //----------------------------------------------------------------------------------------------------
         // Write data fields
         assign write       =  rdp__mwc__valid_d1 ;
-        assign write_data  = {rdp__mwc__cntl_d1, rdp__mwc__ptype_d1, rdp__mwc__pvalid, rdp__mwc__data_d1};
+        assign write_data  = {rdp__mwc__cntl_d1, rdp__mwc__ptype_d1, rdp__mwc__pvalid_d1, rdp__mwc__data_d1};
 
         //----------------------------------------------------------------------------------------------------
         // Extract read data
@@ -306,6 +306,115 @@ module mwc_cntl (
       end
   endgenerate
 
+
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Extract Descriptor FSM
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // - Take storage descriptor option tuples from the fifo and construct starting address and word locations
+  // - Give priority to NoC
+  //
+
+  // State register 
+  reg [`MWC_CNTL_PTR_DATA_RCV_STATE_RANGE ] mwc_cntl_extract_desc_state      ; // state flop
+  reg [`MWC_CNTL_PTR_DATA_RCV_STATE_RANGE ] mwc_cntl_extract_desc_state_next ;
+
+  always @(posedge clk)
+    begin
+      mwc_cntl_extract_desc_state <= ( reset_poweron ) ? `MWC_CNTL_PTR_DATA_RCV_WAIT        :
+                                                          mwc_cntl_extract_desc_state_next  ;
+    end
+  
+  reg                                                 contains_storage_ptr    ;  
+  reg   [`MGR_STORAGE_DESC_ADDRESS_RANGE       ]      storage_desc_ptr        ;  // pointer to local storage descriptor although msb's contain manager ID, so remove
+  //reg   [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE ]      local_storage_desc_ptr  ;  // remove manager ID msb's
+  reg   [`MGR_MGR_ID_RANGE                     ]      storage_desc_ptr_mgr_id ;  // extract manager ID from descriptor
+
+  //------------------------------------------------------------------------------------------------------------------------
+  // State Transitions
+  //
+  always @(*)
+    begin
+      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case)
+        
+        `MWC_CNTL_PTR_DATA_RCV_WAIT: 
+          mwc_cntl_extract_desc_state_next =   ( from_Mcntl_fifo[0].pipe_valid ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_NOC :  
+                                               ( from_Rdp_fifo[0].pipe_valid   ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_RDP :  
+                                                                                   `MWC_CNTL_PTR_DATA_RCV_WAIT        ;
+  
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_NOC: 
+          mwc_cntl_extract_desc_state_next =   ((from_Mcntl_fifo[0].pipe_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES )) ? `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC :  
+                                                                                                                                              `MWC_CNTL_PTR_DATA_RCV_PROCESS_NOC     ;
+  
+        // Cycle thru memory descriptor grabing num_lanes, txfer_type, target and storage descriptor pointer
+        // Dont leave this state until we see the end-of-descriptor
+        `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC : 
+          mwc_cntl_extract_desc_state_next =   ( from_Mcntl_fifo[0].pipe_valid && (storage_desc_ptr_mgr_id == sys__mgr__mgrId )) ? `MWC_CNTL_PTR_DATA_RCV_DECODE_NOC_PTR             :  // read the descriptor
+                                               ( from_Mcntl_fifo[0].pipe_valid                                                 ) ? `MWC_CNTL_PTR_DATA_RCV_EXTRACT_2ND_DESC_FROM_NOC  :  // read the descriptor
+                                                                                                                                   `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC  ;
+
+        `MWC_CNTL_PTR_DATA_RCV_DECODE_NOC_PTR : 
+          mwc_cntl_extract_desc_state_next =   ( from_Mcntl_fifo[0].pipe_valid && (storage_desc_ptr_mgr_id == sys__mgr__mgrId )) ? `MWC_CNTL_PTR_DATA_RCV_DECODE_NOC_PTR             :  // read the descriptor
+                                                                                                                                   `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC  ;
+
+
+
+      endcase // case (mrc_cntl_extract_desc_state)
+    end // always @ (*)
+
+  //------------------------------------------------------------------------------------------------------------------------
+  // State Decodes
+  //
+  //----------------------------------------------------------------------------------------------------
+  // Combinatorial Decodes
+  //
+  always @(*)
+    begin
+      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
+        
+        `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC: 
+          begin
+            contains_storage_ptr = (from_Mcntl_fifo[0].pipe_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES                       ) &
+                                   (from_Mcntl_fifo[0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY ) ; 
+
+            //local_storage_desc_ptr  =  storage_desc_ptr [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE ] ;  // remove manager ID msb's
+            storage_desc_ptr_mgr_id =  storage_desc_ptr [`MGR_STORAGE_DESC_MGR_ID_FIELD_RANGE  ] ;  // extract manager ID msb's
+          end
+        
+        default:
+          begin
+            contains_storage_ptr     = 'd0 ;
+            //local_storage_desc_ptr   = 'd0 ;
+            storage_desc_ptr_mgr_id  = 'd0 ;
+          end
+
+
+      endcase // case (mrc_cntl_extract_desc_state)
+    end // always @ (*)
+
+  //----------------------------------------------------------------------------------------------------
+  // Registered Decodes
+  //
+  always @(posedge clk)
+    begin
+      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
+        
+        `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC: 
+          begin
+            storage_desc_ptr        <= from_Mcntl_fifo[0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ];
+          end
+        
+        default:
+          begin
+            storage_desc_ptr        <= storage_desc_ptr  ;
+          end
+
+
+      endcase // case (mrc_cntl_extract_desc_state)
+    end // always @ (*)
+  //
+  // end of State Decodes
+  //------------------------------------------------------------------------------------------------------------------------
 
 
 endmodule
