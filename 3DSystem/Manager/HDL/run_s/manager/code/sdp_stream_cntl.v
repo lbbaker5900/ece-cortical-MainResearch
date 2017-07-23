@@ -36,7 +36,6 @@
 module sdp_stream_cntl (  
 
             input   wire                                           xxx__sdp__storage_desc_processing_enable     ,
-            output  reg                                            sdp__xxx__storage_desc_processing_complete   ,
             input   wire  [`MGR_STORAGE_DESC_ADDRESS_RANGE  ]      xxx__sdp__storage_desc_ptr                   ,  // pointer to local storage descriptor although msb's contain manager ID, so remove
             input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes                          ,
             input   wire  [`MGR_INST_OPTION_TRANSFER_RANGE  ]      xxx__sdp__txfer_type                         ,
@@ -434,13 +433,15 @@ module sdp_stream_cntl (
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
       always @(*) 
         begin
-          sdp__xxx__get_next_line[chan]  = (strm_inc_channel_e1 == chan) &
+          sdp__xxx__get_next_line[chan]  = ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) & consequtive_counter_le0 && last_consequtive) | // flush last transaction
+                                           (((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) | (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS)) &
+                                           (strm_inc_channel_e1 == chan) &
                                            ((strm_inc_bank_e1 != xxx__sdp__mem_request_bank[strm_inc_channel_e1]) | 
                                             (strm_inc_page_e1 != xxx__sdp__mem_request_page[strm_inc_channel_e1]) | 
                                             `ifdef MGR_DRAM_REQUEST_LT_PAGE
-                                              (strm_inc_line_e1 != xxx__sdp__mem_request_line[strm_inc_channel_e1]))  ;
+                                              (strm_inc_line_e1 != xxx__sdp__mem_request_line[strm_inc_channel_e1])))  ;
                                             `else
-                                              1'b0 ;
+                                              1'b0)) ;
                                             `endif
         end
   endgenerate

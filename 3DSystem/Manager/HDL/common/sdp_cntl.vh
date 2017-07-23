@@ -70,9 +70,9 @@
 `define SDP_CNTL_STRM_LOAD_JUMP_VALUE         6'b00_0100
 `define SDP_CNTL_STRM_COUNT_CONS              6'b00_1000
 
-`define SDP_CNTL_STRM_COMPLETE                6'b10_0000
+`define SDP_CNTL_STRM_COMPLETE                6'b01_0000
 
-`define SDP_CNTL_STRM_ERR                     6'b00_0000
+`define SDP_CNTL_STRM_ERR                     6'b10_0000
 
 `define SDP_CNTL_STRM_STATE_WIDTH         6
 `define SDP_CNTL_STRM_STATE_MSB           `SDP_CNTL_STRM_STATE_WIDTH-1

@@ -59,17 +59,17 @@ module sdp_request_cntl (
             // - send during request generation
             // - we create the requests as fast as possible and send to stream control so streaming can occur as MMC response 
             //   data becomes available
-            output wire                                            sdpr__sdps__cfg_valid       ,
-            output wire   [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]   sdpr__sdps__cfg_addr        ,
-            output wire   [`MGR_INST_OPTION_ORDER_RANGE        ]   sdpr__sdps__cfg_accessOrder ,
+            output reg                                             sdpr__sdps__cfg_valid       ,
+            output reg    [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]   sdpr__sdps__cfg_addr        ,
+            output reg    [`MGR_INST_OPTION_ORDER_RANGE        ]   sdpr__sdps__cfg_accessOrder ,
             input  wire                                            sdps__sdpr__cfg_ready       ,
             input  wire                                            sdps__sdpr__complete        ,
             output reg                                             sdpr__sdps__complete        ,
                                                                    
-            output wire                                            sdpr__sdps__consJump_valid ,
-            output wire   [`COMMON_STD_INTF_CNTL_RANGE         ]   sdpr__sdps__consJump_cntl  ,
-            output wire   [`MGR_INST_CONS_JUMP_RANGE           ]   sdpr__sdps__consJump_value ,
-            input  wire                                            sdps__sdpr__consJump_ready ,
+            output reg                                             sdpr__sdps__consJump_valid ,
+            output reg    [`COMMON_STD_INTF_CNTL_RANGE         ]   sdpr__sdps__consJump_cntl  ,
+            output reg    [`MGR_INST_CONS_JUMP_RANGE           ]   sdpr__sdps__consJump_value ,
+            input  reg                                             sdps__sdpr__consJump_ready ,
 
 
             //
@@ -159,7 +159,7 @@ module sdp_request_cntl (
   reg                                                      first_time_thru            ;  // need to make sure for the first cycle we request the starting bank/page
   reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  storage_desc_consJumpPtr   ;
 
-  wire                                                     to_strm_fsm_fifo_ready    ;
+  reg                                                      to_strm_fsm_fifo_ready    ;
 
   reg                                                      requests_complete         ;
   reg                                                      generate_requests         ;
@@ -179,9 +179,11 @@ module sdp_request_cntl (
   reg  completed_streaming      ;  // strm fsm has completed the cons/jump memory tuples
   always @(*)
     begin
-      completed_streaming   = sdps__sdpr__complete     ;
-      sdpr__sdps__complete  = desc_processor_strm_ack  ;
+      completed_streaming    = sdps__sdpr__complete     ;
+      sdpr__sdps__complete   = desc_processor_strm_ack  ;
+      to_strm_fsm_fifo_ready = sdps__sdpr__consJump_ready & sdps__sdpr__consJump_ready ;
     end
+
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // State Transitions
@@ -854,6 +856,22 @@ module sdp_request_cntl (
       endcase
     end
 
+  //---------------------------------------------------------------------------------
+  //  To SDP stream controller
+
+  always @(*)
+    begin
+     sdpr__sdps__consJump_valid   = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD) | (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD) ;
+     sdpr__sdps__consJump_cntl    = consJumpMemory_cntl  ;
+     sdpr__sdps__consJump_value   = consJumpMemory_value ;
+    end
+
+  always @(*)
+    begin
+     sdpr__sdps__cfg_valid        = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID) ;
+     sdpr__sdps__cfg_addr         = storage_desc_local_address ;
+     sdpr__sdps__cfg_accessOrder  = storage_desc_accessOrder   ;
+    end
   //---------------------------------------------------------------------------------
   //
  

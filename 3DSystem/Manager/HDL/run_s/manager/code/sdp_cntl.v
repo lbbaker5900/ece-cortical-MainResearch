@@ -119,6 +119,137 @@ module sdp_cntl (
       sdp__xxx__mem_request_word       <=   ( reset_poweron   ) ? 'd0  :  sdp__xxx__mem_request_word_e1    ;
     end
 
+  wire                                            sdpr__sdps__cfg_valid       ;
+  wire   [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]   sdpr__sdps__cfg_addr        ;
+  wire   [`MGR_INST_OPTION_ORDER_RANGE        ]   sdpr__sdps__cfg_accessOrder ;
+  wire                                            sdps__sdpr__cfg_ready       ;
+  wire                                            sdps__sdpr__complete        ;
+  wire                                            sdpr__sdps__complete        ;
+                                                  
+  wire                                            sdpr__sdps__consJump_valid  ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE         ]   sdpr__sdps__consJump_cntl   ;
+  wire   [`MGR_INST_CONS_JUMP_RANGE           ]   sdpr__sdps__consJump_value  ;
+  wire                                            sdps__sdpr__consJump_ready  ;
+
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Storage Descriptor Memory Request Generator
+  // - Contains the storage descriptor and consequtive/jump memory
+  // - generates memory requests and passes starting address and consequtive/jump values to the storage descriptor stream controller
+
+  sdp_request_cntl sdp_request_cntl (  
+
+            .xxx__sdp__storage_desc_processing_enable     ( xxx__sdp__storage_desc_processing_enable   ),
+            //.sdp__xxx__storage_desc_processing_complete   ( sdp__xxx__storage_desc_processing_complete ),
+            .sdp__xxx__storage_desc_processing_complete   ( ),
+            .xxx__sdp__storage_desc_ptr                   ( xxx__sdp__storage_desc_ptr                 ),  // pointer to local storage descriptor although msb's contain manager ID, so remove
+            .xxx__sdp__num_lanes                          ( xxx__sdp__num_lanes                        ),
+            .xxx__sdp__txfer_type                         ( xxx__sdp__txfer_type                       ),
+            .xxx__sdp__target                             ( xxx__sdp__target                           ),
+/*
+            .sdp__xxx__mem_request_valid                  ( sdp__xxx__mem_request_valid                ),
+            .sdp__xxx__mem_request_cntl                   ( sdp__xxx__mem_request_cntl                 ),
+*/
+            .sdp__xxx__mem_request_valid                  ( ),
+            .sdp__xxx__mem_request_cntl                   ( ),
+            .xxx__sdp__mem_request_ready                  ( xxx__sdp__mem_request_ready                ),
+/*
+            .sdp__xxx__mem_request_channel                ( sdp__xxx__mem_request_channel              ),
+            .sdp__xxx__mem_request_bank                   ( sdp__xxx__mem_request_bank                 ),
+            .sdp__xxx__mem_request_page                   ( sdp__xxx__mem_request_page                 ),
+            .sdp__xxx__mem_request_word                   ( sdp__xxx__mem_request_word                 ),
+*/
+            .sdp__xxx__mem_request_channel                ( ),
+            .sdp__xxx__mem_request_bank                   ( ),
+            .sdp__xxx__mem_request_page                   ( ),
+            .sdp__xxx__mem_request_word                   ( ),
+
+            .sdpr__sdps__cfg_valid                        ( sdpr__sdps__cfg_valid                      ),
+            .sdpr__sdps__cfg_addr                         ( sdpr__sdps__cfg_addr                       ),
+            .sdpr__sdps__cfg_accessOrder                  ( sdpr__sdps__cfg_accessOrder                ),
+            .sdps__sdpr__cfg_ready                        ( sdps__sdpr__cfg_ready                      ),
+            .sdps__sdpr__complete                         ( sdps__sdpr__complete                       ),
+            .sdpr__sdps__complete                         ( sdpr__sdps__complete                       ),
+
+            .sdpr__sdps__consJump_valid                   ( sdpr__sdps__consJump_valid                 ),
+            .sdpr__sdps__consJump_cntl                    ( sdpr__sdps__consJump_cntl                  ),
+            .sdpr__sdps__consJump_value                   ( sdpr__sdps__consJump_value                 ),
+            .sdps__sdpr__consJump_ready                   ( sdps__sdpr__consJump_ready                 ),
+
+            //------------------------------
+            // General
+            //
+            .sys__mgr__mgrId                              ( sys__mgr__mgrId ),
+            .clk                                          ( clk             ),
+            .reset_poweron                                ( reset_poweron   )
+                        );
+ 
+  sdp_stream_cntl sdp_stream_cntl (  
+
+            .xxx__sdp__storage_desc_processing_enable     ( xxx__sdp__storage_desc_processing_enable   ),
+            .xxx__sdp__storage_desc_ptr                   ( xxx__sdp__storage_desc_ptr                 ),  // pointer to local storage descriptor although msb's contain manager ID, so remove
+            .xxx__sdp__num_lanes                          ( xxx__sdp__num_lanes                        ),
+            .xxx__sdp__txfer_type                         ( xxx__sdp__txfer_type                       ),
+            .xxx__sdp__target                             ( xxx__sdp__target                           ),
+
+            //-------------------------------
+            // from MMC fifo Control
+            .xxx__sdp__mem_request_channel_data_valid                ,  // valid data from channel data fifo and downstream ready
+
+            // Contains the associated address for the next mmc line
+            // - automatically updated when "get_line" is asserted
+            .xxx__sdp__mem_request_valid                  ( xxx__sdp__mem_request_valid              ),
+            .xxx__sdp__mem_request_channel                ( xxx__sdp__mem_request_channel            ),
+            .xxx__sdp__mem_request_bank                   ( xxx__sdp__mem_request_bank               ),
+            .xxx__sdp__mem_request_page                   ( xxx__sdp__mem_request_page               ),
+            .xxx__sdp__mem_request_word                   ( xxx__sdp__mem_request_word               ),
+            //.sdp__xxx__mem_request_ack   (  ),  // actually a read to the request feedback fifo
+/*
+            .sdp__xxx__get_next_line                      ( sdp__xxx__get_next_line                    ),
+            .sdp__xxx__lane_valid                         ( sdp__xxx__lane_valid                       ),
+            .sdp__xxx__lane_cntl                          ( sdp__xxx__lane_cntl                        ),
+            .sdp__xxx__lane_enable                        ( sdp__xxx__lane_enable                      ),
+            .sdp__xxx__lane_channel_ptr                   ( sdp__xxx__lane_channel_ptr                 ),
+            .sdp__xxx__lane_word_ptr                      ( sdp__xxx__lane_word_ptr                    ),
+            .sdp__xxx__current_channel                    ( sdp__xxx__current_channel                  ),
+*/
+            .sdp__xxx__get_next_line                      (               ),
+            .sdp__xxx__lane_valid                         (               ),
+            .sdp__xxx__lane_cntl                          (               ),
+            .sdp__xxx__lane_enable                        (               ),
+            .sdp__xxx__lane_channel_ptr                   (               ),
+            .sdp__xxx__lane_word_ptr                      (               ),
+            .sdp__xxx__current_channel                    (               ),
+
+            .xxx__sdp__lane_ready                         ( xxx__sdp__lane_ready                       ),
+           
+
+            //-------------------------------
+            // from Storage Descriptor request control
+            // - sent here during request generation request generation happens faster than streaming
+            // - two buses :, cfg contains start address and access order and we receive one transaction per stream
+            //                consJump contains the set of consequtive/jump fields which may be one or more
+            //
+            .sdpr__sdps__cfg_valid                        ( sdpr__sdps__cfg_valid                      ),
+            .sdpr__sdps__cfg_addr                         ( sdpr__sdps__cfg_addr                       ),
+            .sdpr__sdps__cfg_accessOrder                  ( sdpr__sdps__cfg_accessOrder                ),
+            .sdps__sdpr__cfg_ready                        ( sdps__sdpr__cfg_ready                      ),
+            .sdps__sdpr__complete                         ( sdps__sdpr__complete                       ),
+            .sdpr__sdps__complete                         ( sdpr__sdps__complete                       ),
+
+            .sdpr__sdps__consJump_valid                   ( sdpr__sdps__consJump_valid                 ),
+            .sdpr__sdps__consJump_cntl                    ( sdpr__sdps__consJump_cntl                  ),
+            .sdpr__sdps__consJump_value                   ( sdpr__sdps__consJump_value                 ),
+            .sdps__sdpr__consJump_ready                   ( sdps__sdpr__consJump_ready                 ),
+
+            //
+            //-------------------------------
+            // General
+            //
+            .sys__mgr__mgrId                              ( sys__mgr__mgrId ),
+            .clk                                          ( clk             ),
+            .reset_poweron                                ( reset_poweron   )
+                        );
+
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // Process Descriptor FSM
@@ -1307,6 +1438,17 @@ module sdp_cntl (
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
       always @(*) 
         begin
+          sdp__xxx__get_next_line[chan]  = ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) & consequtive_counter_le0 && last_consequtive) | // flush last transaction
+                                           (((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) | (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS)) &
+                                           (strm_inc_channel_e1 == chan) &
+                                           ((strm_inc_bank_e1 != xxx__sdp__mem_request_bank[strm_inc_channel_e1]) | 
+                                            (strm_inc_page_e1 != xxx__sdp__mem_request_page[strm_inc_channel_e1]) | 
+                                            `ifdef MGR_DRAM_REQUEST_LT_PAGE
+                                              (strm_inc_line_e1 != xxx__sdp__mem_request_line[strm_inc_channel_e1])))  ;
+                                            `else
+                                              1'b0)) ;
+                                            `endif
+/*
           sdp__xxx__get_next_line[chan]  = (strm_inc_channel_e1 == chan) &
                                            ((strm_inc_bank_e1 != xxx__sdp__mem_request_bank[strm_inc_channel_e1]) | 
                                             (strm_inc_page_e1 != xxx__sdp__mem_request_page[strm_inc_channel_e1]) | 
@@ -1315,6 +1457,7 @@ module sdp_cntl (
                                             `else
                                               1'b0 ;
                                             `endif
+*/
         end
   endgenerate
 
