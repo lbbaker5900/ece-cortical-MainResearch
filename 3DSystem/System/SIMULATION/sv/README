@@ -7,24 +7,25 @@
 vim   ../../../PEArray/SIMULATION/common/TB_common.vh
 #  `define TB_ENABLE_REGFILE_DRIVER
 #  `undef  TB_ENABLE_REGFILE_DRIVER
-vim   ../../../PEArray/HDL/common/pe_array.vh 
 #  - 4-> 64
+vi   ../../../PEArray/HDL/common/pe_array.vh 
 cp ../../../Manager/scripts/nocConfig_mesh2x2.txt ../../../Manager/scripts/nocConfig.txt
 cp ../common/noc_interMgr_port_Bitmasks_2x2.vh ../../../Manager/HDL/common/noc_interMgr_port_Bitmasks.vh
 cp inputFiles.2x2/* inputFiles/.
 
 # restrict number of instructions
-gvim inputFiles/manager_3_layer1_instruction_readmem.dat \
-     inputFiles/manager_2_layer1_instruction_readmem.dat \
-     inputFiles/manager_1_layer1_instruction_readmem.dat \
-     inputFiles/manager_0_layer1_instruction_readmem.dat 
-
-# or placed these files in tmp/.
+#  modified files in tmp/.
 cp   tmp/manager_3_layer1_instruction_readmem.dat \
      tmp/manager_2_layer1_instruction_readmem.dat \
      tmp/manager_1_layer1_instruction_readmem.dat \
      tmp/manager_0_layer1_instruction_readmem.dat \
      inputFiles/.
+
+# or edit
+gvim inputFiles/manager_3_layer1_instruction_readmem.dat \
+     inputFiles/manager_2_layer1_instruction_readmem.dat \
+     inputFiles/manager_1_layer1_instruction_readmem.dat \
+     inputFiles/manager_0_layer1_instruction_readmem.dat 
 
 
 

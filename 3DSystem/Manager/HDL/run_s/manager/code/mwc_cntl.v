@@ -180,7 +180,7 @@ module mwc_cntl (
 
         // Write 
         wire                                                  pipe_valid   ;
-        wire                                                  pipe_read    ;
+        reg                                                   pipe_read    ;
         reg  [`MWC_CNTL_FROM_MCNTL_AGGREGATE_FIFO_RANGE ]     pipe_data    ;
 
         generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MWC_CNTL_FROM_MCNTL_FIFO_DEPTH                 ),
@@ -223,8 +223,6 @@ module mwc_cntl (
         wire   pipe_som     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ); 
         wire   pipe_eom     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (pipe_cntl == `COMMON_STD_INTF_CNTL_EOM);
 
-        assign pipe_read = pipe_valid ;
-
         always @(*)
           begin
             mwc__mcntl__ready_e1  = ~almost_full ;
@@ -253,7 +251,7 @@ module mwc_cntl (
 
         // Write 
         wire                                                  pipe_valid   ;
-        wire                                                  pipe_read    ;
+        reg                                                   pipe_read    ;
         reg  [`MWC_CNTL_FROM_MCNTL_AGGREGATE_FIFO_RANGE ]     pipe_data    ;
 
         generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MWC_CNTL_FROM_MCNTL_FIFO_DEPTH                 ),
@@ -296,8 +294,6 @@ module mwc_cntl (
         wire   pipe_som     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ); 
         wire   pipe_eom     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (pipe_cntl == `COMMON_STD_INTF_CNTL_EOM);
 
-        assign pipe_read = pipe_valid ;
-
         always @(*)
           begin
             mwc__rdp__ready_e1    = ~almost_full ;
@@ -326,9 +322,12 @@ module mwc_cntl (
     end
   
   reg                                                 contains_storage_ptr    ;  
+  reg                                                 contains_data           ;  
   reg   [`MGR_STORAGE_DESC_ADDRESS_RANGE       ]      storage_desc_ptr        ;  // pointer to local storage descriptor although msb's contain manager ID, so remove
   //reg   [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE ]      local_storage_desc_ptr  ;  // remove manager ID msb's
   reg   [`MGR_MGR_ID_RANGE                     ]      storage_desc_ptr_mgr_id ;  // extract manager ID from descriptor
+  reg                                                 storage_desc_processing_enable   ;  
+  wire                                                storage_desc_processing_complete ;  
 
   //------------------------------------------------------------------------------------------------------------------------
   // State Transitions
@@ -338,24 +337,79 @@ module mwc_cntl (
       case (mwc_cntl_extract_desc_state)  // synopsys parallel_case)
         
         `MWC_CNTL_PTR_DATA_RCV_WAIT: 
-          mwc_cntl_extract_desc_state_next =   ( from_Mcntl_fifo[0].pipe_valid ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_NOC :  
-                                               ( from_Rdp_fifo[0].pipe_valid   ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_RDP :  
+          mwc_cntl_extract_desc_state_next =   ( from_Mcntl_fifo[0].pipe_valid ) ? `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_MCNTL:  
+                                               ( from_Rdp_fifo[0].pipe_valid   ) ? `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_RDP:  
                                                                                    `MWC_CNTL_PTR_DATA_RCV_WAIT        ;
-  
-        `MWC_CNTL_PTR_DATA_RCV_PROCESS_NOC: 
-          mwc_cntl_extract_desc_state_next =   ((from_Mcntl_fifo[0].pipe_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES )) ? `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC :  
-                                                                                                                                              `MWC_CNTL_PTR_DATA_RCV_PROCESS_NOC     ;
-  
-        // Cycle thru memory descriptor grabing num_lanes, txfer_type, target and storage descriptor pointer
-        // Dont leave this state until we see the end-of-descriptor
-        `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC : 
-          mwc_cntl_extract_desc_state_next =   ( from_Mcntl_fifo[0].pipe_valid && (storage_desc_ptr_mgr_id == sys__mgr__mgrId )) ? `MWC_CNTL_PTR_DATA_RCV_DECODE_NOC_PTR             :  // read the descriptor
-                                               ( from_Mcntl_fifo[0].pipe_valid                                                 ) ? `MWC_CNTL_PTR_DATA_RCV_EXTRACT_2ND_DESC_FROM_NOC  :  // read the descriptor
-                                                                                                                                   `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC  ;
 
-        `MWC_CNTL_PTR_DATA_RCV_DECODE_NOC_PTR : 
-          mwc_cntl_extract_desc_state_next =   ( from_Mcntl_fifo[0].pipe_valid && (storage_desc_ptr_mgr_id == sys__mgr__mgrId )) ? `MWC_CNTL_PTR_DATA_RCV_DECODE_NOC_PTR             :  // read the descriptor
-                                                                                                                                   `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC  ;
+        //------------------------------------------------------------------------------------------------------------------------------------------------------
+        // RDP
+        //
+        // Keep reading until we see descriptor cycle
+        `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_RDP: 
+          mwc_cntl_extract_desc_state_next =   (contains_storage_ptr ) ? `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_RDP :  
+                                               (contains_data        ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_RDP_DATA              :  
+                                                                         `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_RDP   ;
+  
+  
+        `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_RDP : 
+          mwc_cntl_extract_desc_state_next =   ( storage_desc_ptr_mgr_id == sys__mgr__mgrId ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_RDP :  // read the descriptor
+                                                                                                `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_RDP   ;
+
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_RDP : 
+          mwc_cntl_extract_desc_state_next =   (storage_desc_processing_complete  ) ? `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_RDP    :  // read the descriptor
+                                                                                      `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_RDP  ;
+
+
+        `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_RDP : 
+          mwc_cntl_extract_desc_state_next =   ( (storage_desc_ptr_mgr_id == sys__mgr__mgrId )) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_RDP         :  // read the descriptor
+                                                                                                  `MWC_CNTL_PTR_DATA_RCV_NEXT_RDP_CYCLE                 ;
+
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_RDP : 
+          mwc_cntl_extract_desc_state_next =   (storage_desc_processing_complete  ) ? `MWC_CNTL_PTR_DATA_RCV_NEXT_RDP_CYCLE             :  // read the descriptor
+                                                                                      `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_RDP  ;
+
+        `MWC_CNTL_PTR_DATA_RCV_NEXT_RDP_CYCLE : 
+          mwc_cntl_extract_desc_state_next =    `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_RDP;
+
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_RDP_DATA : 
+          mwc_cntl_extract_desc_state_next =   ( from_Rdp_fifo[0].pipe_valid && from_Rdp_fifo[0].pipe_eom ) ? `MWC_CNTL_PTR_DATA_RCV_WAIT:  
+                                               ( from_Rdp_fifo[0].pipe_valid                              ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_RDP_DATA:  
+                                                                                                              `MWC_CNTL_PTR_DATA_RCV_PROCESS_RDP_DATA        ;
+
+
+        //------------------------------------------------------------------------------------------------------------------------------------------------------
+        // MCntl
+        //
+        // Keep reading until we see descriptor cycle
+        `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_MCNTL: 
+          mwc_cntl_extract_desc_state_next =   (contains_storage_ptr ) ? `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_MCNTL :  
+                                               (contains_data        ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_MCNTL_DATA              :  
+                                                                         `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_MCNTL   ;
+  
+        `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_MCNTL : 
+          mwc_cntl_extract_desc_state_next =   ( storage_desc_ptr_mgr_id == sys__mgr__mgrId ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_MCNTL :  // read the descriptor
+                                                                                                `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_MCNTL   ;
+
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_MCNTL : 
+          mwc_cntl_extract_desc_state_next =   (storage_desc_processing_complete  ) ? `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_MCNTL    :  // read the descriptor
+                                                                                      `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_MCNTL  ;
+
+
+        `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_MCNTL : 
+          mwc_cntl_extract_desc_state_next =   ( (storage_desc_ptr_mgr_id == sys__mgr__mgrId )) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_MCNTL         :  // read the descriptor
+                                                                                                  `MWC_CNTL_PTR_DATA_RCV_NEXT_MCNTL_CYCLE                 ;
+
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_MCNTL : 
+          mwc_cntl_extract_desc_state_next =   (storage_desc_processing_complete  ) ? `MWC_CNTL_PTR_DATA_RCV_NEXT_MCNTL_CYCLE             :  // read the descriptor
+                                                                                      `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_MCNTL  ;
+
+        `MWC_CNTL_PTR_DATA_RCV_NEXT_MCNTL_CYCLE : 
+          mwc_cntl_extract_desc_state_next =    `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_MCNTL;
+
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_MCNTL_DATA : 
+          mwc_cntl_extract_desc_state_next =   ( from_Mcntl_fifo[0].pipe_valid && from_Mcntl_fifo[0].pipe_eom ) ? `MWC_CNTL_PTR_DATA_RCV_WAIT:  
+                                               ( from_Mcntl_fifo[0].pipe_valid                              ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_MCNTL_DATA:  
+                                                                                                              `MWC_CNTL_PTR_DATA_RCV_PROCESS_MCNTL_DATA        ;
 
 
 
@@ -370,22 +424,119 @@ module mwc_cntl (
   //
   always @(*)
     begin
+                                                                                                    
+      storage_desc_ptr_mgr_id =  storage_desc_ptr [`MGR_STORAGE_DESC_MGR_ID_FIELD_RANGE  ] ;  // extract manager ID msb's
+
+    end
+
+  always @(*)
+    begin
       case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
         
-        `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC: 
+        `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_RDP: 
           begin
-            contains_storage_ptr = (from_Mcntl_fifo[0].pipe_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES                       ) &
-                                   (from_Mcntl_fifo[0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY ) ; 
+            contains_storage_ptr = from_Rdp_fifo[0].pipe_valid & (((from_Rdp_fifo  [0].pipe_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES ) & (from_Rdp_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) | 
+                                                                  ((from_Rdp_fifo  [0].pipe_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES ) & (from_Rdp_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )));
+                                                                                                     
+                                                                                       
+            
+            contains_data        = from_Rdp_fifo[0].pipe_valid & (((from_Rdp_fifo  [0].pipe_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_DATA )));
+                                                                                                    
+            from_Rdp_fifo[0].pipe_read   = ~contains_storage_ptr & ~contains_data ;
+          end
 
-            //local_storage_desc_ptr  =  storage_desc_ptr [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE ] ;  // remove manager ID msb's
-            storage_desc_ptr_mgr_id =  storage_desc_ptr [`MGR_STORAGE_DESC_MGR_ID_FIELD_RANGE  ] ;  // extract manager ID msb's
+        `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_RDP : 
+          begin
+            storage_desc_ptr     = from_Rdp_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ] ;
+                                                                                                    
+          end
+        
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_RDP : 
+          begin
+            storage_desc_ptr     = from_Rdp_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ] ;
+            storage_desc_processing_enable  = 'd1  ;  
+                                                                                                    
+          end
+        
+        `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_RDP : 
+          begin
+            storage_desc_ptr     = from_Rdp_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE ] ;
+                                                                                                    
+          end
+        
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_RDP : 
+          begin
+            storage_desc_ptr     = from_Rdp_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE ] ;
+            storage_desc_processing_enable  = 'd1  ;  
+                                                                                                    
+          end
+        
+        `MWC_CNTL_PTR_DATA_RCV_NEXT_RDP_CYCLE : 
+          begin
+            from_Rdp_fifo[0].pipe_read   = 1'b1 ;
+          end
+
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_RDP_DATA : 
+          begin
+            from_Rdp_fifo[0].pipe_read   = from_Rdp_fifo[0].pipe_valid ;
+          end
+        
+        
+        `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_MCNTL: 
+          begin
+            contains_storage_ptr = from_Mcntl_fifo[0].pipe_valid & (((from_Mcntl_fifo  [0].pipe_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES ) & (from_Mcntl_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) | 
+                                                                  ((from_Mcntl_fifo  [0].pipe_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES ) & (from_Mcntl_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )));
+                                                                                                     
+                                                                                       
+            
+            contains_data        = from_Mcntl_fifo[0].pipe_valid & (((from_Mcntl_fifo  [0].pipe_ptype == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_DATA )));
+                                                                                                    
+            from_Mcntl_fifo[0].pipe_read   = ~contains_storage_ptr & ~contains_data ;
+          end
+
+        `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_MCNTL : 
+          begin
+            storage_desc_ptr     = from_Mcntl_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ] ;
+                                                                                                    
+          end
+        
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_MCNTL : 
+          begin
+            storage_desc_ptr     = from_Mcntl_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ] ;
+            storage_desc_processing_enable  = 'd1  ;  
+                                                                                                    
+          end
+        
+        `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_MCNTL : 
+          begin
+            storage_desc_ptr     = from_Mcntl_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE ] ;
+                                                                                                    
+          end
+        
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_MCNTL : 
+          begin
+            storage_desc_ptr     = from_Mcntl_fifo  [0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE ] ;
+            storage_desc_processing_enable  = 'd1  ;  
+                                                                                                    
+          end
+        
+        `MWC_CNTL_PTR_DATA_RCV_NEXT_MCNTL_CYCLE : 
+          begin
+            from_Mcntl_fifo[0].pipe_read   = 1'b1 ;
+          end
+
+        `MWC_CNTL_PTR_DATA_RCV_PROCESS_MCNTL_DATA : 
+          begin
+            from_Mcntl_fifo[0].pipe_read   = from_Mcntl_fifo[0].pipe_valid ;
           end
         
         default:
           begin
-            contains_storage_ptr     = 'd0 ;
-            //local_storage_desc_ptr   = 'd0 ;
-            storage_desc_ptr_mgr_id  = 'd0 ;
+            contains_storage_ptr            = 'd0  ;
+            storage_desc_ptr_mgr_id         = 'd0  ;
+            storage_desc_processing_enable  = 'd0  ;  
+            from_Rdp_fifo[0].pipe_read         = 'd0  ;
+            from_Mcntl_fifo[0].pipe_read       = 'd0  ;
           end
 
 
@@ -395,26 +546,57 @@ module mwc_cntl (
   //----------------------------------------------------------------------------------------------------
   // Registered Decodes
   //
-  always @(posedge clk)
-    begin
-      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
-        
-        `MWC_CNTL_PTR_DATA_RCV_EXTRACT_1ST_DESC_FROM_NOC: 
-          begin
-            storage_desc_ptr        <= from_Mcntl_fifo[0].pipe_data[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ];
-          end
-        
-        default:
-          begin
-            storage_desc_ptr        <= storage_desc_ptr  ;
-          end
-
-
-      endcase // case (mrc_cntl_extract_desc_state)
-    end // always @ (*)
   //
   // end of State Decodes
   //------------------------------------------------------------------------------------------------------------------------
+
+
+
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Storage Descriptor Memory Request Generator
+  // - Contains the storage descriptor and consequtive/jump memory
+  // - generates memory requests and passes starting address and consequtive/jump values to the storage descriptor stream controller
+  // - sends the channel/bank/page/line address associated with each request to the main memory controller
+
+  sdp_request_cntl sdp_request_cntl (  
+
+            .xxx__sdp__storage_desc_processing_enable     ( storage_desc_processing_enable             ),
+            .sdp__xxx__storage_desc_processing_complete   ( storage_desc_processing_complete           ),
+            .xxx__sdp__storage_desc_ptr                   ( storage_desc_ptr                           ),  // pointer to local storage descriptor although msb's contain manager ID, so remove
+            //.xxx__sdp__num_lanes                        ( xxx__sdp__num_lanes                        ),
+            //.xxx__sdp__txfer_type                       ( xxx__sdp__txfer_type                       ),
+            //.xxx__sdp__target                           ( xxx__sdp__target                           ),
+
+            .sdp__xxx__mem_request_valid                  ( mwc__mmc__valid_e1                         ),
+            .sdp__xxx__mem_request_cntl                   ( mwc__mmc__cntl_e1                          ),
+                                                                                                 
+            .xxx__sdp__mem_request_ready                  ( mmc__mwc__ready_d1                         ),
+                                                                                                 
+            .sdp__xxx__mem_request_channel                ( mwc__mmc__channel_e1                       ),
+            .sdp__xxx__mem_request_bank                   ( mwc__mmc__bank_e1                          ),
+            .sdp__xxx__mem_request_page                   ( mwc__mmc__page_e1                          ),
+            .sdp__xxx__mem_request_word                   ( mwc__mmc__word_e1                          ),
+
+            .sdpr__sdps__cfg_valid                        (                                            ),
+            .sdpr__sdps__cfg_addr                         (                                            ),
+            .sdpr__sdps__cfg_accessOrder                  (                                            ),
+            .sdps__sdpr__cfg_ready                        ( 1'b1                                       ),
+            .sdps__sdpr__complete                         ( 1'b1                                       ),
+            .sdpr__sdps__complete                         (                                            ),
+
+            .sdpr__sdps__consJump_valid                   (                                            ),
+            .sdpr__sdps__consJump_cntl                    (                                            ),
+            .sdpr__sdps__consJump_value                   (                                            ),
+            .sdps__sdpr__consJump_ready                   ( 1'b1                                       ),
+
+            //------------------------------
+            // General
+            //
+            .sys__mgr__mgrId                              ( sys__mgr__mgrId ),
+            .clk                                          ( clk             ),
+            .reset_poweron                                ( reset_poweron   )
+                        );
+ 
 
 
 endmodule

@@ -121,16 +121,13 @@
 //  - combine the channel return data with the requesting stream
 // 
 
-`define MMC_CNTL_RDP_WAIT_P0                         8'b0000_0001
-`define MMC_CNTL_RDP_WAIT_P1                         8'b0000_0010
-`define MMC_CNTL_RDP_STRM0_P0                        8'b0000_0100
-`define MMC_CNTL_RDP_STRM0_P1                        8'b0000_1000
-`define MMC_CNTL_RDP_STRM1_P0                        8'b0001_0000
-`define MMC_CNTL_RDP_STRM1_P1                        8'b0010_0000
-                                                            
-`define MMC_CNTL_RDP_ERR                             8'b1000_0000
+`define MMC_CNTL_RDP_WAIT                            4'b0001
+`define MMC_CNTL_RDP_STRM0                           4'b0010
+`define MMC_CNTL_RDP_STRM1                           4'b0100
+                                                        
+`define MMC_CNTL_RDP_ERR                             4'b1000
 
-`define MMC_CNTL_RDP_STATE_WIDTH         8
+`define MMC_CNTL_RDP_STATE_WIDTH         4
 `define MMC_CNTL_RDP_STATE_MSB           `MMC_CNTL_RDP_STATE_WIDTH-1
 `define MMC_CNTL_RDP_STATE_LSB           0
 `define MMC_CNTL_RDP_STATE_SIZE          (`MMC_CNTL_RDP_STATE_MSB - `MMC_CNTL_RDP_STATE_LSB +1)
@@ -586,7 +583,7 @@
 // Strm/Tag FIFO
 
 
-`define MMC_CNTL_READPATH_TAG_FIFO_DEPTH          8
+`define MMC_CNTL_READPATH_TAG_FIFO_DEPTH          `MMC_CNTL_FROM_DFI_FIFO_DEPTH 
 `define MMC_CNTL_READPATH_TAG_FIFO_DEPTH_MSB      (`MMC_CNTL_READPATH_TAG_FIFO_DEPTH) -1
 `define MMC_CNTL_READPATH_TAG_FIFO_DEPTH_LSB      0
 `define MMC_CNTL_READPATH_TAG_FIFO_DEPTH_SIZE     (`MMC_CNTL_READPATH_TAG_FIFO_DEPTH_MSB - `MMC_CNTL_READPATH_TAG_FIFO_DEPTH_LSB +1)

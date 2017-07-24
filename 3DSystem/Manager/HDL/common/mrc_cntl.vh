@@ -147,7 +147,7 @@
 //--------------------------------------------------------
 // From MMC
 
-`define MRC_CNTL_FROM_MMC_FIFO_DEPTH          8
+`define MRC_CNTL_FROM_MMC_FIFO_DEPTH          64
 `define MRC_CNTL_FROM_MMC_FIFO_DEPTH_MSB      (`MRC_CNTL_FROM_MMC_FIFO_DEPTH) -1
 `define MRC_CNTL_FROM_MMC_FIFO_DEPTH_LSB      0
 `define MRC_CNTL_FROM_MMC_FIFO_DEPTH_SIZE     (`MRC_CNTL_FROM_MMC_FIFO_DEPTH_MSB - `MRC_CNTL_FROM_MMC_FIFO_DEPTH_LSB +1)
@@ -282,7 +282,7 @@
 // Request fifo
 //  - for associating each channel return data with an address
 //
-`define MRC_CNTL_REQUEST_FIFO_DEPTH          32
+`define MRC_CNTL_REQUEST_FIFO_DEPTH          64
 `define MRC_CNTL_REQUEST_FIFO_DEPTH_MSB      (`MRC_CNTL_REQUEST_FIFO_DEPTH) -1
 `define MRC_CNTL_REQUEST_FIFO_DEPTH_LSB      0
 `define MRC_CNTL_REQUEST_FIFO_DEPTH_SIZE     (`MRC_CNTL_REQUEST_FIFO_DEPTH_MSB - `MRC_CNTL_REQUEST_FIFO_DEPTH_LSB +1)

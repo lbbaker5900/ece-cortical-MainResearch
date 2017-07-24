@@ -219,32 +219,8 @@ module main_mem_cntl (
           wire  [ `MGR_DRAM_LINE_ADDRESS_RANGE  ]      pipe_line     ;
         `endif
 
-        wire                                           pipe_peek_valid    ;
-        wire  [ `COMMON_STD_INTF_CNTL_RANGE     ]      pipe_peek_cntl     ;
-        wire                                           pipe_peek_is_read  ;
-        wire                                           pipe_peek_is_write ;
-        wire  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      pipe_peek_channel  ;
-        wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      pipe_peek_bank     ;
-        wire  [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      pipe_peek_page     ;
-        wire  [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      pipe_peek_word     ;
-        `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-          wire  [ `MGR_DRAM_LINE_ADDRESS_RANGE  ]      pipe_peek_line     ;
-        `endif
 
-        wire                                           pipe_peek_twoIn_valid    ;
-        wire  [ `COMMON_STD_INTF_CNTL_RANGE     ]      pipe_peek_twoIn_cntl     ;
-        wire                                           pipe_peek_twoIn_is_read  ;
-        wire                                           pipe_peek_twoIn_is_write ;
-        wire  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      pipe_peek_twoIn_channel  ;
-        wire  [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      pipe_peek_twoIn_bank     ;
-        wire  [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      pipe_peek_twoIn_page     ;
-        wire  [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      pipe_peek_twoIn_word     ;
-        `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-          wire  [ `MGR_DRAM_LINE_ADDRESS_RANGE  ]      pipe_peek_twoIn_line     ;
-        `endif
-
-
-        generic_pipelined_w_peek_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_REQUEST_FIFO_DEPTH                 ),
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_REQUEST_FIFO_DEPTH                 ),
                                         .GENERIC_FIFO_THRESHOLD  (`MMC_CNTL_REQUEST_FIFO_ALMOST_FULL_THRESHOLD ),
                                         .GENERIC_FIFO_DATA_WIDTH (`MMC_CNTL_REQUEST_AGGREGATE_FIFO_WIDTH       )
                         ) gpfifo (
@@ -257,11 +233,6 @@ module main_mem_cntl (
                                 .pipe_valid       ( pipe_valid            ),
                                 .pipe_data        ({pipe_cntl, pipe_is_read, pipe_is_write, pipe_channel, pipe_bank, pipe_page, pipe_word}),
                                 .pipe_read        ( pipe_read             ),
-
-                                .pipe_peek_valid       ( pipe_peek_valid       ),
-                                .pipe_peek_data        ({pipe_peek_cntl, pipe_peek_is_read, pipe_peek_is_write, pipe_peek_channel, pipe_peek_bank, pipe_peek_page, pipe_peek_word}), 
-                                .pipe_peek_twoIn_valid ( pipe_peek_twoIn_valid ),
-                                .pipe_peek_twoIn_data  ({pipe_peek_twoIn_cntl, pipe_peek_twoIn_is_read, pipe_peek_twoIn_is_write, pipe_peek_twoIn_channel, pipe_peek_twoIn_bank, pipe_peek_twoIn_page, pipe_peek_twoIn_word}), 
 
                                 // General
                                 .clear            ( clear                 ),
@@ -787,7 +758,7 @@ module main_mem_cntl (
             // The stream request valid is sent to the channel select logic which in turn will enable this fsm
             //  - stream is valid if waiting and the streams request fifo wants this channel or
             //  - the stream has not yet been granted cache access
-            assign  strm_request               = ((mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_WAIT ) & request_fifo[strm].pipe_valid & (strm_request_chan == chan) & ~from_dfi_fifo[chan].almost_full) ;
+            assign  strm_request               = ((mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_WAIT ) & request_fifo[strm].pipe_valid & (strm_request_chan == chan) & (&mrc__mmc__ready_d1[chan])) ;
                                                
             assign  strm_request_done          = (strm_cmd_sequence_codes [strm_cmd_index] == `DRAM_ACC_CMD_IS_NOP ) ;  // when we hit NOP, we are done
                                                
@@ -1045,26 +1016,8 @@ module main_mem_cntl (
         wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                ]   pipe_bank             ;
         wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE                ]   pipe_page             ;
 
-        wire  [`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   pipe_peek_data        ;
-        wire                                                   pipe_peek_valid       ;
-        wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                 ]   pipe_peek_tag         ;
-        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                    ]   pipe_peek_seq_type    ;
-        wire  [`MGR_STREAM_ADDRESS_RANGE                   ]   pipe_peek_strm        ;
-        wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                 ]   pipe_peek_cmd         ;
-        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                ]   pipe_peek_bank        ;
-        wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE                ]   pipe_peek_page        ;
-                                                          
-        wire                                                   pipe_peek_twoIn_valid ;
-        wire  [`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   pipe_peek_twoIn_data  ;
-        wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                 ]   pipe_peek_twoIn_tag   ;
-        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                    ]   pipe_peek_twoIn_seq_type ;
-        wire  [`MGR_STREAM_ADDRESS_RANGE                   ]   pipe_peek_twoIn_strm  ;
-        wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                 ]   pipe_peek_twoIn_cmd   ;
-        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                ]   pipe_peek_twoIn_bank  ;
-        wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE                ]   pipe_peek_twoIn_page  ;
 
-
-        generic_pipelined_w_peek_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_PAGE_CMD_SEQ_FIFO_DEPTH                 ),
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_PAGE_CMD_SEQ_FIFO_DEPTH                 ),
                                         .GENERIC_FIFO_THRESHOLD  (`MMC_CNTL_PAGE_CMD_SEQ_FIFO_ALMOST_FULL_THRESHOLD ),
                                         .GENERIC_FIFO_DATA_WIDTH (`MMC_CNTL_PAGE_CMD_SEQ_AGGREGATE_FIFO_WIDTH       )
                         ) page_cmd_gpfifo (
@@ -1078,11 +1031,6 @@ module main_mem_cntl (
                                 .pipe_data             ( pipe_data             ),
                                 .pipe_read             ( pipe_read             ),
 
-                                .pipe_peek_valid       ( pipe_peek_valid       ),
-                                .pipe_peek_data        ( pipe_peek_data        ),
-                                .pipe_peek_twoIn_valid ( pipe_peek_twoIn_valid ),
-                                .pipe_peek_twoIn_data  ( pipe_peek_twoIn_data  ),
-
                                 // General
                                 .clear                 ( clear                 ),
                                 .reset_poweron         ( reset_poweron         ),
@@ -1092,8 +1040,6 @@ module main_mem_cntl (
           assign write_data  = {write_strm, write_tag, write_seq_type, write_cmd, write_bank, write_page} ;
 
           assign {pipe_strm,            pipe_tag,            pipe_seq_type,            pipe_cmd,            pipe_bank,            pipe_page           } = pipe_data            ;
-          assign {pipe_peek_strm,       pipe_peek_tag,       pipe_peek_seq_type,       pipe_peek_cmd,       pipe_peek_bank,       pipe_peek_page      } = pipe_peek_data       ;
-          assign {pipe_peek_twoIn_strm, pipe_peek_twoIn_tag, pipe_peek_twoIn_seq_type, pipe_peek_twoIn_cmd, pipe_peek_twoIn_bank, pipe_peek_twoIn_page} = pipe_peek_twoIn_data ;
 
         assign clear = 1'b0 ;
  
@@ -1133,32 +1079,8 @@ module main_mem_cntl (
           wire  [`MGR_DRAM_LINE_ADDRESS_RANGE               ]   pipe_line             ;
         `endif
 
-        wire  [`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   pipe_peek_data        ;
-        wire                                                    pipe_peek_valid       ;
-        wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                  ]   pipe_peek_tag         ;
-        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                     ]   pipe_peek_seq_type    ;
-        wire  [`MGR_STREAM_ADDRESS_RANGE                    ]   pipe_peek_strm        ;
-        wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                  ]   pipe_peek_cmd         ;
-        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                 ]   pipe_peek_bank        ;
-        wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE                 ]   pipe_peek_page        ;
-        `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                              
-          wire  [`MGR_DRAM_LINE_ADDRESS_RANGE               ]   pipe_peek_line        ;
-        `endif                                              
-                                                            
-        wire                                                    pipe_peek_twoIn_valid    ;
-        wire  [`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_FIFO_RANGE ]   pipe_peek_twoIn_data     ;
-        wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                  ]   pipe_peek_twoIn_tag      ;
-        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                     ]   pipe_peek_twoIn_seq_type ;
-        wire  [`MGR_STREAM_ADDRESS_RANGE                    ]   pipe_peek_twoIn_strm     ;
-        wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                  ]   pipe_peek_twoIn_cmd      ;
-        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                 ]   pipe_peek_twoIn_bank     ;
-        wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE                 ]   pipe_peek_twoIn_page     ;
-        `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                                 
-          wire  [`MGR_DRAM_LINE_ADDRESS_RANGE               ]   pipe_peek_twoIn_line     ;
-        `endif
 
-
-        generic_pipelined_w_peek_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_CACHE_CMD_SEQ_FIFO_DEPTH                 ),
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_CACHE_CMD_SEQ_FIFO_DEPTH                 ),
                                         .GENERIC_FIFO_THRESHOLD  (`MMC_CNTL_CACHE_CMD_SEQ_FIFO_ALMOST_FULL_THRESHOLD ),
                                         .GENERIC_FIFO_DATA_WIDTH (`MMC_CNTL_CACHE_CMD_SEQ_AGGREGATE_FIFO_WIDTH       )
                         ) cache_cmd_gpfifo (
@@ -1172,11 +1094,6 @@ module main_mem_cntl (
                                 .pipe_data             ( pipe_data             ),
                                 .pipe_read             ( pipe_read             ),
 
-                                .pipe_peek_valid       ( pipe_peek_valid       ),
-                                .pipe_peek_data        ( pipe_peek_data        ),
-                                .pipe_peek_twoIn_valid ( pipe_peek_twoIn_valid ),
-                                .pipe_peek_twoIn_data  ( pipe_peek_twoIn_data  ),
-
                                 // General
                                 .clear                 ( clear                 ),
                                 .reset_poweron         ( reset_poweron         ),
@@ -1187,14 +1104,10 @@ module main_mem_cntl (
           assign write_data  = {write_strm, write_tag, write_seq_type, write_cmd, write_bank, write_page, write_line} ;
 
           assign {pipe_strm,            pipe_tag,            pipe_seq_type,            pipe_cmd,            pipe_bank,            pipe_page,            pipe_line           } = pipe_data            ;
-          assign {pipe_peek_strm,       pipe_peek_tag,       pipe_peek_seq_type,       pipe_peek_cmd,       pipe_peek_bank,       pipe_peek_page,       pipe_peek_line      } = pipe_peek_data       ;
-          assign {pipe_peek_twoIn_strm, pipe_peek_twoIn_tag, pipe_peek_twoIn_seq_type, pipe_peek_twoIn_cmd, pipe_peek_twoIn_bank, pipe_peek_twoIn_page, pipe_peek_twoIn_line} = pipe_peek_twoIn_data ;
         `else
           assign write_data  = {write_strm, write_tag, write_cmd, write_bank, write_page} ;
 
           assign {pipe_strm,            pipe_tag,            pipe_seq_type,            pipe_cmd,            pipe_bank,            pipe_page           } = pipe_data            ;
-          assign {pipe_peek_strm,       pipe_peek_tag,       pipe_peek_seq_type,       pipe_peek_cmd,       pipe_peek_bank,       pipe_peek_page      } = pipe_peek_data       ;
-          assign {pipe_peek_twoIn_strm, pipe_peek_twoIn_tag, pipe_peek_twoIn_seq_type, pipe_peek_twoIn_cmd, pipe_peek_twoIn_bank, pipe_peek_twoIn_page} = pipe_peek_twoIn_data ;
         `endif
 
         assign clear = 1'b0 ;
@@ -2083,6 +1996,7 @@ module main_mem_cntl (
       end
   endgenerate
 
+/*
   //------------------------------------------
   // Return data fifo
 
@@ -2090,29 +2004,31 @@ module main_mem_cntl (
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
       begin: from_dfi_fifo
 
-        wire  clear        ;
-        wire  almost_full  ;  
+        wire                                               clear          ;
+        wire                                               almost_full    ;  
+        wire                                               empty          ;  
+
         wire                                               write          ;
         reg   [`MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_RANGE ]   write_data     ;
-        wire                                               pipe_valid     ;
-        wire                                               pipe_read      ;
-        wire  [`COMMON_STD_INTF_CNTL_RANGE             ]   pipe_cntl      ;
-        wire  [`MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_RANGE ]   pipe_data      ;
-        wire  [`MGR_DRAM_INTF_RANGE                    ]   pipe_dram_data ;
+        wire                                               read           ;
+        reg   [`MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_RANGE ]   read_data      ;
 
-        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_FROM_DFI_FIFO_DEPTH                 ),
-                                 .GENERIC_FIFO_THRESHOLD  (`MMC_CNTL_FROM_DFI_FIFO_ALMOST_FULL_THRESHOLD ),
-                                 .GENERIC_FIFO_DATA_WIDTH (`MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_WIDTH       )
-                        ) gpfifo (
+        generic_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_FROM_DFI_FIFO_DEPTH                 ),
+                       .GENERIC_FIFO_THRESHOLD  (`MMC_CNTL_FROM_DFI_FIFO_ALMOST_FULL_THRESHOLD ),
+                       .GENERIC_FIFO_DATA_WIDTH (`MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_WIDTH       )
+                        ) gfifo (
                                  // Status
                                 .almost_full      ( almost_full           ),
+                                .empty            ( empty                 ),
+                                .depth            (                       ),
+                                .almost_empty     (                       ),
+
                                  // Write                                 
                                 .write            ( write                 ),
                                 .write_data       ( write_data            ),
                                  // Read                                  
-                                .pipe_valid       ( pipe_valid            ),
-                                .pipe_data        ( pipe_data             ),
-                                .pipe_read        ( pipe_read             ),
+                                .read_data        ( read_data             ),
+                                .read             ( read                  ),
 
                                 // General
                                 .clear            ( clear                 ),
@@ -2136,6 +2052,42 @@ module main_mem_cntl (
               end
           end
 
+        // Note: First stage of pipeline is inside FIFO
+        // fifo output stage
+        reg                                                  fifo_pipe_valid   ;
+        wire                                                 fifo_pipe_read    ;
+
+        // pipe stage
+        always @(posedge clk)
+          begin
+            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
+                               ( read               ) ? 'b1               :
+                               ( fifo_pipe_read     ) ? 'b0               :
+                                                         fifo_pipe_valid  ;
+          end
+        reg                                                pipe_valid     ;
+        reg   [`MMC_CNTL_FROM_DFI_AGGREGATE_FIFO_RANGE ]   pipe_data      ;
+        wire                                               pipe_read      ;
+
+        wire  [`COMMON_STD_INTF_CNTL_RANGE             ]   pipe_cntl      ;
+        wire  [`MGR_DRAM_INTF_RANGE                    ]   pipe_dram_data ;
+
+        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
+        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
+
+        always @(posedge clk)
+          begin
+            // If we are reading the previous stage, then this stage will be valid
+            // otherwise if we are reading this stage this stage will not be valid
+            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
+                               ( fifo_pipe_read     ) ? 'b1              :
+                               ( pipe_read          ) ? 'b0              :
+                                                         pipe_valid      ;
+        
+            // if we are reading, transfer from previous pipe stage. 
+            pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
+                                                            pipe_data            ;
+          end
         assign  pipe_read = rdp_fsm[chan].read_data_fifo ;
 
         assign  pipe_cntl      =  pipe_data[`MMC_CNTL_FROM_DFI_AGGREGATE_CNTL_RANGE ];
@@ -2410,8 +2362,139 @@ module main_mem_cntl (
           end
       end
   endgenerate
+*/
+
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  // Direct channel return data to requesting stream
+      
+  generate
+    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
+      begin: rdp_fsm
+
+        reg  [`MMC_CNTL_RDP_STATE_RANGE ]  mmc_cntl_rdp_state      ; // state flop
+        reg  [`MMC_CNTL_RDP_STATE_RANGE ]  mmc_cntl_rdp_state_next ;
+        
+        // State register 
+        always @(posedge clk)
+          begin
+            mmc_cntl_rdp_state <= ( reset_poweron ) ? `MMC_CNTL_RDP_WAIT:
+                                                       mmc_cntl_rdp_state_next  ;
+          end
+        
+        always @(*)
+          begin
+            case (mmc_cntl_rdp_state)
+
+              // Let both channel streams continue if they are accessing different banks
+              // What about conflicts?
+              // a) In the high priority (HP) state, this channel goes first, but it goes to the low priority(LP) state
+              // b) In the low priority (LP) state, ther channel waits but it goes to the high priority(LP) state
+              //
+              // Be careful, when both channels are in the WAIT state, only one will be granted access to a channel conflict.
+              // However, the other channel may be granted to a stream because its not yet in the WAIT state, so dont proceed until we see the other channel isnt granted
+              // e.g. ther other channels grant will be deasserted once it comes back to the WAIT state
+              //
+              // Note: Should we simply use tag??? FIXME
+              //  - what when most requests are from one stream???
+
+              `MMC_CNTL_RDP_WAIT: 
+                begin
+                  mmc_cntl_rdp_state_next =  (dfi__mmc__valid_d1[chan] && (data_return_id[chan].pipe_strm == 'd0)) ?  `MMC_CNTL_RDP_STRM0  :
+                                             (dfi__mmc__valid_d1[chan] && (data_return_id[chan].pipe_strm == 'd1)) ?  `MMC_CNTL_RDP_STRM1  :
+                                                                                                                      `MMC_CNTL_RDP_WAIT   ;                                         
+                end                                                                                                                                                                                                                                                                      
+                                                                                                                                                                                                                                                                                         
+
+              `MMC_CNTL_RDP_STRM0: 
+                mmc_cntl_rdp_state_next =  ( dfi__mmc__valid_d1[chan]) ?  `MMC_CNTL_RDP_WAIT  :
+                                                                          `MMC_CNTL_RDP_STRM0 ;
+              `MMC_CNTL_RDP_STRM1: 
+                mmc_cntl_rdp_state_next =  ( dfi__mmc__valid_d1[chan]) ?  `MMC_CNTL_RDP_WAIT  :
+                                                                          `MMC_CNTL_RDP_STRM1 ;
+                                                                                                                                            
+                                                                                                                                            
+              `MMC_CNTL_RDP_ERR: 
+                mmc_cntl_rdp_state_next =  `MMC_CNTL_RDP_ERR       ;
+      
+              default:
+                mmc_cntl_rdp_state_next = `MMC_CNTL_RDP_WAIT ;
+          
+            endcase // case (mmc_cntl_rdp_state)
+          end // always @ (*)
+
+
+        wire      read_id_fifo     ;  // read the tag/strm ID fifo
+
+        assign read_id_fifo    =  (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM0 ) | (mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1 );
+
+        // add a pipeline to data to align with the read signal
+        reg   [`MGR_NUM_OF_STREAMS_VECTOR           ]                                 strm_valid ;
+        reg   [`COMMON_STD_INTF_CNTL_RANGE          ]                                 strm_cntl  ;
+        reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   strm_data  ;
+
+        //----------------------------------------------------------------------------------------------------
+        always @(posedge clk)
+          begin
+            strm_valid[0]   <= ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT ) & dfi__mmc__valid_d1[chan] && (data_return_id[chan].pipe_strm == 'd0)) | ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM0 ) & dfi__mmc__valid_d1[chan]) ;
+            strm_valid[1]   <= ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT ) & dfi__mmc__valid_d1[chan] && (data_return_id[chan].pipe_strm == 'd1)) | ((mmc_cntl_rdp_state == `MMC_CNTL_RDP_STRM1 ) & dfi__mmc__valid_d1[chan]) ;
+            strm_cntl       <= (mmc_cntl_rdp_state == `MMC_CNTL_RDP_WAIT ) ? `COMMON_STD_INTF_CNTL_SOM : 
+                                                                            `COMMON_STD_INTF_CNTL_EOM ;
+          end
+
+        for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS; word=word+1) 
+          begin: strm_data_reg
+            always @(posedge clk)
+              begin
+                //strm_data  [word] <= dfi__mmc__data_d1[chan] [(word+1)*32-1 : word*32] ;
+                strm_data  [word] <= dfi__mmc__data_d1[chan] [word] ;
+              end
+          end
+
+      end
+  endgenerate
+
+
+  // For each stream, grab the data from the sending channel
+
+  generate
+    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
+      begin
+        for (strm=0; strm<`MGR_NUM_OF_STREAMS; strm=strm+1) 
+          begin
+            always @(*)
+              begin
+                mmc__mrc__valid_e1 [chan][strm]  =  rdp_fsm[chan].strm_valid[strm] ;
+              end
+          end
+      end
+  endgenerate
+
+  generate
+    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
+      begin
+        for (strm=0; strm<`MGR_NUM_OF_STREAMS; strm=strm+1) 
+          begin
+            always @(*)
+              begin
+                mmc__mrc__cntl_e1 [chan][strm] = rdp_fsm[chan].strm_cntl ;
+              end 
+            for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS; word=word+1) 
+              begin: return_data
+                always @(*)
+                  begin
+                    mmc__mrc__data_e1 [chan][strm][word] = rdp_fsm[chan].strm_data[word] ;
+                  end 
+              end
+          end
+      end
+  endgenerate
+
+
+
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   //
+
 endmodule 
   

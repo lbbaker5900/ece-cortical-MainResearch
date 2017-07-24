@@ -38,9 +38,9 @@ module sdp_request_cntl (
             input   wire                                           xxx__sdp__storage_desc_processing_enable     ,
             output  reg                                            sdp__xxx__storage_desc_processing_complete   ,
             input   wire  [`MGR_STORAGE_DESC_ADDRESS_RANGE  ]      xxx__sdp__storage_desc_ptr                   ,  // pointer to local storage descriptor although msb's contain manager ID, so remove
-            input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes                          ,
-            input   wire  [`MGR_INST_OPTION_TRANSFER_RANGE  ]      xxx__sdp__txfer_type                         ,
-            input   wire  [`MGR_INST_OPTION_TGT_RANGE       ]      xxx__sdp__target                             ,
+            //input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes                          ,
+            //input   wire  [`MGR_INST_OPTION_TRANSFER_RANGE  ]      xxx__sdp__txfer_type                         ,
+            //input   wire  [`MGR_INST_OPTION_TGT_RANGE       ]      xxx__sdp__target                             ,
 
             //-------------------------------
             // Main Memory Controller interface

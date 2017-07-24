@@ -252,6 +252,14 @@ module mrc_cntl (
         reg                                                  fifo_pipe_valid   ;
         wire                                                 fifo_pipe_read    ;
         // pipe stage
+        // pipe stage
+        always @(posedge clk)
+          begin
+            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
+                               ( read               ) ? 'b1               :
+                               ( fifo_pipe_read     ) ? 'b0               :
+                                                         fifo_pipe_valid  ;
+          end
         reg                                                  pipe_valid        ;
         reg    [`COMMON_STD_INTF_CNTL_RANGE     ]            pipe_cntl         ;
         reg    [`MGR_WU_OPT_TYPE_RANGE          ]            pipe_option_type  [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
@@ -263,13 +271,6 @@ module mrc_cntl (
 
         // If we are reading the fifo, then this stage will be valid
         // If we are not reading the fifo but the next stage is reading this stage, then this stage will not be valid
-        always @(posedge clk)
-          begin
-            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
-                               ( read               ) ? 'b1               :
-                               ( fifo_pipe_read     ) ? 'b0               :
-                                                         fifo_pipe_valid  ;
-          end
 
         always @(posedge clk)
           begin
@@ -522,7 +523,6 @@ module mrc_cntl (
            .xxx__sdp__mem_request_word                   ( xxx__sdp__mem_request_word        ),
 
 
-
            //-------------------------------
            // from MMC fifo Control
            //
@@ -558,6 +558,7 @@ module mrc_cntl (
 
         wire                                               clear         ;
         wire                                               almost_full   ;
+        wire                                               empty         ;
                                                            
         reg                                                write         ;
         reg   [`MRC_CNTL_REQUEST_AGGREGATE_FIFO_RANGE ]    write_data    ;
@@ -567,31 +568,27 @@ module mrc_cntl (
         reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE          ]    write_page    ;
         reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE          ]    write_word    ;
                                                            
-        reg                                                pipe_read     ;
-        reg   [`MRC_CNTL_REQUEST_AGGREGATE_FIFO_RANGE ]    pipe_data     ;
-                                                           
-        wire                                               pipe_valid    ;
-        reg   [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE       ]    pipe_channel  ;
-        reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE          ]    pipe_bank     ;
-        reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE          ]    pipe_page     ;
-        reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE          ]    pipe_word     ;
+        wire                                               read          ;
+        wire  [`MRC_CNTL_REQUEST_AGGREGATE_FIFO_RANGE ]    read_data     ;
 
 
 
-        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MRC_CNTL_REQUEST_FIFO_DEPTH                 ),
-                                 .GENERIC_FIFO_THRESHOLD  (`MRC_CNTL_REQUEST_FIFO_ALMOST_FULL_THRESHOLD ),
-                                 .GENERIC_FIFO_DATA_WIDTH (`MRC_CNTL_REQUEST_AGGREGATE_FIFO_WIDTH       )
-                        ) gpfifo (
+        generic_fifo #(.GENERIC_FIFO_DEPTH      (`MRC_CNTL_REQUEST_FIFO_DEPTH                 ),
+                       .GENERIC_FIFO_THRESHOLD  (`MRC_CNTL_REQUEST_FIFO_ALMOST_FULL_THRESHOLD ),
+                       .GENERIC_FIFO_DATA_WIDTH (`MRC_CNTL_REQUEST_AGGREGATE_FIFO_WIDTH       )
+                        ) gfifo (
                                  // Status
                                 .almost_full      ( almost_full           ),
+                                .empty            ( empty                 ),
+                                .depth            (                       ),
+                                .almost_empty     (                       ),
 
                                  // Write                                 
                                 .write            ( write                 ),
                                 .write_data       ( write_data            ),
                                  // Read                                  
-                                .pipe_valid       ( pipe_valid            ),
-                                .pipe_data        ( pipe_data             ),
-                                .pipe_read        ( pipe_read             ),
+                                .read_data        ( read_data             ),
+                                .read             ( read                  ),
 
                                 // General
                                 .clear            ( clear                 ),
@@ -600,7 +597,6 @@ module mrc_cntl (
                                 );
 
         assign  clear = 1'b0 ;
-
 
         always @(*)
           begin
@@ -614,6 +610,48 @@ module mrc_cntl (
           begin
             write_data  =  {write_channel, write_bank, write_page, write_word};
           end
+
+        // Note: First stage of pipeline is inside FIFO
+        // fifo output stage
+        reg                                                fifo_pipe_valid   ;
+        wire                                               fifo_pipe_read    ;
+
+        // pipe stage
+        always @(posedge clk)
+          begin
+            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
+                               ( read               ) ? 'b1               :
+                               ( fifo_pipe_read     ) ? 'b0               :
+                                                         fifo_pipe_valid  ;
+          end
+        reg                                                pipe_valid     ;
+        reg                                                pipe_read      ;
+        reg   [`MRC_CNTL_REQUEST_AGGREGATE_FIFO_RANGE ]    pipe_data      ;
+                                                           
+        reg   [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE       ]    pipe_channel  ;
+        reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE          ]    pipe_bank     ;
+        reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE          ]    pipe_page     ;
+        reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE          ]    pipe_word     ;
+
+        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
+        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
+
+        always @(posedge clk)
+          begin
+            // If we are reading the previous stage, then this stage will be valid
+            // otherwise if we are reading this stage this stage will not be valid
+            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
+                               ( fifo_pipe_read     ) ? 'b1              :
+                               ( pipe_read          ) ? 'b0              :
+                                                         pipe_valid      ;
+        
+            // if we are reading, transfer from previous pipe stage. 
+            pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
+                                                            pipe_data            ;
+          end
+
+
+
         always @(*)
           begin
             {pipe_channel, pipe_bank, pipe_page, pipe_word} = pipe_data ;
@@ -643,27 +681,33 @@ module mrc_cntl (
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
       begin: from_mmc_fifo
 
-        wire  clear        ;
-        wire  almost_full  ;
+        wire                                                 clear        ;
+        wire                                                 almost_full  ;
+        wire                                                 empty        ;
+
         wire                                                 write        ;
         wire  [`MRC_CNTL_FROM_MMC_AGGREGATE_FIFO_RANGE   ]   write_data   ;
-        wire                                                 pipe_valid   ;
-        wire                                                 pipe_read    ;
-        wire  [`MRC_CNTL_FROM_MMC_AGGREGATE_FIFO_RANGE   ]   pipe_data    ;
 
-        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MRC_CNTL_FROM_MMC_FIFO_DEPTH                 ),
-                                 .GENERIC_FIFO_THRESHOLD  (`MRC_CNTL_FROM_MMC_FIFO_ALMOST_FULL_THRESHOLD ),
-                                 .GENERIC_FIFO_DATA_WIDTH (`MRC_CNTL_FROM_MMC_AGGREGATE_FIFO_WIDTH       )
-                        ) gpfifo (
+        wire                                                 read         ;
+        wire  [`MRC_CNTL_FROM_MMC_AGGREGATE_FIFO_RANGE   ]   read_data    ;
+
+        generic_fifo #(.GENERIC_FIFO_DEPTH      (`MRC_CNTL_FROM_MMC_FIFO_DEPTH                 ),
+                       .GENERIC_FIFO_THRESHOLD  (`MRC_CNTL_FROM_MMC_FIFO_ALMOST_FULL_THRESHOLD ),
+                       .GENERIC_FIFO_DATA_WIDTH (`MRC_CNTL_FROM_MMC_AGGREGATE_FIFO_WIDTH       )
+                        ) gfifo (
                                  // Status
                                 .almost_full      ( almost_full           ),
+                                .empty            ( empty                 ),
+                                .depth            (                       ),
+                                .almost_empty     (                       ),
+
                                  // Write                                 
                                 .write            ( write                 ),
                                 .write_data       ( write_data            ),
+
                                  // Read                                  
-                                .pipe_valid       ( pipe_valid            ),
-                                .pipe_data        ( pipe_data             ),
-                                .pipe_read        ( pipe_read             ),
+                                .read_data        ( read_data             ),
+                                .read             ( read                  ),
 
                                 // General
                                 .clear            ( clear                 ),
@@ -673,6 +717,39 @@ module mrc_cntl (
 
         assign clear = 1'b0 ;
 
+        // Note: First stage of pipeline is inside FIFO
+        // fifo output stage
+        reg                                                  fifo_pipe_valid   ;
+        wire                                                 fifo_pipe_read    ;
+        // pipe stage
+        always @(posedge clk)
+          begin
+            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
+                               ( read               ) ? 'b1               :
+                               ( fifo_pipe_read     ) ? 'b0               :
+                                                         fifo_pipe_valid  ;
+          end
+
+        reg                                                  pipe_valid   ;
+        wire                                                 pipe_read    ;
+        reg   [`MRC_CNTL_FROM_MMC_AGGREGATE_FIFO_RANGE   ]   pipe_data    ;
+
+        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
+        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
+
+        always @(posedge clk)
+          begin
+            // If we are reading the previous stage, then this stage will be valid
+            // otherwise if we are reading this stage this stage will not be valid
+            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
+                               ( fifo_pipe_read     ) ? 'b1              :
+                               ( pipe_read          ) ? 'b0              :
+                                                         pipe_valid      ;
+        
+            // if we are reading, transfer from previous pipe stage. 
+            pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
+                                                            pipe_data            ;
+          end
         // used by stream fsm
         assign mem_request_channel_data_valid [chan] = pipe_valid ;
 

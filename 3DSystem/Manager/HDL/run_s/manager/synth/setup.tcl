@@ -8,6 +8,9 @@ set clkname clk
 #
 # set modname  mwc_cntl
 # set modname  mgr_cntl
+# set modname  sdp_request_cntl
+# set modname  sdp_stream_cntl
+# set modname  sdp_cntl
 # set modname  mrc_cntl
 # set modname  rdp_cntl
 # set modname  oob_downstream_cntl
