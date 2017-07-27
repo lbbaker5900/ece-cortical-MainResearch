@@ -54,23 +54,31 @@ module mwc_cntl (
             //-------------------------------------------------------------------------------------------------
             // Main Memory Controller interface
             //
-            output  reg                                                                           mwc__mmc__valid                           ,
-            output  reg   [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mwc__mmc__cntl                            ,
-            input   wire                                                                          mmc__mwc__ready                           ,
-                                                               
-            output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__channel                         ,
-            output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mwc__mmc__bank                            ,
-            output  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 mwc__mmc__page                            ,
-            output  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 mwc__mmc__word                            ,
-            output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data  [`MGR_DRAM_NUM_CHANNELS ] ,
+            // Requests are sent out ahead of data
+            output  reg                                                                           mwc__mmc__valid         ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mwc__mmc__cntl          ,
+            input   wire                                                                          mmc__mwc__ready         ,
+                                                                                                                          
+            output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__channel       ,
+            output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mwc__mmc__bank          ,
+            output  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 mwc__mmc__page          ,
+            output  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 mwc__mmc__word          ,
+
+            // Data associated with request (note: dont forget it needs to be in the same order as the request)
+            output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__data_channel  ,
+            output  reg                                                                           mwc__mmc__data_valid    ,
+            output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data          ,
+            output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 mwc__mmc__data_mask     ,
                                                                                                                     
 
             //-------------------------------------------------------------------------------------------------
             // General
             //
-            input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
+            input  wire                           mcntl__mwc__flush ,  // release any held write data. Likely used at end of a sequence
 
-            input  wire                           clk             ,
+            input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId   ,
+
+            input  wire                           clk               ,
             input  wire                           reset_poweron  
                         );
 
@@ -373,6 +381,9 @@ module mwc_cntl (
       
   reg   [`MGR_STORAGE_DESC_ADDRESS_RANGE        ]      storage_desc_ptr                 ;  // pointer to local storage descriptor although msb's contain manager ID, so remove
 
+  reg                                                  held_addr_miscompare             ;  // new descriptor is ponting to a line not in the holding register
+  reg                                                  flush_from_lower                 ;  // keep track of which state we decided to flush 
+      
   generate
     for (intf=0; intf<`MWC_CNTL_NUM_OF_INPUT_INTF ; intf=intf+1) 
       begin : intf_fsm
@@ -411,7 +422,6 @@ module mwc_cntl (
         reg   [`MGR_MGR_ID_RANGE                      ]      storage_desc_ptr_mgr_id          ;  // extract manager ID from descriptor
         reg                                                  storage_desc_processing_enable   ;  
                                                       
-      
         //------------------------------------------------------------------------------------------------------------------------
         // State Transitions
         //
@@ -465,16 +475,33 @@ module mwc_cntl (
                                                                                                                     `MWC_CNTL_PTR_DATA_RCV_PROCESS_DATA        ;
       
               `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER : 
-                mwc_cntl_extract_desc_state_next =   ( pipe_valid && pipe_eom && (pipe_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_ONE)) ? `MWC_CNTL_PTR_DATA_RCV_COMPLETE     :  // only one word valid in last cycle
+                mwc_cntl_extract_desc_state_next =   ( held_addr_miscompare                                                                           ) ? `MWC_CNTL_PTR_DATA_RCV_FLUSH_1ST_HOLDING_REG                :  
+                                                     ( pipe_valid && pipe_eom && (pipe_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_ONE)) ? `MWC_CNTL_PTR_DATA_RCV_COMPLETE                         :  // only one word valid in last cycle
                                                      ( pipe_valid                                                                                     ) ? `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER :  
                                                                                                                                                           `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER ;
       
               `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER : 
               // we dont get here unless the pipe is valid, so dont bother checking
-                mwc_cntl_extract_desc_state_next =   ( pipe_eom ) ? `MWC_CNTL_PTR_DATA_RCV_COMPLETE     :  // only one word valid in last cycle
-                                                                    `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER ;
+                mwc_cntl_extract_desc_state_next =   ( held_addr_miscompare   ) ? `MWC_CNTL_PTR_DATA_RCV_FLUSH_1ST_HOLDING_REG            :  
+                                                     ( pipe_eom               ) ? `MWC_CNTL_PTR_DATA_RCV_COMPLETE                         :  // only one word valid in last cycle
+                                                                                  `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER ;
       
       
+              //----------------------------------------------------------------------------------------------------
+              // Flush data in holding register(s)
+              //
+              `MWC_CNTL_PTR_DATA_RCV_FLUSH_1ST_HOLDING_REG : 
+                mwc_cntl_extract_desc_state_next =   `MWC_CNTL_PTR_DATA_RCV_FLUSH_2ND_HOLDING_REG ;
+      
+              
+              `MWC_CNTL_PTR_DATA_RCV_FLUSH_2ND_HOLDING_REG : 
+                mwc_cntl_extract_desc_state_next =   (flush_from_lower ) ? `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER :
+                                                                           `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER ;
+      
+              
+              //----------------------------------------------------------------------------------------------------
+              // Complete
+              //
               // wait for enable to be deasserted
               `MWC_CNTL_PTR_DATA_RCV_COMPLETE : 
                 mwc_cntl_extract_desc_state_next =   ( enable || storage_desc_processing_complete        ) ? `MWC_CNTL_PTR_DATA_RCV_COMPLETE:  
@@ -549,12 +576,12 @@ module mwc_cntl (
       
               `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER : 
                 begin
-                  pipe_read   = pipe_valid && pipe_eom && (pipe_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_ONE) ;
+                  pipe_read   = ~held_addr_miscompare & pipe_valid & pipe_eom & (pipe_pvalid == `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_ONE) ;
                 end
               
               `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER : 
                 begin
-                  pipe_read   = pipe_valid ;
+                  pipe_read   = ~held_addr_miscompare & pipe_valid ;
                 end
 
               `MWC_CNTL_PTR_DATA_RCV_COMPLETE : 
@@ -613,17 +640,19 @@ module mwc_cntl (
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // Connect inputs from rdp and mcntl fifos to interface fsm
 
-  for (intf=0; intf<`MWC_CNTL_NUM_OF_INPUT_INTF ; intf=intf+1) 
-    begin
-      assign  intf_fsm[intf].pipe_valid    =  input_intf_fifo[intf].pipe_valid    ;
-      assign  intf_fsm[intf].pipe_eom      =  input_intf_fifo[intf].pipe_eom      ;
-      assign  intf_fsm[intf].pipe_ptype    =  input_intf_fifo[intf].pipe_ptype    ;
-      assign  intf_fsm[intf].pipe_data     =  input_intf_fifo[intf].pipe_data     ;
-      assign  intf_fsm[intf].pipe_mem_data =  input_intf_fifo[intf].pipe_mem_data ;
-      assign  intf_fsm[intf].pipe_pvalid   =  input_intf_fifo[intf].pipe_pvalid   ;
-
-      assign  input_intf_fifo[intf].pipe_read    = intf_fsm[intf].pipe_read       ;
-    end
+  generate
+    for (intf=0; intf<`MWC_CNTL_NUM_OF_INPUT_INTF ; intf=intf+1) 
+      begin
+        assign  intf_fsm[intf].pipe_valid    =  input_intf_fifo[intf].pipe_valid    ;
+        assign  intf_fsm[intf].pipe_eom      =  input_intf_fifo[intf].pipe_eom      ;
+        assign  intf_fsm[intf].pipe_ptype    =  input_intf_fifo[intf].pipe_ptype    ;
+        assign  intf_fsm[intf].pipe_data     =  input_intf_fifo[intf].pipe_data     ;
+        assign  intf_fsm[intf].pipe_mem_data =  input_intf_fifo[intf].pipe_mem_data ;
+        assign  intf_fsm[intf].pipe_pvalid   =  input_intf_fifo[intf].pipe_pvalid   ;
+  
+        assign  input_intf_fifo[intf].pipe_read    = intf_fsm[intf].pipe_read       ;
+      end
+  endgenerate
 
   assign  intf_fsm[0].enable    =  enable_rdp_fsm        ;
   assign  intf_fsm[1].enable    =  enable_mcntl_fsm      ;
@@ -710,46 +739,51 @@ module mwc_cntl (
   // - pass to MMC once a new channel/bank/page/line is seen from the sdp_request control
   // - need to manage how long to hold data FIXME: should we respond to the MMC if it sees a waiting write but needs to read??? (sounds too hard)
   
+  // we have a holding register for each channel, we have to specify which channel should be released to the MMC 
+  reg    [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]                                 channel_released_first   ;
+  reg    [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]                                 channel_released_second  ;
+
   //------------------------------------------------------------------------------------------------------------------------
   // Address for incrementing to index into holding register
-  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE        ]                                 strm_inc_address             ;  // address we increment for each jump - FIXME: could use a counter per word??
-  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 strm_inc_channel             ;  // formed address in access order for incrementing
-  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 strm_inc_bank                ;
-  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 strm_inc_page                ;
-  `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                                                           
-    reg [`MGR_DRAM_LINE_ADDRESS_RANGE         ]                                 strm_inc_line                ; 
-  `endif                                                                                                     
-  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 strm_inc_word                ;
 
-  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE        ]                                 strm_inc_address_e1          ;  
-  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 strm_inc_channel_e1          ; 
-  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 strm_inc_bank_e1             ;
-  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 strm_inc_page_e1             ;
+  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE        ]                                 inc_address             ;  // address we increment for each jump - FIXME: could use a counter per word??
+  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 inc_channel             ;  // formed address in access order for incrementing
+  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 inc_bank                ;
+  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 inc_page                ;
   `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                                                           
-    reg [`MGR_DRAM_LINE_ADDRESS_RANGE         ]                                 strm_inc_line_e1             ; 
+    reg [`MGR_DRAM_LINE_ADDRESS_RANGE         ]                                 inc_line                ; 
   `endif                                                                                                     
-  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 strm_inc_word_e1             ;
+  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 inc_word                ;
+
+  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE        ]                                 inc_address_e1          ;  
+  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 inc_channel_e1          ; 
+  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 inc_bank_e1             ;
+  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 inc_page_e1             ;
+  `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                                                           
+    reg [`MGR_DRAM_LINE_ADDRESS_RANGE         ]                                 inc_line_e1             ; 
+  `endif                                                                                                     
+  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 inc_word_e1             ;
   //------------------------------------------------------------------------------------------------------------------------
 
 
-  reg                                                                           held_valid       [`MGR_DRAM_NUM_CHANNELS ] ;
-  reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE        ]                                 held_bank        [`MGR_DRAM_NUM_CHANNELS ] ;
-  reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE        ]                                 held_page        [`MGR_DRAM_NUM_CHANNELS ] ;
-  `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                                                                         
-    reg  [ `MGR_DRAM_LINE_ADDRESS_RANGE       ]                                 held_line        [`MGR_DRAM_NUM_CHANNELS ] ;  // if a dram access reads less than a page, we need to generate additional memory requests when we transition a line
-  `endif                                                                                                                   
-  reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE        ]                                 held_word        [`MGR_DRAM_NUM_CHANNELS ] ;
+  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE  ]                                 held_valid                                 ;
+  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 held_bank        [`MGR_DRAM_NUM_CHANNELS ] ;
+  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 held_page        [`MGR_DRAM_NUM_CHANNELS ] ;
+  `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                                                                          
+    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE        ]                                 held_line        [`MGR_DRAM_NUM_CHANNELS ] ;  // if a dram access reads less than a page, we need to generate additional memory requests when we transition a line
+  `endif                                                                                                                    
+  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 held_word        [`MGR_DRAM_NUM_CHANNELS ] ;
 
-  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE        ]                                 held_address     [`MGR_DRAM_NUM_CHANNELS ] ;
   reg   [`MGR_INST_OPTION_ORDER_RANGE         ]                                 held_accessOrder [`MGR_DRAM_NUM_CHANNELS ] ;
   reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  held_data        [`MGR_DRAM_NUM_CHANNELS ] ;
   reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 held_mask        [`MGR_DRAM_NUM_CHANNELS ] ;
 
 
   //----------------------------------------------------------------------------------------------------
-  // extract the state of the selected interface fsm
-  reg [`MWC_CNTL_PTR_DATA_RCV_STATE_RANGE ] mwc_cntl_extract_desc_state      ; // state flop
-  reg                                       pipe_valid                       ;
+  // extract the state of the selected interface fsm and fifo 
+  reg  [`MWC_CNTL_PTR_DATA_RCV_STATE_RANGE        ]     mwc_cntl_extract_desc_state  ; // state flop
+  reg                                                   pipe_valid                   ;
+  reg  [`MWC_CNTL_FROM_MCNTL_AGGREGATE_FIFO_RANGE ]     pipe_data                    ;
 
   always @(*)
     begin
@@ -758,32 +792,24 @@ module mwc_cntl (
           begin
             mwc_cntl_extract_desc_state  =  intf_fsm[0].mwc_cntl_extract_desc_state ;
             pipe_valid                   =  input_intf_fifo[0].pipe_valid           ;
+            pipe_data                    =  input_intf_fifo[0].pipe_data            ;
           end
         2'b01:
           begin
             mwc_cntl_extract_desc_state  =  intf_fsm[1].mwc_cntl_extract_desc_state ;
             pipe_valid                   =  input_intf_fifo[1].pipe_valid           ;
+            pipe_data                    =  input_intf_fifo[1].pipe_data            ;
           end
         default
           begin
-            mwc_cntl_extract_desc_state  =  `MWC_CNTL_PTR_DATA_RCV_ERR ;
+            mwc_cntl_extract_desc_state  =  'd0    ;  // set to invalid state if neither input fsm is selected
+            pipe_valid                   =  'd0    ;
+            pipe_data                    =  'd0    ;
           end
       endcase
     end
   //----------------------------------------------------------------------------------------------------
   
-  always @(*)
-    begin
-      for (int strm=0; strm<`MGR_NUM_OF_STREAMS ; strm++)
-        begin
-          held_bank[strm]           =  held_address[strm][`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ]  ;
-          held_page[strm]           =  held_address[strm][`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ]  ;
-          `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-            held_line[strm]         =  held_address[strm][`MGR_DRAM_ADDRESS_LINE_FIELD_RANGE ]  ;
-          `endif
-          held_word[strm]           =  held_address[strm][`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ]  ;
-        end
-    end
 
   always @(posedge clk)
     begin
@@ -802,10 +828,10 @@ module mwc_cntl (
                                                    start_accessOrder    ;
 
 
-      for (int strm=0; strm<`MGR_NUM_OF_STREAMS ; strm++)
+      for (int chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
         begin
-          held_mask [strm] <= ( reset_poweron ) ? 64'd0           :
-                                                  held_mask [strm];
+          held_mask [chan] <= ( reset_poweron ) ? 64'd0           :
+                                                  held_mask [chan];
         end
     end
 
@@ -824,34 +850,40 @@ module mwc_cntl (
             // reorder fields for incrementing
             if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
               begin
-                strm_inc_address_e1 =  {start_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
-                                        start_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
-                                        start_address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ] , 
-                                        start_address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ] , 
-                                        2'b00                                              };
+                inc_address_e1 =  {start_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
+                                   start_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
+                                   start_address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ] , 
+                                   start_address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ] , 
+                                   2'b00                                              };
               end
             else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
               begin
-                strm_inc_address_e1 =  {start_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
-                                        start_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
-                                        start_address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ] , 
-                                        start_address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ] , 
-                                        2'b00                                              };
+                inc_address_e1 =  {start_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
+                                   start_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
+                                   start_address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ] , 
+                                   start_address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ] , 
+                                   2'b00                                              };
               end
           end
 
         `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER :
           begin
             // increment if pipe is valid
-            //strm_inc_address_e1 =  strm_inc_address + ({`MGR_DRAM_LOCAL_ADDRESS_WIDTH {pipe_valid}} & (`MGR_DRAM_LOCAL_ADDRESS_WIDTH 'd4)) ;
-            strm_inc_address_e1 =  (pipe_valid )  ? strm_inc_address + 'd4 :
-                                                    strm_inc_address       ;
+            //inc_address_e1 =  inc_address + ({`MGR_DRAM_LOCAL_ADDRESS_WIDTH {pipe_valid}} & (`MGR_DRAM_LOCAL_ADDRESS_WIDTH 'd4)) ;
+            inc_address_e1 =  (~held_addr_miscompare && pipe_valid )  ? inc_address + 'd4 :
+                                                                        inc_address       ;
           end
 
         `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER :
           begin
-            //strm_inc_address_e1 =  strm_inc_address + (`MGR_DRAM_LOCAL_ADDRESS_WIDTH 'd4) ;
-            strm_inc_address_e1 =  strm_inc_address + 'd4 ;
+            //inc_address_e1 =  inc_address + (`MGR_DRAM_LOCAL_ADDRESS_WIDTH 'd4) ;
+            inc_address_e1 =  (~held_addr_miscompare )  ? inc_address + 'd4 :
+                                                          inc_address       ;
+          end
+
+        default:
+          begin
+            inc_address_e1 =  inc_address ;
           end
 
       endcase
@@ -862,22 +894,22 @@ module mwc_cntl (
     begin
       if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
         begin
-          strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
-          strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
-          strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
-          strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
+          inc_channel_e1 =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
+          inc_bank_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
+          inc_page_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
+          inc_word_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
           `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-            strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
+            inc_line_e1  =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
           `endif
         end
       else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
         begin
-          strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
-          strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
-          strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
-          strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+          inc_channel_e1 =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+          inc_bank_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
+          inc_page_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+          inc_word_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
           `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-            strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+            inc_line_e1  =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
           `endif
         end
     end // always @ (*)
@@ -885,15 +917,183 @@ module mwc_cntl (
   // Register the stream address and individual fields
   always @(posedge clk)
     begin
-      strm_inc_address     <=  strm_inc_address_e1 ;
-      strm_inc_channel     <=  strm_inc_channel_e1 ;
-      strm_inc_bank        <=  strm_inc_bank_e1    ;
-      strm_inc_page        <=  strm_inc_page_e1    ;
-      strm_inc_word        <=  strm_inc_word_e1    ;
+      inc_address     <=  inc_address_e1 ;
+      inc_channel     <=  inc_channel_e1 ;
+      inc_bank        <=  inc_bank_e1    ;
+      inc_page        <=  inc_page_e1    ;
+      inc_word        <=  inc_word_e1    ;
       `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-        strm_inc_line      <=  strm_inc_line_e1    ;
+        inc_line      <=  inc_line_e1    ;
       `endif
     end 
+
+
+  always @(posedge clk)
+    begin
+
+      case (mwc_cntl_extract_desc_state)
+
+        `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER :
+          begin
+            flush_from_lower  <=  1'b1 ;
+          end
+
+        `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER :
+          begin
+            flush_from_lower  <=  1'b0 ;
+          end
+
+        default:
+          begin
+            flush_from_lower  <=  flush_from_lower  ;
+          end
+
+      endcase
+    end
+
+  always @(posedge clk)
+    begin
+
+      case (mwc_cntl_extract_desc_state)
+
+        // FIXME: Code assumes two channels
+        `MWC_CNTL_PTR_DATA_RCV_FLUSH_1ST_HOLDING_REG :
+          begin
+            mwc__mmc__data_valid     <=  held_valid [ channel_released_first  ] ;
+            mwc__mmc__data_channel   <=  channel_released_first                 ;
+            mwc__mmc__data           <=  held_data  [ channel_released_first  ] ;
+            mwc__mmc__data_mask      <=  held_mask  [ channel_released_first  ] ;
+          end
+
+        `MWC_CNTL_PTR_DATA_RCV_FLUSH_2ND_HOLDING_REG :
+          begin
+            mwc__mmc__data_valid     <=  held_valid [ channel_released_second ] ;
+            mwc__mmc__data_channel   <=  channel_released_second                ;
+            mwc__mmc__data           <=  held_data  [ channel_released_second ] ;
+            mwc__mmc__data_mask      <=  held_mask  [ channel_released_second ] ;
+          end
+
+        default:
+          begin
+            mwc__mmc__data_valid  <=  1'b0     ;
+          end
+
+      endcase
+    end
+
+  // If neither channel holds a valid entry, then set the first released
+  always @(posedge clk)
+    begin
+
+      case (mwc_cntl_extract_desc_state)
+
+        `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER :
+          begin
+            channel_released_first   <=  ( ~|held_valid ) ?  inc_channel : channel_released_first  ;
+            channel_released_second  <=  ( ~|held_valid ) ? ~inc_channel : channel_released_second ;
+          end
+
+        `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER :
+          begin
+            channel_released_first   <=  ( ~|held_valid ) ?  inc_channel : channel_released_first  ;
+            channel_released_second  <=  ( ~|held_valid ) ? ~inc_channel : channel_released_second ;
+          end
+
+        default:
+          begin
+            channel_released_first   <=  channel_released_first   ;
+            channel_released_second  <=  channel_released_second  ;
+          end
+
+      endcase
+    end
+  always @(posedge clk)
+    begin
+
+      case (mwc_cntl_extract_desc_state)
+
+        // Remember, neither input fsm is selected when they are in their WAIT state
+
+        `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER :
+          begin
+            case (held_addr_miscompare)   // synopsys parallel_case
+              1'b0:
+                begin
+                  held_valid   [inc_channel]              <=  1'b1  ;
+                  held_bank    [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_bank    : held_bank    [inc_channel] ;
+                  held_page    [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_page    : held_page    [inc_channel] ;
+                  `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                    held_line  [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_line    : held_line    [inc_channel] ;
+                  `endif
+                  held_data    [inc_channel][inc_word]    <=  pipe_data [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE ] ;
+                  held_mask    [inc_channel][inc_word]    <=  1'b1             ;
+                end
+            endcase
+          end
+
+        `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER :
+          begin
+            case (held_addr_miscompare)   // synopsys parallel_case
+              1'b0:
+                begin
+                  held_valid   [inc_channel]              <=  1'b1  ;
+                  held_bank    [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_bank    : held_bank    [inc_channel] ;
+                  held_page    [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_page    : held_page    [inc_channel] ;
+                  `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                    held_line  [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_line    : held_line    [inc_channel] ;
+                  `endif
+                  held_data    [inc_channel][inc_word]    <=  pipe_data [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE ] ;
+                  held_mask    [inc_channel][inc_word]    <=  1'b1             ;
+                end
+            endcase
+          end
+
+        `MWC_CNTL_PTR_DATA_RCV_FLUSH_1ST_HOLDING_REG :
+          begin
+            held_valid [ channel_released_first  ] <=  1'b0  ;
+            held_mask  [ channel_released_first  ] <=   'd0  ;
+          end
+        `MWC_CNTL_PTR_DATA_RCV_FLUSH_2ND_HOLDING_REG :
+          begin
+            held_valid [ channel_released_second ] <=  1'b0  ;
+            held_mask  [ channel_released_second ] <=   'd0  ;
+          end
+
+        // Remember, neither input fsm is selected when they are in their WAIT state
+        default:
+          begin
+            for (int chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
+              begin
+                held_valid [chan]  <=  ( reset_poweron ) ? 1'b0 : held_valid [chan]   ;
+                held_mask  [chan]  <=  ( reset_poweron ) ?  'd0 : held_mask  [chan]   ;
+              end
+          end
+
+      endcase
+    end
+
+  always @(*)
+    begin
+
+      case (mwc_cntl_extract_desc_state)
+
+        `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER : 
+          begin
+            held_addr_miscompare   =  |held_valid & ((held_bank[inc_channel] != inc_bank) | 
+                                                     (held_page[inc_channel] != inc_page) |                                                
+                                                     `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                                                       (held_line  [inc_channel] != inc_line));
+                                                     `else
+                                                       1'b0 );
+                                                     `endif
+          end
+
+        default:
+          begin
+          end
+
+      endcase
+    end
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 
 endmodule

@@ -63,11 +63,6 @@ program automatic test (
         #5000;  // 5us
         env.wrap_up();
 
-        #5000;  // 5us
-        env.wrap_up();
-
-        #5000;  // 5us
-        env.wrap_up();
 
 	$finish;
     end

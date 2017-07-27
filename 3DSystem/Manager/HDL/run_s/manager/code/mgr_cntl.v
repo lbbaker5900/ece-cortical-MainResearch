@@ -74,9 +74,11 @@ module mgr_cntl (
             //-------------------------------------------------------------------------------------------------
             // General
             //
-            input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
+            output reg                            mcntl__mwc__flush ,  // release any held write data. Likely used at end of a sequence
 
-            input  wire                           clk             ,
+            input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId   ,
+                                                                    
+            input  wire                           clk               ,
             input  wire                           reset_poweron  
                         );
 
@@ -189,9 +191,10 @@ module mgr_cntl (
         mcntl__wuf__start_addr  <= 24'd0   ;
         mcntl__wuf__enable      <= 1'b1    ;
         xxx__wuf__stall         <= 1'b0    ;
+        mcntl__mwc__flush       <= 1'b0    ;
       end
 
-
+    
     //--------------------------------------------------
 
 

@@ -447,14 +447,18 @@ module manager (
   wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      mrc__mmc__page    [`MGR_NUM_OF_STREAMS ]     ;
   wire  [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      mrc__mmc__word    [`MGR_NUM_OF_STREAMS ]     ;
                                                                           
-  wire                                                                          mwc__mmc__valid                              ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mwc__mmc__cntl                               ;
-  wire                                                                          mmc__mwc__ready                              ;
-  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__channel                            ;
-  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mwc__mmc__bank                               ;
-  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 mwc__mmc__page                               ;
-  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 mwc__mmc__word                               ;
-  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data     [`MGR_DRAM_NUM_CHANNELS ] ;
+  wire                                                                          mwc__mmc__valid        ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mwc__mmc__cntl         ;
+  wire                                                                          mmc__mwc__ready        ;
+  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__channel      ;
+  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mwc__mmc__bank         ;
+  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 mwc__mmc__page         ;
+  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 mwc__mmc__word         ;
+                                                                                                       
+  wire                                                                          mwc__mmc__data_valid   ;
+  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__data_channel ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data         ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 mwc__mmc__data_mask    ;
                                                                                                      
 
   // MMC provides data from each DRAM channel
@@ -816,6 +820,8 @@ module manager (
   wire                                             mcntl__mwc__pvalid     ; 
   wire [`MGR_MGR_ID_RANGE                       ]  mcntl__mwc__mgrId      ; 
 
+  wire                                             mcntl__mwc__flush      ; 
+
   mwc_cntl mwc_cntl (
   
   
@@ -844,7 +850,8 @@ module manager (
             
             //-------------------------------
             // to MMC
-            
+
+            // Request
             .mwc__mmc__valid         ( mwc__mmc__valid         ),                         
             .mwc__mmc__cntl          ( mwc__mmc__cntl          ),                         
             .mmc__mwc__ready         ( mmc__mwc__ready         ),                         
@@ -852,12 +859,18 @@ module manager (
             .mwc__mmc__bank          ( mwc__mmc__bank          ),                         
             .mwc__mmc__page          ( mwc__mmc__page          ),                         
             .mwc__mmc__word          ( mwc__mmc__word          ),                         
+
+            // Write Data
+            .mwc__mmc__data_valid    ( mwc__mmc__data_valid    ),                         
+            .mwc__mmc__data_channel  ( mwc__mmc__data_channel  ),                         
             .mwc__mmc__data          ( mwc__mmc__data          ),                         
+            .mwc__mmc__data_mask     ( mwc__mmc__data_mask     ),                         
                                                                                        
             
             //-------------------------------
             // General
             //
+            .mcntl__mwc__flush       ( mcntl__mwc__flush       ),
             .sys__mgr__mgrId         ( sys__mgr__mgrId         ),
             .clk                     ( clk                     ),
             .reset_poweron           ( reset_poweron           ) 
@@ -919,6 +932,8 @@ assign  mmc__mwc__ready  = 1'b1 ;
             //-------------------------------
             // General
             //
+            .mcntl__mwc__flush       ( mcntl__mwc__flush       ),
+
             .sys__mgr__mgrId         ( sys__mgr__mgrId         ),
             .clk                     ( clk                     ),
             .reset_poweron           ( reset_poweron           ) 
