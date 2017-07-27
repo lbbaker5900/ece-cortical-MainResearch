@@ -12,43 +12,67 @@
 *****************************************************************/
 
 
+//------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
+// Interfaces
+// - from RDP and from MCntl
   
+`define MWC_CNTL_NUM_OF_INPUT_INTF                2
+                                                 
+`define MWC_CNTL_NUM_OF_INPUT_INTF_WIDTH         (`CLOG2(`MWC_CNTL_NUM_OF_INPUT_INTF))
+`define MWC_CNTL_NUM_OF_INPUT_INTF_MSB           `MWC_CNTL_NUM_OF_INPUT_INTF_WIDTH-1
+`define MWC_CNTL_NUM_OF_INPUT_INTF_LSB            0
+`define MWC_CNTL_NUM_OF_INPUT_INTF_RANGE         `MWC_CNTL_NUM_OF_INPUT_INTF_MSB : `MWC_CNTL_NUM_OF_INPUT_INTF_LSB
+                                                 
+`define MWC_CNTL_NUM_OF_INPUT_INTF_VEC_WIDTH     `MWC_CNTL_NUM_OF_INPUT_INTF
+`define MWC_CNTL_NUM_OF_INPUT_INTF_VEC_MSB       `MWC_CNTL_NUM_OF_INPUT_INTF_VEC_WIDTH-1
+`define MWC_CNTL_NUM_OF_INPUT_INTF_VEC_LSB        0
+`define MWC_CNTL_NUM_OF_INPUT_INTF_VEC_RANGE     `MWC_CNTL_NUM_OF_INPUT_INTF_VEC_MSB : `MWC_CNTL_NUM_OF_INPUT_INTF_VEC_LSB
+
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 // FSM's
 //------------------------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------
+// Simple arbiter gives priority to MCntl
+// 
+
+`define MWC_CNTL_INPUT_ARB_WAIT                          5'b0_0001
+
+`define MWC_CNTL_INPUT_ARB_RDP                           5'b0_0010
+`define MWC_CNTL_INPUT_ARB_MCNTL                         5'b0_0100
+`define MWC_CNTL_INPUT_ARB_COMPLETE                      5'b0_1000
+
+`define MWC_CNTL_INPUT_ARB_ERR                           5'b1_0000
+
+`define MWC_CNTL_INPUT_ARB_STATE_WIDTH         5
+`define MWC_CNTL_INPUT_ARB_STATE_MSB           `MWC_CNTL_INPUT_ARB_STATE_WIDTH-1
+`define MWC_CNTL_INPUT_ARB_STATE_LSB           0
+`define MWC_CNTL_INPUT_ARB_STATE_SIZE          (`MWC_CNTL_INPUT_ARB_STATE_MSB - `MWC_CNTL_INPUT_ARB_STATE_LSB +1)
+`define MWC_CNTL_INPUT_ARB_STATE_RANGE          `MWC_CNTL_INPUT_ARB_STATE_MSB : `MWC_CNTL_INPUT_ARB_STATE_LSB
+
+//--------------------------------------------------------
 // from RDP and MCNTL options extraction
 //  - receive the NoC-like packet and extract write descritor pointer and data
 // 
 
-`define MWC_CNTL_PTR_DATA_RCV_WAIT                         16'b0000_0000_0000_0001
+`define MWC_CNTL_PTR_DATA_RCV_WAIT                                12'b0000_0000_0001
+                                                                  
+`define MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_INTF            12'b0000_0000_0010
+`define MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_INTF            12'b0000_0000_0100
+`define MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_INTF          12'b0000_0000_1000
+`define MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_INTF            12'b0000_0001_0000
+`define MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_INTF          12'b0000_0010_0000
+`define MWC_CNTL_PTR_DATA_RCV_NEXT_INTF_CYCLE                     12'b0000_0100_0000
+`define MWC_CNTL_PTR_DATA_RCV_PROCESS_DATA                        12'b0000_1000_0000
+`define MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER    12'b0001_0000_0000
+`define MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER    12'b0010_0000_0000
 
-`define MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_RDP      16'b0000_0000_0000_0010
-`define MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_RDP      16'b0000_0000_0000_0100
-`define MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_RDP    16'b0000_0000_0000_1000
-`define MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_RDP      16'b0000_0000_0001_0000
-`define MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_RDP    16'b0000_0000_0010_0000
-`define MWC_CNTL_PTR_DATA_RCV_NEXT_RDP_CYCLE               16'b0000_0000_0100_0000
-`define MWC_CNTL_PTR_DATA_RCV_PROCESS_RDP_DATA             16'b0000_0000_1000_0000
+`define MWC_CNTL_PTR_DATA_RCV_COMPLETE                            12'b0100_0000_0000
+`define MWC_CNTL_PTR_DATA_RCV_ERR                                 12'b1000_0000_0000
 
-`define MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_MCNTL    16'b0000_0001_0000_0000
-`define MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_MCNTL    16'b0000_0010_0000_0000
-`define MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_MCNTL  16'b0000_0100_0000_0000
-`define MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_MCNTL    16'b0000_1000_0000_0000
-`define MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_MCNTL  16'b0001_0000_0000_0000
-`define MWC_CNTL_PTR_DATA_RCV_NEXT_MCNTL_CYCLE             16'b0010_0000_0000_0000
-`define MWC_CNTL_PTR_DATA_RCV_PROCESS_MCNTL_DATA           16'b0100_0000_0000_0000
-/*
-`define    16'b0000_0001_0000_0000
-`define    16'b0000_0010_0000_0000
-`define    16'b0000_0100_0000_0000
-*/
-
-`define MWC_CNTL_PTR_DATA_RCV_ERR                         16'b1000_0000_0000_0000
-
-`define MWC_CNTL_PTR_DATA_RCV_STATE_WIDTH         16
+`define MWC_CNTL_PTR_DATA_RCV_STATE_WIDTH         12
 `define MWC_CNTL_PTR_DATA_RCV_STATE_MSB           `MWC_CNTL_PTR_DATA_RCV_STATE_WIDTH-1
 `define MWC_CNTL_PTR_DATA_RCV_STATE_LSB           0
 `define MWC_CNTL_PTR_DATA_RCV_STATE_SIZE          (`MWC_CNTL_PTR_DATA_RCV_STATE_MSB - `MWC_CNTL_PTR_DATA_RCV_STATE_LSB +1)
@@ -63,7 +87,7 @@
 //--------------------------------------------------------
 // From Mcntl
 
-`define MWC_CNTL_FROM_MCNTL_FIFO_DEPTH          16
+`define MWC_CNTL_FROM_MCNTL_FIFO_DEPTH          64
 `define MWC_CNTL_FROM_MCNTL_FIFO_DEPTH_MSB      (`MWC_CNTL_FROM_MCNTL_FIFO_DEPTH) -1
 `define MWC_CNTL_FROM_MCNTL_FIFO_DEPTH_LSB      0
 `define MWC_CNTL_FROM_MCNTL_FIFO_DEPTH_SIZE     (`MWC_CNTL_FROM_MCNTL_FIFO_DEPTH_MSB - `MWC_CNTL_FROM_MCNTL_FIFO_DEPTH_LSB +1)

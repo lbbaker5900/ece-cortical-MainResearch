@@ -6,7 +6,7 @@
     Date        : June 2017
     email       : lbbaker@ncsu.edu
 
-    Description : Take commands fro mrc_cntl and access dram
+    Description : Take memory requests from mrc(s) and access dram
                   
       Note: leveraged from https://github.ncsu.edu/ECE-Memory-Controller-IS/ece-diram4-memory-controller/blob/master/HDL/run_s/scheduler
 

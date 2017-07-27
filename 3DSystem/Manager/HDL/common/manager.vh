@@ -824,13 +824,27 @@
 
 
 //---------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 // NoC
 
+//---------------------------------------------------------------------------------------------------------------------
+// Internal
 `define MGR_NOC_INTERNAL_DATA_WIDTH        `MGR_ARRAY_NOC_INTERNAL_DATA_WIDTH
 `define MGR_NOC_INTERNAL_DATA_MSB          `MGR_NOC_INTERNAL_DATA_WIDTH-1
 `define MGR_NOC_INTERNAL_DATA_LSB          0
 `define MGR_NOC_INTERNAL_DATA_RANGE        `MGR_NOC_INTERNAL_DATA_MSB : `MGR_NOC_INTERNAL_DATA_LSB
 
+`define MGR_NOC_INTERNAL_INTF_NUM_WORDS          `MGR_NOC_INTERNAL_DATA_WIDTH/32
+
+`define MGR_NOC_INTERNAL_INTF_NUM_WORDS_WIDTH                       `MGR_NOC_INTERNAL_INTF_NUM_WORDS          
+`define MGR_NOC_INTERNAL_INTF_NUM_WORDS_MSB                         `MGR_NOC_INTERNAL_INTF_NUM_WORDS_WIDTH-1
+`define MGR_NOC_INTERNAL_INTF_NUM_WORDS_LSB                         0
+`define MGR_NOC_INTERNAL_INTF_NUM_WORDS_SIZE                        (`MGR_NOC_INTERNAL_INTF_NUM_WORDS_MSB - `MGR_NOC_INTERNAL_INTF_NUM_WORDS_LSB +1)
+`define MGR_NOC_INTERNAL_INTF_NUM_WORDS_RANGE                        `MGR_NOC_INTERNAL_INTF_NUM_WORDS_MSB : `MGR_NOC_INTERNAL_INTF_NUM_WORDS_LSB
+
+
+//---------------------------------------------------------------------------------------------------------------------
+// External
 `define MGR_NOC_EXTERNAL_DATA_WIDTH        `MGR_ARRAY_NOC_EXTERNAL_DATA_WIDTH 
 `define MGR_NOC_EXTERNAL_DATA_MSB          `MGR_NOC_EXTERNAL_DATA_WIDTH-1
 `define MGR_NOC_EXTERNAL_DATA_LSB          0

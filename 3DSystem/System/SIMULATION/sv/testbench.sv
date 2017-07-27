@@ -58,10 +58,17 @@ program automatic test (
                     .vDramIfc                    ( DramIfc                ));
         env.build();
         env.run();
-        env.wrap_up();
+        //env.wrap_up();
         
         #5000;  // 5us
         env.wrap_up();
+
+        #5000;  // 5us
+        env.wrap_up();
+
+        #5000;  // 5us
+        env.wrap_up();
+
 	$finish;
     end
 endprogram // test

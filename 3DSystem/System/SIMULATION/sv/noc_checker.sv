@@ -61,6 +61,28 @@ class noc_checker;
           end
     endfunction
 
+    task displayRemainingSent();
+
+      local_noc_packet local_noc_pkt_sent_from_mbx  ;
+
+      for (int m=0; m<`MGR_ARRAY_NUM_OF_MGR; m++) 
+        begin
+          if (mgr2noc_p[m].num() != 0)
+            begin
+              $display ("@%0t::%s:%0d:: INFO: Manager {%0d} has unclaimed packets. ", $time, `__FILE__, `__LINE__, m);
+              for (int msg=0; msg<mgr2noc_p[m].num(); msg++) 
+                begin
+                  mgr2noc_p[m].get(local_noc_pkt_sent_from_mbx);
+                  $display ("@%0t::%s:%0d:: INFO: Sent packet to manager {%0d} from {%0d} not received. Sent time = %0t.", $time, `__FILE__, `__LINE__, m, local_noc_pkt_sent_from_mbx.header_source, local_noc_pkt_sent_from_mbx.timeTag);
+                  local_noc_pkt_sent_from_mbx.displayPacket();
+                  mgr2noc_p[m].put(local_noc_pkt_sent_from_mbx);
+                end
+            end
+        end
+
+    endtask
+
+
     task run (); 
 
       local_noc_packet local_noc_pkt_sent  [`MGR_ARRAY_NUM_OF_MGR] ;

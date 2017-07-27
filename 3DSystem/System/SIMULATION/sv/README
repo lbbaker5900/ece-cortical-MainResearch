@@ -8,7 +8,8 @@ vim   ../../../PEArray/SIMULATION/common/TB_common.vh
 #  `define TB_ENABLE_REGFILE_DRIVER
 #  `undef  TB_ENABLE_REGFILE_DRIVER
 #  - 4-> 64
-vi   ../../../PEArray/HDL/common/pe_array.vh 
+#vi   ../../../PEArray/HDL/common/pe_array.vh 
+sed -i -e 's/64/4/g' ../../../PEArray/HDL/common/pe_array.vh
 cp ../../../Manager/scripts/nocConfig_mesh2x2.txt ../../../Manager/scripts/nocConfig.txt
 cp ../common/noc_interMgr_port_Bitmasks_2x2.vh ../../../Manager/HDL/common/noc_interMgr_port_Bitmasks.vh
 cp inputFiles.2x2/* inputFiles/.

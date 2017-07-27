@@ -291,6 +291,7 @@ class Environment;
     endtask
 
     task wrap_up();                                               //This task marks the completion of verification.
+        noc_check.displayRemainingSent();
         $display("@%0t:%s:%0d:Complete!",$time, `__FILE__, `__LINE__);
     endtask : wrap_up
 

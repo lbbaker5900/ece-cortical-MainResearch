@@ -376,36 +376,36 @@ module sdp_stream_cntl (
       jump_value_for_strm         = consJump_to_strm_fsm_fifo[0].pipe_consJumpValue  ;
     end
 
-  reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]   strm_next_cons_start_address ;  // pre-calculated next consequtive phase address
-  reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]   strm_inc_address             ;  // address we increment for each jump
-  reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]   strm_inc_address_e1          ;  
- 
-  reg  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE]    strm_next_cons_start_channel ;
-  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE   ]    strm_next_cons_start_bank    ;
-  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE   ]    strm_next_cons_start_page    ;
+  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]   strm_next_cons_start_address ;  // pre-calculated next consequtive phase address
+  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]   strm_inc_address             ;  // address we increment for each jump
+  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]   strm_inc_address_e1          ;  
+        
+  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   strm_next_cons_start_channel ;
+  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   strm_next_cons_start_bank    ;
+  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   strm_next_cons_start_page    ;
   `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                        
-    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE ]    strm_next_cons_start_line    ; 
+    reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   strm_next_cons_start_line    ; 
   `endif                                                                  
-  reg  [`MGR_DRAM_WORD_ADDRESS_RANGE   ]    strm_next_cons_start_word    ;
-                                                                          
-  reg  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE]    strm_inc_channel             ;  // formed address in access order for incrementing
-  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE   ]    strm_inc_bank                ;
-  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE   ]    strm_inc_page                ;
+  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE    ]   strm_next_cons_start_word    ;
+                                                                           
+  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   strm_inc_channel             ;  // formed address in access order for incrementing
+  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   strm_inc_bank                ;
+  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   strm_inc_page                ;
   `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                        
-    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE ]    strm_inc_line                ; 
+    reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   strm_inc_line                ; 
   `endif                                                                  
-  reg  [`MGR_DRAM_WORD_ADDRESS_RANGE   ]    strm_inc_word                ;
-                                                                          
-  reg  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE]    strm_inc_channel_e1          ;  // 
-  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE   ]    strm_inc_bank_e1             ;
-  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE   ]    strm_inc_page_e1             ;
+  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE    ]   strm_inc_word                ;
+                                                                           
+  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   strm_inc_channel_e1          ;  // 
+  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   strm_inc_bank_e1             ;
+  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   strm_inc_page_e1             ;
   `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                        
-    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE ]    strm_inc_line_e1             ; 
+    reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   strm_inc_line_e1             ; 
   `endif                                                                  
-  reg  [`MGR_DRAM_WORD_ADDRESS_RANGE   ]    strm_inc_word_e1             ;
-
+  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE    ]   strm_inc_word_e1             ;
+                                         
   `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                        
-    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE ]    xxx__sdp__mem_request_line [`MGR_DRAM_NUM_CHANNELS ]  ;   // the MRC provides the word address of the mmc response, but we need the line 
+    reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   xxx__sdp__mem_request_line [`MGR_DRAM_NUM_CHANNELS ]  ;   // the MRC provides the word address of the mmc response, but we need the line 
 
     genvar chan ;
     generate
@@ -508,7 +508,7 @@ module sdp_stream_cntl (
                 strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
                 `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-                  strm_inc_line_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
+                  strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
                 `endif
               end
             else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
@@ -518,7 +518,7 @@ module sdp_stream_cntl (
                 strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
                 `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-                  strm_inc_line_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+                  strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
                 `endif
               end
 
@@ -540,7 +540,7 @@ module sdp_stream_cntl (
                 strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
                 `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-                  strm_inc_line_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
+                  strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
                 `endif
               end
             else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
@@ -550,7 +550,7 @@ module sdp_stream_cntl (
                 strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
                 `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-                  strm_inc_line_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+                  strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
                 `endif
               end
 
