@@ -15,6 +15,51 @@
   
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
+// Interfaces
+// - streams from mrc(s)
+// - write data from mwc
+  
+//  Reads from mrc
+`define MMC_CNTL_NUM_OF_READ_INTF                    `MGR_NUM_OF_STREAMS
+                                                     
+`define MMC_CNTL_NUM_OF_READ_INTF_WIDTH             (`CLOG2(`MMC_CNTL_NUM_OF_READ_INTF))
+`define MMC_CNTL_NUM_OF_READ_INTF_MSB               `MMC_CNTL_NUM_OF_READ_INTF_WIDTH-1
+`define MMC_CNTL_NUM_OF_READ_INTF_LSB                0
+`define MMC_CNTL_NUM_OF_READ_INTF_RANGE             `MMC_CNTL_NUM_OF_READ_INTF_MSB : `MMC_CNTL_NUM_OF_READ_INTF_LSB
+                                                     
+`define MMC_CNTL_NUM_OF_READ_INTF_VEC_WIDTH         `MMC_CNTL_NUM_OF_READ_INTF
+`define MMC_CNTL_NUM_OF_READ_INTF_VEC_MSB           `MMC_CNTL_NUM_OF_READ_INTF_VEC_WIDTH-1
+`define MMC_CNTL_NUM_OF_READ_INTF_VEC_LSB            0
+`define MMC_CNTL_NUM_OF_READ_INTF_VEC_RANGE         `MMC_CNTL_NUM_OF_READ_INTF_VEC_MSB : `MMC_CNTL_NUM_OF_READ_INTF_VEC_LSB
+
+//  Write from mwc
+`define MMC_CNTL_NUM_OF_WRITE_INTF                    1
+                                                     
+`define MMC_CNTL_NUM_OF_WRITE_INTF_WIDTH             (`CLOG2(`MMC_CNTL_NUM_OF_WRITE_INTF))
+`define MMC_CNTL_NUM_OF_WRITE_INTF_MSB               `MMC_CNTL_NUM_OF_WRITE_INTF_WIDTH-1
+`define MMC_CNTL_NUM_OF_WRITE_INTF_LSB                0
+`define MMC_CNTL_NUM_OF_WRITE_INTF_RANGE             `MMC_CNTL_NUM_OF_WRITE_INTF_MSB : `MMC_CNTL_NUM_OF_WRITE_INTF_LSB
+                                                     
+`define MMC_CNTL_NUM_OF_WRITE_INTF_VEC_WIDTH         `MMC_CNTL_NUM_OF_WRITE_INTF
+`define MMC_CNTL_NUM_OF_WRITE_INTF_VEC_MSB           `MMC_CNTL_NUM_OF_WRITE_INTF_VEC_WIDTH-1
+`define MMC_CNTL_NUM_OF_WRITE_INTF_VEC_LSB            0
+`define MMC_CNTL_NUM_OF_WRITE_INTF_VEC_RANGE         `MMC_CNTL_NUM_OF_WRITE_INTF_VEC_MSB : `MMC_CNTL_NUM_OF_WRITE_INTF_VEC_LSB
+
+//  Reads from mrc
+`define MMC_CNTL_NUM_OF_INTF                    `MMC_CNTL_NUM_OF_READ_INTF + `MMC_CNTL_NUM_OF_WRITE_INTF                    
+                                                     
+`define MMC_CNTL_NUM_OF_INTF_WIDTH             (`CLOG2(`MMC_CNTL_NUM_OF_INTF))
+`define MMC_CNTL_NUM_OF_INTF_MSB               `MMC_CNTL_NUM_OF_INTF_WIDTH-1
+`define MMC_CNTL_NUM_OF_INTF_LSB                0
+`define MMC_CNTL_NUM_OF_INTF_RANGE             `MMC_CNTL_NUM_OF_INTF_MSB : `MMC_CNTL_NUM_OF_INTF_LSB
+                                                     
+`define MMC_CNTL_NUM_OF_INTF_VEC_WIDTH         `MMC_CNTL_NUM_OF_INTF
+`define MMC_CNTL_NUM_OF_INTF_VEC_MSB           `MMC_CNTL_NUM_OF_INTF_VEC_WIDTH-1
+`define MMC_CNTL_NUM_OF_INTF_VEC_LSB            0
+`define MMC_CNTL_NUM_OF_INTF_VEC_RANGE         `MMC_CNTL_NUM_OF_INTF_VEC_MSB : `MMC_CNTL_NUM_OF_INTF_VEC_LSB
+
+//------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 // FSM's
 //------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------

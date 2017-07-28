@@ -65,10 +65,11 @@ module mwc_cntl (
             output  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 mwc__mmc__word          ,
 
             // Data associated with request (note: dont forget it needs to be in the same order as the request)
-            output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__data_channel  ,
             output  reg                                                                           mwc__mmc__data_valid    ,
+            output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__data_channel  ,
             output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data          ,
             output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 mwc__mmc__data_mask     ,
+            input   wire                                                                          mmc__mwc__data_ready    ,
                                                                                                                     
 
             //-------------------------------------------------------------------------------------------------
@@ -220,6 +221,8 @@ module mwc_cntl (
                                             (intf_fsm[1].complete ) ? `MWC_CNTL_INPUT_ARB_COMPLETE :  
                                                                       `MWC_CNTL_INPUT_ARB_WAIT    ;
   
+        default:
+          mwc_cntl_input_arb_state_next =   `MWC_CNTL_INPUT_ARB_WAIT   ;
 
 
       endcase // case (mrc_cntl_input_arb_state)
@@ -240,11 +243,13 @@ module mwc_cntl (
         `MWC_CNTL_INPUT_ARB_RDP: 
           begin
             enable_rdp_fsm                  = 1'b1 ;
+            enable_mcntl_fsm                = 1'b0 ;
             storage_desc_processing_enable  = intf_fsm[0].storage_desc_processing_enable ;
           end
         
         `MWC_CNTL_INPUT_ARB_MCNTL: 
           begin
+            enable_rdp_fsm                  = 1'b0 ;
             enable_mcntl_fsm                = 1'b1 ;
             storage_desc_processing_enable  = intf_fsm[1].storage_desc_processing_enable ;
           end
@@ -330,11 +335,6 @@ module mwc_cntl (
         wire   pipe_som     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ); 
         wire   pipe_eom     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (pipe_cntl == `COMMON_STD_INTF_CNTL_EOM);
 
-        always @(*)
-          begin
-            mwc__mcntl__ready_e1  = ~almost_full ;
-          end
-
       end
   endgenerate
 
@@ -414,13 +414,13 @@ module mwc_cntl (
         wire                                                  pipe_pvalid                     ; 
         wire                                                  pipe_eom                        ;
 
-        reg                                                  contains_storage_ptr             ;  
-        reg                                                  contains_data                    ;  
-        reg   [`MGR_STORAGE_DESC_ADDRESS_RANGE        ]      storage_desc_ptr                 ;  // pointer to local storage descriptor although msb's contain manager ID, so remove
-        reg   [`MGR_STORAGE_DESC_ADDRESS_RANGE        ]      storage_desc_ptr_wire            ;  
-        //reg [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE  ]      local_storage_desc_ptr           ;  // remove manager ID msb's
-        reg   [`MGR_MGR_ID_RANGE                      ]      storage_desc_ptr_mgr_id          ;  // extract manager ID from descriptor
-        reg                                                  storage_desc_processing_enable   ;  
+        reg   [`MGR_NOC_INTERNAL_INTF_NUM_WORDS_RANGE   ]     contains_storage_ptr            ;  // Each transaction may have a storage descriptor per word
+        reg                                                   contains_data                   ;
+        reg   [`MGR_STORAGE_DESC_ADDRESS_RANGE          ]     storage_desc_ptr                ;  // pointer to local storage descriptor although msb's contain manager ID, so remove
+        reg   [`MGR_STORAGE_DESC_ADDRESS_RANGE          ]     storage_desc_ptr_wire           ;  
+        //reg [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE    ]     local_storage_desc_ptr          ;  // remove manager ID msb's
+        reg   [`MGR_MGR_ID_RANGE                        ]     storage_desc_ptr_mgr_id         ;  // extract manager ID from descriptor
+        reg                                                   storage_desc_processing_enable  ;  
                                                       
         //------------------------------------------------------------------------------------------------------------------------
         // State Transitions
@@ -438,14 +438,14 @@ module mwc_cntl (
               //
               // Keep reading until we see descriptor cycle
               `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_INTF: 
-                mwc_cntl_extract_desc_state_next =   (contains_storage_ptr ) ? `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_INTF :  
-                                                     (contains_data        ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_DATA              :  
-                                                                               `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_INTF   ;
+                mwc_cntl_extract_desc_state_next =   (|contains_storage_ptr ) ? `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_INTF :  // transition if either word is a storage ptr
+                                                     ( contains_data        ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_DATA             :  
+                                                                                `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_INTF ;
         
         
               `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_INTF : 
-                mwc_cntl_extract_desc_state_next =   ( storage_desc_ptr_mgr_id == sys__mgr__mgrId ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_INTF :  // read the descriptor
-                                                                                                      `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_INTF   ;
+                mwc_cntl_extract_desc_state_next =   ( contains_storage_ptr[0] && (storage_desc_ptr_mgr_id == sys__mgr__mgrId)) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_INTF :  // read the descriptor
+                                                                                                                                   `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_INTF   ;
       
               `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_INTF : 
                 mwc_cntl_extract_desc_state_next =   (storage_desc_processing_complete  ) ? `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_INTF    :  // read the descriptor
@@ -453,8 +453,8 @@ module mwc_cntl (
       
       
               `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_INTF : 
-                mwc_cntl_extract_desc_state_next =   ( (storage_desc_ptr_mgr_id == sys__mgr__mgrId )) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_INTF         :  // read the descriptor
-                                                                                                        `MWC_CNTL_PTR_DATA_RCV_NEXT_INTF_CYCLE                 ;
+                mwc_cntl_extract_desc_state_next =   ( contains_storage_ptr[1] && (storage_desc_ptr_mgr_id == sys__mgr__mgrId )) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_INTF         :  // read the descriptor
+                                                                                                                                   `MWC_CNTL_PTR_DATA_RCV_NEXT_INTF_CYCLE                 ;
       
               `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_INTF : 
                 mwc_cntl_extract_desc_state_next =   (storage_desc_processing_complete  ) ? `MWC_CNTL_PTR_DATA_RCV_NEXT_INTF_CYCLE             :  // read the descriptor
@@ -511,6 +511,9 @@ module mwc_cntl (
                 mwc_cntl_extract_desc_state_next =   `MWC_CNTL_PTR_DATA_RCV_ERR        ;
       
       
+              default:
+                mwc_cntl_extract_desc_state_next =   `MWC_CNTL_PTR_DATA_RCV_WAIT        ;
+      
       
             endcase // case (mrc_cntl_extract_desc_state)
           end // always @ (*)
@@ -523,7 +526,10 @@ module mwc_cntl (
         //
         always @(*)
           begin
-            contains_storage_ptr            = 'd0  ;
+            for (int w=0; w<`MGR_NOC_INTERNAL_INTF_NUM_WORDS ; w++)
+              begin
+                contains_storage_ptr [w]    = 'd0  ;
+              end
             contains_data                   = 'd0  ;
             storage_desc_ptr_mgr_id         = 'd0  ;
             storage_desc_processing_enable  = 'd0  ;  
@@ -534,12 +540,9 @@ module mwc_cntl (
               
               `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_INTF: 
                 begin
-                  contains_storage_ptr = pipe_valid & (((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION0_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) | 
-                                                       ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION1_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )));
-                                                                                                           
-                                                                                             
-                  
-                  contains_data        = pipe_valid & (((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_DATA )));
+                  contains_storage_ptr [0] = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION0_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
+                  contains_storage_ptr [1] = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION1_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
+                  contains_data            = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_DATA ));
                                                                                                           
                   pipe_read   = ~contains_storage_ptr & ~contains_data ;
                   complete    = 1'b0 ;
@@ -548,24 +551,40 @@ module mwc_cntl (
       
               `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_INTF : 
                 begin
+                  contains_storage_ptr [0] = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION0_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
+                  contains_storage_ptr [1] = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION1_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
+                  contains_data            = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_DATA ));
+                                                                                                          
                   storage_desc_ptr_wire     = pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ] ;
                   storage_desc_ptr_mgr_id   =  storage_desc_ptr_wire [`MGR_STORAGE_DESC_MGR_ID_FIELD_RANGE  ] ;  // extract manager ID msb's
                 end
               
               `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_INTF : 
                 begin
+                  contains_storage_ptr [0] = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION0_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
+                  contains_storage_ptr [1] = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION1_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
+                  contains_data            = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_DATA ));
+                                                                                                          
                   storage_desc_processing_enable  = 'd1  ;  
                                                                                                           
                 end
               
               `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_INTF : 
                 begin
+                  contains_storage_ptr [0] = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION0_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
+                  contains_storage_ptr [1] = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION1_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
+                  contains_data            = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_DATA ));
+                                                                                                          
                   storage_desc_ptr_wire     = pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE ] ;
                   storage_desc_ptr_mgr_id   =  storage_desc_ptr_wire [`MGR_STORAGE_DESC_MGR_ID_FIELD_RANGE  ] ;  // extract manager ID msb's
                 end
               
               `MWC_CNTL_PTR_DATA_RCV_PROCESS_2ND_DESC_FROM_INTF : 
                 begin
+                  contains_storage_ptr [0] = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION0_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
+                  contains_storage_ptr [1] = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION1_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
+                  contains_data            = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_DATA ));
+                                                                                                          
                   storage_desc_processing_enable  = 'd1  ;  
                 end
               
@@ -828,11 +847,6 @@ module mwc_cntl (
                                                    start_accessOrder    ;
 
 
-      for (int chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
-        begin
-          held_mask [chan] <= ( reset_poweron ) ? 64'd0           :
-                                                  held_mask [chan];
-        end
     end
 
 
@@ -843,7 +857,7 @@ module mwc_cntl (
   always @(*)
     begin
 
-      case (mwc_cntl_extract_desc_state)
+      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
 
         `MWC_CNTL_PTR_DATA_RCV_PROCESS_DATA :
           begin
@@ -857,6 +871,14 @@ module mwc_cntl (
                                    2'b00                                              };
               end
             else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
+              begin
+                inc_address_e1 =  {start_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
+                                   start_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
+                                   start_address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ] , 
+                                   start_address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ] , 
+                                   2'b00                                              };
+              end
+            else 
               begin
                 inc_address_e1 =  {start_address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
                                    start_address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
@@ -912,6 +934,16 @@ module mwc_cntl (
             inc_line_e1  =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
           `endif
         end
+      else 
+        begin
+          inc_channel_e1 =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+          inc_bank_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
+          inc_page_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+          inc_word_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+          `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+            inc_line_e1  =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+          `endif
+        end
     end // always @ (*)
 
   // Register the stream address and individual fields
@@ -931,7 +963,7 @@ module mwc_cntl (
   always @(posedge clk)
     begin
 
-      case (mwc_cntl_extract_desc_state)
+      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
 
         `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER :
           begin
@@ -954,7 +986,7 @@ module mwc_cntl (
   always @(posedge clk)
     begin
 
-      case (mwc_cntl_extract_desc_state)
+      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
 
         // FIXME: Code assumes two channels
         `MWC_CNTL_PTR_DATA_RCV_FLUSH_1ST_HOLDING_REG :
@@ -985,7 +1017,7 @@ module mwc_cntl (
   always @(posedge clk)
     begin
 
-      case (mwc_cntl_extract_desc_state)
+      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
 
         `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER :
           begin
@@ -1075,21 +1107,33 @@ module mwc_cntl (
   always @(*)
     begin
 
-      case (mwc_cntl_extract_desc_state)
+      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
 
         `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER : 
           begin
-            held_addr_miscompare   =  |held_valid & ((held_bank[inc_channel] != inc_bank) | 
-                                                     (held_page[inc_channel] != inc_page) |                                                
-                                                     `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-                                                       (held_line  [inc_channel] != inc_line));
-                                                     `else
-                                                       1'b0 );
-                                                     `endif
+            held_addr_miscompare   =  held_valid[inc_channel] & ((held_bank[inc_channel] != inc_bank) | 
+                                                                 (held_page[inc_channel] != inc_page) |                                                
+                                                                 `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                                                                   (held_line  [inc_channel] != inc_line));
+                                                                 `else
+                                                                   1'b0 );
+                                                                 `endif
+          end
+
+        `MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER : 
+          begin
+            held_addr_miscompare   =  held_valid[inc_channel] & ((held_bank[inc_channel] != inc_bank) | 
+                                                                 (held_page[inc_channel] != inc_page) |                                                
+                                                                 `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                                                                   (held_line  [inc_channel] != inc_line));
+                                                                 `else
+                                                                   1'b0 );
+                                                                 `endif
           end
 
         default:
           begin
+            held_addr_miscompare   =  1'b0 ;
           end
 
       endcase

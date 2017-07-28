@@ -29,6 +29,8 @@
 `include "manager.vh"
 `include "stack_interface.vh"
 `include "mgr_noc_cntl.vh"
+`include "mwc_cntl.vh"
+`include "main_mem_cntl.vh"
 `include "mem_acc_cont.vh"
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
@@ -436,9 +438,11 @@ module manager (
       end
   endgenerate
 
-  //-------------------------------
+  //------------------------------------------------------------------------------------------------------------------------
   // Main Memory Controller interface
   //
+  //----------------------------------------------------------------------------------------------------
+  // Read
   wire                                           mrc__mmc__valid   [`MGR_NUM_OF_STREAMS ]     ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl    [`MGR_NUM_OF_STREAMS ]     ;
   wire                                           mmc__mrc__ready   [`MGR_NUM_OF_STREAMS ]     ;
@@ -447,20 +451,6 @@ module manager (
   wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      mrc__mmc__page    [`MGR_NUM_OF_STREAMS ]     ;
   wire  [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      mrc__mmc__word    [`MGR_NUM_OF_STREAMS ]     ;
                                                                           
-  wire                                                                          mwc__mmc__valid        ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mwc__mmc__cntl         ;
-  wire                                                                          mmc__mwc__ready        ;
-  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__channel      ;
-  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mwc__mmc__bank         ;
-  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 mwc__mmc__page         ;
-  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 mwc__mmc__word         ;
-                                                                                                       
-  wire                                                                          mwc__mmc__data_valid   ;
-  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__data_channel ;
-  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data         ;
-  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 mwc__mmc__data_mask    ;
-                                                                                                     
-
   // MMC provides data from each DRAM channel
   // - response must be in order of request
   wire  [`MGR_NUM_OF_STREAMS_RANGE            ]                                 mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ]                        ;
@@ -469,6 +459,25 @@ module manager (
   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
 
 
+  //----------------------------------------------------------------------------------------------------
+  // Write
+  wire                                                                          mwc__mmc__valid        [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mwc__mmc__cntl         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire                                                                          mmc__mwc__ready        [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__channel      [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mwc__mmc__bank         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 mwc__mmc__page         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 mwc__mmc__word         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+                                                                                                        
+  wire                                                                          mwc__mmc__data_valid   [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__data_channel [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 mwc__mmc__data_mask    [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire                                                                          mmc__mwc__data_ready   [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+                                                                                                     
+
+  //----------------------------------------------------------------------------------------------------
+  // DFI
   wire                                                                          dfi__mmc__init_done                              ;
   wire                                                                          dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]   ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ]   ;
@@ -482,9 +491,10 @@ module manager (
 
   main_mem_cntl main_mem_cntl (
 
-            //-------------------------------
+            //--------------------------------------------------------------------------------
             // Main Memory Controller interface
             //
+            // Read
             .mrc__mmc__valid         ( mrc__mmc__valid        ),
             .mrc__mmc__cntl          ( mrc__mmc__cntl         ),
             .mmc__mrc__ready         ( mmc__mrc__ready        ),
@@ -493,12 +503,26 @@ module manager (
             .mrc__mmc__page          ( mrc__mmc__page         ),
             .mrc__mmc__word          ( mrc__mmc__word         ),
                                                            
-                                                           
             .mmc__mrc__valid         ( mmc__mrc__valid        ),
             .mmc__mrc__cntl          ( mmc__mrc__cntl         ),
             .mrc__mmc__ready         ( mrc__mmc__ready        ),
             .mmc__mrc__data          ( mmc__mrc__data         ),
             
+            // Write
+            .mwc__mmc__valid         ( mwc__mmc__valid         ),                         
+            .mwc__mmc__cntl          ( mwc__mmc__cntl          ),                         
+            .mmc__mwc__ready         ( mmc__mwc__ready         ),                         
+            .mwc__mmc__channel       ( mwc__mmc__channel       ),                         
+            .mwc__mmc__bank          ( mwc__mmc__bank          ),                         
+            .mwc__mmc__page          ( mwc__mmc__page          ),                         
+            .mwc__mmc__word          ( mwc__mmc__word          ),                         
+
+            .mwc__mmc__data_valid    ( mwc__mmc__data_valid    ),                         
+            .mwc__mmc__data_channel  ( mwc__mmc__data_channel  ),                         
+            .mwc__mmc__data          ( mwc__mmc__data          ),                         
+            .mwc__mmc__data_mask     ( mwc__mmc__data_mask     ),                         
+            .mmc__mwc__data_ready    ( mmc__mwc__data_ready    ),                         
+
             //--------------------------------------------------------------------------------
             // DFI Interface
             // - provide per channel signals
@@ -515,7 +539,7 @@ module manager (
             .mmc__dfi__addr          ( mmc__dfi__addr         ),
 
   
-            //-------------------------------
+            //--------------------------------------------------------------------------------
             // General
             //
             .sys__mgr__mgrId         ( sys__mgr__mgrId         ),
@@ -829,55 +853,53 @@ module manager (
             // Data-Path from MCntl
             // - likely data from another Manager via NoC                                
 
-            .mcntl__mwc__valid       ( mcntl__mwc__valid       ), 
-            .mwc__mcntl__ready       ( mwc__mcntl__ready       ), 
-            .mcntl__mwc__cntl        ( mcntl__mwc__cntl        ), 
-            .mcntl__mwc__type        ( mcntl__mwc__type        ), 
-            .mcntl__mwc__ptype       ( mcntl__mwc__ptype       ), 
-            .mcntl__mwc__data        ( mcntl__mwc__data        ), 
-            .mcntl__mwc__pvalid      ( mcntl__mwc__pvalid      ), 
-            .mcntl__mwc__mgrId       ( mcntl__mwc__mgrId       ), 
-            
-            //-------------------------------
-            // from Return Data Processor Interface
-
-            .rdp__mwc__valid         ( rdp__mwc__valid         ), 
-            .mwc__rdp__ready         ( mwc__rdp__ready         ), 
-            .rdp__mwc__cntl          ( rdp__mwc__cntl          ), 
-            .rdp__mwc__ptype         ( rdp__mwc__ptype         ), 
-            .rdp__mwc__pvalid        ( rdp__mwc__pvalid        ), 
-            .rdp__mwc__data          ( rdp__mwc__data          ), 
-            
-            //-------------------------------
-            // to MMC
-
-            // Request
-            .mwc__mmc__valid         ( mwc__mmc__valid         ),                         
-            .mwc__mmc__cntl          ( mwc__mmc__cntl          ),                         
-            .mmc__mwc__ready         ( mmc__mwc__ready         ),                         
-            .mwc__mmc__channel       ( mwc__mmc__channel       ),                         
-            .mwc__mmc__bank          ( mwc__mmc__bank          ),                         
-            .mwc__mmc__page          ( mwc__mmc__page          ),                         
-            .mwc__mmc__word          ( mwc__mmc__word          ),                         
-
-            // Write Data
-            .mwc__mmc__data_valid    ( mwc__mmc__data_valid    ),                         
-            .mwc__mmc__data_channel  ( mwc__mmc__data_channel  ),                         
-            .mwc__mmc__data          ( mwc__mmc__data          ),                         
-            .mwc__mmc__data_mask     ( mwc__mmc__data_mask     ),                         
-                                                                                       
-            
-            //-------------------------------
-            // General
-            //
-            .mcntl__mwc__flush       ( mcntl__mwc__flush       ),
-            .sys__mgr__mgrId         ( sys__mgr__mgrId         ),
-            .clk                     ( clk                     ),
-            .reset_poweron           ( reset_poweron           ) 
+            .mcntl__mwc__valid       ( mcntl__mwc__valid           ), 
+            .mwc__mcntl__ready       ( mwc__mcntl__ready           ), 
+            .mcntl__mwc__cntl        ( mcntl__mwc__cntl            ), 
+            .mcntl__mwc__type        ( mcntl__mwc__type            ), 
+            .mcntl__mwc__ptype       ( mcntl__mwc__ptype           ), 
+            .mcntl__mwc__data        ( mcntl__mwc__data            ), 
+            .mcntl__mwc__pvalid      ( mcntl__mwc__pvalid          ), 
+            .mcntl__mwc__mgrId       ( mcntl__mwc__mgrId           ), 
+                                                                   
+            //-------------------------------                      
+            // from Return Data Processor Interface                
+                                                                   
+            .rdp__mwc__valid         ( rdp__mwc__valid             ), 
+            .mwc__rdp__ready         ( mwc__rdp__ready             ), 
+            .rdp__mwc__cntl          ( rdp__mwc__cntl              ), 
+            .rdp__mwc__ptype         ( rdp__mwc__ptype             ), 
+            .rdp__mwc__pvalid        ( rdp__mwc__pvalid            ), 
+            .rdp__mwc__data          ( rdp__mwc__data              ), 
+                                                                   
+            //-------------------------------                      
+            // to MMC                                              
+                                                                   
+            // Request                                             
+            .mwc__mmc__valid         ( mwc__mmc__valid        [0]  ),                         
+            .mwc__mmc__cntl          ( mwc__mmc__cntl         [0]  ),                         
+            .mmc__mwc__ready         ( mmc__mwc__ready        [0]  ),                         
+            .mwc__mmc__channel       ( mwc__mmc__channel      [0]  ),                         
+            .mwc__mmc__bank          ( mwc__mmc__bank         [0]  ),                         
+            .mwc__mmc__page          ( mwc__mmc__page         [0]  ),                         
+            .mwc__mmc__word          ( mwc__mmc__word         [0]  ),                         
+                                                                   
+            // Write Data                                          
+            .mwc__mmc__data_valid    ( mwc__mmc__data_valid   [0]  ),                         
+            .mwc__mmc__data_channel  ( mwc__mmc__data_channel [0]  ),                         
+            .mwc__mmc__data          ( mwc__mmc__data         [0]  ),                         
+            .mwc__mmc__data_mask     ( mwc__mmc__data_mask    [0]  ),                         
+            .mmc__mwc__data_ready    ( mmc__mwc__data_ready   [0]  ),                         
+                                                                                           
+                                                                   
+            //-------------------------------                      
+            // General                                             
+            //                                                     
+            .mcntl__mwc__flush       ( mcntl__mwc__flush           ),
+            .sys__mgr__mgrId         ( sys__mgr__mgrId             ),
+            .clk                     ( clk                         ),
+            .reset_poweron           ( reset_poweron               ) 
         );
-
-// FIXME
-assign  mmc__mwc__ready  = 1'b1 ;
 
 
   //----------------------------------------------------------------------------------------------------

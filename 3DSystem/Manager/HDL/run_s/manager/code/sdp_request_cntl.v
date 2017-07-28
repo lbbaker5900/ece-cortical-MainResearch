@@ -240,6 +240,9 @@ module sdp_request_cntl (
         // we now have the start address and end of cons/jump phase address
         // set pbc_inc to start and pbc_end to boundaries of consequtive phase.
         `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS: 
+          sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES ;
+
+        `SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES: 
           sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC ;
 
         // start points to first consequtive address, end points to last consequtive address
@@ -359,9 +362,17 @@ module sdp_request_cntl (
 
   always @(posedge clk)
     begin
-      first_time_thru <= (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT    ) ? 1'b1            :
-                         (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC ) ? 1'b0            :
-                                                                            first_time_thru ;  
+      // we use first_time_thru during the INC_PBC state so we create the start end address after the single first request has been generated.
+      // We also use it in the CONS_FIELD state to test if the start channel is one and the end address remains in the line one of two things may happen:
+      // a) the end address might be on channel '0', in which case the end PBLC (PBLCe) will be less than the current incrementing PBLC (PBLCi).
+      //  e.g. Pe == Pi, Be == Bi,  Le == Li but Ce != Ci and Ci > Ce, so when the PBLCi start incrementing, we'll create "a lot of" erroneous requests.
+      //  This wont occur in the PBCL case.
+      //  So in the PBLC case, test if Pe == Pi, Be == Bi, Le == Li, Ci>Ce and (mem_end_word-mem_inc_word) > 1, then set Ci=Ce. Because pbc_last address will equal
+      //  the actual PBLCi, now Cl != Ci and a request will be generate.
+      first_time_thru <= (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT       ) ? 1'b1            :
+             //          (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC    ) ? 1'b0            :
+                         (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD ) ? 1'b0            :  // we use 
+                                                                                                         first_time_thru ;  
     end
 
   reg create_mem_request ;
@@ -542,6 +553,23 @@ module sdp_request_cntl (
                 pbc_inc_addr    <=  {mem_start_page, mem_start_bank, mem_start_line, mem_start_channel} ;
               `else
                 pbc_inc_addr    <=  {mem_start_page, mem_start_bank, mem_start_channel} ;
+              `endif
+            end
+        end
+      else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES )
+        begin
+          if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP)
+            begin
+              `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                if ((consJumpMemory_value > 0) && (mem_start_page == mem_end_page) && (mem_start_bank == mem_end_bank) && (mem_start_line == mem_end_line))
+                  begin
+                    pbc_inc_addr    <=  {mem_end_page, mem_end_bank, mem_end_line, mem_end_channel} ;
+                  end
+              `else
+                if ((consJumpMemory_value > 0) && (mem_start_page == mem_end_page) && (mem_start_bank == mem_end_bank))
+                  begin
+                    pbc_inc_addr    <=  {mem_end_page, mem_end_bank, mem_end_channel} ;
+                  end
               `endif
             end
         end
@@ -785,6 +813,16 @@ module sdp_request_cntl (
           `endif
         end
       else if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
+        begin
+          mem_end_channel =  mem_end_address[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+          mem_end_bank    =  mem_end_address[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
+          mem_end_page    =  mem_end_address[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+          mem_end_word    =  mem_end_address[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+          `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+            mem_end_line    =  mem_end_address[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+          `endif
+        end
+      else 
         begin
           mem_end_channel =  mem_end_address[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
           mem_end_bank    =  mem_end_address[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;

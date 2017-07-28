@@ -1,5 +1,5 @@
 
-MODNAME = mrc_cntl
+MODNAME = manager
 RTL_DIR = ../code
 GATE_DIR = ../synth
 

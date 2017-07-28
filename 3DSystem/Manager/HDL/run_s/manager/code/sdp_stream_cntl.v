@@ -492,6 +492,10 @@ module sdp_stream_cntl (
               begin
                 strm_inc_address_e1 =  {strm_inc_page_e1, strm_inc_bank_e1, strm_inc_word_e1, strm_inc_channel_e1, 2'b00};
               end
+            else 
+              begin
+                strm_inc_address_e1 =  {strm_inc_page_e1, strm_inc_bank_e1, strm_inc_word_e1, strm_inc_channel_e1, 2'b00};
+              end
           end
 
         `SDP_CNTL_STRM_LOAD_JUMP_VALUE  :
@@ -512,6 +516,16 @@ module sdp_stream_cntl (
                 `endif
               end
             else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
+              begin
+                strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
+                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+                `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                  strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+                `endif
+              end
+            else 
               begin
                 strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
                 strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
@@ -544,6 +558,16 @@ module sdp_stream_cntl (
                 `endif
               end
             else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
+              begin
+                strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
+                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+                `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                  strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+                `endif
+              end
+            else 
               begin
                 strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
                 strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;

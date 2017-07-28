@@ -449,6 +449,8 @@ module mrc_cntl (
           mrc_cntl_extract_desc_state_next =   (~storage_desc_processing_complete ) ? `MRC_CNTL_EXTRACT_DESC_WAIT     :
                                                                                       `MRC_CNTL_EXTRACT_DESC_COMPLETE ;
 
+        default:
+          mrc_cntl_extract_desc_state_next =   `MRC_CNTL_EXTRACT_DESC_WAIT     ;
 
       endcase // case (mrc_cntl_extract_desc_state)
     end // always @ (*)
