@@ -772,7 +772,7 @@ def main():
         instruction = ''
         instruction = bin(int(accessOrder[c],16)).split('b')[1].zfill(optionOrderWidth) + instruction
         print 'Instruction : {0}'.format(instruction)
-        instruction = bin(int(consJumpPtr[c],16)).split('b')[1].zfill(consJumpPtrWidth ) + instruction
+        instruction = bin(int(consJumpPtr[c],16)).split('b')[1].zfill(consJumpPtrWidth )[-consJumpPtrWidth:] + instruction
         print 'Instruction : {0}'.format(instruction)
         instruction = bin(int(memAddress[c],16)).split('b')[1].zfill(numOfAddressBits) + instruction
         print 'Instruction : {0}'.format(instruction)
