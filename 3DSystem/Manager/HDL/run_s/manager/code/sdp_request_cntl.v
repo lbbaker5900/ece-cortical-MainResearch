@@ -157,6 +157,9 @@ module sdp_request_cntl (
   wire                                                     consJumpMemory_som_eom     ;
   wire                                                     consJumpMemory_eom         ;
   reg                                                      first_time_thru            ;  // need to make sure for the first cycle we request the starting bank/page
+  reg                                                      force_request              ;  // Used when the consequtive addresses are in the same line and the PBLC address starts and finishes
+                                                                                         // on the same channel ID. This condition would generate only the initial request unless we force the other channel to be requested
+                                                                                         // Need to make sure we maintain the order
   reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  storage_desc_consJumpPtr   ;
 
   reg                                                      to_strm_fsm_fifo_ready    ;
@@ -369,10 +372,43 @@ module sdp_request_cntl (
       //  This wont occur in the PBCL case.
       //  So in the PBLC case, test if Pe == Pi, Be == Bi, Le == Li, Ci>Ce and (mem_end_word-mem_inc_word) > 1, then set Ci=Ce. Because pbc_last address will equal
       //  the actual PBLCi, now Cl != Ci and a request will be generate.
+      /*
       first_time_thru <= (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT       ) ? 1'b1            :
              //          (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC    ) ? 1'b0            :
                          (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD ) ? 1'b0            :  // we use 
                                                                                                          first_time_thru ;  
+      */
+      case (sdp_cntl_proc_storage_desc_state)  // synopsys parallel_case
+        `SDP_CNTL_PROC_STORAGE_DESC_WAIT:
+           begin
+             first_time_thru <= 1'b1 ;
+             force_request   <= 1'b0   ;
+           end
+
+        `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC:
+           begin
+             first_time_thru <= first_time_thru ;
+             force_request   <= 1'b0   ;
+           end
+
+        `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD:
+           begin
+             first_time_thru <= 1'b0 ;
+             force_request   <= 1'b0   ;
+           end
+
+        `SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES:
+           begin
+             first_time_thru <= first_time_thru ;
+             force_request   <= (consJumpMemory_value > 0) & (mem_start_page == mem_end_page) & (mem_start_bank == mem_end_bank) & (mem_start_line == mem_end_line) ;
+           end
+
+        default:
+           begin
+             first_time_thru <= first_time_thru ;
+             force_request   <= force_request   ;
+           end
+      endcase
     end
 
   reg create_mem_request ;
@@ -518,6 +554,115 @@ module sdp_request_cntl (
 
   always @(posedge clk)
     begin
+      case (sdp_cntl_proc_storage_desc_state)  // synopsys parallel_case
+
+        `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID:
+           begin
+             case (storage_desc_accessOrder)  // synopsys parallel_case
+               PY_WU_INST_ORDER_TYPE_WCBP:
+                 begin
+                   `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                     pbc_inc_addr <=  {storage_desc_page, storage_desc_bank, storage_desc_channel, storage_desc_line};
+                   `else
+                     pbc_inc_addr <=  {storage_desc_page, storage_desc_bank, storage_desc_channel};
+                   `endif
+                 end
+               PY_WU_INST_ORDER_TYPE_CWBP:
+                 begin
+                   `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                     pbc_inc_addr <=  {storage_desc_page, storage_desc_bank, storage_desc_line, storage_desc_channel};
+                   `else
+                     pbc_inc_addr <=  {storage_desc_page, storage_desc_bank, storage_desc_channel};
+                   `endif
+                 end
+               default:
+                  begin
+                    pbc_inc_addr <= pbc_inc_addr ;
+                  end
+             endcase
+           end
+
+        `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS:
+           begin
+             case (storage_desc_accessOrder)  // synopsys parallel_case
+               PY_WU_INST_ORDER_TYPE_WCBP:
+                 begin
+                   `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                     pbc_inc_addr    <=  {mem_start_page, mem_start_bank, mem_start_channel, mem_start_line} ;
+                   `else
+                     pbc_inc_addr    <=  {mem_start_page, mem_start_bank, mem_start_channel} ;
+                   `endif
+                 end
+               PY_WU_INST_ORDER_TYPE_CWBP:
+                 begin
+                   `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                     pbc_inc_addr    <=  {mem_start_page, mem_start_bank, mem_start_line, mem_start_channel} ;
+                   `else
+                     pbc_inc_addr    <=  {mem_start_page, mem_start_bank, mem_start_channel} ;
+                   `endif
+                 end
+               default:
+                  begin
+                    pbc_inc_addr <= pbc_inc_addr ;
+                  end
+             endcase
+           end
+
+        // Test if the start channel is one and the end address remains in the line one of two things may happen:
+        // a) the end address might be on channel '0', in which case the end PBLC (PBLCe) will be less than the current incrementing PBLC (PBLCi).
+        //  e.g. Pe == Pi, Be == Bi,  Le == Li but Ce != Ci and Ci > Ce, so when the PBLCi start incrementing, we'll create "a lot of" erroneous requests.
+        //  This wont occur in the PBCL case.
+        //  So in the PBLC case, test if Pe == Pi, Be == Bi, Le == Li, Ci>Ce and (mem_end_word-mem_inc_word) > 1, then set Ci=Ce. Because pbc_last address will equal
+        //  the actual PBLCi, now Cl != Ci and a request will be generate.
+        `SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES:
+           begin
+             case (storage_desc_accessOrder)  // synopsys parallel_case
+               PY_WU_INST_ORDER_TYPE_CWBP:
+                 begin
+                   `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                     if ((consJumpMemory_value > 0) && (mem_start_page == mem_end_page) && (mem_start_bank == mem_end_bank) && (mem_start_line == mem_end_line))
+                       begin
+                         pbc_inc_addr    <=  {mem_end_page, mem_end_bank, mem_end_line, mem_end_channel} ;
+                       end
+                     else
+                       begin
+                         pbc_inc_addr    <=  pbc_inc_addr ;
+                       end
+                   `else
+                     if ((consJumpMemory_value > 0) && (mem_start_page == mem_end_page) && (mem_start_bank == mem_end_bank))
+                       begin
+                         pbc_inc_addr    <=  {mem_end_page, mem_end_bank, mem_end_channel} ;
+                       end
+                     else
+                       begin
+                         pbc_inc_addr    <=  pbc_inc_addr ;
+                       end
+                   `endif
+                 end
+               default:
+                  begin
+                    pbc_inc_addr <= pbc_inc_addr ;
+                  end
+             endcase
+           end
+
+        `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC:
+           begin
+             pbc_inc_addr    <=  (~generate_requests) ? pbc_inc_addr + 'd1 : pbc_inc_addr  ;
+           end
+
+        `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA:
+           begin
+             pbc_inc_addr    <=  (~requests_complete) ? pbc_inc_addr + 'd1 : pbc_inc_addr  ;
+           end
+
+        default:
+           begin
+             pbc_inc_addr <= pbc_inc_addr ;
+           end
+      endcase
+    end
+/*
       if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID )
         begin
           if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
@@ -556,6 +701,12 @@ module sdp_request_cntl (
               `endif
             end
         end
+      // Test if the start channel is one and the end address remains in the line one of two things may happen:
+      // a) the end address might be on channel '0', in which case the end PBLC (PBLCe) will be less than the current incrementing PBLC (PBLCi).
+      //  e.g. Pe == Pi, Be == Bi,  Le == Li but Ce != Ci and Ci > Ce, so when the PBLCi start incrementing, we'll create "a lot of" erroneous requests.
+      //  This wont occur in the PBCL case.
+      //  So in the PBLC case, test if Pe == Pi, Be == Bi, Le == Li, Ci>Ce and (mem_end_word-mem_inc_word) > 1, then set Ci=Ce. Because pbc_last address will equal
+      //  the actual PBLCi, now Cl != Ci and a request will be generate.
       else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES )
         begin
           if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP)
@@ -585,6 +736,7 @@ module sdp_request_cntl (
           pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
         end
     end
+*/
 
   genvar chan;
   generate

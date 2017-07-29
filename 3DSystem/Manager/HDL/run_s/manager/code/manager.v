@@ -442,52 +442,48 @@ module manager (
   // Main Memory Controller interface
   //
   //----------------------------------------------------------------------------------------------------
-  // Read
-  wire                                           mrc__mmc__valid   [`MGR_NUM_OF_STREAMS ]     ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl    [`MGR_NUM_OF_STREAMS ]     ;
-  wire                                           mmc__mrc__ready   [`MGR_NUM_OF_STREAMS ]     ;
-  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      mrc__mmc__channel [`MGR_NUM_OF_STREAMS ]     ;
-  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      mrc__mmc__bank    [`MGR_NUM_OF_STREAMS ]     ;
-  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      mrc__mmc__page    [`MGR_NUM_OF_STREAMS ]     ;
-  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      mrc__mmc__word    [`MGR_NUM_OF_STREAMS ]     ;
+  // Request
+  wire                                           xxx__mmc__valid   [`MMC_CNTL_NUM_OF_INTF ]     ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      xxx__mmc__cntl    [`MMC_CNTL_NUM_OF_INTF ]     ;
+  wire                                           mmc__xxx__ready   [`MMC_CNTL_NUM_OF_INTF ]     ;
+  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      xxx__mmc__channel [`MMC_CNTL_NUM_OF_INTF ]     ;
+  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      xxx__mmc__bank    [`MMC_CNTL_NUM_OF_INTF ]     ;
+  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      xxx__mmc__page    [`MMC_CNTL_NUM_OF_INTF ]     ;
+  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      xxx__mmc__word    [`MMC_CNTL_NUM_OF_INTF ]     ;
                                                                           
+  //----------------------------------------------------------------------------------------------------
+  // Read Data
+  //
   // MMC provides data from each DRAM channel
   // - response must be in order of request
-  wire  [`MGR_NUM_OF_STREAMS_RANGE            ]                                 mmc__mrc__valid [`MGR_DRAM_NUM_CHANNELS ]                        ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mmc__mrc__cntl  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
-  wire  [`MGR_NUM_OF_STREAMS_RANGE            ]                                 mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ]                        ;
-  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] [`MGR_NUM_OF_STREAMS ] ;
+  wire  [`MMC_CNTL_NUM_OF_READ_INTF_VEC_RANGE  ]                                 mmc__xxx__valid [`MGR_DRAM_NUM_CHANNELS ]                        ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE           ]                                 mmc__xxx__cntl  [`MGR_DRAM_NUM_CHANNELS ] [`MMC_CNTL_NUM_OF_READ_INTF ] ;
+  wire  [`MMC_CNTL_NUM_OF_READ_INTF_VEC_RANGE  ]                                 xxx__mmc__ready [`MGR_DRAM_NUM_CHANNELS ]                        ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE  ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__xxx__data  [`MGR_DRAM_NUM_CHANNELS ] [`MMC_CNTL_NUM_OF_READ_INTF ] ;
 
 
   //----------------------------------------------------------------------------------------------------
-  // Write
-  wire                                                                          mwc__mmc__valid        [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mwc__mmc__cntl         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
-  wire                                                                          mmc__mwc__ready        [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
-  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__channel      [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
-  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mwc__mmc__bank         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
-  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 mwc__mmc__page         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
-  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 mwc__mmc__word         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
-                                                                                                        
-  wire                                                                          mwc__mmc__data_valid   [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
-  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__data_channel [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
-  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
-  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 mwc__mmc__data_mask    [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
-  wire                                                                          mmc__mwc__data_ready   [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  // Write Data
+  //
+  wire  [`MMC_CNTL_NUM_OF_WRITE_INTF_VEC_RANGE ]                                 xxx__mmc__data_valid                                  ;
+  wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE       ]                                 xxx__mmc__data_channel [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE  ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  xxx__mmc__data         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE  ]                                 xxx__mmc__data_mask    [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`MMC_CNTL_NUM_OF_WRITE_INTF_VEC_RANGE ]                                 mmc__xxx__data_ready                                  ;
                                                                                                      
 
   //----------------------------------------------------------------------------------------------------
   // DFI
-  wire                                                                          dfi__mmc__init_done                              ;
-  wire                                                                          dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE          ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire                                                                          mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire                                                                          mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire                                                                          mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]   ;
-  wire  [`MGR_DRAM_PHY_ADDRESS_RANGE          ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire                                                                           dfi__mmc__init_done                              ;
+  wire                                                                           dfi__mmc__valid      [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE           ]                                 dfi__mmc__cntl       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE  ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   dfi__mmc__data       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire                                                                           mmc__dfi__cs         [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire                                                                           mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire                                                                           mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE  ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE          ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_DRAM_PHY_ADDRESS_RANGE           ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]   ;
 
   main_mem_cntl main_mem_cntl (
 
@@ -495,33 +491,26 @@ module manager (
             // Main Memory Controller interface
             //
             // Read
-            .mrc__mmc__valid         ( mrc__mmc__valid        ),
-            .mrc__mmc__cntl          ( mrc__mmc__cntl         ),
-            .mmc__mrc__ready         ( mmc__mrc__ready        ),
-            .mrc__mmc__channel       ( mrc__mmc__channel      ),
-            .mrc__mmc__bank          ( mrc__mmc__bank         ),
-            .mrc__mmc__page          ( mrc__mmc__page         ),
-            .mrc__mmc__word          ( mrc__mmc__word         ),
+            .xxx__mmc__valid         ( xxx__mmc__valid        ),
+            .xxx__mmc__cntl          ( xxx__mmc__cntl         ),
+            .mmc__xxx__ready         ( mmc__xxx__ready        ),
+            .xxx__mmc__channel       ( xxx__mmc__channel      ),
+            .xxx__mmc__bank          ( xxx__mmc__bank         ),
+            .xxx__mmc__page          ( xxx__mmc__page         ),
+            .xxx__mmc__word          ( xxx__mmc__word         ),
                                                            
-            .mmc__mrc__valid         ( mmc__mrc__valid        ),
-            .mmc__mrc__cntl          ( mmc__mrc__cntl         ),
-            .mrc__mmc__ready         ( mrc__mmc__ready        ),
-            .mmc__mrc__data          ( mmc__mrc__data         ),
+            // Read Data
+            .mmc__xxx__valid         ( mmc__xxx__valid        ),
+            .mmc__xxx__cntl          ( mmc__xxx__cntl         ),
+            .xxx__mmc__ready         ( xxx__mmc__ready        ),
+            .mmc__xxx__data          ( mmc__xxx__data         ),
             
-            // Write
-            .mwc__mmc__valid         ( mwc__mmc__valid         ),                         
-            .mwc__mmc__cntl          ( mwc__mmc__cntl          ),                         
-            .mmc__mwc__ready         ( mmc__mwc__ready         ),                         
-            .mwc__mmc__channel       ( mwc__mmc__channel       ),                         
-            .mwc__mmc__bank          ( mwc__mmc__bank          ),                         
-            .mwc__mmc__page          ( mwc__mmc__page          ),                         
-            .mwc__mmc__word          ( mwc__mmc__word          ),                         
-
-            .mwc__mmc__data_valid    ( mwc__mmc__data_valid    ),                         
-            .mwc__mmc__data_channel  ( mwc__mmc__data_channel  ),                         
-            .mwc__mmc__data          ( mwc__mmc__data          ),                         
-            .mwc__mmc__data_mask     ( mwc__mmc__data_mask     ),                         
-            .mmc__mwc__data_ready    ( mmc__mwc__data_ready    ),                         
+            // Write Data
+            .xxx__mmc__data_valid    ( xxx__mmc__data_valid    ),                         
+            .xxx__mmc__data_channel  ( xxx__mmc__data_channel  ),                         
+            .xxx__mmc__data          ( xxx__mmc__data          ),                         
+            .xxx__mmc__data_mask     ( xxx__mmc__data_mask     ),                         
+            .mmc__xxx__data_ready    ( mmc__xxx__data_ready    ),                         
 
             //--------------------------------------------------------------------------------
             // DFI Interface
@@ -552,13 +541,13 @@ module manager (
   generate
     for (strm=0; strm<`MGR_NUM_OF_STREAMS; strm=strm+1) 
       begin: mrc_mmc_connect
-        assign    mrc__mmc__valid   [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__valid   ;
-        assign    mrc__mmc__cntl    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__cntl    ;
-        assign    mrc__mmc__channel [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__channel ;
-        assign    mrc__mmc__bank    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__bank    ;
-        assign    mrc__mmc__page    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__page    ;
-        assign    mrc__mmc__word    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__word    ;
-        assign    mrc_cntl_strm_inst[strm].mmc__mrc__ready =   mmc__mrc__ready   [strm]                   ;
+        assign    xxx__mmc__valid   [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__valid   ;
+        assign    xxx__mmc__cntl    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__cntl    ;
+        assign    xxx__mmc__channel [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__channel ;
+        assign    xxx__mmc__bank    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__bank    ;
+        assign    xxx__mmc__page    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__page    ;
+        assign    xxx__mmc__word    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__word    ;
+        assign    mrc_cntl_strm_inst[strm].mmc__mrc__ready =   mmc__xxx__ready   [strm]                   ;
       end
   endgenerate
   generate
@@ -566,10 +555,10 @@ module manager (
       begin: mmc_mrc_connect
         for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
           begin: mmc_mrc_chan_connect
-            assign    mrc_cntl_strm_inst[strm].mmc__mrc__valid[chan] =   mmc__mrc__valid  [chan] [strm]                   ;
-            assign    mrc_cntl_strm_inst[strm].mmc__mrc__cntl [chan] =   mmc__mrc__cntl   [chan] [strm]                   ;
-            assign    mrc_cntl_strm_inst[strm].mmc__mrc__data [chan] =   mmc__mrc__data   [chan] [strm]                   ;
-            assign    mrc__mmc__ready   [strm]                [chan] =   mrc_cntl_strm_inst[strm].mrc__mmc__ready[chan]   ;
+            assign    mrc_cntl_strm_inst[strm].mmc__mrc__valid[chan] =   mmc__xxx__valid  [chan] [strm]                   ;
+            assign    mrc_cntl_strm_inst[strm].mmc__mrc__cntl [chan] =   mmc__xxx__cntl   [chan] [strm]                   ;
+            assign    mrc_cntl_strm_inst[strm].mmc__mrc__data [chan] =   mmc__xxx__data   [chan] [strm]                   ;
+            assign    xxx__mmc__ready   [strm]                [chan] =   mrc_cntl_strm_inst[strm].mrc__mmc__ready[chan]   ;
           end
       end
   endgenerate
@@ -876,20 +865,20 @@ module manager (
             // to MMC                                              
                                                                    
             // Request                                             
-            .mwc__mmc__valid         ( mwc__mmc__valid        [0]  ),                         
-            .mwc__mmc__cntl          ( mwc__mmc__cntl         [0]  ),                         
-            .mmc__mwc__ready         ( mmc__mwc__ready        [0]  ),                         
-            .mwc__mmc__channel       ( mwc__mmc__channel      [0]  ),                         
-            .mwc__mmc__bank          ( mwc__mmc__bank         [0]  ),                         
-            .mwc__mmc__page          ( mwc__mmc__page         [0]  ),                         
-            .mwc__mmc__word          ( mwc__mmc__word         [0]  ),                         
+            .mwc__mmc__valid         ( xxx__mmc__valid        [2]  ),  // [2] because interfaces [0:1] go to MRC
+            .mwc__mmc__cntl          ( xxx__mmc__cntl         [2]  ),                         
+            .mmc__mwc__ready         ( mmc__xxx__ready        [2]  ),                         
+            .mwc__mmc__channel       ( xxx__mmc__channel      [2]  ),                         
+            .mwc__mmc__bank          ( xxx__mmc__bank         [2]  ),                         
+            .mwc__mmc__page          ( xxx__mmc__page         [2]  ),                         
+            .mwc__mmc__word          ( xxx__mmc__word         [2]  ),                         
                                                                    
             // Write Data                                          
-            .mwc__mmc__data_valid    ( mwc__mmc__data_valid   [0]  ),                         
-            .mwc__mmc__data_channel  ( mwc__mmc__data_channel [0]  ),                         
-            .mwc__mmc__data          ( mwc__mmc__data         [0]  ),                         
-            .mwc__mmc__data_mask     ( mwc__mmc__data_mask    [0]  ),                         
-            .mmc__mwc__data_ready    ( mmc__mwc__data_ready   [0]  ),                         
+            .mwc__mmc__data_valid    ( xxx__mmc__data_valid   [0]  ),  // [0] because only one write interface 
+            .mwc__mmc__data_channel  ( xxx__mmc__data_channel [0]  ),                         
+            .mwc__mmc__data          ( xxx__mmc__data         [0]  ),                         
+            .mwc__mmc__data_mask     ( xxx__mmc__data_mask    [0]  ),                         
+            .mmc__mwc__data_ready    ( mmc__xxx__data_ready   [0]  ),                         
                                                                                            
                                                                    
             //-------------------------------                      
