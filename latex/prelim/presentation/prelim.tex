@@ -1,0 +1,525 @@
+% Sample file: math.tex
+\documentclass{article}
+\usepackage{mathtools}% http://ctan.org/pkg/mathtools
+\usepackage{amsmath}
+\usepackage{mathtools}
+
+\usepackage{geometry} 
+\usepackage{units}
+\usepackage[binary-units=true]{siunitx}
+\usepackage{pst-plot}
+\usepackage{pgfplots}
+
+% axis style
+\pgfplotsset{every axis/.append style={
+                    axis x line=middle,    % put the x axis in the middle
+                    axis y line=middle,    % put the y axis in the middle
+                    axis line style={<->}, % arrows on the axis
+                    xlabel={$x$},          % default put x on x-axis
+                    ylabel={$y$},          % default put y on y-axis
+                    }}
+% grid style
+\pgfplotsset{
+  grid style = {
+    dash pattern = on 0.05mm off 1mm,
+    line cap = round,
+    black,
+    line width = 0.5pt
+  }
+}
+% line style
+\pgfplotsset{myBlueStyle/.style={color=blue,no marks,line width=1pt,<->}} 
+\pgfplotsset{myBlueStyle/.style={color=blue,no marks,line width=1pt,-}} 
+\pgfplotsset{myBlueThickStyle/.style={color=blue,no marks,line width=2pt,-}} 
+\pgfplotsset{myBlackThickStyle/.style={color=black,no marks,line width=2pt,-}} 
+
+% arrow style: stealth stands for 'stealth fighter' 
+\tikzset{>=stealth}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\geometry{paperwidth=0.5in,paperheight=0.5in}  
+\geometry{left=0.1in,right=0.1in}  
+\geometry{top=0.1in,bottom=0.1in}  
+\pagenumbering{gobble}
+
+ \begin{document}
+ \begin{flushleft}
+
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{flalign*}
+f(x) \nonumber
+\end{flalign*}
+
+\newpage
+\eject \pdfpagewidth=1in \pdfpageheight=1in
+\begin{flalign*}
+v'=f(v,u,x) \nonumber \\
+u'=f(v,u) \nonumber
+\end{flalign*}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+\sum \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=2.25in
+\begin{equation}
+\begin{split}
+\begin{cases}
+    {}\\           
+    {}\\           
+    {}\\           
+    {}\\           
+    {}\\           
+    {}\\           
+    {}\\           
+    {}\\           
+    {}\\           
+\end{cases} \nonumber
+\end{split}
+\end{equation}
+
+% Layer 0 weights
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{0,0}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{i,0}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{I,0}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{0,j}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{i,j}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{I,j}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{0,J}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{i,J}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{I,J}^0 \nonumber
+\end{split}
+\end{equation}
+
+% Layer 1 weights
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{0,0}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{l,0}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{L,0}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{0,m}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{l,m}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{L,m}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{0,M}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{l,M}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+w_{L,M}^1 \nonumber
+\end{split}
+\end{equation}
+
+
+% Layer 0 Delays
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{0,0}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{i,0}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{I,0}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{0,j}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{i,j}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{I,j}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{0,J}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{i,J}^0 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{I,J}^0 \nonumber
+\end{split}
+\end{equation}
+
+% Layer 1 Delays
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{0,0}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{l,0}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{L,0}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{0,m}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{l,m}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{L,m}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{0,M}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{l,M}^1 \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=0.5in \pdfpageheight=0.75in
+\begin{equation}
+\begin{split}
+d_{L,M}^1 \nonumber
+\end{split}
+\end{equation}
+
+%
+\newpage
+\eject \pdfpagewidth=1.5in \pdfpageheight=1in
+\begin{equation}
+\label{eq:ReLuMax}
+\begin{split}
+\text{ReLu} &= \max{(0,x)} \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=2in \pdfpageheight=1in
+\begin{equation}
+\label{eq:ReLuCases}
+\begin{split}
+f(x)=
+\begin{cases}
+    0,      &\text{if $x < 0$;}\\           
+    x,       &\text{otherwise. \nonumber}             
+\end{cases}
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=1.5in \pdfpageheight=1in
+\begin{equation}
+\label{eq:Sigmoid}
+\begin{split}
+f(x)= \frac{1}{1+e^{-t}} \nonumber
+\end{split}
+\end{equation}
+
+\newpage
+\eject \pdfpagewidth=5in \pdfpageheight=3in
+\begin{tikzpicture}
+    \begin{axis}[
+        title={Sigmoid},
+        %grid = major,
+        xmin=-6,xmax=6,
+        ymin=0,ymax=1,
+        legend style={draw=none, fill=white},      
+        legend pos= outer north east
+        ]
+        \addplot[myBlueThickStyle] expression[domain=-6:6,samples=100]{1/(1+e^(-x))} 
+                    node at (axis cs:3,0.7){}; 
+        \legend{{\large $f(x)=\frac{1}{1+e^{-t}}$}}
+    \end{axis}
+\end{tikzpicture}
+
+
+\newpage
+\eject \pdfpagewidth=6in \pdfpageheight=3in
+\begin{tikzpicture}
+    \begin{axis}[
+        title={ReLu},
+        xmin=-1,xmax=1,
+        ymin=0,ymax=1,
+        legend style={draw=none, fill=white},      
+        legend pos= outer north east
+        ]
+        \addplot[myBlueThickStyle] expression[domain=0:1,samples=100]{x} node at (axis cs:0.6,0.15){}; 
+         \addplot[myBlueThickStyle] expression[domain=-1:0,samples=100]{0};       
+         \legend  {{ $f(x)= \begin{cases} 0,      &\text{if $x < 0$;}\\   x,       &\text{otherwise.}  \end{cases}$}}  
+    \end{axis}
+\end{tikzpicture}
+
+\newpage
+\eject \pdfpagewidth=6in \pdfpageheight=3in
+\begin{tikzpicture}
+    \begin{axis}[
+        title={Saturation},
+        xmin=-2,xmax=2,
+        ymin=-1.5,ymax=1.5,
+        legend style={draw=none, fill=white},      
+        legend pos= outer north east
+        ]
+        \addplot[myBlueThickStyle] expression[domain=-1:1,samples=100]{x} node at (axis cs:0.6,0.15){}; 
+         \addplot[myBlueThickStyle] expression[domain=-2:-1,samples=100]{-1};       
+         \addplot[myBlueThickStyle] expression[domain=1:2,samples=100]{1};       
+         \legend  {{ $f(x)= \begin{cases} 1,      &\text{if $x \ge 1$;}\\ x,      &\text{if $-1<x<1$;}\\  -1,      &\text{if $x \le -1$;} \end{cases}$}}  
+    \end{axis}
+\end{tikzpicture}
+
+\newpage
+\eject \pdfpagewidth=3in \pdfpageheight=1.5in
+\begin{equation}
+\label{eq:Izhikevich}
+\begin{split}
+&v' = 0.04v^2+5v + 140 - u - I\\
+&u' = a(bv-u)  \\
+&\text{if } v\ge  \SI{30}{\mV}, \text{ then } 
+\begin{cases}
+    v \leftarrow c\\           
+    u \leftarrow u+d\\           
+\end{cases} \nonumber
+\end{split}
+\end{equation}
+
+
+\newpage
+\eject \pdfpagewidth=3in \pdfpageheight=1.5in
+\begin{equation}
+\begin{split}
+&\text{Izhikevich Model} \\
+&v' = 0.04v^2+5v + 140 - u - I\\
+&u' = a(bv-u)  \\
+&\text{if } v\ge  \SI{30}{\mV}, \text{ then } 
+\begin{cases}
+    v \leftarrow c\\           
+    u \leftarrow u+d\\           
+\end{cases} \nonumber
+\end{split}
+\end{equation}
+
+
+
+\newpage
+\eject \pdfpagewidth=8in \pdfpageheight=1in
+\begin{equation}
+\label{eq:e1}
+\begin{split}
+f(x) \overset{ \text{def} }{=} x^{2} - 1 = 
+\overbrace{a + b + \cdots + z}^{n}
+\end{split}
+\end{equation}
+
+\begin{equation}
+\label{eq:e2}
+\begin{split}
+f(x)=
+\begin{cases}
+    -x^{2},      &\text{if $x < 0$;}\\           
+    \alpha + x,  &\text{if $0 \leq x \leq 1$;}\\
+    x^{2},       &\text{otherwise.}             
+\end{cases}
+\end{split}
+\end{equation}
+
+
+ \end{flushleft}
+ \end{document}
+  
+ 

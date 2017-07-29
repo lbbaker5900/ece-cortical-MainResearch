@@ -1,0 +1,94 @@
+% Sample file: math.tex
+\documentclass{article}
+\usepackage{mathtools}% http://ctan.org/pkg/mathtools
+%\usepackage{amsmath}
+\usepackage{geometry} 
+\usepackage{units}
+\usepackage[binary-units=true]{siunitx}
+\usepackage{caption}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\geometry{paperwidth=3in,paperheight=2.00in}  
+\geometry{left=0.1in,right=0.1in}  
+\geometry{top=0.1in,bottom=0.1in}  
+
+ \begin{document}
+ \begin{flushleft}
+
+
+ \eject \pdfpagewidth=6in \pdfpageheight=1.75in
+ 
+ \begin{table}[ht]
+\caption*{DiRAM4 Energy}
+\centering
+\begin{tabular}{c c }
+%\begin{tabular}{| c | c | c | c | c | c |}
+\hline\hline
+Operation & Energy (pJ) \\
+\hline
+Page Open & 100 \\
+Page Close &  320 \\
+Page Read/Write & 64 \\
+NOP & 20 \\
+Page Refresh & 320 \\ [1ex]
+ \hline
+\end{tabular}
+\label{table:DiRAM4 Energy}
+\end{table}
+
+ \newpage
+ \eject \pdfpagewidth=3in \pdfpageheight=2in
+ 
+\begin{table}[ht]
+\caption*{DiRAM4 Read Sequence}
+\centering
+\begin{tabular}{c c c c c c c c}
+%\begin{tabular}{| c | c | c | c | c | c |}
+\hline\hline
+Operation & Number \\
+\hline
+Page Open & 32 \\
+Page Close & 32 \\
+Page Read & 32 \\
+NOP & 32 \\ [1ex]
+ \hline
+\end{tabular}
+\label{table:DRAM Read Sequence}
+\end{table}
+
+ \newpage
+
+\eject \pdfpagewidth=6.5in \pdfpageheight=1.5in
+\begin{alignat}{2}
+\label{eq:Energy per Cycle}
+\text{Average energy per cycle per port} (pJ) &= \frac{\text{\#PO's} \cdot E_{po}+\text{\#PC's} \cdot E_{pc}+\text{\#Read's} \cdot E_{cr}+\text{\#NOP's} \cdot E_{no}}{\text{Total number of cycles}}  \nonumber \\
+ &= \frac{32 \cdot 100+32 \cdot 320+32 \cdot 64+32 \cdot 20}{128}  \nonumber \\
+ &=\SI{126}{\pico\joule} \nonumber
+\end{alignat}
+
+\newpage
+\eject \pdfpagewidth=3in \pdfpageheight=1.5in
+\begin{alignat}{2}
+%\label{eq:Maximum Power}
+\text{Maximum Power} &= \frac{energy}{cycle} \cdot \frac{cycles}{sec} \cdot ports \nonumber \\
+ &=\num{126d-12} \cdot \num{2d9} \cdot 64 \nonumber \\
+ &= \SI{16.12}{\watt} \nonumber
+\end{alignat}
+
+\newpage
+\eject \pdfpagewidth=3in \pdfpageheight=1in
+\begin{alignat}{2}
+%\label{eq:Maximum Power}
+\text{Actual Power} &\approx \frac{\text{54Tbps}}{\text{131Tbps}} \cdot 16.12 =  \SI{6.65}{\watt}\nonumber
+\end{alignat}
+
+\newpage
+
+
+
+ \end{flushleft}
+ \end{document}
+  
+ 
