@@ -93,10 +93,10 @@ module sdp_request_cntl (
   reg                                            sdp__xxx__mem_request_valid_e1      ;
   reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      sdp__xxx__mem_request_cntl_e1       ;
   reg                                            xxx__sdp__mem_request_ready_d1      ;
-  reg   [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      sdp__xxx__mem_request_channel_e1    ;
-  reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      sdp__xxx__mem_request_bank_e1       ;
-  reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE    ]      sdp__xxx__mem_request_page_e1       ;
-  reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE    ]      sdp__xxx__mem_request_word_e1       ;
+  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      sdp__xxx__mem_request_channel_e1    ;
+  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      sdp__xxx__mem_request_bank_e1       ;
+  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      sdp__xxx__mem_request_page_e1       ;
+  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      sdp__xxx__mem_request_word_e1       ;
 
 
 
@@ -157,7 +157,7 @@ module sdp_request_cntl (
   wire                                                     consJumpMemory_som_eom     ;
   wire                                                     consJumpMemory_eom         ;
   reg                                                      first_time_thru            ;  // need to make sure for the first cycle we request the starting bank/page
-  reg                                                      force_request              ;  // Used when the consequtive addresses are in the same line and the PBLC address starts and finishes
+  reg                                                      force_channel_request      ;  // Used when the consequtive addresses are in the same line and the PBLC address starts and finishes
                                                                                          // on the same channel ID. This condition would generate only the initial request unless we force the other channel to be requested
                                                                                          // Need to make sure we maintain the order
   reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  storage_desc_consJumpPtr   ;
@@ -223,7 +223,7 @@ module sdp_request_cntl (
         // Make sure we transition right thru this state
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA : 
        //   sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB   ;
-          sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC      ;
+          sdp_cntl_proc_storage_desc_state_next =                           `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC      ;
 
        // `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB : 
        //   sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC      ;
@@ -254,7 +254,7 @@ module sdp_request_cntl (
         // CHeck if last_end != inc. If so, generate requests and set last_end = inc
         `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC: 
           sdp_cntl_proc_storage_desc_state_next =  ( first_time_thru                              ) ? `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO       :  // we will get here first time thru after the initial request
-                                                   ( generate_requests                            ) ? `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA      :
+                                                   ( generate_requests || force_channel_request   ) ? `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA      :
                                                    ( requests_complete  && ~consJumpMemory_eom    ) ? `SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD            :
                                                    ( requests_complete  &&  consJumpMemory_eom    ) ? `SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE  :
                                                                                                       `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC               ;
@@ -339,28 +339,36 @@ module sdp_request_cntl (
     reg  [`MGR_DRAM_PBC_RANGE               ]    pbc_last_end_addr    ;  // last requested. Use to check for changes during increment
   `endif
  
-  reg  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE    ]    mem_start_channel   ;
-  reg  [ `MGR_DRAM_BANK_ADDRESS_RANGE       ]    mem_start_bank      ;
-  reg  [ `MGR_DRAM_PAGE_ADDRESS_RANGE       ]    mem_start_page      ;
-  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE       ]    mem_start_word      ;
+  reg  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE    ]    mem_start_channel   ;
+  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE       ]    mem_start_bank      ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE       ]    mem_start_page      ;
+  reg  [`MGR_DRAM_WORD_ADDRESS_RANGE       ]    mem_start_word      ;
   `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-    reg  [ `MGR_DRAM_LINE_ADDRESS_RANGE     ]    mem_start_line      ;
+    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE     ]    mem_start_line      ;
   `endif
 
-  reg  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE    ]    mem_end_channel       ;  // formed address in access order for incrementing
-  reg  [ `MGR_DRAM_BANK_ADDRESS_RANGE       ]    mem_end_bank          ;
-  reg  [ `MGR_DRAM_PAGE_ADDRESS_RANGE       ]    mem_end_page          ;
-  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE       ]    mem_end_word          ;
+  reg  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE    ]    mem_end_channel       ;  // formed address in access order for incrementing
+  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE       ]    mem_end_bank          ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE       ]    mem_end_page          ;
+  reg  [`MGR_DRAM_WORD_ADDRESS_RANGE       ]    mem_end_word          ;
   `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-    reg  [ `MGR_DRAM_LINE_ADDRESS_RANGE     ]    mem_end_line          ;
+    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE     ]    mem_end_line          ;
   `endif
 
-  reg  [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE    ]    mem_last_end_channel       ;  // formed address in access order for incrementing
-  reg  [ `MGR_DRAM_BANK_ADDRESS_RANGE       ]    mem_last_end_bank          ;
-  reg  [ `MGR_DRAM_PAGE_ADDRESS_RANGE       ]    mem_last_end_page          ;
-  reg  [ `MGR_DRAM_WORD_ADDRESS_RANGE       ]    mem_last_end_word          ;
+  reg  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE    ]    mem_last_end_channel       ;  // formed address in access order for incrementing
+  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE       ]    mem_last_end_bank          ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE       ]    mem_last_end_page          ;
+  reg  [`MGR_DRAM_WORD_ADDRESS_RANGE       ]    mem_last_end_word          ;
   `ifdef  MGR_DRAM_REQUEST_LT_PAGE
-    reg  [ `MGR_DRAM_LINE_ADDRESS_RANGE     ]    mem_last_end_line          ;
+    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE     ]    mem_last_end_line          ;
+  `endif
+
+  // Keep track of the last channel requested address 
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    channel_last_requested_valid                          ;
+  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE        ]    channel_last_requested_bank [`MGR_DRAM_NUM_CHANNELS ] ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]    channel_last_requested_page [`MGR_DRAM_NUM_CHANNELS ] ;
+  `ifdef  MGR_DRAM_REQUEST_LT_PAGE          
+    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE      ]    channel_last_requested_line [`MGR_DRAM_NUM_CHANNELS ] ;
   `endif
 
   always @(posedge clk)
@@ -382,31 +390,43 @@ module sdp_request_cntl (
         `SDP_CNTL_PROC_STORAGE_DESC_WAIT:
            begin
              first_time_thru <= 1'b1 ;
-             force_request   <= 1'b0   ;
+             force_channel_request   <= 1'b0   ;
            end
 
         `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC:
            begin
              first_time_thru <= first_time_thru ;
-             force_request   <= 1'b0   ;
+             force_channel_request   <= 1'b0   ;
            end
 
         `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD:
            begin
-             first_time_thru <= 1'b0 ;
-             force_request   <= 1'b0   ;
+             first_time_thru <= first_time_thru ;
+             force_channel_request   <= 1'b0   ;
            end
 
         `SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES:
            begin
+             first_time_thru <= 1'b0 ;
+             force_channel_request   <= (consJumpMemory_value > 0) & 
+                                        `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                                          pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] & 
+                                        `else
+                                          pbc_inc_addr [`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] & 
+                                        `endif
+                                        (mem_start_page == mem_end_page) & (mem_start_bank == mem_end_bank) & (mem_start_line == mem_end_line) ;
+           end
+
+        `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA:
+           begin
              first_time_thru <= first_time_thru ;
-             force_request   <= (consJumpMemory_value > 0) & (mem_start_page == mem_end_page) & (mem_start_bank == mem_end_bank) & (mem_start_line == mem_end_line) ;
+             force_channel_request   <= 1'b0 ;
            end
 
         default:
            begin
              first_time_thru <= first_time_thru ;
-             force_request   <= force_request   ;
+             force_channel_request   <= force_channel_request   ;
            end
       endcase
     end
@@ -622,7 +642,11 @@ module sdp_request_cntl (
                    `ifdef  MGR_DRAM_REQUEST_LT_PAGE
                      if ((consJumpMemory_value > 0) && (mem_start_page == mem_end_page) && (mem_start_bank == mem_end_bank) && (mem_start_line == mem_end_line))
                        begin
-                         pbc_inc_addr    <=  {mem_end_page, mem_end_bank, mem_end_line, mem_end_channel} ;
+                         pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ];
+                         pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ];
+                         pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ];
+                         pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ];
+                         //pbc_inc_addr    <=  {mem_end_page, mem_end_bank, mem_end_line, mem_end_channel} ;  // FIXME
                        end
                      else
                        begin
@@ -648,12 +672,68 @@ module sdp_request_cntl (
 
         `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC:
            begin
-             pbc_inc_addr    <=  (~generate_requests) ? pbc_inc_addr + 'd1 : pbc_inc_addr  ;
+             //pbc_inc_addr    <=  (~generate_requests && ~force_channel_request) ? pbc_inc_addr + 'd1 : pbc_inc_addr  ;
+             case ({force_channel_request, generate_requests})  // 
+               2'b00:
+                 begin
+                   pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
+                 end
+               2'b01:
+                 begin
+                   pbc_inc_addr    <=  pbc_inc_addr  ;
+                 end
+               2'b10:
+                 begin
+                   pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ];
+                   pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ];  // invert channel
+                   pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ];
+                   pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ];
+                 end
+               2'b11:
+                 begin
+                   pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ];
+                   pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ];  // invert channel
+                   pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ];
+                   pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ];
+                 end
+               default:
+                 begin
+                   pbc_inc_addr    <=  pbc_inc_addr  ;
+                 end
+             endcase
            end
 
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA:
            begin
-             pbc_inc_addr    <=  (~requests_complete) ? pbc_inc_addr + 'd1 : pbc_inc_addr  ;
+             //pbc_inc_addr    <=  (~requests_complete && ~force_channel_request) ? pbc_inc_addr + 'd1 : pbc_inc_addr  ;
+             case ({force_channel_request, requests_complete})  // sysnopsys parallel_case
+               2'b00:
+                 begin
+                   pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
+                 end
+               2'b01:
+                 begin
+                   pbc_inc_addr    <=  pbc_inc_addr  ;
+                 end
+               2'b10:
+                 begin
+                   pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ];
+                   pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ];  // invert channel
+                   pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ];
+                   pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ];
+                 end
+               2'b11:
+                 begin
+                   pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ];
+                   pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ];  // invert channel
+                   pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ];
+                   pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ];
+                 end
+               default:
+                 begin
+                   pbc_inc_addr    <=  pbc_inc_addr  ;
+                 end
+             endcase
            end
 
         default:
@@ -1009,6 +1089,21 @@ module sdp_request_cntl (
       `endif
     end
 
+
+  generate
+    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
+      begin: chan_last_requested
+        always @(posedge clk)
+          begin
+            channel_last_requested_valid [chan]      <=   create_mem_request  & ( pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] == chan) ;
+            channel_last_requested_bank  [chan]      <= ( create_mem_request && ( pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] == chan)) ? pbc_inc_addr[`MGR_DRAM_PBCL_BANK_FIELD_RANGE ] : channel_last_requested_bank [chan] ;
+            channel_last_requested_page  [chan]      <= ( create_mem_request && ( pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] == chan)) ? pbc_inc_addr[`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ] : channel_last_requested_page [chan] ;
+            `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                 channel_last_requested_line [chan]  <= ( create_mem_request && ( pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] == chan)) ? pbc_inc_addr[`MGR_DRAM_PBCL_LINE_FIELD_RANGE ] : channel_last_requested_line [chan] ;
+            `endif  
+          end
+      end
+  endgenerate
 
   always @(*)
     begin

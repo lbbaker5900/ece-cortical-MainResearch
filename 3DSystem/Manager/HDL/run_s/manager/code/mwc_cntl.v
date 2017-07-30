@@ -66,6 +66,7 @@ module mwc_cntl (
 
             // Data associated with request (note: dont forget it needs to be in the same order as the request)
             output  reg                                                                           mwc__mmc__data_valid    ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE           ]                                mwc__mmc__data_cntl     ,
             output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__data_channel  ,
             output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data          ,
             output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 mwc__mmc__data_mask     ,
@@ -992,6 +993,7 @@ module mwc_cntl (
         `MWC_CNTL_PTR_DATA_RCV_FLUSH_1ST_HOLDING_REG :
           begin
             mwc__mmc__data_valid     <=  held_valid [ channel_released_first  ] ;
+            mwc__mmc__data_cntl      <=  `COMMON_STD_INTF_CNTL_SOM_EOM          ;
             mwc__mmc__data_channel   <=  channel_released_first                 ;
             mwc__mmc__data           <=  held_data  [ channel_released_first  ] ;
             mwc__mmc__data_mask      <=  held_mask  [ channel_released_first  ] ;
@@ -1000,6 +1002,7 @@ module mwc_cntl (
         `MWC_CNTL_PTR_DATA_RCV_FLUSH_2ND_HOLDING_REG :
           begin
             mwc__mmc__data_valid     <=  held_valid [ channel_released_second ] ;
+            mwc__mmc__data_cntl      <=  `COMMON_STD_INTF_CNTL_SOM_EOM          ;
             mwc__mmc__data_channel   <=  channel_released_second                ;
             mwc__mmc__data           <=  held_data  [ channel_released_second ] ;
             mwc__mmc__data_mask      <=  held_mask  [ channel_released_second ] ;

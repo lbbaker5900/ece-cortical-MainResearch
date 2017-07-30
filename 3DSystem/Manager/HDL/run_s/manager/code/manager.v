@@ -443,9 +443,10 @@ module manager (
   //
   //----------------------------------------------------------------------------------------------------
   // Request
-  wire                                           xxx__mmc__valid   [`MMC_CNTL_NUM_OF_INTF ]     ;
+  wire  [`MMC_CNTL_NUM_OF_INTF_VEC_RANGE  ]      xxx__mmc__valid                                ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      xxx__mmc__cntl    [`MMC_CNTL_NUM_OF_INTF ]     ;
-  wire                                           mmc__xxx__ready   [`MMC_CNTL_NUM_OF_INTF ]     ;
+//  wire  [`MMC_CNTL_NUM_OF_INTF_VEC_RANGE  ]      xxx__mmc__read                                 ;
+  wire  [`MMC_CNTL_NUM_OF_INTF_VEC_RANGE  ]      mmc__xxx__ready                                ;
   wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      xxx__mmc__channel [`MMC_CNTL_NUM_OF_INTF ]     ;
   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      xxx__mmc__bank    [`MMC_CNTL_NUM_OF_INTF ]     ;
   wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      xxx__mmc__page    [`MMC_CNTL_NUM_OF_INTF ]     ;
@@ -466,6 +467,7 @@ module manager (
   // Write Data
   //
   wire  [`MMC_CNTL_NUM_OF_WRITE_INTF_VEC_RANGE ]                                 xxx__mmc__data_valid                                  ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE           ]                                 xxx__mmc__data_cntl    [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
   wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE       ]                                 xxx__mmc__data_channel [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE  ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  xxx__mmc__data         [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE  ]                                 xxx__mmc__data_mask    [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
@@ -490,8 +492,9 @@ module manager (
             //--------------------------------------------------------------------------------
             // Main Memory Controller interface
             //
-            // Read
+            // Requests
             .xxx__mmc__valid         ( xxx__mmc__valid        ),
+            .xxx__mmc__read          ( {1'b0, 1'b1, 1'b1}     ),  // mwc, mrc1, mrc0
             .xxx__mmc__cntl          ( xxx__mmc__cntl         ),
             .mmc__xxx__ready         ( mmc__xxx__ready        ),
             .xxx__mmc__channel       ( xxx__mmc__channel      ),
@@ -507,6 +510,7 @@ module manager (
             
             // Write Data
             .xxx__mmc__data_valid    ( xxx__mmc__data_valid    ),                         
+            .xxx__mmc__data_cntl     ( xxx__mmc__data_cntl     ),                         
             .xxx__mmc__data_channel  ( xxx__mmc__data_channel  ),                         
             .xxx__mmc__data          ( xxx__mmc__data          ),                         
             .xxx__mmc__data_mask     ( xxx__mmc__data_mask     ),                         
@@ -875,6 +879,7 @@ module manager (
                                                                    
             // Write Data                                          
             .mwc__mmc__data_valid    ( xxx__mmc__data_valid   [0]  ),  // [0] because only one write interface 
+            .mwc__mmc__data_cntl     ( xxx__mmc__data_cntl    [0]  ),                         
             .mwc__mmc__data_channel  ( xxx__mmc__data_channel [0]  ),                         
             .mwc__mmc__data          ( xxx__mmc__data         [0]  ),                         
             .mwc__mmc__data_mask     ( xxx__mmc__data_mask    [0]  ),                         
