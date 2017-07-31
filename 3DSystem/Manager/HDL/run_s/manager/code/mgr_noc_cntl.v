@@ -951,6 +951,8 @@ module mgr_noc_cntl (
         
               `include "mgr_noc_cntl_noc_port_output_control_fsm_state_transitions.vh"
 
+               default:
+                 nc_port_toNoc_state_next = `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT  ; 
             endcase // 
           end // always @ (*)
     
@@ -1084,6 +1086,10 @@ module mgr_noc_cntl (
       case (nc_local_inq_cntl_state)
 
         `include "mgr_noc_cntl_noc_local_inq_control_fsm_state_transitions.vh"
+
+
+        default:
+             nc_local_inq_cntl_state_next =  `MGR_NOC_CONT_LOCAL_INQ_CNTL_WAIT ;
 
       endcase // case(nc_local_inq_cntl_state)
 
