@@ -229,6 +229,18 @@ module top;
                 assign  clk_diram_cq    [mgr] = {`MGR_DRAM_CLK_GROUP_WIDTH {cq  }} ;
               end
         end
+      else
+        begin : diram
+            for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1) 
+              begin : diram_port_arrays
+ 
+                wire  qvld = 'd0;
+                wire  cq   = clk;
+                
+                assign  phy__dfi__valid [mgr] = {`MGR_DRAM_CLK_GROUP_WIDTH {qvld}} ;
+                assign  clk_diram_cq    [mgr] = {`MGR_DRAM_CLK_GROUP_WIDTH {cq  }} ;
+              end
+        end
     endgenerate
     
     //-------------------------------------------------------------------------------------------

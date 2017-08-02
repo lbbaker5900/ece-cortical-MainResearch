@@ -105,9 +105,10 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
     `include "generic_memories.vh"
 
   `else
-// FIXME: why did I have to do this?????  why didnt the if PARAMETER work?
-        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [4096-1 :0 ] ;
-    // Not synthesis
+    // FIXME: why did I have to do this?????  why didnt the if PARAMETER work?
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
+    //reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [4096-1 :0 ] ;
+
     if (GENERIC_MEM_DEPTH >= 4096)
       begin
         reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [4096-1 :0 ] ;

@@ -223,7 +223,8 @@ module sdp_request_cntl (
         // Make sure we transition right thru this state
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA : 
        //   sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB   ;
-          sdp_cntl_proc_storage_desc_state_next =                           `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC      ;
+          sdp_cntl_proc_storage_desc_state_next =     (xxx__sdp__mem_request_ready_d1) ? `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC          :  // do not generate request if not ready
+                                                                                         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA ;
 
        // `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHB : 
        //   sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC      ;
@@ -420,7 +421,7 @@ module sdp_request_cntl (
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA:
            begin
              first_time_thru <= first_time_thru ;
-             force_channel_request   <= 1'b0 ;
+             force_channel_request   <= (xxx__sdp__mem_request_ready_d1) ? 1'b0 : force_channel_request   ;  // only clear if request can go
            end
 
         default:
@@ -434,7 +435,7 @@ module sdp_request_cntl (
   reg create_mem_request ;
   always @(*)
     begin 
-      create_mem_request  = ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA  ))  ; //|
+      create_mem_request  = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA ) & xxx__sdp__mem_request_ready_d1  ; //|
     end
 
 `ifdef  MGR_DRAM_REQUEST_LT_PAGE
@@ -706,23 +707,27 @@ module sdp_request_cntl (
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA:
            begin
              //pbc_inc_addr    <=  (~requests_complete && ~force_channel_request) ? pbc_inc_addr + 'd1 : pbc_inc_addr  ;
-             case ({force_channel_request, requests_complete})  // sysnopsys parallel_case
-               2'b00:
-                 begin
-                   pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
-                 end
-               2'b01:
+             casex ({xxx__sdp__mem_request_ready_d1, force_channel_request, requests_complete})  // sysnopsys parallel_case
+               3'b0xx:
                  begin
                    pbc_inc_addr    <=  pbc_inc_addr  ;
                  end
-               2'b10:
+               3'b100:
+                 begin
+                   pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
+                 end
+               3'b101:
+                 begin
+                   pbc_inc_addr    <=  pbc_inc_addr  ;
+                 end
+               3'b110:
                  begin
                    pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ];
                    pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ];  // invert channel
                    pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_BANK_FIELD_RANGE ];
                    pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ];
                  end
-               2'b11:
+               3'b111:
                  begin
                    pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_LINE_FIELD_RANGE ];
                    pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ]   <=  pbc_inc_addr [`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ];  // invert channel
@@ -824,6 +829,70 @@ module sdp_request_cntl (
       begin: chan_requested
         always @(posedge clk)
           begin
+            case (sdp_cntl_proc_storage_desc_state)  // synopsys parallel_case
+              `SDP_CNTL_PROC_STORAGE_DESC_WAIT :
+                begin
+                  channel_requested[chan]    <=  1'b0    ;
+                end
+
+              `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS :
+                begin
+                  channel_requested[chan]    <= (mem_start_bank != mem_last_end_bank) ? 1'b0                    :
+                                                (mem_start_page != mem_last_end_page) ? 1'b0                    :
+                                                                                        channel_requested[chan] ;
+                end
+
+              `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC :
+                begin
+                  if (generate_requests) 
+                    begin
+                      channel_requested[chan]    <= (bank_change                                                               ) ? 1'b0                    :
+                                                    (page_change                                                               ) ? 1'b0                    :
+                                                    `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                                                      ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) && line_change ) ? 1'b0                    :
+                                                    `endif
+                                                                                                                                   channel_requested[chan] ;
+                    end
+                  else
+                    begin
+                      channel_requested[chan]    <=  channel_requested[chan]  ;
+                    end
+                end
+
+              `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA :
+                begin
+                  // if we are about to request <chan>, make sure it hasnt been requested already with this bank and page
+                  if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
+                    begin
+                      `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                        channel_requested[chan]    <=  (pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] == chan) ? 1'b1                    :
+                                                                                                                  channel_requested[chan] ;
+                      `else
+                        channel_requested[chan]    <=  (pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] == chan) ? 1'b1                    :
+                                                                                                                 channel_requested[chan] ;
+                      `endif
+                    end
+                  else if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
+                    begin
+                      `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                        channel_requested[chan]    <=  (pbc_inc_addr[`MGR_DRAM_PBLC_CHAN_FIELD_RANGE ] == chan) ? 1'b1                    :
+                                                                                                                  channel_requested[chan] ;
+                      `else
+                        channel_requested[chan]    <=  (pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] == chan) ? 1'b1                    :
+                                                                                                                 channel_requested[chan] ;
+                      `endif
+                    end
+                  else
+                    begin
+                      channel_requested[chan]    <=  channel_requested[chan]  ;
+                    end
+                end
+
+              default:
+                begin
+                  channel_requested[chan]    <=  channel_requested[chan]  ;
+                end
+/*
             if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT )
               begin
                 channel_requested[chan]    <=  1'b0    ;
@@ -868,6 +937,10 @@ module sdp_request_cntl (
                   end
               end
           end
+*/
+
+            endcase
+          end
       end
   endgenerate
 
@@ -882,7 +955,7 @@ module sdp_request_cntl (
               begin
                 line_requested[line]    <=  1'b0    ;
               end
-            if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS )
+            else if (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS )
               begin
                 line_requested[line]    <= (mem_start_bank    != mem_last_end_bank   ) ? 1'b0                 :
                                            (mem_start_page    != mem_last_end_page   ) ? 1'b0                 :
