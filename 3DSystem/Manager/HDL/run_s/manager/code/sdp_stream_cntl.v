@@ -47,12 +47,16 @@ module sdp_stream_cntl (
 
             // Contains the associated address for the next mmc line
             // - automatically updated when "get_line" is asserted
-            input   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   xxx__sdp__mem_request_valid                             ,
-            input   wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]   xxx__sdp__mem_request_channel [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE        ]   xxx__sdp__mem_request_bank    [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]   xxx__sdp__mem_request_page    [`MGR_DRAM_NUM_CHANNELS ] ,
-            input   wire  [`MGR_DRAM_WORD_ADDRESS_RANGE        ]   xxx__sdp__mem_request_word    [`MGR_DRAM_NUM_CHANNELS ] ,
-            //output wire [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__mem_request_ack                               ,  // actually a read to the request feedback fifo
+            //
+            //
+            input   wire                                            sdpr__sdps__response_id_valid              ,
+            input   wire   [`COMMON_STD_INTF_CNTL_RANGE      ]      sdpr__sdps__response_id_cntl               ,
+            output  reg                                             sdps__sdpr__response_id_ready              ,
+            input   wire   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      sdpr__sdps__response_id_channel            ,
+            input   wire   [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      sdpr__sdps__response_id_bank               ,
+            input   wire   [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      sdpr__sdps__response_id_page               ,
+            input   wire   [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      sdpr__sdps__response_id_word               ,
+
 
             output  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__get_next_line                                    ,
             output  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdp__xxx__lane_valid                                       ,
@@ -225,6 +229,147 @@ module sdp_stream_cntl (
     end
   //----------------------------------------------------------------------------------------------------
 
+
+
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Response ID FIFO
+  //
+  //  - this fifo is the address of the channel from_mmc fifo data
+  //  - the sdp_stream_cntl will use this to check if the current consequtive stream address is at the head of the from_mmc fifo
+
+  wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   response_id_valid                               ;
+  wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   response_id_fifo_read                           ;
+  wire  [`MGR_DRAM_BANK_ADDRESS_RANGE        ]   response_id_bank      [`MGR_DRAM_NUM_CHANNELS ] ;
+  wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]   response_id_page      [`MGR_DRAM_NUM_CHANNELS ] ;
+  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE        ]   response_id_word      [`MGR_DRAM_NUM_CHANNELS ] ;
+                                                           
+  generate
+    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
+      begin: response_id_fifo
+
+        wire                                               clear         ;
+        wire                                               almost_full   ;
+        wire                                               empty         ;
+                                                           
+        reg                                                write         ;
+        reg   [`SDP_CNTL_RESPONSE_AGGREGATE_FIFO_RANGE ]   write_data    ;
+                                                           
+        reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE           ]   write_bank    ;
+        reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE           ]   write_page    ;
+        reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE           ]   write_word    ;
+                                                           
+        wire                                               read          ;
+        wire  [`SDP_CNTL_RESPONSE_AGGREGATE_FIFO_RANGE ]   read_data     ;
+
+
+
+        generic_fifo #(.GENERIC_FIFO_DEPTH      (`SDP_CNTL_RESPONSE_FIFO_DEPTH                 ),
+                       .GENERIC_FIFO_THRESHOLD  (`SDP_CNTL_RESPONSE_FIFO_ALMOST_FULL_THRESHOLD ),
+                       .GENERIC_FIFO_DATA_WIDTH (`SDP_CNTL_RESPONSE_AGGREGATE_FIFO_WIDTH       )
+                        ) gfifo (
+                                 // Status
+                                .almost_full      ( almost_full           ),
+                                .empty            ( empty                 ),
+                                .depth            (                       ),
+                                .almost_empty     (                       ),
+
+                                 // Write                                 
+                                .write            ( write                 ),
+                                .write_data       ( write_data            ),
+                                 // Read                                  
+                                .read_data        ( read_data             ),
+                                .read             ( read                  ),
+
+                                // General
+                                .clear            ( clear                 ),
+                                .reset_poweron    ( reset_poweron         ),
+                                .clk              ( clk                   )
+                                );
+
+        assign  clear = 1'b0 ;
+
+        always @(*)
+          begin
+            write         =  sdpr__sdps__response_id_valid & (sdpr__sdps__response_id_channel == chan) ;
+            write_bank    =  sdpr__sdps__response_id_bank                                              ;
+            write_page    =  sdpr__sdps__response_id_page                                              ;
+            write_word    =  sdpr__sdps__response_id_word                                              ;
+          end
+        always @(*)
+          begin
+            write_data  =  {write_bank, write_page, write_word};
+          end
+
+        // Note: First stage of pipeline is inside FIFO
+        // fifo output stage
+        reg                                                fifo_pipe_valid   ;
+        wire                                               fifo_pipe_read    ;
+
+        // pipe stage
+        always @(posedge clk)
+          begin
+            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
+                               ( read               ) ? 'b1               :
+                               ( fifo_pipe_read     ) ? 'b0               :
+                                                         fifo_pipe_valid  ;
+          end
+        reg                                                pipe_valid     ;
+        reg                                                pipe_read      ;
+        reg   [`SDP_CNTL_RESPONSE_AGGREGATE_FIFO_RANGE ]   pipe_data      ;
+                                                           
+        reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE           ]   pipe_bank     ;
+        reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE           ]   pipe_page     ;
+        reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE           ]   pipe_word     ;
+
+        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
+        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
+
+        always @(posedge clk)
+          begin
+            // If we are reading the previous stage, then this stage will be valid
+            // otherwise if we are reading this stage this stage will not be valid
+            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
+                               ( fifo_pipe_read     ) ? 'b1              :
+                               ( pipe_read          ) ? 'b0              :
+                                                         pipe_valid      ;
+        
+            // if we are reading, transfer from previous pipe stage. 
+            pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
+                                                            pipe_data            ;
+          end
+
+
+
+        always @(*)
+          begin
+            {pipe_bank, pipe_page, pipe_word} = pipe_data ;
+          end
+
+        assign    pipe_read                  = response_id_fifo_read [chan]  ;
+
+      end
+  endgenerate
+  
+  always @(*)
+    begin
+      sdps__sdpr__response_id_ready  = ~response_id_fifo[0].almost_full & ~response_id_fifo[1].almost_full ;  // FIXME
+    end
+  assign  response_id_fifo_read[0] =  response_id_fifo[0].pipe_valid ;  // FIXME
+  assign  response_id_fifo_read[1] =  response_id_fifo[1].pipe_valid ;
+
+  generate
+    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
+      begin
+        assign  response_id_valid [chan]      =  response_id_fifo[chan].pipe_valid      ;
+        assign  response_id_bank  [chan]      =  response_id_fifo[chan].pipe_bank       ;
+        assign  response_id_page  [chan]      =  response_id_fifo[chan].pipe_page       ;
+        assign  response_id_word  [chan]      =  response_id_fifo[chan].pipe_word       ;
+      end
+  endgenerate
+
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
   // end of to stream fifo's
@@ -405,7 +550,7 @@ module sdp_stream_cntl (
   reg   [`MGR_DRAM_WORD_ADDRESS_RANGE    ]   strm_inc_word_e1             ;
                                          
   `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                        
-    reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   xxx__sdp__mem_request_line [`MGR_DRAM_NUM_CHANNELS ]  ;   // the MRC provides the word address of the mmc response, but we need the line 
+    reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   response_id_line [`MGR_DRAM_NUM_CHANNELS ]  ;   // the MRC provides the word address of the mmc response, but we need the line 
 
     generate
       for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
@@ -414,11 +559,11 @@ module sdp_stream_cntl (
           case (strm_accessOrder)  // synopsys parallel_case full_case
             PY_WU_INST_ORDER_TYPE_WCBP :
               begin
-                xxx__sdp__mem_request_line [chan]  = xxx__sdp__mem_request_word [chan][`MGR_DRAM_LINE_IN_WORD_ADDRESS_RANGE ] ;
+                response_id_line [chan]  = response_id_word [chan][`MGR_DRAM_LINE_IN_WORD_ADDRESS_RANGE ] ;
               end
             PY_WU_INST_ORDER_TYPE_CWBP :
               begin
-                xxx__sdp__mem_request_line [chan]  = xxx__sdp__mem_request_word [chan][`MGR_DRAM_LINE_IN_WORD_ADDRESS_RANGE ] ;
+                response_id_line [chan]  = response_id_word [chan][`MGR_DRAM_LINE_IN_WORD_ADDRESS_RANGE ] ;
               end
           endcase
         end
@@ -435,10 +580,10 @@ module sdp_stream_cntl (
           sdp__xxx__get_next_line[chan]  = ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) & consequtive_counter_le0 && last_consequtive) | // flush last transaction
                                            (((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) | (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS)) &
                                            (strm_inc_channel_e1 == chan) &
-                                           ((strm_inc_bank_e1 != xxx__sdp__mem_request_bank[strm_inc_channel_e1]) | 
-                                            (strm_inc_page_e1 != xxx__sdp__mem_request_page[strm_inc_channel_e1]) | 
+                                           ((strm_inc_bank_e1 != response_id_bank[strm_inc_channel_e1]) | 
+                                            (strm_inc_page_e1 != response_id_page[strm_inc_channel_e1]) | 
                                             `ifdef MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-                                              (strm_inc_line_e1 != xxx__sdp__mem_request_line[strm_inc_channel_e1])))  ;
+                                              (strm_inc_line_e1 != response_id_line[strm_inc_channel_e1])))  ;
                                             `else
                                               1'b0)) ;
                                             `endif

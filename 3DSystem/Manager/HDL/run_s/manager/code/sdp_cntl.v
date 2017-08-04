@@ -64,15 +64,6 @@ module sdp_cntl (
 
             input   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   xxx__sdp__mem_request_channel_data_valid                          ,  // valid data from channel data fifo
 
-            input   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   xxx__sdp__mem_request_valid                                       ,
-            //output  wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__mem_request_ack                                         ,  // actually a read to the request feedback fifo
-            // Contains the associated address for the next mmc line
-            // - automatically updated when "get_line" is asserted
-            input   wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]   xxx__sdp__mem_request_channel            [`MGR_DRAM_NUM_CHANNELS ],
-            input   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE        ]   xxx__sdp__mem_request_bank               [`MGR_DRAM_NUM_CHANNELS ],
-            input   wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]   xxx__sdp__mem_request_page               [`MGR_DRAM_NUM_CHANNELS ],
-            input   wire  [`MGR_DRAM_WORD_ADDRESS_RANGE        ]   xxx__sdp__mem_request_word               [`MGR_DRAM_NUM_CHANNELS ],
-                                                                                                                    
             //-------------------------------
             // from MMC fifo Control
             output  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__get_next_line                                    ,
@@ -190,14 +181,16 @@ module sdp_cntl (
             // from MMC fifo Control
             .xxx__sdp__mem_request_channel_data_valid                ,  // valid data from channel data fifo and downstream ready
 
-            // Contains the associated address for the next mmc line
+            // From request generator
+            // - Contains the associated address for the next mmc line
             // - automatically updated when "get_line" is asserted
-            .xxx__sdp__mem_request_valid                  ( xxx__sdp__mem_request_valid              ),
-            .xxx__sdp__mem_request_channel                ( xxx__sdp__mem_request_channel            ),
-            .xxx__sdp__mem_request_bank                   ( xxx__sdp__mem_request_bank               ),
-            .xxx__sdp__mem_request_page                   ( xxx__sdp__mem_request_page               ),
-            .xxx__sdp__mem_request_word                   ( xxx__sdp__mem_request_word               ),
-            //.sdp__xxx__mem_request_ack   (  ),  // actually a read to the request feedback fifo
+            .sdpr__sdps__response_id_valid                ( sdpr__sdps__response_id_valid              ),
+            .sdpr__sdps__response_id_cntl                 ( sdpr__sdps__response_id_cntl               ),
+            .sdps__sdpr__response_id_ready                ( sdps__sdpr__response_id_ready              ),
+            .sdpr__sdps__response_id_channel              ( sdpr__sdps__response_id_channel            ),
+            .sdpr__sdps__response_id_bank                 ( sdpr__sdps__response_id_bank               ),
+            .sdpr__sdps__response_id_page                 ( sdpr__sdps__response_id_page               ),
+            .sdpr__sdps__response_id_word                 ( sdpr__sdps__response_id_word               ),
 
             .sdp__xxx__get_next_line                      ( sdp__xxx__get_next_line                    ),
             .sdp__xxx__lane_valid                         ( sdp__xxx__lane_valid                       ),
@@ -236,7 +229,6 @@ module sdp_cntl (
             .clk                                          ( clk             ),
             .reset_poweron                                ( reset_poweron   )
                         );
-
 
 
   //----------------------------------------------------------------------------------------------------

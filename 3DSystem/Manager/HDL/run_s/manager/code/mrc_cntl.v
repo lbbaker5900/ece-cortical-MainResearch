@@ -510,20 +510,13 @@ module mrc_cntl (
            //
            .sdp__xxx__mem_request_valid                  ( mrc__mmc__valid_e1                ),
            .sdp__xxx__mem_request_cntl                   ( mrc__mmc__cntl_e1                 ),
-           .xxx__sdp__mem_request_ready                  ( mmc__mrc__ready_d1 & ~request_fifo_fb[0].almost_full & ~request_fifo_fb[1].almost_full ),  // stop requests if MMC or feedback fifo not ready
+           .xxx__sdp__mem_request_ready                  ( mmc__mrc__ready_d1                ),
            .sdp__xxx__mem_request_channel                ( mrc__mmc__channel_e1              ),
            .sdp__xxx__mem_request_bank                   ( mrc__mmc__bank_e1                 ),
            .sdp__xxx__mem_request_page                   ( mrc__mmc__page_e1                 ),
            .sdp__xxx__mem_request_word                   ( mrc__mmc__word_e1                 ),
 
            .xxx__sdp__mem_request_channel_data_valid     ( mem_request_channel_data_valid    ),
-           .xxx__sdp__mem_request_valid                  ( xxx__sdp__mem_request_valid       ),
-           //.sdp__xxx__mem_request_ack                    ( sdp__xxx__mem_request_ack         ),
-           .xxx__sdp__mem_request_channel                ( xxx__sdp__mem_request_channel     ),
-           .xxx__sdp__mem_request_bank                   ( xxx__sdp__mem_request_bank        ),
-           .xxx__sdp__mem_request_page                   ( xxx__sdp__mem_request_page        ),
-           .xxx__sdp__mem_request_word                   ( xxx__sdp__mem_request_word        ),
-
 
            //-------------------------------
            // from MMC fifo Control
@@ -546,130 +539,6 @@ module mrc_cntl (
             );
 
 
-
-  //------------------------------------------------------------------------------------------------------------------------------------------------------
-  //------------------------------------------------------------------------------------------------------------------------------------------------------
-  // Request FIFO
-  //
-  //  - this fifo is the address of the channel from_mmc fifo data
-  //  - the sdp_cntl will use this to check if the current consequtive stream address is at the head of the from_mmc fifo
-
-  generate
-    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
-      begin: request_fifo_fb
-
-        wire                                               clear         ;
-        wire                                               almost_full   ;
-        wire                                               empty         ;
-                                                           
-        reg                                                write         ;
-        reg   [`MRC_CNTL_REQUEST_AGGREGATE_FIFO_RANGE ]    write_data    ;
-                                                           
-        reg   [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE       ]    write_channel ;
-        reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE          ]    write_bank    ;
-        reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE          ]    write_page    ;
-        reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE          ]    write_word    ;
-                                                           
-        wire                                               read          ;
-        wire  [`MRC_CNTL_REQUEST_AGGREGATE_FIFO_RANGE ]    read_data     ;
-
-
-
-        generic_fifo #(.GENERIC_FIFO_DEPTH      (`MRC_CNTL_REQUEST_FIFO_DEPTH                 ),
-                       .GENERIC_FIFO_THRESHOLD  (`MRC_CNTL_REQUEST_FIFO_ALMOST_FULL_THRESHOLD ),
-                       .GENERIC_FIFO_DATA_WIDTH (`MRC_CNTL_REQUEST_AGGREGATE_FIFO_WIDTH       )
-                        ) gfifo (
-                                 // Status
-                                .almost_full      ( almost_full           ),
-                                .empty            ( empty                 ),
-                                .depth            (                       ),
-                                .almost_empty     (                       ),
-
-                                 // Write                                 
-                                .write            ( write                 ),
-                                .write_data       ( write_data            ),
-                                 // Read                                  
-                                .read_data        ( read_data             ),
-                                .read             ( read                  ),
-
-                                // General
-                                .clear            ( clear                 ),
-                                .reset_poweron    ( reset_poweron         ),
-                                .clk              ( clk                   )
-                                );
-
-        assign  clear = 1'b0 ;
-
-        always @(*)
-          begin
-            write         =  mrc__mmc__valid_e1 & (mrc__mmc__channel_e1 == chan) ;
-            write_channel =  mrc__mmc__channel_e1                                ;
-            write_bank    =  mrc__mmc__bank_e1                                   ;
-            write_page    =  mrc__mmc__page_e1                                   ;
-            write_word    =  mrc__mmc__word_e1                                   ;
-          end
-        always @(*)
-          begin
-            write_data  =  {write_channel, write_bank, write_page, write_word};
-          end
-
-        // Note: First stage of pipeline is inside FIFO
-        // fifo output stage
-        reg                                                fifo_pipe_valid   ;
-        wire                                               fifo_pipe_read    ;
-
-        // pipe stage
-        always @(posedge clk)
-          begin
-            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
-                               ( read               ) ? 'b1               :
-                               ( fifo_pipe_read     ) ? 'b0               :
-                                                         fifo_pipe_valid  ;
-          end
-        reg                                                pipe_valid     ;
-        reg                                                pipe_read      ;
-        reg   [`MRC_CNTL_REQUEST_AGGREGATE_FIFO_RANGE ]    pipe_data      ;
-                                                           
-        reg   [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE       ]    pipe_channel  ;
-        reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE          ]    pipe_bank     ;
-        reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE          ]    pipe_page     ;
-        reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE          ]    pipe_word     ;
-
-        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
-        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
-
-        always @(posedge clk)
-          begin
-            // If we are reading the previous stage, then this stage will be valid
-            // otherwise if we are reading this stage this stage will not be valid
-            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
-                               ( fifo_pipe_read     ) ? 'b1              :
-                               ( pipe_read          ) ? 'b0              :
-                                                         pipe_valid      ;
-        
-            // if we are reading, transfer from previous pipe stage. 
-            pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
-                                                            pipe_data            ;
-          end
-
-
-
-        always @(*)
-          begin
-            {pipe_channel, pipe_bank, pipe_page, pipe_word} = pipe_data ;
-          end
-
-        assign    xxx__sdp__mem_request_valid  [chan]  = pipe_valid                       ;         
-        assign    xxx__sdp__mem_request_channel[chan]  = pipe_channel                     ;
-        assign    xxx__sdp__mem_request_bank   [chan]  = pipe_bank                        ;
-        assign    xxx__sdp__mem_request_page   [chan]  = pipe_page                        ;
-        assign    xxx__sdp__mem_request_word   [chan]  = pipe_word                        ;
-        assign    pipe_read                            = sdp__xxx__get_next_line[chan]    ;
-
-      end
-  endgenerate
-  //------------------------------------------------------------------------------------------------------------------------------------------------------
-  //------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
