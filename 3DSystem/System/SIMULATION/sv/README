@@ -46,3 +46,6 @@ echo 'Expect 395 <cr> 395'
 #395
 #395
 
+
+# View instructions
+gvim -O inputFiles/manager_10_layer1_{i,d}cntl_readmem.dat inputFiles/manager_10_layer1_option*e{0,1,2}*

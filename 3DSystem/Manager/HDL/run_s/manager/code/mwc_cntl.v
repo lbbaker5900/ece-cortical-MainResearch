@@ -719,9 +719,6 @@ module mwc_cntl (
             .xxx__sdp__storage_desc_processing_enable     ( storage_desc_processing_enable             ),
             .sdp__xxx__storage_desc_processing_complete   ( storage_desc_processing_complete           ),
             .xxx__sdp__storage_desc_ptr                   ( storage_desc_ptr                           ),  // pointer to local storage descriptor although msb's contain manager ID, so remove
-            //.xxx__sdp__num_lanes                        ( xxx__sdp__num_lanes                        ),
-            //.xxx__sdp__txfer_type                       ( xxx__sdp__txfer_type                       ),
-            //.xxx__sdp__target                           ( xxx__sdp__target                           ),
 
             .sdp__xxx__mem_request_valid                  ( mwc__mmc__valid_e1                         ),
             .sdp__xxx__mem_request_cntl                   ( mwc__mmc__cntl_e1                          ),
@@ -732,6 +729,15 @@ module mwc_cntl (
             .sdp__xxx__mem_request_bank                   ( mwc__mmc__bank_e1                          ),
             .sdp__xxx__mem_request_page                   ( mwc__mmc__page_e1                          ),
             .sdp__xxx__mem_request_word                   ( mwc__mmc__word_e1                          ),
+
+            .sdpr__sdps__response_id_valid                (                                            ),
+            .sdpr__sdps__response_id_cntl                 (                                            ),
+            .sdps__sdpr__response_id_ready                ( 1'b1                                       ),
+            .sdpr__sdps__response_id_channel              (                                            ),
+            .sdpr__sdps__response_id_bank                 (                                            ),
+            .sdpr__sdps__response_id_page                 (                                            ),
+            .sdpr__sdps__response_id_word                 (                                            ),
+
 
             .sdpr__sdps__cfg_valid                        ( sdpr_cfg_valid                             ),
             .sdpr__sdps__cfg_addr                         ( sdpr_cfg_addr                              ),
@@ -770,7 +776,7 @@ module mwc_cntl (
   reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 inc_channel             ;  // formed address in access order for incrementing
   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 inc_bank                ;
   reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 inc_page                ;
-  `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                                                           
+  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                                                           
     reg [`MGR_DRAM_LINE_ADDRESS_RANGE         ]                                 inc_line                ; 
   `endif                                                                                                     
   reg   [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 inc_word                ;
@@ -779,7 +785,7 @@ module mwc_cntl (
   reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 inc_channel_e1          ; 
   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 inc_bank_e1             ;
   reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 inc_page_e1             ;
-  `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                                                           
+  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                                                           
     reg [`MGR_DRAM_LINE_ADDRESS_RANGE         ]                                 inc_line_e1             ; 
   `endif                                                                                                     
   reg   [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 inc_word_e1             ;
@@ -789,7 +795,7 @@ module mwc_cntl (
   reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE  ]                                 held_valid                                 ;
   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 held_bank        [`MGR_DRAM_NUM_CHANNELS ] ;
   reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]                                 held_page        [`MGR_DRAM_NUM_CHANNELS ] ;
-  `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                                                                          
+  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                                                                          
     reg  [`MGR_DRAM_LINE_ADDRESS_RANGE        ]                                 held_line        [`MGR_DRAM_NUM_CHANNELS ] ;  // if a dram access reads less than a page, we need to generate additional memory requests when we transition a line
   `endif                                                                                                                    
   reg   [`MGR_DRAM_WORD_ADDRESS_RANGE         ]                                 held_word        [`MGR_DRAM_NUM_CHANNELS ] ;
@@ -921,7 +927,7 @@ module mwc_cntl (
           inc_bank_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
           inc_page_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
           inc_word_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
-          `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
             inc_line_e1  =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
           `endif
         end
@@ -931,7 +937,7 @@ module mwc_cntl (
           inc_bank_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
           inc_page_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
           inc_word_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
-          `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
             inc_line_e1  =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
           `endif
         end
@@ -941,7 +947,7 @@ module mwc_cntl (
           inc_bank_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
           inc_page_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
           inc_word_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
-          `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
             inc_line_e1  =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
           `endif
         end
@@ -955,7 +961,7 @@ module mwc_cntl (
       inc_bank        <=  inc_bank_e1    ;
       inc_page        <=  inc_page_e1    ;
       inc_word        <=  inc_word_e1    ;
-      `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+      `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
         inc_line      <=  inc_line_e1    ;
       `endif
     end 
@@ -1057,7 +1063,7 @@ module mwc_cntl (
                   held_valid   [inc_channel]              <=  1'b1  ;
                   held_bank    [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_bank    : held_bank    [inc_channel] ;
                   held_page    [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_page    : held_page    [inc_channel] ;
-                  `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                     held_line  [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_line    : held_line    [inc_channel] ;
                   `endif
                   held_data    [inc_channel][inc_word]    <=  pipe_data [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD0_RANGE ] ;
@@ -1074,7 +1080,7 @@ module mwc_cntl (
                   held_valid   [inc_channel]              <=  1'b1  ;
                   held_bank    [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_bank    : held_bank    [inc_channel] ;
                   held_page    [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_page    : held_page    [inc_channel] ;
-                  `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                     held_line  [inc_channel]              <=  (~held_valid [inc_channel]) ? inc_line    : held_line    [inc_channel] ;
                   `endif
                   held_data    [inc_channel][inc_word]    <=  pipe_data [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD1_RANGE ] ;
@@ -1116,7 +1122,7 @@ module mwc_cntl (
           begin
             held_addr_miscompare   =  held_valid[inc_channel] & ((held_bank[inc_channel] != inc_bank) | 
                                                                  (held_page[inc_channel] != inc_page) |                                                
-                                                                 `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                                                                 `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                                                                    (held_line  [inc_channel] != inc_line));
                                                                  `else
                                                                    1'b0 );
@@ -1127,7 +1133,7 @@ module mwc_cntl (
           begin
             held_addr_miscompare   =  held_valid[inc_channel] & ((held_bank[inc_channel] != inc_bank) | 
                                                                  (held_page[inc_channel] != inc_page) |                                                
-                                                                 `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                                                                 `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                                                                    (held_line  [inc_channel] != inc_line));
                                                                  `else
                                                                    1'b0 );

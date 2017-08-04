@@ -42,14 +42,15 @@
 `define SDP_CNTL_PROC_STORAGE_DESC_EXTRACT                      16'b0000_0000_0000_0010
 `define SDP_CNTL_PROC_STORAGE_DESC_READ                         16'b0000_0000_0000_0100
 `define SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID                16'b0000_0000_0000_1000
-`define SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQ_CHA             16'b0000_0000_0001_0000
-`define SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO              16'b0000_0000_0010_0000
-`define SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD                   16'b0000_0000_0100_0000
-`define SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD                   16'b0000_0000_1000_0000
-`define SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS                16'b0000_0001_0000_0000
-`define SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES             16'b0000_0010_0000_0000
-`define SDP_CNTL_PROC_STORAGE_DESC_INC_PBC                      16'b0000_0100_0000_0000
-`define SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE         16'b0000_1000_0000_0000
+`define SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST             16'b0000_0000_0001_0000
+`define SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID   16'b0000_0000_0010_0000 
+`define SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO              16'b0000_0000_0100_0000
+`define SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD                   16'b0000_0000_1000_0000
+`define SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD                   16'b0000_0001_0000_0000
+`define SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS                16'b0000_0010_0000_0000
+`define SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES             16'b0000_0100_0000_0000
+`define SDP_CNTL_PROC_STORAGE_DESC_INC_PBC                      16'b0000_1000_0000_0000
+`define SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE         16'b0001_0000_0000_0000
 
 `define SDP_CNTL_PROC_STORAGE_DESC_COMPLETE                     16'b0100_0000_0000_0000
                                                   
@@ -99,12 +100,12 @@
 `define SDP_CNTL_CHAN_BIT_RANGE           `SDP_CNTL_CHAN_BIT_MSB : `SDP_CNTL_CHAN_BIT_LSB
 //------------------------------------------------------------------------------------------------------------
 
-`ifdef  MGR_DRAM_REQUEST_LT_PAGE
+`ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
   //--------------------------------------------------------
   // Vector of Lines
   //  - used to indicate which line has been opened with the current chan/bank/page
     
-  `define SDP_CNTL_LINE_BIT_WIDTH          `MGR_DRAM_NUM_LINES
+  `define SDP_CNTL_LINE_BIT_WIDTH          `MGR_DRAM_NUM_LINES_PER_CLINE 
   `define SDP_CNTL_LINE_BIT_MSB           `SDP_CNTL_LINE_BIT_WIDTH-1
   `define SDP_CNTL_LINE_BIT_LSB            0
   `define SDP_CNTL_LINE_BIT_SIZE           (`SDP_CNTL_LINE_BIT_MSB - `SDP_CNTL_LINE_BIT_LSB +1)

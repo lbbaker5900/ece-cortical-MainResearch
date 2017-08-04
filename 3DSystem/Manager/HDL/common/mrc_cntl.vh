@@ -100,7 +100,7 @@
 `define MRC_CNTL_CHAN_BIT_RANGE           `MRC_CNTL_CHAN_BIT_MSB : `MRC_CNTL_CHAN_BIT_LSB
 //------------------------------------------------------------------------------------------------------------
 
-`ifdef  MGR_DRAM_REQUEST_LT_PAGE
+`ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
   //--------------------------------------------------------
   // Vector of Lines
   //  - used to indicate which line has been opened with the current chan/bank/page

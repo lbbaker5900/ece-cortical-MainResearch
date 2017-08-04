@@ -90,7 +90,7 @@
 //--------------------------------------------------------
 // From Mcntl
 
-`define MWC_CNTL_FROM_MCNTL_FIFO_DEPTH          64
+`define MWC_CNTL_FROM_MCNTL_FIFO_DEPTH          256
 `define MWC_CNTL_FROM_MCNTL_FIFO_DEPTH_MSB      (`MWC_CNTL_FROM_MCNTL_FIFO_DEPTH) -1
 `define MWC_CNTL_FROM_MCNTL_FIFO_DEPTH_LSB      0
 `define MWC_CNTL_FROM_MCNTL_FIFO_DEPTH_SIZE     (`MWC_CNTL_FROM_MCNTL_FIFO_DEPTH_MSB - `MWC_CNTL_FROM_MCNTL_FIFO_DEPTH_LSB +1)

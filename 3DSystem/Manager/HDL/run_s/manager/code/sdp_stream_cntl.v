@@ -106,7 +106,7 @@ module sdp_stream_cntl (
   //    b) single address associated with each cons/jump group 
   //
   //  a) Cons/Jump FIFO
-  genvar gvi ;
+  genvar gvi, chan ;
   generate
     for (gvi=0; gvi<1 ; gvi=gvi+1) 
       begin: consJump_to_strm_fsm_fifo
@@ -383,7 +383,7 @@ module sdp_stream_cntl (
   reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   strm_next_cons_start_channel ;
   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   strm_next_cons_start_bank    ;
   reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   strm_next_cons_start_page    ;
-  `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                        
+  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                        
     reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   strm_next_cons_start_line    ; 
   `endif                                                                  
   reg   [`MGR_DRAM_WORD_ADDRESS_RANGE    ]   strm_next_cons_start_word    ;
@@ -391,7 +391,7 @@ module sdp_stream_cntl (
   reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   strm_inc_channel             ;  // formed address in access order for incrementing
   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   strm_inc_bank                ;
   reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   strm_inc_page                ;
-  `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                        
+  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                        
     reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   strm_inc_line                ; 
   `endif                                                                  
   reg   [`MGR_DRAM_WORD_ADDRESS_RANGE    ]   strm_inc_word                ;
@@ -399,15 +399,14 @@ module sdp_stream_cntl (
   reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   strm_inc_channel_e1          ;  // 
   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   strm_inc_bank_e1             ;
   reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   strm_inc_page_e1             ;
-  `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                        
+  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                        
     reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   strm_inc_line_e1             ; 
   `endif                                                                  
   reg   [`MGR_DRAM_WORD_ADDRESS_RANGE    ]   strm_inc_word_e1             ;
                                          
-  `ifdef  MGR_DRAM_REQUEST_LT_PAGE                                        
+  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                        
     reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   xxx__sdp__mem_request_line [`MGR_DRAM_NUM_CHANNELS ]  ;   // the MRC provides the word address of the mmc response, but we need the line 
 
-    genvar chan ;
     generate
       for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
       always @(*)
@@ -415,11 +414,11 @@ module sdp_stream_cntl (
           case (strm_accessOrder)  // synopsys parallel_case full_case
             PY_WU_INST_ORDER_TYPE_WCBP :
               begin
-                xxx__sdp__mem_request_line [chan]  = xxx__sdp__mem_request_word [chan][`MGR_DRAM_LINE_IN_WORD_ADDRESS ] ;
+                xxx__sdp__mem_request_line [chan]  = xxx__sdp__mem_request_word [chan][`MGR_DRAM_LINE_IN_WORD_ADDRESS_RANGE ] ;
               end
             PY_WU_INST_ORDER_TYPE_CWBP :
               begin
-                xxx__sdp__mem_request_line [chan]  = xxx__sdp__mem_request_word [chan][`MGR_DRAM_LINE_IN_WORD_ADDRESS ] ;
+                xxx__sdp__mem_request_line [chan]  = xxx__sdp__mem_request_word [chan][`MGR_DRAM_LINE_IN_WORD_ADDRESS_RANGE ] ;
               end
           endcase
         end
@@ -438,7 +437,7 @@ module sdp_stream_cntl (
                                            (strm_inc_channel_e1 == chan) &
                                            ((strm_inc_bank_e1 != xxx__sdp__mem_request_bank[strm_inc_channel_e1]) | 
                                             (strm_inc_page_e1 != xxx__sdp__mem_request_page[strm_inc_channel_e1]) | 
-                                            `ifdef MGR_DRAM_REQUEST_LT_PAGE
+                                            `ifdef MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                                               (strm_inc_line_e1 != xxx__sdp__mem_request_line[strm_inc_channel_e1])))  ;
                                             `else
                                               1'b0)) ;
@@ -480,7 +479,7 @@ module sdp_stream_cntl (
             strm_inc_bank_e1    =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ]  ;
             strm_inc_page_e1    =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ]  ;
             strm_inc_word_e1    =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ]  ;
-            `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+            `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
               strm_inc_line_e1         =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_LINE_FIELD_RANGE ]  ;
             `endif
             // reorder fields for incrementing
@@ -511,7 +510,7 @@ module sdp_stream_cntl (
                 strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
                 strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
-                `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
                 `endif
               end
@@ -521,7 +520,7 @@ module sdp_stream_cntl (
                 strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
                 strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
-                `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
                 `endif
               end
@@ -531,7 +530,7 @@ module sdp_stream_cntl (
                 strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
                 strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
-                `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
                 `endif
               end
@@ -553,7 +552,7 @@ module sdp_stream_cntl (
                 strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
                 strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
-                `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
                 `endif
               end
@@ -563,7 +562,7 @@ module sdp_stream_cntl (
                 strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
                 strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
-                `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
                 `endif
               end
@@ -573,7 +572,7 @@ module sdp_stream_cntl (
                 strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
                 strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
-                `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
                 `endif
               end
@@ -587,7 +586,7 @@ module sdp_stream_cntl (
             strm_inc_bank_e1    =  strm_inc_bank    ;
             strm_inc_page_e1    =  strm_inc_page    ;
             strm_inc_word_e1    =  strm_inc_word    ;
-            `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+            `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
               strm_inc_line_e1    =  strm_inc_line    ;
             `endif
           end
@@ -607,7 +606,7 @@ module sdp_stream_cntl (
           strm_inc_bank                <=  strm_inc_bank_e1    ;
           strm_inc_page                <=  strm_inc_page_e1    ;
           strm_inc_word                <=  strm_inc_word_e1    ;
-          `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
             strm_inc_line                <=  strm_inc_line_e1  ;
           `endif
         end
@@ -617,7 +616,7 @@ module sdp_stream_cntl (
           strm_inc_bank                <=  strm_inc_bank_e1    ;
           strm_inc_page                <=  strm_inc_page_e1    ;
           strm_inc_word                <=  strm_inc_word_e1    ;
-          `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
             strm_inc_line                <=  strm_inc_line_e1  ;
           `endif
         end
@@ -677,7 +676,7 @@ module sdp_stream_cntl (
           strm_next_cons_start_bank    =  strm_next_cons_start_address[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
           strm_next_cons_start_page    =  strm_next_cons_start_address[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
           strm_next_cons_start_word    =  strm_next_cons_start_address[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
-          `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
             strm_next_cons_start_line    =  strm_next_cons_start_address[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
           `endif
         end
@@ -687,7 +686,7 @@ module sdp_stream_cntl (
           strm_next_cons_start_bank    =  strm_next_cons_start_address[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
           strm_next_cons_start_page    =  strm_next_cons_start_address[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
           strm_next_cons_start_word    =  strm_next_cons_start_address[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
-          `ifdef  MGR_DRAM_REQUEST_LT_PAGE
+          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
             strm_next_cons_start_line    =  strm_next_cons_start_address[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
           `endif
         end

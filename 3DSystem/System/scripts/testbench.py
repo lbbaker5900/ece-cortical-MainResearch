@@ -336,3 +336,82 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ##----------------------------------------------------------------------------------------------------
+  ## Waveform .do files
+
+  f = open("../SIMULATION/sv/allNoc.do", "w")
+  pLine = ""
+  for mgr in range (0, numOfMgr):
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__cp_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__cp_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__cp_type}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__cp_ptype}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__cp_desttype}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__cp_pvalid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__cp_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__dp_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__dp_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__dp_type}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__dp_ptype}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__dp_desttype}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__dp_pvalid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__dp_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__cp_ready}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/locl__noc__dp_ready}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port0_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port0_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port0_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port0_fc}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port1_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port1_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port1_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port1_fc}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port2_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port2_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port2_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port2_fc}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port3_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port3_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port3_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/mgr__noc__port3_fc}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port0_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port0_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port0_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port0_fc}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port1_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port1_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port1_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port1_fc}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port2_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port2_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port2_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port2_fc}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port3_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port3_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port3_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__mgr__port3_fc}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__cp_ready}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__dp_ready}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__cp_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__cp_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__cp_type}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__cp_ptype}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__cp_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__cp_mgrId}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__dp_valid}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__dp_cntl}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__dp_type}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__dp_ptype}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__dp_data}}'.format(mgr)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__dp_mgrId}}'.format(mgr)
+
+  f.write(pLine)
+  f.close()
+
+
+
+

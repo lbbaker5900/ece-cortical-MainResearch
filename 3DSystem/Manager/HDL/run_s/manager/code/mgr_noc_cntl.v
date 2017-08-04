@@ -1308,8 +1308,8 @@ module mgr_noc_cntl (
                 nc_port_fromNoc_state_next = `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET ;
             
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET:
-                nc_port_fromNoc_state_next = ( Port_from_NoC_fifo[gvi].valid && fromNoc_eom)  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE        :
-                                                                                       `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET ;
+                nc_port_fromNoc_state_next = ( Port_from_NoC_fifo[gvi].valid && fromNoc_eom & allDestinationsStillReady )  ? `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE        :
+                                                                                                                             `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET ;
             
               `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_COMPLETE:
                 nc_port_fromNoc_state_next = `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_WAIT ;
@@ -1343,7 +1343,7 @@ module mgr_noc_cntl (
         assign destinationPriority  = Port_from_NoC_fifo[gvi].read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE         ] ;
    
         assign valid_fromNoc    = ( nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER) |
-                                  ((nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET) & Port_from_NoC_fifo[gvi].valid );
+                                  ((nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_PACKET) & Port_from_NoC_fifo[gvi].valid & allDestinationsStillReady );
 
         assign cntl_fromNoc     = Port_from_NoC_fifo[gvi].read_cntl ;  // 
         assign data_fromNoc     = Port_from_NoC_fifo[gvi].read_data ;  //
