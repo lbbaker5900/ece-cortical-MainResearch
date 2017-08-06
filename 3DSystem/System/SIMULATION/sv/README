@@ -49,3 +49,7 @@ echo 'Expect 395 <cr> 395'
 
 # View instructions
 gvim -O inputFiles/manager_10_layer1_{i,d}cntl_readmem.dat inputFiles/manager_10_layer1_option*e{0,1,2}*
+
+sed -i -e 's/mgr_inst\[2\]/mgr_inst\[1\]/' mmc*.do ; sed -i -e 's/MGR2/MGR1/' mmc*.do ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[1\]/' mmc*.do
+sed -i -e 's/mgr_inst\[2\]/mgr_inst\[1\]/' ram.do ; sed -i -e 's/MGR2/MGR1/' ram.do ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[1\]/' ram.do
+

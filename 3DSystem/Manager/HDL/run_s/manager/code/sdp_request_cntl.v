@@ -245,7 +245,6 @@ module sdp_request_cntl (
   reg                                                      page_change               ;
   reg                                                      channel_change            ;
   `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-    reg    [`SDP_CNTL_LINE_BIT_RANGE                    ]  line_requested            ;  // which lines have been requested with current bank/page
     reg                                                    line_change               ;
   `endif
 
@@ -472,12 +471,6 @@ module sdp_request_cntl (
       //  This wont occur in the PBCL case.
       //  So in the PBLC case, test if Pe == Pi, Be == Bi, Le == Li, Ci>Ce and (cj_word-mem_inc_word) > 1, then set Ci=Ce. Because pbc_last address will equal
       //  the actual PBLCi, now Cl != Ci and a request will be generate.
-      /*
-      first_time_thru <= (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_WAIT       ) ? 1'b1            :
-             //          (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC    ) ? 1'b0            :
-                         (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD ) ? 1'b0            :  // we use 
-                                                                                                         first_time_thru ;  
-      */
       case (sdp_cntl_proc_storage_desc_state)  // synopsys parallel_case
         `SDP_CNTL_PROC_STORAGE_DESC_WAIT:
            begin
@@ -933,54 +926,6 @@ module sdp_request_cntl (
            end
       endcase
     end
-
-`ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-  genvar line;
-  generate
-    for (line=0; line<`MGR_DRAM_NUM_LINES_PER_CLINE ; line=line+1) 
-      begin: line_req
-        always @(posedge clk)
-          begin
-            case (sdp_cntl_proc_storage_desc_state)  // synopsys parallel_case
-              `SDP_CNTL_PROC_STORAGE_DESC_WAIT :
-                begin
-                  line_requested[line]    <=  1'b0    ;
-                end
-
-              `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS :
-                begin
-                  line_requested[line]    <= (mem_start_bank    != mem_last_end_bank   ) ? 1'b0                 :
-                                             (mem_start_page    != mem_last_end_page   ) ? 1'b0                 :
-                                             (mem_start_channel != mem_last_end_channel) ? 1'b0                 :
-                                                                                           line_requested[line] ;
-                end
-
-              `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC :
-                begin
-                  line_requested[line]    <= ( generate_requests                                                          ) ? line_requested[line] :
-                                             ( bank_change                                                                ) ? 1'b0                 :
-                                             ( page_change                                                                ) ? 1'b0                 :
-                                             ( (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) && channel_change ) ? 1'b0                 :
-                                                                                                                              line_requested[line] ;
-                end
-
-              `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST :
-                begin
-                  // if we are about to request <line>, make sure it hasnt been requested already with this bank and page
-                  line_requested[line]    <=  ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) && (pbc_inc_addr[`MGR_DRAM_PBCL_LINE_FIELD_RANGE ] == line)) ? 1'b1                 :
-                                              ((storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) && (pbc_inc_addr[`MGR_DRAM_PBLC_LINE_FIELD_RANGE ] == line)) ? 1'b1                 :
-                                                                                                                                                                       line_requested[line] ;
-                end
-
-              default:
-                begin
-                  line_requested[line]    <=  line_requested[line]  ;
-                end
-            endcase
-          end
-      end
-  endgenerate
-`endif
 
 
   always @(posedge clk)
