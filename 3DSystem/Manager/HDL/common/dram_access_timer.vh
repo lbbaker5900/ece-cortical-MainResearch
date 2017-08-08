@@ -92,7 +92,7 @@
 // PO
 `define DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PO                 19
 `define DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PC                  9
-`define DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2CR                  9
+`define DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2CR                  3
 `define DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2CW                  3
 `define DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PR                  0
 // PC
@@ -128,6 +128,22 @@
 //------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------
 
+//--------------------------------------------------------
+// Use a simple fsm rather than just regs to flow a sample thru the timer
+// 
+
+`define DRAM_ACC_SAMPLE_WAIT                 3'b001
+//`define DRAM_ACC_SAMPLE_START                4'b0010
+`define DRAM_ACC_SAMPLE_RESET_TABLE          3'b010
+`define DRAM_ACC_SAMPLE_COMPLETE             3'b100
+
+`define DRAM_ACC_SAMPLE_STATE_WIDTH         3
+`define DRAM_ACC_SAMPLE_STATE_MSB           `DRAM_ACC_SAMPLE_STATE_WIDTH-1
+`define DRAM_ACC_SAMPLE_STATE_LSB           0
+`define DRAM_ACC_SAMPLE_STATE_SIZE          (`DRAM_ACC_SAMPLE_STATE_MSB - `DRAM_ACC_SAMPLE_STATE_LSB +1)
+`define DRAM_ACC_SAMPLE_STATE_RANGE          `DRAM_ACC_SAMPLE_STATE_MSB : `DRAM_ACC_SAMPLE_STATE_LSB
+
+//--------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 // end of FSM's

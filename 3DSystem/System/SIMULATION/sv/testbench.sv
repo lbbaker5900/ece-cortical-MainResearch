@@ -60,7 +60,7 @@ program automatic test (
         env.run();
         //env.wrap_up();
         
-        #5000;  // 5us
+        #10000;  // 5us
         env.wrap_up();
 
 

@@ -11,6 +11,24 @@
                   
       Note: leveraged from https://github.ncsu.edu/ECE-Memory-Controller-IS/ece-diram4-memory-controller/blob/master/HDL/run_s/scheduler/code/global-timer.v
 
+    If ready asserted, provides an immediate can_go status.
+    The requestor must then assert valid to cause a table reset.
+    Any requestor must wait 2 cycles after the valid aseertion before testing ready
+
+                          ______        ______        ______        ______        ______        ______        ______        ______
+                    _____|      |______|      |______|      |______|      |______|      |______|      |______|      |______|      
+                          _______________________________________________________                             ______________
+            Ready   _____|                                                       |___________________________|
+
+      Timer State              Wait          Wait          Wait       Reset Table     Complete       Wait          Wait
+                                                      _____________  
+            Valid   _________________________________|             |__________________________________
+                                        
+                          ______________________________
+        cmd status  -----|______________________________|---------------------------------------------
+                                       ^             ^             ^             ^             ^
+                                     can_go?        yes         illegal        illegal     start testing ready
+
     Structure of timer with all values initated
 
     Rule: Check the column for issuing can_go, set row when granted
@@ -39,13 +57,11 @@
 
 module dram_access_timer(
 
-            //clk,row_number, col_number,set, reset, upd__cam__conflict_timer_set, grant, can_go);
-            
             //-------------------------------
             // Outputs
             output reg [`DRAM_ACC_NUM_OF_CMDS_VECTOR ]  cmd_can_go         , // vector in order of DRAM_ACC_CMD_IS_*
-            output reg                                  can_go             ,
-            output reg                                  can_go_valid       ,  // We need to pipeline to meet timing, so stall can_go if another command is in process
+            //output reg                                  can_go             ,
+            //output reg                                  can_go_valid       ,  // We need to pipeline to meet timing, so stall can_go if another command is in process
             output reg                                  ready              ,  // immediately deassert ready if we are getting a request while one is still being processed
 
             //-------------------------------
@@ -78,47 +94,81 @@ module dram_access_timer(
   reg                                  request_cache_write                                       ; 
   reg                                  request_page_refresh                                      ; 
   
-  reg  [1:0]                           int_request_valid   ;
-  reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE ]  int_request_cmd [2] ;
-  reg                                  request_sample      ;
+  reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE ]  int_request_cmd     ;
+  //reg                                  sample      ;
+  reg                                  reset_table         ;
 
 
-  genvar gvi;
-  generate
-    for (gvi=0; gvi<2; gvi++)
-      begin
-        always @(posedge clk)
-          begin
-            if (gvi == 0)
-              begin
-                int_request_valid[gvi] <= ( reset_poweron ) ? 'd0 :  request_valid | (int_request_valid  & request_sample & ~can_go) ;
-                int_request_cmd  [gvi] <= ( reset_poweron ) ? 'd0 : request_cmd              ;
-              end
-            else
-              begin
-                int_request_valid[gvi] <= ( reset_poweron ) ? 'd0 : int_request_valid[gvi-1] & ~can_go;
-                int_request_cmd  [gvi] <= ( reset_poweron ) ? 'd0 : int_request_cmd  [gvi-1] ;
-              end
-          end
-      end
-  endgenerate
+  reg [`DRAM_ACC_SAMPLE_STATE_RANGE ] dram_acc_sample_state      ; // state flop
+  reg [`DRAM_ACC_SAMPLE_STATE_RANGE ] dram_acc_sample_state_next ;
+  
+
+  // State register 
+  always @(posedge clk)
+    begin
+      dram_acc_sample_state <= ( reset_poweron ) ? `DRAM_ACC_SAMPLE_WAIT       :
+                                                   dram_acc_sample_state_next  ;
+    end
+  
   always @(*)
     begin
-      request_sample = int_request_valid[0] & ~int_request_valid[1] ;
+      case (dram_acc_sample_state)
+        
+        `DRAM_ACC_SAMPLE_WAIT: 
+          dram_acc_sample_state_next =  ( request_valid ) ?   `DRAM_ACC_SAMPLE_RESET_TABLE  :
+                                                              `DRAM_ACC_SAMPLE_WAIT   ;
+  
+/*
+        `DRAM_ACC_SAMPLE_START: 
+          dram_acc_sample_state_next =  ( can_go ) ? `DRAM_ACC_SAMPLE_RESET_TABLE   :  // wait for requested timer to be zero:w
+                                                     `DRAM_ACC_SAMPLE_START         ;
+*/
+  
+        `DRAM_ACC_SAMPLE_RESET_TABLE: 
+          dram_acc_sample_state_next =  `DRAM_ACC_SAMPLE_COMPLETE   ;
+                                                                   
+        `DRAM_ACC_SAMPLE_COMPLETE: 
+          dram_acc_sample_state_next =  (~request_valid ) ?   `DRAM_ACC_SAMPLE_WAIT       :
+                                                              `DRAM_ACC_SAMPLE_COMPLETE   ;
+                                                                                                             
+  
+        default:
+          dram_acc_sample_state_next = `DRAM_ACC_SAMPLE_WAIT ;
+    
+      endcase // case (dram_acc_sample_state)
+    end // always @ (*)
+
+
+  always @(posedge clk)
+    begin
+      int_request_cmd        <= ( dram_acc_sample_state == `DRAM_ACC_SAMPLE_WAIT ) ? request_cmd      :
+                                                                                     int_request_cmd  ;
+    end
+/*
+  always @(*)
+    begin
+      sample = ( dram_acc_sample_state == `DRAM_ACC_SAMPLE_START ) ;
+    end
+*/
+
+  always @(*)
+    begin
+      reset_table = ( dram_acc_sample_state == `DRAM_ACC_SAMPLE_RESET_TABLE ) ;
     end
 
+  // The requestor must wait a cycle before checking ready again. The PASS fsm guarantees this cycle delay
   always @(posedge clk) 
     begin
-      ready <= ( reset_poweron ) ? 'd0 : ~(request_valid | int_request_valid[0]) ;
+      ready <= (dram_acc_sample_state == `DRAM_ACC_SAMPLE_WAIT);
     end
 
   always @(*)
     begin
-      request_page_open     = int_request_valid[0] & (int_request_cmd[0] == `DRAM_ACC_CMD_IS_PO); 
-      request_page_close    = int_request_valid[0] & (int_request_cmd[0] == `DRAM_ACC_CMD_IS_PC); 
-      request_cache_read    = int_request_valid[0] & (int_request_cmd[0] == `DRAM_ACC_CMD_IS_CR); 
-      request_cache_write   = int_request_valid[0] & (int_request_cmd[0] == `DRAM_ACC_CMD_IS_CW); 
-      request_page_refresh  = int_request_valid[0] & (int_request_cmd[0] == `DRAM_ACC_CMD_IS_PR); 
+      request_page_open     = (int_request_cmd == `DRAM_ACC_CMD_IS_PO); 
+      request_page_close    = (int_request_cmd == `DRAM_ACC_CMD_IS_PC); 
+      request_cache_read    = (int_request_cmd == `DRAM_ACC_CMD_IS_CR); 
+      request_cache_write   = (int_request_cmd == `DRAM_ACC_CMD_IS_CW); 
+      request_page_refresh  = (int_request_cmd == `DRAM_ACC_CMD_IS_PR); 
     end
   
   always @(posedge clk)
@@ -139,41 +189,42 @@ module dram_access_timer(
       end
     else 
       begin
-        //------------------------------------------------------------------------------------------------------------------------
-        // PO
-        page_open    [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && can_go && can_go_valid     ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_PO ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PO ] ));
-        page_close   [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && can_go && can_go_valid     ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_PO ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PO ] ));
-        cache_read   [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && can_go && can_go_valid     ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_PO ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PO ] ));
-        cache_write  [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && can_go && can_go_valid     ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_PO ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PO ] ));
-        page_refresh [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && can_go && can_go_valid     ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_PO ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PO ] ));
+        //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //                                                                                                                          check for all zero                                decrement time                                                
+        // PO                                                                                                                               V                                               V                         
+        page_open    [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && reset_table    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_PO ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PO ] ));
+        page_close   [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && reset_table    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_PO ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PO ] ));
+        cache_read   [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && reset_table    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_PO ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PO ] ));
+        cache_write  [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && reset_table    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_PO ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PO ] ));
+        page_refresh [`DRAM_ACC_CMD_IS_PO ] <= (request_page_open && reset_table    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PO2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_PO ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PO ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PO ] ));
         //------------------------------------------------------------------------------------------------------------------------
         // PC
-        page_open    [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go && can_go_valid    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_PC ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PC ] ));
-        page_close   [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go && can_go_valid    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_PC ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PC ] ));
-        cache_read   [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go && can_go_valid    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_PC ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PC ] ));
-        cache_write  [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go && can_go_valid    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_PC ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PC ] ));
-        page_refresh [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && can_go && can_go_valid    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_PC ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PC ] ));
+        page_open    [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && reset_table   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_PC ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PC ] ));
+        page_close   [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && reset_table   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_PC ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PC ] ));
+        cache_read   [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && reset_table   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_PC ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PC ] ));
+        cache_write  [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && reset_table   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_PC ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PC ] ));
+        page_refresh [`DRAM_ACC_CMD_IS_PC ] <= (request_page_close && reset_table   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PC2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_PC ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PC ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PC ] ));
         //------------------------------------------------------------------------------------------------------------------------
         // CR                                                                           
-        page_open    [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go && can_go_valid    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_CR ] ) ? (page_open    [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_CR ] ));
-        page_close   [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go && can_go_valid    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_CR ] ) ? (page_close   [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_CR ] ));
-        cache_read   [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go && can_go_valid    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_CR ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_CR ] ));
-        cache_write  [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go && can_go_valid    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_CR ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_CR ] ));
-        page_refresh [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && can_go && can_go_valid    ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_CR ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_CR ] ));
+        page_open    [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && reset_table   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_CR ] ) ? (page_open    [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_CR ] ));
+        page_close   [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && reset_table   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_CR ] ) ? (page_close   [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_CR ] ));
+        cache_read   [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && reset_table   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_CR ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_CR ] ));
+        cache_write  [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && reset_table   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_CR ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_CR ] ));
+        page_refresh [`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read && reset_table   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CR2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_CR ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_CR ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_CR ] ));
         //------------------------------------------------------------------------------------------------------------------------
         // CW                                                                                
-        page_open    [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go && can_go_valid   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_CW ] ) ? (page_open    [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_CW ] ));
-        page_close   [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go && can_go_valid   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_CW ] ) ? (page_close   [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_CW ] ));
-        cache_read   [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go && can_go_valid   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_CW ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_CW ] ));
-        cache_write  [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go && can_go_valid   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_CW ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_CW ] ));
-        page_refresh [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && can_go && can_go_valid   ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_CW ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_CW ] ));
+        page_open    [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && reset_table  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PO  : ((|page_open    [`DRAM_ACC_CMD_IS_CW ] ) ? (page_open    [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_CW ] ));
+        page_close   [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && reset_table  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PC  : ((|page_close   [`DRAM_ACC_CMD_IS_CW ] ) ? (page_close   [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_CW ] ));
+        cache_read   [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && reset_table  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2CR  : ((|cache_read   [`DRAM_ACC_CMD_IS_CW ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_CW ] ));
+        cache_write  [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && reset_table  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2CW  : ((|cache_write  [`DRAM_ACC_CMD_IS_CW ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_CW ] ));
+        page_refresh [`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write && reset_table  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_CW2PR  : ((|page_refresh [`DRAM_ACC_CMD_IS_CW ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_CW ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_CW ] ));
         //------------------------------------------------------------------------------------------------------------------------
         // PR
-        page_open    [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go && can_go_valid  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PO : ((|page_open    [`DRAM_ACC_CMD_IS_PR ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PR ] ));
-        page_close   [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go && can_go_valid  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PC : ((|page_close   [`DRAM_ACC_CMD_IS_PR ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PR ] ));
-        cache_read   [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go && can_go_valid  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2CR : ((|cache_read   [`DRAM_ACC_CMD_IS_PR ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PR ] ));
-        cache_write  [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go && can_go_valid  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2CW : ((|cache_write  [`DRAM_ACC_CMD_IS_PR ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PR ] ));
-        page_refresh [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go && can_go_valid  ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PR : ((|page_refresh [`DRAM_ACC_CMD_IS_PR ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PR ] ));
+        page_open    [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && reset_table ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PO : ((|page_open    [`DRAM_ACC_CMD_IS_PR ] ) ? (page_open    [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_PR ] ));
+        page_close   [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && reset_table ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PC : ((|page_close   [`DRAM_ACC_CMD_IS_PR ] ) ? (page_close   [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_close   [`DRAM_ACC_CMD_IS_PR ] ));
+        cache_read   [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && reset_table ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2CR : ((|cache_read   [`DRAM_ACC_CMD_IS_PR ] ) ? (cache_read   [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (cache_read   [`DRAM_ACC_CMD_IS_PR ] ));
+        cache_write  [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && reset_table ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2CW : ((|cache_write  [`DRAM_ACC_CMD_IS_PR ] ) ? (cache_write  [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (cache_write  [`DRAM_ACC_CMD_IS_PR ] ));
+        page_refresh [`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && reset_table ) ? `DRAM_ACC_DIRAM4_REQMTS_TIMER_PR2PR : ((|page_refresh [`DRAM_ACC_CMD_IS_PR ] ) ? (page_refresh [`DRAM_ACC_CMD_IS_PR ] - 1 ) : (page_refresh [`DRAM_ACC_CMD_IS_PR ] ));
         //------------------------------------------------------------------------------------------------------------------------
         // Adjacent Bank
         page_open    [`DRAM_ACC_CMD_IS_ADJ ] <= ((adjacent_bank_request                         ) ? (`DRAM_ACC_DIRAM4_REQMTS_TIMER_INTER_BANK ) : ((|page_open    [`DRAM_ACC_CMD_IS_ADJ ] ) ? (page_open    [`DRAM_ACC_CMD_IS_ADJ ] - 1 ) : (page_open    [`DRAM_ACC_CMD_IS_ADJ ] )));
@@ -185,28 +236,28 @@ module dram_access_timer(
   // we will need immediate feedback, so minimize logic
   always @(posedge clk)
     begin
-       cmd_can_go[`DRAM_ACC_CMD_IS_PO ] <= (request_page_open    && can_go) ? 1'b0 :
+       cmd_can_go[`DRAM_ACC_CMD_IS_PO ] <= //(request_page_open    && can_go) ? 1'b0 :
                                                                               ((page_open   [0] == 0) & (page_open   [1] == 0) & (page_open   [2] == 0) & (page_open   [3] == 0) & (page_open   [4] == 0) & (page_open   [5] == 0)) ;
                                                                    
-       cmd_can_go[`DRAM_ACC_CMD_IS_PC ] <= (request_page_close   && can_go) ? 1'b0 :
+       cmd_can_go[`DRAM_ACC_CMD_IS_PC ] <= //(request_page_close   && can_go) ? 1'b0 :
                                                                               ((page_close  [0] == 0) & (page_close  [1] == 0) & (page_close  [2] == 0) & (page_close  [3] == 0) & (page_close  [4] == 0) & (page_close  [5] == 0)) ;
                                                                    
-       cmd_can_go[`DRAM_ACC_CMD_IS_CR ] <= (request_cache_read   && can_go) ? 1'b0 :
+       cmd_can_go[`DRAM_ACC_CMD_IS_CR ] <= //(request_cache_read   && can_go) ? 1'b0 :
                                                                               ((cache_read  [0] == 0) & (cache_read  [1] == 0) & (cache_read  [2] == 0) & (cache_read  [3] == 0) & (cache_read  [4] == 0) ) ;
                                                                    
-       cmd_can_go[`DRAM_ACC_CMD_IS_CW ] <= (request_cache_write  && can_go) ? 1'b0 :
+       cmd_can_go[`DRAM_ACC_CMD_IS_CW ] <= //(request_cache_write  && can_go) ? 1'b0 :
                                                                               ((cache_write [0] == 0) & (cache_write [1] == 0) & (cache_write [2] == 0) & (cache_write [3] == 0) & (cache_write [4] == 0) ) ;
                                                                    
-       cmd_can_go[`DRAM_ACC_CMD_IS_PR ] <= (request_page_refresh && can_go) ? 1'b0 :
+       cmd_can_go[`DRAM_ACC_CMD_IS_PR ] <= //(request_page_refresh && can_go) ? 1'b0 :
                                                                               ((page_refresh[0] == 0) & (page_refresh[1] == 0) & (page_refresh[2] == 0) & (page_refresh[3] == 0) & (page_refresh[4] == 0) & (page_refresh[5] == 0)) ;
 
     end
-
+/*
   always @(*)
     begin
-      can_go       = 0              ;
-      can_go_valid = request_sample ;
-      case(request_cmd)
+      can_go       = 0      ;
+      can_go_valid = sample ;
+      case(int_request_cmd)
         `DRAM_ACC_CMD_IS_PO:
           begin
             can_go = cmd_can_go [`DRAM_ACC_CMD_IS_PO ] ;
@@ -233,6 +284,7 @@ module dram_access_timer(
           end
       endcase
     end
+*/
   
   
   endmodule

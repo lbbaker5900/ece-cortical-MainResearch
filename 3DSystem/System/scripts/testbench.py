@@ -61,6 +61,30 @@ if __name__ == "__main__":
 
 
 
+  FoundNumOfChannelsPerDram = False
+  searchFile = open("../../Manager/HDL/common/manager.vh", "r")
+  for line in searchFile:
+    if FoundNumOfChannelsPerDram == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "MGR_DRAM_NUM_CHANNELS" in data[1]:
+        numOfChannels = int(data[2])
+        FoundNumOfChannelsPerDram = True
+  searchFile.close()
+
+
+  FoundNumOfBanksPerDram = False
+  searchFile = open("../../Manager/HDL/common/manager.vh", "r")
+  for line in searchFile:
+    if FoundNumOfBanksPerDram == False:
+      data = re.split(r'\s{1,}', line)
+      # check define is in 2nd field
+      if "MGR_DRAM_NUM_BANKS" in data[1]:
+        numOfBanks = int(data[2])
+        FoundNumOfBanksPerDram = True
+  searchFile.close()
+
+
   ##----------------------------------------------------------------------------------------------------
   ##----------------------------------------------------------------------------------------------------
   ##----------------------------------------------------------------------------------------------------
@@ -408,6 +432,51 @@ if __name__ == "__main__":
         pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__dp_ptype}}'.format(mgr)
         pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__dp_data}}'.format(mgr)
         pLine = pLine + '\nadd wave -noupdate -group MGR{0} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_noc_cntl/noc__locl__dp_mgrId}}'.format(mgr)
+
+  f.write(pLine)
+  f.close()
+
+
+
+
+  f = open("../SIMULATION/sv/mmc_channel_bank_status.do", "w")
+  pLine = ""
+  for mgr in range (0, numOfMgr):
+    for chan in range (0, numOfChannels):
+      for bank in range (0, numOfBanks):
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/a_page_is_open}}                           '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/bank}}                                     '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/chan_bank_adjacent_bank_request}}          '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/chan_bank_checker_ready}}                  '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/chan_bank_cmd_can_go}}                     '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/chan_bank_request_cmd}}                    '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/chan_bank_request_valid}}                  '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/chan_bank_set_cmd}}                        '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/chan_bank_set_page}}                       '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/chan_bank_set_valid}}                      '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/open_page_id}}                             '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/adjacent_bank_request}}  '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/cache_read}}             '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/cache_write}}            '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/clk}}                    '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/cmd_can_go}}             '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/dram_acc_sample_state}}             '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/dram_acc_sample_state_next}}             '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/int_request_cmd}}        '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/page_close}}             '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/page_open}}              '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/page_refresh}}           '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/ready}}                  '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/request_cache_read}}     '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/request_cache_write}}    '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/request_cmd}}            '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/request_page_close}}     '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/request_page_open}}      '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/request_page_refresh}}   '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/request_valid}}          '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/reset_table}}          '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/reset_poweron}}          '.format(mgr,chan,bank)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/sys__mgr__mgrId}}        '.format(mgr,chan,bank)
 
   f.write(pLine)
   f.close()

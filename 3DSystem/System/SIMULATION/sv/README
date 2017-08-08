@@ -35,7 +35,7 @@ gvim inputFiles/manager_3_layer1_instruction_readmem.dat \
 git checkout ../../../Manager/scripts/nocConfig.txt
 git checkout ../../../Manager/HDL/common/noc_interMgr_port_Bitmasks.vh
 git checkout ../../../PEArray/HDL/common/pe_array.vh 
-cp inputFiles.8x8/* inputFiles/.
+cp inputFiles.8x8.small/* inputFiles/.
 
 grep ERROR transcript ; grep PASS transcript | wc -l
 echo 'Expect 20480'
@@ -52,4 +52,8 @@ gvim -O inputFiles/manager_10_layer1_{i,d}cntl_readmem.dat inputFiles/manager_10
 
 sed -i -e 's/mgr_inst\[2\]/mgr_inst\[1\]/' mmc*.do ; sed -i -e 's/MGR2/MGR1/' mmc*.do ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[1\]/' mmc*.do
 sed -i -e 's/mgr_inst\[2\]/mgr_inst\[1\]/' ram.do ; sed -i -e 's/MGR2/MGR1/' ram.do ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[1\]/' ram.do
+sed -i -e 's/mgr_inst\[2\]/mgr_inst\[1\]/' debug.do ; sed -i -e 's/MGR2/MGR1/' debug.do ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[1\]/' debug.do
+sed -i -e 's/mgr_inst\[2\]/mgr_inst\[1\]/' wave.do ; sed -i -e 's/MGR2/MGR1/' wave.do ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[1\]/' wave.do
+sed -i -e 's/mgr_inst\[1\]/mgr_inst\[2\]/' debug.do ; sed -i -e 's/MGR1/MGR2/' debug.do ; sed -i -e 's/diram_port_arrays\[1\]/diram_port_arrays\[2\]/' debug.do
+sed -i -e 's/mgr_inst\[1\]/mgr_inst\[2\]/' wave.do ; sed -i -e 's/MGR1/MGR2/' wave.do ; sed -i -e 's/diram_port_arrays\[1\]/diram_port_arrays\[2\]/' wave.do
 
