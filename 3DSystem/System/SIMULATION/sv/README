@@ -57,3 +57,7 @@ sed -i -e 's/mgr_inst\[2\]/mgr_inst\[1\]/' wave.do ; sed -i -e 's/MGR2/MGR1/' wa
 sed -i -e 's/mgr_inst\[1\]/mgr_inst\[2\]/' debug.do ; sed -i -e 's/MGR1/MGR2/' debug.do ; sed -i -e 's/diram_port_arrays\[1\]/diram_port_arrays\[2\]/' debug.do
 sed -i -e 's/mgr_inst\[1\]/mgr_inst\[2\]/' wave.do ; sed -i -e 's/MGR1/MGR2/' wave.do ; sed -i -e 's/diram_port_arrays\[1\]/diram_port_arrays\[2\]/' wave.do
 
+sed -i -e 's/mgr_inst\[3\]/mgr_inst\[0\]/' debug.do ; sed -i -e 's/MGR3/MGR0/' debug.do ; sed -i -e 's/diram_port_arrays\[3\]/diram_port_arrays\[0\]/' debug.do
+sed -i -e 's/mgr_inst\[2\]/mgr_inst\[0\]/' debug.do ; sed -i -e 's/MGR2/MGR0/' debug.do ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[0\]/' debug.do
+sed -i -e 's/mgr_inst\[1\]/mgr_inst\[0\]/' debug.do ; sed -i -e 's/MGR1/MGR0/' debug.do ; sed -i -e 's/diram_port_arrays\[1\]/diram_port_arrays\[0\]/' debug.do
+
