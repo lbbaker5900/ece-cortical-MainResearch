@@ -102,7 +102,8 @@ class manager;
     base_operation    sys_operation                              ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_mgr                          ;  // operation packet containing all data associated with operation
     base_operation    sys_operation_oob                          ;  // need to make sure OOB oepration matches lane
-    base_operation    sys_operation_lane [`PE_NUM_OF_EXEC_LANES] ;  // copy for each lane
+    base_operation    sys_operation_lane     [`PE_NUM_OF_EXEC_LANES] ;  // copy for each lane
+    base_operation    sys_operation_lane_gen [`PE_NUM_OF_EXEC_LANES] ;  // sent to each lane
 
     oob_packet       oob_packet_mgr     ;  // constructed from the sys_operation and sent to the OOB driver
     oob_packet       oob_packet_new     ;  // used in OOB process
@@ -154,7 +155,7 @@ class manager;
         bit   [`MGR_NUM_LANES_RANGE           ]      rcvd_num_lanes      ;
         bit   [`MGR_WU_OPT_VALUE_RANGE        ]      rcvd_stOp_cmd       ;
         bit   [`MGR_WU_OPT_VALUE_RANGE        ]      rcvd_simd_cmd       ;
-     
+        //genvar lane; 
 
         repeat (20) @(vDownstreamStackBusOOB.cb_test);  
 

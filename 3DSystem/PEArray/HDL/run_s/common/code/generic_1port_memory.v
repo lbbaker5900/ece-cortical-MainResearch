@@ -117,21 +117,11 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
     `include "generic_memories.vh"
 
   `else
-    // FIXME: why did I have to do this?????  why didnt the if PARAMETER work?
-    //reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
-    //reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [4096-1 :0 ] ;
-    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [bit[GENERIC_MEM_ADDR_WIDTH-1:0]] = '{default: 'X};
 
-    if (GENERIC_MEM_DEPTH >= 4096)
-      begin
-        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [4096-1 :0 ] ;
-      end
-    else
-      begin
-        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
-      end
+    // Associative memory
+    bit  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [bit[GENERIC_MEM_ADDR_WIDTH-1:0]] = '{default: 'X};
 
-
+    /*
     initial
       begin
         @(negedge reset_poweron)
@@ -140,12 +130,15 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
               $readmemh( GENERIC_MEM_INIT_FILE, mem);
             end
       end
+    */
 
     string entry  ;
     int memFileDesc ;
     bit [GENERIC_MEM_ADDR_WIDTH-1 :0 ]  memory_address ;
     bit [GENERIC_MEM_DATA_WIDTH-1 :0 ]  memory_data    ;
 
+    // Need to accomodate loading during simulation
+    // e.g. pe_cntl.v creates event
     event loadMemory ;
     always
       begin
@@ -153,11 +146,11 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
           loadInitFile;
       end
 
+    // load at trailing edge of reset
     initial
       begin
         @(negedge reset_poweron);
         -> loadMemory ;
-        //loadInitFile;
       end
 
     task  loadInitFile;

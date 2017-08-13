@@ -141,14 +141,14 @@ class generator;
                 @(vDownstreamStackBusOOB.cb_test);  
                 if ( mgr2gen.num() != 0 )
                     begin
-                        mgr2gen.peek(sys_operation_mgr);   //Taking the instruction from the manager
-                        mgr2gen.get(sys_operation_mgr)  ;  //Removing the instruction from manager mailbox
+                        mgr2gen.peek(sys_operation_gen);   //Taking the instruction from the manager
+                        mgr2gen.get(sys_operation_gen)  ;  //Removing the instruction from manager mailbox
                         $display("@%0t:%s:%0d:INFO:Received operation from manager: {%0d,%0d}:%h", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation_mgr);
                         
                         // Create a base operation and all operation sent to driver will be copies of this
                         // This allows us to keep track of what has been generated
                      
-                        sys_operation_gen             =  new sys_operation_mgr  ;  // seed object. Dont use directly as all lanes will use the same operation
+                        //sys_operation_gen             =  new sys_operation_mgr  ;  // seed object. Dont use directly as all lanes will use the same operation
                         sys_operation_gen.setPriorOperations(priorOperations)   ;  // object may need to know what went before
 
 /*
@@ -161,7 +161,7 @@ class generator;
                         else if ((Id[0]  == 63) && (Id[1] == 0))
                             $display("@%0t:%s:%0d:INFO:DEBUG:No prior operation:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
 */
-
+/*
                         // randomize again to create operand values
                         sys_operation_gen.c_operationType_definedOrder .constraint_mode(0) ;
                         sys_operation_gen.c_operationType_all          .constraint_mode(0) ;
@@ -173,7 +173,7 @@ class generator;
                         sys_operation_gen.c_memoryLocalized.constraint_mode(1)            ;
                         //
                         assert(sys_operation_gen.randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
-
+*/
                        
                         
                         if (sys_operation_gen.OpType == `STREAMING_OP_CNTL_OPERATION_STD_NONE_NOP_TO_MEM )   // NOP
