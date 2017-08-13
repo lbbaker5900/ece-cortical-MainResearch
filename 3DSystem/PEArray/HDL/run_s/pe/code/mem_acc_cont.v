@@ -367,6 +367,13 @@ module mem_acc_cont (
                             ) gmemory ( 
                             
                             //---------------------------------------------------------------
+                            // Initialize
+                            //
+                            `ifndef SYNTHESIS
+                               .memFile ("" ),
+                            `endif
+
+                            //---------------------------------------------------------------
                             // Port A
                             .portA_address       ( address         ),
                             .portA_write_data    ( write_data      ),

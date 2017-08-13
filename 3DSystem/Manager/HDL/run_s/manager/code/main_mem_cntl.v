@@ -1993,7 +1993,54 @@ module main_mem_cntl (
 
         always @(posedge clk)
           begin
+            case ({(cmd_seq_pc_fifo   [chan].pipe_read & (cmd_seq_pc_fifo    [chan].pipe_cmd != `DRAM_ACC_CMD_IS_NOP)), 
+                   (cmd_seq_po_fifo   [chan].pipe_read & (cmd_seq_po_fifo    [chan].pipe_cmd != `DRAM_ACC_CMD_IS_NOP)), 
+                   (cmd_seq_cache_fifo[chan].pipe_read & (cmd_seq_cache_fifo [chan].pipe_cmd != `DRAM_ACC_CMD_IS_NOP))}) // synopsys parallel_case
+              3'b100:
+                begin
+                  chan_final_queue_valid  [chan]   <=   1'b1                                ;
+                  chan_final_queue_cmd    [chan]   <=   cmd_seq_pc_fifo [chan].pipe_cmd     ;
+                  chan_final_queue_strm   [chan]   <=   cmd_seq_pc_fifo [chan].pipe_strm    ;
+                  chan_final_queue_bank   [chan]   <=   cmd_seq_pc_fifo [chan].pipe_bank    ;
+                  chan_final_queue_page   [chan]   <=   cmd_seq_pc_fifo [chan].pipe_page    ;
+                end                                                                         
+                                                                                            
+              3'b010:                                                                       
+                begin                                                                       
+                  chan_final_queue_valid  [chan]   <=   1'b1                                ;
+                  chan_final_queue_cmd    [chan]   <=   cmd_seq_po_fifo [chan].pipe_cmd     ;
+                  chan_final_queue_strm   [chan]   <=   cmd_seq_po_fifo [chan].pipe_strm    ;
+                  chan_final_queue_bank   [chan]   <=   cmd_seq_po_fifo [chan].pipe_bank    ;
+                  chan_final_queue_page   [chan]   <=   cmd_seq_po_fifo [chan].pipe_page    ;
+                end
+
+              3'b001:
+                begin
+                  chan_final_queue_valid  [chan]   <=   1'b1                                ;
+                  chan_final_queue_cmd    [chan]   <=   cmd_seq_cache_fifo [chan].pipe_cmd  ;
+                  chan_final_queue_strm   [chan]   <=   cmd_seq_cache_fifo [chan].pipe_strm ;
+                  chan_final_queue_bank   [chan]   <=   cmd_seq_cache_fifo [chan].pipe_bank ;
+                  chan_final_queue_page   [chan]   <=   cmd_seq_cache_fifo [chan].pipe_page ;
+                  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                    
+                    chan_final_queue_line[chan]    <=   cmd_seq_cache_fifo [chan].pipe_line ;
+                  `endif
+                end
+
+              default:
+                begin
+                  chan_final_queue_valid  [chan]   <=   1'b0                                ;
+                  chan_final_queue_cmd    [chan]   <=   chan_final_queue_cmd    [chan]      ;
+                  chan_final_queue_strm   [chan]   <=   chan_final_queue_strm   [chan]      ;
+                  chan_final_queue_bank   [chan]   <=   chan_final_queue_bank   [chan]      ;
+                  chan_final_queue_page   [chan]   <=   chan_final_queue_page   [chan]      ;
+                  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                    
+                    chan_final_queue_line[chan]    <=   chan_final_queue_line   [chan]      ;
+                  `endif
+                end
+           endcase
+/*
             chan_final_queue_valid [chan]   <=    cmd_seq_pc_fifo [chan].pipe_read | 
+                                                  cmd_seq_po_fifo [chan].pipe_read | 
                                                   cmd_seq_cache_fifo[chan].pipe_read ;
 
             chan_final_queue_cmd   [chan]   <=  ( cmd_seq_pc_fifo [chan].pipe_read ) ? cmd_seq_pc_fifo [chan].pipe_cmd :
@@ -2011,6 +2058,7 @@ module main_mem_cntl (
             `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                    
               chan_final_queue_line[chan]   <=  cmd_seq_cache_fifo[chan].pipe_line ;
             `endif
+*/
           end
 
       end

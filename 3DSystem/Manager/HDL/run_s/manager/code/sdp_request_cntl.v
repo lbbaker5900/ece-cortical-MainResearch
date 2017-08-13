@@ -1330,6 +1330,13 @@ module sdp_request_cntl (
                         ) gmemory ( 
                         
                         //---------------------------------------------------------------
+                        // Initialize
+                        //
+                        `ifndef SYNTHESIS
+                           .memFile ($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId)),
+                        `endif
+
+                        //---------------------------------------------------------------
                         // Port 
                         .portA_address       ( local_storage_desc_ptr          ),
                         .portA_write_data    ( {`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_WIDTH {1'b0}} ),
@@ -1345,11 +1352,39 @@ module sdp_request_cntl (
   // Note: parameters must be fixed, so have to load directly
   //defparam gmemory.GENERIC_MEM_INIT_FILE   =    $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId);
         `ifndef SYNTHESIS
+
+/*
+          string entry  ;
+          string memFile  ;
+          int memFileDesc ;
+          bit [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE       ]  memory_address ;
+          bit [`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_RANGE ]  memory_data    ;
           initial
             begin
               @(negedge reset_poweron);
-              $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId), gmemory.mem);
+              //$readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId), gmemory.mem);
+
+
+
+              memFile = $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId);
+              memFileDesc = $fopen (memFile, "r");
+              if (memFileDesc == 0)
+                begin
+                  $display("ERROR:LEE:readmem file error : %s ", memFile);
+                  $finish;
+                end
+              while (!$feof(memFileDesc)) 
+                begin 
+                  void'($fgets(entry, memFileDesc)); 
+                  void'($sscanf(entry, "@%x %x", memory_address, memory_data));
+                  //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);
+                  gmemory.mem[memory_address] = memory_data ;
+                end
+             $fclose(memFileDesc);
+
             end
+*/
+
         `endif
       end
   endgenerate
@@ -1365,6 +1400,14 @@ module sdp_request_cntl (
                                .GENERIC_MEM_REGISTERED_OUT (0                                                    ),
                                .GENERIC_MEM_DATA_WIDTH     (`MGR_LOCAL_STORAGE_DESC_CONSJUMP_AGGREGATE_MEM_WIDTH )
                         ) gmemory ( 
+
+                        //---------------------------------------------------------------
+                        // Initialize
+                        //
+                        `ifndef SYNTHESIS
+                           .memFile ($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJump_readmem.dat", sys__mgr__mgrId)),
+                        `endif
+
                         //---------------------------------------------------------------
                         // Port
                         .portA_address       ( consJumpPtr                      ),
@@ -1379,11 +1422,39 @@ module sdp_request_cntl (
                         .clk                 ( clk                       )
                         ) ;
         `ifndef SYNTHESIS
+
+/*
+          string entry  ;
+          string memFile  ;
+          int memFileDesc ;
+          bit [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE       ]  memory_address ;
+          bit [`MGR_LOCAL_STORAGE_DESC_AGGREGATE_MEM_RANGE ]  memory_data    ;
+
           initial
             begin
               @(negedge reset_poweron);
-              $readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJump_readmem.dat", sys__mgr__mgrId), gmemory.mem);
+              //$readmemh($sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJump_readmem.dat", sys__mgr__mgrId), gmemory.mem);
+
+              memFile = $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptorConsJump_readmem.dat", sys__mgr__mgrId);
+
+              memFileDesc = $fopen (memFile, "r");
+              if (memFileDesc == 0)
+                begin
+                  $display("ERROR:LEE:readmem file error : %s ", memFile);
+                  $finish;
+                end
+              while (!$feof(memFileDesc)) 
+                begin 
+                  void'($fgets(entry, memFileDesc)); 
+                  void'($sscanf(entry, "@%x %x", memory_address, memory_data));
+                  //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);
+                  gmemory.mem[memory_address] = memory_data ;
+                end
+             $fclose(memFileDesc);
+
             end
+*/
+
         `endif
       end
   endgenerate

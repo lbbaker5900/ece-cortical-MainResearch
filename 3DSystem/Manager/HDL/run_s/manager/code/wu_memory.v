@@ -168,6 +168,14 @@ module wu_memory (
                         ) gmemory ( 
                         
                         //---------------------------------------------------------------
+                        // Initialize
+                        //
+                        `ifndef SYNTHESIS
+                           .memFile ($sformatf("./inputFiles/manager_%0d_layer1_instruction_readmem.dat", sys__mgr__mgrId)),
+                        `endif
+
+                        //
+                        //---------------------------------------------------------------
                         // Port 
                         .portA_address       ( wuf__wum__addr_d1),
                         .portA_write_data    ( {`MGR_INSTRUCTION_MEMORY_AGGREGATE_MEM_WIDTH {1'b0}} ),
@@ -182,12 +190,39 @@ module wu_memory (
                         ) ;
   // Note: parameters must be fixed, so have to load directly
   //defparam gmemory.GENERIC_MEM_INIT_FILE   =    $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId);
+
         `ifndef SYNTHESIS
-          initial
-            begin
-              @(negedge reset_poweron);
-              $readmemh($sformatf("./inputFiles/manager_%0d_layer1_instruction_readmem.dat", sys__mgr__mgrId), gmemory.mem);
-            end
+/*
+        string entry  ;
+        string memFile  ;
+        int memFileDesc ;
+        bit [`MGR_INSTRUCTION_ADDRESS_RANGE              ]  memory_address ;
+        bit [`MGR_INSTRUCTION_MEMORY_AGGREGATE_MEM_RANGE ]  memory_data    ;
+
+        initial
+          begin
+            @(negedge reset_poweron);
+            //$readmemh($sformatf("./inputFiles/manager_%0d_layer1_instruction_readmem.dat", sys__mgr__mgrId), gmemory.mem);
+           
+            memFile = $sformatf("./inputFiles/manager_%0d_layer1_instruction_readmem.dat", sys__mgr__mgrId);
+            memFileDesc = $fopen (memFile, "r");
+            if (memFileDesc == 0)
+              begin
+                $display("ERROR:LEE:readmem file error : %s ", memFile);
+                $finish;
+              end
+            while (!$feof(memFileDesc)) 
+              begin 
+                void'($fgets(entry, memFileDesc)); 
+                void'($sscanf(entry, "@%x %x", memory_address, memory_data));
+                //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);
+                gmemory.mem[memory_address] = memory_data ;
+              end
+           $fclose(memFileDesc);
+
+          end
+*/
+
         `endif
       end
   endgenerate
@@ -231,7 +266,6 @@ module wu_memory (
         #0.3   dcntl_e1            =  (memory_read) ? dcntl              [wuf__wum__addr_d1] : 'd0 ;
 
       end
-
 */
 
 endmodule

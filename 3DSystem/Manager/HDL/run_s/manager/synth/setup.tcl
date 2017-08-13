@@ -29,7 +29,7 @@ set clkname clk
 # WIP
 #
 
-set modname  manager
+set modname main_mem_cntl
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
@@ -49,4 +49,14 @@ set type test
 #set the number of digits to be used for delay results
 set report_default_significant_digits 4
 
-set CLK_PER 20
+if {$tech == "65nm"} {
+
+  set CLK_PER 2.5
+
+} elseif {($tech == "28nm")} {
+
+  set CLK_PER 1.0
+
+}
+
+

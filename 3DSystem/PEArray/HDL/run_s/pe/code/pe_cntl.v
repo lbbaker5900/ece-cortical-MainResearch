@@ -248,6 +248,13 @@ module pe_cntl (
                         ) gmemory ( 
                         
                         //---------------------------------------------------------------
+                        // Initialize
+                        //
+                        `ifndef SYNTHESIS
+                           .memFile ($sformatf("./inputFiles/pe%0d_pe_cntl_stOp_memory.dat", sys__pe__peId)),
+                        `endif
+
+                        //---------------------------------------------------------------
                         // Port 
                         .portA_address       ( stOp_optionPtr       ),
                         .portA_write_data    ( {`PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_WIDTH {1'b0}} ),
@@ -272,11 +279,14 @@ module pe_cntl (
   // Note: parameters must be fixed, so have to load directly
   //defparam gmemory.GENERIC_MEM_INIT_FILE   =    $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId);
         `ifndef SYNTHESIS
+
           always
             begin
               @(posedge enable_memory)
-              $readmemh($sformatf("./inputFiles/pe%0d_pe_cntl_stOp_memory.dat", sys__pe__peId), gmemory.mem);
+                //$readmemh($sformatf("./inputFiles/pe%0d_pe_cntl_stOp_memory.dat", sys__pe__peId), gmemory.mem);
+                ->gmemory.loadMemory;
             end
+
         `endif
       end
   endgenerate

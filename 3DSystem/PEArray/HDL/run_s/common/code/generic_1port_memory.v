@@ -51,6 +51,14 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
                               parameter GENERIC_MEM_DATA_WIDTH      = 32     ,
                               parameter GENERIC_MEM_INIT_FILE       = ""     )
                          (
+
+                          //---------------------------------------------------------------
+                          // Initialize
+                          // - cant pass as a parameter
+                          `ifndef SYNTHESIS
+                            memFile,
+                          `endif                                                
+
                           //---------------------------------------------------------------
                           // Port A 
                           portA_address        ,
@@ -68,6 +76,10 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
   // 
   localparam GENERIC_MEM_ADDR_WIDTH       = $clog2(GENERIC_MEM_DEPTH) ;
   localparam GENERIC_NUM_OF_PORTS         = 1 ;  // for generic_memories.vh
+
+  `ifndef SYNTHESIS
+    input string memFile;
+  `endif                                                
 
   input   wire                       clk            ;
   input   wire                       reset_poweron  ;  // used only to intialize memory
@@ -106,8 +118,9 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
 
   `else
     // FIXME: why did I have to do this?????  why didnt the if PARAMETER work?
-    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
+    //reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
     //reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [4096-1 :0 ] ;
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [bit[GENERIC_MEM_ADDR_WIDTH-1:0]] = '{default: 'X};
 
     if (GENERIC_MEM_DEPTH >= 4096)
       begin
@@ -127,6 +140,48 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
               $readmemh( GENERIC_MEM_INIT_FILE, mem);
             end
       end
+
+    string entry  ;
+    int memFileDesc ;
+    bit [GENERIC_MEM_ADDR_WIDTH-1 :0 ]  memory_address ;
+    bit [GENERIC_MEM_DATA_WIDTH-1 :0 ]  memory_data    ;
+
+    event loadMemory ;
+    always
+      begin
+        @(loadMemory)
+          loadInitFile;
+      end
+
+    initial
+      begin
+        @(negedge reset_poweron);
+        -> loadMemory ;
+        //loadInitFile;
+      end
+
+    task  loadInitFile;
+      if (memFile != "")
+        begin
+          memFileDesc = $fopen (memFile, "r");
+          if (memFileDesc == 0)
+            begin
+              $display("ERROR:generic_1port_memory:LEE:readmem file error : %s ", memFile);
+              $finish;
+            end
+          while (!$feof(memFileDesc)) 
+            begin 
+              void'($fgets(entry, memFileDesc)); 
+              void'($sscanf(entry, "@%x %x", memory_address, memory_data));
+              //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);
+              mem[memory_address] = memory_data ;
+            end
+         $fclose(memFileDesc);
+        end
+     endtask
+
+
+
   `endif
 
   `ifndef SYNTHESIS
@@ -166,7 +221,8 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
     always @(posedge clk)
       begin
         if (portA_enable && portA_write)
-          mem [portA_address] <= portA_write_data ;
+          //mem [portA_address] <= portA_write_data ;
+          mem [portA_address] = portA_write_data ;
       end
   `endif
 

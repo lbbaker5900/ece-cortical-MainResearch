@@ -518,8 +518,19 @@ module top;
     */
     //----------------------------------------------------------------------------------------------------
  
+/*
+  parameter PORT_COUNT = 1;
+  localparam MAX_PORT_COUNT = 64;
 
+   bit    succeed;
+   int    load_mem_init_flag;
+   string mem_file_name;
 
+    initial
+        begin
+      succeed = initialize_memory_file(PORT_COUNT, BL, mem_file_name);
+        end
+*/
     //----------------------------------------------------------------------------------------------------
     // Testbench - random forces
     //
@@ -539,3 +550,5 @@ module top;
      */
 
 endmodule : top
+
+

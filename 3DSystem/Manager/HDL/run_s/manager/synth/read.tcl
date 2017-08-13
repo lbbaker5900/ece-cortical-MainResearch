@@ -311,48 +311,73 @@ elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=1024,GENERIC_MEM_RE
 #------------------------------------------------------------------------------------------------------------------------
 # Done
 #
-# read_sverilog  $RTL_DIR/sdp_cntl.v
-# read_sverilog  $RTL_DIR/sdp_request_cntl.v
-# read_sverilog  $RTL_DIR/sdp_stream_cntl.v
-# read_sverilog  $RTL_DIR/sdp_cntl.v
-# read_sverilog  $RTL_DIR/mrc_cntl.v
-# read_sverilog  $RTL_DIR/mwc_cntl.v
-# read_sverilog  $RTL_DIR/rdp_cntl.v
-# read_sverilog  $RTL_DIR/oob_downstream_cntl.v
-# read_sverilog  $RTL_DIR/wu_decode.v
-# read_sverilog  $RTL_DIR/stu_cntl.v
-# read_sverilog  $RTL_DIR/wu_memory.v
-# read_sverilog  $RTL_DIR/mgr_noc_cntl.v
-# read_sverilog  $RTL_DIR/dram_access_timer.v
-# read_sverilog  $RTL_DIR/main_mem_cntl.v
-# read_sverilog  $RTL_DIR/wu_fetch.v
-# read_sverilog  $RTL_DIR/dfi.v
-# read_sverilog  $RTL_DIR/mgr_cntl.v
-# read_sverilog  $RTL_DIR/manager.v
+if {($modname == "sdp_cntl") || ($modname == "mrc_cntl") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/sdp_request_cntl.v
+  read_sverilog  $RTL_DIR/sdp_stream_cntl.v
+  read_sverilog  $RTL_DIR/sdp_cntl.v
+}
+
+if {($modname == "mrc_cntl") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/mrc_cntl.v
+}
+
+if {($modname == "mwc_cntl") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/mwc_cntl.v
+}
+
+if {($modname == "rdp_cntl") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/rdp_cntl.v
+}
+
+if {($modname == "oob_downstream_cntl") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/oob_downstream_cntl.v
+}
+
+if {($modname == "wu_decode") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/wu_decode.v
+}
+
+if {($modname == "stu_cntl") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/stu_cntl.v
+}
+
+if {($modname == "wu_memory") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/wu_memory.v
+}
+
+if {($modname == "mgr_noc_cntl") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/mgr_noc_cntl.v
+}
+
+if {($modname == "dram_access_timer") || ($modname == "main_mem_cntl") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/dram_access_timer.v
+}
+
+if {($modname == "main_mem_cntl") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/main_mem_cntl.v
+}
+
+if {($modname == "wu_fetch") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/wu_fetch.v
+}
+
+if {($modname == "dfi") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/dfi.v
+}
+
+if {($modname == "mgr_cntl") || ($modname == "manager")} {
+  read_sverilog  $RTL_DIR/mgr_cntl.v
+}
+
+if {($modname == "manager")} {
+  read_sverilog  $RTL_DIR/manager.v
+}
 
 
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
 
-read_sverilog  $RTL_DIR/sdp_cntl.v
-read_sverilog  $RTL_DIR/sdp_request_cntl.v
-read_sverilog  $RTL_DIR/sdp_stream_cntl.v
-read_sverilog  $RTL_DIR/sdp_cntl.v
-read_sverilog  $RTL_DIR/mrc_cntl.v
-read_sverilog  $RTL_DIR/mwc_cntl.v
-read_sverilog  $RTL_DIR/rdp_cntl.v
-read_sverilog  $RTL_DIR/oob_downstream_cntl.v
-read_sverilog  $RTL_DIR/wu_decode.v
-read_sverilog  $RTL_DIR/stu_cntl.v
-read_sverilog  $RTL_DIR/wu_memory.v
-read_sverilog  $RTL_DIR/mgr_noc_cntl.v
-read_sverilog  $RTL_DIR/dram_access_timer.v
-read_sverilog  $RTL_DIR/main_mem_cntl.v
-read_sverilog  $RTL_DIR/wu_fetch.v
-read_sverilog  $RTL_DIR/dfi.v
-read_sverilog  $RTL_DIR/mgr_cntl.v
-read_sverilog  $RTL_DIR/manager.v
 
 
 

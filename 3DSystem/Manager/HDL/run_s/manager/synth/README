@@ -34,3 +34,15 @@ get_cell from_system_fifo[0.gpfifo/gfifo/fifo_data_mem/*mem*
 #get_cell to_bnc_fifo\[*.gfifo/fifo_data_mem/*mem*
 get_cell to_readpath_fifo[0.gfifo/fifo_data_mem/*mem*
 
+
+ln -s .synopsys_dc.setup .synopsys_lc.setup 
+
+ARM Memory Compiler
+
+/home/gf028/arm/SRAM/sram_dp_hdd_rvt_rvt/r4p0/bin/sram_dp_hdd_rvt_rvt &
+
+/home/gf028/arm/SRAM/sram_sp_hsc_rvt_rvt/r5p0/bin/sram_sp_hsc_rvt_rvt &
+
+WInstance name:  sram_dp_<wxd>_mw<mux_width>
+When generating liberty model, set library name to sram_dp_<wxd>_mw<mux_width>
+
