@@ -133,7 +133,7 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
     */
 
     string entry  ;
-    int memFileDesc ;
+    int fileDesc ;
     bit [GENERIC_MEM_ADDR_WIDTH-1 :0 ]  memory_address ;
     bit [GENERIC_MEM_DATA_WIDTH-1 :0 ]  memory_data    ;
 
@@ -156,20 +156,20 @@ module generic_1port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
     task  loadInitFile;
       if (memFile != "")
         begin
-          memFileDesc = $fopen (memFile, "r");
-          if (memFileDesc == 0)
+          fileDesc = $fopen (memFile, "r");
+          if (fileDesc == 0)
             begin
               $display("ERROR:generic_1port_memory:LEE:readmem file error : %s ", memFile);
               $finish;
             end
-          while (!$feof(memFileDesc)) 
+          while (!$feof(fileDesc)) 
             begin 
-              void'($fgets(entry, memFileDesc)); 
+              void'($fgets(entry, fileDesc)); 
               void'($sscanf(entry, "@%x %x", memory_address, memory_data));
               //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);
               mem[memory_address] = memory_data ;
             end
-         $fclose(memFileDesc);
+         $fclose(fileDesc);
         end
      endtask
 

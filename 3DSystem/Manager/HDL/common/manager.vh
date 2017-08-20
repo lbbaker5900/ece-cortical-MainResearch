@@ -171,6 +171,17 @@
 `define MGR_INST_TYPE_RANGE              `MGR_INST_TYPE_MSB : `MGR_INST_TYPE_LSB
 
 //-------------------------------------------------------------
+// Operands
+
+`define MGR_OP_MAX_NUM_OF_OPERANDS    16384
+
+`define MGR_OP_MAX_NUM_OF_OPERANDS_WIDTH        (`CLOG2(`MGR_OP_MAX_NUM_OF_OPERANDS ))
+`define MGR_OP_MAX_NUM_OF_OPERANDS_MSB          `MGR_OP_MAX_NUM_OF_OPERANDS_WIDTH-1
+`define MGR_OP_MAX_NUM_OF_OPERANDS_LSB          0
+`define MGR_OP_MAX_NUM_OF_OPERANDS_SIZE         (`MGR_OP_MAX_NUM_OF_OPERANDS_MSB - `MGR_OP_MAX_NUM_OF_OPERANDS_LSB +1)
+`define MGR_OP_MAX_NUM_OF_OPERANDS_RANGE         `MGR_OP_MAX_NUM_OF_OPERANDS_MSB : `MGR_OP_MAX_NUM_OF_OPERANDS_LSB
+
+//-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 // - FIXME : Must match python_typedef.vh python_desc_type

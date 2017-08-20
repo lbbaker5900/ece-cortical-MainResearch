@@ -701,6 +701,8 @@ module main_mem_cntl (
 
             reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] mmc_cntl_cmd_gen_state      ; // state flop
             reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] mmc_cntl_cmd_gen_state_next ;
+            //mmc_cntl_cmd_gen_fsm  mmc_cntl_cmd_gen_state      ; // state flop
+            //mmc_cntl_cmd_gen_fsm  mmc_cntl_cmd_gen_state_next ;
             
             // State register 
             always @(posedge clk)
@@ -1466,7 +1468,7 @@ module main_mem_cntl (
                   cmd_seq_pc_fifo     [chan].write_cci          = cache_counter_in[chan][strm_bank_latched[chan][2] ]   ;
 
                   // PO Commands (or PR)
-                  cmd_seq_po_fifo     [chan].write_cmd          = chan_cmd_gen_fsm     [chan].strm_fsm[0].strm_cmd_sequence_codes [1] ;
+                  cmd_seq_po_fifo     [chan].write_cmd          = chan_cmd_gen_fsm     [chan].strm_fsm[2].strm_cmd_sequence_codes [1] ;
                   cmd_seq_po_fifo     [chan].write_bank         = strm_bank_latched    [chan][2] ;
                   cmd_seq_po_fifo     [chan].write_page         = strm_page_latched    [chan][2] ;
                   cmd_seq_po_fifo     [chan].write_tag          = strm_tag             [chan] ;
@@ -1475,7 +1477,7 @@ module main_mem_cntl (
 
                   // Cache Commands 
                   // - NOP in cache fifo
-                  cmd_seq_cache_fifo    [chan].write_cmd          = chan_cmd_gen_fsm     [chan].strm_fsm[0].strm_cmd_sequence_codes [2] ;
+                  cmd_seq_cache_fifo    [chan].write_cmd          = chan_cmd_gen_fsm     [chan].strm_fsm[2].strm_cmd_sequence_codes [2] ;
                   cmd_seq_cache_fifo    [chan].write_bank         = strm_bank_latched    [chan][2] ;
                   cmd_seq_cache_fifo    [chan].write_page         = strm_page_latched    [chan][2] ;
                   `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                     
@@ -1876,8 +1878,8 @@ module main_mem_cntl (
 
                   2'b10 :
                     cache_counter_out [chan][bank] <= ( reset_poweron ) ? 'd0 : (bank == cmd_seq_cache_fifo [chan].pipe_bank)  ?  cache_counter_out[chan][bank] + 'd1 :  cache_counter_out[chan][bank] ;
-                  2'b01 :
-                    cache_counter_out [chan][bank] <= ( reset_poweron ) ? 'd0 : (bank == cmd_seq_cache_fifo [chan].pipe_bank)  ?  'd0 :  cache_counter_out[chan][bank] ;
+                  //2'b01 :
+                    //cache_counter_out [chan][bank] <= ( reset_poweron ) ? 'd0 : (bank == cmd_seq_cache_fifo [chan].pipe_bank)  ?  'd0 :  cache_counter_out[chan][bank] ;
                   default:
                     cache_counter_out [chan][bank] <= ( reset_poweron ) ? 'd0 : cache_counter_out[chan][bank] ;
 

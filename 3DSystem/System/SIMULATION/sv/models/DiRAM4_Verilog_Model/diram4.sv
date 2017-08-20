@@ -1548,7 +1548,9 @@ bit [2:0] rd_cnt_mem;
 bit rd_en;
 bit rd_en_dly,rd_en_dly2,rd_en_dly3;
 bit rd_en_mem;
-bit [63:0] rd_data,rd_data_dly,rd_data_dly2;
+bit [63:0] rd_data     [DQ_WIDTH/32] ;
+bit [63:0] rd_data_dly [DQ_WIDTH/32] ;
+bit [63:0] rd_data_dly2[DQ_WIDTH/32] ;
 
 // Note that each address points to 64 bit word
 // and column address (lsb of index) is loaded from bit 2 upward
@@ -1557,7 +1559,7 @@ bit [(IDX_BITS-1):0] rd_idx;
 bit [DQ_WIDTH-1:0] dout_r,dout_f;
 
 bit [(IDX_BITS-1):0] wr_idx;
-bit [63:0] wr_data;
+wire [63:0] wr_data [DQ_WIDTH/32];
 bit [DQ_WIDTH-1:0] wr_data_r,wr_data_f;
 bit wrclk_dly;
 bit rdclk_o;
@@ -1657,6 +1659,13 @@ always@(negedge wrclk_dly) begin
   wr_data_f <= din;
 end
 
+genvar gvi ;
+generate
+  for (gvi=0; gvi<DQ_WIDTH/32; gvi++)
+    begin
+      assign wr_data[gvi] = {wr_data_f[gvi*32+31:gvi*32],wr_data_r[gvi*32+31:gvi*32]};
+    end
+endgenerate
 assign wr_data = {wr_data_f,wr_data_r};
 
 //---------------------------------------------------------------------------
@@ -1752,7 +1761,12 @@ assign wr_cnt_mem = (BL==2) ? col_waddr[1:0]: wr_cnt;
 assign rd_cnt_mem = (BL==2) ? col_raddr[1:0]: rd_cnt;
 
 	diram4_ram_sparse #(
+	  .BL(BL),
 	  .MEM_SIZE(MEM_SIZE),
+	  .DQ_WIDTH(DQ_WIDTH),
+          .BANK_WIDTH(BANK_WIDTH),
+          .ROW_WIDTH(ROW_WIDTH),
+          .COL_WIDTH(COL_WIDTH),
 	  .IDX_BITS(IDX_BITS)) ram(
 	  .clk(clk ),
 	  .wr_en(wr_en_mem ),
@@ -1769,7 +1783,6 @@ assign rd_cnt_mem = (BL==2) ? col_raddr[1:0]: rd_cnt;
 // DDR read data generation
 //---------------------------------------------------------------------------
 always@(posedge clk) begin
-  rd_data_dly <= rd_data;
   rd_en_dly <= rd_en;
   rd_en_dly2 <= rd_en_dly;
   rd_en_dly3 <= rd_en_dly2;
@@ -1779,17 +1792,49 @@ always@(posedge clk) begin
      rdclk_o <= rd_en_dly2;
   end
 
-always@(negedge clk) begin
-  rd_data_dly2 <= rd_data_dly;
-end
+genvar m ;
+generate
+  for (m = 0; m < DQ_WIDTH/32; m++)
+    begin
+      always@(posedge clk) begin
+        begin
+          rd_data_dly  [m] <= rd_data     [m];
+        end
+    end
+  end
+endgenerate
+generate
+  for (m = 0; m < DQ_WIDTH/32; m++)
+    begin
+      always@(negedge clk) begin
+        begin
+          rd_data_dly2 [m] <= rd_data_dly [m];
+        end
+    end
+  end
+endgenerate
 
-always@(posedge clk) begin
-  dout_r <= rd_data_dly2[31:0];
-end
+generate
+  for (m = 0; m < DQ_WIDTH/32; m++)
+    begin
+      always@(posedge clk) begin
+        begin
+          dout_r [(m+1)*32-1:m*32] <= rd_data_dly2[m][31:0];
+        end
+    end
+  end
+endgenerate
 
-always@(negedge clk) begin
-  dout_f <= rd_data_dly2[63:32];
-end
+generate
+  for (m = 0; m < DQ_WIDTH/32; m++)
+    begin
+      always@(negedge clk) begin
+        begin
+          dout_f [(m+1)*32-1:m*32] <= rd_data_dly2[m][63:32];
+        end
+    end
+  end
+endgenerate
 
 //---------------------------------------------------------------------------
 // Outputs
@@ -2728,28 +2773,43 @@ endmodule : diram4_ram_model
 //==============================================================================
 
 module diram4_ram_sparse #(
+  parameter BL=2 ,
   parameter MEM_SIZE = 16,
+  parameter DQ_WIDTH = 32,
+  parameter BANK_WIDTH = 5,
+  parameter ROW_WIDTH  = 12,
+  parameter COL_WIDTH  = 6,
   parameter IDX_BITS = 4) (
   input clk,
   input wr_en,
   input [IDX_BITS-1:0] wr_idx,
-  input [63:0] wr_data,
+  input [63:0] wr_data [DQ_WIDTH/32],
   input [2:0] wr_cnt,
   input rd_en,
   input [IDX_BITS-1:0] rd_idx,
   input [2:0] rd_cnt,
-  output bit [63:0] rd_data
+  output bit [63:0] rd_data [DQ_WIDTH/32]
 );
 
 timeunit 1ps;
 timeprecision 1ps;
+
+localparam NUM_WORDS_MSB = $clog2(DQ_WIDTH/32)-1;
 
 //---------------------------------------------------------------------------
 // Declarations
 //---------------------------------------------------------------------------
 
 // Memory array
-bit [255:0] mem [int];
+bit [31:0] mem [DQ_WIDTH/32] [BL] [int] ;
+initial
+  begin
+    for (int m = 0; m < DQ_WIDTH/32; m++)
+      begin
+        mem[m][0]  = '{default: 0};
+        mem[m][1]  = '{default: 0};
+      end
+  end
 
 bit sparse_mem_debug = 0; // Default value 0
                           // 0: No Debug
@@ -2761,15 +2821,22 @@ bit sparse_mem_debug = 0; // Default value 0
 always@(posedge clk) begin
   if(wr_en) begin
     case (wr_cnt)
-        0: mem[wr_idx][63 : 0]  = wr_data;
-        1: mem[wr_idx][127: 64] = wr_data;
-        2: mem[wr_idx][191:128] = wr_data;
-        3: mem[wr_idx][255:192] = wr_data;
+      0: 
+        begin
+          for (int m = 0; m < DQ_WIDTH/32; m++)
+            begin
+              mem[m][0][wr_idx]  = wr_data[m][31: 0];
+              mem[m][1][wr_idx]  = wr_data[m][63:32];
+            end
+        end
     endcase
 
     if (sparse_mem_debug)
-       $display("DEBUG:@%0t %m:\tWrite: wr_en=%0d, wr_cnt=%0d, wr_idx=0x%6x, wr_data=0x%16x",
-                $time, wr_en, wr_cnt, wr_idx, wr_data);
+      for (int m = 0; m < DQ_WIDTH/32; m++)
+        begin
+          $display("DEBUG:@%0t %m:\tWrite: wr_en=%0d, wr_cnt=%0d, wr_idx=0x%6x, wr_data=0x%16x",
+                $time, wr_en, wr_cnt, wr_idx, wr_data[m]);
+        end
   end // if(wr_en)...
 end // always
 
@@ -2779,17 +2846,54 @@ end // always
 always@(posedge clk) begin
   if(rd_en) begin
     case (rd_cnt)
-        0: rd_data <= mem[rd_idx][63 : 0];
-        1: rd_data <= mem[rd_idx][127: 64];
-        2: rd_data <= mem[rd_idx][191:128];
-        3: rd_data <= mem[rd_idx][255:192];
+      0:
+        begin
+          for (int m = 0; m < DQ_WIDTH/32; m++)
+            begin
+              rd_data[m][31: 0] <= mem[m][0][rd_idx];
+              rd_data[m][63:32] <= mem[m][1][rd_idx];
+            end
+        end
     endcase
 
     if (sparse_mem_debug)
-       $display("DEBUG:@%0t %m:\tRead : rd_en=%0d, rd_cnt=%0d, rd_idx=0x%6x, rd_data=0x%16x",
-                $time, rd_en, rd_cnt, rd_idx, rd_data);
+      for (int m = 0; m < DQ_WIDTH/32; m++)
+        begin
+          $display("DEBUG:@%0t %m:\tRead : rd_en=%0d, rd_cnt=%0d, rd_idx=0x%6x, rd_data=0x%16x",
+                $time, rd_en, rd_cnt, rd_idx, rd_data[m]);
+        end
   end // if(rd_en)...
 end // always
+
+//---------------------------------------------------------------------------
+// External configuration
+//---------------------------------------------------------------------------
+
+bit [BANK_WIDTH-1:0] config_bank_addr ;
+bit [ROW_WIDTH-1:0 ] config_row_addr  ;
+bit [COL_WIDTH-1:0 ] config_line_addr ;
+bit [IDX_BITS-1:0  ] config_index     ;
+bit [32-1:0        ] config_data      ;
+
+assign config_index =   {config_bank_addr,config_row_addr,config_line_addr};
+
+  bit                        config_burst ;
+  bit [NUM_WORDS_MSB:0]      config_word  ;
+  bit                        config_load  ;
+
+  genvar m ;
+  generate
+    for (m = 0; m < DQ_WIDTH/32; m++)
+      begin
+        always @(posedge config_load)
+          begin
+            if (m == config_word)
+              begin
+                mem[m][config_burst][config_index]  = config_data ;
+              end
+          end
+      end
+  endgenerate
 
 endmodule : diram4_ram_sparse
 

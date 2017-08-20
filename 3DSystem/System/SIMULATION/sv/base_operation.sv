@@ -24,6 +24,7 @@
 `include "pe_array.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
+`include "python_typedef.vh"
 `include "mgr_noc_cntl.vh"
 `include "manager.vh"
 `include "manager_array.vh"
@@ -39,6 +40,8 @@ package operation;
 
     `undef _TB_streamingOps_cntl_vh     // forces this include to occur in the package
     `include "TB_streamingOps_cntl.vh" 
+    `undef _python_typedef_vh     // forces this include to occur in the package
+    `include "python_typedef.vh"
 
 
     //------------------------------------------------------------------------------------------------------
@@ -702,7 +705,8 @@ package operation;
         bit   [`MGR_WU_OPT_VALUE_RANGE        ]      simd_cmd      ;
      
 
-        function new ();
+        function new (int Id);
+            this.Id      = Id    ;
             this.timeTag = $time ;
         endfunction
     
@@ -718,6 +722,12 @@ package operation;
 
         endfunction
     
+        function void display();
+            $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
+            $display("@%0t :%s:%0d:INFO: OOB Command created by Manager : {%0d} :: Tag : %0d, Number of lanes : %0d, stOp command : %0d, SIMD command : %0d", $time, `__FILE__, `__LINE__, Id, tag, num_lanes, stOp_cmd, simd_cmd);
+            $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
+
+        endfunction
     endclass
 
 
@@ -818,27 +828,87 @@ package operation;
 
     class descriptor ; 
     
-        time timeTag    ;  // debug
-
+        time                                 timeTag                 ;  // debug
+        int                                  descType                ; // OP, MR, MW
         bit [`MGR_WU_OPT_TYPE_RANGE   ]      payload_tuple_type  [$] ;  // queues
         bit [`MGR_WU_OPT_VALUE_RANGE  ]      payload_tuple_value [$] ;
-
 
         function new ();
             this.timeTag = $time ;
         endfunction
     
-    
         function void displayDesc();
             $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
             $display("@%0t :%s:%0d:INFO: Descriptor", $time, `__FILE__, `__LINE__);
             $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
-            //$display("@%0t :%s:%0d:INFO:  Tuples", $time, `__FILE__, `__LINE__);
+            $display("@%0t :%s:%0d:INFO:  Type: %0d", $time, `__FILE__, `__LINE__, descType);
             for (int i=0; i<payload_tuple_type.size(); i++)
               begin
                 $display("@%0t :%s:%0d:INFO:Tuple %0d:  {%h,%h}", $time, `__FILE__, `__LINE__, i, payload_tuple_type[i], payload_tuple_value[i]);
               end
             $display("@%0t :%s:%0d:INFO: -------------------------------------", $time, `__FILE__, `__LINE__);
+
+        endfunction
+
+        function int isOptionValuePresent(int tuple_option);
+
+            for (int i=0; i<payload_tuple_type.size(); i++)
+              begin
+                if (int'(payload_tuple_type[i]) == tuple_option)
+                  begin
+                    return 1;
+                  end
+              end
+            return 0;
+
+        endfunction
+
+        function int getOptionValue(int tuple_option);
+
+            case (tuple_option)
+              PY_WU_INST_OPT_TYPE_SRC                 :
+                begin
+                end
+              PY_WU_INST_OPT_TYPE_TGT                 :
+                begin
+                  
+                end
+              PY_WU_INST_OPT_TYPE_TXFER               :
+                begin
+                  
+                end
+              PY_WU_INST_OPT_TYPE_NUM_OF_LANES        :
+                begin
+                  
+                end
+              PY_WU_INST_OPT_TYPE_STOP                :
+                begin
+                  
+                end
+              PY_WU_INST_OPT_TYPE_SIMDOP              :
+                begin
+                  
+                end
+              PY_WU_INST_OPT_TYPE_MEMORY              :
+                begin
+                  
+                end
+              PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS:
+                begin
+                  
+                end
+              PY_WU_INST_OPT_TYPE_NUM_OF_ARG1_OPERANDS:
+                begin
+                  
+                end
+            endcase
+            for (int i=0; i<payload_tuple_type.size(); i++)
+              begin
+                if (int'(payload_tuple_type[i]) == tuple_option)
+                  begin
+                    return int'(payload_tuple_value[i]) ;
+                  end
+              end
 
         endfunction
 

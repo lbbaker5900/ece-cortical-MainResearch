@@ -94,9 +94,11 @@ module top;
 
     //----------------------------------------------------------------------------------------------------
     // DRAM
-    diram_ifc   DramIfc        [`MGR_ARRAY_NUM_OF_MGR] (.clk   ( clk  ),
-                                                        .clk2x ( clk2x)
-                                                       ); 
+    diram_ifc       DramIfc        [`MGR_ARRAY_NUM_OF_MGR] (.clk   ( clk  ),
+                                                            .clk2x ( clk2x)
+                                                           ); 
+    diram_cfg_ifc   DramCfgIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_DRAM_NUM_CHANNELS] (.clk   ( clk  )
+                                                              ); 
 
     //----------------------------------------------------------------------------------------------------
     // System
@@ -121,6 +123,7 @@ module top;
     wire     [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_cq        [`MGR_ARRAY_NUM_OF_MGR ] ;
     wire     [`MGR_DRAM_CLK_GROUP_RANGE       ]  phy__dfi__valid     [`MGR_ARRAY_NUM_OF_MGR ] ;
     wire     [`MGR_DRAM_INTF_RANGE            ]  phy__dfi__data      [`MGR_ARRAY_NUM_OF_MGR ] ;
+
 
     system system_inst (
        
@@ -186,6 +189,7 @@ module top;
 
                    // DRAM
                    .DramIfc                    ( DramIfc                   ) ,  // array of dram interfaces
+                   .DramCfgIfc                 ( DramCfgIfc                ) ,  // array of dram config interfaces
 
                    .reset                      ( reset_poweron             ) 
                   );
@@ -196,16 +200,14 @@ module top;
     genvar mgr;
     localparam MGR_ARRAY_NUM_OF_MGR = `MGR_ARRAY_NUM_OF_MGR ;
     generate
-      if (MGR_ARRAY_NUM_OF_MGR <= 4)
+      if (MGR_ARRAY_NUM_OF_MGR <= 64)
         begin : diram
             for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1) 
               begin : diram_port_arrays
  
                 wire  qvld ;
                 wire  cq   ;
-                diram4   #(.DQ_WIDTH    (`MGR_DRAM_INTF_WIDTH),
-                           .PORT_COUNT  (                   1),
-                           .DO_MEM_INIT (                   1)
+                diram4_port_model   #(.DQ_WIDTH    (`MGR_DRAM_INTF_WIDTH)
                           )
                           diram_inst(
                                     .clk       ( clk ),
@@ -218,7 +220,6 @@ module top;
                                     .baddr     ( dfi__phy__bank  [mgr] ),
                                                                  
                                     .d         ( dfi__phy__data  [mgr] ),
-                                    //.q         ( ),
                                     .q         ( phy__dfi__data  [mgr] ),
                                     .cq_n      (                       ),
                                     .cq        ( cq                    ),
@@ -432,6 +433,30 @@ module top;
 
            end
     endgenerate
+
+
+    generate
+       for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+           begin
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_bank_addr   = DramCfgIfc[mgr][0].config_bank_addr   ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_row_addr    = DramCfgIfc[mgr][0].config_row_addr    ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_line_addr   = DramCfgIfc[mgr][0].config_line_addr   ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_burst       = DramCfgIfc[mgr][0].config_burst       ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_word        = DramCfgIfc[mgr][0].config_word        ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_load        = DramCfgIfc[mgr][0].config_load        ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_data        = DramCfgIfc[mgr][0].config_data        ;
+
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_bank_addr   = DramCfgIfc[mgr][1].config_bank_addr   ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_row_addr    = DramCfgIfc[mgr][1].config_row_addr    ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_line_addr   = DramCfgIfc[mgr][1].config_line_addr   ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_burst       = DramCfgIfc[mgr][1].config_burst       ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_word        = DramCfgIfc[mgr][1].config_word        ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_load        = DramCfgIfc[mgr][1].config_load        ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_data        = DramCfgIfc[mgr][1].config_data        ;
+
+           end
+    endgenerate
+
 
     //------------------------------------------------------------
     // Memory Read to Stack Downstream Interfaces

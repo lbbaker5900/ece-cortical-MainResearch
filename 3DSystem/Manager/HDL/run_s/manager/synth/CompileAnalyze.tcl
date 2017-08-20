@@ -148,6 +148,16 @@ set link_library [concat $link_library dw_foundation.sldb $mem_lib $regf_lib *]
 
 translate
 
+report_timing \
+	-delay min \
+	-nworst 30 \
+	> ${modname}_${type}_timing_tt_min.rpt
+
+report_timing \
+	-delay max \
+	-nworst 30 \
+	> ${modname}_${type}_timing_tt_max.rpt
+
 #
 #	write out area
 #

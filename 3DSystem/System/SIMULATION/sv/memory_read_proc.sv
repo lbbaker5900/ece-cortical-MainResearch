@@ -92,9 +92,9 @@ class memory_read_proc;
                             rcvd_desc_complete = 1    ;
                             mrc2mgr_m.put(rcvd_desc)  ;  // send descriptor to manager
                             $display ("@%0t::%s:%0d:: INFO: Manager {%0d} observed descriptor EOM between WU decoder and MR Controller {%0d}", $time, `__FILE__, `__LINE__, this.Id, this.mrId);
-                            rcvd_desc.displayDesc()   ;
+                            //rcvd_desc.displayDesc()   ;
                         end
-                      else
+                      else if (vDesc.valid == 1'b1) 
                         begin
                           //$display ("@%0t::%s:%0d:: DEBUG: ", $time, `__FILE__, `__LINE__);
                           for (int i=0; i<`MGR_WU_OPT_PER_INST; i++)

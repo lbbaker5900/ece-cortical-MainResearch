@@ -63,4 +63,16 @@
 `define COMMON_INT_MAX                 32'hFFFF_FFFF
 
 //------------------------------------------------------------------------------------------------------------
+// ASCII
+`define COMMON_ASCII_SPACE         'h20
+`define COMMON_ASCII_CR            'h0D
+`define COMMON_ASCII_LF            'h0A
+`define COMMON_ASCII_COMMA         'h2C
+`define COMMON_ASCII_POUND         'h23
+`define COMMON_ASCII_COLON         'h3A
+`define COMMON_ASCII_SEMICOLON     'h3B
+`define COMMON_ASCII_SLASH         'h2F
+`define COMMON_ASCII_HIPHON        'h2D
+
+//------------------------------------------------------------------------------------------------------------
 `endif

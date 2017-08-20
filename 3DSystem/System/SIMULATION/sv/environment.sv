@@ -25,6 +25,7 @@
 `include "pe_array.vh"
 `include "streamingOps_cntl.vh"
 
+`include "dram_utilities.sv"
 `include "interface.sv"
 `include "manager.sv"
 `include "generator.sv"
@@ -140,6 +141,7 @@ class Environment;
     //----------------------------------------------------------------------------------------------------
     // DRAM Interfaces
     vDiRam_T          vDramIfc            [`MGR_ARRAY_NUM_OF_MGR]       ;
+    vDiRamCfg_T       vDramCfgIfc         [`MGR_ARRAY_NUM_OF_MGR] [`MGR_DRAM_NUM_CHANNELS] ;
 
     //----------------------------------------------------------------------------------------------------
     // 
@@ -157,7 +159,8 @@ class Environment;
                     input vRegFileScalarDrv2stOpCntl_T vRegFileScalarDrv2stOpCntl      [`PE_ARRAY_NUM_OF_PE   ]                                                ,
                     input vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE   ] [`PE_NUM_OF_EXEC_LANES]                        ,
                     input vLoadStoreDrv2memCntl_T      vLoadStoreDrv2memCntl           [`PE_ARRAY_NUM_OF_PE   ]                                                ,
-                    input vDiRam_T                     vDramIfc                        [`MGR_ARRAY_NUM_OF_MGR ]                                                 
+                    input vDiRam_T                     vDramIfc                        [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
+                    input vDiRamCfg_T                  vDramCfgIfc                     [`MGR_ARRAY_NUM_OF_MGR ] [`MGR_DRAM_NUM_CHANNELS]                                               
                 );
         this.vGenStackBus                =   vGenStackBus                ;
         this.vDownstreamStackBusOOB      =   vDownstreamStackBusOOB      ;
@@ -176,6 +179,7 @@ class Environment;
         this.vLoadStoreDrv2memCntl       =   vLoadStoreDrv2memCntl       ;
 
         this.vDramIfc                    =   vDramIfc                    ;
+        this.vDramCfgIfc                 =   vDramCfgIfc                 ;
 
     endfunction
 
@@ -221,8 +225,30 @@ class Environment;
                         rf_driver   [pe][lane]  = new ( Id,                                                                                      vRegFileScalarDrv2stOpCntl [pe]       , vRegFileLaneDrv2stOpCntl [pe][lane] ,  gen2rfP[pe][lane],   gen2rfP_ack [pe][lane]  );  // RegFile driver for stOp controller inputs
                     end
                  
-                mgr         [pe]  = new ( pe, mgr2oob[pe] , mgr2oob_ack[pe], mgr2gen[pe] , mgr2gen_ack[pe],  final_operation[pe], vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe], mgr2up [pe], vWudToMrcIfc[pe], mrc2mgr_m[pe], wud2mgr_m[pe]    );
-                oob_drv     [pe]  = new ( pe, mgr2oob[pe],  mgr2oob_ack[pe], gen2oob[pe],  gen2oob_ack[pe],                       vDownstreamStackBusOOB [pe],   vDownstreamStackBusLane [pe], vWudToOobIfc[pe],                             wud2mgr_m[pe]    );
+                mgr         [pe]  = new ( .Id                        ( pe                           ), 
+                                          .mgr2oob                   ( mgr2oob[pe]                  ),
+                                          .mgr2oob_ack               ( mgr2oob_ack[pe]              ), 
+                                          .mgr2gen                   ( mgr2gen[pe]                  ), 
+                                          .mgr2gen_ack               ( mgr2gen_ack[pe]              ),  
+                                          .final_operation           ( final_operation[pe]          ), 
+                                          .vDownstreamStackBusOOB    ( vDownstreamStackBusOOB [pe]  ),   
+                                          .vDownstreamStackBusLane   ( vDownstreamStackBusLane [pe] ), 
+                                          .mgr2up                    ( mgr2up [pe]                  ), 
+                                          .vWudToMrcIfc              ( vWudToMrcIfc[pe]             ), 
+                                          .mrc2mgr_m                 ( mrc2mgr_m[pe]                ), 
+                                          .wud2mgr_m                 ( wud2mgr_m[pe]                ),
+                                          .vDramCfgIfc               ( vDramCfgIfc[pe]              ));
+
+                oob_drv     [pe]  = new ( .Id                      ( pe                              ),
+                                          .mgr2oob                 ( mgr2oob[pe]                     ),
+                                          .mgr2oob_ack             ( mgr2oob_ack[pe]                 ),
+                                          .gen2oob                 ( gen2oob[pe]                     ),
+                                          .gen2oob_ack             ( gen2oob_ack[pe]                 ),
+                                          .vDownstreamStackBusOOB  ( vDownstreamStackBusOOB [pe]     ),
+                                          .vDownstreamStackBusLane ( vDownstreamStackBusLane [pe]    ),
+                                          .vWudToOobIfc            ( vWudToOobIfc[pe]                ),
+                                          .wud2mgr_m               ( wud2mgr_m[pe]                   ));
+
                 up_check    [pe]  = new ( pe, vUpstreamStackBus [pe],  mgr2up [pe], gen2up [pe] ) ;
             end
           noc_check    = new ( vLocalToNoC,  vLocalFromNoC, noc2env_mbxEmpty );

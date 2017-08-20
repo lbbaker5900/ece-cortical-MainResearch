@@ -1,6 +1,6 @@
 
 MODNAME = main_mem_cntl
-TECH    = 28nm
+TECH    = 65nm
 
 RTL_DIR = ../code
 GATE_DIR = ../synth
@@ -40,6 +40,15 @@ dw:
 	unset SNPSLMD_LICENSE_FILE ; \
 	add embedit2013.03 ; \
         ./run_create_dw_proj.ish dw_memories"
+
+
+arm:
+	tcsh -c "add synopsys2015 ; \
+	cd arm_memories  ; \
+	../run_create_arm_mem.sh ;\
+	/bin/mv *.lib lib/. ; \
+	/bin/mv *.v verilog/. ; \
+	/bin/mv *.ps documents/. "
 
 
 

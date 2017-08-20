@@ -86,7 +86,6 @@
 
 `define MMC_CNTL_CMD_GEN_ERR                         11'b100_0000_0000
 
-
 `define MMC_CNTL_CMD_GEN_STATE_WIDTH         11
 `define MMC_CNTL_CMD_GEN_STATE_MSB           `MMC_CNTL_CMD_GEN_STATE_WIDTH-1
 `define MMC_CNTL_CMD_GEN_STATE_LSB           0
@@ -98,6 +97,20 @@
 `define MMC_CNTL_CMD_GEN_TAG_LSB           0
 `define MMC_CNTL_CMD_GEN_TAG_SIZE          (`MMC_CNTL_CMD_GEN_TAG_MSB - `MMC_CNTL_CMD_GEN_TAG_LSB +1)
 `define MMC_CNTL_CMD_GEN_TAG_RANGE          `MMC_CNTL_CMD_GEN_TAG_MSB : `MMC_CNTL_CMD_GEN_TAG_LSB
+
+typedef enum reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] {
+           MMC_CNTL_CMD_GEN_WAIT                  =  11'b000_0000_0001,
+           MMC_CNTL_CMD_GEN_DECODE_SEQUENCE       =  11'b000_0000_0010,
+           MMC_CNTL_CMD_GEN_POCR                  =  11'b000_0000_0100,
+           MMC_CNTL_CMD_GEN_POCW                  =  11'b000_0000_1000,
+           MMC_CNTL_CMD_GEN_CR                    =  11'b000_0001_0000,
+           MMC_CNTL_CMD_GEN_CW                    =  11'b000_0010_0000,
+           MMC_CNTL_CMD_GEN_PCPOCR                =  11'b000_0100_0000,
+           MMC_CNTL_CMD_GEN_PCPOCW                =  11'b000_1000_0000,
+           MMC_CNTL_CMD_GEN_PCPR                  =  11'b001_0000_0000,
+           MMC_CNTL_CMD_GEN_PR                    =  11'b010_0000_0000,
+           MMC_CNTL_CMD_GEN_ERR                   =  11'b100_0000_0000}  mmc_cntl_cmd_gen_fsm;
+
 
 //--------------------------------------------------------
 // Command Sequence Validate FSM

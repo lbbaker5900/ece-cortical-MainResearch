@@ -328,7 +328,7 @@ class oob_driver;
                     //--------------------------------------------------------------------------------------------
                
                     //--------------------------------------------------------------------------------------------
-                    $display("@%0t:%s:%0d: INFO:{%0d}: Driving WU via OOB with contents of OOB packet from manager : {%0d,%0d}", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1]);
+                    $display("@%0t:%s:%0d: INFO:{%0d}: Driving WU via OOB with contents of OOB packet from manager : {%0d}", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1]);
                     oob_packet_mgr.displayPacket();
                
                     oob_sent = 0 ;
@@ -459,13 +459,14 @@ class oob_driver;
                   begin
                     // Start of descriptor observed, create new descriptor and start to fill the fields
                     $display ("@%0t::%s:%0d:: INFO: Manager {%0d} observed command between WU decoder and OOB Controller", $time, `__FILE__, `__LINE__, this.Id);
-                    rcvd_wud_to_oob_cmd          =   new()               ;  
-                    rcvd_wud_to_oob_cmd.timeTag  =   $time               ;
-                    rcvd_tag                     =   vWudToOobIfc.valid  ;
-                    rcvd_num_lanes               =   vWudToOobIfc.valid  ;
-                    rcvd_stOp_cmd                =   vWudToOobIfc.valid  ;
-                    rcvd_simd_cmd                =   vWudToOobIfc.valid  ;
+                    rcvd_wud_to_oob_cmd          =   new(this.Id)           ;  
+                    rcvd_wud_to_oob_cmd.timeTag  =   $time                  ;
+                    rcvd_tag                     =   vWudToOobIfc.tag       ;
+                    rcvd_num_lanes               =   vWudToOobIfc.num_lanes ;
+                    rcvd_stOp_cmd                =   vWudToOobIfc.stOp_cmd  ;
+                    rcvd_simd_cmd                =   vWudToOobIfc.simd_cmd  ;
                     rcvd_wud_to_oob_cmd.create( rcvd_tag, rcvd_num_lanes, rcvd_stOp_cmd, rcvd_simd_cmd);
+                    rcvd_wud_to_oob_cmd.display();          
                     if ((vWudToOobIfc.valid == 1'b1) && (vWudToOobIfc.cntl != `COMMON_STD_INTF_CNTL_SOM_EOM))  // not single cycle
                       begin
                         $display ("@%0t:%s:%0d:ERROR::Manager {%0d} Non single cycle command between WU Decoder and Downstream OOB Controller", $time, `__FILE__, `__LINE__, this.Id);

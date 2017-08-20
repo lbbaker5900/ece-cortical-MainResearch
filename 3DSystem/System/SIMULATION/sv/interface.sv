@@ -477,3 +477,37 @@ endinterface : diram_ifc
 
 typedef virtual diram_ifc vDiRam_T;
 
+interface diram_cfg_ifc(
+                           input bit clk   );
+
+    //--------------------------------------------------------------------------------
+    // Memory Load Interface to DRAM
+    //
+  logic [`MGR_DRAM_BANK_ADDRESS_RANGE         ]  config_bank_addr ;
+  logic [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]  config_row_addr  ;
+  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
+    logic [`MGR_DRAM_ADDRESS_LINE_FIELD_RANGE ]  config_line_addr ;
+  `endif
+  logic                                         config_burst     ;
+  logic [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE   ] config_word      ;
+  logic                                         config_load      ;
+  logic [31:0   ] config_data      ;
+
+
+  clocking cb_out @(posedge clk);
+
+    output   config_bank_addr  ;
+    output   config_row_addr   ;
+    output   config_line_addr  ;
+    output   config_burst      ;
+
+    output   config_word       ;
+    output   config_data       ;
+    output   config_load       ;
+
+  endclocking : cb_out
+
+endinterface : diram_cfg_ifc
+
+typedef virtual diram_cfg_ifc vDiRamCfg_T;
+
