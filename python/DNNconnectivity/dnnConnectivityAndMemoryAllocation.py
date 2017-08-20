@@ -246,7 +246,9 @@ OptionType = namedtuple('OptionType',   \
                                       NUM_OF_LANES   \
                                       stOp           \
                                       simdOp         \
-                                      MEMORY        ')
+                                      MEMORY         \
+                                      NUM_OF_ARG0_OPERANDS \
+                                      NUM_OF_ARG1_OPERANDS')
 optionType  = OptionType._make([int(math.ceil(math.log(len(OptionType._fields)-1,16)))] + range(len(OptionType._fields)-1))
 
 # Note: For now, with these stOp commands, we will map an option value to the larger regFile streamingOp command, address, number of operands etc. 
@@ -308,14 +310,31 @@ outFile = dirStr + 'python_typedef.vh'
 
 oFile = open(outFile, 'w')
 
-pLine = '\n'
+pLine = '\n`ifndef _python_typedef_vh'
+pLine = pLine + '\n`define _python_typedef_vh'
+
+pLine = pLine + '\n'
+pLine = pLine +  '\n'
+pLine = pLine +  '\n/*****************************************************************'
+pLine = pLine +  '\n'
+pLine = pLine +  '\n    File name   : python_tydef.vh'
+pLine = pLine +  '\n    Author      : Lee Baker'
+pLine = pLine +  '\n    Affiliation : North Carolina State University, Raleigh, NC'
+pLine = pLine +  '\n    Date        : Mar 2017'
+pLine = pLine +  '\n    email       : lbbaker@ncsu.edu'
+pLine = pLine +  '\n'
+pLine = pLine +  '\n    DO NOT EDIT'
+pLine = pLine +  '\n    Created by python script dnnConnectivityAndmemoryAllocation.py'
+pLine = pLine +  '\n'
+pLine = pLine +  '\n*****************************************************************/'
+pLine = pLine +  '\n'
 
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(descType)-1,2))-1)))
 for i in range(1,len(descType)-1) :
   pass
-  pLine = pLine + '\n                   PY_WU_INST_DESC_TYPE_{0:<8} = {1:>2}, '.format(descType._fields[i].upper(), str(getattr(descType, descType._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_DESC_TYPE_{0:<8}                               = {1:>2}, '.format(descType._fields[i].upper(), str(getattr(descType, descType._fields[i])))
 i += 1
-pLine = pLine + '\n                   PY_WU_INST_DESC_TYPE_{0:<8} = {1:>2} '.format(descType._fields[i].upper(), str(getattr(descType, descType._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_DESC_TYPE_{0:<8}                               = {1:>2} '.format(descType._fields[i].upper(), str(getattr(descType, descType._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_desc_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -323,9 +342,9 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(optionType)-1,2))-1)))
 for i in range(1,len(optionType)-1) :
   pass
-  pLine = pLine + '\n                   PY_WU_INST_OPT_TYPE_{0:<8} = {1:>2}, '.format(optionType._fields[i].upper(), str(getattr(optionType, optionType._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_OPT_TYPE_{0:<8}                               = {1:>2}, '.format(optionType._fields[i].upper(), str(getattr(optionType, optionType._fields[i])))
 i += 1
-pLine = pLine + '\n                   PY_WU_INST_OPT_TYPE_{0:<8} = {1:>2} '.format(optionType._fields[i].upper(), str(getattr(optionType, optionType._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_OPT_TYPE_{0:<8}                               = {1:>2} '.format(optionType._fields[i].upper(), str(getattr(optionType, optionType._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_option_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -333,9 +352,9 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(stOpValues)-1,2))-1)))
 for i in range(1,len(stOpValues)-1) :
   pass
-  pLine = pLine + '\n                   PY_WU_INST_STOP_CMD_{0:<8} = {1:>2}, '.format(stOpValues._fields[i].upper(), str(getattr(stOpValues, stOpValues._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_STOP_CMD_{0:<8}                               = {1:>2}, '.format(stOpValues._fields[i].upper(), str(getattr(stOpValues, stOpValues._fields[i])))
 i += 1
-pLine = pLine + '\n                   PY_WU_INST_STOP_CMD_{0:<8} = {1:>2} '.format(stOpValues._fields[i].upper(), str(getattr(stOpValues, stOpValues._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_STOP_CMD_{0:<8}                               = {1:>2} '.format(stOpValues._fields[i].upper(), str(getattr(stOpValues, stOpValues._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_stOp_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -343,9 +362,9 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(simdValues)-1,2))-1)))
 for i in range(1,len(simdValues)-1) :
   pass
-  pLine = pLine + '\n                   PY_WU_INST_SIMD_CMD_{0:<8} = {1:>2}, '.format(simdValues._fields[i].upper(), str(getattr(simdValues, simdValues._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_SIMD_CMD_{0:<8}                               = {1:>2}, '.format(simdValues._fields[i].upper(), str(getattr(simdValues, simdValues._fields[i])))
 i += 1
-pLine = pLine + '\n                   PY_WU_INST_SIMD_CMD_{0:<8} = {1:>2} '.format(simdValues._fields[i].upper(), str(getattr(simdValues, simdValues._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_SIMD_CMD_{0:<8}                               = {1:>2} '.format(simdValues._fields[i].upper(), str(getattr(simdValues, simdValues._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_simd_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -353,9 +372,9 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(tgtValues)-1,2))-1)))
 for i in range(1,len(tgtValues)-1) :
   pass
-  pLine = pLine + '\n                   PY_WU_INST_TGT_TYPE_{0:<8} = {1:>2}, '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_TGT_TYPE_{0:<8}                               = {1:>2}, '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
 i += 1
-pLine = pLine + '\n                   PY_WU_INST_TGT_TYPE_{0:<8} = {1:>2} '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_TGT_TYPE_{0:<8}                               = {1:>2} '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_target_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -364,9 +383,9 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(tgtValues)-1,2))-1)))
 for i in range(1,len(tgtValues)-1) :
   pass
-  pLine = pLine + '\n                   PY_WU_INST_SRC_TYPE_{0:<8} = {1:>2}, '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_SRC_TYPE_{0:<8}                               = {1:>2}, '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
 i += 1
-pLine = pLine + '\n                   PY_WU_INST_SRC_TYPE_{0:<8} = {1:>2} '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_SRC_TYPE_{0:<8}                               = {1:>2} '.format(tgtValues._fields[i].upper(), str(getattr(tgtValues, tgtValues._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_source_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -374,9 +393,9 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(txferValues)-1,2))-1)))
 for i in range(1,len(txferValues)-1) :
   pass
-  pLine = pLine + '\n                   PY_WU_INST_TXFER_TYPE_{0:<8} = {1:>2}, '.format(txferValues._fields[i].upper(), str(getattr(txferValues, txferValues._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_TXFER_TYPE_{0:<8}                               = {1:>2}, '.format(txferValues._fields[i].upper(), str(getattr(txferValues, txferValues._fields[i])))
 i += 1
-pLine = pLine + '\n                   PY_WU_INST_TXFER_TYPE_{0:<8} = {1:>2} '.format(txferValues._fields[i].upper(), str(getattr(txferValues, txferValues._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_TXFER_TYPE_{0:<8}                               = {1:>2} '.format(txferValues._fields[i].upper(), str(getattr(txferValues, txferValues._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_transfer_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
@@ -384,12 +403,13 @@ pLine = pLine + '\n'
 pLine = pLine + '\ntypedef enum logic [{0:2}:0] {{ '.format(str(int(math.ceil(math.log(len(orderValues)-1,2))-1)))
 for i in range(1,len(orderValues)-1) :
   pass
-  pLine = pLine + '\n                   PY_WU_INST_ORDER_TYPE_{0:<8} = {1:>2}, '.format(orderValues._fields[i].upper(), str(getattr(orderValues, orderValues._fields[i])))
+  pLine = pLine + '\n                   PY_WU_INST_ORDER_TYPE_{0:<8}                               = {1:>2}, '.format(orderValues._fields[i].upper(), str(getattr(orderValues, orderValues._fields[i])))
 i += 1
-pLine = pLine + '\n                   PY_WU_INST_ORDER_TYPE_{0:<8} = {1:>2} '.format(orderValues._fields[i].upper(), str(getattr(orderValues, orderValues._fields[i])))
+pLine = pLine + '\n                   PY_WU_INST_ORDER_TYPE_{0:<8}                               = {1:>2} '.format(orderValues._fields[i].upper(), str(getattr(orderValues, orderValues._fields[i])))
 pLine = pLine + '\n                           }} {0} ; '.format('python_order_type')
 pLine = pLine + '\n'
 pLine = pLine + '\n'
+pLine = pLine + '\n`endif'
 
 oFile.write(pLine)
 oFile.close()
@@ -2583,7 +2603,7 @@ class Manager():
             #------------------------------------------------------------
             # b)
             # Get the common ROI for the group
-            wuRoi = {'StartAddress': None, 'Consequtive': [], 'Jump': [], 'Order' : []}
+            wuRoi = {'StartAddress': None, 'Consequtive': [], 'Jump': [], 'Order' : [], 'NumberOfOperands' : None}
             # The ROI for all cells in a group are the same, so just use the first cell
             #for c in g[0]:
             roi = g[0].getROIcells()
@@ -2595,7 +2615,9 @@ class Manager():
             cnt = 0  # count how many consequtive memory locations
             # use the memoryOption increment method and compare with address of next cell
             #memoryOption.increment(roi[0].memoryLocation.memory, 0)
+            numberOfOperands = 0
             for rc in roi:
+                numberOfOperands += 1
                 if rc.memoryLocation.compareAddress(np.array([memoryOption.channel, memoryOption.bank, memoryOption.page, memoryOption.word])):
                     cnt += 1
                     memoryOption.increment(rc.memoryLocation.memory, 0)
@@ -2609,6 +2631,7 @@ class Manager():
                     memoryOption.increment(rc.memoryLocation.memory, 0)
             if cnt > 0 :
                 wuRoi['Consequtive'].append(cnt)
+            wuRoi['NumberOfOperands'] = numberOfOperands
             wuRois.append(wuRoi)
 
             #------------------------------------------------------------
@@ -2628,7 +2651,7 @@ class Manager():
                     raise Exception('{0}:{1}:Manager {2},{3}:Kernel sizes are different in group {4}'.format(__FILE__(), __LINE__(), ID[0], ID[1], gId)) 
 
             # Start incrementing thru memory and make sure there are no discontinuities
-            wuKernel = {'StartAddress': None, 'Consequtive': [], 'Jump': [], 'Order' : [], 'NumberOfCells' : None}
+            wuKernel = {'StartAddress': None, 'Consequtive': [], 'Jump': [], 'Order' : [], 'NumberOfCells' : None, 'NumberOfOperands' : None}
             memoryOption              = kernelAddresses[0][0].convertToMemoryAllocationOption()
             memoryOption.order        = self.memoryKernelAllocationOptions[layerID].order # use order from original group kernel assignment
             wuKernel['Order']         = memoryOption.order
@@ -2636,7 +2659,9 @@ class Manager():
             wuKernel['NumberOfCells'] = numberOfCellsInGroup
             cnt = 0  # count how many consequtive memory locations
             #memoryOption.increment(kernelAddresses[0][0].memory, 0)
+            numberOfOperands = 0
             for kIdx in range(kernelAddresses[0].__len__()) :
+                numberOfOperands += 1
                 for cNum in range(numberOfCellsInGroup) :
                     if kernelAddresses[cNum][kIdx].compareAddress(np.array([memoryOption.channel, memoryOption.bank, memoryOption.page, memoryOption.word])):
                         cnt += 1
@@ -2650,6 +2675,7 @@ class Manager():
                         memoryOption.increment(kernelAddresses[cNum][kIdx].memory, 0)
             if cnt > 0 :
                 wuKernel['Consequtive'].append(cnt)
+            wuKernel['NumberOfOperands'] = numberOfOperands
             wuKernels.append(wuKernel)
       
 
@@ -2727,12 +2753,12 @@ class Manager():
         pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Memory Read"')  + '"OptionType" : {0:^16}, '.format('"target"') + '"Option" : {0:^14}, '.format('"Stack Arg0"')                                             + '"OptionType" : {0:^16}, '.format('"Transfer"') + '"Option" : {0:^10}, '.format('"BCast"')  + '"OptionType" : {0:^16}, '.format('"numLanes"') + '"Option" : {0:^10}, '.format('"N"') + '"OptionType" : {0:^16}, '.format('"storage"') + '"Option" : {0:^100}, '.format('{0:^24}'.format('"Address (ROI)"')        + '{0:^15}'.format('"Increment order"') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ')) + '"OptionType" : {0:^16}, '.format('"Null"') + "EOD"
         pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Memory Read"')  + '"OptionType" : {0:^16}, '.format('"target"') + '"Option" : {0:^14}, '.format('"Stack Arg1"')                                             + '"OptionType" : {0:^16}, '.format('"Transfer"') + '"Option" : {0:^10}, '.format('"Vector"') + '"OptionType" : {0:^16}, '.format('"numLanes"') + '"Option" : {0:^10}, '.format('"N"') + '"OptionType" : {0:^16}, '.format('"storage"') + '"Option" : {0:^100}, '.format('{0:^24}'.format('"Address (Kernel)"')     + '{0:^15}'.format('"Increment order"') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ')) + '"OptionType" : {0:^16}, '.format('"Null"') + "EOD"
         pLine = pLine + '\n# SOD, ' + '"DescType" : {0:^20}, '.format('"Memory Write"') + '"OptionType" : {0:^16}, '.format('"source"') + '"Option" : {0:^14}, '.format('"Stack"')                                                  + '"OptionType" : {0:^16}, '.format('"Transfer"') + '"Option" : {0:^10}, '.format('"Vector"') + '"OptionType" : {0:^16}, '.format('"numLanes"') + '"Option" : {0:^10}, '.format('"N"') + '"OptionType" : {0:^16}, '.format('"storage"') + '"Option" : {0:^100}, '.format('{0:^24}'.format('"Address (next Layer)"') + '{0:^15}'.format('"Increment order"') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ')) + '"OptionType" : {0:^16}, '.format('"Null"') + "EOD"
-        pLine = pLine + '\n'
+        pLine = pLine + '\n#'
         pLine = pLine + '\n# The storage option takes the following form : ' + '{0:^24}'.format('"Address"') + '{0:^15}'.format('"Increment order"') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"valid"') + '{0:^7}'.format('"jump"') + '{0:^8}'.format('"valid" .... ') + '{0:^20}'.format('"consequtive"') + '{0:^8}'.format('"invalid"') 
 
         pLine = pLine + '\n# In the case of the Memory write, there may be more than one optionType=storage if the result has to be written to multiple managers'
         pLine = pLine + '\n# Address format = "Mgr, Local/Global, channel, bank, page, word"'
-        pLine = pLine + '\n'
+        pLine = pLine + '\n#'
         pLine = pLine + '\n# Field lengths:'
         pLine = pLine + '\n# Delineator      : {0:^{1}}, '.format(int(math.ceil(math.log(len(descDelin  )-1,2))), int(math.ceil(math.log(len(descDelin  )-1,10))))
         pLine = pLine + '\n# Descriptor Type : {0:^{1}}, '.format(int(math.ceil(math.log(len(descType   )-1,2))), int(math.ceil(math.log(len(descType   )-1,10))))
@@ -2762,6 +2788,8 @@ class Manager():
             # option tuples                                                                  
             opDescRowStr = opDescRowStr + '{0:^{1}}: '.format(toHexPad(optionType.stOp       , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(stOpValues.STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM, stOpValues.WIDTH), stOpValues.WIDTH )
             opDescRowStr = opDescRowStr + '{0:^{1}}: '.format(toHexPad(optionType.simdOp     , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(simdValues.ReLu                                             , simdValues.WIDTH), simdValues.WIDTH )
+            opDescRowStr = opDescRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_ARG0_OPERANDS  , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(roi['NumberOfOperands'] , 5                ), txferValues.WIDTH )
+            opDescRowStr = opDescRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_ARG1_OPERANDS  , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(ker['NumberOfOperands'] , 5                ), txferValues.WIDTH )
             opDescRowStr = opDescRowStr + '{0:^{1}}, '.format(toHexPad(optionType.NOP        , optionType.WIDTH ), optionType.WIDTH )   
             opDescRowStr = opDescRowStr + '{0:^{1}}  '.format(toHexPad(descDelin.EOD         , descDelin .WIDTH ), descDelin .WIDTH ) 
 
@@ -2783,12 +2811,13 @@ class Manager():
             # Text file
 
             roiRowStr = ''
-            roiRowStr = roiRowStr + '{0:^{1}}, '.format(toHexPad(descDelin.SOD               , descDelin .WIDTH ), descDelin .WIDTH ) 
-            roiRowStr = roiRowStr + '{0:^{1}}, '.format(toHexPad(descType.MR                 , descType  .WIDTH ), descType  .WIDTH )         
-            # option tuples
-            roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TGT              , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(tgtValues.STACK_DN_ARG0 , tgtValues  .WIDTH), tgtValues  .WIDTH )
-            roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TXFER            , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(txferValues.BCAST       , txferValues.WIDTH), txferValues.WIDTH )
-            roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_LANES     , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(ker['NumberOfCells']    , 2                ), txferValues.WIDTH )
+            roiRowStr = roiRowStr + '{0:^{1}}, '.format(toHexPad(descDelin.SOD                    , descDelin .WIDTH ), descDelin .WIDTH ) 
+            roiRowStr = roiRowStr + '{0:^{1}}, '.format(toHexPad(descType.MR                      , descType  .WIDTH ), descType  .WIDTH )         
+            # option tuples                                                                      
+            roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TGT                   , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(tgtValues.STACK_DN_ARG0 , tgtValues  .WIDTH), tgtValues  .WIDTH )
+            roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TXFER                 , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(txferValues.BCAST       , txferValues.WIDTH), txferValues.WIDTH )
+            roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_LANES          , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(ker['NumberOfCells']    , 2                ), txferValues.WIDTH )
+            #roiRowStr = roiRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_ARG0_OPERANDS  , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(roi['NumberOfOperands'] , 5                ), txferValues.WIDTH )
             #  - memory option
             # Construct storage descriptor
             # - save storage descriptor and ptr to storage descriptor as option value
@@ -2841,12 +2870,13 @@ class Manager():
 
 
 
-            kerRowStr = '{0:^{1}}, '.format(toHexPad(descDelin.SOD               , descDelin .WIDTH ), descDelin .WIDTH ) 
-            kerRowStr = kerRowStr + '{0:^{1}}, '.format(toHexPad(descType.MR                 , descType  .WIDTH ), descType  .WIDTH )         
+            kerRowStr =             '{0:^{1}}, '.format(toHexPad(descDelin.SOD                    , descDelin .WIDTH ), descDelin .WIDTH ) 
+            kerRowStr = kerRowStr + '{0:^{1}}, '.format(toHexPad(descType.MR                      , descType  .WIDTH ), descType  .WIDTH )         
             # option tuples
-            kerRowStr = kerRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TGT              , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(tgtValues.STACK_DN_ARG1 , tgtValues  .WIDTH), tgtValues  .WIDTH )
-            kerRowStr = kerRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TXFER            , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(txferValues.VECTOR      , txferValues.WIDTH), txferValues.WIDTH )
-            kerRowStr = kerRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_LANES     , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(ker['NumberOfCells']    , 2                ), txferValues.WIDTH )
+            kerRowStr = kerRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TGT                   , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(tgtValues.STACK_DN_ARG1 , tgtValues  .WIDTH), tgtValues  .WIDTH )
+            kerRowStr = kerRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TXFER                 , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(txferValues.VECTOR      , txferValues.WIDTH), txferValues.WIDTH )
+            kerRowStr = kerRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_LANES          , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(ker['NumberOfCells']    , 2                ), txferValues.WIDTH )
+            #kerRowStr = kerRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_ARG1_OPERANDS  , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(ker['NumberOfOperands'] , 5                ), txferValues.WIDTH )
 
             #  - memory option
             # Construct storage descriptor
@@ -3707,20 +3737,21 @@ def main():
     #network.addLayer('Fully Connected',  1,   1, 4096,    1,   1, 4096,   1 ) # 4096,
     #network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
     
-    # Small
-    network.addLayer('Input',           55,  55,    4,                      ) #   96,
-    network.addLayer('Convolutional',   27,  27,   4,    5,   5,    4,   2 ) #  256,
-    network.addLayer('Convolutional',   13,  13,  8,    3,   3,   4,   2 ) #  384,
-    network.addLayer('Convolutional',   13,  13,  4,    3,   3,   8,   1 ) #  384,
+    # 2x2 and 8x8
+    #network.addLayer('Input',           55,  55,    32,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,   32,    5,   5,    32,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,  4,    3,   3,   32,   2 ) #  384,
+    #network.addLayer('Convolutional',   13,  13,  4,    3,   3,   4,   1 ) #  384,
     
     # FC-7
     #network.addLayer('Input',         4096,    1,    1,                      ) #   96,
     #network.addLayer('Convolutional', 4096,    1,    1, 4096,   1,    1,   0 ) #  256,
     #network.addLayer('Convolutional', 1024,    1,    1, 4096,   1,    1,   0 ) #  384,
     
-    #network.addLayer('Input',           55,  55,    3,                      ) #   96,
-    #network.addLayer('Convolutional',   27,  27,  128,    5,   5,    3,   2 ) #  256,
-    #network.addLayer('Convolutional',   13,  13,   64,    3,   3,  128,   2 ) #  384,
+    # Small 2x2 and 8x8
+    network.addLayer('Input',           55,  55,    3,                      ) #   96,
+    network.addLayer('Convolutional',   27,  27,  32,    5,   5,    3,   2 ) #  256,
+    network.addLayer('Convolutional',   13,  13,   64,    3,   3,  32,   2 ) #  384,
     #network.addLayer('Convolutional',   13,  13,   32,    3,   3,   64,   1 ) #  384,
     #network.addLayer('Convolutional',   13,  13,   64,    3,   3,   32,   1 ) #  384,
     #

@@ -1,16 +1,20 @@
-
 jupyter notebook
 
 python -i test.py
 
 # To change array size, edit
-vim /Users/lbbaker/Documents/workspace/github/ece-cortical-MainResearch/3DSystem/PEArray/HDL/common/pe_array.vh
+#vim /Users/lbbaker/Documents/workspace/github/ece-cortical-MainResearch/3DSystem/PEArray/HDL/common/pe_array.vh
+sed -i -e 's/64/4/g' /Users/lbbaker/Documents/workspace/github/ece-cortical-MainResearch/3DSystem/PEArray/HDL/common/pe_array.vh
 
 scp verilogFiles/latest/*.vh   lbbaker@olympia.ece.ncsu.edu:/home/lbbaker/Cortical/MyResearch/3DSystem/System/HDL/common/.
 scp outputFiles/latest/*/*.dat lbbaker@olympia.ece.ncsu.edu:/home/lbbaker/Cortical/MyResearch/3DSystem/System/SIMULATION/sv/inputFiles/.
 
 scp verilogFiles/latest/*.vh   lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/System/HDL/common/. ; \
-scp outputFiles/latest/*/*.dat lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/System/SIMULATION/sv/inputFiles/.
+scp outputFiles/latest/*/*.dat lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/System/SIMULATION/sv/inputFiles/. ; \
+scp outputFiles/latest/manager_*/manager_*_*_layer1_{group_?_AllGroupMemory.txt,WUs.txt} lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/System/SIMULATION/sv/configFiles/.
+
+vim -O outputFiles/latest/manager_0_0/manager_0_layer1_{i,d}cntl_readmem.dat outputFiles/latest/manager_0_0/manager_0_layer1_op_readmem.dat outputFiles/latest/manager_0_0/manager_0_layer1_option*e{0,1,2}*
+
 
 bsub -W 2:00 < script.csh
 

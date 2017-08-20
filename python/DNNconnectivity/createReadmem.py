@@ -149,6 +149,7 @@ FoundLocalConsJumpMemoryDepth = False
 FoundDescToCJRatio = False
 FoundCJWidth = False
 FoundInstructionMemoryDepth = False
+FoundMaxNumOfOperands = False
 
 
 
@@ -202,6 +203,15 @@ for line in searchFile:
     if "MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH" in data[1]:
       localStorageDescMemoryDepth = int(data[2])
       FoundLocalStorageDescMemoryDepth = True
+
+  if FoundMaxNumOfOperands == False:
+    data = re.split(r'\s{1,}', line)
+    # check define is in 2nd field
+    if "MGR_OP_MAX_NUM_OF_OPERANDS" in data[1]:
+      maxNumOfOperands = int(data[2])
+      FoundMaxNumOfOperands = True
+      maxNumOfOperandsWidth = int(math.log(int(data[2]),2))
+
 
   if FoundLocalConsJumpMemoryDepth == False:
     data = re.split(r'\s{1,}', line)
@@ -262,9 +272,6 @@ NUMOFEXECLANES = numOfLanes
 ## Memory
 WORDSIZE = laneWidth
 
-FoundDescPtrWidth = False
-
-descPtrWidth      = 17  # default if not found
 
 
 
@@ -379,11 +386,14 @@ def main():
           instNum = 0
           descNum = 0
           for desc in listOfDesc:
+            print '{0}:{1}:INFO: Manager {2} Layer {3} Descriptor {4} of {5}'.format(__FILE__(), __LINE__(), mgrY*arrayX+mgrX, layerID, descNum,len(listOfDesc))
+            print '{0}:{1}:LEE: {2}'.format(__FILE__(), __LINE__(), desc)
             instTuples = desc.split(',')
             # Remove SOD and EOD
             del instTuples[0]
             del instTuples[-1]
             numTuples = len(instTuples)
+            print '{0}:{1}:LEE: number of tuples = {2}'.format(__FILE__(), __LINE__(), numTuples)
             #print descNum, numOfDescriptors, numTuples
             tupleNum = 0
             tupInInstNum = 0
@@ -404,8 +414,10 @@ def main():
                 oper = optType
                 #op.append(optType)
               elif getattr(dc.optionType, 'NOP') == optType:
+                print '{0}:{1}:INFO: Last tuple'.format(__FILE__(), __LINE__())
                 lastTuple = True
               elif len(optionAndValue)==2:
+                print '{0}:{1}:INFO: Middle tuple: {2}, tuple num = {3}, inst number = {4}, available slots = {5}'.format(__FILE__(), __LINE__(), optionAndValue, tupleNum, tupInInstNum, optionsPerInst )
                 optVal = re.sub('[\n ]', '', optionAndValue[1])
               else :
                 print '{0}:{1}:ERROR: single tuple but not op or EOD'.format(__FILE__(), __LINE__())
@@ -425,6 +437,7 @@ def main():
                   peBits = math.log(numOfPes,2)
                   descPtrAddress = descPtrAddress + bin(int(descPtr[0], 16)).split('b')[1].zfill(int(peBits))
                   descPtrAddrBits = math.log(storageDescMemoryDepth,2)
+                  print '{0}:{1}:LEE: {2} {3}'.format(__FILE__(), __LINE__(), peBits, descPtrAddrBits )
                   descPtrAddress = descPtrAddress + bin(int(descPtr[1], 16)).split('b')[1].zfill(int(descPtrAddrBits))
                   descPtrHexAddress=str(hex(int(descPtrAddress,2)).split('x')[1]).zfill(6)
                   descPtrAddressBits = peBits + descPtrAddrBits
@@ -441,6 +454,11 @@ def main():
                     option[tupInInstNum].append(memBytes[1])
                     optionValue[tupInInstNum].append(memBytes[2])
                     tupInInstNum += 1
+                    if (tupleNum == numTuples-2):
+                      print '{0}:{1}:INFO: Last tuple is a memory tuple: {2} of {3}'.format(__FILE__(), __LINE__(), tupleNum, numTuples)
+                      lastTuple = True
+                      # force a stop
+                      tupleNum += 1
                   else:
                     # not enuff space in current instruction for memory option, so pad with NOP and jump to next instruction
                     for pad in range(tupInInstNum, optionsPerInst):
@@ -449,6 +467,32 @@ def main():
                       optionValue[pad].append(getattr(dc.optionType, 'NOP'))
                       tupInInstNum += 1
                       tupleNum -= 1
+                elif (getattr(dc.optionType,'NUM_OF_ARG0_OPERANDS') == optType) or (getattr(dc.optionType,'NUM_OF_ARG1_OPERANDS') == optType) :
+                  if tupInInstNum < (optionsPerInst-1):
+                    option[tupInInstNum].append(optType)
+                    numOfOperands=bin(int(optVal, 16)).split('b')[1].zfill(int(maxNumOfOperandsWidth))
+                    print '{0}:{1}:LEE: numOfOperands {2}'.format(__FILE__(), __LINE__(), numOfOperands)
+                    numOfOperandsHex=str(hex(int(numOfOperands,2)).split('x')[1]).zfill(6)
+                    numOperandsBytes = re.findall('.{1,2}', numOfOperandsHex.zfill(6))
+                    optionValue[tupInInstNum].append(numOperandsBytes [0])
+                    tupInInstNum += 1
+                    option[tupInInstNum].append(numOperandsBytes [1])
+                    optionValue[tupInInstNum].append(numOperandsBytes [2])
+                    tupInInstNum += 1
+                    if (tupleNum == numTuples-2):
+                      print '{0}:{1}:INFO: Last tuple is a numOperand tuple: {2} of {3}'.format(__FILE__(), __LINE__(), tupleNum, numTuples)
+                      lastTuple = True
+                      # force a stop
+                      tupleNum += 1
+                  else:
+                    # not enuff space in current instruction for memory option, so pad with NOP and jump to next instruction
+                    for pad in range(tupInInstNum, optionsPerInst):
+                      option[pad].append(getattr(dc.optionType, 'NOP'))
+                      # dont care about value
+                      optionValue[pad].append(getattr(dc.optionType, 'NOP'))
+                      tupInInstNum += 1
+                      tupleNum -= 1
+                    pass
                 else:
                     # non-memory tuple
                     option[tupInInstNum].append(optType)
@@ -459,6 +503,7 @@ def main():
                     tupInInstNum += 1
               if lastTuple:
                 # Last tuple
+                print '{0}:{1}:LEE:  Last tuple: {2} {3}'.format(__FILE__(), __LINE__(), tupInInstNum, optionsPerInst)
                 #print 'Descriptor complete'
                 descComplete = True
                 # Pad instruction
@@ -470,6 +515,7 @@ def main():
               #----------------------------------------------------------------------------------------------------
               #  Check if we have completed an instruction
               if (tupInInstNum == optionsPerInst) :
+                print '{0}:{1}:LEE:  Completed an instruction: {2}'.format(__FILE__(), __LINE__(), instNum)
                 #print 'instruction #{0}'.format(instNum)
                 #  Completedd an insruction, now set operation and delineators
                 tupInInstNum = 0
@@ -768,7 +814,7 @@ def main():
       oFile = open(outputFile, 'w')
       consJumpPtrWidth = int(math.log(localConsJumpMemoryDepth ,2))
       for c in range(len(sdAddress)):
-        print 'Storage Descriptor Entry : {0}'.format(c)
+        print 'Manager {0}: Storage Descriptor Entry : {1} of {2}'.format(mgrY*arrayX+mgrX, c, len(memAddress))
         instruction = ''
         instruction = bin(int(accessOrder[c],16)).split('b')[1].zfill(optionOrderWidth) + instruction
         print 'Instruction : {0}'.format(instruction)
