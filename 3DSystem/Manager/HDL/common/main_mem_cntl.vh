@@ -109,7 +109,7 @@ typedef enum reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] {
            MMC_CNTL_CMD_GEN_PCPOCW                =  11'b000_1000_0000,
            MMC_CNTL_CMD_GEN_PCPR                  =  11'b001_0000_0000,
            MMC_CNTL_CMD_GEN_PR                    =  11'b010_0000_0000,
-           MMC_CNTL_CMD_GEN_ERR                   =  11'b100_0000_0000}  mmc_cntl_cmd_gen_fsm;
+           MMC_CNTL_CMD_GEN_ERR                   =  11'b100_0000_0000}  mmc_cntl_cmd_gen_fsm_enum;
 
 
 //--------------------------------------------------------

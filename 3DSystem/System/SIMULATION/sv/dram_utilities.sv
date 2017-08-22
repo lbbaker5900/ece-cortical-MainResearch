@@ -68,10 +68,10 @@ package dram_utils;
 
 
     function new (
-                  input int                          Id 
+                  input int           Id 
                   );
 
-        this.Id                            =   Id  ;
+        this.Id    =   Id  ;
     endfunction
 
     task loadDramFromAllGroupFile ( input         string                        allGroupFileName                           ,
@@ -80,11 +80,7 @@ package dram_utils;
                                           );
       logic [`MGR_DRAM_BANK_ADDRESS_RANGE       ]  config_bank_addr ;
       logic [`MGR_DRAM_PAGE_ADDRESS_RANGE       ]  config_row_addr  ;
-      `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-      logic [`MGR_DRAM_ADDRESS_LINE_FIELD_RANGE ]  config_line_addr ;
-      `endif
-      logic                                        config_burst     ;
-      logic [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE  ] config_word      ;
+      logic [`MGR_DRAM_WORD_ADDRESS_RANGE       ]  config_word_addr ;
       logic                                        config_load      ;
 
       int lineNum ;
@@ -94,9 +90,7 @@ package dram_utils;
         begin
           vDramCfgIfc[i].config_bank_addr  =  'd0 ;
           vDramCfgIfc[i].config_row_addr   =  'd0 ;
-          vDramCfgIfc[i].config_line_addr  =  'd0 ;
-          vDramCfgIfc[i].config_burst      =  'd0 ;
-          vDramCfgIfc[i].config_word       =  'd0 ;
+          vDramCfgIfc[i].config_word_addr  =  'd0 ;
           vDramCfgIfc[i].config_load       =  'd0 ;
         end
 
@@ -134,7 +128,7 @@ package dram_utils;
           // first find the "---------------------"
           while (found == 0)
             begin
-              void'($fgetc (fileDesc)); 
+              char = $fgetc (fileDesc); 
               if (char == `COMMON_ASCII_HIPHON )
                 begin
                   void'($fgets (fileLine, fileDesc)); 
@@ -144,6 +138,7 @@ package dram_utils;
                 begin
                   void'($fgets (fileLine, fileDesc)); 
                 end
+              //$display("@%0t :%s:%0d:INFO: Manager {%0d} : Not Found - in fileLine: %s", $time, `__FILE__, `__LINE__, Id, fileLine);
               /* seemed to work but then didnt ???
               void'($fgets (fileLine, fileDesc)); 
               if (fileLine.substr(0,0).compare("-") != 0) 
@@ -155,7 +150,7 @@ package dram_utils;
             end
 
           void'($fgets (fileLine, fileDesc)); 
-          //$display("@%0t :%s:%0d:INFO: Manager {%0d} : fileLine: %s", $time, `__FILE__, `__LINE__, Id, fileLine);
+          //$display("@%0t :%s:%0d:INFO: Manager {%0d} : line# %0d, fileLine: %s", $time, `__FILE__, `__LINE__, Id, lineNum, fileLine);
 
           // find the index of the "|" delineators
           idx = 0;
@@ -186,13 +181,11 @@ package dram_utils;
             begin
               tmp_str = fileLine.substr(idxs[i]+1, idxs[i+1]-1);
               void'($sscanf(tmp_str, "%s %s %s %s ", cbpw[0], cbpw[1], cbpw[2], cbpw[3]));
-              $display("@%0t :%s:%0d:INFO: Manager {%0d} : %d: %h %h %h %h ", $time, `__FILE__, `__LINE__, Id, i, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi());
+              //$display("@%0t :%s:%0d:INFO: Manager {%0d} : %0d: %4h %4h %4h ", $time, `__FILE__, `__LINE__, Id, i, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi());
 
               vDramCfgIfc[cbpw[0].atoi()].config_bank_addr  =  cbpw[1].atoi() ;
               vDramCfgIfc[cbpw[0].atoi()].config_row_addr   =  cbpw[2].atoi() ;
-              vDramCfgIfc[cbpw[0].atoi()].config_line_addr  =  cbpw[3].atoi() ;
-              vDramCfgIfc[cbpw[0].atoi()].config_burst      =  (cbpw[3].atoi() > 63) ;
-              vDramCfgIfc[cbpw[0].atoi()].config_word       =  cbpw[3].atoi()%64 ;
+              vDramCfgIfc[cbpw[0].atoi()].config_word_addr  =  cbpw[3].atoi() ;
 
               if (i == 0)
                 begin

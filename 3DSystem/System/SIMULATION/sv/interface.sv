@@ -485,23 +485,17 @@ interface diram_cfg_ifc(
     //
   logic [`MGR_DRAM_BANK_ADDRESS_RANGE         ]  config_bank_addr ;
   logic [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]  config_row_addr  ;
-  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-    logic [`MGR_DRAM_ADDRESS_LINE_FIELD_RANGE ]  config_line_addr ;
-  `endif
-  logic                                         config_burst     ;
-  logic [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE   ] config_word      ;
-  logic                                         config_load      ;
-  logic [31:0   ] config_data      ;
+  logic [`MGR_DRAM_WORD_ADDRESS_RANGE         ]  config_word_addr ;
+  logic                                          config_load      ;
+  logic [31:0                                 ]  config_data      ;
 
 
   clocking cb_out @(posedge clk);
 
     output   config_bank_addr  ;
-    output   config_row_addr   ;
-    output   config_line_addr  ;
-    output   config_burst      ;
+    output   config_row_addr   ;  // page
+    output   config_word_addr  ;  // word in page
 
-    output   config_word       ;
     output   config_data       ;
     output   config_load       ;
 

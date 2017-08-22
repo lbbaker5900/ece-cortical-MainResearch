@@ -112,6 +112,13 @@
 //---------------------------------------------------------------------------------------------------------------------
 // WU Instruction
 
+`define MGR_WU_DESC_PER_INST                       4
+`define MGR_WU_DESC_PER_INST_WIDTH                 (`CLOG2(`MGR_WU_DESC_PER_INST ))
+`define MGR_WU_DESC_PER_INST_MSB                   `MGR_WU_DESC_PER_INST_WIDTH-1
+`define MGR_WU_DESC_PER_INST_LSB                   0
+`define MGR_WU_DESC_PER_INST_SIZE                  (`MGR_WU_DESC_PER_INST_MSB - `MGR_WU_DESC_PER_INST_LSB +1)
+`define MGR_WU_DESC_PER_INST_RANGE                  `MGR_WU_DESC_PER_INST_MSB : `MGR_WU_DESC_PER_INST_LSB
+
 `define MGR_WU_OPT_PER_INST                       3
 `define MGR_WU_OPT_PER_INST_WIDTH                 `MGR_WU_OPT_PER_INST   
 `define MGR_WU_OPT_PER_INST_MSB                   `MGR_WU_OPT_PER_INST_WIDTH-1

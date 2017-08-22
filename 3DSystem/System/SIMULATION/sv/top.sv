@@ -207,7 +207,8 @@ module top;
  
                 wire  qvld ;
                 wire  cq   ;
-                diram4_port_model   #(.DQ_WIDTH    (`MGR_DRAM_INTF_WIDTH)
+                diram4_port_model   #(.DQ_WIDTH    (`MGR_DRAM_INTF_WIDTH),
+                                      .CL_PER_PAGE (`MGR_DRAM_NUM_CLINES_PER_PAGE)
                           )
                           diram_inst(
                                     .clk       ( clk ),
@@ -440,17 +441,13 @@ module top;
            begin
              assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_bank_addr   = DramCfgIfc[mgr][0].config_bank_addr   ;
              assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_row_addr    = DramCfgIfc[mgr][0].config_row_addr    ;
-             assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_line_addr   = DramCfgIfc[mgr][0].config_line_addr   ;
-             assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_burst       = DramCfgIfc[mgr][0].config_burst       ;
-             assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_word        = DramCfgIfc[mgr][0].config_word        ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_word_addr   = DramCfgIfc[mgr][0].config_word_addr   ;
              assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_load        = DramCfgIfc[mgr][0].config_load        ;
              assign diram.diram_port_arrays[mgr].diram_inst.ram_even.ram.config_data        = DramCfgIfc[mgr][0].config_data        ;
 
              assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_bank_addr   = DramCfgIfc[mgr][1].config_bank_addr   ;
              assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_row_addr    = DramCfgIfc[mgr][1].config_row_addr    ;
-             assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_line_addr   = DramCfgIfc[mgr][1].config_line_addr   ;
-             assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_burst       = DramCfgIfc[mgr][1].config_burst       ;
-             assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_word        = DramCfgIfc[mgr][1].config_word        ;
+             assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_word_addr   = DramCfgIfc[mgr][1].config_word_addr   ;
              assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_load        = DramCfgIfc[mgr][1].config_load        ;
              assign diram.diram_port_arrays[mgr].diram_inst.ram_odd.ram.config_data        = DramCfgIfc[mgr][1].config_data        ;
 

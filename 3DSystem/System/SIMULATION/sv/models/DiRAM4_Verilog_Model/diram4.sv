@@ -560,6 +560,8 @@ module diram4_port_model #(
   parameter BANK_WIDTH = 5,
   parameter ROW_WIDTH  = 12,
   parameter COL_WIDTH  = 6,
+  parameter CL_PER_PAGE  = 64,
+  parameter BITS_PER_PAGE  = 4096,
   parameter BL = 2)
 (
   input                  clk,   // Main Input Clock - 1 GHz
@@ -894,6 +896,8 @@ diram4_ram_model # (
   .BANK_WIDTH(BANK_WIDTH),
   .ROW_WIDTH(ROW_WIDTH),
   .COL_WIDTH(COL_WIDTH),
+  .CL_PER_PAGE(CL_PER_PAGE),
+  .BITS_PER_PAGE(BITS_PER_PAGE),
   .BL(BL)) ram_even(
   .clk         (port_clk_r),
   .cs_n        (cs_n_r | ~command_and_data_valid),
@@ -913,6 +917,8 @@ diram4_ram_model # (
   .BANK_WIDTH(BANK_WIDTH),
   .ROW_WIDTH(ROW_WIDTH),
   .COL_WIDTH(COL_WIDTH),
+  .CL_PER_PAGE(CL_PER_PAGE),
+  .BITS_PER_PAGE(BITS_PER_PAGE),
   .BL(BL)) ram_odd(
   .clk         (port_clk_f),
   .cs_n        (cs_n_f | ~command_and_data_valid),
@@ -1505,6 +1511,8 @@ module diram4_ram_model # (
   parameter BANK_WIDTH = 5,
   parameter ROW_WIDTH  = 12,
   parameter COL_WIDTH  = 6,
+  parameter CL_PER_PAGE  = 64,
+  parameter BITS_PER_PAGE  = 4096,
   parameter BL = 2) (
   input                   clk,
   input                   cs_n,
@@ -1527,7 +1535,8 @@ timeprecision 1ps;
 //---------------------------------------------------------------------------
 `include "diram4_ram_params.svh"
 localparam BANK = (1 << BANK_WIDTH);
-localparam IDX_BITS = BANK_WIDTH+ROW_WIDTH+COL_WIDTH-2;
+localparam IDX_BITS = BANK_WIDTH+ROW_WIDTH+(CL_PER_PAGE-1)*(COL_WIDTH);
+
 localparam MEM_SIZE = (1 << IDX_BITS);
 
 //---------------------------------------------------------------------------
@@ -1537,8 +1546,8 @@ localparam MEM_SIZE = (1 << IDX_BITS);
 bit [BANK_WIDTH-1:0] wr_bank_addr;
 bit [BANK_WIDTH-1:0] rd_bank_addr;
 bit [ROW_WIDTH-1:0] row_addr [BANK-1:0];
-bit [COL_WIDTH-1:0] col_waddr;
-bit [COL_WIDTH-1:0] col_raddr;
+    bit [CL_PER_PAGE-1:0] col_waddr;
+    bit [CL_PER_PAGE-1:0] col_raddr;
 bit refr,pc;
 bit wr_en,wr_en_dly;
 bit [2:0] rd_cnt;
@@ -1687,41 +1696,91 @@ always@(posedge clk) begin
   end
 end // always
 
-always@(negedge clk) begin
-  if (cmd1 && cmd0 && !cs_n) begin  // cmd1,0 = "11" CAW
-    col_waddr <= addr[COL_WIDTH-1:0];
-    wr_bank_addr <= baddr;
-    wr_en <= 1;
-  end else begin
-    col_waddr <= col_waddr;
-    wr_bank_addr <= wr_bank_addr;
-    if(wr_cnt== 3 || BL==2) begin
-    	wr_en <= 0;
-    end else begin
-    	wr_en <= wr_en;
-    end
-  end // if
+if (CL_PER_PAGE > 1)
+  begin
+    always@(negedge clk) 
+      begin
+        if (cmd1 && cmd0 && !cs_n) 
+          begin  // cmd1,0 = "11" CAW
+            col_waddr <= addr[COL_WIDTH-1:0];
+          end 
+        else 
+          begin
+            col_waddr <= col_waddr;
+          end
+      end
+  end
 
-  if (cmd1 && !cmd0 && !cs_n) begin  // cmd1,0 = "10" CAR
-    col_raddr <= addr[COL_WIDTH-1:0];
-    rd_bank_addr <= baddr;
-    rd_en <= 1;
-  end else begin
-    col_raddr <= col_raddr;
-    rd_bank_addr <= rd_bank_addr;
-    if(rd_cnt == 3 || BL==2) begin
-      rd_en <= 0;
-    end else begin
-      rd_en <= rd_en;
-    end
-  end // if
-end // always
+always@(negedge clk) 
+  begin
+    if (cmd1 && cmd0 && !cs_n) 
+      begin  // cmd1,0 = "11" CAW
+        wr_bank_addr <= baddr;
+        wr_en <= 1;
+      end 
+    else 
+      begin
+      wr_bank_addr <= wr_bank_addr;
+      if(wr_cnt== 3 || BL==2) 
+        begin
+          wr_en <= 0;
+        end 
+      else 
+        begin
+          wr_en <= wr_en;
+        end
+    end // if
+  end // always
+    
+if (CL_PER_PAGE > 1)
+  begin
+    always@(negedge clk) 
+      begin
+        if (cmd1 && !cmd0 && !cs_n) 
+          begin  // cmd1,0 = "10" CAR
+            col_raddr <= addr[COL_WIDTH-1:0];
+          end 
+        else 
+          begin
+            col_raddr <= col_raddr;
+          end // if
+      end // always
+  end
+
+always@(negedge clk) 
+  begin
+    if (cmd1 && !cmd0 && !cs_n) 
+      begin  // cmd1,0 = "10" CAR
+        rd_bank_addr <= baddr;
+        rd_en <= 1;
+      end 
+    else 
+      begin
+        rd_bank_addr <= rd_bank_addr;
+        if(rd_cnt == 3 || BL==2) 
+          begin
+            rd_en <= 0;
+          end 
+        else 
+          begin
+            rd_en <= rd_en;
+          end
+      end // if
+  end // always
 
 //---------------------------------------------------------------------------
 // RAM flat address/index
 //---------------------------------------------------------------------------
-assign wr_idx =   {wr_bank_addr,row_addr[wr_bank_addr],col_waddr[(COL_WIDTH-1):2]};
-assign rd_idx =   {rd_bank_addr,row_addr[rd_bank_addr],col_raddr[(COL_WIDTH-1):2]};
+if (CL_PER_PAGE > 1)
+  begin
+    assign wr_idx =   {wr_bank_addr,row_addr[wr_bank_addr],col_waddr[(COL_WIDTH-1):2]};
+    assign rd_idx =   {rd_bank_addr,row_addr[rd_bank_addr],col_raddr[(COL_WIDTH-1):2]};
+  end
+else
+  begin
+    assign wr_idx =   {wr_bank_addr,row_addr[wr_bank_addr]};
+    assign rd_idx =   {rd_bank_addr,row_addr[rd_bank_addr]};
+  end
 
 //---------------------------------------------------------------------------
 // Write counter and ECC bit
@@ -1757,8 +1816,16 @@ end
 //---------------------------------------------------------------------------
 assign rd_en_mem  = (BL==2) ? rd_en : (rd_en || rd_en_dly);
 assign wr_en_mem  = (BL==2) ? wr_en : (wr_en || wr_en_dly);
-assign wr_cnt_mem = (BL==2) ? col_waddr[1:0]: wr_cnt;
-assign rd_cnt_mem = (BL==2) ? col_raddr[1:0]: rd_cnt;
+if (CL_PER_PAGE > 1)
+  begin
+    assign wr_cnt_mem = (BL==2) ? col_waddr[1:0]: wr_cnt;
+    assign rd_cnt_mem = (BL==2) ? col_raddr[1:0]: rd_cnt;
+  end
+else
+  begin
+    assign wr_cnt_mem = 0;
+    assign rd_cnt_mem = 0;
+  end
 
 	diram4_ram_sparse #(
 	  .BL(BL),
@@ -1767,6 +1834,7 @@ assign rd_cnt_mem = (BL==2) ? col_raddr[1:0]: rd_cnt;
           .BANK_WIDTH(BANK_WIDTH),
           .ROW_WIDTH(ROW_WIDTH),
           .COL_WIDTH(COL_WIDTH),
+          .CL_PER_PAGE(CL_PER_PAGE),
 	  .IDX_BITS(IDX_BITS)) ram(
 	  .clk(clk ),
 	  .wr_en(wr_en_mem ),
@@ -2779,6 +2847,8 @@ module diram4_ram_sparse #(
   parameter BANK_WIDTH = 5,
   parameter ROW_WIDTH  = 12,
   parameter COL_WIDTH  = 6,
+  parameter CL_PER_PAGE  = 64,
+  parameter BITS_PER_PAGE  = 4096,
   parameter IDX_BITS = 4) (
   input clk,
   input wr_en,
@@ -2794,7 +2864,8 @@ module diram4_ram_sparse #(
 timeunit 1ps;
 timeprecision 1ps;
 
-localparam NUM_WORDS_MSB = $clog2(DQ_WIDTH/32)-1;
+localparam NUM_WORDS_PER_INTF_MSB  = $clog2(DQ_WIDTH/32)-1;
+localparam WORDS_PER_PAGE = $clog2(BITS_PER_PAGE)-5;
 
 //---------------------------------------------------------------------------
 // Declarations
@@ -2869,17 +2940,20 @@ end // always
 // External configuration
 //---------------------------------------------------------------------------
 
-bit [BANK_WIDTH-1:0] config_bank_addr ;
-bit [ROW_WIDTH-1:0 ] config_row_addr  ;
-bit [COL_WIDTH-1:0 ] config_line_addr ;
-bit [IDX_BITS-1:0  ] config_index     ;
-bit [32-1:0        ] config_data      ;
+bit [BANK_WIDTH-1:0     ] config_bank_addr ;
+bit [ROW_WIDTH-1:0      ] config_row_addr  ;
+bit [WORDS_PER_PAGE-1:0 ] config_word_addr ;
+bit [IDX_BITS-1:0       ] config_index     ;
+bit [32-1:0             ] config_data      ;
 
-assign config_index =   {config_bank_addr,config_row_addr,config_line_addr};
+assign config_index =   {config_bank_addr,config_row_addr};
 
-  bit                        config_burst ;
-  bit [NUM_WORDS_MSB:0]      config_word  ;
-  bit                        config_load  ;
+  bit                                 config_burst      ;
+  bit [NUM_WORDS_PER_INTF_MSB:0]      config_intf_word  ;  // word in a burst
+  bit                                 config_load       ;
+
+  assign config_burst      = (config_word_addr > 63);
+  assign config_intf_word  =  config_word_addr%64;
 
   genvar m ;
   generate
@@ -2887,7 +2961,7 @@ assign config_index =   {config_bank_addr,config_row_addr,config_line_addr};
       begin
         always @(posedge config_load)
           begin
-            if (m == config_word)
+            if (m == config_intf_word)
               begin
                 mem[m][config_burst][config_index]  = config_data ;
               end

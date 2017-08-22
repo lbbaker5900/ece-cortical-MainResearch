@@ -699,15 +699,15 @@ module main_mem_cntl (
         for (strm=0; strm<`MMC_CNTL_NUM_OF_INTF ; strm=strm+1) 
           begin: strm_fsm
 
-            reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] mmc_cntl_cmd_gen_state      ; // state flop
-            reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] mmc_cntl_cmd_gen_state_next ;
-            //mmc_cntl_cmd_gen_fsm  mmc_cntl_cmd_gen_state      ; // state flop
-            //mmc_cntl_cmd_gen_fsm  mmc_cntl_cmd_gen_state_next ;
+            //reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] mmc_cntl_cmd_gen_state      ; // state flop
+            //reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] mmc_cntl_cmd_gen_state_next ;
+            mmc_cntl_cmd_gen_fsm_enum  mmc_cntl_cmd_gen_state      ; // state flop
+            mmc_cntl_cmd_gen_fsm_enum  mmc_cntl_cmd_gen_state_next ;
             
             // State register 
             always @(posedge clk)
               begin
-                mmc_cntl_cmd_gen_state <= ( reset_poweron ) ? `MMC_CNTL_CMD_GEN_WAIT        :
+                mmc_cntl_cmd_gen_state <= ( reset_poweron ) ? MMC_CNTL_CMD_GEN_WAIT        :
                                                                mmc_cntl_cmd_gen_state_next  ;
               end
             
@@ -732,7 +732,7 @@ module main_mem_cntl (
             //                                                               
             reg   [`DRAM_ACC_CMD_SEQ_RANGE         ]   strm_cmd_sequence                                               ;
             reg   [`DRAM_ACC_NUM_OF_CMDS_RANGE     ]   strm_cmd_sequence_codes         [`DRAM_ACC_CMD_SEQ_MAX_LENGTH ] ;  // contains the actual sequence e.g. {PC, PO, CR, NOP}
-            reg   [`MMC_CNTL_CMD_GEN_STATE_RANGE   ]   strm_cmd_code_state_next                                        ;  // let the code define the enxt state
+            mmc_cntl_cmd_gen_fsm_enum                  strm_cmd_code_state_next                                        ;  // let the code define the enxt state
                                                                                                                        
             reg                                        strm_cmd_write                                                  ;  // write the command to the sequence fifo
 
@@ -744,50 +744,50 @@ module main_mem_cntl (
               begin
                 case (mmc_cntl_cmd_gen_state)
                   
-                  `MMC_CNTL_CMD_GEN_WAIT: 
+                  MMC_CNTL_CMD_GEN_WAIT: 
                     // The channel stream select logic will not enable this fsm unless this streams request fifo is requesting this channel
-                    mmc_cntl_cmd_gen_state_next =  ( strm_enable [chan][strm] ) ?   `MMC_CNTL_CMD_GEN_DECODE_SEQUENCE  :
-                                                                                    `MMC_CNTL_CMD_GEN_WAIT             ;
+                    mmc_cntl_cmd_gen_state_next =  ( strm_enable [chan][strm] ) ?   MMC_CNTL_CMD_GEN_DECODE_SEQUENCE  :
+                                                                                    MMC_CNTL_CMD_GEN_WAIT             ;
        
-                  `MMC_CNTL_CMD_GEN_DECODE_SEQUENCE: 
+                  MMC_CNTL_CMD_GEN_DECODE_SEQUENCE: 
                     mmc_cntl_cmd_gen_state_next =  strm_cmd_code_state_next          ;
                                                    //( ~cmd_seq_pc_fifo  [chan].almost_full && ~cmd_seq_po_fifo  [chan].almost_full && ~cmd_seq_cache_fifo [chan].almost_full) ? strm_cmd_code_state_next          :  // a sequence will always contain a page and cache command
-                                                   //                                                                                                                            `MMC_CNTL_CMD_GEN_DECODE_SEQUENCE ;  // need to add PR (FIXME)
+                                                   //                                                                                                                            MMC_CNTL_CMD_GEN_DECODE_SEQUENCE ;  // need to add PR (FIXME)
 
                   //----------------------------------------------------------------------------------------------------
                   // These states are transitory. We write the commands into the sequence fifos
                   // FIXME: These states are mainly for debug and can be consolidated
-                  `MMC_CNTL_CMD_GEN_POCR: 
-                    mmc_cntl_cmd_gen_state_next = `MMC_CNTL_CMD_GEN_WAIT ;
+                  MMC_CNTL_CMD_GEN_POCR: 
+                    mmc_cntl_cmd_gen_state_next = MMC_CNTL_CMD_GEN_WAIT ;
                                                                              
-                  `MMC_CNTL_CMD_GEN_POCW: 
-                    mmc_cntl_cmd_gen_state_next = `MMC_CNTL_CMD_GEN_WAIT ;
+                  MMC_CNTL_CMD_GEN_POCW: 
+                    mmc_cntl_cmd_gen_state_next = MMC_CNTL_CMD_GEN_WAIT ;
                                                                              
-                  `MMC_CNTL_CMD_GEN_CR: 
-                    mmc_cntl_cmd_gen_state_next = `MMC_CNTL_CMD_GEN_WAIT ;
+                  MMC_CNTL_CMD_GEN_CR: 
+                    mmc_cntl_cmd_gen_state_next = MMC_CNTL_CMD_GEN_WAIT ;
                                                                              
-                  `MMC_CNTL_CMD_GEN_CW: 
-                    mmc_cntl_cmd_gen_state_next = `MMC_CNTL_CMD_GEN_WAIT ;
+                  MMC_CNTL_CMD_GEN_CW: 
+                    mmc_cntl_cmd_gen_state_next = MMC_CNTL_CMD_GEN_WAIT ;
                                                                              
-                  `MMC_CNTL_CMD_GEN_PCPOCR: 
-                    mmc_cntl_cmd_gen_state_next = `MMC_CNTL_CMD_GEN_WAIT ;
+                  MMC_CNTL_CMD_GEN_PCPOCR: 
+                    mmc_cntl_cmd_gen_state_next = MMC_CNTL_CMD_GEN_WAIT ;
                                                                              
-                  `MMC_CNTL_CMD_GEN_PCPOCW: 
-                    mmc_cntl_cmd_gen_state_next = `MMC_CNTL_CMD_GEN_WAIT ;
+                  MMC_CNTL_CMD_GEN_PCPOCW: 
+                    mmc_cntl_cmd_gen_state_next = MMC_CNTL_CMD_GEN_WAIT ;
                                                                              
-                  `MMC_CNTL_CMD_GEN_PCPR: 
-                    mmc_cntl_cmd_gen_state_next = `MMC_CNTL_CMD_GEN_WAIT ;
+                  MMC_CNTL_CMD_GEN_PCPR: 
+                    mmc_cntl_cmd_gen_state_next = MMC_CNTL_CMD_GEN_WAIT ;
                                                                              
-                  `MMC_CNTL_CMD_GEN_PR: 
-                    mmc_cntl_cmd_gen_state_next = `MMC_CNTL_CMD_GEN_WAIT ;
+                  MMC_CNTL_CMD_GEN_PR: 
+                    mmc_cntl_cmd_gen_state_next = MMC_CNTL_CMD_GEN_WAIT ;
                                                                              
                   //----------------------------------------------------------------------------------------------------
        
-                  `MMC_CNTL_CMD_GEN_ERR: 
-                    mmc_cntl_cmd_gen_state_next =  `MMC_CNTL_CMD_GEN_ERR ;
+                  MMC_CNTL_CMD_GEN_ERR: 
+                    mmc_cntl_cmd_gen_state_next =  MMC_CNTL_CMD_GEN_ERR ;
        
                   default:
-                    mmc_cntl_cmd_gen_state_next = `MMC_CNTL_CMD_GEN_WAIT ;
+                    mmc_cntl_cmd_gen_state_next = MMC_CNTL_CMD_GEN_WAIT ;
               
                 endcase // case (mmc_cntl_cmd_gen_state)
               end // always @ (*)
@@ -797,25 +797,25 @@ module main_mem_cntl (
               begin
                 case (strm_cmd_sequence) // synopsys parallel_case
                   `DRAM_ACC_CMD_SEQ_IS_POCR :
-                    strm_cmd_code_state_next = `MMC_CNTL_CMD_GEN_POCR  ;
+                    strm_cmd_code_state_next = MMC_CNTL_CMD_GEN_POCR  ;
                   `DRAM_ACC_CMD_SEQ_IS_POCW :
-                    strm_cmd_code_state_next = `MMC_CNTL_CMD_GEN_POCW  ;
+                    strm_cmd_code_state_next = MMC_CNTL_CMD_GEN_POCW  ;
                   `DRAM_ACC_CMD_SEQ_IS_CR :
-                    strm_cmd_code_state_next = `MMC_CNTL_CMD_GEN_CR  ;
+                    strm_cmd_code_state_next = MMC_CNTL_CMD_GEN_CR  ;
                   `DRAM_ACC_CMD_SEQ_IS_CW :
-                    strm_cmd_code_state_next = `MMC_CNTL_CMD_GEN_CW  ;
+                    strm_cmd_code_state_next = MMC_CNTL_CMD_GEN_CW  ;
                   `DRAM_ACC_CMD_SEQ_IS_PCPOCR :
-                    strm_cmd_code_state_next = `MMC_CNTL_CMD_GEN_PCPOCR  ;
+                    strm_cmd_code_state_next = MMC_CNTL_CMD_GEN_PCPOCR  ;
                   `DRAM_ACC_CMD_SEQ_IS_PCPOCW :
-                    strm_cmd_code_state_next = `MMC_CNTL_CMD_GEN_PCPOCW  ;
+                    strm_cmd_code_state_next = MMC_CNTL_CMD_GEN_PCPOCW  ;
                   `DRAM_ACC_CMD_SEQ_IS_PCPR :
-                    strm_cmd_code_state_next = `MMC_CNTL_CMD_GEN_PCPR  ;
+                    strm_cmd_code_state_next = MMC_CNTL_CMD_GEN_PCPR  ;
                   `DRAM_ACC_CMD_SEQ_IS_PR :
-                    strm_cmd_code_state_next = `MMC_CNTL_CMD_GEN_PR  ;
+                    strm_cmd_code_state_next = MMC_CNTL_CMD_GEN_PR  ;
                   `DRAM_ACC_CMD_SEQ_IS_NOP:
-                    strm_cmd_code_state_next = `MMC_CNTL_CMD_GEN_WAIT ;
+                    strm_cmd_code_state_next = MMC_CNTL_CMD_GEN_WAIT ;
                   default:
-                    strm_cmd_code_state_next = `MMC_CNTL_CMD_GEN_WAIT ;
+                    strm_cmd_code_state_next = MMC_CNTL_CMD_GEN_WAIT ;
                 endcase
               end
           //--------------------------------------------------

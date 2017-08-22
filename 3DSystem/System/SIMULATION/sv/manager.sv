@@ -77,9 +77,10 @@ class manager;
     vDiRamCfg_T                 vDramCfgIfc  [`MGR_DRAM_NUM_CHANNELS]  ;
     dram_utils::dram_utilities  dram_utils   ;
 
-    string     fileName          ;
-    descriptor  descriptorObjs [$][4]  ;
-    typedef descriptor  descObjs [$][4]  ;  // dont seem to be allowed to explicitly declare an array of objects as an output of a task
+    string              fileName          ;
+
+    descriptor          descriptorObjs [$][`MGR_WU_DESC_PER_INST ]  ;
+    typedef descriptor  descObjs       [$][`MGR_WU_DESC_PER_INST ]  ;  // dont seem to be allowed to explicitly declare an array of objects as an output of a task
 
     //-------------------------------------------------------------------------
     // HOW MANY?
@@ -176,6 +177,8 @@ class manager;
         bit   [`MGR_WU_OPT_VALUE_RANGE        ]      rcvd_stOp_cmd       ;
         bit   [`MGR_WU_OPT_VALUE_RANGE        ]      rcvd_simd_cmd       ;
         //genvar lane; 
+     
+        descriptor instruction [`MGR_WU_DESC_PER_INST ] ;  // we will load this from the list of instructions extracted from the WU file
 
         repeat (20) @(vDownstreamStackBusOOB.cb_test);  
 
@@ -194,7 +197,7 @@ class manager;
         //descriptorObjs[0][1].displayDesc();
         //descriptorObjs[0][2].displayDesc();
         //descriptorObjs[0][3].displayDesc();
-        $display("@%0t:%s:%0d:INFO:Manager {%0d} Extracted %0d instructions from WU file", $time, `__FILE__, `__LINE__, Id, $size(descriptorObjs));
+        $display("@%0t:%s:%0d:INFO:Manager {%0d} Extracted %0d instructions from WU file %s", $time, `__FILE__, `__LINE__, Id, $size(descriptorObjs), fileName);
 
         $display("@%0t:%s:%0d:INFO:Manager {%0d} Running %0d operations", $time, `__FILE__, `__LINE__, Id, num_operations);
         repeat (num_operations)                 //Number of transactions to be generated
@@ -224,6 +227,13 @@ class manager;
                 sys_operation_mgr        =  new ()  ;  // seed operation object.  Generators will copy this and then re-create different operand values
                 sys_operation_mgr.Id[0]  =  Id      ;  // Id in manager is only PE
                 sys_operation_mgr.Id[1]  =  0       ;  // set to lane 0 to avoid error in randomize
+
+                // Set number of oerands based on instruction
+                instruction = descriptorObjs [WU_num] ;
+                instruction[0].displayDesc();
+                $display("@%0t:%s:%0d:INFO: Manager {%0d} : Instruction %0d has %0d operands\'s", $time, `__FILE__, `__LINE__, Id, WU_num, instruction[0].getOptionValue(PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS));
+                sys_operation_mgr.setNumOperands(instruction[0].getOptionValue(PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS));
+                sys_operation_mgr.setNumOperands(instruction[0].getOptionValue(PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS));
 
                 // FIXME: currently the operation class decides what type of operation based on transaction ID
                 sys_operation_mgr.c_operationType_definedOrder .constraint_mode(0) ;
@@ -363,9 +373,9 @@ class manager;
                                           );
       
       // Each instruction will contain four descriptors
-      descriptor  descriptorWU [4]  ;
+      descriptor  descriptorWU         [`MGR_WU_DESC_PER_INST ]  ;
       // The task will return an array of instructions each with 4 descriptors
-      descriptor  wuDescriptorArray [$][4]  ;
+      descriptor  wuDescriptorArray [$][`MGR_WU_DESC_PER_INST ]  ;
 
       // Information extracted from WU file
       int        simd_operation    ;

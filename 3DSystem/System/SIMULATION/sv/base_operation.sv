@@ -189,6 +189,11 @@ package operation;
                     //c.numberOfLanes             = this.numberOfLanes           ;
         endfunction
         
+        function void setNumOperands (int num);
+                    this.numberOfOperands_min      = num     ;
+                    this.numberOfOperands_max      = num     ;
+        endfunction
+        
 
         //------------------------------------------------------------------------------------------------------
         // Pre randomize
@@ -858,6 +863,23 @@ package operation;
                   begin
                     return 1;
                   end
+                case (payload_tuple_type[i])
+                  PY_WU_INST_OPT_TYPE_MEMORY              :
+                    begin
+                      i += 1 ;
+                    end
+                  PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS:
+                    begin
+                      i += 1 ;
+                    end
+                  PY_WU_INST_OPT_TYPE_NUM_OF_ARG1_OPERANDS:
+                    begin
+                      i += 1 ;
+                    end
+                  default                 :
+                    begin
+                    end
+                endcase
               end
             return 0;
 
@@ -865,49 +887,69 @@ package operation;
 
         function int getOptionValue(int tuple_option);
 
-            case (tuple_option)
-              PY_WU_INST_OPT_TYPE_SRC                 :
-                begin
-                end
-              PY_WU_INST_OPT_TYPE_TGT                 :
-                begin
-                  
-                end
-              PY_WU_INST_OPT_TYPE_TXFER               :
-                begin
-                  
-                end
-              PY_WU_INST_OPT_TYPE_NUM_OF_LANES        :
-                begin
-                  
-                end
-              PY_WU_INST_OPT_TYPE_STOP                :
-                begin
-                  
-                end
-              PY_WU_INST_OPT_TYPE_SIMDOP              :
-                begin
-                  
-                end
-              PY_WU_INST_OPT_TYPE_MEMORY              :
-                begin
-                  
-                end
-              PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS:
-                begin
-                  
-                end
-              PY_WU_INST_OPT_TYPE_NUM_OF_ARG1_OPERANDS:
-                begin
-                  
-                end
-            endcase
+            bit found ;
+            bit [`MGR_WU_OPT_TYPE_RANGE       ]      tmp_payload_tuple_type       ; 
+            bit [`MGR_WU_EXTD_OPT_VALUE_RANGE ]      tmp_payload_extd_tuple_value ;
+
+            found = 0;
             for (int i=0; i<payload_tuple_type.size(); i++)
               begin
-                if (int'(payload_tuple_type[i]) == tuple_option)
+                tmp_payload_tuple_type       = payload_tuple_type  [i] ;
+                tmp_payload_extd_tuple_value = payload_tuple_value [i] ;
+                $display("@%0t:%s:%0d:INFO: Tuple: {%2h, %2h}", $time, `__FILE__, `__LINE__, payload_tuple_type[i], payload_tuple_value [i]);
+
+                if (int'(tmp_payload_tuple_type) == tuple_option)
                   begin
-                    return int'(payload_tuple_value[i]) ;
+                    found = 1;
                   end
+             
+                case (tmp_payload_tuple_type)
+                  PY_WU_INST_OPT_TYPE_SRC                 :
+                    begin
+                    end
+                  PY_WU_INST_OPT_TYPE_TGT                 :
+                    begin
+                      
+                    end
+                  PY_WU_INST_OPT_TYPE_TXFER               :
+                    begin
+                      
+                    end
+                  PY_WU_INST_OPT_TYPE_NUM_OF_LANES        :
+                    begin
+                      
+                    end
+                  PY_WU_INST_OPT_TYPE_STOP                :
+                    begin
+                      
+                    end
+                  PY_WU_INST_OPT_TYPE_SIMDOP              :
+                    begin
+                      
+                    end
+                  PY_WU_INST_OPT_TYPE_MEMORY              :
+                    begin
+                      tmp_payload_extd_tuple_value = {payload_tuple_value [i], payload_tuple_type [i+1], payload_tuple_value [i+1]} ;
+                      i += 1 ;
+                    end
+                  PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS:
+                    begin
+                      tmp_payload_extd_tuple_value = {payload_tuple_value [i], payload_tuple_type [i+1], payload_tuple_value [i+1]} ;
+                      i += 1 ;
+                    end
+                  PY_WU_INST_OPT_TYPE_NUM_OF_ARG1_OPERANDS:
+                    begin
+                      tmp_payload_extd_tuple_value = {payload_tuple_value [i], payload_tuple_type [i+1], payload_tuple_value [i+1]} ;
+                      i += 1 ;
+                    end
+                  default                 :
+                    begin
+                    end
+                endcase
+              if (found)
+                begin
+                  return int'(tmp_payload_extd_tuple_value) ;
+                end
               end
 
         endfunction
