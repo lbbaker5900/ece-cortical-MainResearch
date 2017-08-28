@@ -9,16 +9,16 @@ crDWlib: $(crDWlib)
 $(crDWlib): ../synth/dw_memories/compout/views/*/*.plef
 	tcsh -c "add synopsys2015 ; \
 	/bin/rm -rf ../pr/dw_memories ; \
-	icc_shell -f run_create_mw_lib.tcl |& tee run_create_mw_lib.log ; \
+	nice +19 icc_shell -f run_create_mw_lib.tcl |& tee run_create_mw_lib.log ; \
 	Milkyway -tcl -galaxy -nogui -file run_create_dw_lib.tcl |& tee run_create_dw_lib.log ; \
 	touch $(crDWlib)"
 
 INIT = .init
 .PHONY: init
 init: $(INIT)
-$(INIT): $(crDWlib) constraints.tcl run_init.tcl ../synth/$(MODNAME)_final.v 
+$(INIT): $(crDWlib) run_init.tcl ../synth/$(MODNAME)_final.v 
 	tcsh -c "add synopsys2015 ; \
-	icc_shell -f run_init.tcl |& tee run_init.log ; \
+	nice +19 icc_shell -f run_init.tcl |& tee run_init.log ; \
 	touch $(INIT)"
 
 PLACE = .place
@@ -26,7 +26,7 @@ PLACE = .place
 place: $(PLACE)
 $(PLACE): $(INIT) run_place.tcl
 	tcsh -c "add synopsys2015 ; \
-	icc_shell -f run_place.tcl |& tee run_place.log ; \
+	nice +19 icc_shell -f run_place.tcl |& tee run_place.log ; \
 	touch $(PLACE)"
 
 PP = .pp
@@ -34,7 +34,7 @@ PP = .pp
 pp: $(PP)
 $(PP): $(PLACE) run_pp.tcl
 	tcsh -c "add synopsys2015 ; \
-	icc_shell -f run_pp.tcl |& tee run_pp.log ; \
+	nice +19 icc_shell -f run_pp.tcl |& tee run_pp.log ; \
 	touch $(PP)"
 
 CTS = .cts
@@ -42,7 +42,7 @@ CTS = .cts
 cts: $(CTS)
 $(CTS): $(PP) run_cts.tcl
 	tcsh -c "add synopsys2015 ; \
-	icc_shell -f run_cts.tcl |& tee run_cts.log ; \
+	nice +19 icc_shell -f run_cts.tcl |& tee run_cts.log ; \
 	touch $(CTS)"
 
 FILL = .fill
@@ -50,7 +50,7 @@ FILL = .fill
 fill: $(FILL)
 $(FILL): $(CTS) run_fill.tcl
 	tcsh -c "add synopsys2015 ; \
-	icc_shell -f run_fill.tcl |& tee run_fill.log ; \
+	nice +19 icc_shell -f run_fill.tcl |& tee run_fill.log ; \
 	touch $(FILL)"
 
 ROUTE = .route
@@ -58,7 +58,7 @@ ROUTE = .route
 route: $(ROUTE)
 $(ROUTE): $(FILL) run_route.tcl
 	tcsh -c "add synopsys2015 ; \
-	icc_shell -f run_route.tcl |& tee run_route.log ; \
+	nice +19 icc_shell -f run_route.tcl |& tee run_route.log ; \
 	touch $(ROUTE)"
 
 SO = .so

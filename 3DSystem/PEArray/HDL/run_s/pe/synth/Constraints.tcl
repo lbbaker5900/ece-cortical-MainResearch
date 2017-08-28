@@ -33,19 +33,22 @@
 # target and setting the link library to the conctenation
 # of the target and the synthetic library
 #---------------------------------------------------------
-# set target_library cp65npkldst_tt1p2v25c.db
-# set target_library cp65npkldst_ss0p9v125c.db
-# set target_library NangateOpenCellLibrary_PDKv1_2_v2008_10_slow_nldm.db
-# set link_library   [concat  $target_library $synthetic_library $fifo_library ]
+#
  set link_library   [concat  "*" $target_library $synthetic_library $mem_lib $regf_lib  ]
 
 #---------------------------------------------------------
 # Specify a 5000ps clock period with 50% duty cycle     
 # and a skew of 50ps                                 
 #---------------------------------------------------------
- #set CLK_PER  5
  set CLK_SKEW 0.05
+
+
  create_clock -name $clkname -period $CLK_PER -waveform "0 [expr $CLK_PER / 2]" $clkname
+
+ create_generated_clock [get_ports clk_diram2x ] -name [format "%s%s" clk_diram" "2x" ] -source [get_ports clk] -master_clock clk -add -combinational -multiply_by 2
+ create_generated_clock [get_ports clk_diram   ] -name [format "%s%s" clk_diram" ""   ] -source [get_ports clk] -master_clock clk -add -combinational -multiply_by 1
+ create_generated_clock [get_ports clk_diram_cq] -name [format "%s%s" clk_diram" "_cq"] -source [get_ports clk] -master_clock clk -add -combinational -multiply_by 1
+
  set_clock_uncertainty $CLK_SKEW $clkname
 
 #---------------------------------------------------------
@@ -69,9 +72,17 @@
 # NOTE: THESE ARE INITIAL ASSUMPTIONS ONLY             
 #---------------------------------------------------------
 #
+if {$tech == "65nm"} {
+
  set DFF_CKQ 0.638
  set IP_DELAY [expr 0.02 + $DFF_CKQ]
  set_input_delay $IP_DELAY -clock $clkname [remove_from_collection [all_inputs] $clkname]
+
+} elseif {($tech == "28nm")} {
+
+ set_input_delay 0.0060452 -clock $clkname [remove_from_collection [all_inputs] $clkname]
+
+}
 
 #---------------------------------------------------------
 # ASSUME this module is driving a D-flip-flip          
@@ -79,35 +90,64 @@
 # Same wire delay as mentioned above           
 # NOTE: THESE ARE INITIAL ASSUMPTIONS ONLY             
 #---------------------------------------------------------
+
+if {$tech == "65nm"} {
+
  set DFF_SETUP 0.546
  set OP_DELAY [expr 0.02 + $DFF_SETUP]
  set_output_delay $OP_DELAY -clock $clkname [all_outputs]
+
+} elseif {($tech == "28nm")} {
+
+ set_output_delay 0.0263 -clock $clkname [all_outputs]
+
+}
 
 #---------------------------------------------------------	
 # ASSUME being driven by a D-flip-flop                 
 #---------------------------------------------------------
 
-# set DR_CELL_NAME DFFR_X1
-set DR_CELL_NAME	SEN_FDPQ_1
-set DR_CELL_PIN	Q
-# set DR_CELL_NAME SEL_FDPRBQ_D_1
-# set DR_CELL_PIN  Q
 
- set_driving_cell -lib_cell "$DR_CELL_NAME" -pin "$DR_CELL_PIN" [remove_from_collection [all_inputs] $clkname]
+if {$tech == "65nm"} {
+
+  set DR_CELL_NAME	SEN_FDPQ_1
+  set DR_CELL_PIN	Q
+  set_driving_cell -lib_cell "$DR_CELL_NAME" -pin "$DR_CELL_PIN" [remove_from_collection [all_inputs] $clkname]
+
+
+} elseif {($tech == "28nm")} {
+
+  set DFF_CELL_NAME DFFQ_X1M_A12TR_C30
+  set DFF_CELL_PIN Q
+  set_driving_cell -lib_cell $DFF_CELL_NAME -pin $DFF_CELL_PIN [remove_from_collection [all_inputs] $clkname]
+
+}
+
 
 #---------------------------------------------------------
 # ASSUME the worst case output load is                 
 # 4 D-flip-flop (D-inputs) and                         
 # 0.013 units of wiring capacitance                     
 #---------------------------------------------------------
-set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
-# set PORT_LOAD_CELL  cp65npkldst_ss0p9v125c/SEL_FDPRBQ_D_1/D
-# set PORT_LOAD_CELL  cp65npkldst_ss0p9v125c/SEL_FDPRBQ_D_1/D
-# set PORT_LOAD_CELL  NangateOpenCellLibrary_PDKv1_2_v2008_10_slow_nldm/DFFR_X1/D
- set WIRE_LOAD_EST   0.013
- set FANOUT          4
- set PORT_LOAD [expr $WIRE_LOAD_EST + $FANOUT * [load_of $PORT_LOAD_CELL]]
- set_load $PORT_LOAD [all_outputs]
+
+if {$tech == "65nm"} {
+
+  set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
+  set WIRE_LOAD_EST   0.013
+  set FANOUT          4
+  set PORT_LOAD [expr $WIRE_LOAD_EST + $FANOUT * [load_of $PORT_LOAD_CELL]]
+  set_load $PORT_LOAD [all_outputs]
+
+} elseif {($tech == "28nm")} {
+
+  set PORT_LOAD_CELL sc12mc_cmos28hpp_base_rvt_c30_ss_nominal_max_0p765v_110c/DFFQ_X1M_A12TR_C30/D
+  set WIRE_LOAD_EST   0.013
+  set FANOUT          4
+  set PORT_LOAD [expr $WIRE_LOAD_EST + $FANOUT * [load_of $PORT_LOAD_CELL]]
+  set_load $PORT_LOAD [all_outputs]
+
+}
+
 
 #---------------------------------------------------------
 # Now set the GOALS for the compile                    
@@ -135,6 +175,8 @@ set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
 set acells [get_cell -hier]
 set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ asdr.*"]
 set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ sass.*"]
+set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ arm_regf.*"]
+set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ arm_sram.*"]
 
 #---------------------------------------------------------
 # Other Dont touch 
