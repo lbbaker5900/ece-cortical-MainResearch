@@ -56,6 +56,16 @@ analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=64,GENERIC_FIF
 elaborate generic_pipelined_w_peek_fifo -parameter "GENERIC_FIFO_DEPTH=64,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=70"
 
 
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=256,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=70  $RTL_COM_DIR/generic_2port_memory.v
+elaborate generic_2port_memory -parameter "GENERIC_MEM_DEPTH=256,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=70"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=256,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=70  $RTL_COM_DIR/generic_fifo.v
+elaborate generic_fifo -parameter "GENERIC_FIFO_DEPTH=256,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=70"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=256,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=70  $RTL_COM_DIR/generic_pipelined_fifo.v
+elaborate generic_pipelined_fifo -parameter "GENERIC_FIFO_DEPTH=256,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=70"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=256,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=70  $RTL_COM_DIR/generic_pipelined_w_peek_fifo.v
+elaborate generic_pipelined_w_peek_fifo -parameter "GENERIC_FIFO_DEPTH=256,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=70"
+
+
 analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=8,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=2114  $RTL_COM_DIR/generic_2port_memory.v
 elaborate generic_2port_memory -parameter "GENERIC_MEM_DEPTH=8,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=2114"
 analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=8,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=2114  $RTL_COM_DIR/generic_fifo.v
@@ -83,6 +93,15 @@ elaborate generic_pipelined_fifo -parameter "GENERIC_FIFO_DEPTH=64,GENERIC_FIFO_
 analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=64,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=25  $RTL_COM_DIR/generic_pipelined_w_peek_fifo.v
 elaborate generic_pipelined_w_peek_fifo -parameter "GENERIC_FIFO_DEPTH=64,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=25"
 
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=64,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=24  $RTL_COM_DIR/generic_2port_memory.v
+elaborate generic_2port_memory -parameter "GENERIC_MEM_DEPTH=64,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=24"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=64,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=24  $RTL_COM_DIR/generic_fifo.v
+elaborate generic_fifo -parameter "GENERIC_FIFO_DEPTH=64,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=24"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=64,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=24  $RTL_COM_DIR/generic_pipelined_fifo.v
+elaborate generic_pipelined_fifo -parameter "GENERIC_FIFO_DEPTH=64,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=24"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=64,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=24  $RTL_COM_DIR/generic_pipelined_w_peek_fifo.v
+elaborate generic_pipelined_w_peek_fifo -parameter "GENERIC_FIFO_DEPTH=64,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=24"
+
 analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=32,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=25  $RTL_COM_DIR/generic_2port_memory.v
 elaborate generic_2port_memory -parameter "GENERIC_MEM_DEPTH=32,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=25"
 analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=32,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=25  $RTL_COM_DIR/generic_fifo.v
@@ -93,6 +112,13 @@ analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=32,GENERIC_FIF
 elaborate generic_pipelined_w_peek_fifo -parameter "GENERIC_FIFO_DEPTH=32,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=25"
 
 #<mrc_cntl.consJump_to_strm>
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=128,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=18  $RTL_COM_DIR/generic_2port_memory.v
+elaborate generic_2port_memory -parameter "GENERIC_MEM_DEPTH=128,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=18"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=128,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=18  $RTL_COM_DIR/generic_fifo.v
+elaborate generic_fifo -parameter "GENERIC_FIFO_DEPTH=128,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=18"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=128,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=18  $RTL_COM_DIR/generic_pipelined_fifo.v
+elaborate generic_pipelined_fifo -parameter "GENERIC_FIFO_DEPTH=128,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=18"
+
 analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=128,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=12  $RTL_COM_DIR/generic_2port_memory.v
 elaborate generic_2port_memory -parameter "GENERIC_MEM_DEPTH=128,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=12"
 analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=128,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=12  $RTL_COM_DIR/generic_fifo.v
@@ -274,6 +300,16 @@ elaborate generic_2port_memory -parameter "GENERIC_MEM_DEPTH=70,GENERIC_MEM_REGI
 analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=70,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=18   $PE_RTL_COM_DIR/generic_fifo.v
 elaborate generic_fifo -parameter "GENERIC_FIFO_DEPTH=70,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=18"   
 
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=70,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=19  $RTL_COM_DIR/generic_2port_memory.v
+elaborate generic_2port_memory -parameter "GENERIC_MEM_DEPTH=70,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=19"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=70,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=19   $PE_RTL_COM_DIR/generic_fifo.v
+elaborate generic_fifo -parameter "GENERIC_FIFO_DEPTH=70,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=19"   
+
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=70,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=21  $RTL_COM_DIR/generic_2port_memory.v
+elaborate generic_2port_memory -parameter "GENERIC_MEM_DEPTH=70,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=21"
+analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=70,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=21   $PE_RTL_COM_DIR/generic_fifo.v
+elaborate generic_fifo -parameter "GENERIC_FIFO_DEPTH=70,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=21"   
+
 analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=8,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=82  $RTL_COM_DIR/generic_2port_memory.v
 elaborate generic_2port_memory -parameter "GENERIC_MEM_DEPTH=8,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=82"
 analyze -format sverilog -library WORK -define GENERIC_FIFO_DEPTH=8,GENERIC_FIFO_THRESHOLD=4,GENERIC_FIFO_DATA_WIDTH=82    $PE_RTL_COM_DIR/generic_fifo.v
@@ -288,8 +324,23 @@ elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=1024,GENERIC_MEM_RE
 analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=16384,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=12  $RTL_COM_DIR/generic_1port_memory.v
 elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=16384,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=12"
 
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=16384,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=18  $RTL_COM_DIR/generic_1port_memory.v
+elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=16384,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=18"
+
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=65536,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=18  $RTL_COM_DIR/generic_1port_memory.v
+elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=65536,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=18"
+
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=2048,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=46  $RTL_COM_DIR/generic_1port_memory.v
+elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=2048,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=46"
+
 analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=4096,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=57  $RTL_COM_DIR/generic_1port_memory.v
 elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=4096,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=57"
+
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=8192,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=52  $RTL_COM_DIR/generic_1port_memory.v
+elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=8192,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=52"
+
+analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=8192,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=57  $RTL_COM_DIR/generic_1port_memory.v
+elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=8192,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=57"
 
 analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=1024,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=57  $RTL_COM_DIR/generic_1port_memory.v
 elaborate generic_1port_memory -parameter "GENERIC_MEM_DEPTH=1024,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=57"

@@ -266,6 +266,7 @@ module top;
     
     // Downstream Stack bus Interface
     //  - connect Lane signals inside manager from std_lane_ifc
+    //  The mrc_cntl drives the bus conditioned on the TESTING define
     `include "TB_system_stack_bus_downstream_assignments.vh"
     
     // Upstream Stack bus Interface

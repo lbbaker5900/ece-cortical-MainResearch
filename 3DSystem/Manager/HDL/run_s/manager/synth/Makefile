@@ -1,5 +1,5 @@
 
-MODNAME = main_mem_cntl
+MODNAME = manager
 TECH    = 65nm
 
 RTL_DIR = ../code
@@ -10,7 +10,7 @@ $(GATE_DIR)/$(MODNAME)_final.v: $(RTL_DIR)/$(MODNAME).v
 	sed -i -e 's/^ *set modname .*/set modname $(MODNAME)/' setup.tcl ;\
 	sed -i -e 's/set tech \"28nm\"/set tech \"$(TECH)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set tech \"65nm\"/set tech \"$(TECH)\"/g' .synopsys_dc.setup ;\
-	dc_shell-t -f run_synth.tcl |& tee run_synth.log ; \
+	nice +19 dc_shell-t -f run_synth.tcl |& tee run_synth.log ; \
 	mkdir logs.$(TECH)/$(MODNAME) ; \
 	mv *rpt *log *.v logs.$(TECH)/$(MODNAME)/. "
 

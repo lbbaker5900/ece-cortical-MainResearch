@@ -100,7 +100,7 @@
 // WU Memory
 
 // FIXME
-`define MGR_WU_MEMORY_DEPTH                      8192
+`define MGR_WU_MEMORY_DEPTH                      4096
 `define MGR_WU_ADDRESS_WIDTH                       (`CLOG2(`MGR_WU_MEMORY_DEPTH))
 `define MGR_WU_ADDRESS_MSB                         `MGR_WU_ADDRESS_WIDTH-1
 `define MGR_WU_ADDRESS_LSB                         0
@@ -261,7 +261,13 @@
 //---------------------------------------------------------------------------------------------------------------------
 // Instruction Memory
 
-// FIXME - need to check depth equirements (for sim, keep small)
+// Each instruction takes ~10 reads
+// If a network has ~1M neurons
+// Each instruction is for a group of up to 32 ANs
+// 1M/32 ~32000 operations
+// ~500 per manager
+// Instruction memory ~5000
+
 `define MGR_INSTRUCTION_MEMORY_DEPTH   `MGR_WU_MEMORY_DEPTH 
 `define MGR_INSTRUCTION_MEMORY_MSB     `MGR_INSTRUCTION_MEMORY_DEPTH-1
 `define MGR_INSTRUCTION_MEMORY_LSB     0
@@ -354,7 +360,7 @@
 // This is per manager storage. The pointers will include additional bits for
 // the manager ID
 
-`define MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH   8192
+`define MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH   2048
 `define MGR_LOCAL_STORAGE_DESC_MEMORY_MSB     `MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH-1
 `define MGR_LOCAL_STORAGE_DESC_MEMORY_LSB     0
 `define MGR_LOCAL_STORAGE_DESC_MEMORY_SIZE    (`MGR_LOCAL_STORAGE_DESC_MEMORY_MSB - `MGR_LOCAL_STORAGE_DESC_MEMORY_LSB +1)
@@ -372,9 +378,10 @@
 
 // Average number of consequtive/jump fields per storage descriptor
 //`define MGR_LOCAL_STORAGE_DESC_CONSJUMP_PER_DESC   `MGR_INST_CONS_JUMP_DEPTH / `MGR_LOCAL_STORAGE_DESC_MEMORY_DEPTH         
+//
 
 // size of consequtive and jump field - FIXME : TBD
-`define MGR_INST_CONS_JUMP_DEPTH        65536
+`define MGR_INST_CONS_JUMP_DEPTH        1024
 `define MGR_INST_CONS_JUMP_WIDTH        (`CLOG2(`MGR_INST_CONS_JUMP_DEPTH ))
 `define MGR_INST_CONS_JUMP_MSB          `MGR_INST_CONS_JUMP_WIDTH-1
 `define MGR_INST_CONS_JUMP_LSB          0

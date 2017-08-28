@@ -19,7 +19,7 @@ gui_set_highlight_options -current_color yellow
 gui_change_highlight -add -collection global
 
 change_selection [get_cells -hier -regexp -filter "full_name =~ stOp_lane_.*__streamingOps_datapath/streamingOps/.*"]
-gui_set_highlight_options -current_color light_purple
+gui_set_highlight_options -current_color light_red
 gui_change_highlight -add -collection global
 
 change_selection [get_cells -hier -regexp -filter "full_name =~ mem_acc_cont.*"]
@@ -30,4 +30,22 @@ change_selection  [get_cells -hier -filter "ref_name =~ asdr* || ref_name =~ sas
 gui_set_highlight_options -current_color orange
 gui_change_highlight -add -collection global
 
+
+set std   [get_port *std* ]
+set stu   [get_port *stu* ]
+set other [get_ports *    ]
+set other [remove_from_collection $other $std ]
+set other [remove_from_collection $other $stu ]
+
+change_selection $other
+gui_set_highlight_options -current_color light_purple
+gui_change_highlight -add -collection global
+
+change_selection $std
+gui_set_highlight_options -current_color light_blue
+gui_change_highlight -add -collection global
+
+change_selection $stu
+gui_set_highlight_options -current_color light_green
+gui_change_highlight -add -collection global
 

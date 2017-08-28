@@ -2,8 +2,8 @@ set d_area [get_attr [get_die_area] bbox]
 set c_area [get_attr [get_core_area] bbox]
 
 # 5um pitch
-set dx 5
-set dy 5
+set dx 10
+set dy 10
 set lx 0.1
 set ly 0.1
 
@@ -22,13 +22,16 @@ sort_collection $lane_down -descending {name }
 sort_collection $oob_down  -descending {name }
 
 
-
-set sx [expr [lindex [lindex $c_area 0] 0] +50]
-set sy [expr [lindex [lindex $c_area 1] 1] -50]
+set sx [expr [lindex [lindex $c_area 1] 0] /5]
+set sy [expr [lindex [lindex $c_area 1] 1] -100]
 
 set x $sx
 set y $sy
 set idx 0
+
+set numCols 128
+set numRows 18
+set rhs [expr $sx + [expr $numCols * $dx]]
 
 foreach_in_collection tsv $lane_down {
 
@@ -39,22 +42,32 @@ foreach_in_collection tsv $lane_down {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set x [expr $x + $dx]
+  set y [expr $y - $dy]
 
-  if {$idx == 256} {
+  if {$idx == $numRows} {
     set idx 0
-    set rhs $x
-    set x $sx
-    set y [expr $y - $dy]
+    set y $sy
+    set x [expr $x + $dx]
 
   }
 }
 
-set sx $rhs
+set rhs $x
 
-set x [expr $sx +$dx]
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+# OOB Down Interface
+
+set sx [expr $rhs + [expr $dx * 5]]
+#et sy [expr $y - [expr $dy * 5]]
+
+set x $sx
 set y $sy
+
 set idx 0
+
+set numCols 32
+set numRows 18
+set rhs [expr $sx + [expr $numCols * $dx]]
 
 foreach_in_collection tsv $oob_down {
 
@@ -65,16 +78,18 @@ foreach_in_collection tsv $oob_down {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set x [expr $x + $dx]
+  set y [expr $y - $dy]
 
-  if {$idx == 4} {
+  if {$idx == $numRows} {
     set idx 0
-    set rhs $x
-    set x $sx
-    set y [expr $y - $dy]
+    set y $sy
+    set x [expr $x + $dx]
 
   }
 }
+
+set rhs $x
+
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # Stack Up Interface
 
@@ -83,14 +98,18 @@ set data_up [add_to_collection $data_up [get_terminals -quiet -filter "name =~ m
 sort_collection $data_up -descending {name }
 
 set oob_up [get_terminals -quiet -filter "name =~ stu__mgr__oob*"]
-set oob_up [add_to_collection $oob_up [get_terminals -quiet -filter "name =~ std__mgr__oob*"] ]
 sort_collection $oob_up -descending {name }
 
-set sx $rhs
+set data_up [remove_from_collection $data_up $oob_up]
 
-set x [expr $sx +$dx]
+set sx [expr $rhs + [expr $dx * 5]]
+set numCols 32
+set rhs [expr $sx + [expr $numCols * $dx]]
+
+set x $sx
 set y $sy
 set idx 0
+
 
 foreach_in_collection tsv $oob_up {
 
@@ -101,22 +120,16 @@ foreach_in_collection tsv $oob_up {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set x [expr $x + $dx]
+  set y [expr $y - $dy]
 
-  if {$idx == 32} {
+  if {$idx == $numRows} {
     set idx 0
-    set rhs $x
-    set x $sx
-    set y [expr $y - $dy]
+    set y $sy
+    set x [expr $x + $dx]
 
   }
 }
 
-set sx $rhs
-
-set x [expr $sx +$dx]
-set y $sy
-set idx 0
 
 foreach_in_collection tsv $data_up {
 
@@ -127,16 +140,16 @@ foreach_in_collection tsv $data_up {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set x [expr $x + $dx]
+  set y [expr $y - $dy]
 
-  if {$idx == 32} {
+  if {$idx == $numRows} {
     set idx 0
-    set rhs $x
-    set x $sx
-    set y [expr $y - $dy]
+    set y $sy
+    set x [expr $x + $dx]
 
   }
 }
+
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # DRAM Interface
@@ -146,11 +159,20 @@ foreach_in_collection tsv $data_up {
 set obj [sort_collection [get_terminals -quiet -filter "name =~ phy__dfi__*"] -descending {name }]
 set obj [add_to_collection $obj [get_terminals -quiet -filter "name =~ clk_diram_*cq*"] ]
 
+set numObjs [sizeof_collection $obj]
+#puts $numObjs
+
 set sx [expr [lindex [lindex $c_area 0] 0] +50]
 set sy [expr [lindex [lindex $c_area 0] 0] +50]
 
+set sx [expr [lindex [lindex $c_area 1] 0] * 0.7]
+set sy [expr [lindex [lindex $c_area 1] 1] /12]
+
+set sx [expr $sx - [expr $dx * 20]]
+set sy [expr $sy /2]
 set x $sx
 set y $sy
+
 set idx 0
 
 # Use via34
@@ -173,7 +195,7 @@ foreach_in_collection tsv $obj {
   set idx [expr $idx + 1]
   set x [expr $x + $dx]
 
-  if {$idx == 256} {
+  if {$idx == 32} {
     set idx 0
     set rhs $x
     set x $sx
@@ -187,11 +209,15 @@ foreach_in_collection tsv $obj {
 set obj [sort_collection [get_terminals -quiet -filter "name =~ dfi__phy__*"] -descending {name }]
 set obj [add_to_collection $obj [get_terminals -quiet -filter "name =~ clk_diram_*ck*"] ]
 
+set numObjs [sizeof_collection $obj]
+#puts $numObjs
+
 set sy [expr $top +$dy]
 
 
 set x $sx
 set y $sy
+set y [expr $y + [expr $dy * 5]]
 set idx 0
 
 foreach_in_collection tsv $obj {
@@ -209,13 +235,12 @@ foreach_in_collection tsv $obj {
   set idx [expr $idx + 1]
   set x [expr $x + $dx]
 
-  if {$idx == 256} {
+  if {$idx == 32} {
     set idx 0
     set x $sx
     set y [expr $y + $dy]
   }
 }
-
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # NoC
@@ -228,20 +253,20 @@ set ly 0.05
 # place on edge sx = 1.2, sy = 0
 # top right dx = 1.8
 #           dy = 1.8
-set trx 1.8
-set try 1.8
+set trx [expr 1.8 + [expr $dx * 200]]
+set try [expr 1.8 + [expr $dy * 200]]
 # top left  dx = 1.2
 #           dy = 1.8
-set tlx 1.2
-set tly 1.8
+set tlx [expr 1.2 + [expr $dx * 200]]
+set tly [expr 1.8 + [expr $dy * 200]]
 # Bot left  dx = 1.2
 #           dy = 1.2
-set blx 1.2
-set bly 1.2
+set blx [expr 1.2 + [expr $dx * 200]]
+set bly [expr 1.2 + [expr $dy * 200]]
 # Bot right dx = 1.8
 #           dy = 1.2
-set brx 1.8
-set bry 1.2
+set brx [expr 1.8 + [expr $dx * 200]]
+set bry [expr 1.2 + [expr $dy * 200]]
 #
 #
 #--------------------------------------------------
@@ -265,7 +290,7 @@ set mask_noc_port0 [get_terminals -quiet -filter "name =~ *sys__mgr__port0_desti
 
 # put top right
 set sy [expr [ lindex [lindex $d_area 1] 1] +0   ]
-set sx [expr [ lindex [lindex $d_area 1] 0] -$trx]
+set sx [expr [ lindex [lindex $d_area 0] 0] +$tlx]
 
 set x $sx
 set y $sy
@@ -281,7 +306,7 @@ foreach_in_collection tsv $to_noc_port0 {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set x [expr $x - $dx]
+  set x [expr $x + $dx]
 
 }
 
@@ -292,7 +317,7 @@ foreach_in_collection tsv $from_noc_port0 {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set x [expr $x - $dx]
+  set x [expr $x + $dx]
 
 }
 
@@ -303,7 +328,7 @@ foreach_in_collection tsv $mask_noc_port0 {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set x [expr $x - $dx]
+  set x [expr $x + $dx]
 
 }
 
@@ -326,8 +351,8 @@ set from_noc_port1 [remove_from_collection $from_noc_port1 [get_terminals -quiet
 set mask_noc_port1 [get_terminals -quiet -filter "name =~ *sys__mgr__port1_destinationMask*"]
 
 
-# put top right
-set sy [expr [ lindex [lindex $d_area 1] 1] -$try ]
+# put bottom right
+set sy [expr [ lindex [lindex $d_area 0] 1] +$bry ]
 set sx [expr [ lindex [lindex $d_area 1] 0] -0    ]
 
 set x $sx
@@ -344,7 +369,7 @@ foreach_in_collection tsv $to_noc_port1 {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set y [expr $y - $dy]
+  set y [expr $y + $dy]
 
 }
 
@@ -355,7 +380,7 @@ foreach_in_collection tsv $from_noc_port1 {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set y [expr $y - $dy]
+  set y [expr $y + $dy]
 
 }
 foreach_in_collection tsv $mask_noc_port1 {
@@ -365,7 +390,7 @@ foreach_in_collection tsv $mask_noc_port1 {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set y [expr $y - $dy]
+  set y [expr $y + $dy]
 
 }
 
@@ -388,9 +413,9 @@ set from_noc_port2 [remove_from_collection $from_noc_port2 [get_terminals -quiet
 set mask_noc_port2 [get_terminals -quiet -filter "name =~ *sys__mgr__port2_destinationMask*"]
 
 
-# put top right
+# put bottom right 
 set sy [expr [ lindex [lindex $d_area 0] 1] +0   ]
-set sx [expr [ lindex [lindex $d_area 0] 0] +$blx]
+set sx [expr [ lindex [lindex $d_area 1] 0] -$brx]
 
 set x $sx
 set y $sy
@@ -406,7 +431,7 @@ foreach_in_collection tsv $to_noc_port2 {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set x [expr $x + $dx]
+  set x [expr $x - $dx]
 
 }
 
@@ -417,7 +442,7 @@ foreach_in_collection tsv $from_noc_port2 {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set x [expr $x + $dx]
+  set x [expr $x - $dx]
 
 }
 
@@ -428,7 +453,7 @@ foreach_in_collection tsv $mask_noc_port2 {
   set_attribute -quiet $tsv status Fixed
 
   set idx [expr $idx + 1]
-  set x [expr $x + $dx]
+  set x [expr $x - $dx]
 
 }
 
@@ -451,7 +476,7 @@ set from_noc_port3 [remove_from_collection $from_noc_port3 [get_terminals -quiet
 set mask_noc_port3 [get_terminals -quiet -filter "name =~ *sys__mgr__port3_destinationMask*"]
 
 
-# put top right
+# put bottom left
 set sy [expr [ lindex [lindex $d_area 0] 1] +$bly ]
 set sx [expr [ lindex [lindex $d_area 0] 0] +0    ]
 
@@ -498,28 +523,6 @@ foreach_in_collection tsv $mask_noc_port3 {
 # General
 #
 #
-set dx 1.2
-set dy 1.2
-set lx 0.05
-set ly 0.05
-
-# place on edge sx = 1.2, sy = 0
-# top right dx = 1.8
-#           dy = 1.8
-set trx 1.8
-set try 1.8
-# top left  dx = 1.2
-#           dy = 1.8
-set tlx 1.2
-set tly 1.8
-# Bot left  dx = 1.2
-#           dy = 1.2
-set blx 1.2
-set bly 1.2
-# Bot right dx = 1.8
-#           dy = 1.2
-set brx 1.8
-set bry 1.2
 
 set gen [get_terminals -quiet -filter "name =~ *sys__mgr__mgrId*"]
 set gen [add_to_collection $gen [get_terminals -quiet -filter "name =~ sys__mgr__ready"] ]
@@ -532,9 +535,9 @@ set gen [add_to_collection $gen [get_terminals -quiet -filter "name =~ clk"] ]
 set gen [add_to_collection $gen [get_terminals -quiet -filter "name =~ reset_poweron"] ]
 
 
-# put top left down
+# put top right down
 set sy [expr [ lindex [lindex $d_area 1] 1] -$tly ]
-set sx [expr [ lindex [lindex $d_area 0] 0] +0    ]
+set sx [expr [ lindex [lindex $d_area 1] 0] +0    ]
 
 set x $sx
 set y $sy
@@ -544,7 +547,7 @@ sort_collection $gen    -descending {name }
 
 foreach_in_collection tsv $gen {
 
-  set bbox [list [list [expr $x +0] [expr $y - $ly ]] [list [expr $x + [expr $lx *2]] [expr $y + $ly]]]
+  set bbox [list [list [expr $x +0] [expr $y - $ly ]] [list [expr $x - [expr $lx *2]] [expr $y + $ly]]]
   set_attribute -quiet $tsv bbox $bbox
   set_attribute -quiet $tsv status Fixed
 
