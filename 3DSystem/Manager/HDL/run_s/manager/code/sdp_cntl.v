@@ -101,7 +101,7 @@ module sdp_cntl (
                                                   
   wire                                            sdpr__sdps__consJump_valid  ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE         ]   sdpr__sdps__consJump_cntl   ;
-  wire   [`MGR_OP_MAX_NUM_OF_OPERANDS_RANGE   ]   sdpr__sdps__consJump_value  ;
+  wire   [`MGR_INST_CONS_JUMP_FIELD_RANGE     ]   sdpr__sdps__consJump_value  ;
   wire                                            sdps__sdpr__consJump_ready  ;
 
   wire                                            sdpr__sdps__response_id_valid   ;

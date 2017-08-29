@@ -83,7 +83,7 @@ module sdp_stream_cntl (
                                                                    
             input  wire                                            sdpr__sdps__consJump_valid  ,
             input  wire   [`COMMON_STD_INTF_CNTL_RANGE         ]   sdpr__sdps__consJump_cntl   ,
-            input  wire   [`MGR_OP_MAX_NUM_OF_OPERANDS_RANGE   ]   sdpr__sdps__consJump_value  ,
+            input  wire   [`MGR_INST_CONS_JUMP_FIELD_RANGE     ]   sdpr__sdps__consJump_value  ,
             output wire                                            sdps__sdpr__consJump_ready  ,
 
             //
@@ -151,7 +151,7 @@ module sdp_stream_cntl (
         assign  write_data  = {sdpr__sdps__consJump_cntl, sdpr__sdps__consJump_value};
     
         wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  pipe_consJumpCntl   ;
-        wire   [`MGR_OP_MAX_NUM_OF_OPERANDS_RANGE ]  pipe_consJumpValue ;
+        wire   [`MGR_INST_CONS_JUMP_FIELD_RANGE   ]  pipe_consJumpValue ;
         assign  {pipe_consJumpCntl, pipe_consJumpValue} = pipe_data ;
 
         wire   pipe_som     =  (pipe_consJumpCntl == `COMMON_STD_INTF_CNTL_SOM    ); 
@@ -407,8 +407,8 @@ module sdp_stream_cntl (
   reg  [`SDP_CNTL_CONS_COUNTER_RANGE        ]     consequtive_counter        ;
   reg                                             consequtive_counter_le0    ;  //
   reg                                             last_consequtive           ;  // we have seen the end-of-consJump so after this last phase we exit
-  reg  [`MGR_OP_MAX_NUM_OF_OPERANDS_RANGE   ]     consequtive_value_for_strm ;  // latched consequtive and jump values so we can calculate the next consequitve start address while we are running thru cons phase
-  reg  [`MGR_OP_MAX_NUM_OF_OPERANDS_RANGE   ]     jump_value_for_strm        ;
+  reg  [`MGR_INST_CONS_JUMP_FIELD_RANGE     ]     consequtive_value_for_strm ;  // latched consequtive and jump values so we can calculate the next consequitve start address while we are running thru cons phase
+  reg  [`MGR_INST_CONS_JUMP_FIELD_RANGE     ]     jump_value_for_strm        ;
   reg                                             next_channel               ;  // about to access data from channel fifo n
   reg                                             ok_to_send                 ;  // if from_mmc data is available and the downsteram is ready
 

@@ -106,7 +106,7 @@ module sdp_request_cntl (
                                                                    
             output reg                                             sdpr__sdps__consJump_valid ,
             output reg    [`COMMON_STD_INTF_CNTL_RANGE         ]   sdpr__sdps__consJump_cntl  ,
-            output reg    [`MGR_OP_MAX_NUM_OF_OPERANDS_RANGE   ]   sdpr__sdps__consJump_value ,
+            output reg    [`MGR_INST_CONS_JUMP_FIELD_RANGE     ]   sdpr__sdps__consJump_value ,
             input  reg                                             sdps__sdpr__consJump_ready ,
 
 
@@ -211,7 +211,7 @@ module sdp_request_cntl (
 
   // need to loop thru all consequtive jump fields until we hit EOM
   reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]  consJumpMemory_cntl       ;  // cons/jump delineator
-  reg   [`MGR_OP_MAX_NUM_OF_OPERANDS_RANGE              ]  consJumpMemory_value      ;  // cons/jump value
+  reg   [`MGR_INST_CONS_JUMP_FIELD_RANGE                ]  consJumpMemory_value      ;  // cons/jump value
   reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  consJumpPtr               ;
   reg                                                      inc_consJumpPtr           ;  // cycle thru consequtive and jump memory
                                                                                      
@@ -1390,7 +1390,7 @@ module sdp_request_cntl (
   endgenerate
 
   wire   [`COMMON_STD_INTF_CNTL_RANGE               ]  sdmem_consJumpCntl  ;
-  wire   [`MGR_OP_MAX_NUM_OF_OPERANDS_RANGE         ]  sdmem_consJump      ;
+  wire   [`MGR_INST_CONS_JUMP_FIELD_RANGE           ]  sdmem_consJump      ;
 
   generate
     for (gvi=0; gvi<1 ; gvi=gvi+1) 
