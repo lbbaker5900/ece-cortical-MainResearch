@@ -55,7 +55,7 @@ module sdp_stream_cntl (
             input   wire   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      sdpr__sdps__response_id_channel            ,
             input   wire   [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      sdpr__sdps__response_id_bank               ,
             input   wire   [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      sdpr__sdps__response_id_page               ,
-            input   wire   [`MGR_DRAM_WORD_ADDRESS_RANGE     ]      sdpr__sdps__response_id_word               ,
+            input   wire   [`MGR_DRAM_LINE_ADDRESS_RANGE     ]      sdpr__sdps__response_id_line               ,
 
 
             output  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__get_next_line                                    ,
@@ -242,7 +242,7 @@ module sdp_stream_cntl (
   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   response_id_fifo_read                           ;
   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE        ]   response_id_bank      [`MGR_DRAM_NUM_CHANNELS ] ;
   wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]   response_id_page      [`MGR_DRAM_NUM_CHANNELS ] ;
-  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE        ]   response_id_word      [`MGR_DRAM_NUM_CHANNELS ] ;
+  wire  [`MGR_DRAM_LINE_ADDRESS_RANGE        ]   response_id_line      [`MGR_DRAM_NUM_CHANNELS ] ;
                                                            
   generate
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
@@ -257,7 +257,7 @@ module sdp_stream_cntl (
                                                            
         reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE           ]   write_bank    ;
         reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE           ]   write_page    ;
-        reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE           ]   write_word    ;
+        reg   [ `MGR_DRAM_LINE_ADDRESS_RANGE           ]   write_line    ;
                                                            
         wire                                               read          ;
         wire  [`SDP_CNTL_RESPONSE_AGGREGATE_FIFO_RANGE ]   read_data     ;
@@ -294,11 +294,11 @@ module sdp_stream_cntl (
             write         =  sdpr__sdps__response_id_valid & (sdpr__sdps__response_id_channel == chan) ;
             write_bank    =  sdpr__sdps__response_id_bank                                              ;
             write_page    =  sdpr__sdps__response_id_page                                              ;
-            write_word    =  sdpr__sdps__response_id_word                                              ;
+            write_line    =  sdpr__sdps__response_id_line                                              ;
           end
         always @(*)
           begin
-            write_data  =  {write_bank, write_page, write_word};
+            write_data  =  {write_bank, write_page, write_line};
           end
 
         // Note: First stage of pipeline is inside FIFO
@@ -320,7 +320,7 @@ module sdp_stream_cntl (
                                                            
         reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE           ]   pipe_bank     ;
         reg   [ `MGR_DRAM_PAGE_ADDRESS_RANGE           ]   pipe_page     ;
-        reg   [ `MGR_DRAM_WORD_ADDRESS_RANGE           ]   pipe_word     ;
+        reg   [ `MGR_DRAM_LINE_ADDRESS_RANGE           ]   pipe_line     ;
 
         assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
         assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
@@ -343,7 +343,7 @@ module sdp_stream_cntl (
 
         always @(*)
           begin
-            {pipe_bank, pipe_page, pipe_word} = pipe_data ;
+            {pipe_bank, pipe_page, pipe_line} = pipe_data ;
           end
 
         assign    pipe_read                  = response_id_fifo_read [chan]  ;
@@ -364,7 +364,7 @@ module sdp_stream_cntl (
         assign  response_id_valid [chan]      =  response_id_fifo[chan].pipe_valid      ;
         assign  response_id_bank  [chan]      =  response_id_fifo[chan].pipe_bank       ;
         assign  response_id_page  [chan]      =  response_id_fifo[chan].pipe_page       ;
-        assign  response_id_word  [chan]      =  response_id_fifo[chan].pipe_word       ;
+        assign  response_id_line  [chan]      =  response_id_fifo[chan].pipe_line       ;
       end
   endgenerate
 
@@ -388,7 +388,7 @@ module sdp_stream_cntl (
   // - Take the consequtive/jump tuples from the intermediate fifo and start streaming data
   // - If page line changes occur, assume the next line is in the from_mmc_fifo because its been pipelined
   //   by the descriptor processing fsm
-  // - The stream fsm will keep a register for channel 0 and channel 1 and  draw from these two registers as required when incrementing
+  // - The stream fsm will keep a register for channel 0 and channel 1 and draw from these two registers as required when incrementing
       
   // State register 
   reg [`SDP_CNTL_STRM_STATE_RANGE ] sdp_cntl_stream_state      ; // state flop
@@ -497,10 +497,9 @@ module sdp_stream_cntl (
 
   always @(posedge clk)
     begin
-      consequtive_counter <=  ( reset_poweron                                                                                                                                                             )  ? 'd0                                                        :
-                              (                                                                                                            (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT)) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
-                              (~ok_to_send                                                                                                     ) ? consequtive_counter                                         :  // data not yet available
-
+      consequtive_counter <=  ( reset_poweron                                                                                                                           )  ? 'd0                                                        :
+                              (                                                                          (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT)) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
+                              (~ok_to_send                                                                                                                              ) ? consequtive_counter                                         :  // data not yet available
                               ( consequtive_counter_le0  &&  consJump_to_strm_fsm_fifo[0].pipe_valid  && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
                               ( consequtive_counter_le0                                                                                                                 ) ? consequtive_counter                                         :  // jump data not yet available
 /*
@@ -509,9 +508,9 @@ module sdp_stream_cntl (
                               ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB] == 1'b1) &&  consJump_to_strm_fsm_fifo[0].pipe_valid    && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
                               ((consequtive_counter                             ==  'd0) || (consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB] == 1'b1)                                                     ) ? consequtive_counter                                         :  // jump data not yet available
 */
-                              ( strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST                                                                                                ) ? consequtive_counter-1                                       :
-                              ( strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR                                                                                               ) ? consequtive_counter-addr_to_strm_fsm_fifo[0].pipe_num_lanes :
-                                                                                                                                                                                                              consequtive_counter                                         ;  // will only occur with error
+                              ( strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST                                                                                       ) ? consequtive_counter-1                                       :
+                              ( strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR                                                                                      ) ? consequtive_counter-addr_to_strm_fsm_fifo[0].pipe_num_lanes :
+                                                                                                                                                                            consequtive_counter                                         ;  // will only occur with error
     end
 
   // Save jump and consequtive values while we are running thru the consequtive phase
@@ -521,54 +520,38 @@ module sdp_stream_cntl (
       jump_value_for_strm         = consJump_to_strm_fsm_fifo[0].pipe_consJumpValue  ;
     end
 
-  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]   strm_next_cons_start_address ;  // pre-calculated next consequtive phase address
-  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]   strm_inc_address             ;  // address we increment for each jump
-  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE   ]   strm_inc_address_e1          ;  
-        
-  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   strm_next_cons_start_channel ;
-  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   strm_next_cons_start_bank    ;
-  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   strm_next_cons_start_page    ;
+  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]   strm_next_inc_cons_start_address ;  // pre-calculated next consequtive phase address
+  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]   strm_inc_address             ;  // address we increment for each jump
+  reg   [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]   strm_inc_address_e1          ;  
+                                             
+  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]   strm_next_inc_cons_start_channel ;
+  reg   [`MGR_DRAM_BANK_DIV2_ADDRESS_RANGE   ]   strm_next_inc_cons_start_bank    ;
+  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]   strm_next_inc_cons_start_page    ;
   `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                        
-    reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   strm_next_cons_start_line    ; 
-  `endif                                                                  
-  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE    ]   strm_next_cons_start_word    ;
-                                                                           
-  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   strm_inc_channel             ;  // formed address in access order for incrementing
-  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   strm_inc_bank                ;
-  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   strm_inc_page                ;
+    reg [`MGR_DRAM_LINE_ADDRESS_RANGE        ]   strm_next_inc_cons_start_line    ; 
+  `endif                                                                      
+  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE        ]   strm_next_inc_cons_start_word    ;
+                                                                               
+  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]   strm_inc_channel             ;  // formed address in access order for incrementing
+  //reg   [`MGR_DRAM_BANK_ADDRESS_RANGE      ]   strm_inc_bank                ;
+  reg   [`MGR_DRAM_BANK_DIV2_ADDRESS_RANGE   ]   strm_inc_bank                ;
+  reg                                            strm_inc_bank_lsb            ;  // temporary store of bank lsb as we increment thru the consequtive/jump phases
+  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]   strm_inc_page                ;
   `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                        
-    reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   strm_inc_line                ; 
-  `endif                                                                  
-  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE    ]   strm_inc_word                ;
-                                                                           
-  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]   strm_inc_channel_e1          ;  // 
-  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   strm_inc_bank_e1             ;
-  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE    ]   strm_inc_page_e1             ;
+    reg [`MGR_DRAM_LINE_ADDRESS_RANGE        ]   strm_inc_line                ; 
+  `endif                                                                      
+  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE        ]   strm_inc_word                ;
+                                                                               
+  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]   strm_inc_channel_e1          ; 
+  //reg   [`MGR_DRAM_BANK_ADDRESS_RANGE      ]   strm_inc_bank_e1             ;
+  reg   [`MGR_DRAM_BANK_DIV2_ADDRESS_RANGE   ]   strm_inc_bank_e1             ;
+  reg                                            strm_inc_bank_lsb_e1         ;  // temporary store of bank lsb as we increment thru the consequtive/jump phases
+  reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]   strm_inc_page_e1             ;
   `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                        
-    reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   strm_inc_line_e1             ; 
-  `endif                                                                  
-  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE    ]   strm_inc_word_e1             ;
-                                         
-  `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                        
-    reg [`MGR_DRAM_LINE_ADDRESS_RANGE    ]   response_id_line [`MGR_DRAM_NUM_CHANNELS ]  ;   // the MRC provides the word address of the mmc response, but we need the line 
-
-    generate
-      for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
-      always @(*)
-        begin
-          case (strm_accessOrder)  // synopsys parallel_case full_case
-            PY_WU_INST_ORDER_TYPE_WCBP :
-              begin
-                response_id_line [chan]  = response_id_word [chan][`MGR_DRAM_LINE_IN_WORD_ADDRESS_RANGE ] ;
-              end
-            PY_WU_INST_ORDER_TYPE_CWBP :
-              begin
-                response_id_line [chan]  = response_id_word [chan][`MGR_DRAM_LINE_IN_WORD_ADDRESS_RANGE ] ;
-              end
-          endcase
-        end
-    endgenerate
-  `endif                                                                  
+    reg [`MGR_DRAM_LINE_ADDRESS_RANGE        ]   strm_inc_line_e1             ; 
+  `endif                                                                      
+  reg   [`MGR_DRAM_WORD_ADDRESS_RANGE        ]   strm_inc_word_e1             ;
+                                             
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // Check the output of the channel request ID fifo to determine if the output of the from_mmc fifo is the line bank/page/line we need
@@ -580,7 +563,7 @@ module sdp_stream_cntl (
           sdp__xxx__get_next_line[chan]  = ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) & consequtive_counter_le0 && last_consequtive) | // flush last transaction
                                            (((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) | (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS)) &
                                            (strm_inc_channel_e1 == chan) &
-                                           ((strm_inc_bank_e1 != response_id_bank[strm_inc_channel_e1]) | 
+                                           (({strm_inc_bank_e1, strm_inc_bank_lsb} != response_id_bank[strm_inc_channel_e1]) | 
                                             (strm_inc_page_e1 != response_id_page[strm_inc_channel_e1]) | 
                                             `ifdef MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                                               (strm_inc_line_e1 != response_id_line[strm_inc_channel_e1])))  ;
@@ -620,12 +603,13 @@ module sdp_stream_cntl (
         `SDP_CNTL_STRM_WAIT :
           begin
             // extract fields from start address
-            strm_inc_channel_e1 =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ]  ;
-            strm_inc_bank_e1    =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ]  ;
-            strm_inc_page_e1    =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ]  ;
-            strm_inc_word_e1    =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ]  ;
+            strm_inc_channel_e1     =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE      ]  ;
+            strm_inc_bank_e1        =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_DIV2_FIELD_RANGE ]  ;
+            strm_inc_bank_lsb_e1    =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_FIELD_LSB        ]  ;
+            strm_inc_page_e1        =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ]  ;
+            strm_inc_word_e1        =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE      ]  ;
             `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-              strm_inc_line_e1         =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_LINE_FIELD_RANGE ]  ;
+              strm_inc_line_e1      =  addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_LINE_FIELD_RANGE      ]  ;
             `endif
             // reorder fields for incrementing
             if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
@@ -652,8 +636,8 @@ module sdp_stream_cntl (
             if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
               begin
                 strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
-                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
-                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_WO_BANK_LSB_FIELD_RANGE ]  ;
+                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_WO_BANK_LSB_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
                 `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
@@ -662,8 +646,8 @@ module sdp_stream_cntl (
             else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
               begin
                 strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
-                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
-                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_WO_BANK_LSB_FIELD_RANGE ]  ;
+                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_WO_BANK_LSB_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
                 `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
@@ -672,8 +656,8 @@ module sdp_stream_cntl (
             else 
               begin
                 strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
-                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
-                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_WO_BANK_LSB_FIELD_RANGE ]  ;
+                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_WO_BANK_LSB_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
                 `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
@@ -686,7 +670,7 @@ module sdp_stream_cntl (
         `SDP_CNTL_STRM_COUNT_CONS:
           begin
             strm_inc_address_e1   = (~ok_to_send                                        ) ? strm_inc_address                                                    :
-                                    (consequtive_counter_le0                            ) ? strm_next_cons_start_address                                        :
+                                    (consequtive_counter_le0                            ) ? strm_next_inc_cons_start_address                                        :
                                     (strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR ) ? strm_inc_address + {addr_to_strm_fsm_fifo[0].pipe_num_lanes, 2'b00} :
                                     (strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) ? strm_inc_address + 'd4                                              :
                                                                                             strm_inc_address                                                    ;
@@ -694,8 +678,8 @@ module sdp_stream_cntl (
             if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
               begin
                 strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
-                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
-                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_WO_BANK_LSB_FIELD_RANGE ]  ;
+                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_WO_BANK_LSB_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
                 `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
@@ -704,8 +688,8 @@ module sdp_stream_cntl (
             else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
               begin
                 strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
-                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
-                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_WO_BANK_LSB_FIELD_RANGE ]  ;
+                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_WO_BANK_LSB_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
                 `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
@@ -714,8 +698,8 @@ module sdp_stream_cntl (
             else 
               begin
                 strm_inc_channel_e1 =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
-                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
-                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                strm_inc_bank_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_WO_BANK_LSB_FIELD_RANGE ]  ;
+                strm_inc_page_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_WO_BANK_LSB_FIELD_RANGE ]  ;
                 strm_inc_word_e1    =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
                 `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
                   strm_inc_line_e1  =  strm_inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
@@ -747,22 +731,24 @@ module sdp_stream_cntl (
 
       if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
         begin
-          strm_inc_channel             <=  strm_inc_channel_e1 ;
-          strm_inc_bank                <=  strm_inc_bank_e1    ;
-          strm_inc_page                <=  strm_inc_page_e1    ;
-          strm_inc_word                <=  strm_inc_word_e1    ;
-          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-            strm_inc_line                <=  strm_inc_line_e1  ;
+          strm_inc_channel             <=  strm_inc_channel_e1  ;
+          strm_inc_bank                <=  strm_inc_bank_e1     ;
+          strm_inc_bank_lsb            <=  strm_inc_bank_lsb_e1 ;
+          strm_inc_page                <=  strm_inc_page_e1     ;
+          strm_inc_word                <=  strm_inc_word_e1     ;
+          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE            
+            strm_inc_line                <=  strm_inc_line_e1   ;
           `endif
         end
       else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP)
         begin
-          strm_inc_channel             <=  strm_inc_channel_e1 ;
-          strm_inc_bank                <=  strm_inc_bank_e1    ;
-          strm_inc_page                <=  strm_inc_page_e1    ;
-          strm_inc_word                <=  strm_inc_word_e1    ;
-          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-            strm_inc_line                <=  strm_inc_line_e1  ;
+          strm_inc_channel             <=  strm_inc_channel_e1  ;
+          strm_inc_bank                <=  strm_inc_bank_e1     ;
+          strm_inc_bank_lsb            <=  strm_inc_bank_lsb_e1 ;
+          strm_inc_page                <=  strm_inc_page_e1     ;
+          strm_inc_word                <=  strm_inc_word_e1     ;
+          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE            
+            strm_inc_line                <=  strm_inc_line_e1   ;
           `endif
         end
     end // always @ (*)
@@ -780,33 +766,33 @@ module sdp_stream_cntl (
         
         `SDP_CNTL_STRM_WAIT: 
           begin
-            strm_next_cons_start_address <= strm_inc_address_e1 ;  // address already ordered
+            strm_next_inc_cons_start_address <= strm_inc_address_e1 ;  // address already ordered
           end
 
         `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT: 
           begin
-            strm_next_cons_start_address <= (ok_to_send) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00} :
-                                                           strm_next_cons_start_address                                       ;
+            strm_next_inc_cons_start_address <= (ok_to_send) ? strm_next_inc_cons_start_address + {consequtive_value_for_strm, 2'b00} :
+                                                           strm_next_inc_cons_start_address                                       ;
           end
 
         `SDP_CNTL_STRM_LOAD_JUMP_VALUE: 
           begin
-            strm_next_cons_start_address <= (~ok_to_send                               ) ? strm_next_cons_start_address                                 : 
-                                            ( consJump_to_strm_fsm_fifo[0].pipe_valid  ) ? strm_next_cons_start_address + {jump_value_for_strm, 2'b00}  : // remember its a byte address
-                                                                                           strm_next_cons_start_address                                 ;
+            strm_next_inc_cons_start_address <= (~ok_to_send                               ) ? strm_next_inc_cons_start_address                                 : 
+                                            ( consJump_to_strm_fsm_fifo[0].pipe_valid  ) ? strm_next_inc_cons_start_address + {jump_value_for_strm, 2'b00}  : // remember its a byte address
+                                                                                           strm_next_inc_cons_start_address                                 ;
           end
 
         `SDP_CNTL_STRM_COUNT_CONS :
           begin
             // next inc address loaded with start in FIRST_CONS_COUNT state
-            strm_next_cons_start_address <= ((consequtive_counter == 'd0                              ) && consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00}  :
-                                            ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB]  == 1'b1) && consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_cons_start_address + {consequtive_value_for_strm, 2'b00}  :
-                                                                                                                                                      strm_next_cons_start_address                               ;
+            strm_next_inc_cons_start_address <= ((consequtive_counter == 'd0                              ) && consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_inc_cons_start_address + {consequtive_value_for_strm, 2'b00}  :
+                                            ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB]  == 1'b1) && consJump_to_strm_fsm_fifo[0].pipe_valid) ? strm_next_inc_cons_start_address + {consequtive_value_for_strm, 2'b00}  :
+                                                                                                                                                      strm_next_inc_cons_start_address                               ;
           end
 
         default:
           begin
-            strm_next_cons_start_address <=  ( reset_poweron ) ? 'd0 : strm_next_cons_start_address ;
+            strm_next_inc_cons_start_address <=  ( reset_poweron ) ? 'd0 : strm_next_inc_cons_start_address ;
           end
 
       endcase // case (sdp_cntl_stream_state)
@@ -817,22 +803,22 @@ module sdp_stream_cntl (
     begin
       if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
         begin
-          strm_next_cons_start_channel =  strm_next_cons_start_address[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
-          strm_next_cons_start_bank    =  strm_next_cons_start_address[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
-          strm_next_cons_start_page    =  strm_next_cons_start_address[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
-          strm_next_cons_start_word    =  strm_next_cons_start_address[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
+          strm_next_inc_cons_start_channel =  strm_next_inc_cons_start_address[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
+          strm_next_inc_cons_start_bank    =  strm_next_inc_cons_start_address[`MGR_DRAM_WCBP_ORDER_BANK_WO_BANK_LSB_FIELD_RANGE ]  ;
+          strm_next_inc_cons_start_page    =  strm_next_inc_cons_start_address[`MGR_DRAM_WCBP_ORDER_PAGE_WO_BANK_LSB_FIELD_RANGE ]  ;
+          strm_next_inc_cons_start_word    =  strm_next_inc_cons_start_address[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
           `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-            strm_next_cons_start_line    =  strm_next_cons_start_address[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
+            strm_next_inc_cons_start_line    =  strm_next_inc_cons_start_address[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
           `endif
         end
       else if (strm_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
         begin
-          strm_next_cons_start_channel =  strm_next_cons_start_address[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
-          strm_next_cons_start_bank    =  strm_next_cons_start_address[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
-          strm_next_cons_start_page    =  strm_next_cons_start_address[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
-          strm_next_cons_start_word    =  strm_next_cons_start_address[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+          strm_next_inc_cons_start_channel =  strm_next_inc_cons_start_address[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+          strm_next_inc_cons_start_bank    =  strm_next_inc_cons_start_address[`MGR_DRAM_CWBP_ORDER_BANK_WO_BANK_LSB_FIELD_RANGE ]  ;
+          strm_next_inc_cons_start_page    =  strm_next_inc_cons_start_address[`MGR_DRAM_CWBP_ORDER_PAGE_WO_BANK_LSB_FIELD_RANGE ]  ;
+          strm_next_inc_cons_start_word    =  strm_next_inc_cons_start_address[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
           `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-            strm_next_cons_start_line    =  strm_next_cons_start_address[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+            strm_next_inc_cons_start_line    =  strm_next_inc_cons_start_address[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
           `endif
         end
     end

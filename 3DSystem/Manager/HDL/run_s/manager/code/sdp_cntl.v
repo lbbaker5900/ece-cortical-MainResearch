@@ -110,7 +110,7 @@ module sdp_cntl (
   wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]   sdpr__sdps__response_id_channel ;
   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE         ]   sdpr__sdps__response_id_bank    ;
   wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]   sdpr__sdps__response_id_page    ;
-  wire  [`MGR_DRAM_WORD_ADDRESS_RANGE         ]   sdpr__sdps__response_id_word    ;
+  wire  [`MGR_DRAM_LINE_ADDRESS_RANGE         ]   sdpr__sdps__response_id_line    ;
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // Storage Descriptor Memory Request Generator
@@ -140,7 +140,7 @@ module sdp_cntl (
             .sdpr__sdps__response_id_channel              ( sdpr__sdps__response_id_channel            ),
             .sdpr__sdps__response_id_bank                 ( sdpr__sdps__response_id_bank               ),
             .sdpr__sdps__response_id_page                 ( sdpr__sdps__response_id_page               ),
-            .sdpr__sdps__response_id_word                 ( sdpr__sdps__response_id_word               ),
+            .sdpr__sdps__response_id_line                 ( sdpr__sdps__response_id_line               ),
 
             .sdpr__sdps__cfg_valid                        ( sdpr__sdps__cfg_valid                      ),
             .sdpr__sdps__cfg_addr                         ( sdpr__sdps__cfg_addr                       ),
@@ -190,7 +190,7 @@ module sdp_cntl (
             .sdpr__sdps__response_id_channel              ( sdpr__sdps__response_id_channel            ),
             .sdpr__sdps__response_id_bank                 ( sdpr__sdps__response_id_bank               ),
             .sdpr__sdps__response_id_page                 ( sdpr__sdps__response_id_page               ),
-            .sdpr__sdps__response_id_word                 ( sdpr__sdps__response_id_word               ),
+            .sdpr__sdps__response_id_line                 ( sdpr__sdps__response_id_line               ),
 
             .sdp__xxx__get_next_line                      ( sdp__xxx__get_next_line                    ),
             .sdp__xxx__lane_valid                         ( sdp__xxx__lane_valid                       ),

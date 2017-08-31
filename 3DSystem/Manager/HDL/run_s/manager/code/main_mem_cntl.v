@@ -1387,8 +1387,8 @@ module main_mem_cntl (
         always @(*)
           begin
 
-            cmd_seq_pc_fifo  [chan].write      = chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_write  | chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_write  | chan_cmd_gen_fsm [chan].strm_fsm[2].strm_cmd_write ;
-            cmd_seq_po_fifo  [chan].write      = chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_write  | chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_write  | chan_cmd_gen_fsm [chan].strm_fsm[2].strm_cmd_write ;
+            cmd_seq_pc_fifo    [chan].write    = chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_write  | chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_write  | chan_cmd_gen_fsm [chan].strm_fsm[2].strm_cmd_write ;
+            cmd_seq_po_fifo    [chan].write    = chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_write  | chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_write  | chan_cmd_gen_fsm [chan].strm_fsm[2].strm_cmd_write ;
             cmd_seq_cache_fifo [chan].write    = chan_cmd_gen_fsm [chan].strm_fsm[0].strm_cmd_write  | chan_cmd_gen_fsm [chan].strm_fsm[1].strm_cmd_write  | chan_cmd_gen_fsm [chan].strm_fsm[2].strm_cmd_write ;
 
             // page fifo
@@ -2377,6 +2377,10 @@ module main_mem_cntl (
   //------------------------------------------------------------------------------------------
   // DFI Sequencer FSM(s)
   //  - read the channel command page and cache fifo and sequence commands to DRAM
+  //
+  //  - the head of the FIFO gets sent directly to the dram is the fsm is in
+  //  the correct page/cache phase
+  //  - if we see the head will be empty, we always jump to a NOHEAD state
   // 
   //------------------------------------------------------------------------------------------
    
@@ -2487,9 +2491,9 @@ module main_mem_cntl (
 
                         //--------------------------------------------------
                     
-                        if (!final_page_cmd_fifo[chan].pipe_peek_valid)  // no data
+                        if (!final_page_cmd_fifo[chan].pipe_peek_valid)  // no commands coming
                           begin
-                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NODATA_NOP_RW_CMD;
+                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NOHEAD_NOP_RW_CMD;
                           end
                         else if (final_cache_cmd_fifo[chan].pipe_peek_cmd == `MMC_CNTL_CACHE_CMD_FINAL_FIFO_TYPE_NOP )  // queue has data but the next RW is not a valid RW command
                           begin
@@ -2550,12 +2554,18 @@ module main_mem_cntl (
                 `MMC_CNTL_DFI_SEQ_NOP_PAGE_CMD: 
                     begin
                         // This state dram_cmd_mode == 1
-                        // If we are here, the pipe has data but its a RW command, so dont read just jump to RD state
+                        // If we are here, the pipe has a NOP page command so it must have a valid CR command at the head
                     
-                        if (~final_page_cmd_fifo[chan].pipe_peek_valid)
+                        if (final_cache_cmd_fifo[chan].pipe_valid)
                           begin
-                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NODATA_NOP_RW_CMD;
+                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_RD_CMD;
                           end
+/*
+                        else if (~final_page_cmd_fifo[chan].pipe_peek_valid)
+                          begin
+                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NOHEAD_NOP_RW_CMD;
+                          end
+&*/
                         else if ((final_cache_cmd_fifo[chan].pipe_peek_cmd == `MMC_CNTL_CACHE_CMD_FINAL_FIFO_TYPE_NOP ))  // queue has data but the next RW is not a valid RW command  
                           begin
                             mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NOP_RW_CMD;
@@ -2567,14 +2577,17 @@ module main_mem_cntl (
                     end
 
                 // Head of fifo is empty
-                `MMC_CNTL_DFI_SEQ_NODATA_NOP_PAGE_CMD: 
+                `MMC_CNTL_DFI_SEQ_NOHEAD_NOP_PAGE_CMD: 
                     begin
                         // This state dram_cmd_mode == 1
-                        // If we are here, the pipe does not have data 
-                    
-                        if (~final_page_cmd_fifo[chan].pipe_peek_valid)
+                        // There should be nothing at the head of the fifo(s)
+                        if (final_cache_cmd_fifo[chan].pipe_valid)
                           begin
-                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NODATA_NOP_RW_CMD;
+                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_ERR;
+                          end
+                        else if (~final_page_cmd_fifo[chan].pipe_peek_valid)
+                          begin
+                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NOHEAD_NOP_RW_CMD;
                           end
                         else if ((final_cache_cmd_fifo[chan].pipe_peek_cmd == `MMC_CNTL_CACHE_CMD_FINAL_FIFO_TYPE_NOP ))  // queue has data but the next RW is not a valid RW command  
                           begin
@@ -2647,7 +2660,7 @@ module main_mem_cntl (
                         if (!final_page_cmd_fifo[chan].pipe_peek_valid  )
                           begin
                             // Command fifo empty so just jump to the NOP PG phase
-                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NODATA_NOP_PAGE_CMD;
+                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NOHEAD_NOP_PAGE_CMD;
                           end
                         // next is nop page command with write data
                         else if (final_cache_cmd_fifo[chan].pipe_peek_cmd == `MMC_CNTL_CACHE_CMD_FINAL_FIFO_TYPE_CW)
@@ -2698,7 +2711,7 @@ module main_mem_cntl (
                         if (!final_page_cmd_fifo[chan].pipe_peek_valid  )
                           begin
                             // Command fifo empty so just jump to the NOP PG phase
-                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NODATA_NOP_PAGE_CMD;
+                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NOHEAD_NOP_PAGE_CMD;
                           end
                         // next is nop page command with write data
                         else if (final_cache_cmd_fifo[chan].pipe_peek_cmd == `MMC_CNTL_CACHE_CMD_FINAL_FIFO_TYPE_CW)
@@ -2743,14 +2756,14 @@ module main_mem_cntl (
                           end
                     end
       
-                `MMC_CNTL_DFI_SEQ_NODATA_NOP_RW_CMD: 
+                `MMC_CNTL_DFI_SEQ_NOHEAD_NOP_RW_CMD: 
                     begin
                         // This state dram_cmd_mode == 0
                     
                         if (!final_page_cmd_fifo[chan].pipe_peek_valid  )
                           begin
                             // Command fifo empty so just jump to the NOP PG phase
-                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NODATA_NOP_PAGE_CMD;
+                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_NOHEAD_NOP_PAGE_CMD;
                           end
                         // next is nop page command with write data
                         else if (final_cache_cmd_fifo[chan].pipe_peek_cmd == `MMC_CNTL_CACHE_CMD_FINAL_FIFO_TYPE_CW)

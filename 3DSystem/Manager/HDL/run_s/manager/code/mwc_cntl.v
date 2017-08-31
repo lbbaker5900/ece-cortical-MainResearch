@@ -736,7 +736,7 @@ module mwc_cntl (
             .sdpr__sdps__response_id_channel              (                                            ),
             .sdpr__sdps__response_id_bank                 (                                            ),
             .sdpr__sdps__response_id_page                 (                                            ),
-            .sdpr__sdps__response_id_word                 (                                            ),
+            .sdpr__sdps__response_id_line                 (                                            ),
 
 
             .sdpr__sdps__cfg_valid                        ( sdpr_cfg_valid                             ),
