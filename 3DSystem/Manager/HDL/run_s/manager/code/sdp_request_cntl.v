@@ -766,7 +766,8 @@ module sdp_request_cntl (
 
            end  //`SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES:
 
-        `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST:
+        //`SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST:
+        `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID:
            begin
 
              case ({force_cons_chan01_request, force_cons_chan10_request })  // synopsys full_case
@@ -796,7 +797,7 @@ module sdp_request_cntl (
 
            end  //`SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST:
 
-
+/*
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID:
            begin
              first_time_thru                  <= first_time_thru                  ;
@@ -806,6 +807,7 @@ module sdp_request_cntl (
              force_cons_chan10_request        <= force_cons_chan10_request        ;
              force_jump_request               <= force_jump_request               ;
            end
+*/
 
         default:
            begin
@@ -1537,34 +1539,46 @@ module sdp_request_cntl (
       case (storage_desc_accessOrder)  // synopsys parallel_case full_case
         PY_WU_INST_ORDER_TYPE_WCBP :
           begin
-            `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE  
-              sdpr__sdps__response_id_channel_e1                                      =  pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ;
-              sdpr__sdps__response_id_bank_e1                                         = {pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ], storage_desc_bank_lsb}  ;
-              sdpr__sdps__response_id_page_e1                                         =  pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ;
-              sdpr__sdps__response_id_line_e1                                         = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST          ) ?  'd0 :
-                                                                                        (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID) ?  'd1 :
-                                                                                                                                                                                        'd0 ;
-            `else
-              sdpr__sdps__response_id_channel_e1 =  pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ;
+            `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE  
+              sdpr__sdps__response_id_channel_e1 = (force_cons_chan0_request || force_cons_chan01_request )  ?  1'b0   :
+                                                   (force_cons_chan1_request || force_cons_chan10_request )  ?  1'b1   :
+                                                                                                                pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] ;
               sdpr__sdps__response_id_bank_e1    = {pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ], storage_desc_bank_lsb}  ;
               sdpr__sdps__response_id_page_e1    =  pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ;
-              sdpr__sdps__response_id_line_e1    = 'd0 ; 
+              sdpr__sdps__response_id_line_e1    = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST          ) ?  'd0 :
+                                                   (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID) ?  'd1 :
+                                                                                                                                                   'd0 ;
+            `else
+              sdpr__sdps__response_id_channel_e1 =   (force_cons_chan0_request || force_cons_chan01_request )  ?  1'b0   :
+                                                     (force_cons_chan1_request || force_cons_chan10_request )  ?  1'b1   :
+                                                                                                                  pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ;
+              sdpr__sdps__response_id_bank_e1    = {pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ], storage_desc_bank_lsb}  ;
+              sdpr__sdps__response_id_page_e1    =  pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ;
+              sdpr__sdps__response_id_line_e1    = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST          ) ?  'd0 :
+                                                   (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID) ?  'd1 :
+                                                                                                                                                   'd0 ;
             `endif
           end
         PY_WU_INST_ORDER_TYPE_CWBP :
           begin
-            `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE  
-              sdpr__sdps__response_id_channel_e1                                      =  pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ;
-              sdpr__sdps__response_id_bank_e1                                         =  {pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ], storage_desc_bank_lsb}  ;
-              sdpr__sdps__response_id_page_e1                                         =  pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ;
-              sdpr__sdps__response_id_line_e1                                         = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST          ) ?  'd0 :
-                                                                                        (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID) ?  'd1 :
-                                                                                                                                                                                        'd0 ;
+            `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE  
+              sdpr__sdps__response_id_channel_e1  =  (force_cons_chan0_request || force_cons_chan01_request )  ?  1'b0   :
+                                                     (force_cons_chan1_request || force_cons_chan10_request )  ?  1'b1   :
+                                                                                                                  pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] ;
+              sdpr__sdps__response_id_bank_e1     =  {pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ], storage_desc_bank_lsb}  ;
+              sdpr__sdps__response_id_page_e1     =  pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ;
+              sdpr__sdps__response_id_line_e1     = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST          ) ?  'd0 :
+                                                    (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID) ?  'd1 :
+                                                                                                                                                    'd0 ;
             `else
-              sdpr__sdps__response_id_channel_e1 =  pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ;
+              sdpr__sdps__response_id_channel_e1 =  (force_cons_chan0_request || force_cons_chan01_request )  ?  1'b0   :
+                                                    (force_cons_chan1_request || force_cons_chan10_request )  ?  1'b1   :
+                                                                                                                 pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ;
               sdpr__sdps__response_id_bank_e1    = {pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ], storage_desc_bank_lsb} ;
               sdpr__sdps__response_id_page_e1    =  pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ;
-              sdpr__sdps__response_id_line_e1    =  'd0                                           ;
+              sdpr__sdps__response_id_line_e1     = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST          ) ?  'd0 :
+                                                    (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID) ?  'd1 :
+                                                                                                                                                    'd0 ;
             `endif
           end
       endcase

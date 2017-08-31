@@ -43,7 +43,7 @@ module sdp_stream_cntl (
 
             //-------------------------------
             // from MMC fifo Control
-            input   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   xxx__sdp__mem_request_channel_data_valid                ,  // valid data from channel data fifo and downstream ready
+            input   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   xxx__sdp__mem_request_channel_data_valid     ,  // valid data from channel data fifo and downstream ready
 
             // Contains the associated address for the next mmc line
             // - automatically updated when "get_line" is asserted
@@ -355,8 +355,6 @@ module sdp_stream_cntl (
     begin
       sdps__sdpr__response_id_ready  = ~response_id_fifo[0].almost_full & ~response_id_fifo[1].almost_full ;  // FIXME
     end
-  assign  response_id_fifo_read[0] =  response_id_fifo[0].pipe_valid ;  // FIXME
-  assign  response_id_fifo_read[1] =  response_id_fifo[1].pipe_valid ;
 
   generate
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
@@ -406,6 +404,7 @@ module sdp_stream_cntl (
 
   reg  [`SDP_CNTL_CONS_COUNTER_RANGE        ]     consequtive_counter        ;
   reg                                             consequtive_counter_le0    ;  //
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]     response_id_match          ;  //  head of response ID fifo matches our current stream count
   reg                                             last_consequtive           ;  // we have seen the end-of-consJump so after this last phase we exit
   reg  [`MGR_INST_CONS_JUMP_FIELD_RANGE     ]     consequtive_value_for_strm ;  // latched consequtive and jump values so we can calculate the next consequitve start address while we are running thru cons phase
   reg  [`MGR_INST_CONS_JUMP_FIELD_RANGE     ]     jump_value_for_strm        ;
@@ -439,7 +438,7 @@ module sdp_stream_cntl (
           sdp_cntl_stream_state_next =  (ok_to_send && consJump_to_strm_fsm_fifo[0].pipe_valid) ? `SDP_CNTL_STRM_COUNT_CONS      : 
                                                                                                   `SDP_CNTL_STRM_LOAD_JUMP_VALUE ;
 
-        // Pre-calculate next consequtive phase start adderss
+        // Pre-calculate next consequtive phase start address
         // wait for consequtive counter to time out
         // we are always in this state when we are expecting the next consequtive value
         `SDP_CNTL_STRM_COUNT_CONS: 
@@ -495,24 +494,6 @@ module sdp_stream_cntl (
                                                      (sdp_cntl_stream_state == `SDP_CNTL_STRM_COMPLETE) ;
     end
 
-  always @(posedge clk)
-    begin
-      consequtive_counter <=  ( reset_poweron                                                                                                                           )  ? 'd0                                                        :
-                              (                                                                          (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT)) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
-                              (~ok_to_send                                                                                                                              ) ? consequtive_counter                                         :  // data not yet available
-                              ( consequtive_counter_le0  &&  consJump_to_strm_fsm_fifo[0].pipe_valid  && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
-                              ( consequtive_counter_le0                                                                                                                 ) ? consequtive_counter                                         :  // jump data not yet available
-/*
-
-                              ((consequtive_counter                             ==  'd0) &&  consJump_to_strm_fsm_fifo[0].pipe_valid    && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
-                              ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB] == 1'b1) &&  consJump_to_strm_fsm_fifo[0].pipe_valid    && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
-                              ((consequtive_counter                             ==  'd0) || (consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB] == 1'b1)                                                     ) ? consequtive_counter                                         :  // jump data not yet available
-*/
-                              ( strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST                                                                                       ) ? consequtive_counter-1                                       :
-                              ( strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR                                                                                      ) ? consequtive_counter-addr_to_strm_fsm_fifo[0].pipe_num_lanes :
-                                                                                                                                                                            consequtive_counter                                         ;  // will only occur with error
-    end
-
   // Save jump and consequtive values while we are running thru the consequtive phase
   always @(*)
     begin
@@ -553,6 +534,27 @@ module sdp_stream_cntl (
   reg   [`MGR_DRAM_WORD_ADDRESS_RANGE        ]   strm_inc_word_e1             ;
                                              
 
+  // We must only decrement the counter if the data is available and the response ID matches. 
+  // Remember, we always read a cacheline, so if we only need one line of a two line cacheline, we have to flush the response ID fifo and the data fifo, so dont increment 
+  // until the response_id matches and thus the data matches.
+  always @(posedge clk)
+    begin
+      consequtive_counter <=  ( reset_poweron                                                                                                                           )  ? 'd0                                                        :
+                              (                                                                          (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT)) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
+                              (~ok_to_send                                                                                                                              ) ? consequtive_counter                                         :  // data not yet available
+                              ( consequtive_counter_le0  &&  consJump_to_strm_fsm_fifo[0].pipe_valid  && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
+                              ( consequtive_counter_le0                                                                                                                 ) ? consequtive_counter                                         :  // jump data not yet available
+/*
+
+                              ((consequtive_counter                             ==  'd0) &&  consJump_to_strm_fsm_fifo[0].pipe_valid    && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
+                              ((consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB] == 1'b1) &&  consJump_to_strm_fsm_fifo[0].pipe_valid    && (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS           )) ? consJump_to_strm_fsm_fifo[0].pipe_consJumpValue             :  
+                              ((consequtive_counter                             ==  'd0) || (consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB] == 1'b1)                                                     ) ? consequtive_counter                                         :  // jump data not yet available
+*/
+                              ( (strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST )  && response_id_match[strm_inc_channel]                                            ) ? consequtive_counter-1                                       :
+                              ( (strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR)  && response_id_match[strm_inc_channel]                                            ) ? consequtive_counter-addr_to_strm_fsm_fifo[0].pipe_num_lanes :
+                                                                                                                                                                            consequtive_counter                                         ;  // will only occur with error
+    end
+
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // Check the output of the channel request ID fifo to determine if the output of the from_mmc fifo is the line bank/page/line we need
   // - use the "next" stream address
@@ -561,7 +563,7 @@ module sdp_stream_cntl (
       always @(*) 
         begin
           sdp__xxx__get_next_line[chan]  = ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) & consequtive_counter_le0 && last_consequtive) | // flush last transaction
-                                           (((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) | (sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS)) &
+                                           (((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) | (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE)) &
                                            (strm_inc_channel_e1 == chan) &
                                            (({strm_inc_bank_e1, strm_inc_bank_lsb} != response_id_bank[strm_inc_channel_e1]) | 
                                             (strm_inc_page_e1 != response_id_page[strm_inc_channel_e1]) | 
@@ -570,8 +572,17 @@ module sdp_stream_cntl (
                                             `else
                                               1'b0)) ;
                                             `endif
+          response_id_match [chan]      =  (({strm_inc_bank, strm_inc_bank_lsb} == response_id_bank[strm_inc_channel]) & 
+                                            (strm_inc_page == response_id_page[strm_inc_channel]) & 
+                                            `ifdef MGR_DRAM_REQUEST_LINE_LT_CACHELINE
+                                              (strm_inc_line == response_id_line[strm_inc_channel]))  ;
+                                            `else
+                                              1'b0) ;
+                                            `endif
         end
   endgenerate
+  assign  response_id_fifo_read[0] =  sdp__xxx__get_next_line[0] ;
+  assign  response_id_fifo_read[1] =  sdp__xxx__get_next_line[1] ;
 
   always @(*)
     begin
