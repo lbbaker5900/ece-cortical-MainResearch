@@ -19,6 +19,12 @@ set clkname clk
 #set modname simd_core
 #set modname pe
 
+
+
+
+
+
+
 #------------------------------------------------------------------------------------------------------------------------
 # WIP
 #
@@ -43,4 +49,13 @@ set type test
 #set the number of digits to be used for delay results
 set report_default_significant_digits 4
 
-set CLK_PER 2
+if {$tech == "65nm"} {
+
+  set CLK_PER 3.0
+
+} elseif {($tech == "28nm")} {
+
+  set CLK_PER 1.0
+
+}
+

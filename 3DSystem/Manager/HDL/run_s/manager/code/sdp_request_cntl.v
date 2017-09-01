@@ -805,7 +805,6 @@ module sdp_request_cntl (
              force_cons_chan1_request         <= force_cons_chan1_request         ;
              force_cons_chan01_request        <= force_cons_chan01_request        ;
              force_cons_chan10_request        <= force_cons_chan10_request        ;
-             force_jump_request               <= force_jump_request               ;
            end
 */
 
@@ -816,7 +815,6 @@ module sdp_request_cntl (
              force_cons_chan1_request         <= force_cons_chan1_request         ;
              force_cons_chan01_request        <= force_cons_chan01_request        ;
              force_cons_chan10_request        <= force_cons_chan10_request        ;
-             force_jump_request               <= force_jump_request               ;
            end
       endcase
     end

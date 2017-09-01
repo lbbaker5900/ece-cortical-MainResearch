@@ -1,5 +1,5 @@
 
-MODNAME = manager
+MODNAME = mrc_cntl
 TECH    = 65nm
 
 RTL_DIR = ../code
