@@ -224,8 +224,9 @@ for line in searchFile:
   if FoundCJWidth == False:
     data = re.split(r'\s{1,}', line)
     # check define is in 2nd field
-    if "MGR_INST_CONS_JUMP_DEPTH" in data[1]:
-      cjWidth = int(math.log(int(data[2]),2))
+    if "MGR_OP_MAX_NUM_OF_OPERANDS" in data[1]:
+      cjWidth = int(math.log(int(data[2]),2)) + int(math.log(numOfLanes,2))
+      #cjWidth = int(data[2])
       FoundCJWidth = True
   #
  

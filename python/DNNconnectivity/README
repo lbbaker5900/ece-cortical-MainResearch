@@ -13,7 +13,7 @@ scp verilogFiles/latest/*.vh   lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortica
 scp outputFiles/latest/*/*.dat lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/System/SIMULATION/sv/inputFiles/. ; \
 scp outputFiles/latest/manager_*/manager_*_*_layer1_{group_?_AllGroupMemory.txt,WUs.txt} lbbaker@bunyip.ece.ncsu.edu:/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/System/SIMULATION/sv/configFiles/.
 
-vim -O outputFiles/latest/manager_0_0/manager_0_layer1_{i,d}cntl_readmem.dat outputFiles/latest/manager_0_0/manager_0_layer1_op_readmem.dat outputFiles/latest/manager_0_0/manager_0_layer1_option*e{0,1,2}*
+vim -O manager_*_layer1_{i,d}cntl_readmem.dat manager_*_layer1_op_readmem.dat manager_*_layer1_option*e{0,1,2}*
 
 
 bsub -W 2:00 < script.csh
