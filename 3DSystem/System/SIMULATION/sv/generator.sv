@@ -154,7 +154,7 @@ class generator;
 /*
                         // DEBUG
                         $display("@%0t:%s:%0d:INFO:DEBUG:{%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                        sys_operation_gen.displayOperationFoo(`__FILE__, `__LINE__);
+                        sys_operation_gen.displayOperation(`__FILE__, `__LINE__);
 
                         if ((Id[0]  == 63) && (Id[1] == 0) && (priorOperations.size > 0))
                             priorOperations[$].displayOperation();

@@ -482,7 +482,7 @@ module main_mem_cntl (
 
 //// /* experiment with above assign issue 
 ////  generate
-////    for (strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
+////    for (strm=0; strm<`MMC_CNTL_NUM_OF_INTF ; strm++)
 ////      begin
 ////        always @(*)
 ////          begin
@@ -506,10 +506,9 @@ module main_mem_cntl (
                                          
   // Set the page status. Either stream can set the page status but only one will be activve at a time
   // So genearte the page status by ORing the access_set_valid [chan][bank]
-  reg  [`MGR_NUM_OF_STREAMS_RANGE        ]    access_set_valid              [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]                       ;
-  reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE      ]    access_set_cmd                [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ] [`MGR_NUM_OF_STREAMS] ;
-  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    access_set_page               [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ] [`MGR_NUM_OF_STREAMS] ;
-  reg  [`MGR_NUM_OF_STREAMS_RANGE        ]    access_set_strm               [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]                       ;
+  reg  [`MMC_CNTL_NUM_OF_INTF_VEC_RANGE  ]    access_set_valid              [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ]                       ;
+  reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE      ]    access_set_cmd                [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ] [`MMC_CNTL_NUM_OF_INTF ] ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]    access_set_page               [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_NUM_BANKS  ] [`MMC_CNTL_NUM_OF_INTF ] ;
 
   // The checker fsm will check page and cache commands separately but never to the same bank at the same time
   // So the checker will or the requests
@@ -617,10 +616,12 @@ module main_mem_cntl (
                 chan_bank_set_valid         = |access_set_valid  [chan] [bank] ; // either stream
 
                 chan_bank_set_cmd           = access_set_valid  [chan] [bank] [0] ? access_set_cmd  [chan] [bank] [0] :
-                                                                                    access_set_cmd  [chan] [bank] [1] ;             
+                                              access_set_valid  [chan] [bank] [1] ? access_set_cmd  [chan] [bank] [1] :
+                                                                                    access_set_cmd  [chan] [bank] [2] ;             
 
                 chan_bank_set_page          = access_set_valid  [chan] [bank] [0] ? access_set_page [chan] [bank] [0] :
-                                                                                    access_set_page [chan] [bank] [1] ;             
+                                              access_set_valid  [chan] [bank] [1] ? access_set_page [chan] [bank] [1] :
+                                                                                    access_set_page [chan] [bank] [2] ;             
               end
 
             // use because we cannot index the generate with a variable
@@ -1878,8 +1879,8 @@ module main_mem_cntl (
 
                   2'b10 :
                     cache_counter_out [chan][bank] <= ( reset_poweron ) ? 'd0 : (bank == cmd_seq_cache_fifo [chan].pipe_bank)  ?  cache_counter_out[chan][bank] + 'd1 :  cache_counter_out[chan][bank] ;
-                  //2'b01 :
-                    //cache_counter_out [chan][bank] <= ( reset_poweron ) ? 'd0 : (bank == cmd_seq_cache_fifo [chan].pipe_bank)  ?  'd0 :  cache_counter_out[chan][bank] ;
+                  2'b01 :
+                    cache_counter_out [chan][bank] <= ( reset_poweron ) ? 'd0 : (bank == cmd_seq_pc_fifo [chan].pipe_bank   )  ?  'd0 :  cache_counter_out[chan][bank] ;
                   default:
                     cache_counter_out [chan][bank] <= ( reset_poweron ) ? 'd0 : cache_counter_out[chan][bank] ;
 
@@ -1906,11 +1907,12 @@ module main_mem_cntl (
         assign  po_sequence_is_PCPOCx           =  (cmd_seq_po_fifo [chan].pipe_seq_type == `DRAM_ACC_CMD_SEQ_IS_PCPOCR) | (cmd_seq_po_fifo [chan].pipe_seq_type == `DRAM_ACC_CMD_SEQ_IS_PCPOCW) ;
         
 
-
+                                                                                          /*|<-------------------- index into array of dram command timer status ----------------->|*/
         assign  page_cmd_pc_ready_to_go         = cmd_seq_pc_fifo    [chan].pipe_valid  & (cmd_can_go[chan][cmd_seq_pc_fifo    [chan].pipe_bank][cmd_seq_pc_fifo    [chan].pipe_cmd] == 1'b1) & (cmd_seq_pc_fifo    [chan].pipe_cmd != `DRAM_ACC_CMD_IS_NOP); //) ; // page command available and timer ready
         assign  page_cmd_po_ready_to_go         = cmd_seq_po_fifo    [chan].pipe_valid  & (cmd_can_go[chan][cmd_seq_po_fifo    [chan].pipe_bank][cmd_seq_po_fifo    [chan].pipe_cmd] == 1'b1) & (cmd_seq_po_fifo    [chan].pipe_cmd != `DRAM_ACC_CMD_IS_NOP); //) ; // page command available and timer ready
         assign  cache_cmd_ready_to_go           = cmd_seq_cache_fifo [chan].pipe_valid  & (cmd_can_go[chan][cmd_seq_cache_fifo [chan].pipe_bank][cmd_seq_cache_fifo [chan].pipe_cmd] == 1'b1) & (cmd_seq_cache_fifo [chan].pipe_cmd != `DRAM_ACC_CMD_IS_NOP); //) ; // cache command available and timer ready
 
+                                                                             /*|<------------------ have we seen enough cache commands for this bank?------------------->|*/
         assign  page_cmd_pc_requested           =  page_cmd_pc_ready_to_go & ((cmd_seq_pc_fifo [chan].pipe_cci == cache_counter_out[chan][cmd_seq_pc_fifo [chan].pipe_bank]) | (pc_and_po_tags_synced & po_and_cache_tags_synced)) ;
         assign  page_cmd_po_requested           =  (page_cmd_po_ready_to_go & ~pc_and_po_tags_synced) | (cmd_seq_pc_fifo    [chan].pipe_valid & (cmd_seq_pc_fifo    [chan].pipe_cmd == `DRAM_ACC_CMD_IS_NOP)) ;
         assign  cache_cmd_requested             =  cache_cmd_ready_to_go   & po_cache_delta_tag_gt0 & ~pc_and_cache_tags_synced  ;
@@ -1942,27 +1944,30 @@ module main_mem_cntl (
                                                               last_pc_tag                        ;
 
             last_po_tag         <= (reset_poweron         ) ? 'd0                                :
-                                   (page_cmd_po_accepted  ) ? cmd_seq_po_fifo [chan].pipe_tag  :
+                                   (page_cmd_po_accepted  ) ? cmd_seq_po_fifo [chan].pipe_tag    :
                                                               last_po_tag                        ;
 
             last_cache_tag      <= (reset_poweron         ) ? 'd0                                :
                                    (cache_cmd_accepted    ) ? cmd_seq_cache_fifo [chan].pipe_tag :
                                                               last_cache_tag                     ;
 
-            pc_cache_delta_tag  <= (reset_poweron        ) ? 'd0             :
-                                   (page_cmd_pc_read     ) ? pc_cache_delta_tag + 'd1 :
-                                   (cache_cmd_read       ) ? pc_cache_delta_tag - 'd1 :
-                                                             pc_cache_delta_tag       ;
+            pc_cache_delta_tag  <= (reset_poweron                        ) ? 'd0                      :
+                                   (page_cmd_pc_read && cache_cmd_read   ) ? pc_cache_delta_tag       :
+                                   (page_cmd_pc_read                     ) ? pc_cache_delta_tag + 'd1 :
+                                   (cache_cmd_read                       ) ? pc_cache_delta_tag - 'd1 :
+                                                                             pc_cache_delta_tag       ;
 
-            po_cache_delta_tag  <= (reset_poweron        ) ? 'd0             :
-                                   (page_cmd_po_read     ) ? po_cache_delta_tag + 'd1 :
-                                   (cache_cmd_read       ) ? po_cache_delta_tag - 'd1 :
-                                                             po_cache_delta_tag       ;
+            po_cache_delta_tag  <= (reset_poweron                        ) ? 'd0                      :
+                                   (page_cmd_po_read && cache_cmd_read   ) ? po_cache_delta_tag       :
+                                   (page_cmd_po_read                     ) ? po_cache_delta_tag + 'd1 :
+                                   (cache_cmd_read                       ) ? po_cache_delta_tag - 'd1 :
+                                                                             po_cache_delta_tag       ;
 
-            pc_po_delta_tag     <= (reset_poweron        ) ? 'd0             :
-                                   (page_cmd_pc_read     ) ? pc_po_delta_tag + 'd1 :
-                                   (page_cmd_po_read     ) ? pc_po_delta_tag - 'd1 :
-                                                             pc_po_delta_tag       ;
+            pc_po_delta_tag     <= (reset_poweron                        ) ? 'd0                      :
+                                   (page_cmd_pc_read && page_cmd_po_read ) ? pc_po_delta_tag          :
+                                   (page_cmd_pc_read                     ) ? pc_po_delta_tag + 'd1    :
+                                   (page_cmd_po_read                     ) ? pc_po_delta_tag - 'd1    :
+                                                                             pc_po_delta_tag          ;
 
           end
 

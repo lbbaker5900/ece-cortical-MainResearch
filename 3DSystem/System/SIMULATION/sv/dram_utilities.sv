@@ -174,9 +174,7 @@ package dram_utils;
           void'($sscanf(fileLine, "%s  %s  %s  %s  %s ", a,b,c,d,e));
           $display("@%0t :%s:%0d:INFO: %s %s %s %s %s", $time, `__FILE__, `__LINE__, a,b,c,d,e);
 */
-          count  = 0;
-
-          //$display("@%0t :%s:%0d:INFO: Loading DRAM from AllGroup file %s for manager {%0d}", $time, `__FILE__, `__LINE__, allGroupFileName, Id);
+          $display("@%0t :%s:%0d:INFO: Loading DRAM from AllGroup file %s for manager {%0d}", $time, `__FILE__, `__LINE__, allGroupFileName, Id);
           for (int i=0; i<idx-1; i++)
             begin
               tmp_str = fileLine.substr(idxs[i]+1, idxs[i+1]-1);
@@ -187,15 +185,17 @@ package dram_utils;
               vDramCfgIfc[cbpw[0].atoi()].config_row_addr   =  cbpw[2].atoi() ;
               vDramCfgIfc[cbpw[0].atoi()].config_word_addr  =  cbpw[3].atoi() ;
 
+              // ROI is Arg0
               if (i == 0)
                 begin
                   vDramCfgIfc[cbpw[0].atoi()].config_data       =  sys_operation_data[i].operands[0][count];
-                  //$display("@%0t :%s:%0d:INFO: Manager {%0d} : %d: %h %h %h %h : %h ", $time, `__FILE__, `__LINE__, Id, i, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), sys_operation_data[i].operands[0][count]);
+                  $display("@%0t :%s:%0d:INFO: Manager {%0d} : %0d: %h %h %h %h : %h ", $time, `__FILE__, `__LINE__, Id, i, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), sys_operation_data[i].operands[0][count]);
                 end
+              // Arg1
               else
                 begin
                   vDramCfgIfc[cbpw[0].atoi()].config_data       =  sys_operation_data[i-1].operands[1][count];
-                  //$display("@%0t :%s:%0d:INFO: Manager {%0d} : %d: %h %h %h %h : %h ", $time, `__FILE__, `__LINE__, Id, i, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), sys_operation_data[i-1].operands[1][count]);
+                  $display("@%0t :%s:%0d:INFO: Manager {%0d} : %0d: %h %h %h %h : %h ", $time, `__FILE__, `__LINE__, Id, i, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), sys_operation_data[i-1].operands[1][count]);
                 end
              
               vDramCfgIfc[cbpw[0].atoi()].config_load       =  'd0 ;

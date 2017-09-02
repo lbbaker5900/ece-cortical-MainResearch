@@ -598,7 +598,7 @@ package operation;
                 begin
                     operandsReal[0] = $bitstoshortreal({operands[0][i]});
                     operandsReal[1] = $bitstoshortreal({operands[1][i]});
-                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Operand %3d {%f, %f}, ", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsReal[0], operandsReal[1]);
+                    $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Operand %3d {%f, %f}, {%h, %h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], i, operandsReal[0], operandsReal[1], operands[0][i], operands[1][i]);
                 end
             $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Result %f ", $time, `__FILE__, `__LINE__, Id[0], Id[1], result);
 

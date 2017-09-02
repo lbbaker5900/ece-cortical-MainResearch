@@ -307,6 +307,11 @@ class manager;
 
                 if (`MGR_ARRAY_NUM_OF_MGR < 5)
                   begin
+                    $display("@%0t:%s:%0d:INFO:Loading DRAMs with operation operands", $time, `__FILE__, `__LINE__);
+                    for (int i=0; i<`MGR_ARRAY_NUM_OF_MGR; i++)
+                      begin
+                        sys_operation_lane_gen[i].displayOperation();
+                      end
                     fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num );
                     dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
                                                          .sys_operation_data  ( sys_operation_lane_gen),

@@ -52,10 +52,11 @@ echo 'Expect 395 <cr> 395'
 # View instructions
 gvim -O inputFiles/manager_0_layer1_{i,d}cntl_readmem.dat inputFiles/manager_0_layer1_option*e{0,1,2}*
 
-sed -i -e 's/mgr_inst\[5\]/mgr_inst\[55\]/' mmc*.do  ; sed -i -e 's/MGR5 /MGR55 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[5\]/diram_port_arrays\[55\]/' mmc*.do
-sed -i -e 's/mgr_inst\[2\]/mgr_inst\[55\]/' mmc*.do  ; sed -i -e 's/MGR2 /MGR55 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[55\]/' mmc*.do
-sed -i -e 's/mgr_inst\[1\]/mgr_inst\[55\]/' mmc*.do  ; sed -i -e 's/MGR1 /MGR55 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[1\]/diram_port_arrays\[55\]/' mmc*.do
-sed -i -e 's/mgr_inst\[0\]/mgr_inst\[55\]/' mmc*.do  ; sed -i -e 's/MGR0 /MGR55 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[0\]/diram_port_arrays\[55\]/' mmc*.do
+sed -i -e 's/mgr_inst\[55\]/mgr_inst\[0\]/' mmc*.do  ; sed -i -e 's/MGR55 /MGR0 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[55\]/diram_port_arrays\[0\]/' mmc*.do
+sed -i -e 's/mgr_inst\[5\]/mgr_inst\[0\]/' mmc*.do  ; sed -i -e 's/MGR5  /MGR0 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[5\]/diram_port_arrays\[0\]/' mmc*.do
+sed -i -e 's/mgr_inst\[2\]/mgr_inst\[0\]/' mmc*.do  ; sed -i -e 's/MGR2  /MGR0 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[0\]/' mmc*.do
+sed -i -e 's/mgr_inst\[1\]/mgr_inst\[0\]/' mmc*.do  ; sed -i -e 's/MGR1  /MGR0 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[1\]/diram_port_arrays\[0\]/' mmc*.do
+sed -i -e 's/mgr_inst\[0\]/mgr_inst\[0\]/' mmc*.do  ; sed -i -e 's/MGR0  /MGR0 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[0\]/diram_port_arrays\[0\]/' mmc*.do
 
 sed -i -e 's/mgr_inst\[2\]/mgr_inst\[55\]/' wave*.do ; sed -i -e 's/MGR2 /MGR55 /' wave*.do ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[55\]/' wave*.do
 sed -i -e 's/mgr_inst\[1\]/mgr_inst\[55\]/' wave*.do ; sed -i -e 's/MGR1 /MGR55 /' wave*.do ; sed -i -e 's/diram_port_arrays\[1\]/diram_port_arrays\[55\]/' wave*.do
