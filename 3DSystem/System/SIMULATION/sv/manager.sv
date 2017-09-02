@@ -207,13 +207,13 @@ class manager;
                 // Create the operation and send to OOB driver and lane driver
 
                 // A WU Decoder command to OOB Downstream controller initiates the operation
-                `ifdef TB_ENABLE_WUD_INITIATE_OP
+                `ifdef TB_WUD_INITIATES_OP
                     wait ( wud2mgr_m.num() != 0 ) 
                     wud2mgr_m.get(rcvd_wud_to_oob_cmd);
                     $display("@%0t:%s:%0d:INFO: Manager {%0d} received WUD Downstream OOB Command from WUD\'s", $time, `__FILE__, `__LINE__, Id);
                     rcvd_wud_to_oob_cmd.display();
                `endif
-
+/*
                 // A request to both Memory Read controllers will initiate an operation
                 `ifdef TB_ENABLE_MEM_CNTL_INITIATE_OP
                     wait (( mrc2mgr_m[0].num() != 0 ) && ( mrc2mgr_m[1].num() != 0 ));
@@ -221,7 +221,7 @@ class manager;
                     mrc2mgr_m[1].get(mrc_desc[1]);
                     $display("@%0t:%s:%0d:INFO: Manager {%0d} received Memory Descriptor from MRC\'s", $time, `__FILE__, `__LINE__, Id);
                 `endif
-
+*/
                 // Create a base operation and send the generator which will then spawn further operations for each lane.
                 // The generator will maintain operation type and number of operands for all lanes but will randomize operands.
                 sys_operation_mgr        =  new ()  ;  // seed operation object.  Generators will copy this and then re-create different operand values

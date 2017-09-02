@@ -135,9 +135,9 @@ module pe_cntl (
 
 // Outputs will default as wires allowing them to be driven by the testbench
 `ifdef SYNTHESIS
-  `undef TB_ENABLE_REGFILE_DRIVER
+  `undef TB_DRIVES_SIMD_REGFILE_INPUTS
 `endif
-`ifndef TB_ENABLE_REGFILE_DRIVER
+`ifndef TB_DRIVES_SIMD_REGFILE_INPUTS
   `include "pe_cntl_simd_instance_wires.vh"
 `endif
 
@@ -170,9 +170,9 @@ module pe_cntl (
   // Originally the control for the stOp was going to come from the simd registers, so we have maintain the register naming for the stOp although these should probably change.
   //
 `ifdef SYNTHESIS
-  `undef TB_ENABLE_REGFILE_DRIVER
+  `undef TB_DRIVES_SIMD_REGFILE_INPUTS
 `endif
-`ifndef TB_ENABLE_REGFILE_DRIVER
+`ifndef TB_DRIVES_SIMD_REGFILE_INPUTS
   genvar pe, lane;
   generate
       always @(posedge clk)
@@ -208,7 +208,7 @@ module pe_cntl (
   endgenerate
 `endif
 
-`ifndef TB_ENABLE_REGFILE_DRIVER
+`ifndef TB_DRIVES_SIMD_REGFILE_INPUTS
   always @(posedge clk)
     begin
       cntl__simd__lane_r130_e1          <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? sourceAddress0                                      : cntl__simd__lane_r130_e1          ;

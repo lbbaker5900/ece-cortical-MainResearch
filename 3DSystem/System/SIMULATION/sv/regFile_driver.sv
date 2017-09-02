@@ -106,7 +106,7 @@ class regFile_driver;
                         //
                         // Note: ** when disabling rf_driver, also remove reset task from env.run
                         
-                        `ifdef TB_ENABLE_REGFILE_DRIVER
+                        `ifdef TB_DRIVES_SIMD_REGFILE_INPUTS
                         $display("@%0t:%s:%0d: INFO:{%0d}: Driving WU via RegFile driver with contents of OOB packet from generator : {%0d,%0d}", $time, `__FILE__, `__LINE__, this.Id[0], oob_packet_new.Id[0], oob_packet_new.Id[1]);
                         oob_packet_new.displayPacket();
                         vP_vrf.cb_out.r130          <= oob_packet_new.sourceAddress[0]                     ;
@@ -152,7 +152,7 @@ class regFile_driver;
                         $display ("@%0t:%s:%0d:INFO: Operation driven for {%02d,%02d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
  
                         
-                        `ifdef TB_ENABLE_REGFILE_DRIVER
+                        `ifdef TB_DRIVES_SIMD_REGFILE_INPUTS
                         //----------------------------------------------------------------------------------------------------
                         // Wait for  streamingOps_cntl to be complete the deassert enable ( rs0[0]=0 )
                         wait(vP_srf.cb_out.complete);

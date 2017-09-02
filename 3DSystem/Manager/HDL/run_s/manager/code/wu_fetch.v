@@ -165,7 +165,7 @@ module wu_fetch (
   assign stall                     = xxx__wuf__stall_d1 | wum__wuf__stall_d1 ;
   assign wuf__wum__addr_e1         = pc                   ;
   assign wuf__wum__read_e1         = increment_pc         ;
-  `ifdef TESTING
+  `ifdef TB_LIMIT_MAX_PC
   assign increment_pc              = (wuf_cntl_state == `WUF_CNTL_INC_PC)  && (pc < `WUF_DEBUG_MAX_PC) ;
   `else
   assign increment_pc              = (wuf_cntl_state == `WUF_CNTL_INC_PC) ;

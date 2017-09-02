@@ -850,8 +850,8 @@ module sdp_stream_cntl (
   reg  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE ]      lane_word_inc    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; // value to increment the pointer by
   reg  [`MGR_NUM_OF_EXEC_LANES_RANGE ]            lane_enable                                      ;  // vector of lane enables based on number of active lanes
   reg  [`COMMON_STD_INTF_CNTL_RANGE        ]      lane_cntl                                        ;
-  //genvar lane ;
-  //generate
+
+
   always @(posedge clk)
     begin
       lane_cntl  <=  ((sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_FIRST_CONS_COUNT)                                                )  ? `COMMON_STD_INTF_CNTL_SOM :
@@ -872,9 +872,10 @@ module sdp_stream_cntl (
                                      ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) || (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE)) ?  strm_inc_channel              :
                                                                                                                                                             lane_channel_ptr[lane]        ;
 
-          lane_word_ptr   [lane]  <= (reset_poweron                                                                                                                                                              ) ?  'd0                           :
-                                     (((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) || (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE)) && (strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR)) ?  strm_inc_word + lane          :
-                                                                                                                                                                                                                      lane_word_ptr[lane]           ;
+          lane_word_ptr   [lane]  <= (reset_poweron                                                                                                                                                              ) ?  'd0                   :
+                                     (((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) || (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE)) && (strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR)) ?  strm_inc_word + lane  :
+                                     (((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) || (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE))                                                        ) ?  strm_inc_word         :
+                                                                                                                                                                                                                      lane_word_ptr[lane]   ;
 
           lane_word_inc   [lane]  <= (reset_poweron                                                                                                    ) ?  'd0                           :
                                      ((sdp_cntl_stream_state == `SDP_CNTL_STRM_COUNT_CONS) || (sdp_cntl_stream_state == `SDP_CNTL_STRM_LOAD_JUMP_VALUE)) ?  xxx__sdp__num_lanes           :

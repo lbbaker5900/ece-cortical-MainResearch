@@ -4,7 +4,7 @@
 //----------------------------------------------------------------------------------------------------
 // Define what drives SIMD registers into streamingOps_cntl
 //
-`define TB_ENABLE_REGFILE_DRIVER
-`undef  TB_ENABLE_REGFILE_DRIVER
+//`define TB_ENABLE_REGFILE_DRIVER
+//`undef  TB_ENABLE_REGFILE_DRIVER
 
 `endif

@@ -260,13 +260,14 @@ module top;
     
     // Downstream Stack bus OOB Interface
     //  - connect OOB signals inside manager from std_oob_ifc
-    `ifndef TB_SYSTEM_DRIVES_OOB_PACKET
+    `ifdef TB_DRIVES_OOB_PACKET
       `include "TB_system_stack_bus_downstream_oob_assignments.vh"
     `endif
     
     // Downstream Stack bus Interface
     //  - connect Lane signals inside manager from std_lane_ifc
     //  The mrc_cntl drives the bus conditioned on the TESTING define
+    //  StackBuslane assignments
     `include "TB_system_stack_bus_downstream_assignments.vh"
     
     // Upstream Stack bus Interface
@@ -484,7 +485,7 @@ module top;
     // Forces
     //
     // connect regFile interfaces to SIMD regFile to streaming Ops controller interface
-    `ifdef TB_ENABLE_REGFILE_DRIVER
+    `ifdef TB_DRIVES_SIMD_REGFILE_INPUTS
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin

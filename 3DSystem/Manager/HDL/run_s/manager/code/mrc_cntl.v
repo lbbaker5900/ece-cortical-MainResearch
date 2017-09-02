@@ -681,7 +681,7 @@ module mrc_cntl (
   endgenerate
 
   // Currently the testbench drives downstream data 
-  `ifndef TESTING
+  `ifndef TB_DRIVES_STACK_DOWN_DATA
     generate
       for (lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
         begin: drive_std

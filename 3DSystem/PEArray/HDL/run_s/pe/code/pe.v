@@ -15,12 +15,6 @@
 `timescale 1ns/10ps
 
 //--------------------------------------------------
-// test related defines
-`ifdef TESTING
-`include "TB_common.vh"
-`endif
-
-//--------------------------------------------------
 // RTL related defines
 `include "common.vh"
 `include "pe_array.vh"

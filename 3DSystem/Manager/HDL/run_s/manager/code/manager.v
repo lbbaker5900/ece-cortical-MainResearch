@@ -14,11 +14,6 @@
     
 `timescale 1ns/10ps
 
-//--------------------------------------------------
-// test related defines
-`ifdef TESTING
-//`include "TB_common.vh"
-`endif
 
 //--------------------------------------------------
 // RTL related defines
@@ -331,7 +326,7 @@ module manager (
             //-------------------------------
             // Stack Bus - OOB Downstream
             // FIXME: currently driven by testbench
-            `ifdef TB_SYSTEM_DRIVES_OOB_PACKET
+            `ifndef TB_DRIVES_OOB_PACKET
               .mgr__std__oob_cntl       ( mgr__std__oob_cntl   ), 
               .mgr__std__oob_valid      ( mgr__std__oob_valid  ), 
               .std__mgr__oob_ready      ( std__mgr__oob_ready  ), 

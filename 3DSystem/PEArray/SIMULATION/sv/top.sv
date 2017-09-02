@@ -120,7 +120,7 @@ module top;
     // Forces
     //
     // connect regFile interfaces to SIMD regFile to streaming Ops controller interface
-    `ifdef TB_ENABLE_REGFILE_DRIVER
+    `ifdef TB_DRIVES_SIMD_REGFILE_INPUTS
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
