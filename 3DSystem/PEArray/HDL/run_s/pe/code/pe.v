@@ -145,8 +145,8 @@ module pe (
   //-------------------------------------------------------------------------------------------------
   // Streaming Operations Control
 
-  wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  scntl__stOp__operation ;
-  wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  scntl__dma__operation  ;
+  //wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  scntl__stOp__operation ;
+  //wire [`STREAMING_OP_CNTL_OPERATION_RANGE]  scntl__dma__operation  ;
 
   //-------------------------------------------------------------------------------------------------
   // Result from stOp to simd (via scntl)
@@ -157,7 +157,7 @@ module pe (
 
   //-------------------------------------------------------------------------------------------------
   `include "pe_dma_memc_connection_wires.vh"
-  `include "pe_std_to_stOp_connection_wires.vh"
+  //`include "pe_std_to_stOp_connection_wires.vh"
 
   //`include "pe_noc_to_peArray_connection_wires.vh"
 
@@ -201,6 +201,7 @@ module pe (
 
   wire                                    cntl__simd__tag_valid      ;
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag            ;
+  wire  [`PE_NUM_LANES_RANGE           ]  cntl__simd__tag_num_lanes  ; 
   wire                                    simd__cntl__tag_ready      ;
 
   //---------------------------------------
@@ -208,6 +209,7 @@ module pe (
   // 
   `include "pe_simd_instance_wires.vh"
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag            ;
+  wire  [`PE_NUM_LANES_RANGE           ]  simd__sui__tag_num_lanes  ;  
 
   wire [`PE_PE_ID_RANGE     ]     peId = sys__pe__peId   ;
 
@@ -296,6 +298,7 @@ module pe (
             .stOp_complete                        ( pe__sys__complete                 ),
             .cntl__simd__tag_valid                ( cntl__simd__tag_valid             ),
             .cntl__simd__tag                      ( cntl__simd__tag                   ),
+            .cntl__simd__tag_num_lanes            ( cntl__simd__tag_num_lanes         ),
             .simd__cntl__tag_ready                ( simd__cntl__tag_ready             ),
 
             //-------------------------------
@@ -338,6 +341,7 @@ module pe (
                   //--------------------------------------------------
                   // Additional control from simd
                   .simd__sui__tag           ( simd__sui__tag           ),
+                  .simd__sui__tag_num_lanes ( simd__sui__tag_num_lanes ),
 
                   //--------------------------------------------------
                   // General
@@ -371,21 +375,23 @@ module pe (
 
             //-------------------------------
             // Additional PE control
-            .cntl__simd__tag_valid    ( cntl__simd__tag_valid    ),
-            .cntl__simd__tag          ( cntl__simd__tag          ),
-            .simd__cntl__tag_ready    ( simd__cntl__tag_ready    ),
+            .cntl__simd__tag_valid     ( cntl__simd__tag_valid     ),
+            .cntl__simd__tag           ( cntl__simd__tag           ),
+            .cntl__simd__tag_num_lanes ( cntl__simd__tag_num_lanes ),
+            .simd__cntl__tag_ready     ( simd__cntl__tag_ready     ),
 
             //-------------------------------
             // Result from stOp to regFile
-            .scntl__reg__valid         ( scntl__reg__valid       ),
-            .scntl__reg__cntl          ( scntl__reg__cntl        ),
-            .scntl__reg__data          ( scntl__reg__data        ),
-            .reg__scntl__ready         ( reg__scntl__ready       ),
+            .scntl__reg__valid         ( scntl__reg__valid         ),
+            .scntl__reg__cntl          ( scntl__reg__cntl          ),
+            .scntl__reg__data          ( scntl__reg__data          ),
+            .reg__scntl__ready         ( reg__scntl__ready         ),
             //`include "simd_wrapper_scntl_to_simd_regfile_instance_ports.vh"
 
             //--------------------------------------------------
             // Additional control to stack upstream 
-            .simd__sui__tag           ( simd__sui__tag           ),
+            .simd__sui__tag            ( simd__sui__tag            ),
+            .simd__sui__tag_num_lanes  ( simd__sui__tag_num_lanes  ),
 
             //-------------------------------------------------------------------------------------------------
             // SIMD Registers to Stack Up 

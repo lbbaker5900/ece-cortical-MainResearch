@@ -47,6 +47,7 @@ module sdp_cntl (
             output  reg                                            sdp__xxx__storage_desc_processing_complete   ,
             input   wire  [`MGR_STORAGE_DESC_ADDRESS_RANGE  ]      xxx__sdp__storage_desc_ptr                   ,  // pointer to local storage descriptor although msb's contain manager ID, so remove
             input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes                          ,
+            input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes_m1                       ,
             input   wire  [`MGR_INST_OPTION_TRANSFER_RANGE  ]      xxx__sdp__txfer_type                         ,
             input   wire  [`MGR_INST_OPTION_TGT_RANGE       ]      xxx__sdp__target                             ,
 
@@ -68,11 +69,10 @@ module sdp_cntl (
             // from MMC fifo Control
             output  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__get_next_line                                    ,
             output  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdp__xxx__lane_valid                                       ,
-            output  reg   [`COMMON_STD_INTF_CNTL_RANGE         ]   sdp__xxx__lane_cntl                                        ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE         ]   sdp__xxx__lane_cntl        [`MGR_NUM_OF_EXEC_LANES_RANGE ] ,
             output  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdp__xxx__lane_enable                                      ,
             output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]   sdp__xxx__lane_channel_ptr [`MGR_NUM_OF_EXEC_LANES_RANGE ] ,
             output  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE  ]   sdp__xxx__lane_word_ptr    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ,
-            output  reg                                            sdp__xxx__current_channel                                  ,
             input   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   xxx__sdp__lane_ready                                       ,
            
 
@@ -112,6 +112,19 @@ module sdp_cntl (
   wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]   sdpr__sdps__response_id_page    ;
   wire  [`MGR_DRAM_LINE_ADDRESS_RANGE         ]   sdpr__sdps__response_id_line    ;
 
+  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE         ]   xxx__sdp__lane_enable           ;  // create a vector of enables
+
+  genvar lane;
+  generate
+    for (lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
+      begin
+        always @(posedge clk)
+          begin
+            xxx__sdp__lane_enable [lane] <= lane < xxx__sdp__num_lanes ;
+          end
+      end
+  endgenerate
+
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // Storage Descriptor Memory Request Generator
   // - Contains the storage descriptor and consequtive/jump memory
@@ -120,6 +133,17 @@ module sdp_cntl (
 
   sdp_request_cntl sdp_request_cntl (  
 
+            //------------------------------
+            // Configuration
+            //
+            .xxx__sdp__lane_enable                        ( xxx__sdp__lane_enable                      ),
+            .xxx__sdp__num_lanes                          ( xxx__sdp__num_lanes                        ),
+            .xxx__sdp__num_lanes_m1                       ( xxx__sdp__num_lanes_m1                     ),
+            .xxx__sdp__txfer_type                         ( xxx__sdp__txfer_type                       ),
+
+            //------------------------------
+            // Request Generation
+            //
             .xxx__sdp__storage_desc_processing_enable     ( xxx__sdp__storage_desc_processing_enable   ),
             .sdp__xxx__storage_desc_processing_complete   ( sdp__xxx__storage_desc_processing_complete ),
             .xxx__sdp__storage_desc_ptr                   ( xxx__sdp__storage_desc_ptr                 ),  // pointer to local storage descriptor although msb's contain manager ID, so remove
@@ -174,8 +198,11 @@ module sdp_cntl (
             .xxx__sdp__storage_desc_processing_enable     ( xxx__sdp__storage_desc_processing_enable   ),
             .xxx__sdp__storage_desc_ptr                   ( xxx__sdp__storage_desc_ptr                 ),  // pointer to local storage descriptor although msb's contain manager ID, so remove
             .xxx__sdp__num_lanes                          ( xxx__sdp__num_lanes                        ),
+            .xxx__sdp__num_lanes_m1                       ( xxx__sdp__num_lanes_m1                     ),
             .xxx__sdp__txfer_type                         ( xxx__sdp__txfer_type                       ),
             .xxx__sdp__target                             ( xxx__sdp__target                           ),
+
+            .xxx__sdp__lane_enable                        ( xxx__sdp__lane_enable                      ),
 
             //-------------------------------
             // from MMC fifo Control
@@ -198,7 +225,6 @@ module sdp_cntl (
             .sdp__xxx__lane_enable                        ( sdp__xxx__lane_enable                      ),
             .sdp__xxx__lane_channel_ptr                   ( sdp__xxx__lane_channel_ptr                 ),
             .sdp__xxx__lane_word_ptr                      ( sdp__xxx__lane_word_ptr                    ),
-            .sdp__xxx__current_channel                    ( sdp__xxx__current_channel                  ),
 
             .xxx__sdp__lane_ready                         ( xxx__sdp__lane_ready                       ),
            

@@ -30,6 +30,7 @@
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
 `include "dma_cont.vh"
+`include "python_typedef.vh"
 
 
 module pe_cntl (
@@ -51,6 +52,7 @@ module pe_cntl (
             //
             cntl__simd__tag_valid                         ,
             cntl__simd__tag                               ,
+            cntl__simd__tag_num_lanes                     ,
             simd__cntl__tag_ready                         ,
 
             `include "pe_cntl_simd_ports.vh"
@@ -83,6 +85,7 @@ module pe_cntl (
                                                 
   output                                           cntl__simd__tag_valid          ;  // tag to simd needs to be a fifo interface as the next stOp may start while the 
   output [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]        cntl__simd__tag                ;  // simd is processing the previosu stOp result
+  output [`PE_NUM_LANES_RANGE             ]        cntl__simd__tag_num_lanes      ;  // number of active lanes associated with this tag
   input                                            simd__cntl__tag_ready          ;
 
   input                                            stOp_complete                  ;  // dont allow another OOB command until we are complete
@@ -130,6 +133,7 @@ module pe_cntl (
 
   wire                                            cntl__simd__tag_valid      ;  // tag to simd needs to be a fifo interface as the next stOp may start while the 
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]        cntl__simd__tag            ;  // simd is processing the previosu stOp result
+  wire  [`PE_NUM_LANES_RANGE             ]        cntl__simd__tag_num_lanes  ;  // number of active lanes associated with this tag
   wire                                            simd__cntl__tag_ready      ;
   reg                                             simd__cntl__tag_ready_d1   ;
 
@@ -224,7 +228,7 @@ module pe_cntl (
                                                                                                                                                                                                          
       cntl__simd__rs0_e1[0]             <= (reset_poweron ) ? 1'b0                    : ( start_stOp_operation ) ? 1'b1             : ( stop_stOp_operation ) ? 1'b0   : cntl__simd__rs0_e1[0]             ;
       cntl__simd__rs0_e1[31:1]          <= (reset_poweron ) ? 31'd0                   : ( start_stOp_operation ) ? stOp_operation                                      : cntl__simd__rs0_e1[31:1]          ;  // `STREAMING_OP_CNTL_OPERATION_STD_STD_FP_MAC_TO_MEM ;
-      cntl__simd__rs1_e1                <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? {32{1'b1}}                                          : cntl__simd__rs1_e1                ;  // FIXME: Need to use numLanes from OOB packet
+      cntl__simd__rs1_e1                <= (reset_poweron ) ? `PE_EXEC_LANE_WIDTH 'd0 : ( start_stOp_operation ) ? execLanesActive                                     : cntl__simd__rs1_e1                ;  // FIXME: Need to use numLanes from OOB packet
     end
 `endif
 
@@ -494,9 +498,13 @@ module pe_cntl (
                                    ((pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_COMPLETE                                                                 )) ? 1'b0           :  // clear when packet and operation complete
                                                                                                                                                                      contained_stOp ;
 
-      // FIXME
       contained_simd           <=  ( reset_poweron                                                                                                               ) ? 1'b0           :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_RANGE] == PY_WU_INST_OPT_TYPE_SIMDOP)) ? 1'b1           :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_RANGE] == PY_WU_INST_OPT_TYPE_SIMDOP)) ? 1'b1           :
+                                   ((pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_COMPLETE                                                                 )) ? 1'b0           :  // clear when packet and operation complete
                                                                                                                                                                      contained_simd ;
+
+
 
       // pointer to stOp operation control memory
       stOp_optionPtr           <=  ( reset_poweron                                                                                                               ) ?  'd0                                                            :
@@ -505,8 +513,11 @@ module pe_cntl (
                                                                                                                                                                      stOp_optionPtr                                                  ;
 
       // FIXME
-      simd_optionPtr           <=  ( reset_poweron                                                                                                               ) ?  'd0                                                       :
-                                                                                                                                                                     simd_optionPtr                                             ;
+      simd_optionPtr           <=  ( reset_poweron                                                                                                               ) ?  'd0                                                            :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_RANGE] == PY_WU_INST_OPT_TYPE_SIMDOP)) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
+                                   ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_RANGE] == PY_WU_INST_OPT_TYPE_SIMDOP)) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION1_DATA_RANGE] :
+                                                                                                                                                                     simd_optionPtr                                                  ;
+
 
       tag                      <=  ( reset_poweron                                                                                                               ) ?  'd0                                                            :
                                    ( from_Sti_OOB_Fifo[0].pipe_valid  && (from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_RANGE] ==  STD_PACKET_OOB_OPT_TAG )) ? from_Sti_OOB_Fifo[0].pipe_data[`PE_CNTL_OOB_OPTION0_DATA_RANGE] :
@@ -537,7 +548,8 @@ module pe_cntl (
 
   assign oob_packet_starting     = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT) & (pe_cntl_oob_rx_cntl_state_next != `PE_CNTL_OOB_RX_CNTL_WAIT) ;  // transitioning out of WAIT
 
-  assign cntl__simd__tag         = tag     ;
+  assign cntl__simd__tag            =  tag                 ;
+  assign cntl__simd__tag_num_lanes  =  numberOfActiveLanes ;  // number of active lanes associated with this tag
 
   // send the tag as soon as we start the operations 
   //   - only send tags whose operations are FPMAC

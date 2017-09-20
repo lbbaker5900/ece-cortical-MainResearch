@@ -38,6 +38,7 @@ module simd_upstream_intf (
                   //--------------------------------------------------
                   // Register(s) from simd
                   simd__sui__tag           ,
+                  simd__sui__tag_num_lanes ,
                   simd__sui__regs_valid    ,
                   simd__sui__regs_cntl     ,
                   simd__sui__regs          ,
@@ -74,6 +75,7 @@ module simd_upstream_intf (
   // Register File interface
   //
   input  [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag                                 ;
+  input  [`PE_NUM_LANES_RANGE           ]           simd__sui__tag_num_lanes                       ;  // number of active lanes associated with this tag
   input  [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                          ;
   input  [`COMMON_STD_INTF_CNTL_RANGE   ]           simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ;
   input  [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ;
@@ -92,6 +94,7 @@ module simd_upstream_intf (
   wire   [`STACK_UP_INTF_OOB_DATA_RANGE ]           sui__sti__oob_data         ;
 
   wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag                                 ;
+  wire   [`PE_NUM_LANES_RANGE           ]           simd__sui__tag_num_lanes                       ; 
   wire   [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                          ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE   ]           simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ;
   wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ;
@@ -104,6 +107,7 @@ module simd_upstream_intf (
   //  - all inputs must be registered
   //
   reg    [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag_d1                                 ;
+  reg    [`PE_NUM_LANES_RANGE           ]           simd__sui__tag_num_lanes_d1                       ; 
   reg    [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid_d1                          ;
   reg    [`COMMON_STD_INTF_CNTL_RANGE   ]           simd__sui__regs_cntl_d1  [`PE_NUM_OF_EXEC_LANES ] ;
   reg    [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs_d1       [`PE_NUM_OF_EXEC_LANES ] ;
@@ -122,7 +126,8 @@ module simd_upstream_intf (
 
   always @(posedge clk)
     begin
-      simd__sui__tag_d1   <=  ( reset_poweron ) ? 'd0 : ( simd__sui__regs_valid ) ? simd__sui__tag  : simd__sui__tag_d1     ;
+      simd__sui__tag_d1             <=  ( reset_poweron ) ? 'd0 : ( simd__sui__regs_valid ) ? simd__sui__tag            : simd__sui__tag_d1            ;
+      simd__sui__tag_num_lanes_d1   <=  ( reset_poweron ) ? 'd0 : ( simd__sui__regs_valid ) ? simd__sui__tag_num_lanes  : simd__sui__tag_num_lanes_d1  ;
     end
 
   reg                                              sti__sui__ready_d1            ;
@@ -132,6 +137,17 @@ module simd_upstream_intf (
     end
 
 
+  reg   [`PE_NUM_OF_EXEC_LANES_RANGE  ]   reg_enable           ;  // create a vector of enables
+  genvar lane;
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES ; lane++)
+      begin
+        always @(posedge clk)
+          begin
+            reg_enable [lane] <= lane < simd__sui__tag_num_lanes_d1  ;
+          end
+      end
+  endgenerate
 
   //------------------------------------------
   // Assume the STU can flow control, so we will start to send the data by placing n-bit wide transactions in a FIFO then sending the output to the
@@ -216,7 +232,7 @@ module simd_upstream_intf (
     end
   
   // FIXME: Does this need to be based on number of active lanes?
-  wire allRegsReady = &simd__sui__regs_valid_d1 ; // all regs must be loaded to start transfer
+  wire allRegsReady = |simd__sui__regs_valid_d1 ; // assume all regs must be ready at the same time
 
   always @(*)
     begin

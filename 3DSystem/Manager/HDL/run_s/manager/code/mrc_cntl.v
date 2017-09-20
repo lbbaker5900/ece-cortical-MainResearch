@@ -334,6 +334,7 @@ module mrc_cntl (
   //
 
   reg  [`MGR_NUM_LANES_RANGE            ]      num_lanes         ;  // 0-32 so need 6 bits
+  reg  [`MGR_NUM_LANES_RANGE            ]      num_lanes_m1      ;  // num_lanes-1 is useful
   // for memory reads, we assume one storage descriptor pointer
   reg  [`MGR_STORAGE_DESC_ADDRESS_RANGE ]      storage_desc_ptr  ;  // pointer to local storage descriptor although msb's contain manager ID, so remove
   // use option tuple range
@@ -372,6 +373,13 @@ module mrc_cntl (
                            ( option[2].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[2] :
                            ( descriptor_fsm_complete                                      ) ? 'd0                                   :
                                                                                               num_lanes                             ;
+
+      num_lanes_m1     <=  ( reset_poweron                                                ) ?  'd0                                      :
+                           ( option[0].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[0]-'d1 :
+                           ( option[1].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[1]-'d1 :
+                           ( option[2].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[2]-'d1 :
+                           ( descriptor_fsm_complete                                      ) ? 'd0                                       :
+                                                                                              num_lanes_m1                              ;
 
       // storage descriptor option type will always be in tuple 0 or tuple 1 because its an extended tuple
       storage_desc_ptr <=  ( reset_poweron                                                ) ?  'd0                                                                                                                :
@@ -479,7 +487,7 @@ module mrc_cntl (
   // - Generate memory requests from tuple options
 
   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdp__xxx__lane_valid                                                     ;
-  wire  [`COMMON_STD_INTF_CNTL_RANGE         ]   sdp__xxx__lane_cntl                                                      ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE         ]   sdp__xxx__lane_cntl                      [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdp__xxx__lane_enable                                                    ;
   wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]   sdp__xxx__lane_channel_ptr               [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
   wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE  ]   sdp__xxx__lane_word_ptr                  [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; 
@@ -501,6 +509,7 @@ module mrc_cntl (
            .sdp__xxx__storage_desc_processing_complete   ( storage_desc_processing_complete  ),
            .xxx__sdp__storage_desc_ptr                   ( storage_desc_ptr                  ),  // pointer to local storage descriptor although msb's contain manager ID, so remove
            .xxx__sdp__num_lanes                          ( num_lanes                         ),
+           .xxx__sdp__num_lanes_m1                       ( num_lanes_m1                      ),
            .xxx__sdp__txfer_type                         ( txfer_type                        ),
            .xxx__sdp__target                             ( target                            ),
 
@@ -527,7 +536,6 @@ module mrc_cntl (
             .sdp__xxx__lane_cntl                         ( sdp__xxx__lane_cntl               ),
             .sdp__xxx__lane_channel_ptr                  ( sdp__xxx__lane_channel_ptr        ),
             .sdp__xxx__lane_word_ptr                     ( sdp__xxx__lane_word_ptr           ),
-            .sdp__xxx__current_channel                   ( sdp__xxx__current_channel         ),
             .xxx__sdp__lane_ready                        ( std__mrc__lane_ready_d1           ),
                                                                                                                     
             //-------------------------------
@@ -655,13 +663,9 @@ module mrc_cntl (
   reg  [`MGR_NUM_OF_EXEC_LANES_RANGE       ]      lane_valid                                       ;
   reg  [`MGR_NUM_OF_EXEC_LANES_RANGE       ]      lane_enable                                      ;
   reg  [`STACK_DOWN_INTF_STRM_DATA_RANGE   ]      lane_word        [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; // value driven to downstream stack bus
-  reg  [`COMMON_STD_INTF_CNTL_RANGE        ]      lane_cntl                                        ;
+  reg  [`COMMON_STD_INTF_CNTL_RANGE        ]      lane_cntl        [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
   // Mux per lane
 
-  always @(*)
-    begin
-      lane_cntl = sdp__xxx__lane_cntl ;
-    end
   genvar lane ;
   generate
     for (lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
@@ -669,6 +673,7 @@ module mrc_cntl (
         always @(*)
          begin
            lane_valid[lane]  =  sdp__xxx__lane_valid[lane] & sdp__xxx__lane_enable[lane] ;
+           lane_cntl [lane]  =  sdp__xxx__lane_cntl [lane]                               ;
 
            // Use selecteWord task to direct from_mmc_fifo data to the downstream lane
            selectLineWord (sdp__xxx__lane_channel_ptr [lane] ,   // chan_select
@@ -688,8 +693,8 @@ module mrc_cntl (
           always @(*)
            begin
              mrc__std__lane_valid_e1 [lane]  = lane_valid [lane] ; 
-             mrc__std__lane_cntl_e1  [lane]  = lane_cntl         ;
-             mrc__std__lane_data_e1  [lane]  = lane_word [lane]  ;
+             mrc__std__lane_cntl_e1  [lane]  = lane_cntl  [lane] ;
+             mrc__std__lane_data_e1  [lane]  = lane_word  [lane] ;
            end
         end
     endgenerate

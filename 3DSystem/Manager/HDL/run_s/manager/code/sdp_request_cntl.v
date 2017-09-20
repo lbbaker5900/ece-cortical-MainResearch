@@ -64,6 +64,11 @@
 
 module sdp_request_cntl (  
 
+            input   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE     ]      xxx__sdp__lane_enable                        , 
+            input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes                          ,
+            input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes_m1                       ,
+            input   wire  [`MGR_INST_OPTION_TRANSFER_RANGE  ]      xxx__sdp__txfer_type                         ,
+
             input   wire                                           xxx__sdp__storage_desc_processing_enable     ,
             output  reg                                            sdp__xxx__storage_desc_processing_complete   ,
             input   wire  [`MGR_STORAGE_DESC_ADDRESS_RANGE  ]      xxx__sdp__storage_desc_ptr                   ,  // pointer to local storage descriptor although msb's contain manager ID, so remove
@@ -222,6 +227,9 @@ module sdp_request_cntl (
   wire                                                     consJumpMemory_som_eom     ;
   wire                                                     consJumpMemory_eom         ;
 
+  wire  [`MGR_INST_OPTION_TRANSFER_RANGE ]   strm_transfer_type           ;
+  assign strm_transfer_type  =  xxx__sdp__txfer_type                           ;
+
   //----------------------------------------------------------------------------------------------------
   // Flags for special situations
   reg                                                      first_time_thru                     ;  // need to make sure for the first cycle we request the starting bank/page
@@ -354,11 +362,17 @@ module sdp_request_cntl (
           sdp_cntl_proc_storage_desc_state_next =  ( first_time_thru                                              ) ? `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO       :  // we will get here first time thru after the initial request
                                                    ( generate_requests || force_cons_request || force_jump_request) ? `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST      :
                                                    ( requests_complete  && ~consJumpMemory_eom                    ) ? `SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD            :
-                                                   ( requests_complete  &&  consJumpMemory_eom                    ) ? `SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE  :
+                                                   ( requests_complete  &&  consJumpMemory_eom                    ) ? `SDP_CNTL_PROC_STORAGE_DESC_REQUESTS_COMPLETE     :
                                                                                                                       `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC               ;
 
         `SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD: 
           sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO    ;
+
+        //------------------------------------------------------------------------------------------------------------------------------------------------------
+        // Completed requests
+        
+        `SDP_CNTL_PROC_STORAGE_DESC_REQUESTS_COMPLETE: 
+          sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE    ;  // create a request EOM during this transition
 
         // Cycle thru all cons/jump fields
         `SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE: 
@@ -423,9 +437,17 @@ module sdp_request_cntl (
           
   // Form an address using the base address fields ordered based on access order
   reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]    mem_start_address                ;  // Start address for a consequtive phase
+  reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]    mem_ms_lane_start_address        ;  // Start address for the last active lane
   reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]    cj_address                       ;  // address we increment for each jump
+  reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]    cj_ms_lane_address               ;  // address we increment for each jump
   //reg  [`MGR_DRAM_LOCAL_ADDRESS_RANGE     ]    mem_last_end_address             ;  // address we increment for each jump
                                                                                   
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //Note:  When you are looking at a PBC address, its actually Bank/2 - so 4 bits for bank
+  //
+  //       PBC => {pppppppppppp, bbbb, c}
+  //
+  //
   `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE                                          
     reg  [`MGR_DRAM_PBCL_RANGE              ]    pbc_end_addr                     ;  // 
                                                                                   
@@ -511,6 +533,13 @@ module sdp_request_cntl (
   reg  [`MGR_DRAM_WORD_ADDRESS_RANGE        ]    cj_word                ;
   `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE                                
     reg  [`MGR_DRAM_LINE_ADDRESS_RANGE      ]    cj_cline               ;
+  `endif
+  reg  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]    cj_ms_lane_channel             ;  // formed address in access order for incrementing
+  reg  [`MGR_DRAM_BANK_DIV2_ADDRESS_RANGE   ]    cj_ms_lane_bank                ;
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]    cj_ms_lane_page                ;
+  reg  [`MGR_DRAM_WORD_ADDRESS_RANGE        ]    cj_ms_lane_word                ;
+  `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE                                
+    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE      ]    cj_ms_lane_cline               ;
   `endif
 /*
   reg  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]    mem_last_end_channel ;  // formed address in access order for incrementing
@@ -625,6 +654,8 @@ module sdp_request_cntl (
                                                       0                1         Normal situation
                                                       1                0         Force request to chan 0 followed by 1
                                                       1                1         Force request to chan 1 followed by 0
+
+  Note:  When you are looking at a PBC address, its actually Bank/2 - {pppppppppppp, bbbb, c}
       */
 
   always @(posedge clk)
@@ -844,8 +875,11 @@ module sdp_request_cntl (
       endcase
 
       // We need to feed the mmc line address back to the steram controller
-      create_response_id      =  ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST           ) & xxx__sdp__mem_request_ready_d1 ) |
-                                 ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID )                                  ) ;
+      create_response_id      =  ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_READ                       )                                  ) |
+                                 ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST           ) & xxx__sdp__mem_request_ready_d1 ) |
+                                 ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID )                                  ) |
+                                 ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_REQUESTS_COMPLETE          )                                  ) ;
+
     end
 
 `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE  // MGR_DRAM_REQUEST_LINE_LT_CACHELINE
@@ -972,15 +1006,24 @@ module sdp_request_cntl (
             case (storage_desc_accessOrder )  // synopsys parallel_case
               PY_WU_INST_ORDER_TYPE_WCBP:
                 begin
-                  cj_address      <=  {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_channel, storage_desc_word, 2'b00} ;  // byte address
+                  cj_address              <=  {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_channel, storage_desc_word, 2'b00} ;
+                  cj_ms_lane_address      <=  (strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) ? {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_channel, storage_desc_word, 2'b00} :
+                                              (strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR ) ? {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_channel, storage_desc_word, 2'b00} + {xxx__sdp__num_lanes_m1, 2'b00} : 
+                                                                                                      {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_channel, storage_desc_word, 2'b00} ;
                 end
               PY_WU_INST_ORDER_TYPE_CWBP:
                 begin
-                  cj_address      <=  {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_word, storage_desc_channel, 2'b00} ;  // byte address
+                  cj_address              <=  {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_word,  storage_desc_channel, 2'b00} ;  // byte address
+                  cj_ms_lane_address      <=  (strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) ? {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_word, storage_desc_channel, 2'b00} :
+                                              (strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR ) ? {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_word, storage_desc_channel, 2'b00} + {xxx__sdp__num_lanes_m1, 2'b00} : 
+                                                                                                      {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_word, storage_desc_channel, 2'b00} ;
+                  //cj_ms_lane_address      <=  {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_word,  storage_desc_channel, 2'b00} + {xxx__sdp__num_lanes_m1, 2'b00} ; 
+                  //cj_ms_lane_address      <=  {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_word, storage_desc_channel, 2'b00} + {consJumpMemory_value, 2'b00} ;  // byte address
                 end
               default:
                 begin
-                  cj_address   <=  cj_address ;
+                  cj_address           <=  cj_address ;
+                  cj_ms_lane_address   <=  cj_ms_lane_address ;
                 end
             endcase
           end
@@ -988,16 +1031,20 @@ module sdp_request_cntl (
           begin
             // FIXME: Need to accomodate a consequtive value traversing multiple bank/pages
             // Jump value is from previous end location so add consequtive and jump to start address to get next start address
-            cj_address      <=  cj_address + {consJumpMemory_value, 2'b00} ;  // account for byte address 
+            cj_address              <=  cj_address         + {consJumpMemory_value, 2'b00} ;  // account for byte address 
+            cj_ms_lane_address      <=  cj_ms_lane_address + {consJumpMemory_value, 2'b00} ;  // account for byte address 
           end
         `SDP_CNTL_PROC_STORAGE_DESC_JUMP_FIELD :
           begin
-            cj_address   <=  (~consJumpMemory_eom) ? cj_address + {consJumpMemory_value, 2'b00} :  // account for byte address
-                                                     cj_address                                 ;
+            cj_address           <=  (~consJumpMemory_eom) ? cj_address         + {consJumpMemory_value, 2'b00} :  // account for byte address
+                                                             cj_address                                 ;
+            cj_ms_lane_address   <=  (~consJumpMemory_eom) ? cj_ms_lane_address + {consJumpMemory_value, 2'b00} :  // account for byte address
+                                                             cj_ms_lane_address                                 ;
           end
         default:
           begin
             cj_address   <=  cj_address ;
+            cj_ms_lane_address   <=  cj_ms_lane_address ;
           end
       endcase
     end
@@ -1008,24 +1055,31 @@ module sdp_request_cntl (
 
         `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID:
           begin
-            //mem_start_address <=  {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_channel, storage_desc_word, 2'b00} ;  // byte address
-            mem_start_address <=  {storage_desc_channel, storage_desc_bank, storage_desc_page, storage_desc_word, 2'b00} ;
+            //mem_start_address         <=  {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_channel, storage_desc_word, 2'b00} ;  // byte address
+            mem_start_address           <=  {storage_desc_channel, storage_desc_bank, storage_desc_page, storage_desc_word, 2'b00} ;
+            mem_ms_lane_start_address   <=  {storage_desc_channel, storage_desc_bank, storage_desc_page, storage_desc_word, 2'b00} + {xxx__sdp__num_lanes_m1, 2'b00} ;
           end
 
         `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO :
           begin
             // when we enter the CHECK_STRM state the cj address points to beginning of next consequtive phase
-            mem_start_address <=  {cj_channel, cj_bank, storage_desc_bank_lsb, cj_page, cj_word, 2'b00} ;
+            mem_start_address         <=  {        cj_channel,         cj_bank, storage_desc_bank_lsb,         cj_page,         cj_word, 2'b00} ;
+            mem_ms_lane_start_address <=  {cj_ms_lane_channel, cj_ms_lane_bank, storage_desc_bank_lsb, cj_ms_lane_page, cj_ms_lane_word, 2'b00} ;
             //mem_start_address <=  {cj_channel, cj_bank, cj_page, cj_word, 2'b00} ;
           end
 
         default:
           begin
-            mem_start_address <=  mem_start_address ;
+            mem_start_address         <=  mem_start_address         ;
+            mem_ms_lane_start_address <=  mem_ms_lane_start_address ;
           end
       endcase
     end
 
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // **** Remember :page, bank/2, channel****
+  //       PBC => {pppppppppppp, bbbb, c}
+  //
   always @(posedge clk)
     begin
       case (sdp_cntl_proc_storage_desc_state)  // synopsys parallel_case
@@ -1219,14 +1273,14 @@ module sdp_request_cntl (
             `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE  // MGR_DRAM_REQUEST_LINE_LT_CACHELINE
               if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
                 begin
-                  pbc_end_addr <=  {cj_page, cj_bank, cj_channel, cj_cline};
+                  pbc_end_addr <=  {cj_ms_lane_page, cj_ms_lane_bank, cj_ms_lane_channel, cj_ms_lane_cline};
                 end
               else if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
                 begin
-                  pbc_end_addr <=  {cj_page, cj_bank, cj_cline, cj_channel};
+                  pbc_end_addr <=  {cj_ms_lane_page, cj_ms_lane_bank, cj_ms_lane_cline, cj_ms_lane_channel};
                 end
             `else
-              pbc_end_addr <=  {cj_page, cj_bank, cj_channel};
+              pbc_end_addr <=  {cj_ms_lane_page, cj_ms_lane_bank, cj_ms_lane_channel};
             `endif
 
             //---------------------------------------------------------------------------
@@ -1259,17 +1313,17 @@ module sdp_request_cntl (
             if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
               begin
                 `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE  // MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-                  pbc_last_end_addr    <=  {cj_page, cj_bank, cj_channel, cj_cline};
+                  pbc_last_end_addr    <=  {cj_ms_lane_page, cj_ms_lane_bank, cj_ms_lane_channel, cj_ms_lane_cline};
                 `else
-                  pbc_last_end_addr    <=  {cj_page, cj_bank, cj_channel};
+                  pbc_last_end_addr    <=  {cj_ms_lane_page, cj_ms_lane_bank, cj_ms_lane_channel};
                 `endif
               end
             else if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
               begin
                 `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE  // MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-                  pbc_last_end_addr    <=  {cj_page, cj_bank, cj_cline, cj_channel};
+                  pbc_last_end_addr    <=  {cj_ms_lane_page, cj_ms_lane_bank, cj_ms_lane_cline, cj_ms_lane_channel};
                 `else
-                  pbc_last_end_addr    <=  {cj_page, cj_bank, cj_channel};
+                  pbc_last_end_addr    <=  {cj_ms_lane_page, cj_ms_lane_bank, cj_ms_lane_channel};
                 `endif
               end
 
@@ -1409,6 +1463,44 @@ module sdp_request_cntl (
       endcase
     end
 
+  always @(*)
+    begin
+      case (storage_desc_accessOrder )  // synopsys parallel_case
+        PY_WU_INST_ORDER_TYPE_WCBP:
+          begin
+            cj_ms_lane_channel =  cj_ms_lane_address[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
+            cj_ms_lane_bank    =  cj_ms_lane_address[`MGR_DRAM_WCBP_ORDER_BANK_WO_BANK_LSB_FIELD_RANGE ]  ;
+            cj_ms_lane_page    =  cj_ms_lane_address[`MGR_DRAM_WCBP_ORDER_PAGE_WO_BANK_LSB_FIELD_RANGE ]  ;
+            cj_ms_lane_word    =  cj_ms_lane_address[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
+            `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE  // MGR_DRAM_REQUEST_LINE_LT_CACHELINE
+              cj_ms_lane_cline  =  cj_ms_lane_address[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
+            `endif
+          end
+       
+        PY_WU_INST_ORDER_TYPE_CWBP:
+          begin
+            cj_ms_lane_channel =  cj_ms_lane_address[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+            cj_ms_lane_bank    =  cj_ms_lane_address[`MGR_DRAM_CWBP_ORDER_BANK_WO_BANK_LSB_FIELD_RANGE ]  ;
+            cj_ms_lane_page    =  cj_ms_lane_address[`MGR_DRAM_CWBP_ORDER_PAGE_WO_BANK_LSB_FIELD_RANGE ]  ;
+            cj_ms_lane_word    =  cj_ms_lane_address[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+            `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE  // MGR_DRAM_REQUEST_LINE_LT_CACHELINE
+              cj_ms_lane_cline  =  cj_ms_lane_address[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+            `endif
+          end
+       
+        default:
+          begin
+            cj_ms_lane_channel =  cj_ms_lane_address[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+            cj_ms_lane_bank    =  cj_ms_lane_address[`MGR_DRAM_CWBP_ORDER_BANK_WO_BANK_LSB_FIELD_RANGE ]  ;
+            cj_ms_lane_page    =  cj_ms_lane_address[`MGR_DRAM_CWBP_ORDER_PAGE_WO_BANK_LSB_FIELD_RANGE ]  ;
+            cj_ms_lane_word    =  cj_ms_lane_address[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+            `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE  // MGR_DRAM_REQUEST_LINE_LT_CACHELINE
+              cj_ms_lane_cline  =  cj_ms_lane_address[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+            `endif
+          end
+      endcase
+    end
+
   // extract chan/bank/page/word fields from previous request address
   always @(*)
     begin
@@ -1532,8 +1624,25 @@ module sdp_request_cntl (
     end
   always @(*)
     begin
-      sdpr__sdps__response_id_valid_e1   =  create_response_id                            ;
-      sdpr__sdps__response_id_cntl_e1    = `COMMON_STD_INTF_CNTL_SOM_EOM                  ;  // memory request is single cycle
+      sdpr__sdps__response_id_valid_e1   =  create_response_id ;
+
+      //  We always send a SOM and EOM but these are used purely for delineation and dont have a MMC data association
+      //  We do this so we can flush any extra requests
+      case (sdp_cntl_proc_storage_desc_state )
+        `SDP_CNTL_PROC_STORAGE_DESC_READ :
+          begin
+            sdpr__sdps__response_id_cntl_e1    = `COMMON_STD_INTF_CNTL_SOM    ;  // dummy start
+          end
+        `SDP_CNTL_PROC_STORAGE_DESC_REQUESTS_COMPLETE:
+          begin
+            sdpr__sdps__response_id_cntl_e1    = `COMMON_STD_INTF_CNTL_EOM    ;  // memory request 
+          end
+        default:
+          begin
+            sdpr__sdps__response_id_cntl_e1    = `COMMON_STD_INTF_CNTL_MOM    ;  // dummy end
+          end
+      endcase
+
       case (storage_desc_accessOrder)  // synopsys parallel_case full_case
         PY_WU_INST_ORDER_TYPE_WCBP :
           begin

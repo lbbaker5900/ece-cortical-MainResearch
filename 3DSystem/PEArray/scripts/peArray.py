@@ -2768,7 +2768,7 @@ if __name__ == "__main__":
 
   # In this case, '1' means one active lane
   pLine = pLine + '\n'
-  numOfExecLaneIdBits = int(math.log(numOfExecLanes,2))
+  numOfExecLaneIdBits = int(math.log(numOfExecLanes,2))+1
   pLine = pLine + '\n  // Set bit in rs1 for each enabled lane'
   pLine = pLine + '\n  // In this case, \'1\' means one active lane. We accommodate no active lanes but not sure that will ever be used'
   for activeLanes in range (numOfExecLanes, 0, -1 ):

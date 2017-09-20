@@ -582,6 +582,59 @@ package operation;
         endfunction                                               // but we got the prior operation when we copied the manager operation
 
     
+        function void copyOperands(base_operation fromOp, int operandId);
+          
+            for (int i=0; i<numberOfOperands; i++)
+                begin
+                    operands            [operandId][i]  = fromOp.operands            [operandId][i] ;
+                    operandsSign        [operandId][i]  = fromOp.operandsSign        [operandId][i] ;
+                    operandsExp         [operandId][i]  = fromOp.operandsExp         [operandId][i] ;
+                    operandsSignificand [operandId][i]  = fromOp.operandsSignificand [operandId][i] ;
+                end
+
+        endfunction
+
+        function void calculateResult();
+
+            // Note: result is calculated in post_randomize
+
+            result = 0.0 ;
+
+            //------------------------------------------------------------------------------------------------------
+
+
+            for (int i=0; i<numberOfOperands; i++)
+                begin
+                    //$display("%t: Stream 0 Operand %d = {%p %p %p}\n", $time, i, operandsSign[0][i], operandsExp[0][i], operandsSignificand[0][i] )          ;
+                    //$display("%t: Stream 1 Operand %d = {%p %p %p}\n", $time, i, operandsSign[1][i], operandsExp[1][i], operandsSignificand[1][i] )          ;
+
+                    // calculate expected result
+                    operandsReal[0] = $bitstoshortreal({operandsSign[0][i], operandsExp[0][i], operandsSignificand[0][i]});
+                    operandsReal[1] = $bitstoshortreal({operandsSign[1][i], operandsExp[1][i], operandsSignificand[1][i]});
+                    result          = result + operandsReal[0]*operandsReal[1]   ; 
+                    if (result >= 0)
+                      begin
+                        resultHigh      = (1.0+FpTolerance)*result                   ;
+                        resultLow       = (1.0-FpTolerance)*result                   ;
+                      end
+                    else
+                      begin
+                        resultLow       = (1.0+FpTolerance)*result                   ;
+                        resultHigh      = (1.0-FpTolerance)*result                   ;
+                      end
+                    //$display("%t: Base_operation result %d: %f, %f <> %f\n", $time, tId, result, resultHigh, resultLow);
+
+                    // generate stimiulus from floating point fields
+                    operands[0][i] = {operandsSign[0][i], operandsExp[0][i], operandsSignificand[0][i]};
+                    operands[1][i] = {operandsSign[1][i], operandsExp[1][i], operandsSignificand[1][i]};
+
+                    //$display("%t: Stream 0 Operand %d = %h\n", $time, i, operands[0][i]);
+                    //$display("%t: Stream 1 Operand %d = %h\n", $time, i, operands[1][i]);
+                end
+
+        endfunction : calculateResult
+    
+
         function void create();
 
         endfunction
@@ -694,6 +747,7 @@ package operation;
             $display("@%0t :%s:%0d:INFO:{%0d,%0d}:      Source Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], sourceAddress[0], sourceAddress[1]);
             $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Destination Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], destinationAddress[0], destinationAddress[1]);
             $display("@%0t :%s:%0d:INFO:{%0d,%0d}: {numberOfOperands} = {%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], numberOfOperands);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Option pointers: stOp=%2h, SIMD=%2h", $time, `__FILE__, `__LINE__, Id[0], Id[1], stOp_optionPtr, simd_optionPtr);
             $display("@%0t :%s:%0d:INFO: ------------------------------------------------------------------------", $time, `__FILE__, `__LINE__);
 
         endfunction

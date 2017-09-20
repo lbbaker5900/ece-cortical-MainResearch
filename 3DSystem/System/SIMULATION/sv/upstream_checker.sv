@@ -62,6 +62,7 @@ class upstream_checker;
 
         int tag    ;  // we need to match the tag of the upstream data with the tag from the manager and generator
         bit tagFound = 0;
+        int numberOfActiveLanes;
 
         forever 
             begin
@@ -161,6 +162,7 @@ class upstream_checker;
                                         if (tag == sys_operation_gen.tId)
                                           begin 
                                             tagFound = 1 ;
+                                            numberOfActiveLanes = sys_operation_gen.numberOfLanes  ;
                                           end 
                                         else
                                           // not the correct tag so put at the back of the mailbox
@@ -172,15 +174,18 @@ class upstream_checker;
                                 
                                 if (tagFound)
                                   begin
-                                   if (($bitstoshortreal(upstream_packet_data[sys_operation_gen.Id[1]]) < sys_operation_gen.resultLow) || ($bitstoshortreal(upstream_packet_data[sys_operation_gen.Id[1]]) > sys_operation_gen.resultHigh))
+                                   if (lane < numberOfActiveLanes )
                                      begin
-                                         $display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: incorrect result data for {%0d,%0d}: expected %f, observed %f", $time, `__FILE__, `__LINE__, 
-                                                                                this.Id, sys_operation_gen.Id[1], sys_operation_gen.result, $bitstoshortreal(upstream_packet_data[sys_operation_gen.Id[1]]));
-                                     end
-                                   else 
-                                     begin
-                                       $display ("@%0t::%s:%0d::PASS:UPSTREAM :: Correct result in upstream packet for {%0d,%0d} : Hex : %h, FP : %f", $time, `__FILE__, `__LINE__, 
-                                                                                this.Id, sys_operation_gen.Id[1], sys_operation_gen.result, $bitstoshortreal(upstream_packet_data[sys_operation_gen.Id[1]]));
+                                       if (($bitstoshortreal(upstream_packet_data[sys_operation_gen.Id[1]]) < sys_operation_gen.resultLow) || ($bitstoshortreal(upstream_packet_data[sys_operation_gen.Id[1]]) > sys_operation_gen.resultHigh))
+                                         begin
+                                             $display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: incorrect result data for {%0d,%0d}: expected %f, observed %f", $time, `__FILE__, `__LINE__, 
+                                                                                    this.Id, sys_operation_gen.Id[1], sys_operation_gen.result, $bitstoshortreal(upstream_packet_data[sys_operation_gen.Id[1]]));
+                                         end
+                                       else 
+                                         begin
+                                           $display ("@%0t::%s:%0d::PASS:UPSTREAM :: Correct result in upstream packet for {%0d,%0d} : Hex : %h, FP : %f", $time, `__FILE__, `__LINE__, 
+                                                                                    this.Id, sys_operation_gen.Id[1], sys_operation_gen.result, $bitstoshortreal(upstream_packet_data[sys_operation_gen.Id[1]]));
+                                         end
                                      end
                                   end  // if tagFound
                                 else  // tag not found

@@ -2383,7 +2383,7 @@ module main_mem_cntl (
   // DFI Sequencer FSM(s)
   //  - read the channel command page and cache fifo and sequence commands to DRAM
   //
-  //  - the head of the FIFO gets sent directly to the dram is the fsm is in
+  //  - the head of the FIFO gets sent directly to the dram if the fsm is in
   //  the correct page/cache phase
   //  - if we see the head will be empty, we always jump to a NOHEAD state
   // 
@@ -2755,6 +2755,11 @@ module main_mem_cntl (
                           begin
                             mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_PAGE_CMD_WITH_WR_DATA;
                           end
+                        else if (!final_page_cmd_fifo[chan].pipe_peek_valid && final_cache_cmd_fifo[chan].pipe_peek_twoIn_valid && (final_cache_cmd_fifo[chan].pipe_peek_twoIn_cmd == `MMC_CNTL_CACHE_CMD_FINAL_FIFO_TYPE_CW))
+                        // the peek entry is invalid so the twoIn value will automatically move up
+                          begin
+                            mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_PAGE_CMD_WITH_WR_DATA;
+                          end
                         else
                           begin
                             mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_PAGE_CMD;
@@ -2865,7 +2870,7 @@ module main_mem_cntl (
 
         assign  clear      =  1'b0  ;
 
-        assign  write      =  cmd_seq_cache_fifo[chan].pipe_read ;
+        assign  write      =  cmd_seq_cache_fifo[chan].pipe_read & (cmd_seq_cache_fifo[chan].pipe_cmd == `DRAM_ACC_CMD_IS_CR);
         assign  write_data =  {cmd_seq_cache_fifo[chan].pipe_strm, cmd_seq_cache_fifo[chan].pipe_tag};
 
         wire  [`MMC_CNTL_NUM_OF_INTF_RANGE    ]   pipe_strm     ;

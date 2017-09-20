@@ -439,7 +439,35 @@ if __name__ == "__main__":
 
 
 
-  f = open("../SIMULATION/sv/mmc_channel_bank_status.do", "w")
+  f = open("../SIMULATION/sv/ram.do", "w")
+  pLine = ""
+  for mgr in range (0, numOfMgr):
+
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/clk}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/cs_n}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/cmd0}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/cmd1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/baddr}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/addr}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/din}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/dout}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/rdstrb}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/clk}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/cs_n}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/cmd0}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/cmd1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/baddr}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/addr}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/din}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/dout}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/rdstrb}}'.format(mgr)
+
+  f.write(pLine)
+  f.close()
+
+
+  f = open("../SIMULATION/sv/mmc.do", "w")
+
   pLine = ""
   for mgr in range (0, numOfMgr):
     for chan in range (0, numOfChannels):
@@ -478,39 +506,6 @@ if __name__ == "__main__":
         pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/reset_poweron}}          '.format(mgr,chan,bank)
         pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group CHAN{1} -group BANK{2} -group TIMER -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/chan_info[{1}]/bank_info[{2}]/dram_access_timer/sys__mgr__mgrId}}        '.format(mgr,chan,bank)
 
-  f.write(pLine)
-  f.close()
-
-
-  f = open("../SIMULATION/sv/ram.do", "w")
-  pLine = ""
-  for mgr in range (0, numOfMgr):
-
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/clk}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/cs_n}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/cmd0}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/cmd1}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/baddr}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/addr}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/din}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/dout}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/rdstrb}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/clk}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/cs_n}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/cmd0}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/cmd1}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/baddr}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/addr}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/din}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/dout}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/rdstrb}}'.format(mgr)
-
-  f.write(pLine)
-  f.close()
-
-
-  f = open("../SIMULATION/sv/mmc.do", "w")
-  pLine = ""
   for mgr in range (0, numOfMgr):
     for chan in range (0, numOfChannels):
       for intf in range (0, 3):

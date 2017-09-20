@@ -57,6 +57,7 @@ sed -i -e 's/mgr_inst\[5\]/mgr_inst\[0\]/' mmc*.do  ; sed -i -e 's/MGR5  /MGR0 /
 sed -i -e 's/mgr_inst\[2\]/mgr_inst\[0\]/' mmc*.do  ; sed -i -e 's/MGR2  /MGR0 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[0\]/' mmc*.do
 sed -i -e 's/mgr_inst\[1\]/mgr_inst\[0\]/' mmc*.do  ; sed -i -e 's/MGR1  /MGR0 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[1\]/diram_port_arrays\[0\]/' mmc*.do
 sed -i -e 's/mgr_inst\[0\]/mgr_inst\[0\]/' mmc*.do  ; sed -i -e 's/MGR0  /MGR0 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[0\]/diram_port_arrays\[0\]/' mmc*.do
+sed -i -e 's/mgr_inst\[0\]/mgr_inst\[1\]/' mmc*.do  ; sed -i -e 's/MGR0  /MGR1 /' mmc*.do  ; sed -i -e 's/diram_port_arrays\[0\]/diram_port_arrays\[1\]/' mmc*.do
 
 sed -i -e 's/mgr_inst\[2\]/mgr_inst\[55\]/' wave*.do ; sed -i -e 's/MGR2 /MGR55 /' wave*.do ; sed -i -e 's/diram_port_arrays\[2\]/diram_port_arrays\[55\]/' wave*.do
 sed -i -e 's/mgr_inst\[1\]/mgr_inst\[55\]/' wave*.do ; sed -i -e 's/MGR1 /MGR55 /' wave*.do ; sed -i -e 's/diram_port_arrays\[1\]/diram_port_arrays\[55\]/' wave*.do

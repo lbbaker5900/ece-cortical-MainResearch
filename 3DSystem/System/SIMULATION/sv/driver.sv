@@ -113,45 +113,47 @@ class driver;
                         drv2memP.put(sys_operation) ;  //Putting the instruction into the golden model mailbox                                              
                         $display("@%0t:%s:%0d:DEBUG:{%0d,%0d} Send operation to mem_checker with expected result of %f, %f <> %f", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
 
-                        //----------------------------------------------------------------------------------------------------
-                        // Start driving the operand
-
-                        gen2drv.get(sys_operation)  ;  //Removing the instruction from generator mailbox
+                        `ifdef TB_DRIVES_STACK_DOWN_DATA
+                          //----------------------------------------------------------------------------------------------------
+                          // Start driving the operand
                         
-                        // create stream objects and send to mailboxes for processes driving downstream stream stack bus
-                        // Note: the processes havent started yet
-
-                        // Default is streams are disabled.
-                        streamEnabled[0] =  0;
-                        streamEnabled[1] =  0;
-                        for (int i=0; i<sys_operation.stOp_operation.numberOfSrcStreams; i++)
-                            begin
-                                if (sys_operation.pe_stOp_stream_src [i] == PE_STOP_SRC_IS_STD ) 
-                                    begin
-                                        // enable the stream process
-                                        streamEnabled[i]                      = 1                                                              ;
-                                        tmp_strm_operation                    = new                                                            ;
-                                        tmp_strm_operation.tId                = sys_operation.tId                                              ;
-                                        tmp_strm_operation.operands           = new[sys_operation.numberOfOperands](sys_operation.operands[i]) ;
-                                        tmp_strm_operation.numberOfOperands   = sys_operation.numberOfOperands                                 ;
-                                        //tmp_strm_operation.operands         = sys_operation.operands[i]                                      ;
-                                        drv2lane[i].put(tmp_strm_operation)                                                                    ;
-                                        $display("@%0t:%s:%0d:DEBUG:{%0d,%0d} Passed to stream driver %0d", $time, `__FILE__, `__LINE__, Id[0], Id[1], i );
-                                    end
-                                else
-                                    begin
-                                        // disable the stream process. Process will spawn but then finish immediately
-                                        $display("@%0t:%s:%0d:DEBUG:{%0d,%0d} Disabled stream driver %0d", $time, `__FILE__, `__LINE__, Id[0], Id[1], i );
-                                        streamEnabled[i] = 0 ;
-                                        //sys_operation.displayOperation();
-                                    end
-                            end
-
-                        // DEBUG
-                        //streamEnabled[0] = (sys_operation.pe_stOp_stream_src [0] == PE_STOP_SRC_IS_STD ) ? 1 : 0;
-                        //streamEnabled[1] = (sys_operation.pe_stOp_stream_src [1] == PE_STOP_SRC_IS_STD ) ? 1 : 0;
-                        // DEBUG END
-                        $display("@%0t:%s:%0d:DEBUG {%0d,%0d} Passed to stream drivers with enables {%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], streamEnabled[0], streamEnabled[1]);
+                          gen2drv.get(sys_operation)  ;  //Removing the instruction from generator mailbox
+                          
+                          // create stream objects and send to mailboxes for processes driving downstream stream stack bus
+                          // Note: the processes havent started yet
+                        
+                          // Default is streams are disabled.
+                          streamEnabled[0] =  0;
+                          streamEnabled[1] =  0;
+                          for (int i=0; i<sys_operation.stOp_operation.numberOfSrcStreams; i++)
+                              begin
+                                  if (sys_operation.pe_stOp_stream_src [i] == PE_STOP_SRC_IS_STD ) 
+                                      begin
+                                          // enable the stream process
+                                          streamEnabled[i]                      = 1                                                              ;
+                                          tmp_strm_operation                    = new                                                            ;
+                                          tmp_strm_operation.tId                = sys_operation.tId                                              ;
+                                          tmp_strm_operation.operands           = new[sys_operation.numberOfOperands](sys_operation.operands[i]) ;
+                                          tmp_strm_operation.numberOfOperands   = sys_operation.numberOfOperands                                 ;
+                                          //tmp_strm_operation.operands         = sys_operation.operands[i]                                      ;
+                                          drv2lane[i].put(tmp_strm_operation)                                                                    ;
+                                          $display("@%0t:%s:%0d:DEBUG:{%0d,%0d} Passed to stream driver %0d", $time, `__FILE__, `__LINE__, Id[0], Id[1], i );
+                                      end
+                                  else
+                                      begin
+                                          // disable the stream process. Process will spawn but then finish immediately
+                                          $display("@%0t:%s:%0d:DEBUG:{%0d,%0d} Disabled stream driver %0d", $time, `__FILE__, `__LINE__, Id[0], Id[1], i );
+                                          streamEnabled[i] = 0 ;
+                                          //sys_operation.displayOperation();
+                                      end
+                              end
+                        
+                          // DEBUG
+                          //streamEnabled[0] = (sys_operation.pe_stOp_stream_src [0] == PE_STOP_SRC_IS_STD ) ? 1 : 0;
+                          //streamEnabled[1] = (sys_operation.pe_stOp_stream_src [1] == PE_STOP_SRC_IS_STD ) ? 1 : 0;
+                          // DEBUG END
+                          $display("@%0t:%s:%0d:DEBUG {%0d,%0d} Passed to stream drivers with enables {%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], streamEnabled[0], streamEnabled[1]);
+                        `endif
                                             
                         //----------------------------------------------------------------------------------------------------
                         // Operand data is in the stream mailboxes
@@ -174,23 +176,24 @@ class driver;
                                 $display("@%0t:%s:%0d:DEBUG: {%0d,%0d} received mem_checker ack", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
                             end
                              
-                            //----------------------------------------------------------------------------------------------------
-                            // Wait for streams that are driving
-                            // FIXME - not sure we need these two processes
-                            begin
-                                $display("@%0t:%s:%0d:DEBUG: {%0d,%0d} waiting for stream %0d", $time, `__FILE__, `__LINE__, Id[0], Id[1], 0 );
-                                if (streamEnabled[0])
-                                    wait(strm_ack[0].triggered);
-                                //@(strm_ack[0]);
-                                $display("@%0t :%s:%0d:DEBUG: {%0d,%0d} stream %0d complete", $time, `__FILE__, `__LINE__, Id[0], Id[1], 0 );
-                            end
-                            begin
-                                $display("@%0t:%s:%0d:DEBUG: {%0d,%0d} waiting for stream %0d", $time, `__FILE__, `__LINE__, Id[0], Id[1], 1 );
-                                if (streamEnabled[1])
-                                    wait(strm_ack[1].triggered);
-                                //@(strm_ack[1]);
-                                $display("@%0t :%s:%0d:DEBUG: {%0d,%0d} stream %0d complete", $time, `__FILE__, `__LINE__, Id[0], Id[1], 1 );
-                            end
+                            `ifdef TB_DRIVES_STACK_DOWN_DATA
+                              //----------------------------------------------------------------------------------------------------
+                              // Wait for streams that are driving
+                              // FIXME - not sure we need these two processes
+                              begin
+                                  $display("@%0t:%s:%0d:DEBUG: {%0d,%0d} waiting for stream %0d", $time, `__FILE__, `__LINE__, Id[0], Id[1], 0 );
+                                  if (streamEnabled[0])
+                                      wait(strm_ack[0].triggered);
+                                  //@(strm_ack[0]);
+                                  $display("@%0t :%s:%0d:DEBUG: {%0d,%0d} stream %0d complete", $time, `__FILE__, `__LINE__, Id[0], Id[1], 0 );
+                              end
+                              begin
+                                  $display("@%0t:%s:%0d:DEBUG: {%0d,%0d} waiting for stream %0d", $time, `__FILE__, `__LINE__, Id[0], Id[1], 1 );
+                                  if (streamEnabled[1])
+                                      wait(strm_ack[1].triggered);
+                                  //@(strm_ack[1]);
+                                  $display("@%0t :%s:%0d:DEBUG: {%0d,%0d} stream %0d complete", $time, `__FILE__, `__LINE__, Id[0], Id[1], 1 );
+                              end
 
                             //----------------------------------------------------------------------------------------------------
                             // Stream 0
@@ -212,13 +215,14 @@ class driver;
                                                     
                                                         if (vDownstreamStackBusLane[0].pe__std__lane_strm_ready) 
                                                             begin
+                                                                //$display("@%0t:%s:%0d:DEBUG: {%d,%d} Drive stream 0 valid", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                                                 vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_data_valid  <= 1  ;
                                                                 vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_cntl        <= ((transaction[0] == 0) && (transaction[0] == (strm_operation[0].numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
                                                                                                                             ( transaction[0] == 0                                                               ) ?  `COMMON_STD_INTF_CNTL_SOM         :
                                                                                                                             ( transaction[0] == (strm_operation[0].numberOfOperands-1)                          ) ?  `COMMON_STD_INTF_CNTL_EOM         :
                                                                                                                                                                                                                      `COMMON_STD_INTF_CNTL_MOM         ;
                                                                 //if ((Id[0]==0)&&(Id[1]==0))
-                                                                //    $display("%s:%0d:DEBUG: operand%d , %h", `__FILE__, `__LINE__, transaction[0], strm_operation[0].operands[transaction[0]] ) ;
+                                                                //$display("%s:%0d:DEBUG: operand%d , %h", `__FILE__, `__LINE__, transaction[0], strm_operation[0].operands[transaction[0]] ) ;
                                                                 vDownstreamStackBusLane[0].cb_test.std__pe__lane_strm_data        <= strm_operation[0].operands[transaction[0]]  ;
                                                                 
                                                                 transaction[0] = transaction[0] + 1;
@@ -276,6 +280,7 @@ class driver;
                                                     
                                                         if (vDownstreamStackBusLane[1].pe__std__lane_strm_ready) 
                                                             begin
+                                                                //$display("@%0t:%s:%0d:DEBUG: {%d,%d} Drive stream 1 valid", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                                                 vDownstreamStackBusLane[1].cb_test.std__pe__lane_strm_data_valid  <= 1  ;
                                                                 vDownstreamStackBusLane[1].cb_test.std__pe__lane_strm_cntl        <= ((transaction[1] == 0) && (transaction[1] == (strm_operation[1].numberOfOperands-1))) ?  `COMMON_STD_INTF_CNTL_SOM_EOM     :
                                                                                                                             ( transaction[1] == 0                                                               ) ?  `COMMON_STD_INTF_CNTL_SOM         :
@@ -318,10 +323,15 @@ class driver;
                                     end  // while (transaction[1] == 0) 
                                 $display("@%0t:%s:%0d:INFO:{%0d,%0d} Completed stream 1 process", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                             end
+                        `endif
                         join_none
                         wait fork;
 
-                        $display("@%0t:%s:%0d:INFO:{%0d,%0d} Completed driving streams, send ack to generator", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
+                        `ifdef TB_DRIVES_STACK_DOWN_DATA
+                          $display("@%0t:%s:%0d:INFO:{%0d,%0d} Completed driving streams and memory check, send ack to generator", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
+                        `else
+                          $display("@%0t:%s:%0d:INFO:{%0d,%0d} Completed Memory check , send ack to generator", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
+                        `endif
                         -> gen2drv_ack;
                     end  // if ( gen2drv.num() != 0 )
             end  // forever

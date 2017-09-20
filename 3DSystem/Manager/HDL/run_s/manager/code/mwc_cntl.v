@@ -716,6 +716,16 @@ module mwc_cntl (
   
   sdp_request_cntl sdp_request_cntl (  
 
+            //------------------------------
+            // Configuration
+            //
+            .xxx__sdp__lane_enable                        ( {`MGR_NUM_OF_EXEC_LANES {1'b1}}             ),  // FIXME
+            .xxx__sdp__num_lanes                          ( 6'd32 ),  // FIXME
+            .xxx__sdp__num_lanes_m1                       ( 6'd31 ),
+            .xxx__sdp__txfer_type                         ( 2'd1  ),  // FIXME
+            //.xxx__sdp__num_lanes                          ( {`MGR_NUM_LANES_WIDTH 'd `MGR_NUM_OF_EXEC_LANES  } ),
+            //.xxx__sdp__num_lanes_m1                       ( {`MGR_NUM_LANES_WIDTH 'd `MGR_NUM_OF_EXEC_LANES-1} ),
+
             .xxx__sdp__storage_desc_processing_enable     ( storage_desc_processing_enable             ),
             .sdp__xxx__storage_desc_processing_complete   ( storage_desc_processing_complete           ),
             .xxx__sdp__storage_desc_ptr                   ( storage_desc_ptr                           ),  // pointer to local storage descriptor although msb's contain manager ID, so remove

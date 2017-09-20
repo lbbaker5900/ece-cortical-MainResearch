@@ -153,12 +153,12 @@ class regFile_driver;
  
                         
                         `ifdef TB_DRIVES_SIMD_REGFILE_INPUTS
-                        //----------------------------------------------------------------------------------------------------
-                        // Wait for  streamingOps_cntl to be complete the deassert enable ( rs0[0]=0 )
-                        wait(vP_srf.cb_out.complete);
-                        $display ("@%0t:%s:%0d:INFO: streamingOps_cntl complete for {%02d,%02d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                        vP_srf.cb_out.rs0[0]        <= 1'b0                                               ;
-                        wait(~vP_srf.cb_out.complete);
+                          //----------------------------------------------------------------------------------------------------
+                          // Wait for  streamingOps_cntl to be complete the deassert enable ( rs0[0]=0 )
+                          wait(vP_srf.cb_out.complete);
+                          $display ("@%0t:%s:%0d:INFO: streamingOps_cntl complete for {%02d,%02d}", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                          vP_srf.cb_out.rs0[0]        <= 1'b0                                               ;
+                          wait(~vP_srf.cb_out.complete);
                         `endif
 
 

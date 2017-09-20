@@ -143,7 +143,7 @@ class generator;
                     begin
                         mgr2gen.peek(sys_operation_gen);   //Taking the instruction from the manager
                         mgr2gen.get(sys_operation_gen)  ;  //Removing the instruction from manager mailbox
-                        $display("@%0t:%s:%0d:INFO:Received operation from manager: {%0d,%0d}:%h", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation_mgr);
+                        $display("@%0t:%s:%0d:INFO:Received operation from manager: {%0d,%0d}:%h", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation_gen);
                         
                         // Create a base operation and all operation sent to driver will be copies of this
                         // This allows us to keep track of what has been generated
@@ -232,8 +232,9 @@ class generator;
                         // now wait for driver to take our sequence of operations
                         //sys_operation.displayOperation();
                         //@gen2drv_ack;
+                        $display("@%0t:%s:%0d:INFO:{%0d,%0d} Wait for driver ack", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
                         wait(gen2drv_ack.triggered);
-                        //$display("@%0t:%s:%0d:INFO:{%0d,%0d} Driver ack", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        $display("@%0t:%s:%0d:INFO:{%0d,%0d} Driver has acked", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
 
 
                         //----------------------------------------------------------------------------------------------------
@@ -243,6 +244,7 @@ class generator;
                         //----------------------------------------------------------------------------------------------------
                         // Acknowledge manager that operation is complete
                         -> mgr2gen_ack;
+                        $display("@%0t:%s:%0d:INFO:{%0d,%0d} Generator acked manager", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
 
                     end // if ( mgr2gen.num() != 0 )
             end  // forever

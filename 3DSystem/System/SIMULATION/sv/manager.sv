@@ -227,6 +227,9 @@ class manager;
                 sys_operation_mgr        =  new ()  ;  // seed operation object.  Generators will copy this and then re-create different operand values
                 sys_operation_mgr.Id[0]  =  Id      ;  // Id in manager is only PE
                 sys_operation_mgr.Id[1]  =  0       ;  // set to lane 0 to avoid error in randomize
+                `ifdef TB_WUD_INITIATES_OP
+                  sys_operation_mgr.numberOfLanes  = rcvd_wud_to_oob_cmd.num_lanes ;
+               `endif
 
                 // Set number of oerands based on instruction
                 instruction = descriptorObjs [WU_num] ;
@@ -303,11 +306,26 @@ class manager;
                     sys_operation_lane_gen[lane].c_memoryLocalized.constraint_mode(1)            ;
                     //
                     assert(sys_operation_lane_gen[lane].randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
+
+                    // FIME: right now we are testing 
+                    `ifdef TB_COMMON_ARG0
+                      // use lane0's operand[0] for all lanes
+                        if (lane == 0)
+                          begin
+                            sys_operation_lane_gen[lane].displayOperation();    
+                          end
+                        else
+                          begin
+                            sys_operation_lane_gen[lane].copyOperands(sys_operation_lane_gen[0], 0);
+                            sys_operation_lane_gen[lane].calculateResult();                         // need to recalculate result
+                            sys_operation_lane_gen[lane].displayOperation();                         // need to recalculate result
+                          end
+                    `endif
                   end
 
                 if (`MGR_ARRAY_NUM_OF_MGR < 5)
                   begin
-                    $display("@%0t:%s:%0d:INFO:Loading DRAMs with operation operands", $time, `__FILE__, `__LINE__);
+                    $display("@%0t:%s:%0d:INFO:Loading DRAMs with operation %0d operands", $time, `__FILE__, `__LINE__, operationNum);
                     for (int i=0; i<`MGR_ARRAY_NUM_OF_MGR; i++)
                       begin
                         sys_operation_lane_gen[i].displayOperation();
@@ -317,6 +335,15 @@ class manager;
                                                          .sys_operation_data  ( sys_operation_lane_gen),
                                                          .vDramCfgIfc         ( vDramCfgIfc           ) 
                                                              );
+                    // Load the next WU also as some data might be stuck in
+                    // itermediate fifos
+/*
+                    fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num+1 );
+                    dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
+                                                         .sys_operation_data  ( sys_operation_lane_gen),
+                                                         .vDramCfgIfc         ( vDramCfgIfc           ) 
+                                                             );
+*/
                   end
 
 
@@ -327,8 +354,13 @@ class manager;
                 // create the oob_packet object from the operation
                 oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
                 oob_packet_mgr.createFromOperation(sys_operation_oob.tId, sys_operation_oob)     ;
-                oob_packet_mgr.stOp_optionPtr     = rcvd_wud_to_oob_cmd.stOp_cmd;
-                oob_packet_mgr.simd_optionPtr     = rcvd_wud_to_oob_cmd.simd_cmd;
+                `ifdef TB_WUD_INITIATES_OP
+                  oob_packet_mgr.stOp_optionPtr     = rcvd_wud_to_oob_cmd.stOp_cmd;
+                  oob_packet_mgr.simd_optionPtr     = rcvd_wud_to_oob_cmd.simd_cmd;
+                `else
+                  oob_packet_mgr.stOp_optionPtr     = 1;  // FIXME
+                  oob_packet_mgr.simd_optionPtr     = 1;
+                `endif
                 mgr2oob.put(oob_packet_mgr)                                  ;  // oob needs to prepare the PE
                 $display("@%0t:%s:%0d:INFO: Manager {%0d} sent oob_packet {%0d} to oob_driver", $time, `__FILE__, `__LINE__, Id, operationNum);
 
