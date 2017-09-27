@@ -695,7 +695,7 @@ module sdp_stream_cntl (
               
               `SDP_CNTL_STRM_DATA_LOAD_FIRST_CONS_COUNT: 
                 begin
-                  loading_consequtive    = destination_ready & lane_data_available &  consJump_to_strm_fsm_fifo[0].pipe_valid & ~loaded_consequtive ;
+                  loading_consequtive    = consJump_to_strm_fsm_fifo[0].pipe_valid & ~loaded_consequtive ;
                   loading_jump           = 1'b0 ;
                 end
               `SDP_CNTL_STRM_DATA_COUNT_CONS: 
@@ -1050,9 +1050,9 @@ module sdp_stream_cntl (
    
        always @(*) 
          begin
-           lane_running      = ((sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_LOAD_FIRST_CONS_COUNT) | (sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_COUNT_CONS) | (sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_LOAD_JUMP_VALUE)) ;
+           lane_running      = ((sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_COUNT_CONS) | (sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_LOAD_JUMP_VALUE)) ;
       
-           send_data        = lane_running & destination_ready & lane_data_available & ~sent_data_without_increment & ~((sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_LOAD_FIRST_CONS_COUNT) & loading_consequtive) ;  // First time thru dont send at the same time as loading consequtive otherwise we miss a consequtive_counter step
+           send_data        = lane_running & destination_ready & lane_data_available & ~sent_data_without_increment ; //& ~((sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_LOAD_FIRST_CONS_COUNT) & loading_consequtive) ;  // First time thru dont send at the same time as loading consequtive otherwise we miss a consequtive_counter step
          end
    
        always @(posedge clk)
@@ -1088,13 +1088,8 @@ module sdp_stream_cntl (
                  
                  `SDP_CNTL_STRM_DATA_LOAD_FIRST_CONS_COUNT: 
                    begin
-                     req_next_line [chan]        = //( block_request [chan]                                                                                                                                                                                                     )  ?  1'b0  :
-                                                   ( lane_running & (send_data | sent_data_without_increment) /*destination_ready*/ & (lane_channel_ptr_e1 == chan) & ~lane_address_next_match [chan]                                                                         )  ?  1'b1  :
-                                                                                                                                                                                                                                                                                    1'b0  ;
-
-                     force_req_next_line [chan]  = //(block_request [chan]                                                                                                                                                                                                                    )  ?  1'b0  :
-                                                   (destination_ready & (lane_channel_ptr == chan) & first_transaction & (from_mmc_data_valid [lane_channel_ptr] & response_id_valid[lane_channel_ptr] & ~lane_address_match[lane_channel_ptr] & ~lane_address_next_match[lane_channel_ptr]))  ?  1'b1  :
-                                                                                                                                                                                                                                                                                                  1'b0  ; //&  ~at_least_one_req_next_line [chan])  ;  // in case the first data is in the 2nd line
+                     req_next_line [chan]        = 1'b0 ;
+                     force_req_next_line [chan]  = 1'b0 ;
                    end
              
                  `SDP_CNTL_STRM_DATA_COUNT_CONS: 
@@ -1103,7 +1098,7 @@ module sdp_stream_cntl (
                                                    ((strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) & (from_mmc_data_valid [chan] & response_id_valid[chan] & ~lane_address_match[chan] & (~lane_address_next_match[chan] & (lane_channel_ptr_e1 != lane_channel_ptr ))))  ?  1'b1  :
                                                    ((strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) & (from_mmc_data_valid [chan] & response_id_valid[chan] & ~lane_address_match[chan] & (~lane_address_next_match[chan]                                             )))  ?  1'b1  :
                                                                                                                                                                                                                                                                                     1'b0  ;
-                     force_req_next_line [chan]  = 1'b0  ;
+                     force_req_next_line [chan]  = (destination_ready & (lane_channel_ptr == chan) & first_transaction & (from_mmc_data_valid [lane_channel_ptr] & response_id_valid[lane_channel_ptr] & ~lane_address_match[lane_channel_ptr] & ~lane_address_next_match[lane_channel_ptr])) ;
                    end
              
                  `SDP_CNTL_STRM_DATA_LOAD_JUMP_VALUE: 
