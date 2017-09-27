@@ -640,7 +640,8 @@ package operation;
         endfunction
     
         function void displayOperation();
-            $display("@%0t :%s:%0d:INFO: {PE,Lane,tId} = {%0d,%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], tId);
+            $display("@%0t :%s:%0d:INFO:Operation for {PE,Lane,tId} = {%0d,%0d,%0d}", $time, `__FILE__, `__LINE__, Id[0], Id[1], tId);
+            $display("@%0t :%s:%0d:INFO:{%0d,%0d}: Number of active lanes : %0d", $time, `__FILE__, `__LINE__, Id[0], Id[1], numberOfLanes);
             $display("@%0t :%s:%0d:INFO:{%0d,%0d}: stOp_operation : %b", $time, `__FILE__, `__LINE__, Id[0], Id[1], stOp_operation);
             $display("@%0t :%s:%0d:INFO:{%0d,%0d}: src{0,1},dest{0,1} : {%3b,%3b,%3b,%3b}", $time, `__FILE__, `__LINE__, Id[0], Id[1], pe_stOp_stream_src[0], pe_stOp_stream_src[1], pe_stOp_stream_dest[0], pe_stOp_stream_dest[1]);
             $display("@%0t :%s:%0d:INFO:{%0d,%0d}:      Source Address: {%h,%h}", $time, `__FILE__, `__LINE__, Id[0], Id[1], sourceAddress[0], sourceAddress[1]);

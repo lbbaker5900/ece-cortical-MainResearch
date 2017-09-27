@@ -406,6 +406,16 @@ module mrc_cntl (
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Testbench control
+  `ifdef TB_MGR_PAUSES_WUD
+  reg tb_pause ; // the manager.sv can pause the WU decoder to ensure DiRAM4 memory is updated
+  initial
+    begin
+      @(posedge clk) tb_pause = 1'b1;
+    end
+  `endif
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
   // Extract Descriptor FSM
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // - Take storage descriptor option tuples from the WU fifo and construct starting address, number of lanes
@@ -437,7 +447,11 @@ module mrc_cntl (
       case (mrc_cntl_extract_desc_state)
         
         `MRC_CNTL_EXTRACT_DESC_WAIT: 
-          mrc_cntl_extract_desc_state_next =   ( from_Wud_Fifo[0].pipe_valid && ~from_Wud_Fifo[0].pipe_som ) ? `MRC_CNTL_EXTRACT_DESC_ERR      :  // right now assume MR desciptors are multi-cycle
+          mrc_cntl_extract_desc_state_next =   
+                                               `ifdef TB_MGR_PAUSES_WUD
+                                                 ( tb_pause ) ? `MRC_CNTL_EXTRACT_DESC_WAIT:
+                                               `endif
+                                               ( from_Wud_Fifo[0].pipe_valid && ~from_Wud_Fifo[0].pipe_som ) ? `MRC_CNTL_EXTRACT_DESC_ERR      :  // right now assume MR desciptors are multi-cycle
                                                ( from_Wud_Fifo[0].pipe_valid                               ) ? `MRC_CNTL_EXTRACT_DESC_EXTRACT  :  // pull all we need from the descriptor then start memory access
                                                                                                                `MRC_CNTL_EXTRACT_DESC_WAIT     ;
   
@@ -472,10 +486,10 @@ module mrc_cntl (
 
   always @(posedge clk)
     begin
-      storage_desc_processing_enable  <= ( reset_poweron )  ? 1'b0 : 
-                                        ( mrc_cntl_extract_desc_state == `MRC_CNTL_EXTRACT_DESC_START_PROCESSING   ) ? 1'b1                          :
-                                        ( mrc_cntl_extract_desc_state == `MRC_CNTL_EXTRACT_DESC_COMPLETE) ? 1'b0                          :
-                                                                                                                       storage_desc_processing_enable ;
+      storage_desc_processing_enable  <= ( reset_poweron                                                            ) ? 1'b0                           : 
+                                         ( mrc_cntl_extract_desc_state == `MRC_CNTL_EXTRACT_DESC_START_PROCESSING   ) ? 1'b1                           :
+                                         ( mrc_cntl_extract_desc_state == `MRC_CNTL_EXTRACT_DESC_COMPLETE           ) ? 1'b0                           :
+                                                                                                                        storage_desc_processing_enable ;
 
     end
       
@@ -494,7 +508,7 @@ module mrc_cntl (
 
   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   mem_request_channel_data_valid                                           ;  // valid data from channel data fifo
   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__get_next_line                                                  ;
-
+/*
   // Associate this address with the response from the MMC
   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   xxx__sdp__mem_request_valid                                              ;
 //  wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__mem_request_ack                                                ;  // actually a read to the request feedback fifo
@@ -502,6 +516,7 @@ module mrc_cntl (
   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE        ]   xxx__sdp__mem_request_bank               [`MGR_DRAM_NUM_CHANNELS ]       ;
   wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]   xxx__sdp__mem_request_page               [`MGR_DRAM_NUM_CHANNELS ]       ;
   wire  [`MGR_DRAM_WORD_ADDRESS_RANGE        ]   xxx__sdp__mem_request_word               [`MGR_DRAM_NUM_CHANNELS ]       ;
+*/
 
   sdp_cntl sdp_cntl (  
 

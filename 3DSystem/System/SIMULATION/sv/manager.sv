@@ -72,6 +72,10 @@ class manager;
         
 
     //----------------------------------------------------------------------------------------------------
+    // WU Decoder to OOB Downstream Interfaces
+    vWudToOob_T       vWudToOobIfc        ;
+
+    //----------------------------------------------------------------------------------------------------
     //  Misc
 
     vDiRamCfg_T                 vDramCfgIfc  [`MGR_DRAM_NUM_CHANNELS]  ;
@@ -84,7 +88,7 @@ class manager;
 
     //-------------------------------------------------------------------------
     // HOW MANY?
-    integer num_operations = 6;  // fp mac:{std,std}->mem, copy:std->mem, fp mac:{std,mem}->mem
+    integer num_operations = 8;  // fp mac:{std,std}->mem, copy:std->mem, fp mac:{std,mem}->mem
 
    
     // Use multiple of 3 if we want to see std_std_fpmac_mem, std_na_nop_mem, std_mem_fpmac_mem
@@ -141,7 +145,8 @@ class manager;
                   input vDesc_T                      vWudToMrcIfc                                    [`MGR_NUM_OF_STREAMS ] ,
                   input mailbox                      mrc2mgr_m                                       [`MGR_NUM_OF_STREAMS ] ,
                   input mailbox                      wud2mgr_m                                                              ,
-                  input vDiRamCfg_T                  vDramCfgIfc             [`MGR_DRAM_NUM_CHANNELS]                                               
+                  input vDiRamCfg_T                  vDramCfgIfc             [`MGR_DRAM_NUM_CHANNELS]                       ,                        
+                  input vWudToOob_T                  vWudToOobIfc                                                           
                  );
 
         this.Id                        = Id                      ;
@@ -159,6 +164,10 @@ class manager;
         this.wud2mgr_m                 = wud2mgr_m               ;
         this.dram_utils                = new (Id )               ;
         this.vDramCfgIfc               = vDramCfgIfc             ;
+        this.vWudToOobIfc              = vWudToOobIfc            ;
+
+        this.vWudToOobIfc.tb_mrc_pause     = 1 ;
+        this.vWudToOobIfc.tb_wud_pause     = 1 ;
 
     endfunction
 
@@ -208,10 +217,19 @@ class manager;
 
                 // A WU Decoder command to OOB Downstream controller initiates the operation
                 `ifdef TB_WUD_INITIATES_OP
+                    // release WUD
+                    $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause MRC ", $time, `__FILE__, `__LINE__, Id);
+                    vWudToOobIfc.tb_mrc_pause     = 1 ;
+                    vWudToOobIfc.tb_wud_pause     = 0 ;
+                    $display("@%0t:%s:%0d:INFO: Manager {%0d} Release WUD and Pause MRCs ", $time, `__FILE__, `__LINE__, Id);
+                    wait(vWudToOobIfc.tb_wud_initiatiated_instruction);
+                    vWudToOobIfc.tb_wud_pause     = 1 ;
                     wait ( wud2mgr_m.num() != 0 ) 
                     wud2mgr_m.get(rcvd_wud_to_oob_cmd);
                     $display("@%0t:%s:%0d:INFO: Manager {%0d} received WUD Downstream OOB Command from WUD\'s", $time, `__FILE__, `__LINE__, Id);
                     rcvd_wud_to_oob_cmd.display();
+                    vWudToOobIfc.tb_wud_pause     = 1 ;
+                    $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause WUD ", $time, `__FILE__, `__LINE__, Id);
                `endif
 /*
                 // A request to both Memory Read controllers will initiate an operation
@@ -229,9 +247,10 @@ class manager;
                 sys_operation_mgr.Id[1]  =  0       ;  // set to lane 0 to avoid error in randomize
                 `ifdef TB_WUD_INITIATES_OP
                   sys_operation_mgr.numberOfLanes  = rcvd_wud_to_oob_cmd.num_lanes ;
+                  $display("@%0t:%s:%0d:INFO: Manager {%0d} : Instruction %0d is utilizing %0d lane\'s", $time, `__FILE__, `__LINE__, Id, WU_num, sys_operation_mgr.numberOfLanes);
                `endif
 
-                // Set number of oerands based on instruction
+                // Set number of operands based on instruction
                 instruction = descriptorObjs [WU_num] ;
                 instruction[0].displayDesc();
                 $display("@%0t:%s:%0d:INFO: Manager {%0d} : Instruction %0d has %0d operands\'s", $time, `__FILE__, `__LINE__, Id, WU_num, instruction[0].getOptionValue(PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS));
@@ -307,7 +326,7 @@ class manager;
                     //
                     assert(sys_operation_lane_gen[lane].randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
 
-                    // FIME: right now we are testing 
+                    // FIXME: right now we are testing 
                     `ifdef TB_COMMON_ARG0
                       // use lane0's operand[0] for all lanes
                         if (lane == 0)
@@ -323,20 +342,18 @@ class manager;
                     `endif
                   end
 
-                if (`MGR_ARRAY_NUM_OF_MGR < 5)
+                if (`MGR_ARRAY_NUM_OF_MGR < 64)
                   begin
-                    $display("@%0t:%s:%0d:INFO:Loading DRAMs with operation %0d operands", $time, `__FILE__, `__LINE__, operationNum);
-                    for (int i=0; i<`MGR_ARRAY_NUM_OF_MGR; i++)
-                      begin
-                        sys_operation_lane_gen[i].displayOperation();
-                      end
+                    $display("@%0t:%s:%0d:INFO:Manager {%0d} Loading DRAMs with operation %0d operands for WU %0d", $time, `__FILE__, `__LINE__, Id, operationNum, WU_num);
                     fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num );
                     dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
                                                          .sys_operation_data  ( sys_operation_lane_gen),
                                                          .vDramCfgIfc         ( vDramCfgIfc           ) 
                                                              );
+
+                    
                     // Load the next WU also as some data might be stuck in
-                    // itermediate fifos
+                    // intermediate fifos
 /*
                     fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num+1 );
                     dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
@@ -349,6 +366,8 @@ class manager;
 
                 // send actual base operation to upstream checker 
                 mgr2up.put(sys_operation_mgr)                      ; 
+                $display("@%0t:%s:%0d:INFO: Manager {%0d} Release MRC ", $time, `__FILE__, `__LINE__, Id);
+                vWudToOobIfc.tb_mrc_pause     = 0 ;
 
                 //---------------------------------------------------------------------------------------------------------------
                 // create the oob_packet object from the operation

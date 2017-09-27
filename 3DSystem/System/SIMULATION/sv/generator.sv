@@ -227,6 +227,8 @@ class generator;
                         // Send operands to PE/Lanes
 
                         // Send to driver
+                        $display("@%0t:%s:%0d:INFO:{%0d,%0d} Send operation to driver", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
+                        sys_operation.displayOperation();
                         gen2drv.put(sys_operation)                    ;
 
                         // now wait for driver to take our sequence of operations

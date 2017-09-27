@@ -391,6 +391,17 @@ module wu_decode (
   assign wud__wum__ready_e1              = ~from_WuMemory_Fifo[0].almost_full  ;
 
 
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Testbench control
+  `ifdef TB_MGR_PAUSES_WUD
+  reg tb_pause ; // the manager.sv can pause the WU decoder to ensure DiRAM4 memory is updated
+  initial
+    begin
+      @(posedge clk) tb_pause = 1'b1;
+    end
+  `endif
+
   //----------------------------------------------------------------------------------------------------
   // WU Instruction Decode FSM
   //
@@ -436,7 +447,11 @@ module wu_decode (
               
               // Note: the pipe will not be read unless all affected destination modules are ready
               `WU_DEC_INSTR_DECODE_WAIT: 
-                wu_dec_instr_dec_state_next =  ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_OP ) ) ? `WU_DEC_INSTR_DECODE_OP             :  // Instruction starts with operation descriptor
+                wu_dec_instr_dec_state_next =  
+                                               `ifdef TB_MGR_PAUSES_WUD
+                                                 ( tb_pause ) ? `WU_DEC_INSTR_DECODE_WAIT   :
+                                               `endif
+                                               ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_OP ) ) ? `WU_DEC_INSTR_DECODE_OP             :  // Instruction starts with operation descriptor
                                                ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_OP ) ) ? `WU_DEC_INSTR_DECODE_INSTR_RUNNING  :  // Instruction started with 1-cycle OP but instruction still valid
                                                ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_OP ) ) ? `WU_DEC_INSTR_DECODE_WAIT           :  // a one cycle instruction and descriptor???
                                                ( from_WuMemory_Fifo[0].pipe_read && (from_WuMemory_Fifo[0].pipe_icntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_WuMemory_Fifo[0].pipe_op   == `MGR_INST_DESC_TYPE_MR ) ) ? `WU_DEC_INSTR_DECODE_MR             :  // instruction starts with MR 
@@ -570,7 +585,11 @@ module wu_decode (
   // All decoder FSM's should follow the same path
   // We read the FIFO unless the instruction is complete and we are starting to process OR
   // the destination modules that require info from the instruction are not ready
-  assign from_WuMemory_Fifo[0].pipe_read = (~((instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ) | 
+  assign from_WuMemory_Fifo[0].pipe_read = ( ~(
+                                               `ifdef TB_MGR_PAUSES_WUD
+                                                 tb_pause |
+                                               `endif
+                                              (instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ) | 
                                               (instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ) | 
                                               (instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ) | 
                                               (instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR) | 

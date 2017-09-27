@@ -130,6 +130,9 @@ interface wud_to_oob_ifc(
     logic  [`MGR_WU_OPT_VALUE_RANGE        ]      stOp_cmd      ;
     logic  [`MGR_WU_OPT_VALUE_RANGE        ]      simd_cmd      ;
  
+    logic                                         tb_mrc_pause  ;  // testbench force a pause
+    logic                                         tb_wud_pause  ;  // testbench force a pause
+    logic                                         tb_wud_initiatiated_instruction ;
             
     clocking cb_p @(posedge clk);
 

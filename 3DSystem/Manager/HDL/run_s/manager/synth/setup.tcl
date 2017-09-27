@@ -29,7 +29,7 @@ set clkname clk
 # WIP
 #
 
-set modname mrc_cntl
+set modname sdp_stream_cntl
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
@@ -51,7 +51,7 @@ set report_default_significant_digits 4
 
 if {$tech == "65nm"} {
 
-  set CLK_PER 3.0
+  set CLK_PER 10.0
 
 } elseif {($tech == "28nm")} {
 

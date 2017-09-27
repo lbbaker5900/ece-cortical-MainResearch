@@ -145,18 +145,19 @@ typedef enum reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] {
 //  - read page and rw commands from command fifo's and make sure we follow the DDR protocol for DiRAM4
 // 
 
-`define MMC_CNTL_DFI_SEQ_WAIT                           12'b0000_0000_0001
-`define MMC_CNTL_DFI_SEQ_PAGE_CMD                       12'b0000_0000_0010
-`define MMC_CNTL_DFI_SEQ_PAGE_CMD_WITH_WR_DATA          12'b0000_0000_0100
-`define MMC_CNTL_DFI_SEQ_NOP_PAGE_CMD                   12'b0000_0000_1000
-`define MMC_CNTL_DFI_SEQ_NOP_PAGE_CMD_WITH_WR_DATA      12'b0000_0001_0000
-`define MMC_CNTL_DFI_SEQ_NOHEAD_NOP_PAGE_CMD            12'b0000_0010_0000
-`define MMC_CNTL_DFI_SEQ_RD_CMD                         12'b0000_0100_0000
-`define MMC_CNTL_DFI_SEQ_WR_CMD                         12'b0000_1000_0000
-`define MMC_CNTL_DFI_SEQ_NOP_RW_CMD                     12'b0001_0000_0000
-`define MMC_CNTL_DFI_SEQ_NOHEAD_NOP_RW_CMD              12'b0010_0000_0000
-
-`define MMC_CNTL_DFI_SEQ_ERR                             12'b1000_0000_0000
+`define MMC_CNTL_DFI_SEQ_WAIT                                  12'b0000_0000_0001
+`define MMC_CNTL_DFI_SEQ_PAGE_CMD                              12'b0000_0000_0010
+`define MMC_CNTL_DFI_SEQ_PAGE_CMD_WITH_WR_DATA                 12'b0000_0000_0100
+`define MMC_CNTL_DFI_SEQ_NOP_PAGE_CMD                          12'b0000_0000_1000
+`define MMC_CNTL_DFI_SEQ_NOP_PAGE_CMD_WITH_WR_DATA             12'b0000_0001_0000
+`define MMC_CNTL_DFI_SEQ_NOHEAD_NOP_PAGE_CMD                   12'b0000_0010_0000
+`define MMC_CNTL_DFI_SEQ_NOHEAD_NOP_PAGE_CMD_WITH_WR_DATA      12'b0000_0100_0000
+`define MMC_CNTL_DFI_SEQ_RD_CMD                                12'b0000_1000_0000
+`define MMC_CNTL_DFI_SEQ_WR_CMD                                12'b0001_0000_0000
+`define MMC_CNTL_DFI_SEQ_NOP_RW_CMD                            12'b0010_0000_0000
+`define MMC_CNTL_DFI_SEQ_NOHEAD_NOP_RW_CMD                     12'b0100_0000_0000
+                                                              
+`define MMC_CNTL_DFI_SEQ_ERR                                   12'b1000_0000_0000
 
 `define MMC_CNTL_DFI_SEQ_STATE_WIDTH         12
 `define MMC_CNTL_DFI_SEQ_STATE_MSB           `MMC_CNTL_DFI_SEQ_STATE_WIDTH-1

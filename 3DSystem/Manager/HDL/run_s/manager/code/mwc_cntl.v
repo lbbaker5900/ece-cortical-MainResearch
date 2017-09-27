@@ -7,7 +7,7 @@
     email       : lbbaker@ncsu.edu
 
     Description : Receives memory descriptors and data from the NoC and writes data to main memory
-                  Introduce a custom access to teh DRAM known as "masked" cache write
+                  Introduce a custom access to the DRAM known as "masked" cache write
                   The burst of two will be broken into a mask and a data phase or a phase with mask and data
                   e.g. we would like byte-wise masks
                   The cache line may be 256 bytes, so we break the cache line into two chunks and provide a mask/data phase 
@@ -200,7 +200,7 @@ module mwc_cntl (
   //
   always @(*)
     begin
-      case (mwc_cntl_input_arb_state)  // synopsys parallel_case)
+      case (mwc_cntl_input_arb_state)  // synopsys parallel_case full_case
         
         `MWC_CNTL_INPUT_ARB_WAIT: 
           mwc_cntl_input_arb_state_next =   ( input_intf_fifo[0].pipe_valid  ) ? `MWC_CNTL_INPUT_ARB_RDP    :  
@@ -209,18 +209,17 @@ module mwc_cntl (
 
         `MWC_CNTL_INPUT_ARB_RDP: 
           mwc_cntl_input_arb_state_next =   (intf_fsm[0].complete ) ? `MWC_CNTL_INPUT_ARB_COMPLETE :  
-                                                                         `MWC_CNTL_INPUT_ARB_RDP      ;
+                                                                      `MWC_CNTL_INPUT_ARB_RDP      ;
   
         `MWC_CNTL_INPUT_ARB_MCNTL: 
           mwc_cntl_input_arb_state_next =   (intf_fsm[1].complete ) ? `MWC_CNTL_INPUT_ARB_COMPLETE :  
-                                                                         `MWC_CNTL_INPUT_ARB_MCNTL    ;
+                                                                      `MWC_CNTL_INPUT_ARB_MCNTL    ;
   
   
         // wait for the input fsm to deassert complete
         `MWC_CNTL_INPUT_ARB_COMPLETE : 
-          mwc_cntl_input_arb_state_next =   (intf_fsm[0].complete ) ? `MWC_CNTL_INPUT_ARB_COMPLETE :  
-                                            (intf_fsm[1].complete ) ? `MWC_CNTL_INPUT_ARB_COMPLETE :  
-                                                                      `MWC_CNTL_INPUT_ARB_WAIT    ;
+          mwc_cntl_input_arb_state_next =   (intf_fsm[0].complete || intf_fsm[1].complete)  ? `MWC_CNTL_INPUT_ARB_COMPLETE :  
+                                                                                              `MWC_CNTL_INPUT_ARB_WAIT     ;
   
         default:
           mwc_cntl_input_arb_state_next =   `MWC_CNTL_INPUT_ARB_WAIT   ;
@@ -446,7 +445,7 @@ module mwc_cntl (
         
               `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_INTF : 
                 mwc_cntl_extract_desc_state_next =   ( contains_storage_ptr[0] && (storage_desc_ptr_mgr_id == sys__mgr__mgrId)) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_INTF :  // read the descriptor
-                                                                                                                                   `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_INTF   ;
+                                                                                                                                  `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_INTF   ;
       
               `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_INTF : 
                 mwc_cntl_extract_desc_state_next =   (storage_desc_processing_complete  ) ? `MWC_CNTL_PTR_DATA_RCV_CHECK_2ND_DESC_FROM_INTF    :  // read the descriptor
@@ -693,7 +692,6 @@ module mwc_cntl (
   wire                                            sdpr_cfg_valid       ;
   wire   [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]   sdpr_cfg_addr        ;
   wire   [`MGR_INST_OPTION_ORDER_RANGE        ]   sdpr_cfg_accessOrder ;
-  wire                                            sdpr_complete        ;
 
   always @(*)
     begin
@@ -719,12 +717,12 @@ module mwc_cntl (
             //------------------------------
             // Configuration
             //
-            .xxx__sdp__lane_enable                        ( {`MGR_NUM_OF_EXEC_LANES {1'b1}}             ),  // FIXME
-            .xxx__sdp__num_lanes                          ( 6'd32 ),  // FIXME
-            .xxx__sdp__num_lanes_m1                       ( 6'd31 ),
-            .xxx__sdp__txfer_type                         ( 2'd1  ),  // FIXME
-            //.xxx__sdp__num_lanes                          ( {`MGR_NUM_LANES_WIDTH 'd `MGR_NUM_OF_EXEC_LANES  } ),
-            //.xxx__sdp__num_lanes_m1                       ( {`MGR_NUM_LANES_WIDTH 'd `MGR_NUM_OF_EXEC_LANES-1} ),
+            .xxx__sdp__lane_enable                        ( {`MGR_NUM_OF_EXEC_LANES {1'b1}}            ),  // FIXME
+            .xxx__sdp__num_lanes                          ( 6'd32                                      ),  // FIXME
+            .xxx__sdp__num_lanes_m1                       ( 6'd31                                      ),
+            .xxx__sdp__txfer_type                         ( 2'd1                                       ),  // FIXME
+            //.xxx__sdp__num_lanes                        ( {`MGR_NUM_LANES_WIDTH 'd `MGR_NUM_OF_EXEC_LANES  } ),
+            //.xxx__sdp__num_lanes_m1                     ( {`MGR_NUM_LANES_WIDTH 'd `MGR_NUM_OF_EXEC_LANES-1} ),
 
             .xxx__sdp__storage_desc_processing_enable     ( storage_desc_processing_enable             ),
             .sdp__xxx__storage_desc_processing_complete   ( storage_desc_processing_complete           ),
@@ -753,7 +751,7 @@ module mwc_cntl (
             .sdpr__sdps__cfg_addr                         ( sdpr_cfg_addr                              ),
             .sdpr__sdps__cfg_accessOrder                  ( sdpr_cfg_accessOrder                       ),
             .sdps__sdpr__cfg_ready                        ( 1'b1                                       ),
-            .sdps__sdpr__complete                         ( 1'b1 ),
+            .sdps__sdpr__complete                         ( 1'b1                                       ),
             .sdpr__sdps__complete                         (                                            ),
 
             .sdpr__sdps__consJump_valid                   (                                            ),

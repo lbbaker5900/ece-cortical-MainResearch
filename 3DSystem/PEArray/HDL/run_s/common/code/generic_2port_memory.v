@@ -114,19 +114,23 @@ module generic_2port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
     `include "generic_memories.vh"
 
   `else
-      reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [256-1 :0 ] ;
+    // reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [256-1 :0 ] ;
     // Not synthesis
     if (GENERIC_MEM_DEPTH >= 256)
-      reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [256-1 :0 ] ;
+      begin:memblk
+        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [256-1 :0 ] ;
+      end
     else
-      reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
+      begin:memblk
+        reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     mem     [GENERIC_MEM_DEPTH-1 :0 ] ;
+      end
 
     initial
       begin
         @(negedge reset_poweron)
           if (GENERIC_MEM_INIT_FILE != "")
             begin
-              $readmemh( GENERIC_MEM_INIT_FILE, mem);
+              $readmemh( GENERIC_MEM_INIT_FILE, memblk.mem);
             end
       end
   `endif
@@ -144,22 +148,22 @@ module generic_2port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
       end
 
     if (GENERIC_MEM_REGISTERED_OUT == 0)
-     begin
+     begin:readassign
       always @(posedge clk)
         begin
-          reg_portA_read_data   <= ( portA_enable  ) ? mem [portA_address] : 
+          reg_portA_read_data   <= ( portA_enable  ) ? memblk.mem [portA_address] : 
                                                        reg_portA_read_data ;
-          reg_portB_read_data   <= ( portB_enable  ) ? mem [portB_address] : 
+          reg_portB_read_data   <= ( portB_enable  ) ? memblk.mem [portB_address] : 
                                                        reg_portB_read_data ;
         end
      end
     else  // Not registers
-     begin
+     begin:readassign
       always @(posedge clk)
         begin
-          reg_portA_read_data   <= ( portA_enable_d1 ) ? mem [portA_address] : 
+          reg_portA_read_data   <= ( portA_enable_d1 ) ? memblk.mem [portA_address] : 
                                                          reg_portA_read_data ;
-          reg_portB_read_data   <= ( portB_enable_d1 ) ? mem [portB_address] : 
+          reg_portB_read_data   <= ( portB_enable_d1 ) ? memblk.mem [portB_address] : 
                                                          reg_portB_read_data ;
         end
       /*
@@ -174,9 +178,9 @@ module generic_2port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
     always @(posedge clk)
       begin
         if (portA_enable && portA_write)
-          mem [portA_address] <= portA_write_data ;
+          memblk.mem [portA_address] <= portA_write_data ;
         if (portB_enable && portB_write)
-          mem [portB_address] <= portB_write_data ;
+          memblk.mem [portB_address] <= portB_write_data ;
       end
   `endif
 

@@ -529,15 +529,15 @@ if __name__ == "__main__":
     #pLine = pLine + '\n                  sys_operation_lane_gen[{0}].c_memoryLocalized.constraint_mode(1)            ;'.format(lane)
     #pLine = pLine + '\n                  //'.format(lane)
     #pLine = pLine + '\n                  assert(sys_operation_lane_gen[{0}].randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address'.format(lane)
-    pLine = pLine + '\n'
-    pLine = pLine + '\n                // Send to driver                                                                                                                 '.format(lane) 
-    pLine = pLine + '\n                mgr2gen[{0}].put(sys_operation_lane_gen[{0}])                    ;                                                                '.format(lane) 
-    pLine = pLine + '\n                                                                                                                                                  '.format(lane) 
-    pLine = pLine + '\n                // now wait for generator                                                                                                         '.format(lane) 
-    pLine = pLine + '\n                @mgr2gen_ack[{0}];                                                                                                                '.format(lane) 
-    pLine = pLine + '\n                                                                                                                                                  '.format(lane) 
-    pLine = pLine + '\n            join_none                                                                                                                             '.format(lane) 
-    pLine = pLine + '\n                                                                                                                                                  '.format(lane) 
+    pLine = pLine + '\n                //if (sys_operation_lane_gen[{0}].numberOfLanes < {0})         '.format(lane)
+    pLine = pLine + '\n                //  begin'
+    pLine = pLine + '\n                    // Send to driver                                        '.format(lane) 
+    pLine = pLine + '\n                    mgr2gen[{0}].put(sys_operation_lane_gen[{0}]) ;          '.format(lane) 
+    pLine = pLine + '\n                    // now wait for generator                                '.format(lane) 
+    pLine = pLine + '\n                    @mgr2gen_ack[{0}];                                       '.format(lane) 
+    pLine = pLine + '\n                //  end                                                        '.format(lane) 
+    pLine = pLine + '\n            join_none                                                        '.format(lane) 
+    pLine = pLine + '\n                                                                             '.format(lane) 
   pLine = pLine + '\n'
 
   f.write(pLine)

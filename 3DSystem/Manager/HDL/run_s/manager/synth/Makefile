@@ -1,5 +1,5 @@
 
-MODNAME = mrc_cntl
+MODNAME = sdp_stream_cntl
 TECH    = 65nm
 
 RTL_DIR = ../code

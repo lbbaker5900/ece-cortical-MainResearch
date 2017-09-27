@@ -237,7 +237,7 @@ module sdp_request_cntl (
   reg                                                      force_disable_request               ;  
                                                                                                   
   reg                                                      force_cons_request                  ;  // force either chan0 or chan1
-  reg                                                      force_jump_request                  ;  
+  reg                                                      force_jump_request                  ;  // FIXME force_jump_.* always 0, delete???
   reg                                                      force_cons_chan01_request           ;  // force chan0 then chan1 at consequtive phase start
   reg                                                      force_cons_chan10_request           ;  // force chan1 then chan0 at consequtive phase start
   reg                                                      force_jump_chan01_request           ;  // force chan0 then chan1 at jump phase
@@ -471,6 +471,10 @@ module sdp_request_cntl (
   reg  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]    pbc_last_end_addr_chan           ;  // use for consequtive/jump boundary checks
   reg  [`MGR_DRAM_BANK_DIV2_ADDRESS_RANGE   ]    pbc_last_end_addr_bank           ;  //               "
   reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]    pbc_last_end_addr_page           ;  //               "
+
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    pbc_last_requested_valid                          ;  // Keep track of the previously requested bank/page for each channel
+  reg  [`MGR_DRAM_BANK_DIV2_ADDRESS_RANGE   ]    pbc_bank_last_requested [`MGR_DRAM_NUM_CHANNELS ] ;  // 
+  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]    pbc_page_last_requested [`MGR_DRAM_NUM_CHANNELS ] ;  // LEE
 
   // extract the bank/page/chan sub-fields
   // Would have been nice to use a struct, maybe next time
@@ -717,7 +721,8 @@ module sdp_request_cntl (
            begin
              first_time_thru                  <= 1'b0 ;
              // if last_end_addr points to cons(t-1).end, and cons(t).start is in the same bank/page, then assume the channels with this bank/page have already been requested
-             force_disable_request            <= pbc_last_end_is_cons_tm1_end && ((pbc_inc_addr_bank == pbc_last_end_addr_bank) && (pbc_inc_addr_page == pbc_last_end_addr_page));
+             //force_disable_request            <= pbc_last_end_is_cons_tm1_end & ((pbc_inc_addr_bank == pbc_last_end_addr_bank) & (pbc_inc_addr_page == pbc_last_end_addr_page));
+             force_disable_request            <= pbc_last_end_is_cons_tm1_end & pbc_last_requested_valid [pbc_inc_addr_chan] & (pbc_inc_addr_bank == pbc_bank_last_requested [pbc_inc_addr_chan]) & (pbc_page_last_requested [pbc_inc_addr_chan] == pbc_inc_addr_page);
 
              case (storage_desc_accessOrder)
                PY_WU_INST_ORDER_TYPE_CWBP:
@@ -743,8 +748,8 @@ module sdp_request_cntl (
                            begin
                              force_cons_chan0_request  <= 1'b0 ;
                              force_cons_chan1_request  <= 1'b0 ;
-                             force_cons_chan01_request <= 1'b1 ;
-                             force_cons_chan10_request <= 1'b0 ;
+                             force_cons_chan01_request <= 1'b0 ;
+                             force_cons_chan10_request <= 1'b1 ;
                            end
                          3'b011:
                            begin
@@ -770,8 +775,8 @@ module sdp_request_cntl (
                            end
                          3'b110:
                            begin
-                             force_cons_chan0_request  <= 1'b0 ;
-                             force_cons_chan1_request  <= 1'b1 ;
+                             force_cons_chan0_request  <= 1'b1 ;
+                             force_cons_chan1_request  <= 1'b0 ;
                              force_cons_chan01_request <= 1'b0 ;
                              force_cons_chan10_request <= 1'b0 ;
                            end
@@ -841,6 +846,7 @@ module sdp_request_cntl (
 
         default:
            begin
+             force_disable_request            <= 1'b0                             ;  // clear as soon as we have been in PBC_INC 
              first_time_thru                  <= first_time_thru                  ;
              force_cons_chan0_request         <= force_cons_chan0_request         ;
              force_cons_chan1_request         <= force_cons_chan1_request         ;
@@ -1108,6 +1114,7 @@ module sdp_request_cntl (
                     pbc_inc_addr <= pbc_inc_addr ;
                   end
              endcase
+             pbc_last_requested_valid   <= 2'b00 ; // Keep track of the previously requested bank/page for each channel
            end
 
         `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS:
@@ -1138,7 +1145,7 @@ module sdp_request_cntl (
 
         `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC:
            begin
-             case ({force_jump_request, force_cons_request, generate_requests})  // 
+             casex ({force_jump_request, force_cons_request, generate_requests})  // 
                3'b000:
                  begin
                    pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
@@ -1149,7 +1156,7 @@ module sdp_request_cntl (
                  end
                3'b01x:
                  begin
-                     pbc_inc_addr    <=  pbc_inc_addr ;
+                     pbc_inc_addr    <=  pbc_end_addr ;  // LEE
                  end
                3'b1xx:
                  begin
@@ -1161,6 +1168,7 @@ module sdp_request_cntl (
                  end
              endcase
            end
+
 
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST:
            begin
@@ -1190,6 +1198,25 @@ module sdp_request_cntl (
                    pbc_inc_addr    <=  pbc_inc_addr  ;
                  end
              endcase
+
+             pbc_last_requested_valid [0] <= (force_cons_chan0_request || force_cons_chan01_request )  ?  1'b1                         :
+                                             (pbc_inc_addr_chan == 'd0                              )  ?  1'b1                         :
+                                                                                                          pbc_last_requested_valid [0] ;
+             pbc_last_requested_valid [1] <= (force_cons_chan1_request || force_cons_chan10_request )  ?  1'b1                         :
+                                             (pbc_inc_addr_chan == 'd1                              )  ?  1'b1                         :
+                                                                                                          pbc_last_requested_valid [1] ;
+             pbc_bank_last_requested  [0] <= (force_cons_chan0_request || force_cons_chan01_request )  ?  pbc_inc_addr_bank            :
+                                             (pbc_inc_addr_chan == 'd0                              )  ?  pbc_inc_addr_bank            :
+                                                                                                          pbc_bank_last_requested  [0] ;
+             pbc_bank_last_requested  [1] <= (force_cons_chan1_request || force_cons_chan10_request )  ?  pbc_inc_addr_bank            :
+                                             (pbc_inc_addr_chan == 'd1                              )  ?  pbc_inc_addr_bank            :
+                                                                                                          pbc_bank_last_requested  [1] ;
+             pbc_page_last_requested  [0] <= (force_cons_chan0_request || force_cons_chan01_request )  ?  pbc_inc_addr_page            :
+                                             (pbc_inc_addr_chan == 'd0                              )  ?  pbc_inc_addr_page            :
+                                                                                                          pbc_page_last_requested  [0] ;
+             pbc_page_last_requested  [1] <= (force_cons_chan1_request || force_cons_chan10_request )  ?  pbc_inc_addr_page            :
+                                             (pbc_inc_addr_chan == 'd1                              )  ?  pbc_inc_addr_page            :
+                                                                                                          pbc_page_last_requested  [1] ;
            end
 
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID:

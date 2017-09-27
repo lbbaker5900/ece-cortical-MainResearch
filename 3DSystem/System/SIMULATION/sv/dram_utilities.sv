@@ -173,8 +173,8 @@ package dram_utils;
           void'($fgets (fileLine, fileDesc)); 
           void'($sscanf(fileLine, "%s  %s  %s  %s  %s ", a,b,c,d,e));
           $display("@%0t :%s:%0d:INFO: %s %s %s %s %s", $time, `__FILE__, `__LINE__, a,b,c,d,e);
-*/
           $display("@%0t :%s:%0d:INFO: Loading DRAM from AllGroup file %s for manager {%0d}", $time, `__FILE__, `__LINE__, allGroupFileName, Id);
+*/
           for (int i=0; i<idx-1; i++)
             begin
               tmp_str = fileLine.substr(idxs[i]+1, idxs[i+1]-1);

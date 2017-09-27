@@ -237,6 +237,7 @@ class Environment;
                                           .vWudToMrcIfc              ( vWudToMrcIfc[pe]             ), 
                                           .mrc2mgr_m                 ( mrc2mgr_m[pe]                ), 
                                           .wud2mgr_m                 ( wud2mgr_m[pe]                ),
+                                          .vWudToOobIfc              ( vWudToOobIfc[pe]             ),
                                           .vDramCfgIfc               ( vDramCfgIfc[pe]              ));
 
                 oob_drv     [pe]  = new ( .Id                      ( pe                              ),
