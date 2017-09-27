@@ -1094,19 +1094,19 @@ module sdp_stream_cntl (
              
                  `SDP_CNTL_STRM_DATA_COUNT_CONS: 
                    begin
-                     req_next_line [chan]        = ( lane_running & (send_data | sent_data_without_increment) /*destination_ready*/ & (lane_channel_ptr_e1 == chan) & ~lane_address_next_match [chan]                                                                         )  ?  1'b1  :
-                                                   ((strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) & (from_mmc_data_valid [chan] & response_id_valid[chan] & ~lane_address_match[chan] & (~lane_address_next_match[chan] & (lane_channel_ptr_e1 != lane_channel_ptr ))))  ?  1'b1  :
-                                                   ((strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) & (from_mmc_data_valid [chan] & response_id_valid[chan] & ~lane_address_match[chan] & (~lane_address_next_match[chan]                                             )))  ?  1'b1  :
-                                                                                                                                                                                                                                                                                    1'b0  ;
+                     req_next_line [chan]        = ( lane_running & (send_data | sent_data_without_increment) /*destination_ready*/ & (lane_channel_ptr_e1 == chan) & ~lane_address_next_match [chan]                                                                         )  |  
+                                                   ((strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) & (from_mmc_data_valid [chan] & response_id_valid[chan] & ~lane_address_match[chan] & (~lane_address_next_match[chan] & (lane_channel_ptr_e1 != lane_channel_ptr ))))  |  
+                                                   ((strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) & (from_mmc_data_valid [chan] & response_id_valid[chan] & ~lane_address_match[chan] & (~lane_address_next_match[chan]                                             )))  ;  
+                                                                                                                                                                                                                                                                                    
                      force_req_next_line [chan]  = (destination_ready & (lane_channel_ptr == chan) & first_transaction & (from_mmc_data_valid [lane_channel_ptr] & response_id_valid[lane_channel_ptr] & ~lane_address_match[lane_channel_ptr] & ~lane_address_next_match[lane_channel_ptr])) ;
                    end
              
                  `SDP_CNTL_STRM_DATA_LOAD_JUMP_VALUE: 
                    begin
-                     req_next_line [chan]        = ( lane_running & (send_data | sent_data_without_increment) /*destination_ready*/ & (lane_channel_ptr_e1 == chan) & ~lane_address_next_match [chan]                                                                         )  ?  1'b1  :
-                                                   ((strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) & (from_mmc_data_valid [chan] & response_id_valid[chan] & ~lane_address_match[chan] & (~lane_address_next_match[chan] & (lane_channel_ptr_e1 != lane_channel_ptr ))))  ?  1'b1  :
-                                                   ((strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) & (from_mmc_data_valid [chan] & response_id_valid[chan] & ~lane_address_match[chan] & (~lane_address_next_match[chan]                                             )))  ?  1'b1  :
-                                                                                                                                                                                                                                                                                    1'b0  ;
+                     req_next_line [chan]        = ( lane_running & (send_data | sent_data_without_increment) /*destination_ready*/ & (lane_channel_ptr_e1 == chan) & ~lane_address_next_match [chan]                                                                         )  | 
+                                                   ((strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) & (from_mmc_data_valid [chan] & response_id_valid[chan] & ~lane_address_match[chan] & (~lane_address_next_match[chan] & (lane_channel_ptr_e1 != lane_channel_ptr ))))  | 
+                                                   ((strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST  ) & (from_mmc_data_valid [chan] & response_id_valid[chan] & ~lane_address_match[chan] & (~lane_address_next_match[chan]                                             )))  ; 
+                                                                                                                                                                                                                                                                                   
                      force_req_next_line [chan]  = 1'b0  ;
                    end
              
@@ -1118,9 +1118,9 @@ module sdp_stream_cntl (
                    end
                  default:
                    begin
-                     req_next_line [chan]        = ( complete                                                                                                                                                                                                                 )  ?  1'b1  :  // if complete, set to avoid blocking other lanes// & from_mmc_data_valid [chan] ) //;
-                                                   ( lane_running & (send_data | sent_data_without_increment) /*destination_ready*/ & (lane_channel_ptr_e1 == chan) & ~lane_address_next_match [chan]                                                                         )  ?  1'b1  :
-                                                                                                                                                                                                                                                                                    1'b0  ;
+                     req_next_line [chan]        = ( complete                                                                                                                                         )  |   // if complete, set to avoid blocking other lanes// & from_mmc_data_valid [chan] ) //;
+                                                   ( lane_running & (send_data | sent_data_without_increment) /*destination_ready*/ & (lane_channel_ptr_e1 == chan) & ~lane_address_next_match [chan] )  ;
+
                      force_req_next_line [chan]  = 1'b0  ;
                                                                                                     
                    end
