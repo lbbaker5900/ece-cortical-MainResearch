@@ -248,7 +248,9 @@ OptionType = namedtuple('OptionType',   \
                                       simdOp         \
                                       MEMORY         \
                                       NUM_OF_ARG0_OPERANDS \
-                                      NUM_OF_ARG1_OPERANDS')
+                                      NUM_OF_ARG1_OPERANDS \
+                                      CONFIG         \
+                                      STATUS')
 optionType  = OptionType._make([int(math.ceil(math.log(len(OptionType._fields)-1,16)))] + range(len(OptionType._fields)-1))
 
 # Note: For now, with these stOp commands, we will map an option value to the larger regFile streamingOp command, address, number of operands etc. 
@@ -290,6 +292,12 @@ OrderValues = namedtuple('OrderValues',              \
                                       wcbp           \
                                       NOP            ')
 orderValues  = OrderValues._make([int(math.ceil(math.log(len(OrderValues._fields)-1,16)))] + range(len(OrderValues._fields)-1))
+
+
+cfgValues = namedtuple('cfgValues',              \
+                                     'SYNC       \
+                                      NOP        ')
+cfgValues  = cfgValues._make([int(math.ceil(math.log(len(cfgValues._fields)-1,16)))] + range(len(cfgValues._fields)-1))
 
 
 
@@ -466,11 +474,12 @@ class StorageDescriptor():
     # Only increment the ptr value if a descriptor is actually used. This keeps a tally of the number of descriptors and is the pointer to the next descriptor added
     ptr = 0
 
-    def __init__(self, address, access, accessOrder, consequtive, jump):
+    def __init__(self, address, access, accessOrder, consequtive, jump, numberOfCells):
       self.Id          = None          # Id also represents the pointer to this descriptor when used in a WU
       self.address     = address     
       self.access      = access        # read/write - not important other thanshows what required the descriptor, so dont use it in the _-eq__ method
       self.accessOrder = accessOrder 
+      self.numberOfCells = numberOfCells 
       self.consequtive = consequtive   # list
       self.jump        = jump          # list
 
@@ -2612,6 +2621,7 @@ class Manager():
             memoryOption.order    = self.memoryROIallocationOptions[layerID].order
             wuRoi['Order']        = memoryOption.order
             wuRoi['StartAddress'] = roi[0].memoryLocation
+            wuRoi['NumberOfCells'] = 1  # ROI is boardcast so Storage descriptors increment like there is one cell
             cnt = 0  # count how many consequtive memory locations
             # use the memoryOption increment method and compare with address of next cell
             #memoryOption.increment(roi[0].memoryLocation.memory, 0)
@@ -2706,7 +2716,7 @@ class Manager():
             # Make sure that a common destination manager is storing each cell state in contiguous memory
             # For each destination manager, make sure each cell in the group is writing to consequtive locations and create an output WU
             # So create a dummpy memory location based on where the first cell is stored, and then increment that dummpy location and compare against the address of the next cell.
-            # If the address is continuous, then count number of cintoinuos. 
+            # If the address is continuous, then count number of continuous. 
             # If its not continuous, then log the "jump" to the next location.
             wuDestination = []
             for ctIdx in range(numOfCopiedTo) :
@@ -2733,6 +2743,7 @@ class Manager():
                 if cnt > 0 :
                     wuPerMgrDestination['Consequtive'].append(cnt)
                 wuDestination.append(wuPerMgrDestination)
+                print '{0}:{1}:LEE:ERROR:DEBUG: {2}'.format(__FILE__(), __LINE__(), wuDestination)
 
             wuDestinations.append(wuDestination)
 
@@ -2805,7 +2816,7 @@ class Manager():
             roiAddress = '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
             roiAddress = roiAddress + roi['StartAddress'].asHexString()
             # remember to remove any spaces when adding fields to descriptor
-            readDesc   = StorageDescriptor(roiAddress.replace(" ",""), 'read', roi['Order'], [], [] )
+            readDesc   = StorageDescriptor(roiAddress.replace(" ",""), 'read', roi['Order'], [], [], roi['NumberOfCells'] )
 
             #--------------------------------------------------
             # Text file
@@ -2866,7 +2877,7 @@ class Manager():
             # Address is a chiplet wdide address, so include Manager ID as msb's of address
             kerAddress = '{0:>{1}}_' .format(toHexPad(self.absID                  , int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))) ), int(math.ceil(math.log(self.parentManagerArray.Y*self.parentManagerArray.X          ,16))))
             kerAddress = kerAddress + ker['StartAddress'].asHexString()
-            readDesc   = StorageDescriptor(kerAddress.replace(" ",""), 'read', ker['Order'], [], [] )
+            readDesc   = StorageDescriptor(kerAddress.replace(" ",""), 'read', ker['Order'], [], [], ker['NumberOfCells'] )
 
 
 
@@ -2935,7 +2946,7 @@ class Manager():
                 # Create a storage descriptor for each destination
                 destAddress =   '{0:>{1}}_' .format(toHexPad(  d['Manager'].absID        , int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X  ,16))) ), int(math.ceil(math.log(  d['Manager'].parentManagerArray.Y*d['Manager'].parentManagerArray.X   ,16))))
                 destAddress =   destAddress + d['StartAddress'].asHexString()
-                writeDesc   =   StorageDescriptor(destAddress.replace(" ",""), 'write', d['Order'], [], [] )
+                writeDesc   =   StorageDescriptor(destAddress.replace(" ",""), 'write', d['Order'], [], [], d['NumberOfCells'] )
 
                 # Construct storage descriptor
                 # - save storage descriptor and ptr to storage descriptor as option value
@@ -3032,9 +3043,9 @@ class Manager():
           pLine = pLine + storageDesc.address + ' ' 
           pLine = pLine + '{0:>{1}} ' .format(getattr(orderValues, ''.join(  storageDesc.accessOrder)), orderValues.WIDTH)
           for c in range(len(storageDesc.consequtive)) :
-              pLine = pLine + '{0:>3} '.format(toHexPad(int(storageDesc.consequtive[c],16)-1,3))
+              pLine = pLine + '{0:>3} '.format(toHexPad(int(storageDesc.consequtive[c],16)-storageDesc.numberOfCells,3))
               try :
-                  pLine = pLine + '1 {0:>3} '.format(toHexPad(int(storageDesc.jump[c],16)+1,3))
+                  pLine = pLine + '1 {0:>3} '.format(toHexPad(int(storageDesc.jump[c],16)+storageDesc.numberOfCells,3))
               except:
                   pass
           pLine = pLine + '0\n'
