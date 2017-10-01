@@ -1,5 +1,5 @@
 
-MODNAME = sdp_stream_cntl
+MODNAME = manager
 TECH    = 65nm
 
 RTL_DIR = ../code

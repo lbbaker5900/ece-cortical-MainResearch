@@ -85,8 +85,10 @@ if {$tech == "28nm"} {
 
   
 if {$tech == "65nm"} {
-  set target_library cp65npksdst_ss0p9v125c.db
-  set symbol_library cp65npksdst.slib 
+  set target_library cp65npksdst_tt1p0v25c.db
+  set link_library cp65npksdst_tt1p0v25c.db
+  #set target_library cp65npksdst_ss0p9v125c.db
+  #set symbol_library cp65npksdst.slib 
 
 } elseif {$tech == "28nm"} {
 

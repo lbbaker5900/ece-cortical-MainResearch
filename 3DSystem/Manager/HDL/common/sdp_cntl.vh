@@ -88,18 +88,19 @@
 //--------------------------------------------------------
 // Stream Data FSM
 
-`define SDP_CNTL_STRM_DATA_WAIT                    8'b0000_0001
-`define SDP_CNTL_STRM_DATA_INIT                    8'b0000_0010
+`define SDP_CNTL_STRM_DATA_WAIT                    9'b0_0000_0001
+`define SDP_CNTL_STRM_DATA_PTR_INIT                9'b0_0000_0010
+`define SDP_CNTL_STRM_DATA_PTR_INC_INIT            9'b0_0000_0100
 
-`define SDP_CNTL_STRM_DATA_LOAD_FIRST_CONS_COUNT   8'b0000_0100
-`define SDP_CNTL_STRM_DATA_LOAD_JUMP_VALUE         8'b0000_1000
-`define SDP_CNTL_STRM_DATA_COUNT_CONS              8'b0001_0000
+`define SDP_CNTL_STRM_DATA_LOAD_FIRST_CONS_COUNT   9'b0_0000_1000
+`define SDP_CNTL_STRM_DATA_LOAD_JUMP_VALUE         9'b0_0001_0000
+`define SDP_CNTL_STRM_DATA_COUNT_CONS              9'b0_0010_0000
 
-`define SDP_CNTL_STRM_DATA_COMPLETE                8'b0010_0000
-`define SDP_CNTL_STRM_DATA_WAIT_DISABLE            8'b0100_0000
-`define SDP_CNTL_STRM_DATA_ERR                     8'b1000_0000
+`define SDP_CNTL_STRM_DATA_COMPLETE                9'b0_0100_0000
+`define SDP_CNTL_STRM_DATA_WAIT_DISABLE            9'b0_1000_0000
+`define SDP_CNTL_STRM_DATA_ERR                     9'b1_0000_0000
 
-`define SDP_CNTL_STRM_DATA_STATE_WIDTH         8
+`define SDP_CNTL_STRM_DATA_STATE_WIDTH         9
 `define SDP_CNTL_STRM_DATA_STATE_MSB           `SDP_CNTL_STRM_DATA_STATE_WIDTH-1
 `define SDP_CNTL_STRM_DATA_STATE_LSB           0
 `define SDP_CNTL_STRM_DATA_STATE_SIZE          (`SDP_CNTL_STRM_DATA_STATE_MSB - `SDP_CNTL_STRM_DATA_STATE_LSB +1)

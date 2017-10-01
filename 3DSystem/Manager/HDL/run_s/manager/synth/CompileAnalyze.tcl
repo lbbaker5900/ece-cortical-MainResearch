@@ -10,7 +10,9 @@ set_ungroup [all_designs] false
 set_structure true
 
 #compile -map_effort medium -boundary_optimization -auto_ungroup area
-compile -map_effort medium
+compile -map_effort medium    \
+        -area_effort medium
+
 # compile_ultra \
 #      -no_autoungroup
 #report_fsm
@@ -41,6 +43,8 @@ report_timing \
 
 report_cell > ${modname}_${type}_cell_report_initial.rpt
 
+compile -incremental      \
+        -area_effort none
 #
 # 	Now resynthesize the design for the fastest corner   
 # 	making sure that hold time conditions are met        

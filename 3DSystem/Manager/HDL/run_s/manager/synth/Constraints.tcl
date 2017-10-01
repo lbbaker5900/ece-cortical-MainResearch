@@ -132,7 +132,7 @@ if {$tech == "65nm"} {
 
 if {$tech == "65nm"} {
 
-  set PORT_LOAD_CELL	cp65npksdst_ss0p9v125c/SEN_FDPQ_1/D
+  set PORT_LOAD_CELL cp65npksdst_tt1p0v25c/SEN_FDPQ_1/D
   set WIRE_LOAD_EST   0.013
   set FANOUT          4
   set PORT_LOAD [expr $WIRE_LOAD_EST + $FANOUT * [load_of $PORT_LOAD_CELL]]

@@ -561,6 +561,7 @@ module sdp_stream_cntl (
       begin: lane_fsm
         reg  [`SDP_CNTL_CONS_COUNTER_RANGE        ]    consequtive_counter             ;
         reg                                            consequtive_counter_le0         ;  //
+        reg                                            consequtive_counter_eq1         ;  //
                                                                                    
         reg                                            last_consequtive                ;  // we have seen the end-of-consJump so after this last phase we exit
         reg                                            destination_ready               ;  // if from_mmc data is available and the downsteram is ready
@@ -633,12 +634,17 @@ module sdp_stream_cntl (
             case (sdp_cntl_stream_data_state)  // synopsys parallel_case full_case
               
               `SDP_CNTL_STRM_DATA_WAIT: 
-                sdp_cntl_stream_data_state_next =  ( exec_lane_enable [lane]  ) ? `SDP_CNTL_STRM_DATA_INIT : 
+                sdp_cntl_stream_data_state_next =  ( exec_lane_enable [lane]  ) ? `SDP_CNTL_STRM_DATA_PTR_INIT : 
                                                                                   `SDP_CNTL_STRM_DATA_WAIT ;
         
-              `SDP_CNTL_STRM_DATA_INIT: 
-                sdp_cntl_stream_data_state_next =  ( consJump_to_strm_fsm_fifo[0].pipe_valid && addr_to_strm_fsm_fifo[0].pipe_valid ) ? `SDP_CNTL_STRM_DATA_LOAD_FIRST_CONS_COUNT :  // load consequtive words counter
-                                                                                                                                        `SDP_CNTL_STRM_DATA_INIT                  ;
+              `SDP_CNTL_STRM_DATA_PTR_INIT: 
+                sdp_cntl_stream_data_state_next =  ( consJump_to_strm_fsm_fifo[0].pipe_valid && addr_to_strm_fsm_fifo[0].pipe_valid ) ? `SDP_CNTL_STRM_DATA_PTR_INC_INIT :  // load consequtive words counter
+                                                                                                                                        `SDP_CNTL_STRM_DATA_PTR_INIT     ;
+        
+              // After this state, lane_inc points to current address and lane_inc_..._e1 points to next address
+              `SDP_CNTL_STRM_DATA_PTR_INC_INIT: 
+                sdp_cntl_stream_data_state_next =  `SDP_CNTL_STRM_DATA_LOAD_FIRST_CONS_COUNT ;  // increment next address
+                                                   
         
               // wait for consequtive counter to time out
               //  - transition straight thru this state
@@ -763,13 +769,14 @@ module sdp_stream_cntl (
         always @(*)
           begin
             consequtive_counter_le0 = (consequtive_counter[`SDP_CNTL_CONS_COUNTER_MSB]  == 1'b1) | (consequtive_counter == 'd0) ;
+            consequtive_counter_eq1 =                                                              (consequtive_counter == 'd1) ;
           end
         
         always @(posedge clk)
           begin
             case (sdp_cntl_stream_data_state)  // synopsys parallel_case
               
-              `SDP_CNTL_STRM_DATA_INIT: 
+              `SDP_CNTL_STRM_DATA_PTR_INIT: 
                 begin
                   last_consequtive <= 1'b0  ;
                 end
@@ -793,7 +800,7 @@ module sdp_stream_cntl (
 
         always @(posedge clk)
           begin
-            lane_bank_lsb    <= ((sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_INIT                 ))  ? addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_FIELD_LSB ] :
+            lane_bank_lsb    <= ((sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_PTR_INIT             ))  ? addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_FIELD_LSB ] :
                                                                                                                lane_bank_lsb                                                         ;
           end
 
@@ -805,10 +812,50 @@ module sdp_stream_cntl (
        always @(posedge clk)
          begin
            case (sdp_cntl_stream_data_state)  // synopsys parallel_case
-             `SDP_CNTL_STRM_DATA_INIT :
+             `SDP_CNTL_STRM_DATA_PTR_INIT :
                begin
-                 lane_inc_address <=  lane_inc_address_e1 ;
+                
+                 case (strm_transfer_type )  // synopsys parallel_case full_case
+                 
+                   PY_WU_INST_TXFER_TYPE_VECTOR:
+                     begin
+                       case (strm_accessOrder )  // synopsys parallel_case full_case
+                         PY_WU_INST_ORDER_TYPE_WCBP:
+                           begin
+                             lane_inc_address           <=  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
+                                                             addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_DIV2_FIELD_RANGE ], 
+                                                             addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE      ], 
+                                                             addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE      ],
+                                                             2'b00 } + {lane, 2'b00} ;
+                           end
+                         PY_WU_INST_ORDER_TYPE_CWBP:
+                           begin
+                             lane_inc_address           <=  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
+                                                             addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_DIV2_FIELD_RANGE ], 
+                                                             addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE      ],
+                                                             addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE      ], 
+                                                             2'b00 } + {lane, 2'b00} ;
+                           end
+                       endcase //(strm_accessOrder )
+                     end
+
+                   PY_WU_INST_TXFER_TYPE_BCAST :
+                     begin
+                       lane_inc_address           <=  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
+                                                       addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_DIV2_FIELD_RANGE ], 
+                                                       addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE      ],
+                                                       addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE      ], 
+                                                       2'b00 } ;
+                     end
+                 endcase //(strm_transfer_type )
+   
                end
+
+             `SDP_CNTL_STRM_DATA_PTR_INC_INIT :
+               begin
+                 lane_inc_address   <=   lane_inc_address ;
+               end
+
              default:
                begin   
                  //  Increment address if we are sending and we are requesting next line and our request is accepted
@@ -851,11 +898,11 @@ module sdp_stream_cntl (
          end
    
 
-       always @(*)
+       always @(posedge clk)
          begin
            case (sdp_cntl_stream_data_state)  // synopsys parallel_case full_case
            
-             `SDP_CNTL_STRM_DATA_INIT :
+             `SDP_CNTL_STRM_DATA_PTR_INIT :
                begin
                 
                  case (strm_transfer_type )  // synopsys parallel_case full_case
@@ -865,7 +912,7 @@ module sdp_stream_cntl (
                        case (strm_accessOrder )  // synopsys parallel_case full_case
                          PY_WU_INST_ORDER_TYPE_WCBP:
                            begin
-                             lane_inc_address_e1         =  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
+                             lane_inc_address_e1        <=  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
                                                              addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_DIV2_FIELD_RANGE ], 
                                                              addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE      ], 
                                                              addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE      ],
@@ -873,7 +920,7 @@ module sdp_stream_cntl (
                            end
                          PY_WU_INST_ORDER_TYPE_CWBP:
                            begin
-                             lane_inc_address_e1         =  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
+                             lane_inc_address_e1        <=  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
                                                              addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_DIV2_FIELD_RANGE ], 
                                                              addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE      ],
                                                              addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE      ], 
@@ -884,7 +931,7 @@ module sdp_stream_cntl (
 
                    PY_WU_INST_TXFER_TYPE_BCAST :
                      begin
-                       lane_inc_address_e1         =  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
+                       lane_inc_address_e1        <=  {addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE      ], 
                                                        addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_BANK_DIV2_FIELD_RANGE ], 
                                                        addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE      ],
                                                        addr_to_strm_fsm_fifo[0].pipe_addr[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE      ], 
@@ -893,20 +940,39 @@ module sdp_stream_cntl (
                  endcase //(strm_transfer_type )
    
                end
+     
+             `SDP_CNTL_STRM_DATA_PTR_INC_INIT :
+               begin
+                 case (strm_transfer_type )  // synopsys parallel_case full_case
+                   PY_WU_INST_TXFER_TYPE_VECTOR:
+                     begin
+                       lane_inc_address_e1   <=   lane_inc_address_e1 + {num_lanes, 2'b00} ;
+                     end
+                   PY_WU_INST_TXFER_TYPE_BCAST :
+                     begin
+                       lane_inc_address_e1   <=   lane_inc_address_e1 + 'd4                ;
+                     end
+                 endcase //(strm_transfer_type )
+               end
+
       
              `SDP_CNTL_STRM_DATA_COUNT_CONS:
                begin
                  case (strm_transfer_type )  // synopsys parallel_case full_case
                    PY_WU_INST_TXFER_TYPE_VECTOR:
                      begin
-                       lane_inc_address_e1    =   (consequtive_counter_le0     ) ?  lane_next_inc_cons_start_address      :
-                                                                                    lane_inc_address + {num_lanes, 2'b00} ;
+//                       lane_inc_address_e1   <=   (consequtive_counter_le0                                                                                                     ) ?  lane_next_inc_cons_start_address         :
+                       lane_inc_address_e1   <=   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1]) && consequtive_counter_eq1 ) ?  lane_next_inc_cons_start_address         :
+                                                  (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])                            ) ?  lane_inc_address_e1 + {num_lanes, 2'b00} :
+                                                                                                                                                                                                                lane_inc_address_e1                      ;
 
                      end
                    PY_WU_INST_TXFER_TYPE_BCAST :
                      begin
-                       lane_inc_address_e1    =   (consequtive_counter_le0     ) ?  lane_next_inc_cons_start_address      :
-                                                                                    lane_inc_address + 'd4                ;
+//                       lane_inc_address_e1   <=   (consequtive_counter_le0                                                                                                     ) ?  lane_next_inc_cons_start_address         :
+                       lane_inc_address_e1   <=   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1]) && consequtive_counter_eq1 ) ?  lane_next_inc_cons_start_address         :
+                                                  (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])                            ) ?  lane_inc_address_e1 + 'd4                :
+                                                                                                                                                                                                                lane_inc_address_e1                      ;
                      end
                  endcase //(strm_transfer_type )
                end
@@ -916,11 +982,14 @@ module sdp_stream_cntl (
                  case (strm_transfer_type )  // synopsys parallel_case full_case
                    PY_WU_INST_TXFER_TYPE_VECTOR:
                      begin
-                       lane_inc_address_e1    =   lane_inc_address + {num_lanes, 2'b00} ;
+                       lane_inc_address_e1   <=   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  lane_inc_address_e1 + {num_lanes, 2'b00} :
+                                                                                                                                                                                    lane_inc_address_e1                      ;
+
                      end
                    PY_WU_INST_TXFER_TYPE_BCAST :
                      begin
-                       lane_inc_address_e1    =   lane_inc_address + 'd4                ;
+                       lane_inc_address_e1   <=   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  lane_inc_address_e1 + 'd4                :
+                                                                                                                                                                                    lane_inc_address_e1                      ;
                      end
                  endcase //(strm_transfer_type )
                end                            
@@ -930,11 +999,14 @@ module sdp_stream_cntl (
                  case (strm_transfer_type )  // synopsys parallel_case full_case
                    PY_WU_INST_TXFER_TYPE_VECTOR:
                      begin
-                       lane_inc_address_e1    =   lane_inc_address + {num_lanes, 2'b00} ;
+                       lane_inc_address_e1   <=   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  lane_inc_address_e1 + {num_lanes, 2'b00} :
+                                                                                                                                                                                    lane_inc_address_e1                      ;
+
                      end
                    PY_WU_INST_TXFER_TYPE_BCAST :
                      begin
-                       lane_inc_address_e1    =   lane_inc_address + 'd4                ;
+                       lane_inc_address_e1   <=   (( send_data || sent_data_without_increment) && (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1])) ?  lane_inc_address_e1 + 'd4                :
+                                                                                                                                                                                    lane_inc_address_e1                      ;
                      end
                  endcase //(strm_transfer_type )
                end
@@ -1058,7 +1130,7 @@ module sdp_stream_cntl (
        always @(posedge clk)
          begin
            consequtive_counter <=  ( reset_poweron || ~exec_lane_enable [lane]                                                                                                                       )  ? 'd0                                                        :
-                                   ( (sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_INIT)                                                                                                        ) ? consequtive_value_for_strm  :
+                                   ( (sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_PTR_INIT)                                                                                                    ) ? consequtive_value_for_strm  :
                                    ( loading_consequtive                                                                                                                                             ) ? consequtive_value_for_strm                                  :
                                    ( send_data && (strm_transfer_type == PY_WU_INST_TXFER_TYPE_BCAST )                                                                                               ) ? consequtive_counter-1                                       :  
                                    ( send_data && (strm_transfer_type == PY_WU_INST_TXFER_TYPE_VECTOR)                                                                                               ) ? consequtive_counter-num_lanes :  
@@ -1133,7 +1205,7 @@ module sdp_stream_cntl (
        
            case (sdp_cntl_stream_data_state) // synopsys parallel_case
              
-             `SDP_CNTL_STRM_DATA_INIT: 
+             `SDP_CNTL_STRM_DATA_PTR_INC_INIT: 
                begin
                  lane_next_inc_cons_start_address <= lane_inc_address_e1 ;  // address already ordered
                end
