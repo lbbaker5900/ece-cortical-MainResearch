@@ -344,7 +344,7 @@ module main_mem_cntl (
         assign  mmc__xxx__data_ready_e1 [wr_intf]  =  ~write_data_fifo[wr_intf].almost_full ;
 
         //assign write_data_fifo[wr_intf].pipe_read = write_data_fifo[wr_intf].pipe_valid ; // FIXME sdp__xxx__get_next_line[wr_intf] ;  
-        assign write_data_fifo[wr_intf].pipe_read =  strm_write_data_read [0][wr_intf] | strm_write_data_read [0][wr_intf]; // either channel might read fifo
+        assign write_data_fifo[wr_intf].pipe_read =  strm_write_data_read [0][wr_intf] | strm_write_data_read [1][wr_intf]; // either channel might read fifo
       end
   endgenerate
 
@@ -2738,7 +2738,7 @@ module main_mem_cntl (
                         final_page_cmd_fifo [chan].pipe_read  = 1'b1 ;
                         final_cache_cmd_fifo[chan].pipe_read  = 1'b1 ;
 
-                        //strm_write_data_read [chan][0] = 1'b1 ;  // FIXME: only one write interface???
+                        strm_write_data_read [chan][0] = 1'b1 ;  // FIXME: only one write interface???
 
                         {mmc__dfi__cs_e1 [chan], mmc__dfi__cmd1_e1 [chan], mmc__dfi__cmd0_e1[chan]} = `MGR_DRAM_COMMAND_CW              ;
 

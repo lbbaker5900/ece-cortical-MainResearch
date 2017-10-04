@@ -40,10 +40,20 @@ $(INIT): $(crDWlib) run_init.tcl ../synth/$(MODNAME)_final.v
 	nice +19 icc_shell -f run_init.tcl |& tee run_init.log ; \
 	touch $(INIT)"
 
+PLACE_MACROS = .place_macros
+.PHONY: place_macros
+place_macros: $(PLACE_MACROS)
+$(PLACE_MACROS): $(INIT) run_place_macros.tcl 
+	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	nice +19 icc_shell -f run_place_macros.tcl |& tee run_place_macros.log ; \
+	touch $(PLACE_MACROS)"
+
 PLACE = .place
 .PHONY: place
 place: $(PLACE)
-$(PLACE): $(INIT) run_place.tcl
+$(PLACE): $(PLACE_MACROS) run_place.tcl
 	tcsh -c "add synopsys2015 ; \
 	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\

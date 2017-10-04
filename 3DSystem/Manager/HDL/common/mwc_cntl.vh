@@ -69,8 +69,7 @@
 `define MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER    14'b00_0001_0000_0000
 `define MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER    14'b00_0010_0000_0000
 
-`define MWC_CNTL_PTR_DATA_RCV_FLUSH_1ST_HOLDING_REG               14'b00_0100_0000_0000
-`define MWC_CNTL_PTR_DATA_RCV_FLUSH_2ND_HOLDING_REG               14'b00_1000_0000_0000
+`define MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REGS                  14'b00_0100_0000_0000
 
 `define MWC_CNTL_PTR_DATA_RCV_COMPLETE                            14'b01_0000_0000_0000
 `define MWC_CNTL_PTR_DATA_RCV_ERR                                 14'b10_0000_0000_0000
@@ -80,11 +79,69 @@
 `define MWC_CNTL_PTR_DATA_RCV_STATE_LSB           0
 `define MWC_CNTL_PTR_DATA_RCV_STATE_SIZE          (`MWC_CNTL_PTR_DATA_RCV_STATE_MSB - `MWC_CNTL_PTR_DATA_RCV_STATE_LSB +1)
 `define MWC_CNTL_PTR_DATA_RCV_STATE_RANGE          `MWC_CNTL_PTR_DATA_RCV_STATE_MSB : `MWC_CNTL_PTR_DATA_RCV_STATE_LSB
+
+
+
+//------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
+// Write Cache
+//------------------------------------------------------------------------------------------------------------
+// Number of cache entries per channel
+//
+`define MWC_CNTL_CACHE_ENTRIES                         4
+
+`define MWC_CNTL_CACHE_ENTRIES_WIDTH                  (`CLOG2(`MWC_CNTL_CACHE_ENTRIES))
+`define MWC_CNTL_CACHE_ENTRIES_MSB                    `MWC_CNTL_CACHE_ENTRIES_WIDTH-1
+`define MWC_CNTL_CACHE_ENTRIES_LSB                     0
+`define MWC_CNTL_CACHE_ENTRIES_RANGE                  `MWC_CNTL_CACHE_ENTRIES_MSB : `MWC_CNTL_CACHE_ENTRIES_LSB
+                                                 
+`define MWC_CNTL_CACHE_ENTRY_LINES                     `MWC_CNTL_CACHE_ENTRIES * `MGR_DRAM_NUM_LINES_PER_CLINE              
+`define MWC_CNTL_CACHE_ENTRY_LINES_WIDTH                  (`CLOG2(`MWC_CNTL_CACHE_ENTRY_LINES))
+`define MWC_CNTL_CACHE_ENTRY_LINES_MSB                    `MWC_CNTL_CACHE_ENTRY_LINES_WIDTH-1
+`define MWC_CNTL_CACHE_ENTRY_LINES_LSB                     0
+`define MWC_CNTL_CACHE_ENTRY_LINES_RANGE                  `MWC_CNTL_CACHE_ENTRY_LINES_MSB : `MWC_CNTL_CACHE_ENTRY_LINES_LSB
+
+`define MWC_CNTL_CACHE_ENTRIES_PER_CHAN                `MWC_CNTL_CACHE_ENTRIES / `MGR_DRAM_NUM_CHANNELS                       
+                                                 
+`define MWC_CNTL_CACHE_ENTRIES_PER_CHAN_WIDTH         (`CLOG2(`MWC_CNTL_CACHE_ENTRIES_PER_CHAN))
+`define MWC_CNTL_CACHE_ENTRIES_PER_CHAN_MSB           `MWC_CNTL_CACHE_ENTRIES_PER_CHAN_WIDTH-1
+`define MWC_CNTL_CACHE_ENTRIES_PER_CHAN_LSB            0
+`define MWC_CNTL_CACHE_ENTRIES_PER_CHAN_RANGE         `MWC_CNTL_CACHE_ENTRIES_PER_CHAN_MSB : `MWC_CNTL_CACHE_ENTRIES_PER_CHAN_LSB
+                                                 
+`define MWC_CNTL_CACHE_ENTRIES_PER_CHAN_VEC_WIDTH     `MWC_CNTL_CACHE_ENTRIES_PER_CHAN
+`define MWC_CNTL_CACHE_ENTRIES_PER_CHAN_VEC_MSB       `MWC_CNTL_CACHE_ENTRIES_PER_CHAN_VEC_WIDTH-1
+`define MWC_CNTL_CACHE_ENTRIES_PER_CHAN_VEC_LSB        0
+`define MWC_CNTL_CACHE_ENTRIES_PER_CHAN_VEC_RANGE     `MWC_CNTL_CACHE_ENTRIES_PER_CHAN_VEC_MSB : `MWC_CNTL_CACHE_ENTRIES_PER_CHAN_VEC_LSB
+
+`define MWC_CNTL_CACHE_ENTRY_WORD_ADDR_WIDTH         (`CLOG2(`MGR_DRAM_NUM_WORDS_PER_CLINE ))
+`define MWC_CNTL_CACHE_ENTRY_WORD_ADDR_MSB           `MWC_CNTL_CACHE_ENTRY_WORD_ADDR_WIDTH-1
+`define MWC_CNTL_CACHE_ENTRY_WORD_ADDR_LSB            0
+`define MWC_CNTL_CACHE_ENTRY_WORD_ADDR_RANGE         `MWC_CNTL_CACHE_ENTRY_WORD_ADDR_MSB : `MWC_CNTL_CACHE_ENTRY_WORD_ADDR_LSB
+                                                 
+`define MWC_CNTL_CACHE_ENTRY_WORD_VEC_WIDTH         `MGR_DRAM_NUM_WORDS_PER_CLINE
+`define MWC_CNTL_CACHE_ENTRY_WORD_VEC_MSB           `MWC_CNTL_CACHE_ENTRY_WORD_VEC_WIDTH-1
+`define MWC_CNTL_CACHE_ENTRY_WORD_VEC_LSB            0
+`define MWC_CNTL_CACHE_ENTRY_WORD_VEC_RANGE         `MWC_CNTL_CACHE_ENTRY_WORD_VEC_MSB : `MWC_CNTL_CACHE_ENTRY_WORD_VEC_LSB
+                                                 
+
+// pointer to fields in line counter that refer to cache/chan
+`define MWC_CNTL_CHAN_CLINE_PTR_RANGE                     `MWC_CNTL_CACHE_ENTRY_LINES_MSB : `MWC_CNTL_CACHE_ENTRY_LINES_MSB-(`MGR_DRAM_CHANNEL_ADDRESS_WIDTH -1)
+`define MWC_CNTL_CACHE_LINE_PTR_RANGE                     `MWC_CNTL_CACHE_ENTRY_LINES_MSB-`MGR_DRAM_CHANNEL_ADDRESS_WIDTH : `MWC_CNTL_CACHE_ENTRY_LINES_MSB-`MGR_DRAM_CHANNEL_ADDRESS_WIDTH -(`MWC_CNTL_CACHE_ENTRIES_PER_CHAN_WIDTH-1 )
+`define MWC_CNTL_CLINE_LINE_PTR_RANGE                     `MWC_CNTL_CACHE_ENTRY_LINES_MSB-`MGR_DRAM_CHANNEL_ADDRESS_WIDTH -(`MWC_CNTL_CACHE_ENTRIES_PER_CHAN_WIDTH ) : 0
+                                                 
+// index into cacheline when sending to mmc
+`define MWC_CNTL_CLINE_LINE0_MSB                    (`MGR_DRAM_NUM_WORDS_PER_LINE+`MWC_CNTL_CLINE_LINE0_LSB-1)
+`define MWC_CNTL_CLINE_LINE0_LSB                     0
+`define MWC_CNTL_CLINE_LINE0_RANGE                  `MWC_CNTL_CLINE_LINE0_MSB : `MWC_CNTL_CLINE_LINE0_LSB
+
+`define MWC_CNTL_CLINE_LINE1_MSB                    (`MGR_DRAM_NUM_WORDS_PER_LINE+`MWC_CNTL_CLINE_LINE1_LSB-1)
+`define MWC_CNTL_CLINE_LINE1_LSB                    (`MWC_CNTL_CLINE_LINE0_MSB+1                             )
+`define MWC_CNTL_CLINE_LINE1_RANGE                  `MWC_CNTL_CLINE_LINE1_MSB : `MWC_CNTL_CLINE_LINE1_LSB
+
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 // FIFO's
 //------------------------------------------------------------------------------------------------------------
-
 
 //--------------------------------------------------------
 //--------------------------------------------------------

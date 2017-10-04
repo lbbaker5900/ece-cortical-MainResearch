@@ -667,7 +667,7 @@ module sdp_stream_cntl (
               `SDP_CNTL_STRM_DATA_COUNT_CONS: 
                 sdp_cntl_stream_data_state_next =  ( consequtive_counter_le0 && last_consequtive && send_data                                                    ) ? `SDP_CNTL_STRM_DATA_COMPLETE        :
                                                    ( consequtive_counter_le0 && consJump_to_strm_fsm_fifo[0].pipe_valid && consJump_to_strm_fsm_fifo[0].pipe_eom ) ? `SDP_CNTL_STRM_DATA_COUNT_CONS      :  // starting last consequtive
-                                                   ( all_lanes_loaded_consequtive                                                                                ) ? `SDP_CNTL_STRM_DATA_LOAD_JUMP_VALUE :
+                                                   ( all_lanes_loaded_consequtive && ~last_consequtive                                                           ) ? `SDP_CNTL_STRM_DATA_LOAD_JUMP_VALUE :  // account for case where a lane has load_consequtive but is waiting for anther 
                                                                                                                                                                      `SDP_CNTL_STRM_DATA_COUNT_CONS      ;
        
               // WHen we generate requests, we may a) generate an unneeded channel request or be left with an unused line.
@@ -787,7 +787,7 @@ module sdp_stream_cntl (
                 end
               `SDP_CNTL_STRM_DATA_COUNT_CONS: 
                 begin
-                  last_consequtive <= ( req_next_line_but_not_accepted                                                                          ) ?  last_consequtive :
+                  last_consequtive <= ( req_next_line_but_not_accepted || ~destination_ready  || ~lane_data_available                           ) ?  last_consequtive :
                                       (consequtive_counter_le0 & consJump_to_strm_fsm_fifo[0].pipe_valid & consJump_to_strm_fsm_fifo[0].pipe_eom) ?  1'b1             :
                                                                                                                                                      last_consequtive ;
                 end

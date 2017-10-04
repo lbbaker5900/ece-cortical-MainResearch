@@ -48,7 +48,7 @@ set mem_lib ""
 set regf_lib ""
 
 if {($tech == "65nm") || ([info exist INCLUDE_65nm_MEM])} {
-  set libList [glob dw_memories/compout/views/sass*/tt1p2v25c/*.lib]
+  set libList [glob ../synth/dw_memories/compout/views/sass*/tt1p2v25c/*.lib]
   foreach libFile $libList {
     set lName [file tail [file rootname $libFile]]
     set dbName ${lName}_lib
@@ -58,7 +58,7 @@ if {($tech == "65nm") || ([info exist INCLUDE_65nm_MEM])} {
     echo "Adding .db file to mem_lib variable : " $dbFileName
     set mem_lib [concat $mem_lib $dbFileName]
   }
-  set libList [glob dw_memories/compout/views/asdr*/tt1p2v25c/*.lib]
+  set libList [glob ../synth/dw_memories/compout/views/asdr*/tt1p2v25c/*.lib]
   foreach libFile $libList {
     set lName [file tail [file rootname $libFile]]
     set dbName ${lName}_lib

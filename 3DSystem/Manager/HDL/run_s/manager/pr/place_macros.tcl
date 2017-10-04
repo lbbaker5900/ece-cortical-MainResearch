@@ -19,11 +19,6 @@ set fg 50
 set x 50
 set y 50 
 
-set dx [expr 0 + 0]
-set dy [expr $refH + $g]
-
-set llx [expr $x]
-set lly [expr $y]
 
 #
 #
@@ -69,7 +64,7 @@ set lly [expr $y]
 set inst 0
 
 
-set mrc_lly 475
+set mrc_lly 425
 set mrc_llx 100
 
 foreach inst {0 1} {
@@ -107,8 +102,6 @@ foreach inst {0 1} {
     }
     
     
-    set mrc_ury $urx
-    set mrc_urx $ury
     
     set strm0_fifo_top [expr $lly + 0]
     
@@ -215,11 +208,14 @@ foreach inst {0 1} {
     set hcell [get_cells -hier -filter "full_name =~ mrc_cntl_strm_inst_${inst}*/storageDescConsJump_mem* && ref_name =~ sass*"] 
     set hcell_inst [get_attr $hcell full_name] 
     
-    set x [expr [expr $wud_llx + [get_attr $hcell width]] + $g]
-    set y $wud_lly
+    #set x [expr [expr $wud_llx + [get_attr $hcell width]] + $g]
+    #set y $wud_lly
     
-    set llx [expr $x]
-    set lly [expr $y + $g]
+    #set llx [expr $x]
+    #set lly [expr $y + $g]
+    #
+    set x $llx
+    set y $lly
     
     set org "$llx $lly"
     eval set_attr $hcell_inst origin {$org}
@@ -273,7 +269,7 @@ set_attr [get_cells -hier -filter "full_name =~ oob_downstream_cntl/from_WuDecod
 set_attr [get_cells -hier -filter "full_name =~ mwc_cntl/input_intf_fifo_0* && ref_name =~ asdr*"                       ]  origin "1950 1425"
 set_attr [get_cells -hier -filter "full_name =~ mwc_cntl/input_intf_fifo_1* && ref_name =~ asdr*"                       ]  origin "1950 1280"
 set_attr [get_cells -hier -filter "full_name =~ mwc_cntl/sdp_request_cntl/storageDesc_mem_* && ref_name =~ sass*"       ]  origin "1870 1010"
-set_attr [get_cells -hier -filter "full_name =~ mwc_cntl/sdp_request_cntl/storageDescConsJump_mem* && ref_name =~ sass*"]  origin "2021 810"
+set_attr [get_cells -hier -filter "full_name =~ mwc_cntl/sdp_request_cntl/storageDescConsJump_mem* && ref_name =~ sass*"]  origin "1870 750"
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # NoC 

@@ -514,11 +514,12 @@
 
 // cache line size 
 `define MGR_DRAM_NUM_CLINES_PER_PAGE             (`MGR_DRAM_PAGE_SIZE/(`MGR_DRAM_INTF_WIDTH*`MGR_DRAM_BURST_SIZE))    // CLINE is the DRAM burst size
-`define MGR_DRAM_CLINE_SIZE                      `MGR_DRAM_PAGE_SIZE/`MGR_DRAM_NUM_CLINES_PER_PAGE             
-`define MGR_DRAM_NUM_LINES_PER_CLINE              (`MGR_DRAM_CLINE_SIZE/`MGR_MMC_TO_MRC_INTF_WIDTH                 )    // Line is the transaction size from the MMC
-`define MGR_DRAM_NUM_LINES_PER_REQUEST           (`MGR_DRAM_NUM_LINES_PER_CLINE )    // MMC transactions per memory request
+`define MGR_DRAM_CLINE_SIZE                      (`MGR_DRAM_PAGE_SIZE/`MGR_DRAM_NUM_CLINES_PER_PAGE              )
+`define MGR_DRAM_NUM_LINES_PER_CLINE             (`MGR_DRAM_CLINE_SIZE/`MGR_MMC_TO_MRC_INTF_WIDTH                )    // Line is the transaction size from the MMC
+`define MGR_DRAM_NUM_LINES_PER_REQUEST           (`MGR_DRAM_NUM_LINES_PER_CLINE                                  )    // MMC transactions per memory request
+`define MGR_DRAM_NUM_WORDS_PER_CLINE             (`MGR_DRAM_NUM_WORDS_PER_PAGE/`MGR_DRAM_NUM_CLINES_PER_PAGE     )
+`define MGR_DRAM_NUM_LINES_PER_PAGE              (`MGR_DRAM_NUM_CLINES_PER_PAGE * `MGR_DRAM_NUM_LINES_PER_CLINE  )
 `define MGR_DRAM_NUM_WORDS_PER_LINE              (`MGR_DRAM_NUM_WORDS_PER_PAGE/`MGR_DRAM_NUM_LINES_PER_PAGE      )
-//`define MGR_DRAM_NUM_LINES                       (`MGR_DRAM_NUM_WORDS_PER_PAGE/`MGR_DRAM_NUM_WORDS_PER_LINE)
 
 //****************************************************************************************************
 //****************************************************************************************************

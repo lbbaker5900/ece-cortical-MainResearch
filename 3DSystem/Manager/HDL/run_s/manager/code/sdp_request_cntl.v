@@ -354,7 +354,7 @@ module sdp_request_cntl (
         // a) First time we initially generate a request for the very start of the stream. So we transition thru the generate state before entering this state.
         //    Now it may turn out that the first request of the current stream is the same as the last request of the previous stream, btu we dont try to take advantage. 
         //    So either way, generate a request when we starg a new stream.
-        // b) During a stream, when we ibncrement based on PBLC, the channel will toggle multiple times. if the start and end channel are the same, it may look like
+        // b) During a stream, when we increment based on PBLC, the channel will toggle multiple times. if the start and end channel are the same, it may look like
         //    we have completed the stream e.g. PBLC_inc == PBLC_end. So in this case, we force a request to be generated.
 
 
@@ -545,25 +545,6 @@ module sdp_request_cntl (
   `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE                                
     reg  [`MGR_DRAM_LINE_ADDRESS_RANGE      ]    cj_ms_lane_cline               ;
   `endif
-/*
-  reg  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]    mem_last_end_channel ;  // formed address in access order for incrementing
-  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE        ]    mem_last_end_bank    ;
-  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]    mem_last_end_page    ;
-  reg  [`MGR_DRAM_WORD_ADDRESS_RANGE        ]    mem_last_end_word    ;
-  `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE //MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE      ]    mem_last_end_cline    ;
-  `endif
-*/
-  // Keep track of the last channel requested line because when we perform a request we request a cacheline. So we might have
-  // already requested the line based on the previous request
-/*
-  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    channel_last_requested_valid                          ;
-  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE        ]    channel_last_requested_bank [`MGR_DRAM_NUM_CHANNELS ] ;
-  reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]    channel_last_requested_page [`MGR_DRAM_NUM_CHANNELS ] ;
-  `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE //MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-    reg  [`MGR_DRAM_LINE_ADDRESS_RANGE      ]    channel_last_requested_cline [`MGR_DRAM_NUM_CHANNELS ] ;
-  `endif
-*/
 
   //------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------------------------------
@@ -664,17 +645,6 @@ module sdp_request_cntl (
 
   always @(posedge clk)
     begin
-/*
-      first_time_thru                  <= 1'b0   ;
-      force_cons_chan0_request         <= 1'b0   ;
-      force_cons_chan1_request         <= 1'b0   ;
-      force_cons_chan01_request        <= 1'b0   ;
-      force_cons_chan10_request        <= 1'b0   ;
-      force_jump_chan0_request         <= 1'b0   ;
-      force_jump_chan1_request         <= 1'b0   ;
-      force_jump_chan01_request        <= 1'b0   ;
-      force_jump_chan10_request        <= 1'b0   ;
-*/
       case (sdp_cntl_proc_storage_desc_state)  // synopsys parallel_case
 
         `SDP_CNTL_PROC_STORAGE_DESC_WAIT:
@@ -690,33 +660,7 @@ module sdp_request_cntl (
              force_jump_chan10_request        <= 1'b0   ;
              force_disable_request            <= 1'b0   ;
            end
-/*
-        `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC:
-           begin
-             first_time_thru                  <= first_time_thru  ;
-             force_cons_chan0_request         <= 1'b0   ;
-             force_cons_chan1_request         <= 1'b0   ;
-             force_cons_chan01_request        <= 1'b0   ;
-             force_cons_chan10_request        <= 1'b0   ;
-             force_jump_chan0_request         <= 1'b0   ;
-             force_jump_chan1_request         <= 1'b0   ;
-             force_jump_chan01_request        <= 1'b0   ;
-             force_jump_chan10_request        <= 1'b0   ;
-           end
 
-        `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD:
-           begin
-             first_time_thru                  <= first_time_thru  ;
-             force_cons_chan0_request         <= 1'b0   ;
-             force_cons_chan1_request         <= 1'b0   ;
-             force_cons_chan01_request        <= 1'b0   ;
-             force_cons_chan10_request        <= 1'b0   ;
-             force_jump_chan0_request         <= 1'b0   ;
-             force_jump_chan1_request         <= 1'b0   ;
-             force_jump_chan01_request        <= 1'b0   ;
-             force_jump_chan10_request        <= 1'b0   ;
-           end
-*/
         `SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES:
            begin
              first_time_thru                  <= 1'b0 ;
@@ -727,7 +671,7 @@ module sdp_request_cntl (
              case (storage_desc_accessOrder)
                PY_WU_INST_ORDER_TYPE_CWBP:
                  begin
-                   if ((pbc_inc_addr_bank == pbc_end_addr_bank) && (pbc_inc_addr_page == pbc_end_addr_page) && ~(pbc_last_end_is_cons_tm1_end && (pbc_inc_addr_bank == pbc_last_end_addr_bank) && (pbc_inc_addr_page == pbc_last_end_addr_page)))
+                   if (((pbc_inc_addr_bank == pbc_end_addr_bank) && (pbc_inc_addr_page == pbc_end_addr_page) && ~(pbc_last_end_is_cons_tm1_end && (pbc_inc_addr_bank == pbc_last_end_addr_bank) && (pbc_inc_addr_page == pbc_last_end_addr_page))))
                      begin
                        case ({first_time_thru, pbc_inc_addr_chan, pbc_end_addr_chan})
                          3'b000:
@@ -802,47 +746,67 @@ module sdp_request_cntl (
 
            end  //`SDP_CNTL_PROC_STORAGE_DESC_CHECK_PBC_VALUES:
 
-        //`SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST:
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID:
            begin
 
-             case ({force_cons_chan01_request, force_cons_chan10_request })  // synopsys full_case
-               2'b00:
-                 begin
-                   force_cons_chan0_request  <= 1'b0 ;
-                   force_cons_chan1_request  <= 1'b0 ;
-                   force_cons_chan01_request <= 1'b0 ;
-                   force_cons_chan10_request <= 1'b0 ;
-                 end
-               2'b01:
-                 begin
-                   force_cons_chan0_request  <= 1'b1 ;
-                   force_cons_chan1_request  <= 1'b0 ;
-                   force_cons_chan01_request <= 1'b0 ;
-                   force_cons_chan10_request <= 1'b0 ;
-                 end
-               2'b10:
-                 begin
-                   force_cons_chan0_request  <= 1'b0 ;
-                   force_cons_chan1_request  <= 1'b1 ;
-                   force_cons_chan01_request <= 1'b0 ;
-                   force_cons_chan10_request <= 1'b0 ;
-                 end
-
-             endcase  // case ({force_cons_chan01_request, force_cons_chan10_request })
+             if (force_cons_request)
+               begin
+                 case ({force_cons_chan01_request, force_cons_chan10_request })  // synopsys full_case parallel_case
+                   2'b00:
+                     begin
+                       force_cons_chan0_request  <= 1'b0 ;
+                       force_cons_chan1_request  <= 1'b0 ;
+                       force_cons_chan01_request <= 1'b0 ;
+                       force_cons_chan10_request <= 1'b0 ;
+                     end
+                   2'b01:
+                     begin
+                       force_cons_chan0_request  <= 1'b1 ;
+                       force_cons_chan1_request  <= 1'b0 ;
+                       force_cons_chan01_request <= 1'b0 ;
+                       force_cons_chan10_request <= 1'b0 ;
+                     end
+                   2'b10:
+                     begin
+                       force_cons_chan0_request  <= 1'b0 ;
+                       force_cons_chan1_request  <= 1'b1 ;
+                       force_cons_chan01_request <= 1'b0 ;
+                       force_cons_chan10_request <= 1'b0 ;
+                     end
+                 endcase  // case ({force_cons_chan01_request, force_cons_chan10_request })
+               end
+             else if (requests_complete && ~first_time_thru && (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP))
+               begin
+                 // if we are completing a consequtive zone, the access order is CWBP and we havent fetched both channels, then anticipate we have jumped over a channel
+                 // e.g. pbc_start = 0,24,1,  pbc_end = 0,26,0
+                 // We saw this mainly during the writeback testing where we are writing back 32 words in CWBP order and the address crossed a bak/channel boundary
+                 case ({(~pbc_last_requested_valid[1] | (pbc_last_end_addr_bank != pbc_bank_last_requested[1]) | (pbc_last_end_addr_page != pbc_page_last_requested[1])), (~pbc_last_requested_valid[0] | (pbc_last_end_addr_bank != pbc_bank_last_requested[0]) | (pbc_last_end_addr_page != pbc_page_last_requested[0]))})  
+                   2'b00:
+                     begin
+                       force_cons_chan0_request  <= 1'b0 ;
+                       force_cons_chan1_request  <= 1'b0 ;
+                       force_cons_chan01_request <= 1'b0 ;
+                       force_cons_chan10_request <= 1'b0 ;
+                     end
+                   2'b01:
+                     begin
+                       force_cons_chan0_request  <= 1'b1 ;
+                       force_cons_chan1_request  <= 1'b0 ;
+                       force_cons_chan01_request <= 1'b0 ;
+                       force_cons_chan10_request <= 1'b0 ;
+                     end
+                   2'b10:
+                     begin
+                       force_cons_chan0_request  <= 1'b0 ;
+                       force_cons_chan1_request  <= 1'b1 ;
+                       force_cons_chan01_request <= 1'b0 ;
+                       force_cons_chan10_request <= 1'b0 ;
+                     end
+                 endcase  // case ({force_cons_chan01_request, force_cons_chan10_request })
+               end
 
            end  //`SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST:
 
-/*
-        `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID:
-           begin
-             first_time_thru                  <= first_time_thru                  ;
-             force_cons_chan0_request         <= force_cons_chan0_request         ;
-             force_cons_chan1_request         <= force_cons_chan1_request         ;
-             force_cons_chan01_request        <= force_cons_chan01_request        ;
-             force_cons_chan10_request        <= force_cons_chan10_request        ;
-           end
-*/
 
         default:
            begin
@@ -1061,7 +1025,6 @@ module sdp_request_cntl (
 
         `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID:
           begin
-            //mem_start_address         <=  {storage_desc_page, {storage_desc_bank[`MGR_DRAM_BANK_ADDRESS_WO_LSB_RANGE ]}, storage_desc_channel, storage_desc_word, 2'b00} ;  // byte address
             mem_start_address           <=  {storage_desc_channel, storage_desc_bank, storage_desc_page, storage_desc_word, 2'b00} ;
             mem_ms_lane_start_address   <=  {storage_desc_channel, storage_desc_bank, storage_desc_page, storage_desc_word, 2'b00} + {xxx__sdp__num_lanes_m1, 2'b00} ;
           end
@@ -1071,7 +1034,6 @@ module sdp_request_cntl (
             // when we enter the CHECK_STRM state the cj address points to beginning of next consequtive phase
             mem_start_address         <=  {        cj_channel,         cj_bank, storage_desc_bank_lsb,         cj_page,         cj_word, 2'b00} ;
             mem_ms_lane_start_address <=  {cj_ms_lane_channel, cj_ms_lane_bank, storage_desc_bank_lsb, cj_ms_lane_page, cj_ms_lane_word, 2'b00} ;
-            //mem_start_address <=  {cj_channel, cj_bank, cj_page, cj_word, 2'b00} ;
           end
 
         default:
@@ -1156,7 +1118,8 @@ module sdp_request_cntl (
                  end
                3'b01x:
                  begin
-                     pbc_inc_addr    <=  pbc_end_addr ;  // LEE
+                     //pbc_inc_addr    <=  pbc_inc_addr ;
+                     pbc_inc_addr    <=  pbc_end_addr ;  // if we are forcing a request, set inc -> end
                  end
                3'b1xx:
                  begin
@@ -1172,7 +1135,7 @@ module sdp_request_cntl (
 
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST:
            begin
-             casex ({xxx__sdp__mem_request_ready_d1, force_cons_request, requests_complete})  // synopsys parallel_case
+             casex ({xxx__sdp__mem_request_ready_d1, force_cons_request, requests_complete}) 
                3'b0xx:
                  begin
                    pbc_inc_addr    <=  pbc_inc_addr  ;
@@ -1285,11 +1248,6 @@ module sdp_request_cntl (
               end
             
             //---------------------------------------------------------------------------
-            // mem_last_end_address 
-            //
-/*
-            mem_last_end_address <=  {storage_desc_channel, storage_desc_bank, storage_desc_page, storage_desc_word, 2'b00} ;
-*/
           end
 
         `SDP_CNTL_PROC_STORAGE_DESC_CALC_NUM_REQS :
@@ -1316,11 +1274,6 @@ module sdp_request_cntl (
             pbc_last_end_addr    <=  pbc_last_end_addr      ;
 
             //---------------------------------------------------------------------------
-            // mem_last_end_address 
-            //
-/*
-            mem_last_end_address <=  {storage_desc_channel, storage_desc_bank, storage_desc_page, storage_desc_word, 2'b00} ;
-*/
 
           end
 
@@ -1357,12 +1310,6 @@ module sdp_request_cntl (
             pbc_last_end_is_cons_tm1_end <= 1'b1                 ;
 
             //---------------------------------------------------------------------------
-            // mem_last_end_address 
-            //
-            // mem_addr is current set to end of CONS phase, so set last req to end of previous consequtive phase
-/*
-            mem_last_end_address <=  {cj_channel, cj_bank, storage_desc_bank_lsb, cj_page, cj_word, 2'b00} ;
-*/
           end
 
         `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC:
@@ -1404,49 +1351,13 @@ module sdp_request_cntl (
             // mem_addr is current set to end of CONS phase, so set last req to end of previous consequtive phase
             pbc_last_end_addr               <=  pbc_inc_addr   ;
             pbc_last_end_is_cons_tm1_end <= 1'b0            ;
-/*
-            if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
-              begin
-                `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE  // MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-                 pbc_last_end_addr[`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ] ;
-                 pbc_last_end_addr[`MGR_DRAM_PBCL_BANK_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBCL_BANK_FIELD_RANGE ] ;
-                 pbc_last_end_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] ;
-                 pbc_last_end_addr[`MGR_DRAM_PBCL_CLINE_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBCL_CLINE_FIELD_RANGE ] ;
-               `else
-                 pbc_last_end_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ;
-                 pbc_last_end_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ] ;
-                 pbc_last_end_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ;
-               `endif
-              end
-            else if (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
-              begin
-                `ifdef  MGR_DRAM_REQUEST_CLINE_LT_PAGE  // MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-                 pbc_last_end_addr[`MGR_DRAM_PBLC_PAGE_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBLC_PAGE_FIELD_RANGE ] ;
-                 pbc_last_end_addr[`MGR_DRAM_PBLC_BANK_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBLC_BANK_FIELD_RANGE ] ;
-                 pbc_last_end_addr[`MGR_DRAM_PBLC_CHAN_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBLC_CHAN_FIELD_RANGE ] ;
-                 pbc_last_end_addr[`MGR_DRAM_PBLC_CLINE_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBLC_CLINE_FIELD_RANGE ] ;
-               `else
-                 pbc_last_end_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBC_PAGE_FIELD_RANGE ] ;
-                 pbc_last_end_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBC_BANK_FIELD_RANGE ] ;
-                 pbc_last_end_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] <= pbc_inc_addr[`MGR_DRAM_PBC_CHAN_FIELD_RANGE ] ;
-               `endif
-              end
-*/
             //---------------------------------------------------------------------------
-            // mem_last_end_address 
-            //
-/*
-            mem_last_end_address <=  mem_last_end_address   ;
-*/
           end
 
         default:
           begin
             pbc_end_addr         <=  pbc_end_addr           ;
             pbc_last_end_addr    <=  pbc_last_end_addr      ;
-/*
-            mem_last_end_address <=  mem_last_end_address   ;
-*/
           end
       endcase
     end
@@ -1542,69 +1453,7 @@ module sdp_request_cntl (
         mem_start_cline  =  mem_start_address[`MGR_DRAM_ADDRESS_CLINE_FIELD_RANGE ]  ;
       `endif
     end
-/*
-  always @(*)
-    begin
-      case (storage_desc_accessOrder)  // synopsys parallel_case full_case
-        PY_WU_INST_ORDER_TYPE_WCBP :
-          begin
-            mem_last_end_channel =  pbc_last_end_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ]  ;
-            mem_last_end_bank    = {pbc_last_end_addr[`MGR_DRAM_PBCL_BANK_FIELD_RANGE ],storage_desc_bank_lsb};
-            mem_last_end_page    =  pbc_last_end_addr[`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ]  ;
-            mem_last_end_word    =  pbc_last_end_addr[`MGR_DRAM_PBCL_CLINE_FIELD_RANGE ]  ;
-          end
-        PY_WU_INST_ORDER_TYPE_CWBP :
-          begin
-            mem_last_end_channel =  pbc_last_end_addr[`MGR_DRAM_PBLC_CHAN_FIELD_RANGE ]  ;
-            mem_last_end_bank    = {pbc_last_end_addr[`MGR_DRAM_PBLC_BANK_FIELD_RANGE ],storage_desc_bank_lsb};
-            mem_last_end_page    =  pbc_last_end_addr[`MGR_DRAM_PBLC_PAGE_FIELD_RANGE ]  ;
-            mem_last_end_word    =  pbc_last_end_addr[`MGR_DRAM_PBLC_CLINE_FIELD_RANGE ]  ;
-          end
-        default:
-          begin
-          end
-      endcase
-    end
-*/
   genvar chan ;
-/*
-  generate
-    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
-      begin: chan_last_requested
-        always @(posedge clk)
-          begin
-            case (storage_desc_accessOrder)  // synopsys parallel_case full_case
-              PY_WU_INST_ORDER_TYPE_WCBP :
-                begin
-                  channel_last_requested_valid [chan]      <= ( reset_poweron                                                                  ) ? 'd0                                  :   
-                                                              ( create_response_id  & ( pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] == chan)) ?  1'b1                                :
-                                                                                                                                                    channel_last_requested_valid [chan] ;
-                  channel_last_requested_bank  [chan]      <= ( create_response_id && ( pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] == chan)) ? pbc_inc_addr[`MGR_DRAM_PBCL_BANK_FIELD_RANGE ] : channel_last_requested_bank [chan] ;
-                  channel_last_requested_page  [chan]      <= ( create_response_id && ( pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] == chan)) ? pbc_inc_addr[`MGR_DRAM_PBCL_PAGE_FIELD_RANGE ] : channel_last_requested_page [chan] ;
-                  channel_last_requested_cline  [chan]      <= ( create_response_id && ( pbc_inc_addr[`MGR_DRAM_PBCL_CHAN_FIELD_RANGE ] == chan)) ? 'd1                                            : channel_last_requested_cline [chan] ;  // FIXME : assumes two lines in a cacheline
-                end
-              PY_WU_INST_ORDER_TYPE_CWBP :
-                begin
-                  channel_last_requested_valid [chan]      <= ( reset_poweron                                                                  ) ? 'd0                                  :   
-                                                              ( create_response_id  & ( pbc_inc_addr[`MGR_DRAM_PBLC_CHAN_FIELD_RANGE ] == chan)) ?  1'b1                                :
-                                                                                                                                                    channel_last_requested_valid [chan] ;
-                  channel_last_requested_bank  [chan]      <= ( create_response_id && ( pbc_inc_addr[`MGR_DRAM_PBLC_CHAN_FIELD_RANGE ] == chan)) ? pbc_inc_addr[`MGR_DRAM_PBLC_BANK_FIELD_RANGE ] : channel_last_requested_bank [chan] ;
-                  channel_last_requested_page  [chan]      <= ( create_response_id && ( pbc_inc_addr[`MGR_DRAM_PBLC_CHAN_FIELD_RANGE ] == chan)) ? pbc_inc_addr[`MGR_DRAM_PBLC_PAGE_FIELD_RANGE ] : channel_last_requested_page [chan] ;
-                  channel_last_requested_cline  [chan]      <= ( create_response_id && ( pbc_inc_addr[`MGR_DRAM_PBLC_CHAN_FIELD_RANGE ] == chan)) ? 'd1                                            : channel_last_requested_cline [chan] ;  // FIXME : assumes two lines in a cacheline
-                end
-              default:
-                begin
-                  channel_last_requested_valid [chan]      <= ( reset_poweron  ) ? 'd0                                 :   
-                                                                                   channel_last_requested_valid [chan] ;
-                  channel_last_requested_bank  [chan]      <= channel_last_requested_bank  [chan] ;
-                  channel_last_requested_page  [chan]      <= channel_last_requested_page  [chan] ;
-                  channel_last_requested_cline  [chan]      <= channel_last_requested_cline  [chan] ;
-                end
-            endcase
-          end
-      end
-  endgenerate
-*/
 
   always @(*)
     begin
