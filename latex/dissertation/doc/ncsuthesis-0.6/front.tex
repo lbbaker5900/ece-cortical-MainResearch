@@ -1,0 +1,120 @@
+%% ------------------------------ Abstract ---------------------------------- %%
+\begin{abstract}
+
+%\lipsum[1-6]
+
+Although Artificial Neural Networks have been known about for many decades, it hasnt been until the last few years that
+they have demonstrated efficacy in applications such as image recognition and voice recognition.
+These ANNs have demonstrated significant improvements over what was considered to be state-of-the-art algorithms.
+
+In most cases, ANNs must be "trained" to perform their function and these recent breakthoughs can, in a large part 
+be attributed to the availability of "big" training data.
+
+This data takes the form of images, recordings etc. and this along with the available storage capacity means that the required training data is now available 
+to train these ANNs.
+
+Artificial neural networks (ANN) take their inspiration from neuron behavior observed in the mammalian brain, although
+implementations are simplifications of what actually exists in the brain.
+Now these simplifications range from attempts to emulate the actual spiking behavior of real neurons to ANs that simply encode the spiking behavior in the
+form of a number or rate.
+
+Surprisingly, the ANNs that have demonstrated the most efficacy are those that employ the more simpler rate-based ANs.
+Now this may be in large part because these simpler rate-based ANs are easier to process or because large NNs employing the more complex spiking ANs have yet to
+demonsrate improved efficacy in the various applications.
+There is a belief that the more complex spiking neurons have the ability to outperform the simpler rate-based neurons but this work focuses on
+ANNs formed from rate-based ANs.
+
+The ANNs that have demonstrated to be most effective are a family of NNs that can be described as Deep Neural Networks.
+These DNNs are created by cascading layers of ANs to form a large, layered ANN. 
+These ANNs are in most cases generate outputs in the form of a classification, such as the probability of an image containing a certain object
+or the output of some approximated function, which might be the expected cost from making a stock trade.
+
+Now researchers have experimented with various sized NNs for various applcations, but those that have demonstrated the most efficacy employ tens of thousands
+of ANs.
+
+In many implementations of these useful sized NNs, the performance is impacted by the memory bandwidth of the system. 
+Much of the NN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or SRAM. 
+These implementations can be shown to be effective with specific NN architectures, such as Convolutional NNs but in reality, these implementations do not provide the flexibility, 
+storage capacity and deterministic performance required to implement useful sized NNs.
+
+In addition, it is this works belief that that real-world applications will employ multiple instances of these useful sized ANNs and current implementations will not
+meet the demands of these multi NN systems.
+
+\iffalse
+Researchers have attempted to solve this with
+the use of fast local SRAM. These implementations rely on the ANN being able to store data in the local SRAM and reuse that data without having to
+constantly go to the main memory, which is often implemented in slower DRAM.
+However, many DNNs do not exhibit this ability to reuse the contents of local SRAM, or not to the extent that makes these implementations acceptable.
+Some work has included combining SRAM with DRAM but these implementations still exhibit poor performance with a wider family of ANNs.
+\fi
+
+One area of integrated circuit technology that hasnt been widely used in ANNs is 3-D integrated circuits.  3DIC has the potential to increase connectivity, and thus bandwidth 
+and keep power dissipation to acceptable levels.
+
+This work combines ANNs which 3DIC technology. The work demonstrates how a 3DIC DRAM memory can be combined with customized IC layers to produce a system providing
+an acceptable level of performance in systems with multiple instances of various types of DNNs.
+
+This work includes utilizing a customized 3D dynamic random access memory, or DRAM along with a system which includes a manager layer which executes ANN operations in the form
+of unique instructions and a processing layer able to absorb data from the DRAM, via the manager at a bandwidth that meets the demands of a system employing
+multiple ANNs.
+
+
+
+\end{abstract}
+
+
+%% ---------------------------- Copyright page ------------------------------ %%
+%% Comment the next line if you don't want the copyright page included.
+\makecopyrightpage
+
+%% -------------------------------- Title page ------------------------------ %%
+\maketitlepage
+
+%% -------------------------------- Dedication ------------------------------ %%
+\begin{dedication}
+ \centering To my family and parents.
+\end{dedication}
+
+%% -------------------------------- Biography ------------------------------- %%
+\begin{biography}
+The author was born in a the United Kingdom to a working class family.  After performing poorly in high school he took a job in a local electronic engineering firm
+under a vocational program.
+After seeing the white coated "engineers" being called down from upstairs to solve the "big" problems, he decided he wanted to wear one
+of those white coats (his dress sense was wanting).
+The journey took him to Brighton Polytechnic, now Brighton University and a First Class Honours Degree in Electrical Engineering.
+After working in the UK for a couple of years, he moved to the United States.
+The journey included a family with a daughter and two son's.
+The education continued with a Masters in Engineering from Villanova University and a Masters in Business Administration from North
+Carolina State University.
+
+With the family now being somewhat independent, he decided to make a career change which would hopefully include teaching.
+
+That career change included enrolling in the Electrical Engineering PhD program at North
+Carolina State University. This stage of the education journey has resulted in this dissertation.
+
+So remember this, do not stand still and do not let your past dictate your future\ldots
+\end{biography}
+
+%% ----------------------------- Acknowledgements --------------------------- %%
+\begin{acknowledgements}
+At a personal level, I would like to thank my wife Mandy and my children Adam, Rachel and Paul for their encouragement.
+
+I would like to thank my advisor, Paul Franzon for his help in making this possible.
+
+I would also like to thank my fellow students, especially Jong Beom, Josh, Sumon and Weifu for their healthy discussions and referring to me as Lee and not Sir or Mr. Baker.
+
+\end{acknowledgements}
+
+
+%% Lee
+% Uncomment for dissertation (change to iftrue)
+%\iffalse
+\iftrue
+
+\thesistableofcontents
+
+\thesislistoftables
+
+\thesislistoffigures
+
+\fi

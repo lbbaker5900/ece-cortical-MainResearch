@@ -1,0 +1,94 @@
+%% Lee
+%% In dissertation, change 
+%    section* to chapter 
+%    subsection* to section
+%    subsubsection* to subsection
+
+\chapter{Research Plan}
+%\section{Research Plan}
+\label{chap-six}
+
+This work will identify and emulate systems employing the ANNs targeted by this work. The systems complexity will be representative of the identified systems
+to ensure memory access patterns, computations and algorithmic procedures, such as back-propagation can be analyzed for performance.
+
+The systems recreated will be similar to those described in \cite{krizhevsky2012imagenet}\cite{qiu2013parallel}\cite{mnih2013playing}.
+These systems will be simulated in either matlab, \verb!C++! or Python and the code will be instrumented to extract memory access behavior and
+processing "hot-spots".
+Where possible, this work will attempt to gain access to current work such as that described in \cite{qiu2013parallel} and \cite{tensorflow2015-whitepaper}.
+This data will be used to research designs to support the objectives outlined in section \ref{chap-three}.
+
+% FIXME - put in research objective??
+
+%Using these simulation environments will ensure:
+%\vspace{-3mm}
+\begin{outline}
+\renewcommand{\outlinei}{enumerate}
+  \vspace{-3mm}
+  \1 any research options maintain high bandwidth utilization
+    \vspace{-3mm}
+    \2 research data structures and memory organizations to maintain high bandwidth utilization during all algorithm phases
+%%     \2 research data structures and memory organizations to ensure reading operands and write back of results maintain high bandwidth
+%%        utilization between algorithm phases
+%%       \vspace{-1mm}
+%%       \3 in DNN, output of layer $n$ is input to layer $n+1$
+%%       \vspace{-1mm}
+%%       \3 for example, analyze write-back patterns and consider "caching" mechanisms to ensure coalesced accesses
+%%       \vspace{-1mm}
+      \3 for example, consider "caching" mechanisms in management layer to ensure coalesced accesses
+%%      \3 consider network-on-chip options
+  \vspace{-3mm}
+  \1 cases where low memory bandwidth utilization is encountered ensure the performance
+        exceeds that of a similar CPU or GPU implementation
+    \vspace{-3mm}
+    \2 in cogent confabulation knowledge base access, examine access patterns to optimize matrix layout, storage methods and hash functions
+\end{outline}
+
+%% and resulting in:
+%% \begin{outline}
+%% \renewcommand{\outlinei}{enumerate}
+%%   \vspace{-3mm}
+%%   \1 a custom organized DRAM with optimal bank, page and IO organization to support the target systems
+%%   \vspace{-3mm}
+%%   \1 a set of data structures for storage of inputs, weights and matrices to ensure high bandwidth utilization
+%%   \vspace{-3mm}
+%%   \1 a 3DIC structure including a TSV-based communication bus to carry inputs and results between processing tiers and the memory management tier
+%%   \vspace{-3mm}
+%%   \1 a processing tier with a group of streaming operations customized for the target ANNs 
+%%     \vspace{-3mm}
+%%     \2 the PE will include a SIMD engine to perform additional processing not suited to the streaming operations
+%% \end{outline}
+%% 
+
+Most of the digital design will be implemented in Verilog HDL and synthesized and routed in an appropriate technology node.
+A system verilog verification environment will be used to verify the functionality of the design and measure the system performance.
+If necessary, a literature review will be performed to ensure the feasibility of the stack bus performance requirements.
+%% will be reviewed analyzed using HFSS, HSPICE and Cadence Virtuoso to ensure signal integrity can be maintained for stacks from one to four layers.
+The design will be analyzed for area and power dissipation and if necessary scaled for comparison to state-of-the-art.
+If necessary, the DRAM analysis may be supported using the work from \cite{park2015data}.
+
+Where necessary, subsets of the simulation environments will be ported to GPU systems for performance comparisons.
+
+%% projected supported by google.
+%%  implement some "hot-spot" functionality
+%% on this works system. The analysis will be to test that an acceptable level of DRAM access bandwidth can be maintained during processing of the network(s).
+%% Another example will be a deep convolutional neural network. In the case of CNN's, there are example available through the google tensorFlow project.
+%% These examples will be loaded and run on the system to demonstrate that effective bandwidth utilization can be maintained from the DRAM.
+%% 
+%% It should be noted that when analyzing the target algorithms, it may be determined that not all sub-functions of the algorithm lend themselves to
+%% parallelism. For example, in \cite{qiu2013parallel}, it is anticipated that the cogent confabulation sentence model may have access patterns 
+%% and matrix sizes that are better processed on a CPU rather than this system. In this case, the applcation will be analyzed and partitioned to
+%% determine if partitioning a subset of the algorithm onto this solution provides an adequate performance improvement.
+
+\vspace{-1mm}
+\subsection*{Future Work}
+\label{sec:FutureWork}
+\begin{outline}
+\renewcommand{\outlinei}{enumerate}
+  \vspace{-2mm}
+  \1 Consider issues associated with connecting more than one of these 3D modules into a larger network.
+This work may consider the impact of partitioning a network across multiple devices and issues associated with communicating neuron state information
+between modules.
+  \vspace{-3mm}
+  \1 Translate each ANNs data structures to a C++ library
+\end{outline}
+

@@ -1,0 +1,9 @@
+To create wiki document
+1) clone main repository
+2) clone wiki
+3) Edit .md files with:
+  sed -i -e 's/lbbaker\/ece-cortical-MainResearch\/blob\/master\/3DSystem/ece-cortical\/ece-cortical-3D-DRAM-ANN-system\/blob\/master/g' ece-cortical-3D-DRAM-ANN-system.wiki/*.md
+  sed -i -e 's/lbbaker\/ece-cortical-MainResearch/ece-cortical\/ece-cortical-3D-DRAM-ANN-system/g' ece-cortical-3D-DRAM-ANN-system.wiki/*.md
+4) Run wkhtml2pdf
+ ./wikidoc/wikidoc.py /usr/local/bin/wkhtmltopdf ./ece-cortical-3D-DRAM-ANN-system.wiki
+
