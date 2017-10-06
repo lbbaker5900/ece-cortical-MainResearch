@@ -1283,9 +1283,9 @@ module main_mem_cntl (
                     end
                   `MMC_CNTL_STRM_SEL_WRITE_INTF0:
                     begin
-                      strm_enable_e1 [chan][strm] = (( strm_access_done [chan][2]  & (strm == 2) &  strm_access_request [chan][2]                                                                   & (!last_bank_valid | (last_bank != strm_access_bank [chan] [2])))) |
-                                                    (( strm_access_done [chan][2]  & (strm == 0) & ~strm_access_request [chan][2]  &  strm_access_request [chan][0]                                 & (!last_bank_valid | (last_bank != strm_access_bank [chan] [0])))) |
-                                                    (( strm_access_done [chan][2]  & (strm == 1) & ~strm_access_request [chan][2]  & ~strm_access_request [chan][0] & strm_access_request [chan][1] & (!last_bank_valid | (last_bank != strm_access_bank [chan] [1])))) ;
+                      strm_enable_e1 [chan][strm] = (( strm_access_done [chan][2]  & (strm == 2) &  (strm_access_request [chan][2]  & (!last_bank_valid | (last_bank != strm_access_bank [chan] [2])))                                                                                                                                                                                                             )) |
+                                                    (( strm_access_done [chan][2]  & (strm == 0) & ~(strm_access_request [chan][2]  & (!last_bank_valid | (last_bank != strm_access_bank [chan] [2]))) &  ( strm_access_request [chan][0] & (!last_bank_valid | (last_bank != strm_access_bank [chan] [0])))                                                                                                       )) |
+                                                    (( strm_access_done [chan][2]  & (strm == 1) & ~(strm_access_request [chan][2]  & (!last_bank_valid | (last_bank != strm_access_bank [chan] [2]))) & ~( strm_access_request [chan][0] & (!last_bank_valid | (last_bank != strm_access_bank [chan] [0])))  & ( strm_access_request [chan][1] & (!last_bank_valid | (last_bank != strm_access_bank [chan] [1]))) )) ;
                     end
                   default:
                     begin

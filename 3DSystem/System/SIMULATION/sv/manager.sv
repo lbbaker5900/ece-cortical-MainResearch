@@ -230,7 +230,7 @@ class manager;
                     rcvd_wud_to_oob_cmd.display();
                     vWudToOobIfc.tb_wud_pause     = 1 ;
                     $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause WUD ", $time, `__FILE__, `__LINE__, Id);
-               `endif
+                `endif
 /*
                 // A request to both Memory Read controllers will initiate an operation
                 `ifdef TB_ENABLE_MEM_CNTL_INITIATE_OP
@@ -248,7 +248,7 @@ class manager;
                 `ifdef TB_WUD_INITIATES_OP
                   sys_operation_mgr.numberOfLanes  = rcvd_wud_to_oob_cmd.num_lanes ;
                   $display("@%0t:%s:%0d:INFO: Manager {%0d} : Instruction %0d is utilizing %0d lane\'s", $time, `__FILE__, `__LINE__, Id, WU_num, sys_operation_mgr.numberOfLanes);
-               `endif
+                `endif
 
                 // Set number of operands based on instruction
                 instruction = descriptorObjs [WU_num] ;
@@ -342,6 +342,26 @@ class manager;
                     `endif
                   end
 
+                //---------------------------------------------------------------------------------------------------------------
+                // create the oob_packet object from the operation
+                oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
+                oob_packet_mgr.createFromOperation(sys_operation_oob.tId, sys_operation_oob)     ;
+                `ifdef TB_WUD_INITIATES_OP
+                  oob_packet_mgr.stOp_optionPtr     = rcvd_wud_to_oob_cmd.stOp_cmd;
+                  oob_packet_mgr.simd_optionPtr     = rcvd_wud_to_oob_cmd.simd_cmd;
+                `else
+                  oob_packet_mgr.stOp_optionPtr     = 1;  // FIXME
+                  oob_packet_mgr.simd_optionPtr     = 1;
+                `endif
+                mgr2oob.put(oob_packet_mgr)                                  ;  // oob needs to prepare the PE
+                $display("@%0t:%s:%0d:INFO: Manager {%0d} sent oob_packet {%0d} to oob_driver", $time, `__FILE__, `__LINE__, Id, operationNum);
+
+                //  The manager sends OOB packet to oob_driver and the same operation to each generator
+                //  The oob_driver will get oob information from the generator in case the generator has made changes to the operation
+                //  e.g. perhaps we have different operations per lane
+                //
+                // so we will not get the ack from the oob or geneators until we have sent both the oob-packet and the operations
+                // the oob_driver and generator make sure the OOB WU gets sent before operation data
                 if (`MGR_ARRAY_NUM_OF_MGR < 64)
                   begin
                     $display("@%0t:%s:%0d:INFO:Manager {%0d} Loading DRAMs with operation %0d operands for WU %0d", $time, `__FILE__, `__LINE__, Id, operationNum, WU_num);
@@ -369,26 +389,6 @@ class manager;
                 $display("@%0t:%s:%0d:INFO: Manager {%0d} Release MRC ", $time, `__FILE__, `__LINE__, Id);
                 vWudToOobIfc.tb_mrc_pause     = 0 ;
 
-                //---------------------------------------------------------------------------------------------------------------
-                // create the oob_packet object from the operation
-                oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
-                oob_packet_mgr.createFromOperation(sys_operation_oob.tId, sys_operation_oob)     ;
-                `ifdef TB_WUD_INITIATES_OP
-                  oob_packet_mgr.stOp_optionPtr     = rcvd_wud_to_oob_cmd.stOp_cmd;
-                  oob_packet_mgr.simd_optionPtr     = rcvd_wud_to_oob_cmd.simd_cmd;
-                `else
-                  oob_packet_mgr.stOp_optionPtr     = 1;  // FIXME
-                  oob_packet_mgr.simd_optionPtr     = 1;
-                `endif
-                mgr2oob.put(oob_packet_mgr)                                  ;  // oob needs to prepare the PE
-                $display("@%0t:%s:%0d:INFO: Manager {%0d} sent oob_packet {%0d} to oob_driver", $time, `__FILE__, `__LINE__, Id, operationNum);
-
-                //  The manager sends OOB packet to oob_driver and the same operation to each generator
-                //  The oob_driver will get oob information from the generator in case the generator has made changes to the operation
-                //  e.g. perhaps we have different operations per lane
-                //
-                // so we will not get the ack from the oob or geneators until we have sent both the oob-packet and the operations
-                // the oob_driver and generator make sure the OOB WU gets sent before operation data
 
                 //----------------------------------------------------------------------------------------------------
                 // Create copies of the base_operation and send to each lane generator 
