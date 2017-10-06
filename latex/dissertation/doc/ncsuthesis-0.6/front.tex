@@ -3,7 +3,7 @@
 
 %\lipsum[1-6]
 
-Although Artificial Neural Networks have been known about for many decades, it hasnt been until the last few years that
+Although Artificial Neural Networks (ANN) have been known about for many decades, it hasnt been until the last few years that
 they have demonstrated efficacy in applications such as image recognition and voice recognition.
 These ANNs have demonstrated significant improvements over what was considered to be state-of-the-art algorithms.
 
@@ -13,18 +13,18 @@ be attributed to the availability of "big" training data.
 This data takes the form of images, recordings etc. and this along with the available storage capacity means that the required training data is now available 
 to train these ANNs.
 
-Artificial neural networks (ANN) take their inspiration from neuron behavior observed in the mammalian brain, although
+Artificial Neurons (AN) take their inspiration from neuron behavior observed in the mammalian brain, although
 implementations are simplifications of what actually exists in the brain.
-Now these simplifications range from attempts to emulate the actual spiking behavior of real neurons to ANs that simply encode the spiking behavior in the
+These simplifications range from attempts to emulate the actual spiking behavior of real neurons to ANs that simply encode the spiking behavior in the
 form of a number or rate.
 
 Surprisingly, the ANNs that have demonstrated the most efficacy are those that employ the more simpler rate-based ANs.
 Now this may be in large part because these simpler rate-based ANs are easier to process or because large NNs employing the more complex spiking ANs have yet to
 demonsrate improved efficacy in the various applications.
 There is a belief that the more complex spiking neurons have the ability to outperform the simpler rate-based neurons but this work focuses on
-ANNs formed from rate-based ANs.
+the proven efficacy of ANNs formed from rate-based ANs.
 
-The ANNs that have demonstrated to be most effective are a family of NNs that can be described as Deep Neural Networks.
+The ANNs that have demonstrated to be most effective are a family of neural networks that can be described as Deep Neural Networks.
 These DNNs are created by cascading layers of ANs to form a large, layered ANN. 
 These ANNs are in most cases generate outputs in the form of a classification, such as the probability of an image containing a certain object
 or the output of some approximated function, which might be the expected cost from making a stock trade.
@@ -35,7 +35,7 @@ of ANs.
 In many implementations of these useful sized NNs, the performance is impacted by the memory bandwidth of the system. 
 Much of the NN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or SRAM. 
 These implementations can be shown to be effective with specific NN architectures, such as Convolutional NNs but in reality, these implementations do not provide the flexibility, 
-storage capacity and deterministic performance required to implement useful sized NNs.
+storage capacity and deterministic performance required to implement all useful sized NNs.
 
 In addition, it is this works belief that that real-world applications will employ multiple instances of these useful sized ANNs and current implementations will not
 meet the demands of these multi NN systems.
@@ -48,14 +48,14 @@ However, many DNNs do not exhibit this ability to reuse the contents of local SR
 Some work has included combining SRAM with DRAM but these implementations still exhibit poor performance with a wider family of ANNs.
 \fi
 
-One area of integrated circuit technology that hasnt been widely used in ANNs is 3-D integrated circuits.  3DIC has the potential to increase connectivity, and thus bandwidth 
+One area of integrated circuit technology that hasnt been widely used in ANNs is 3-D integrated circuits (3DIC).  3DIC has the potential to increase connectivity, and thus bandwidth 
 and keep power dissipation to acceptable levels.
 
-This work combines ANNs which 3DIC technology. The work demonstrates how a 3DIC DRAM memory can be combined with customized IC layers to produce a system providing
+This work combines ANNs with 3DIC technology to demonstrate how a 3DIC dynamic random access memory (DRAM) memory can be combined with customized IC layers to produce a system providing
 an acceptable level of performance in systems with multiple instances of various types of DNNs.
 
-This work includes utilizing a customized 3D dynamic random access memory, or DRAM along with a system which includes a manager layer which executes ANN operations in the form
-of unique instructions and a processing layer able to absorb data from the DRAM, via the manager at a bandwidth that meets the demands of a system employing
+This work includes utilizing a customized 3D DRAM along with a system which includes a management layer which coordinates and executes ANN operations in the form
+of unique instructions and a processing layer able to process data from the DRAM, via the manager at a bandwidth that meets the demands of a system employing
 multiple ANNs.
 
 
