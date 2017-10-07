@@ -206,7 +206,7 @@ class oob_driver;
                 if (( mgr2oob.num() != 0 ) && (receivedManagerOobPacket == 0) )
                   begin
                       mgr2oob.peek(oob_packet_mgr) ;                             //Taking the instruction from the manager 
-                      //$display("@%0t%s:%0d:DEBUG:{%0d}: received OOB packet from manager: %0b", $time, `__FILE__, `__LINE__, Id, oob_packet_mgr.stOp_operation );
+                      $display("@%0t%s:%0d:DEBUG:{%0d}: received OOB packet from manager: %0b", $time, `__FILE__, `__LINE__, Id, oob_packet_mgr.stOp_operation );
                       receivedManagerOobPacket      = 1                     ;
                   end
                 @(vDownstreamStackBusOOB.cb_test);

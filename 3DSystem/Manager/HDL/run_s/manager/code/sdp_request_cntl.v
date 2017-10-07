@@ -475,6 +475,7 @@ module sdp_request_cntl (
   reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    pbc_last_requested_valid                          ;  // Keep track of the previously requested bank/page for each channel
   reg  [`MGR_DRAM_BANK_DIV2_ADDRESS_RANGE   ]    pbc_bank_last_requested [`MGR_DRAM_NUM_CHANNELS ] ;  // 
   reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE        ]    pbc_page_last_requested [`MGR_DRAM_NUM_CHANNELS ] ;  // LEE
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    pbc_last_requested_mismatch                       ;  // when generating a request, check if we have loaded both channels
 
   // extract the bank/page/chan sub-fields
   // Would have been nice to use a struct, maybe next time
@@ -643,6 +644,18 @@ module sdp_request_cntl (
   Note:  When you are looking at a PBC address, its actually Bank/2 - {pppppppppppp, bbbb, c}
       */
 
+  genvar chan;
+  generate
+    for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan++)
+      begin: last_mismatch
+        always @(*)
+          begin
+            pbc_last_requested_mismatch [chan] = ~pbc_last_requested_valid[chan] | (pbc_last_end_addr_bank != pbc_bank_last_requested[chan]) | (pbc_last_end_addr_page != pbc_page_last_requested[chan]);
+          end
+      end
+  endgenerate
+//                 case ({(~pbc_last_requested_valid[1] | (pbc_last_end_addr_bank != pbc_bank_last_requested[1]) | (pbc_last_end_addr_page != pbc_page_last_requested[1])), (~pbc_last_requested_valid[0] | (pbc_last_end_addr_bank != pbc_bank_last_requested[0]) | (pbc_last_end_addr_page != pbc_page_last_requested[0]))})  
+
   always @(posedge clk)
     begin
       case (sdp_cntl_proc_storage_desc_state)  // synopsys parallel_case
@@ -775,12 +788,14 @@ module sdp_request_cntl (
                      end
                  endcase  // case ({force_cons_chan01_request, force_cons_chan10_request })
                end
-             else if (requests_complete && ~first_time_thru && (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP))
+             else if (/*requests_complete &&*/ ~first_time_thru && (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP))
                begin
                  // if we are completing a consequtive zone, the access order is CWBP and we havent fetched both channels, then anticipate we have jumped over a channel
                  // e.g. pbc_start = 0,24,1,  pbc_end = 0,26,0
+                 //      pbc_start = 0, 8,1,  pbc_end = 0,10,1
                  // We saw this mainly during the writeback testing where we are writing back 32 words in CWBP order and the address crossed a bak/channel boundary
-                 case ({(~pbc_last_requested_valid[1] | (pbc_last_end_addr_bank != pbc_bank_last_requested[1]) | (pbc_last_end_addr_page != pbc_page_last_requested[1])), (~pbc_last_requested_valid[0] | (pbc_last_end_addr_bank != pbc_bank_last_requested[0]) | (pbc_last_end_addr_page != pbc_page_last_requested[0]))})  
+                 //case ({(~pbc_last_requested_valid[1] | (pbc_last_end_addr_bank != pbc_bank_last_requested[1]) | (pbc_last_end_addr_page != pbc_page_last_requested[1])), (~pbc_last_requested_valid[0] | (pbc_last_end_addr_bank != pbc_bank_last_requested[0]) | (pbc_last_end_addr_page != pbc_page_last_requested[0]))})  
+                 case ({pbc_last_requested_mismatch[1],  pbc_last_requested_mismatch[0]})
                    2'b00:
                      begin
                        force_cons_chan0_request  <= 1'b0 ;
@@ -1118,8 +1133,11 @@ module sdp_request_cntl (
                  end
                3'b01x:
                  begin
-                     //pbc_inc_addr    <=  pbc_inc_addr ;
-                     pbc_inc_addr    <=  pbc_end_addr ;  // if we are forcing a request, set inc -> end
+                     pbc_inc_addr    <=  pbc_inc_addr ;
+                     // cannot set to pbc_end because pbc_end might be a few banks away and we might miss some requests
+                     // e.g. pbc_inc = 0,4.1, pbc_end = 0,8,1
+                     // but we need to force a channel 1 request in bank 4, and we will jumo right to 0,8,1 and miss bank 6
+                     //pbc_inc_addr    <=  pbc_end_addr ;  // if we are forcing a request, set inc -> end.
                  end
                3'b1xx:
                  begin
@@ -1185,8 +1203,8 @@ module sdp_request_cntl (
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID:
            begin
              // if we are at the end of a consequtive phase, dont increment the pbc_inc_addr past the pbc_end_addr
-             casex ({requests_complete, force_jump_request, force_cons_request})  // synopsys parallel_case
-               3'b000:
+             casex ({requests_complete, force_cons_request, pbc_last_requested_mismatch[1],  pbc_last_requested_mismatch[0]})
+               4'b0000:
                  begin
                    pbc_inc_addr    <=  pbc_inc_addr + 'd1 ;
                  end
@@ -1453,7 +1471,6 @@ module sdp_request_cntl (
         mem_start_cline  =  mem_start_address[`MGR_DRAM_ADDRESS_CLINE_FIELD_RANGE ]  ;
       `endif
     end
-  genvar chan ;
 
   always @(*)
     begin
