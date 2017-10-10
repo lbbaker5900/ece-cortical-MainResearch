@@ -109,11 +109,11 @@ class mem_checker;
                                                     end
                                                 else if (~dataBad)
                                                     begin
-                                                        $display ("@%0t::%s:%0d::PASS:MEM_CHECKER :: Correct result written to memory {%0d,%0d} : Hex : %h, FP : %f", $time, `__FILE__, `__LINE__, Id[0], Id[1], vP_mem.cb.dma__memc__write_data, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
+                                                        $display ("@%0t::%s:%0d::INFO:MEM_CHECKER :: Correct result written to memory {%0d,%0d} : Hex : %h, FP : %f", $time, `__FILE__, `__LINE__, Id[0], Id[1], vP_mem.cb.dma__memc__write_data, $bitstoshortreal(vP_mem.cb.dma__memc__write_data));
                                                     end
                                                 else if (~addressBad)
                                                     begin
-                                                        $display ("@%0t::%s:%0d:PASS:MEM_CHECKER :: Correct address for result {%0d,%0d} : Hex : %h", $time, `__FILE__, `__LINE__, Id[0], Id[1], vP_mem.cb.dma__memc__write_address);
+                                                        $display ("@%0t::%s:%0d:INFO:MEM_CHECKER :: Correct address for result {%0d,%0d} : Hex : %h", $time, `__FILE__, `__LINE__, Id[0], Id[1], vP_mem.cb.dma__memc__write_address);
                                                     end
 
 

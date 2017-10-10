@@ -90,6 +90,26 @@ $(FILL): $(CTS) run_fill.tcl
 	nice +19 icc_shell -f run_fill.tcl |& tee run_fill.log ; \
 	touch $(FILL)"
 
+ROUTE_TRACK = .route_track
+.PHONY: route_track
+route_track: $(ROUTE_TRACK)
+$(ROUTE_TRACK): $(FILL) run_route_track.tcl
+	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	nice +19 icc_shell -f run_route_track.tcl |& tee run_route_track.log ; \
+	touch $(ROUTE_TRACK)"
+
+ROUTE_DETAIL = .route_detail
+.PHONY: route_detail
+route_detail: $(ROUTE_DETAIL)
+$(ROUTE_DETAIL): $(FILL) run_route_detail.tcl
+	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	nice +19 icc_shell -f run_route_detail.tcl |& tee run_route_detail.log ; \
+	touch $(ROUTE_DETAIL)"
+
 ROUTE = .route
 .PHONY: route
 route: $(ROUTE)

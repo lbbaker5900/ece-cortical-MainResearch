@@ -346,7 +346,6 @@ if __name__ == "__main__":
                                              
   f.write(pLine)
   f.close()
-
   f = open('../SIMULATION/common/TB_system_start_running_processes.vh', 'w')
   pLine = ""
 
@@ -356,6 +355,35 @@ if __name__ == "__main__":
       pLine = pLine + '\n              mr_proc[{0}][{1}].run()  ;'.format(pe,strm) 
       pLine = pLine + '\n            end'                                    
       pLine = pLine + '\n'
+
+  f.write(pLine)
+  f.close()
+
+
+  f = open('../SIMULATION/common/TB_system_load_dram.vh', 'w')
+  pLine = ""
+
+  #pLine = pLine + '\n    case (m)'
+  #for word in range (0, 64):
+  #  pLine = pLine + '\n         {2}:'.format(mgr,chan, word)
+  #  pLine = pLine + '\n           begin'
+  pLine = pLine + '\n    case (mgr)'
+  for mgr in range (0, numOfMgr):
+    pLine = pLine + '\n         {0}:'.format(mgr)
+    pLine = pLine + '\n            begin'
+    pLine = pLine + '\n              case (chan)'
+    #for chan in range (0, numOfChannels ):
+    pLine = pLine + '\n                 0:'.format(mgr)
+    pLine = pLine + '\n                    begin'
+    pLine = pLine + '\n                      diram.diram_port_arrays[{0}].diram_inst.ram_even.ram.mem[config_intf_word][config_burst][config_index]  = config_data ;'.format(mgr)
+    pLine = pLine + '\n                    end'                                    
+    pLine = pLine + '\n                 1:'.format(mgr)
+    pLine = pLine + '\n                    begin'
+    pLine = pLine + '\n                      diram.diram_port_arrays[{0}].diram_inst.ram_odd.ram.mem[config_intf_word][config_burst][config_index]  = config_data ;'.format(mgr)
+    pLine = pLine + '\n                    end'                                    
+    pLine = pLine + '\n              endcase'
+    pLine = pLine + '\n            end'
+  pLine = pLine + '\n    endcase'
 
   f.write(pLine)
   f.close()

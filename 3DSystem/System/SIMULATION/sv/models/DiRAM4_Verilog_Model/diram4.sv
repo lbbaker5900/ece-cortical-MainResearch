@@ -2870,6 +2870,7 @@ localparam WORDS_PER_PAGE = $clog2(BITS_PER_PAGE)-5;
 //---------------------------------------------------------------------------
 // Declarations
 //---------------------------------------------------------------------------
+//
 
 // Memory array
 bit [31:0] mem [DQ_WIDTH/32] [BL] [int] ;
@@ -2939,6 +2940,9 @@ end // always
 //---------------------------------------------------------------------------
 // External configuration
 //---------------------------------------------------------------------------
+
+function void testFn();
+endfunction
 
 bit [BANK_WIDTH-1:0     ] config_bank_addr ;
 bit [ROW_WIDTH-1:0      ] config_row_addr  ;

@@ -22,6 +22,7 @@
 `include "pe.vh"
 `include "pe_array.vh"
 `include "manager.vh"
+`include "manager_array.vh"
 `include "pe_cntl.vh"
 `include "noc_interpe_port_Bitmasks.vh"
 
@@ -34,6 +35,7 @@ import operation::*;
 package dram_utils;
 
   import virtual_interface::*;
+
 
   class dram_utilities;
 
@@ -82,6 +84,7 @@ package dram_utils;
       logic [`MGR_DRAM_PAGE_ADDRESS_RANGE       ]  config_row_addr  ;
       logic [`MGR_DRAM_WORD_ADDRESS_RANGE       ]  config_word_addr ;
       logic                                        config_load      ;
+      logic [31:0]                                 config_data      ;
 
       int lineNum ;
       int count   ;
@@ -189,19 +192,42 @@ package dram_utils;
               if (i == 0)
                 begin
                   vDramCfgIfc[cbpw[0].atoi()].config_data       =  sys_operation_data[i].operands[0][count];
+                  config_data       =  sys_operation_data[i].operands[0][count];
                   $display("@%0t :%s:%0d:INFO: Manager {%0d} : %0d: %h %h %h %h : %h ", $time, `__FILE__, `__LINE__, Id, i, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), sys_operation_data[i].operands[0][count]);
                 end
               // Arg1
               else
                 begin
                   vDramCfgIfc[cbpw[0].atoi()].config_data       =  sys_operation_data[i-1].operands[1][count];
+                  config_data       =  sys_operation_data[i-1].operands[1][count];
                   $display("@%0t :%s:%0d:INFO: Manager {%0d} : %0d: %h %h %h %h : %h ", $time, `__FILE__, `__LINE__, Id, i, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), sys_operation_data[i-1].operands[1][count]);
                 end
              
               vDramCfgIfc[cbpw[0].atoi()].config_load       =  'd0 ;
-              #0.01  vDramCfgIfc[cbpw[0].atoi()].config_load       =  'd0 ;
-              #0.01  vDramCfgIfc[cbpw[0].atoi()].config_load       =  'd1 ;
-              #0.01  vDramCfgIfc[cbpw[0].atoi()].config_load       =  'd0 ;
+              //#0.01  vDramCfgIfc[cbpw[0].atoi()].config_load       =  'd0 ;
+              //#0.01  vDramCfgIfc[cbpw[0].atoi()].config_load       =  'd1 ;
+              //#0.01  vDramCfgIfc[cbpw[0].atoi()].config_load       =  'd0 ;
+              //
+              
+              case (cbpw[0].atoi())
+                0:
+                  begin
+                    if (cbpw[0].atoi() == 0)
+                      begin
+                        vDramCfgIfc[0].loadDram(Id, 0, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), config_data);
+                      end
+                  end
+                1:
+                  begin
+                    if (cbpw[0].atoi() == 1)
+                      begin
+                        vDramCfgIfc[1].loadDram(Id, 1, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), config_data);
+                      end
+                  end
+              endcase
+              
+
+
             end
           //while (transaction[0] < sys_operation[0].numberOfOperands)
           //vDownstreamStackBusLane[0].cb_test.std__pe__lane_sys_data        <= sys_operation[0].operands[transaction[0]]  ;

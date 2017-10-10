@@ -489,6 +489,8 @@ interface diram_cfg_ifc(
   logic                                          config_load      ;
   logic [31:0                                 ]  config_data      ;
 
+  bit                                 config_burst      ;
+  bit [5:0]      config_intf_word  ;  // word in a burst
 
   clocking cb_out @(posedge clk);
 
@@ -500,6 +502,27 @@ interface diram_cfg_ifc(
     output   config_load       ;
 
   endclocking : cb_out
+
+  function void loadDram(int mgr  ,
+                         int chan ,
+                         logic [`MGR_DRAM_BANK_ADDRESS_RANGE         ]   config_bank_addr,
+                         logic [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]   config_row_addr ,
+                         logic [`MGR_DRAM_WORD_ADDRESS_RANGE         ]   config_word_addr,
+                         logic [31:0                                 ]   config_data   
+  );
+
+    bit [17-1:0       ] config_index     ;
+
+    assign config_index =   {config_bank_addr,config_row_addr};
+
+
+    assign config_burst      = (config_word_addr > 63);
+    assign config_intf_word  =  config_word_addr%64;
+    
+    `include "TB_system_load_dram.vh"
+    //diram.diram_port_arrays[0].diram_inst.ram_even.ram.mem[0][0][0][0] = 0;
+
+  endfunction
 
 endinterface : diram_cfg_ifc
 
