@@ -329,9 +329,9 @@ module top;
              assign LocalFromNocIfc[mgr].noc__locl__dp_mgrId    = system_inst.manager_array_inst.mgr_inst[mgr].manager.mgr_noc_cntl.noc__locl__dp_mgrId   ;
            end
     endgenerate
-
-    //------------------------------------------------------------
-    // WU Decoder to OOB Downstream Interfaces
+ 
+      //------------------------------------------------------------
+      // WU Decoder to OOB Downstream Interfaces
     generate
        for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
            begin
@@ -342,6 +342,7 @@ module top;
              assign WudToOobIfc[mgr].num_lanes    = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__num_lanes ;
              assign WudToOobIfc[mgr].stOp_cmd     = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__stOp_cmd  ;
              assign WudToOobIfc[mgr].simd_cmd     = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__simd_cmd  ;
+             `ifndef TB_USES_MANAGER_GATE_NETLIST
              always @(*)
                begin
                  system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.tb_pause                       =  WudToOobIfc[mgr].tb_wud_pause     ;
@@ -349,9 +350,27 @@ module top;
                  system_inst.manager_array_inst.mgr_inst[mgr].manager.mrc_cntl_strm_inst[1].mrc_cntl.tb_pause  =  WudToOobIfc[mgr].tb_mrc_pause     ;
                  WudToOobIfc[mgr].tb_wud_initiatiated_instruction = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.initiate_instruction  ;
                end
+           `endif
            end
     endgenerate
 
+    `ifdef TB_USES_MANAGER_GATE_NETLIST
+      ///top/system_inst/manager_array_inst/mgr_inst[0]/manager/mrc_cntl_strm_inst_0__mrc_cntl/sdp_cntl/sdp_request_cntl/storageDesc_mem_0__gmemory/genblk61_mem1p2048x44/u0
+      ///top/system_inst/manager_array_inst/mgr_inst[0]/manager/mrc_cntl_strm_inst_0__mrc_cntl/sdp_cntl/sdp_request_cntl/storageDescConsJump_mem_0__gmemory/genblk63_mem1p4096x21/u0
+      ///top/system_inst/manager_array_inst/mgr_inst[0]/manager/mrc_cntl_strm_inst_1__mrc_cntl/sdp_cntl/sdp_request_cntl/storageDesc_mem_0__gmemory/genblk61_mem1p2048x44/u0
+      ///top/system_inst/manager_array_inst/mgr_inst[0]/manager/mrc_cntl_strm_inst_1__mrc_cntl/sdp_cntl/sdp_request_cntl/storageDescConsJump_mem_0__gmemory/genblk63_mem1p4096x21/u0
+      ///top/system_inst/manager_array_inst/mgr_inst[0]/manager/wu_memory/instruction_mem_0__gmemory/genblk62_mem1p4096x57/u0
+      //generate
+      initial
+        begin
+         repeat (5) @(posedge clk);  // ME to memory may not have reset to its reg
+         for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+           begin
+             `include "TB_system_gate_sim_load_readmem.vh"
+           end
+        end
+      //endgenerate
+    `endif
     //------------------------------------------------------------
     // WU Decoder to memory Read Interfaces
     //
@@ -390,6 +409,7 @@ module top;
     endgenerate
     */
 
+    //`ifndef TB_USES_MANAGER_GATE_NETLIST
     genvar memIfc;
     genvar opt;
     generate
@@ -422,6 +442,7 @@ module top;
             end
         end
     endgenerate
+    //`endif
 
     //------------------------------------------------------------
     // DRAM

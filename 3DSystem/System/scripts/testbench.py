@@ -388,6 +388,27 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../SIMULATION/common/TB_system_gate_sim_load_readmem.vh', 'w')
+  pLine = ""
+
+  for mgr in range (0, numOfMgr):
+    pLine = pLine + '\n                  if (mgr == {0})'.format(mgr)
+    pLine = pLine + '\n                    begin'
+    pLine = pLine + '\n                      $display ("@%0t::%s:%0d:: INFO: Loading Memories of gate level Manager {{%0d}}", $time, `__FILE__, `__LINE__, {0});'.format(mgr)
+    for strm in range (0, numOfStrms):
+      pLine = pLine + '\n                      //----------------------------------------------------------------------------------------------------'
+      pLine = pLine + '\n                      // sdp_request_cntl'
+      pLine = pLine + '\n                      $readmemh( "./inputFiles/manager_{0}_layer1_storageDescriptor_readmem.dat", top.system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst_{1}__mrc_cntl.sdp_cntl.sdp_request_cntl.storageDesc_mem_0__gmemory.dw_mem_mem1p2048x44.u0.mem_core_array);'.format(mgr,strm)
+      pLine = pLine + '\n                      $readmemh( "./inputFiles/manager_{0}_layer1_storageDescriptorConsJump_readmem.dat", top.system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst_{1}__mrc_cntl.sdp_cntl.sdp_request_cntl.storageDescConsJump_mem_0__gmemory.dw_mem_mem1p4096x21.u0.mem_core_array);'.format(mgr,strm)
+      pLine = pLine + '\n                      '
+    pLine = pLine + '\n                      //----------------------------------------------------------------------------------------------------'
+    pLine = pLine + '\n                      // wu_memory'
+    pLine = pLine + '\n                      $readmemh( "./inputFiles/manager_{0}_layer1_instruction_readmem.dat", top.system_inst.manager_array_inst.mgr_inst[{0}].manager.wu_memory.instruction_mem_0__gmemory.dw_mem_mem1p4096x57.u0.mem_core_array);'.format(mgr)
+    pLine = pLine + '\n                    end'
+
+  f.write(pLine)
+  f.close()
+
   ##----------------------------------------------------------------------------------------------------
   ##----------------------------------------------------------------------------------------------------
   ##----------------------------------------------------------------------------------------------------

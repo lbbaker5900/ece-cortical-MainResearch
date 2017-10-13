@@ -43,7 +43,7 @@ module manager (
             output   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank    ,
             output   wire  [`MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr    ,
 
-            output   reg   [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck ,  // Data group clocks
+            output   wire  [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck ,  // Data group clocks
             output   wire  [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data    ,
 
             //--------------------------------------------------------------------------------
@@ -814,8 +814,6 @@ module manager (
                           
   );
 
-  // FIXME
-  assign mcntl__noc__cp_ready = 1;
 
 
 

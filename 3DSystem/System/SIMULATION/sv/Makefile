@@ -27,6 +27,9 @@ TB_WHO_DRIVES_SIMD_REGFILE_INPUTS=TB_DOES_NOT_DRIVE_SIMD_REGFILE_INPUTS
 TB_CAN_MANAGER_PAUSE_WUD=TB_MGR_PAUSES_WUD
 #TB_CAN_MANAGER_PAUSE_WUD=TB_MGR_CANNOT_PAUSE_WUD
 
+TB_MANAGER_RTL_OR_GATES=TB_DOES_NOT_USE_MANAGER_GATE_NETLIST
+#TB_MANAGER_RTL_OR_GATES=TB_USES_MANAGER_GATE_NETLIST
+
 
 TB_COMMON_ARG0=TB_COMMON_ARG0
 
@@ -270,6 +273,21 @@ cleanPy :
 	echo "manager"
 	touch .manager
 
+.manager_gates_init : ../../../Manager/HDL/run_s/manager/synth/logs.65nm/manager/manager_final.v 
+	vlog -sv +define+${TB_WHO_DRIVES_OOB} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common   ../../../Manager/HDL/run_s/manager/synth/logs.65nm/manager/manager_init.v 
+	echo "manager gates_init"
+	touch .manager_gates_init
+
+.manager_gates_synth : ../../../Manager/HDL/run_s/manager/synth/logs.65nm/manager/manager_final.v 
+	vlog -sv +define+${TB_WHO_DRIVES_OOB} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common   ../../../Manager/HDL/run_s/manager/synth/logs.65nm/manager/manager_final.v 
+	echo "manager gates_synth"
+	touch .manager_gates_synth
+
+.manager_gates_pr : ../../../Manager/HDL/run_s/manager/pr/manager_routed_track.v 
+	vlog -sv +define+${TB_WHO_DRIVES_OOB} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common    ../../../Manager/HDL/run_s/manager/pr/manager_routed_track.v  
+	echo "manager gates_pr"
+	touch .manager_gates_pr
+
 .manager_array : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh ../../../PEArray/SIMULATION/common/*.vh        ../../../Manager/HDL/run_s/manager_array.v
 	vlog -sv      +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common        ../../../Manager/HDL/run_s/manager_array.v
 	echo "manager_array"
@@ -382,7 +400,7 @@ cleanPy :
 	touch .testbench
 
 .top : .environment ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh   ../../../PEArray/SIMULATION/common/*.vh      top.sv 
-	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
+	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	#vlog -sv  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	echo "top"
 	touch .top
