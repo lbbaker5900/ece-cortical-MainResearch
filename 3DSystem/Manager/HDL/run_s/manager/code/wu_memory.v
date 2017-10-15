@@ -29,7 +29,6 @@
 
 
 module wu_memory (  
-            valid                       ,
             sys__mgr__mgrId             ,
 
             // from WU fetch
@@ -59,7 +58,6 @@ module wu_memory (
     input                                       clk                            ;
     input                                       reset_poweron                  ;
 
-    input                                       valid                          ;
     input   [`MGR_MGR_ID_RANGE    ]             sys__mgr__mgrId                ;
 
     // from WU fetch

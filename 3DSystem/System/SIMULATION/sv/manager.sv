@@ -217,6 +217,7 @@ class manager;
 
                 // A WU Decoder command to OOB Downstream controller initiates the operation
                 `ifdef TB_WUD_INITIATES_OP
+                  `ifndef TB_USES_MANAGER_GATE_NETLIST
                     // release WUD
                     $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause MRC ", $time, `__FILE__, `__LINE__, Id);
                     vWudToOobIfc.tb_mrc_pause     = 1 ;
@@ -224,12 +225,14 @@ class manager;
                     $display("@%0t:%s:%0d:INFO: Manager {%0d} Release WUD and Pause MRCs ", $time, `__FILE__, `__LINE__, Id);
                     wait(vWudToOobIfc.tb_wud_initiatiated_instruction);
                     vWudToOobIfc.tb_wud_pause     = 1 ;
-                    wait ( wud2mgr_m.num() != 0 ) 
-                    wud2mgr_m.get(rcvd_wud_to_oob_cmd);
-                    $display("@%0t:%s:%0d:INFO: Manager {%0d} received WUD Downstream OOB Command from WUD\'s", $time, `__FILE__, `__LINE__, Id);
-                    rcvd_wud_to_oob_cmd.display();
-                    vWudToOobIfc.tb_wud_pause     = 1 ;
-                    $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause WUD ", $time, `__FILE__, `__LINE__, Id);
+                  `endif
+
+                  wait ( wud2mgr_m.num() != 0 ) 
+                  wud2mgr_m.get(rcvd_wud_to_oob_cmd);
+                  $display("@%0t:%s:%0d:INFO: Manager {%0d} received WUD Downstream OOB Command from WUD\'s", $time, `__FILE__, `__LINE__, Id);
+                  rcvd_wud_to_oob_cmd.display();
+                  vWudToOobIfc.tb_wud_pause     = 1 ;
+                  $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause WUD ", $time, `__FILE__, `__LINE__, Id);
                 `endif
 /*
                 // A request to both Memory Read controllers will initiate an operation

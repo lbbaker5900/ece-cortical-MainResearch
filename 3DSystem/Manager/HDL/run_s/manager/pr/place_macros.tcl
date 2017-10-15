@@ -247,7 +247,7 @@ set_attr [get_cells -hier -filter "full_name =~ stu_cntl/from_Stu_Fifo* && ref_n
 
 set_attr [get_cells -hier -filter "full_name =~ rdp_cntl/from_WuDecode_Fifo* && ref_name =~ asdr*"       ] origin "1375 2095"
 set_attr [get_cells -hier -filter "full_name =~ rdp_cntl/storagePtr_LocalFifo* && ref_name =~ asdr*"     ] origin "1375 2005"
-set_attr [get_cells -hier -filter "full_name =~ rdp_cntl/storageDestAddr_LocalFifo* && ref_name =~ asdr*"] origin "1375 1945"
+#set_attr [get_cells -hier -filter "full_name =~ rdp_cntl/storageDestAddr_LocalFifo* && ref_name =~ asdr*"] origin "1375 1945"
 set_attr [get_cells -hier -filter "full_name =~ rdp_cntl/from_Stuc_Fifo* && ref_name =~ asdr*"           ] origin "1375 1850"
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------

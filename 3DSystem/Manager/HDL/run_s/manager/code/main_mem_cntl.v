@@ -166,6 +166,7 @@ module main_mem_cntl (
         always @(posedge clk)
           begin
             xxx__mmc__data_valid_d1   [wr_intf ] <=   ( reset_poweron   ) ? 'd0  :  xxx__mmc__data_valid    [wr_intf ] ; 
+            xxx__mmc__data_cntl_d1    [wr_intf ] <=                                 xxx__mmc__data_cntl     [wr_intf ] ; 
             xxx__mmc__data_channel_d1 [wr_intf ] <=                                 xxx__mmc__data_channel  [wr_intf ] ; 
             mmc__xxx__data_ready      [wr_intf ] <=                                 mmc__xxx__data_ready_e1 [wr_intf ] ; 
           end

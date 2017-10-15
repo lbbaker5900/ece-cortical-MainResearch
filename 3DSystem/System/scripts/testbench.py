@@ -397,10 +397,15 @@ if __name__ == "__main__":
     pLine = pLine + '\n                      $display ("@%0t::%s:%0d:: INFO: Loading Memories of gate level Manager {{%0d}}", $time, `__FILE__, `__LINE__, {0});'.format(mgr)
     for strm in range (0, numOfStrms):
       pLine = pLine + '\n                      //----------------------------------------------------------------------------------------------------'
-      pLine = pLine + '\n                      // sdp_request_cntl'
+      pLine = pLine + '\n                      // MRC {0} sdp_request_cntl'.format(strm)
       pLine = pLine + '\n                      $readmemh( "./inputFiles/manager_{0}_layer1_storageDescriptor_readmem.dat", top.system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst_{1}__mrc_cntl.sdp_cntl.sdp_request_cntl.storageDesc_mem_0__gmemory.dw_mem_mem1p2048x44.u0.mem_core_array);'.format(mgr,strm)
       pLine = pLine + '\n                      $readmemh( "./inputFiles/manager_{0}_layer1_storageDescriptorConsJump_readmem.dat", top.system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst_{1}__mrc_cntl.sdp_cntl.sdp_request_cntl.storageDescConsJump_mem_0__gmemory.dw_mem_mem1p4096x21.u0.mem_core_array);'.format(mgr,strm)
       pLine = pLine + '\n                      '
+    pLine = pLine + '\n                      //----------------------------------------------------------------------------------------------------'
+    pLine = pLine + '\n                      // MWC sdp_request_cntl'
+    pLine = pLine + '\n                      $readmemh( "./inputFiles/manager_{0}_layer1_storageDescriptor_readmem.dat", top.system_inst.manager_array_inst.mgr_inst[{0}].manager.mwc_cntl.sdp_request_cntl.storageDesc_mem_0__gmemory.dw_mem_mem1p2048x44.u0.mem_core_array);'.format(mgr,strm)
+    pLine = pLine + '\n                      $readmemh( "./inputFiles/manager_{0}_layer1_storageDescriptorConsJump_readmem.dat", top.system_inst.manager_array_inst.mgr_inst[{0}].manager.mwc_cntl.sdp_request_cntl.storageDescConsJump_mem_0__gmemory.dw_mem_mem1p4096x21.u0.mem_core_array);'.format(mgr,strm)
+    pLine = pLine + '\n                      '
     pLine = pLine + '\n                      //----------------------------------------------------------------------------------------------------'
     pLine = pLine + '\n                      // wu_memory'
     pLine = pLine + '\n                      $readmemh( "./inputFiles/manager_{0}_layer1_instruction_readmem.dat", top.system_inst.manager_array_inst.mgr_inst[{0}].manager.wu_memory.instruction_mem_0__gmemory.dw_mem_mem1p4096x57.u0.mem_core_array);'.format(mgr)

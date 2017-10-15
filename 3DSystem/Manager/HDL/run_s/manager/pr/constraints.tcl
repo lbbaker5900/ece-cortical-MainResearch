@@ -142,7 +142,7 @@ if {$tech == "65nm"} {
  set_max_area 0
 #---------------------------------------------------------
 # This command prevents feedthroughs from input to output and avoids assign statements                 
-#--------------------------------------------------------- 
+#------------------------------------------------------ 
  set_fix_multiple_port_nets -all -buffer_constants [get_designs]
 
 
@@ -153,7 +153,7 @@ if {$tech == "65nm"} {
 # not compilable. See > man check_design for more information.
 #---------------------------------------------------------
 check_design \
-	> ${modname}_${type}_check_design.rpt
+	> ${modname}_check_design.rpt
 #---------------------------------------------------------
 # link performs check for presence of the design components 
 # instantiated within the design. It makes sure that all the 

@@ -12,7 +12,7 @@
 *****************************************************************/
 
 
-`define DRAM_ACC_NUM_OF_CMDS              7
+`define DRAM_ACC_NUM_OF_CMDS              5 //7
 `define DRAM_ACC_NUM_OF_CMDS_WIDTH        3   // need to account for 5
 `define DRAM_ACC_NUM_OF_CMDS_MSB          `DRAM_ACC_NUM_OF_CMDS_WIDTH-1
 `define DRAM_ACC_NUM_OF_CMDS_LSB          0

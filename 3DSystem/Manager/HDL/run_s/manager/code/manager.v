@@ -192,8 +192,6 @@ module manager (
 
   wu_memory wu_memory (
   
-            .valid                   ( wuf__wum__read           ),  // used to initiate readmemh
-        
             //-------------------------------
             // From WU fetch 
             .wuf__wum__read          ( wuf__wum__read           ),

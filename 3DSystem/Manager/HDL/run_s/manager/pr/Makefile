@@ -33,7 +33,7 @@ $(crDWlib): ../synth/dw_memories/compout/views/*/*.plef
 INIT = .init
 .PHONY: init
 init: $(INIT)
-$(INIT): $(crDWlib) run_init.tcl ../synth/$(MODNAME)_final.v 
+$(INIT): $(crDWlib) run_init.tcl ../synth/logs.65nm/manager/$(MODNAME)_final.v 
 	tcsh -c "add synopsys2015 ; \
 	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\

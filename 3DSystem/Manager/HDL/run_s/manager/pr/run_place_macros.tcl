@@ -14,9 +14,9 @@
 #
 #*********************************************************************************************
 
+set begintime [clock seconds]
 
 source setup.tcl
-set begintime [clock seconds]
 
 open_mw_lib ./work/${modname}
 open_mw_cel ${modname}_init
@@ -25,5 +25,8 @@ source place_macros.tcl
 source place_ports.tcl
 
 save_mw_cel -as ${modname}_init_macros_placed
+
+set endtime [clock seconds]
+set timestr [timef [expr $endtime-$begintime]]
 puts "run_place_macros.tcl completed successfully (elapsed time: $timestr actual)"
 exit
