@@ -131,6 +131,7 @@
 `define MGR_NOC_CONT_TYPE_DMA_DATA_EOD      7
 `define MGR_NOC_CONT_TYPE_DESC_WRITE_DATA   8
 `define MGR_NOC_CONT_TYPE_STATUS            9
+`define MGR_NOC_CONT_TYPE_INSTRUCTION      10
 
 //---------------------------------------------------------------------------------------------------------------------
 // Destination address types
@@ -154,9 +155,12 @@
 `define MGR_NOC_CONT_NOC_PAYLOAD_TYPE_SIZE           (`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_MSB - `MGR_NOC_CONT_NOC_PAYLOAD_TYPE_LSB +1)
 `define MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE           `MGR_NOC_CONT_NOC_PAYLOAD_TYPE_MSB : `MGR_NOC_CONT_NOC_PAYLOAD_TYPE_LSB
 
-`define MGR_NOC_CONT_PAYLOAD_TYPE_NOP        0
-`define MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES     1
-`define MGR_NOC_CONT_PAYLOAD_TYPE_DATA       2
+`define MGR_NOC_CONT_PAYLOAD_TYPE_NOP             0
+`define MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES          1
+`define MGR_NOC_CONT_PAYLOAD_TYPE_DATA            2
+`define MGR_NOC_CONT_PAYLOAD_TYPE_OP_DESCRIPTOR   3
+`define MGR_NOC_CONT_PAYLOAD_TYPE_MR_DESCRIPTOR   4
+`define MGR_NOC_CONT_PAYLOAD_TYPE_MW_DESCRIPTOR   5
 
 
 

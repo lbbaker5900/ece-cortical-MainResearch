@@ -519,8 +519,52 @@ interface diram_cfg_ifc(
     assign config_burst      = (config_word_addr > 63);
     assign config_intf_word  =  config_word_addr%64;
     
-    `include "TB_system_load_dram.vh"
+    `include "TB_system_dram_load.vh"
     //diram.diram_port_arrays[0].diram_inst.ram_even.ram.mem[0][0][0][0] = 0;
+
+  endfunction
+
+  function logic [31:0] readDram(int mgr  ,
+                         int chan ,
+                         logic [`MGR_DRAM_BANK_ADDRESS_RANGE         ]   config_bank_addr,
+                         logic [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]   config_row_addr ,
+                         logic [`MGR_DRAM_WORD_ADDRESS_RANGE         ]   config_word_addr
+  );
+
+    bit   [17-1:0 ]  config_index     ;
+    logic [31:0   ]  status_read_data ;
+
+    assign config_index =   {config_bank_addr,config_row_addr};
+
+
+    assign config_burst      = (config_word_addr > 63);
+    assign config_intf_word  =  config_word_addr%64;
+    
+    `include "TB_system_dram_read.vh"
+
+    return status_read_data ;
+
+  endfunction
+
+  function int    entryStatusDram(int mgr  ,
+                         int chan ,
+                         logic [`MGR_DRAM_BANK_ADDRESS_RANGE         ]   config_bank_addr,
+                         logic [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]   config_row_addr ,
+                         logic [`MGR_DRAM_WORD_ADDRESS_RANGE         ]   config_word_addr
+  );
+
+    bit   [17-1:0 ]  config_index     ;
+    int              status_entry     ;
+
+    assign config_index =   {config_bank_addr,config_row_addr};
+
+
+    assign config_burst      = (config_word_addr > 63);
+    assign config_intf_word  =  config_word_addr%64;
+    
+    `include "TB_system_dram_entry_status.vh"
+
+    return status_entry ;
 
   endfunction
 

@@ -594,6 +594,15 @@ package operation;
 
         endfunction
 
+        function void updateOperandsFromBits(int operandId, int operandIdx, logic [31:0] value);
+          
+            operands            [operandId][operandIdx]  = value         ;
+            operandsSign        [operandId][operandIdx]  = value [31]    ;
+            operandsExp         [operandId][operandIdx]  = value [30:23] ;
+            operandsSignificand [operandId][operandIdx]  = value [22: 0] ; 
+
+        endfunction
+
         function void calculateResult();
 
             // Note: result is calculated in post_randomize
@@ -624,7 +633,7 @@ package operation;
                       end
                     //$display("%t: Base_operation result %d: %f, %f <> %f\n", $time, tId, result, resultHigh, resultLow);
 
-                    // generate stimiulus from floating point fields
+                    // generate stimulus from floating point fields
                     operands[0][i] = {operandsSign[0][i], operandsExp[0][i], operandsSignificand[0][i]};
                     operands[1][i] = {operandsSign[1][i], operandsExp[1][i], operandsSignificand[1][i]};
 

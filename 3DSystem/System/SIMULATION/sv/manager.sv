@@ -373,7 +373,6 @@ class manager;
                                                          .sys_operation_data  ( sys_operation_lane_gen),
                                                          .vDramCfgIfc         ( vDramCfgIfc           ) 
                                                              );
-
                     
                     // Load the next WU also as some data might be stuck in
                     // intermediate fifos

@@ -327,7 +327,7 @@ class driver;
                                         end  // while (transaction[1] == 0) 
                                     $display("@%0t:%s:%0d:INFO:{%0d,%0d} Completed stream 1 process", $time, `__FILE__, `__LINE__, Id[0], Id[1] );
                                 end
-                            `endif
+                            `endif  // TB_DRIVES_STACK_DOWN_DATA
                             join_none
                             wait fork;
                             
