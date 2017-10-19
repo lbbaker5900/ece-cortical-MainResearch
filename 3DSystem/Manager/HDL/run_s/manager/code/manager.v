@@ -20,6 +20,7 @@
 `include "common.vh"
 `include "pe_array.vh"
 `include "pe.vh"
+`include "wu_memory.vh"
 `include "manager_array.vh"
 `include "manager.vh"
 `include "stack_interface.vh"
@@ -190,6 +191,8 @@ module manager (
   wire  [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type    [`MGR_WU_OPT_PER_INST ] ;  // 
   wire  [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value   [`MGR_WU_OPT_PER_INST ] ;  // 
 
+  wire  [`WUM_MAX_INST_RANGE            ]    wum__mcntl__inst_count  ;  // instruction count
+
   wu_memory wu_memory (
   
             //-------------------------------
@@ -208,6 +211,10 @@ module manager (
             .wum__wud__option_type   ( wum__wud__option_type    ),
             .wum__wud__option_value  ( wum__wud__option_value   ),
         
+            //-------------------------------
+            // Config/Status
+            .wum__mcntl__inst_count  ( wum__mcntl__inst_count   ),
+
             //-------------------------------
             // General
             .sys__mgr__mgrId         ( sys__mgr__mgrId          ),
@@ -555,7 +562,8 @@ module manager (
             assign    mrc_cntl_strm_inst[strm].mmc__mrc__valid[chan] =   mmc__xxx__valid  [chan] [strm]                   ;
             assign    mrc_cntl_strm_inst[strm].mmc__mrc__cntl [chan] =   mmc__xxx__cntl   [chan] [strm]                   ;
             assign    mrc_cntl_strm_inst[strm].mmc__mrc__data [chan] =   mmc__xxx__data   [chan] [strm]                   ;
-            assign    xxx__mmc__ready   [strm]                [chan] =   mrc_cntl_strm_inst[strm].mrc__mmc__ready[chan]   ;
+
+            assign    xxx__mmc__ready   [chan]                [strm] =   mrc_cntl_strm_inst[strm].mrc__mmc__ready[chan]   ;
           end
       end
   endgenerate
@@ -899,6 +907,10 @@ module manager (
             .mcntl__wuf__start_addr    ( mcntl__wuf__start_addr    ),  // first WU address
             .mcntl__wuf__enable        ( mcntl__wuf__enable        ),
             .xxx__wuf__stall           ( xxx__wuf__stall           ),
+
+            //-------------------------------
+            // Status
+            .wum__mcntl__inst_count    ( wum__mcntl__inst_count    ),
 
             //-------------------------------
             // Control-Path (cp) from NoC                                

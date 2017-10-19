@@ -147,7 +147,7 @@
 //--------------------------------------------------------
 // From MMC
 
-`define MRC_CNTL_FROM_MMC_FIFO_DEPTH          32
+`define MRC_CNTL_FROM_MMC_FIFO_DEPTH          64
 `define MRC_CNTL_FROM_MMC_FIFO_DEPTH_MSB      (`MRC_CNTL_FROM_MMC_FIFO_DEPTH) -1
 `define MRC_CNTL_FROM_MMC_FIFO_DEPTH_LSB      0
 `define MRC_CNTL_FROM_MMC_FIFO_DEPTH_SIZE     (`MRC_CNTL_FROM_MMC_FIFO_DEPTH_MSB - `MRC_CNTL_FROM_MMC_FIFO_DEPTH_LSB +1)
@@ -180,7 +180,7 @@
 
 // Threshold below full when we assert almost full
 // assert almost full when there are only this many entries available in the fifo
-`define MRC_CNTL_FROM_MMC_FIFO_ALMOST_FULL_THRESHOLD 4
+`define MRC_CNTL_FROM_MMC_FIFO_ALMOST_FULL_THRESHOLD 32
 
 
 //--------------------------------------------------------

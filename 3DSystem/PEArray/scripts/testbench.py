@@ -534,7 +534,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n                    // Send to driver                                        '.format(lane) 
     pLine = pLine + '\n                    mgr2gen[{0}].put(sys_operation_lane_gen[{0}]) ;          '.format(lane) 
     pLine = pLine + '\n                    // now wait for generator                                '.format(lane) 
-    pLine = pLine + '\n                    @mgr2gen_ack[{0}];                                       '.format(lane) 
+    pLine = pLine + '\n                    //@mgr2gen_ack[{0}];                                       '.format(lane) 
     pLine = pLine + '\n                //  end                                                        '.format(lane) 
     pLine = pLine + '\n            join_none                                                        '.format(lane) 
     pLine = pLine + '\n                                                                             '.format(lane) 

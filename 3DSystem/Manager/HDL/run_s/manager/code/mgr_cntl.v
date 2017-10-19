@@ -17,6 +17,7 @@
 `include "common.vh"
 `include "pe_array.vh"
 `include "pe.vh"
+`include "wu_memory.vh"
 `include "manager_array.vh"
 `include "manager.vh"
 `include "mgr_noc_cntl.vh"
@@ -33,6 +34,10 @@ module mgr_cntl (
             output  reg                                  mcntl__wuf__enable      ,
             output  reg                                  xxx__wuf__stall         ,
 
+            //-------------------------------------------------------------------------------------------------
+            // Status
+            //
+            input   wire [`WUM_MAX_INST_RANGE      ]     wum__mcntl__inst_count  ,  // instruction count
 
 
 

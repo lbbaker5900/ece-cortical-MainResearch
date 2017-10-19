@@ -46,9 +46,13 @@ module wu_memory (
             wum__wud__option_value      ,
 
             //-------------------------------
+            // Config/Status
+            //
+            wum__mcntl__inst_count      ,
+            //-------------------------------
             // General
             //
-            clk                               ,
+            clk                         ,
             reset_poweron    
             );
 
@@ -60,6 +64,12 @@ module wu_memory (
 
     input   [`MGR_MGR_ID_RANGE    ]             sys__mgr__mgrId                ;
 
+    //----------------------------------------------------------------------------------------------------
+    // Config/Status
+  
+    output [`WUM_MAX_INST_RANGE            ]    wum__mcntl__inst_count         ;
+
+    //----------------------------------------------------------------------------------------------------
     // from WU fetch
     input  [`MGR_WU_ADDRESS_RANGE          ]    wuf__wum__addr                 ;
     input                                       wuf__wum__read                 ;
@@ -107,6 +117,13 @@ module wu_memory (
 
     reg  [`MGR_WU_ADDRESS_RANGE          ]    wuf__wum__addr_d1                ;
     reg                                       wuf__wum__read_d1                ;
+
+    // DEBUG
+    //`ifndef SYNTHESIS
+    reg  [`WUM_MAX_INST_RANGE            ]    wum__mcntl__inst_count           ;
+    reg  [`WUM_MAX_INST_RANGE            ]    instruction_count                ;
+    //`endif
+
     //----------------------------------------------------------------------------------------------------
     // Register inputs and outputs
 
@@ -150,7 +167,27 @@ module wu_memory (
       begin
         memory_valid           <=  memory_read   ;
       end
-    assign valid_e1 = memory_valid ;
+    assign valid_e1 = memory_valid 
+                      `ifdef TB_LIMIT_MAX_INST
+                        & (instruction_count != 'd`WUM_DEBUG_MAX_INSTRUCTIONS);
+                      `else
+                        ;
+                      `endif
+
+    //----------------------------------------------------------------------------------------------------
+    // DEBUG
+    always @(posedge clk)
+      begin
+        instruction_count <= ( reset_poweron                                      ) ? 'd0                     :
+                             `ifdef TB_LIMIT_MAX_INST
+                             (instruction_count == 'd`WUM_DEBUG_MAX_INSTRUCTIONS  ) ? instruction_count       :
+                             (valid_e1 && (icntl_e1 == `COMMON_STD_INTF_CNTL_EOM) ) ? instruction_count + 'd1 :
+                                                                                      instruction_count       ;
+                             `else
+                             (valid_e1 && (icntl_e1 == `COMMON_STD_INTF_CNTL_EOM) ) ? instruction_count + 'd1 :
+                                                                                      instruction_count       ;
+                             `endif
+      end
 
     //----------------------------------------------------------------------------------------------------
     // Memories 

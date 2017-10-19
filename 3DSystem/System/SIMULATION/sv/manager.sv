@@ -212,11 +212,16 @@ class manager;
         repeat (num_operations)                 //Number of transactions to be generated
             begin
 
+                @(vDownstreamStackBusOOB.cb_test);  
+
                 //----------------------------------------------------------------------------------------------------
                 // Create the operation and send to OOB driver and lane driver
 
                 // A WU Decoder command to OOB Downstream controller initiates the operation
                 `ifdef TB_WUD_INITIATES_OP
+                    vWudToOobIfc.tb_mrc_pause     = 0 ;
+                    vWudToOobIfc.tb_wud_pause     = 0 ;
+/*
                   `ifndef TB_USES_MANAGER_GATE_NETLIST
                     // release WUD
                     $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause MRC ", $time, `__FILE__, `__LINE__, Id);
@@ -226,12 +231,13 @@ class manager;
                     wait(vWudToOobIfc.tb_wud_initiatiated_instruction);
                     vWudToOobIfc.tb_wud_pause     = 1 ;
                   `endif
+*/
 
                   wait ( wud2mgr_m.num() != 0 ) 
                   wud2mgr_m.get(rcvd_wud_to_oob_cmd);
                   $display("@%0t:%s:%0d:INFO: Manager {%0d} received WUD Downstream OOB Command from WUD\'s", $time, `__FILE__, `__LINE__, Id);
                   rcvd_wud_to_oob_cmd.display();
-                  vWudToOobIfc.tb_wud_pause     = 1 ;
+//                  vWudToOobIfc.tb_wud_pause     = 1 ;
                   $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause WUD ", $time, `__FILE__, `__LINE__, Id);
                 `endif
 /*
@@ -347,6 +353,8 @@ class manager;
 
                 //---------------------------------------------------------------------------------------------------------------
                 // create the oob_packet object from the operation
+                // - also used to load pe_cntl memory
+
                 oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
                 oob_packet_mgr.createFromOperation(sys_operation_oob.tId, sys_operation_oob)     ;
                 `ifdef TB_WUD_INITIATES_OP
@@ -365,31 +373,38 @@ class manager;
                 //
                 // so we will not get the ack from the oob or geneators until we have sent both the oob-packet and the operations
                 // the oob_driver and generator make sure the OOB WU gets sent before operation data
-                if (`MGR_ARRAY_NUM_OF_MGR < 64)
+                $display("@%0t:%s:%0d:INFO:Manager {%0d} Loading DRAMs with operation %0d operands for WU %0d", $time, `__FILE__, `__LINE__, Id, operationNum, WU_num);
+                fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num );
+                $display("@%0t:%s:%0d:INFO:Manager {%0d} Before", $time, `__FILE__, `__LINE__, Id);
+                for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                   begin
-                    $display("@%0t:%s:%0d:INFO:Manager {%0d} Loading DRAMs with operation %0d operands for WU %0d", $time, `__FILE__, `__LINE__, Id, operationNum, WU_num);
-                    fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num );
-                    dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
-                                                         .sys_operation_data  ( sys_operation_lane_gen),
-                                                         .vDramCfgIfc         ( vDramCfgIfc           ) 
-                                                             );
-                    
-                    // Load the next WU also as some data might be stuck in
-                    // intermediate fifos
+                    sys_operation_lane_gen[lane].displayOperation();
+                  end
+                dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
+                                                     .sys_operation_data  ( sys_operation_lane_gen),
+                                                     .vDramCfgIfc         ( vDramCfgIfc           ) 
+                                                         );
+                $display("@%0t:%s:%0d:INFO:Manager {%0d} After", $time, `__FILE__, `__LINE__, Id);
+                for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+                  begin
+                    sys_operation_lane_gen[lane].displayOperation();
+                  end
+                
+                // Load the next WU also as some data might be stuck in
+                // intermediate fifos
 /*
-                    fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num+1 );
-                    dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
-                                                         .sys_operation_data  ( sys_operation_lane_gen),
-                                                         .vDramCfgIfc         ( vDramCfgIfc           ) 
+                fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num+1 );
+                dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
+                                                     .sys_operation_data  ( sys_operation_lane_gen),
+                                                     .vDramCfgIfc         ( vDramCfgIfc           ) 
                                                              );
 */
-                  end
 
 
                 // send actual base operation to upstream checker 
                 mgr2up.put(sys_operation_mgr)                      ; 
-                $display("@%0t:%s:%0d:INFO: Manager {%0d} Release MRC ", $time, `__FILE__, `__LINE__, Id);
-                vWudToOobIfc.tb_mrc_pause     = 0 ;
+//                $display("@%0t:%s:%0d:INFO: Manager {%0d} Release MRC ", $time, `__FILE__, `__LINE__, Id);
+//                vWudToOobIfc.tb_mrc_pause     = 0 ;
 
 
                 //----------------------------------------------------------------------------------------------------
@@ -401,7 +416,7 @@ class manager;
                 // include has mgr2gen and mgr2gen_ack
                 // Note: couldnt get this to work with a for loop, so used python
                 `include "TB_manager_send_operation_to_generators.vh"
-                wait fork;
+                //wait fork;
                 // this should have waited till generator, driver and mem_checker are done 
 
                 // wait till OOB packet is complete before startng next operation
@@ -415,8 +430,17 @@ class manager;
                 WU_num++         ;
                 
             end
+
+        for (int lane = 0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+          begin
+            $display("@%0t:%s:%0d:INFO: Manager {%0d} check generator {%0d} has processed all operations", $time, `__FILE__, `__LINE__, Id, lane);
+            wait(mgr2gen[lane].num() == 0);
+          end
+        $display("@%0t:%s:%0d:INFO: Manager {%0d} check upstream checker has processed all operations", $time, `__FILE__, `__LINE__, Id);
+        wait(mgr2up.num() == 0);
+
         // Wait a little time for the last result to be received by the upstream checker
-        repeat (50) @(vDownstreamStackBusOOB.cb_test);  
+        repeat (500) @(vDownstreamStackBusOOB.cb_test);  
 
 
         -> final_operation;

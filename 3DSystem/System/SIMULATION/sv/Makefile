@@ -18,8 +18,11 @@ TB_WHO_DRIVES_STACK_DOWN_DATA=TB_DOES_NOT_DRIVE_STACK_DOWN_DATA
 #TB_WHO_INITIATES_OP=TB_TESTBENCH_MGR_INITIATES_OP
 TB_WHO_INITIATES_OP=TB_WUD_INITIATES_OP
 
-TB_LIMIT_MAX_PROGRAM_COUNT=TB_LIMIT_MAX_PC
-#TB_LIMIT_MAX_PROGRAM_COUNT=TB_DO_NOT_LIMIT_MAX_PC
+#TB_LIMIT_MAX_PROGRAM_COUNT=TB_LIMIT_MAX_PC
+TB_LIMIT_MAX_PROGRAM_COUNT=TB_DO_NOT_LIMIT_MAX_PC
+
+TB_LIMIT_MAX_INSTRUCTIONS=TB_LIMIT_MAX_INST
+#TB_LIMIT_MAX_INSTRUCTIONS=TB_DO_NOT_LIMIT_MAX_INST
 
 #TB_WHO_DRIVES_SIMD_REGFILE_INPUTS=TB_DRIVES_SIMD_REGFILE_INPUTS
 TB_WHO_DRIVES_SIMD_REGFILE_INPUTS=TB_DOES_NOT_DRIVE_SIMD_REGFILE_INPUTS
@@ -194,7 +197,7 @@ cleanPy :
 	touch .wu_decode
                                                                                                                           
 .wu_memory : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh           ../../../Manager/HDL/run_s/manager/code/wu_memory.v
-	vlog -sv      +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common           ../../../Manager/HDL/run_s/manager/code/wu_memory.v
+	vlog -sv    +define+${TB_LIMIT_MAX_INSTRUCTIONS}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common           ../../../Manager/HDL/run_s/manager/code/wu_memory.v
 	echo "wu_memory"
 	touch .wu_memory
 
@@ -239,7 +242,7 @@ cleanPy :
 	touch .mwc_cntl
 
 .mgr_cntl : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh           ../../../Manager/HDL/run_s/manager/code/mgr_cntl.v 
-	vlog -sv   +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common           ../../../Manager/HDL/run_s/manager/code/mgr_cntl.v 
+	vlog -sv   +define+${TB_LIMIT_MAX_INSTRUCTIONS} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common           ../../../Manager/HDL/run_s/manager/code/mgr_cntl.v 
 	echo "mgr_cntl"
 	touch .mgr_cntl
 
@@ -269,7 +272,7 @@ cleanPy :
 	touch .mgr_noc_cntl
 
 .manager : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh ../../../PEArray/SIMULATION/common/*.vh        ../../../Manager/HDL/run_s/manager/code/manager.v
-	vlog -sv +define+${TB_WHO_DRIVES_OOB} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common        ../../../Manager/HDL/run_s/manager/code/manager.v
+	vlog -sv +define+${TB_WHO_DRIVES_OOB}+${TB_LIMIT_MAX_INSTRUCTIONS} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common        ../../../Manager/HDL/run_s/manager/code/manager.v
 	#vlog -sv +define+TESTING     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common        ../../../Manager/HDL/run_s/manager/code/manager.v
 	echo "manager"
 	touch .manager
@@ -387,7 +390,7 @@ cleanPy :
 
 # Note: environment includes all .sv files
 .environment : .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .armMgr .dwPe .definition .base_operation .driver .oob_driver .generator .tb_manager .dram_utilities .mem_checker .upstream_checker .regFile_driver .dram_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .interface  ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      environment.sv
-	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      environment.sv
+	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      environment.sv
 	echo "environment"
 	touch .environment
                                                                                                                                                                                                              
@@ -396,12 +399,12 @@ cleanPy :
 #  - make sure any required defines are added to the testbench compile
 #
 .testbench : .environment ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      testbench.sv
-	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      testbench.sv
+	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      testbench.sv
 	echo "testbench"
 	touch .testbench
 
 .top : .environment ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh   ../../../PEArray/SIMULATION/common/*.vh      top.sv 
-	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
+	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	#vlog -sv  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	echo "top"
 	touch .top

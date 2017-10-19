@@ -703,10 +703,10 @@ module sdp_stream_cntl (
                 begin
                   loading_consequtive    = consJump_to_strm_fsm_fifo[0].pipe_valid & ~loaded_consequtive ;
                   loading_jump           = 1'b0 ;
-                end
-              `SDP_CNTL_STRM_DATA_COUNT_CONS: 
-                begin
-                  loading_consequtive    = ~req_next_line_but_not_accepted & ( destination_ready & lane_data_available &  consJump_to_strm_fsm_fifo[0].pipe_valid & consequtive_counter_le0 & ~last_consequtive & ~loaded_consequtive ) ;
+                end                              // FIXME: Need to review the whole sent_data_wo_inc, req_next_line_but_not_accepted and generate a single signal and make sure we understand usage
+              `SDP_CNTL_STRM_DATA_COUNT_CONS:    //             if sent_data_wo_inc is set, we already sent the data associated with the current address                                                                              
+                begin                            //                                             v                                                      
+                  loading_consequtive    = ~req_next_line_but_not_accepted & (destination_ready | (sent_data_without_increment & (~req_next_line [lane_channel_ptr_e1] || get_next_line [lane_channel_ptr_e1]))) & lane_data_available &  consJump_to_strm_fsm_fifo[0].pipe_valid & consequtive_counter_le0 & ~last_consequtive & ~loaded_consequtive  ;
                   loading_jump           = 1'b0 ;
                 end
               `SDP_CNTL_STRM_DATA_LOAD_JUMP_VALUE : 
@@ -878,7 +878,7 @@ module sdp_stream_cntl (
          begin
            sent_data_without_increment <= ( reset_poweron                                                                                                                 ) ?  1'b0                        :
 
-                                          //( send_data && req_next_line [lane_channel_ptr_e1] &&  (sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_LOAD_FIRST_CONS_COUNT)) ?  1'b1                        :  // only allow one transfer during the initial wait state
+                                          //( send_data && req_next_line [lane_channel_ptr_e1] &&  (sdp_cntl_stream_data_state == `SDP_CNTL_STRM_DATA_LOAD_FIRST_CONS_COUNT)) ?  1'b1                      :  // only allow one transfer during the initial wait state
                                                                                                                                                                                                               // where we are all waiting for data to be available for each line
                                                                                                                                                                                                               // data sent and a get_line was rejected, so block sends until we see the all_get_line
                  //                                                            requested next line and rejected
@@ -886,7 +886,7 @@ module sdp_stream_cntl (
                  //                                                                           v
                  //                                      |<------------------------------------------------------------------------->|
                                           ( send_data && req_next_line [lane_channel_ptr_e1] && ~get_next_line [lane_channel_ptr_e1]                                      ) ?  1'b1                        :  // If we send current but next is rejected, leave the current and next address alone
-                                          (                                                      get_next_line [lane_channel_ptr_e1]                                      ) ?  1'b0                        :  // but set this flag to ensure we dont resend current data. We dot his because all data
+                                          (                                                      get_next_line [lane_channel_ptr_e1]                                      ) ?  1'b0                        :  // but set this flag to ensure we dont resend current data. We do this because all data
                                                                                                                                                                                                               // is requested using next address
 
                                                                                                                                                                                sent_data_without_increment ;
