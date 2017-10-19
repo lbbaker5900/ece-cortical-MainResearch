@@ -290,7 +290,7 @@ class Environment;
         join_none
 
 
-        //$display("@%0t%s:%0d: LEE: Wait for final operation\n", $time, `__FILE__, `__LINE__,);
+        $display("@%0t%s:%0d: INFO: Wait for final operations\n", $time, `__FILE__, `__LINE__,);
         fork                                                          //These end after the manager triggers the event "final_operation" after generating the final transaction.
             `include "TB_wait_for_final_operation.vh"
         join

@@ -342,15 +342,14 @@ module top;
              assign WudToOobIfc[mgr].num_lanes    = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__num_lanes ;
              assign WudToOobIfc[mgr].stOp_cmd     = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__stOp_cmd  ;
              assign WudToOobIfc[mgr].simd_cmd     = system_inst.manager_array_inst.mgr_inst[mgr].manager.oob_downstream_cntl.wud__odc__simd_cmd  ;
+             /*
              `ifndef TB_USES_MANAGER_GATE_NETLIST
              always @(*)
                begin
-                 system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.tb_pause                       =  WudToOobIfc[mgr].tb_wud_pause     ;
-                 system_inst.manager_array_inst.mgr_inst[mgr].manager.mrc_cntl_strm_inst[0].mrc_cntl.tb_pause  =  WudToOobIfc[mgr].tb_mrc_pause     ;
-                 system_inst.manager_array_inst.mgr_inst[mgr].manager.mrc_cntl_strm_inst[1].mrc_cntl.tb_pause  =  WudToOobIfc[mgr].tb_mrc_pause     ;
-                 WudToOobIfc[mgr].tb_wud_initiatiated_instruction = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.initiate_instruction  ;
+                 WudToOobIfc[mgr].tb_wud_initiatted_instruction = system_inst.manager_array_inst.mgr_inst[mgr].manager.wu_decode.initiate_instruction  ;
                end
            `endif
+           */
            end
     endgenerate
 

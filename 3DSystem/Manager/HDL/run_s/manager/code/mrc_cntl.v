@@ -406,16 +406,6 @@ module mrc_cntl (
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------------------------------------------------------------
-  // Testbench control
-  `ifdef TB_MGR_PAUSES_WUD
-  reg tb_pause ; // the manager.sv can pause the WU decoder to ensure DiRAM4 memory is updated
-  initial
-    begin
-      @(posedge clk) tb_pause = 1'b1;
-    end
-  `endif
-  //------------------------------------------------------------------------------------------------------------------------------------------------------
-  //------------------------------------------------------------------------------------------------------------------------------------------------------
   // Extract Descriptor FSM
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // - Take storage descriptor option tuples from the WU fifo and construct starting address, number of lanes
@@ -448,9 +438,6 @@ module mrc_cntl (
         
         `MRC_CNTL_EXTRACT_DESC_WAIT: 
           mrc_cntl_extract_desc_state_next =   
-                                               `ifdef TB_MGR_PAUSES_WUD
-                                                 ( tb_pause ) ? `MRC_CNTL_EXTRACT_DESC_WAIT:
-                                               `endif
                                                ( from_Wud_Fifo[0].pipe_valid && ~from_Wud_Fifo[0].pipe_som ) ? `MRC_CNTL_EXTRACT_DESC_ERR      :  // right now assume MR desciptors are multi-cycle
                                                ( from_Wud_Fifo[0].pipe_valid                               ) ? `MRC_CNTL_EXTRACT_DESC_EXTRACT  :  // pull all we need from the descriptor then start memory access
                                                                                                                `MRC_CNTL_EXTRACT_DESC_WAIT     ;

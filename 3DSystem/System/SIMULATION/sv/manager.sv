@@ -166,9 +166,6 @@ class manager;
         this.vDramCfgIfc               = vDramCfgIfc             ;
         this.vWudToOobIfc              = vWudToOobIfc            ;
 
-        this.vWudToOobIfc.tb_mrc_pause     = 1 ;
-        this.vWudToOobIfc.tb_wud_pause     = 1 ;
-
     endfunction
 
     localparam MGR_ARRAY_XY = $sqrt(`MGR_ARRAY_NUM_OF_MGR) ;
@@ -219,36 +216,14 @@ class manager;
 
                 // A WU Decoder command to OOB Downstream controller initiates the operation
                 `ifdef TB_WUD_INITIATES_OP
-                    vWudToOobIfc.tb_mrc_pause     = 0 ;
-                    vWudToOobIfc.tb_wud_pause     = 0 ;
-/*
-                  `ifndef TB_USES_MANAGER_GATE_NETLIST
-                    // release WUD
-                    $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause MRC ", $time, `__FILE__, `__LINE__, Id);
-                    vWudToOobIfc.tb_mrc_pause     = 1 ;
-                    vWudToOobIfc.tb_wud_pause     = 0 ;
-                    $display("@%0t:%s:%0d:INFO: Manager {%0d} Release WUD and Pause MRCs ", $time, `__FILE__, `__LINE__, Id);
-                    wait(vWudToOobIfc.tb_wud_initiatiated_instruction);
-                    vWudToOobIfc.tb_wud_pause     = 1 ;
-                  `endif
-*/
 
                   wait ( wud2mgr_m.num() != 0 ) 
                   wud2mgr_m.get(rcvd_wud_to_oob_cmd);
                   $display("@%0t:%s:%0d:INFO: Manager {%0d} received WUD Downstream OOB Command from WUD\'s", $time, `__FILE__, `__LINE__, Id);
                   rcvd_wud_to_oob_cmd.display();
-//                  vWudToOobIfc.tb_wud_pause     = 1 ;
                   $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause WUD ", $time, `__FILE__, `__LINE__, Id);
                 `endif
-/*
-                // A request to both Memory Read controllers will initiate an operation
-                `ifdef TB_ENABLE_MEM_CNTL_INITIATE_OP
-                    wait (( mrc2mgr_m[0].num() != 0 ) && ( mrc2mgr_m[1].num() != 0 ));
-                    mrc2mgr_m[0].get(mrc_desc[0]);
-                    mrc2mgr_m[1].get(mrc_desc[1]);
-                    $display("@%0t:%s:%0d:INFO: Manager {%0d} received Memory Descriptor from MRC\'s", $time, `__FILE__, `__LINE__, Id);
-                `endif
-*/
+
                 // Create a base operation and send the generator which will then spawn further operations for each lane.
                 // The generator will maintain operation type and number of operands for all lanes but will randomize operands.
                 sys_operation_mgr        =  new ()  ;  // seed operation object.  Generators will copy this and then re-create different operand values
@@ -403,8 +378,6 @@ class manager;
 
                 // send actual base operation to upstream checker 
                 mgr2up.put(sys_operation_mgr)                      ; 
-//                $display("@%0t:%s:%0d:INFO: Manager {%0d} Release MRC ", $time, `__FILE__, `__LINE__, Id);
-//                vWudToOobIfc.tb_mrc_pause     = 0 ;
 
 
                 //----------------------------------------------------------------------------------------------------
@@ -438,6 +411,7 @@ class manager;
           end
         $display("@%0t:%s:%0d:INFO: Manager {%0d} check upstream checker has processed all operations", $time, `__FILE__, `__LINE__, Id);
         wait(mgr2up.num() == 0);
+        $display("@%0t:%s:%0d:INFO: Manager {%0d} upstream checker has processed all operations", $time, `__FILE__, `__LINE__, Id);
 
         // Wait a little time for the last result to be received by the upstream checker
         repeat (500) @(vDownstreamStackBusOOB.cb_test);  

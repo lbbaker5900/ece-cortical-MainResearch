@@ -391,16 +391,6 @@ module wu_decode (
   assign wud__wum__ready_e1              = ~from_WuMemory_Fifo[0].almost_full  ;
 
 
-  //------------------------------------------------------------------------------------------------------------------------------------------------------
-  //------------------------------------------------------------------------------------------------------------------------------------------------------
-  // Testbench control
-  `ifdef TB_MGR_PAUSES_WUD
-  reg tb_pause ; // the manager.sv can pause the WU decoder to ensure DiRAM4 memory is updated
-  initial
-    begin
-      @(posedge clk) tb_pause = 1'b1;
-    end
-  `endif
 
   //----------------------------------------------------------------------------------------------------
   // WU Instruction Decode FSM
@@ -586,9 +576,6 @@ module wu_decode (
   // We read the FIFO unless the instruction is complete and we are starting to process OR
   // the destination modules that require info from the instruction are not ready
   assign from_WuMemory_Fifo[0].pipe_read = ( ~(
-                                               `ifdef TB_MGR_PAUSES_WUD
-                                                 tb_pause |
-                                               `endif
                                               (instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ) | 
                                               (instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ) | 
                                               (instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ) | 
