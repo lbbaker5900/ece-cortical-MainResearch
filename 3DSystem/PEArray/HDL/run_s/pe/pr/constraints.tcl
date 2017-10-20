@@ -20,21 +20,6 @@
 
  current_design $modname
 
-#---------------------------------------------------------
-# Set the synthetic library variable to enable use of 
-# desigware blocks
-#---------------------------------------------------------
- set synthetic_library [list dw_foundation.sldb]
- 
-#---------------------------------------------------------
-# Specify the worst case (slowest) libraries and       
-# slowest temperature/Vcc conditions                   
-# This would involve setting up the slow library as the 
-# target and setting the link library to the conctenation
-# of the target and the synthetic library
-#---------------------------------------------------------
-#
- set link_library   [concat  "*" $target_library $synthetic_library $mem_lib $regf_lib  ]
 
 #---------------------------------------------------------
 # Specify a 5000ps clock period with 50% duty cycle     
@@ -157,57 +142,10 @@ if {$tech == "65nm"} {
  set_max_area 0
 #---------------------------------------------------------
 # This command prevents feedthroughs from input to output and avoids assign statements                 
-#--------------------------------------------------------- 
+#------------------------------------------------------ 
  set_fix_multiple_port_nets -all -buffer_constants [get_designs]
 
 
-#---------------------------------------------------------
-# Dont touch on DW functions
-#  - dw mults etc. are found in dw_foundation.sldb and are found during instance search in the sldb
-#  - i dont think we dont_touch these instances
-#--------------------------------------------------------- 
-#set_dont_touch [get_cell DW_*]
-
-#---------------------------------------------------------
-# Dont touch on memories and regFiles
-#--------------------------------------------------------- 
-# Seem to have to perform a get_cell first
-set acells [get_cell -hier]
-set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ asdr.*"]
-set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ sass.*"]
-set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ arm_regf.*"]
-set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ arm_sram.*"]
-
-#---------------------------------------------------------
-# Other Dont touch 
-#  - SIMD core
-#--------------------------------------------------------- 
-set_dont_touch [get_cell simd_wrapper/simd_core]
-
-set verilogout_show_unconnected_pins true
-
-#---------------------------------------------------------
-# Other 
-#  - DW FP MAC timing can be ignored as we assume horowitz performance
-#--------------------------------------------------------- 
-set_disable_timing [get_cells  -hier *DW_fp_mac*]
-
-#------------------------------------------------------
-# During the initial map (synthesis), Synopsys might   
-# have built parts (such as adders) using its          
-# DesignWare(TM) library.  In order to remap the       
-# design to our TSMC025 library AND to create scope    
-# for logic reduction, I want to 'flatten out' the     
-# DesignWare components.  i.e. Make one flat design    
-#                                                      
-# 'replace_synthetic' is the cleanest way of doing this
-#------------------------------------------------------
-
-# replace_synthetic -ungroup
-
-#---------------------------------------------------------
-# check the design before optimization  
-#---------------------------------------------------------
 
 #---------------------------------------------------------
 # check_design checks for consistency of design and issues
@@ -215,7 +153,7 @@ set_disable_timing [get_cells  -hier *DW_fp_mac*]
 # not compilable. See > man check_design for more information.
 #---------------------------------------------------------
 check_design \
-	> ${modname}_${type}_check_design.rpt
+	> ${modname}_check_design.rpt
 #---------------------------------------------------------
 # link performs check for presence of the design components 
 # instantiated within the design. It makes sure that all the 

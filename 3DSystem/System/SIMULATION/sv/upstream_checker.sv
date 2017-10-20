@@ -79,10 +79,11 @@ class upstream_checker;
                   if ( vUpstreamStackBus.pe__stu__cntl == `COMMON_STD_INTF_CNTL_SOM )
                    begin
                      tag = vUpstreamStackBus.pe__stu__oob_data ;
-                     //$display ("@%0t::%s:%0d:: INFO:UPSTREAM_CHECKER :: Packet received {%d} : tag = %d", $time, `__FILE__, `__LINE__, this.Id, tag);
+                     $display ("@%0t::%s:%0d:: INFO:UPSTREAM_CHECKER :: Packet start received {%0d} : tag = %d", $time, `__FILE__, `__LINE__, this.Id, tag);
                    end
                   else if (( vUpstreamStackBus.pe__stu__cntl == `COMMON_STD_INTF_CNTL_SOM_EOM ) || ( vUpstreamStackBus.pe__stu__cntl == `COMMON_STD_INTF_CNTL_EOM ))
                    begin
+                     $display ("@%0t::%s:%0d:: INFO:UPSTREAM_CHECKER :: Packet end received {%0d} : tag = %d", $time, `__FILE__, `__LINE__, this.Id, tag);
                      tag = vUpstreamStackBus.pe__stu__oob_data ;
                      // check size of packet
                      lastCycle = 1 ;
@@ -111,7 +112,13 @@ class upstream_checker;
                     // and generator expected data from generator mailbox
                     if ( mgr2up.num() == 0 )
                       begin
-                        $display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: No operation in manager mailbox for {%d}", $time, `__FILE__, `__LINE__, this.Id);
+                        // when running netlist, we might not have control over instruction generation in the wu_memory modules, so just output warnings
+                        // e.g. Manager obj may only send 8 messages to upstream checker but RTL produces 9 instructions
+                        `ifdef TB_USES_MANAGER_GATE_NETLIST
+                          $display ("@%0t:%s:%0d:INFO:UPSTREAM_CHECKER :: No operation in manager mailbox for {%0d}", $time, `__FILE__, `__LINE__, this.Id);
+                        `else
+                          $display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: No operation in manager mailbox for {%0d}", $time, `__FILE__, `__LINE__, this.Id);
+                        `endif
                       end
                     else
                       begin
@@ -142,7 +149,7 @@ class upstream_checker;
 
                         if (~tagFound)
                           begin
-                            $display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: No operation in manager for {%d} mailbox matches tag {%d} from upstream", $time, `__FILE__, `__LINE__, this.Id, tag);
+                            $display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: No operation in manager for {%0d} mailbox matches tag {%0d} from upstream", $time, `__FILE__, `__LINE__, this.Id, tag);
                           end  // if
 
                       end
@@ -153,7 +160,13 @@ class upstream_checker;
                       begin
                         if ( gen2up.num() == 0 )
                           begin
-                            $display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: Not enough operations in generator mailbox for {%d} : received %d, expected %d", $time, `__FILE__, `__LINE__, this.Id, lane+1, `PE_NUM_OF_EXEC_LANES);
+                            // when running netlist, we might not have control over instruction generation in the wu_memory modules, so just output warnings
+                            // e.g. Manager obj may only send 8 messages to upstream checker but RTL produces 9 instructions
+                            `ifdef TB_USES_MANAGER_GATE_NETLIST
+                              $display ("@%0t:%s:%0d:INFO:UPSTREAM_CHECKER :: Not enough operations in generator mailbox for {%0d} : received %0d, expected %0d", $time, `__FILE__, `__LINE__, this.Id, lane+1, `PE_NUM_OF_EXEC_LANES);
+                            `else
+                              $display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: Not enough operations in generator mailbox for {%0d} : received %0d, expected %0d", $time, `__FILE__, `__LINE__, this.Id, lane+1, `PE_NUM_OF_EXEC_LANES);
+                            `endif
                           end
                         else
                           begin
@@ -167,7 +180,7 @@ class upstream_checker;
                                     if (tag == sys_operation_gen.tId)
                                       begin 
                                         tagFound = 1 ;
-                                        numberOfActiveLanes = sys_operation_gen.numberOfLanes  ;
+                                        numberOfActiveLanes = sys_operation_gen.numberOfLanes  ; 
                                       end 
                                     else
                                       // not the correct tag so put at the back of the mailbox
@@ -197,7 +210,11 @@ class upstream_checker;
                               end  // if tagFound
                             else  // tag not found
                               begin
-                                $display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: No operation in manager for {%d} mailbox matches tag {%d} from upstream", $time, `__FILE__, `__LINE__, this.Id, tag);
+                                `ifdef TB_USES_MANAGER_GATE_NETLIST
+                                  $display ("@%0t:%s:%0d:INFO:UPSTREAM_CHECKER :: No operation in manager for {%0d} mailbox matches tag {%0d} from upstream", $time, `__FILE__, `__LINE__, this.Id, tag);
+                                `else
+                                  $display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: No operation in manager for {%0d} mailbox matches tag {%0d} from upstream", $time, `__FILE__, `__LINE__, this.Id, tag);
+                                `endif
                               end
                             
                           end //else

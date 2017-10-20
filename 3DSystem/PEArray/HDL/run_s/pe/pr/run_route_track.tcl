@@ -1,6 +1,6 @@
 #*********************************************************************************************
 #
-#    File name   : run_route_track.tcl
+#    File name   : run_route.tcl
 #    Author      : Lee Baker
 #    Affiliation : North Carolina State University, Raleigh, NC
 #    Date        : Apr 2017
@@ -291,7 +291,6 @@ verify_zrt_route \
 	-antenna true \
 	-voltage_area true
 
-save_mw_cel -as ${modname}_post_track_route
 
 report_timing
 

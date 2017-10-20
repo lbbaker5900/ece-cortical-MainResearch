@@ -1,6 +1,6 @@
 #*********************************************************************************************
 #
-#    File name   : run_route.tcl
+#    File name   : run_route_detail.tcl
 #    Author      : Lee Baker
 #    Affiliation : North Carolina State University, Raleigh, NC
 #    Date        : Apr 2017

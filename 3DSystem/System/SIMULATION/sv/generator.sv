@@ -219,6 +219,7 @@ class generator;
                         priorOperations.push_back(sys_operation)                       ;  
 
                         // send actual operation with expected result to upstream checker 
+                        $display("@%0t:%s:%0d:INFO:{%0d,%0d} Send operation to upstream checker", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
                         gen2up.put(sys_operation)                      ; 
 
                         //----------------------------------------------------------------------------------------------------

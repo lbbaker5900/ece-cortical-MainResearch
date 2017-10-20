@@ -30,7 +30,6 @@ if {$tech == "65nm"} {
   set path_slib "/home/gf028/arm/rvt/sc12mc_base_rvt_c30/r8p0/slib"
 }
 
-
 set path_this "/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/PEArray/HDL/run_s/pe/synth"
 set path_common "../../../../HDL/common"
 
@@ -42,13 +41,14 @@ set search_path "$path_ccs $path_plib $path_slib $path_common $path_this $search
 
 
 
+
 # Library DB files
 
 set mem_lib ""
 set regf_lib ""
 
 if {($tech == "65nm") || ([info exist INCLUDE_65nm_MEM])} {
-  set libList [glob dw_memories/compout/views/sass*/tt1p2v25c/*.lib]
+  set libList [glob ../synth/dw_memories/compout/views/sass*/tt1p2v25c/*.lib]
   foreach libFile $libList {
     set lName [file tail [file rootname $libFile]]
     set dbName ${lName}_lib
@@ -58,7 +58,7 @@ if {($tech == "65nm") || ([info exist INCLUDE_65nm_MEM])} {
     echo "Adding .db file to mem_lib variable : " $dbFileName
     set mem_lib [concat $mem_lib $dbFileName]
   }
-  set libList [glob dw_memories/compout/views/asdr*/tt1p2v25c/*.lib]
+  set libList [glob ../synth/dw_memories/compout/views/asdr*/tt1p2v25c/*.lib]
   foreach libFile $libList {
     set lName [file tail [file rootname $libFile]]
     set dbName ${lName}_lib
@@ -85,8 +85,10 @@ if {$tech == "28nm"} {
 
   
 if {$tech == "65nm"} {
-  set target_library cp65npksdst_ss0p9v125c.db
-  set symbol_library cp65npksdst.slib 
+  set target_library cp65npksdst_tt1p0v25c.db
+  set link_library cp65npksdst_tt1p0v25c.db
+  #set target_library cp65npksdst_ss0p9v125c.db
+  #set symbol_library cp65npksdst.slib 
 
 } elseif {$tech == "28nm"} {
 
@@ -103,7 +105,5 @@ set link_library   [concat  $target_library $synthetic_library $mem_lib $regf_li
 set verilogout_no_tri "true"
 
 alias h history
-
-
 
 

@@ -22,6 +22,7 @@ source -echo setup.tcl
 source -echo import.tcl
 
 source ${modname}_constraints.tcl
+source constraints.tcl
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # pr_tut
@@ -162,4 +163,5 @@ close_mw_lib
 set endtime [clock seconds]
 set timestr [timef [expr $endtime-$begintime]]
 puts "run_init.tcl completed successfully (elapsed time: $timestr actual)"
+
 exit

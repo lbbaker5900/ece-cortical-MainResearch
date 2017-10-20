@@ -85,7 +85,7 @@ set gen_fifo_options                  {
                                        {  0       70      19       4}
                                        {  0       70      21       4}
   }
-set gen_mem_options                   {
+set gen_1port_mem_options             {
                                        {  0     1024      12        }
                                        {  0     1024      21        }
                                        {  0     1024      42        }
@@ -147,7 +147,7 @@ foreach mem $gen_fifo_options {
   analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_fifo.v
   elaborate generic_fifo -parameter                                                           "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
 }
-foreach mem $gen_mem_options {
+foreach mem $gen_1port_mem_options {
   
   set registered [lindex $mem 0]
   set depth      [lindex $mem 1]

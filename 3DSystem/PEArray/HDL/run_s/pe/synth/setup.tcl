@@ -51,7 +51,8 @@ set report_default_significant_digits 4
 
 if {$tech == "65nm"} {
 
-  set CLK_PER 3.0
+  set CLK_PER 5.0
+  #set CLK_PER 2.6
 
 } elseif {($tech == "28nm")} {
 

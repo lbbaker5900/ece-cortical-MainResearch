@@ -1,3 +1,20 @@
+#*********************************************************************************************
+#
+#    File name   : Makefile
+#    Author      : Lee Baker
+#    Affiliation : North Carolina State University, Raleigh, NC
+#    Date        : Apr 2017
+#    email       : lbbaker@ncsu.edu
+#
+#    Description : 
+#
+#    leveraged from file supplied by: 
+#    Dr. Rhett Davis, North Carolina State University, Raleigh, NC, email: wdavis@ncsu.edu
+#
+#*********************************************************************************************
+
+TECH    = 65nm
+CORNER  = typical
 
 MODNAME=pe
 
@@ -16,16 +33,30 @@ $(crDWlib): ../synth/dw_memories/compout/views/*/*.plef
 INIT = .init
 .PHONY: init
 init: $(INIT)
-$(INIT): $(crDWlib) run_init.tcl ../synth/$(MODNAME)_final.v 
+$(INIT): $(crDWlib) run_init.tcl ../synth/logs.65nm/manager/$(MODNAME)_final.v 
 	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	nice +19 icc_shell -f run_init.tcl |& tee run_init.log ; \
 	touch $(INIT)"
+
+PLACE_MACROS = .place_macros
+.PHONY: place_macros
+place_macros: $(PLACE_MACROS)
+$(PLACE_MACROS): $(INIT) run_place_macros.tcl 
+	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	nice +19 icc_shell -f run_place_macros.tcl |& tee run_place_macros.log ; \
+	touch $(PLACE_MACROS)"
 
 PLACE = .place
 .PHONY: place
 place: $(PLACE)
-$(PLACE): $(INIT) run_place.tcl
+$(PLACE): $(PLACE_MACROS) run_place.tcl
 	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	nice +19 icc_shell -f run_place.tcl |& tee run_place.log ; \
 	touch $(PLACE)"
 
@@ -34,6 +65,8 @@ PP = .pp
 pp: $(PP)
 $(PP): $(PLACE) run_pp.tcl
 	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	nice +19 icc_shell -f run_pp.tcl |& tee run_pp.log ; \
 	touch $(PP)"
 
@@ -42,6 +75,8 @@ CTS = .cts
 cts: $(CTS)
 $(CTS): $(PP) run_cts.tcl
 	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	nice +19 icc_shell -f run_cts.tcl |& tee run_cts.log ; \
 	touch $(CTS)"
 
@@ -50,14 +85,38 @@ FILL = .fill
 fill: $(FILL)
 $(FILL): $(CTS) run_fill.tcl
 	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	nice +19 icc_shell -f run_fill.tcl |& tee run_fill.log ; \
 	touch $(FILL)"
+
+ROUTE_TRACK = .route_track
+.PHONY: route_track
+route_track: $(ROUTE_TRACK)
+$(ROUTE_TRACK): $(FILL) run_route_track.tcl
+	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	nice +19 icc_shell -f run_route_track.tcl |& tee run_route_track.log ; \
+	touch $(ROUTE_TRACK)"
+
+ROUTE_DETAIL = .route_detail
+.PHONY: route_detail
+route_detail: $(ROUTE_DETAIL)
+$(ROUTE_DETAIL): $(FILL) run_route_detail.tcl
+	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	nice +19 icc_shell -f run_route_detail.tcl |& tee run_route_detail.log ; \
+	touch $(ROUTE_DETAIL)"
 
 ROUTE = .route
 .PHONY: route
 route: $(ROUTE)
 $(ROUTE): $(FILL) run_route.tcl
 	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	nice +19 icc_shell -f run_route.tcl |& tee run_route.log ; \
 	touch $(ROUTE)"
 
@@ -66,7 +125,9 @@ SO = .so
 so: $(SO)
 $(SO): $(ROUTE) run_so.tcl
 	tcsh -c "add synopsys2015 ; \
-	icc_shell -f run_so.tcl |& tee run_so.log ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	nice +19 icc_shell -f run_so.tcl |& tee run_so.log ; \
 	touch $(SO)"
 
 
@@ -80,7 +141,9 @@ $(IMPORT): import.tcl setup.tcl ../synth/$(MODNAME)_final.v $(crDWlib)
 	tcsh -c "add synopsys2015 ; \
 	/bin/mkdir work ; \
 	/bin/rm -rf work/$(MODNAME) ; \
-	icc_shell -f import.tcl |& tee import.log ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	nice +19 icc_shell -f import.tcl |& tee import.log ; \
 	touch $(IMPORT)"
 
 
@@ -89,13 +152,17 @@ rest = .rest
 rest: $(rest)
 $(rest): import.tcl setup.tcl ../synth/$(MODNAME)_final.v $(crDWlib) $(IMPORT)
 	tcsh -c "add synopsys2015 ; \
-	icc_shell -f rest.tcl |& tee rest.log ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	nice +19 icc_shell -f rest.tcl |& tee rest.log ; \
 	touch $(rest)"
 
 #----------------------------------------------------------------------------------------------------
 
 gui:
 	tcsh -c "add synopsys2015 ; \
+	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	icc_shell -gui"
 
 clean:

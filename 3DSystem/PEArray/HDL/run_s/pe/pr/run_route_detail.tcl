@@ -1,6 +1,6 @@
 #*********************************************************************************************
 #
-#    File name   : run_route_track.tcl
+#    File name   : run_route.tcl
 #    Author      : Lee Baker
 #    Affiliation : North Carolina State University, Raleigh, NC
 #    Date        : Apr 2017
@@ -18,7 +18,7 @@
 source setup.tcl
 set begintime [clock seconds]
 open_mw_lib ./work/${modname}
-open_mw_cel ${modname}_fill
+open_mw_cel ${modname}__post_track_route
 
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -264,10 +264,90 @@ set_route_zrt_detail_options \
 #################################################################	ROUTE ZRT - GLOBAL
 #
 #
-route_zrt_global \
+##route_zrt_global \
+##	-effort high \
+##	-congestion_map_only false \
+##	-exploration false
+##
+##verify_zrt_route \
+##	-open_net true \
+##	-report_all_open_nets true \
+##	-drc true \
+##	-antenna true \
+##	-voltage_area true
+##
+##save_mw_cel -as ${modname}_post_global_route
+###
+###
+###################################################################	ROUTE ZRT - TRACK
+###
+###	
+##route_zrt_track
+##
+##verify_zrt_route \
+##	-open_net true \
+##	-report_all_open_nets true \
+##	-drc true \
+##	-antenna true \
+##	-voltage_area true
+##
+##save_mw_cel -as ${modname}_post_track_route
+###
+###
+#################################################################	ROUTE ZRT - DETAIL
+#
+#
+route_zrt_detail \
+	-max_number_iterations 100 \
+	-incremental true
+
+verify_zrt_route \
+	-open_net true \
+	-report_all_open_nets true \
+	-drc true \
+	-antenna true \
+	-voltage_area true
+
+save_mw_cel -as ${modname}_post_detail_route_1
+#
+#
+#################################################################	ROUTE OTPIMIZATION
+#
+#
+set_si_options \
+	-route_xtalk_prevention true
+
+route_opt \
+	-stage detail \
+	-area_recovery \
 	-effort high \
-	-congestion_map_only false \
-	-exploration false
+	-incremental \
+	-only_area_recovery
+
+route_opt \
+	-stage detail \
+	-effort high \
+	-incremental \
+	-only_hold_time
+
+route_opt \
+	-stage detail \
+	-xtalk_reduction \
+	-effort high \
+	-incremental
+
+route_opt \
+	-stage detail \
+	-effort high \
+	-incremental \
+	-only_power_recovery
+
+route_opt \
+	-stage detail \
+	-effort high \
+	-incremental \
+	-only_design_rule
+
 
 verify_zrt_route \
 	-open_net true \
@@ -276,13 +356,45 @@ verify_zrt_route \
 	-antenna true \
 	-voltage_area true
 
-save_mw_cel -as ${modname}_post_global_route
+save_mw_cel -as ${modname}_post_opt_route
 #
 #
-#################################################################	ROUTE ZRT - TRACK
+#################################################################	FOCAL optimization
 #
-#	
-route_zrt_track
+#
+focal_opt -setup_endpoints all -effort high
+
+focal_opt -hold_enpoints all -effort high
+
+focal_opt -drc_nets all -effort high
+
+focal_opt -drc_pins all -effort high
+
+#focal_opt -power -effort high
+
+save_mw_cel -as ${modname}_post_opt_focal
+#
+#
+#################################################################	RECHECK PG NETS
+#
+#
+preroute_standard_cells \
+	-nets {VDD VSS} \
+	-mode rail \
+	-connect horizontal \
+	-fill_empty_rows \
+	-port_filter_mode off \
+	-cell_master_filter_mode off \
+	-cell_instance_filter_mode off \
+	-voltage_area_filter_mode off \
+	-extend_to_boundaries_and_generate_pins
+
+
+verify_pg_nets \
+	-std_cell_pin_connection check \
+	-macro_pin_connection all \
+	-pad_pin_connection all
+
 
 verify_zrt_route \
 	-open_net true \
@@ -290,24 +402,20 @@ verify_zrt_route \
 	-drc true \
 	-antenna true \
 	-voltage_area true
+#
+#
+#################################################################
 
-save_mw_cel -as ${modname}_post_track_route
+####save_mw_cel -as ${modname}_routed
 
-report_timing
 
-extract_rc
-
-write_parasitics -output ${modname}_routed_track.spef
-write_verilog -pg -no_physical_only_cells xbar_wpg.v
-write_verilog -no_physical_only_cells ${modname}_routed_track.v
-write_def -output ${modname}_track.def
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # end Josh
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 
-save_mw_cel -as ${modname}_post_track_route
+save_mw_cel -as ${modname}_routed
 set endtime [clock seconds]
 set timestr [timef [expr $endtime-$begintime]]
-puts "run_route_track.tcl completed successfully (elapsed time: $timestr actual)"
+puts "run_route.tcl completed successfully (elapsed time: $timestr actual)"
 exit

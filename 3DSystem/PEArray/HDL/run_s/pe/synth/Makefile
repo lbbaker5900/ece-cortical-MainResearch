@@ -12,7 +12,7 @@ $(GATE_DIR)/$(MODNAME)_final.v: $(RTL_DIR)/$(MODNAME).v
 	sed -i -e 's/set tech \"65nm\"/set tech \"$(TECH)\"/g' .synopsys_dc.setup ;\
 	nice +19 dc_shell-t -f run_synth.tcl |& tee run_synth.log ; \
 	mkdir logs.$(TECH)/$(MODNAME) ; \
-	mv *rpt *log *.v logs.$(TECH)/$(MODNAME)/. "
+	mv *rpt *log *.v *.sdc logs.$(TECH)/$(MODNAME)/. "
 
 .PHONY: pt ptsi
 
