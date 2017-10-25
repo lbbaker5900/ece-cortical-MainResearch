@@ -31,17 +31,17 @@ module top;
 
 
     // system clock and reset
-    logic reset_poweron       ;
+    logic reset_poweron       ; 
     logic clk    =  0 ;
-    logic clk2x  =  0 ;
+    logic clk2x  =  1 ;
 
     always #2.5ns clk2x = ~clk2x;
-    always @(posedge clk2x)
+    always @(negedge clk2x)
       clk = ~clk;
 
     initial begin
         reset_poweron            = 1;
-        #100ns reset_poweron     = 0;
+        #1000ns reset_poweron     = 0;
     end
 
     //----------------------------------------------------------------------------------------------------

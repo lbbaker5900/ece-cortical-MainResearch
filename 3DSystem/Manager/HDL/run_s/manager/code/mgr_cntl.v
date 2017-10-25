@@ -87,120 +87,175 @@ module mgr_cntl (
             input  wire                           reset_poweron  
                         );
 
-    //----------------------------------------------------------------------------------------------------
-    //----------------------------------------------------------------------------------------------------
-    // Registers and Wires
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  // Registers and Wires
  
 
-    //-------------------------------------------------------------------------------------------------
-    // from NoC 
-    reg                                               noc__mcntl__cp_valid_d1      ; 
-    reg  [`COMMON_STD_INTF_CNTL_RANGE           ]     noc__mcntl__cp_cntl_d1       ; 
-    reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     noc__mcntl__cp_type_d1       ; 
-    reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     noc__mcntl__cp_ptype_d1      ; 
-    reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     noc__mcntl__cp_data_d1       ; 
-    reg                                               noc__mcntl__cp_pvalid_d1     ; 
-    reg  [`MGR_MGR_ID_RANGE                     ]     noc__mcntl__cp_mgrId_d1      ; 
-    wire                                              mcntl__noc__cp_ready_e1      ; 
+  //-------------------------------------------------------------------------------------------------
+  // from NoC 
+  reg                                               noc__mcntl__cp_valid_d1      ; 
+  reg  [`COMMON_STD_INTF_CNTL_RANGE           ]     noc__mcntl__cp_cntl_d1       ; 
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     noc__mcntl__cp_type_d1       ; 
+  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     noc__mcntl__cp_ptype_d1      ; 
+  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     noc__mcntl__cp_data_d1       ; 
+  reg                                               noc__mcntl__cp_pvalid_d1     ; 
+  reg  [`MGR_MGR_ID_RANGE                     ]     noc__mcntl__cp_mgrId_d1      ; 
+  wire                                              mcntl__noc__cp_ready_e1      ; 
 
-    reg                                               noc__mcntl__dp_valid_d1      ; 
-    reg  [`COMMON_STD_INTF_CNTL_RANGE           ]     noc__mcntl__dp_cntl_d1       ; 
-    reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     noc__mcntl__dp_type_d1       ; 
-    reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     noc__mcntl__dp_ptype_d1      ; 
-    reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     noc__mcntl__dp_data_d1       ; 
-    reg                                               noc__mcntl__dp_pvalid_d1     ; 
-    reg  [`MGR_MGR_ID_RANGE                     ]     noc__mcntl__dp_mgrId_d1      ; 
-    reg                                               mcntl__noc__dp_ready_e1      ; 
-
-  
-    //-------------------------------------------------------------------------------------------------
-    // to MWC
-    reg                                               mcntl__mwc__valid_e1      ; 
-    reg  [`COMMON_STD_INTF_CNTL_RANGE           ]     mcntl__mwc__cntl_e1       ; 
-    reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     mcntl__mwc__type_e1       ; 
-    reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     mcntl__mwc__ptype_e1      ; 
-    reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     mcntl__mwc__data_e1       ; 
-    reg                                               mcntl__mwc__pvalid_e1     ; 
-    reg  [`MGR_MGR_ID_RANGE                     ]     mcntl__mwc__mgrId_e1      ; 
-    reg                                               mwc__mcntl__ready_d1      ; 
+  reg                                               noc__mcntl__dp_valid_d1      ; 
+  reg  [`COMMON_STD_INTF_CNTL_RANGE           ]     noc__mcntl__dp_cntl_d1       ; 
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     noc__mcntl__dp_type_d1       ; 
+  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     noc__mcntl__dp_ptype_d1      ; 
+  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     noc__mcntl__dp_data_d1       ; 
+  reg                                               noc__mcntl__dp_pvalid_d1     ; 
+  reg  [`MGR_MGR_ID_RANGE                     ]     noc__mcntl__dp_mgrId_d1      ; 
+  reg                                               mcntl__noc__dp_ready_e1      ; 
 
   
+  //-------------------------------------------------------------------------------------------------
+  // to MWC
+  reg                                               mcntl__mwc__valid_e1      ; 
+  reg  [`COMMON_STD_INTF_CNTL_RANGE           ]     mcntl__mwc__cntl_e1       ; 
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     mcntl__mwc__type_e1       ; 
+  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     mcntl__mwc__ptype_e1      ; 
+  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     mcntl__mwc__data_e1       ; 
+  reg                                               mcntl__mwc__pvalid_e1     ; 
+  reg  [`MGR_MGR_ID_RANGE                     ]     mcntl__mwc__mgrId_e1      ; 
+  reg                                               mwc__mcntl__ready_d1      ; 
+
+  
 
 
-    //--------------------------------------------------
-    // from NoC
-    
-    always @(posedge clk) 
-      begin
-        noc__mcntl__cp_valid_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_valid      ;
-        noc__mcntl__cp_cntl_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_cntl       ;
-        noc__mcntl__cp_type_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_type       ;
-        noc__mcntl__cp_ptype_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_ptype      ;
-        noc__mcntl__cp_data_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_data       ;
-        noc__mcntl__cp_pvalid_d1   <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_pvalid     ;
-        noc__mcntl__cp_mgrId_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_mgrId      ;
-        mcntl__noc__cp_ready       <=   ( reset_poweron   ) ? 'd0  : mcntl__noc__cp_ready_e1   ;
+  //--------------------------------------------------
+  // from NoC
+  
+  always @(posedge clk) 
+    begin
+      noc__mcntl__cp_valid_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_valid      ;
+      noc__mcntl__cp_cntl_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_cntl       ;
+      noc__mcntl__cp_type_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_type       ;
+      noc__mcntl__cp_ptype_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_ptype      ;
+      noc__mcntl__cp_data_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_data       ;
+      noc__mcntl__cp_pvalid_d1   <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_pvalid     ;
+      noc__mcntl__cp_mgrId_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__cp_mgrId      ;
+      mcntl__noc__cp_ready       <=   ( reset_poweron   ) ? 'd0  : mcntl__noc__cp_ready_e1   ;
 
-        noc__mcntl__dp_valid_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_valid      ;
-        noc__mcntl__dp_cntl_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_cntl       ;
-        noc__mcntl__dp_type_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_type       ;
-        noc__mcntl__dp_ptype_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_ptype      ;
-        noc__mcntl__dp_data_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_data       ;
-        noc__mcntl__dp_pvalid_d1   <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_pvalid     ;
-        noc__mcntl__dp_mgrId_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_mgrId      ;
-        mcntl__noc__dp_ready       <=   ( reset_poweron   ) ? 'd0  : mcntl__noc__dp_ready_e1   ;
-      end
+      noc__mcntl__dp_valid_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_valid      ;
+      noc__mcntl__dp_cntl_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_cntl       ;
+      noc__mcntl__dp_type_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_type       ;
+      noc__mcntl__dp_ptype_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_ptype      ;
+      noc__mcntl__dp_data_d1     <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_data       ;
+      noc__mcntl__dp_pvalid_d1   <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_pvalid     ;
+      noc__mcntl__dp_mgrId_d1    <=   ( reset_poweron   ) ? 'd0  : noc__mcntl__dp_mgrId      ;
+      mcntl__noc__dp_ready       <=   ( reset_poweron   ) ? 'd0  : mcntl__noc__dp_ready_e1   ;
+    end
 
-    //--------------------------------------------------
-    // to MWC
-    
-    always @(posedge clk) 
-      begin
-        mcntl__mwc__valid        <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__valid_e1    ;
-        mcntl__mwc__cntl         <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__cntl_e1     ;
-        mcntl__mwc__type         <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__type_e1     ;
-        mcntl__mwc__ptype        <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__ptype_e1    ;
-        mcntl__mwc__data         <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__data_e1     ;
-        mcntl__mwc__pvalid       <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__pvalid_e1   ;
-        mcntl__mwc__mgrId        <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__mgrId_e1    ;
-        mwc__mcntl__ready_d1     <=   ( reset_poweron   ) ? 'd0  : mwc__mcntl__ready       ;
-      end
+  //-------------------------------------------------------------------------------------------------
+  //-------------------------------------------------------------------------------------------------
+  // Configuration
+  //  - FIXME temporary assignments
+  
+  always @(posedge clk)
+    begin
+      mcntl__wuf__start_addr  <= 24'd0   ;
+      mcntl__wuf__enable      <= 1'b1    ;
+      xxx__wuf__stall         <= 1'b0    ;
+      mcntl__mwc__flush       <= 1'b0    ;
+    end
 
-    //--------------------------------------------------
-    // 
-    //  FIXME - pass thru
-    //
-    always @(*)
-      begin
-        mcntl__mwc__valid_e1     =   noc__mcntl__dp_valid_d1    ;
-        mcntl__mwc__cntl_e1      =   noc__mcntl__dp_cntl_d1     ;
-        mcntl__mwc__type_e1      =   noc__mcntl__dp_type_d1     ;
-        mcntl__mwc__ptype_e1     =   noc__mcntl__dp_ptype_d1    ;
-        mcntl__mwc__data_e1      =   noc__mcntl__dp_data_d1     ;
-        mcntl__mwc__pvalid_e1    =   noc__mcntl__dp_pvalid_d1   ;
-        mcntl__mwc__mgrId_e1     =   noc__mcntl__dp_mgrId_d1    ;
-        mcntl__noc__dp_ready_e1  =   mwc__mcntl__ready_d1       ;
-      end
+  
+  //--------------------------------------------------
 
 
-    // FIXME
-    assign  mcntl__noc__cp_ready_e1   = 1'b1 ;
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Main Control FSM
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // - manage host communication
+  // - aggegate exceptions
+  // - configuration
+  //
 
-    //-------------------------------------------------------------------------------------------------
-    //-------------------------------------------------------------------------------------------------
-    // Configuration
-    //  - FIXME temporary assignments
-    
-    always @(posedge clk)
-      begin
-        mcntl__wuf__start_addr  <= 24'd0   ;
-        mcntl__wuf__enable      <= 1'b1    ;
-        xxx__wuf__stall         <= 1'b0    ;
-        mcntl__mwc__flush       <= 1'b0    ;
-      end
+      
+  // State register 
+  reg [`MGR_CNTL_MAIN_STATE_RANGE ] mgr_cntl_main_state      ; // state flop
+  reg [`MGR_CNTL_MAIN_STATE_RANGE ] mgr_cntl_main_state_next ;
 
-    
-    //--------------------------------------------------
+  always @(posedge clk)
+    begin
+      mgr_cntl_main_state <= ( reset_poweron ) ? `MGR_CNTL_MAIN_WAIT        :
+                                                 mgr_cntl_main_state_next  ;
+    end
+
+  always @(*)
+    begin
+      case (mgr_cntl_main_state)
+        
+        `MGR_CNTL_MAIN_WAIT: 
+          mgr_cntl_main_state_next =   
+                                               ( noc__mcntl__dp_valid_d1  && (noc__mcntl__dp_cntl_d1 == `COMMON_STD_INTF_CNTL_SOM) && (noc__mcntl__dp_mgrId == sys__mgr__mgrId)) ? `MGR_CNTL_MAIN_ERR      : 
+                                               ( noc__mcntl__dp_valid_d1  && (noc__mcntl__dp_cntl_d1 != `COMMON_STD_INTF_CNTL_SOM)                                             ) ? `MGR_CNTL_MAIN_ERR      : 
+                                               ( noc__mcntl__dp_valid_d1  && (noc__mcntl__dp_cntl_d1 == `COMMON_STD_INTF_CNTL_SOM)                                             ) ? `MGR_CNTL_MAIN_RCV      : 
+                                                                                                                                                                                   `MGR_CNTL_MAIN_WAIT     ;
+  
+        `MGR_CNTL_MAIN_RCV: 
+          mgr_cntl_main_state_next =   
+                                               ( noc__mcntl__dp_valid_d1  && (noc__mcntl__dp_cntl_d1 == `COMMON_STD_INTF_CNTL_EOM)) ? `MGR_CNTL_MAIN_WAIT      : 
+                                                                                                                                      `MGR_CNTL_MAIN_RCV       ;
+  
+
+        `MGR_CNTL_MAIN_COMPLETE: 
+          mgr_cntl_main_state_next =   `MGR_CNTL_MAIN_WAIT ;
+
+
+        `MGR_CNTL_MAIN_ERR: 
+          mgr_cntl_main_state_next =   `MGR_CNTL_MAIN_ERR ;
+
+
+        default:
+          mgr_cntl_main_state_next =   `MGR_CNTL_MAIN_WAIT     ; 
+
+      endcase // case (mgr_cntl_main_state)
+    end // always @ (*)
+
+
+      
+  //--------------------------------------------------
+  // to MWC
+  
+  always @(posedge clk) 
+    begin
+      mcntl__mwc__valid        <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__valid_e1    ;
+      mcntl__mwc__cntl         <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__cntl_e1     ;
+      mcntl__mwc__type         <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__type_e1     ;
+      mcntl__mwc__ptype        <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__ptype_e1    ;
+      mcntl__mwc__data         <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__data_e1     ;
+      mcntl__mwc__pvalid       <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__pvalid_e1   ;
+      mcntl__mwc__mgrId        <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__mgrId_e1    ;
+      mwc__mcntl__ready_d1     <=   ( reset_poweron   ) ? 'd0  : mwc__mcntl__ready       ;
+    end
+
+  //--------------------------------------------------
+  // 
+  //  FIXME - pass thru
+  //
+  always @(*)
+    begin
+      mcntl__mwc__valid_e1     =   noc__mcntl__dp_valid_d1 & (mgr_cntl_main_state != `MGR_CNTL_MAIN_ERR) ;
+      mcntl__mwc__cntl_e1      =   noc__mcntl__dp_cntl_d1     ;
+      mcntl__mwc__type_e1      =   noc__mcntl__dp_type_d1     ;
+      mcntl__mwc__ptype_e1     =   noc__mcntl__dp_ptype_d1    ;
+      mcntl__mwc__data_e1      =   noc__mcntl__dp_data_d1     ;
+      mcntl__mwc__pvalid_e1    =   noc__mcntl__dp_pvalid_d1   ;
+      mcntl__mwc__mgrId_e1     =   noc__mcntl__dp_mgrId_d1    ;
+      mcntl__noc__dp_ready_e1  =   mwc__mcntl__ready_d1       ;
+    end
+
+
+  // FIXME
+  assign  mcntl__noc__cp_ready_e1   = 1'b1 ;
+
 
 
 

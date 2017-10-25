@@ -176,7 +176,7 @@ module sdp_request_cntl (
     begin
       sdpr__sdps__response_id_valid     <=   ( reset_poweron   ) ? 'd0  :  sdpr__sdps__response_id_valid_e1   ;
       sdpr__sdps__response_id_cntl      <=   ( reset_poweron   ) ? 'd0  :  sdpr__sdps__response_id_cntl_e1    ;
-      sdps__sdpr__response_id_ready_d1  <=   ( reset_poweron   ) ? 'd0  :  sdps__sdpr__response_id_ready_d1   ;
+      sdps__sdpr__response_id_ready_d1  <=   ( reset_poweron   ) ? 'd0  :  sdps__sdpr__response_id_ready      ;
       sdpr__sdps__response_id_channel   <=   ( reset_poweron   ) ? 'd0  :  sdpr__sdps__response_id_channel_e1 ;
       sdpr__sdps__response_id_bank      <=   ( reset_poweron   ) ? 'd0  :  sdpr__sdps__response_id_bank_e1    ;
       sdpr__sdps__response_id_page      <=   ( reset_poweron   ) ? 'd0  :  sdpr__sdps__response_id_page_e1    ;

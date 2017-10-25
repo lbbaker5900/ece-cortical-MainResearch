@@ -77,8 +77,13 @@ cleanPy :
 # virage_ignore_read_addrx  : does not corrupt memory is ME=1, WE=0 and ADR=X
 .dwMgr    : ../../../Manager/HDL/run_s/manager/synth/dw_memories/compout/views/*/std*.v 
 	vlog -sv +define+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET+virage_ignore_read_addrx                       +incdir+../../../Manager/HDL/common ../../../Manager/HDL/run_s/manager/synth/dw_memories/compout/views/*/*_fast_func.v           2>&1   | tee -a $1
-	vlog -sv +define+_fv+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET+VIRL_functiononly +incdir+../../../Manager/HDL/common  /home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/verilog/3.0/cp65npksdst.v       2>&1   | tee -a $1
+	vlog -sv +delay_mode_zero +define+_fv+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET+VIRL_functiononly +incdir+../../../Manager/HDL/common  /home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/verilog/3.0/cp65npksdst_no_specify.v       2>&1   | tee -a $1
 	touch .dwMgr
+
+#.dwMgr    : ../../../Manager/HDL/run_s/manager/synth/dw_memories/compout/views/*/std*.v 
+#	vlog -sv +define+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET+virage_ignore_read_addrx                       +incdir+../../../Manager/HDL/common ../../../Manager/HDL/run_s/manager/synth/dw_memories/compout/views/*/*_fast_func.v           2>&1   | tee -a $1
+#	vlog -sv +delay_mode_zero +define+_fv+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET+VIRL_functiononly +incdir+../../../Manager/HDL/common  /home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/verilog/3.0/cp65npksdst.v       2>&1   | tee -a $1
+#	touch .dwMgr
 
 .armMgr    : ../../../Manager/HDL/run_s/manager/synth/arm_memories/verilog/*.v 
 	vlog -sv +define+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET                       +incdir+../../../Manager/HDL/common ../../../Manager/HDL/run_s/manager/synth/arm_memories/verilog/*.v                            2>&1   | tee -a $1
@@ -86,7 +91,7 @@ cleanPy :
 
 .dwPe    : ../../../PEArray/HDL/run_s/pe/synth/dw_memories/compout/views/*/std*.v 
 	vlog -sv +define+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET+virage_ignore_read_addrx                       +incdir+../../../Manager/HDL/common ../../../PEArray/HDL/run_s/pe/synth/dw_memories/compout/views/*/*_fast_func.v           2>&1   | tee -a $1
-	vlog -sv +define+_fv+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET+VIRL_functiononly +incdir+../../../Manager/HDL/common  /home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/verilog/3.0/cp65npksdst.v       2>&1   | tee -a $1
+	vlog -sv +delay_mode_zero +define+_fv+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET+VIRL_functiononly +incdir+../../../Manager/HDL/common  /home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/verilog/3.0/cp65npksdst.v       2>&1   | tee -a $1
 	touch .dwPe
 
 .diram4 :  ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh ./models/DiRAM4_Verilog_Model/*
@@ -277,7 +282,7 @@ cleanPy :
 	echo "manager"
 	touch .manager
 
-.manager_gates_init : ../../../Manager/HDL/run_s/manager/synth/logs.65nm/manager/manager_final.v 
+.manager_gates_init : ../../../Manager/HDL/run_s/manager/synth/logs.65nm/manager/manager_init.v 
 	vlog -sv +define+${TB_WHO_DRIVES_OOB} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common   ../../../Manager/HDL/run_s/manager/synth/logs.65nm/manager/manager_init.v 
 	echo "manager gates_init"
 	touch .manager_gates_init
@@ -289,6 +294,8 @@ cleanPy :
 
 .manager_gates_pr : ../../../Manager/HDL/run_s/manager/pr/manager_routed_track.v 
 	vlog -sv +define+${TB_WHO_DRIVES_OOB} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common    ../../../Manager/HDL/run_s/manager/pr/manager_routed_track.v  
+	vlog -sv +delay_mode_zero +define+_fv+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET+VIRL_functiononly +incdir+../../../Manager/HDL/common  /home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/verilog/3.0/cp65npksdst_no_specify.v       2>&1   | tee -a $1
+	echo "manager gates_pr: WARNING: Compiling standard cell library with zero delay"
 	echo "manager gates_pr"
 	touch .manager_gates_pr
 
