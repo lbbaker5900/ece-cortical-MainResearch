@@ -1,5 +1,6 @@
 
 MODNAME = pe
+INST    = 2
 TECH    = 65nm
 
 RTL_DIR = ../code
@@ -18,15 +19,21 @@ $(GATE_DIR)/$(MODNAME)_final.v: $(RTL_DIR)/$(MODNAME).v
 
 pt:
 	tcsh -c "add synopsys2015 ; \
-	pt_shell -f run_pt.tcl |& tee run_pt.log"
+	nice +19 pt_shell -f run_pt.tcl |& tee run_pt.log"
+
+saif:
+	tcsh -c "add synopsys2015 ; \
+	vcd2saif -input ../../../../../System/SIMULATION/sv/${MODNAME}_${INST}.vcd -output ./logs.$(TECH)/$(MODNAME)/$(MODNAME)_$(INST).saif "
 
 ptsi:
 	tcsh -c "add synopsys2015 ; \
-	pt_shell -f run_ptsi.tcl |& tee run_ptsi.log"
+	nice +19 pt_shell -f run_ptsi.tcl |& tee run_ptsi.log"
 
 ptpx:
 	tcsh -c "add synopsys2015 ; \
-	pt_shell -f run_ptpx.tcl |& tee run_ptpx.log"
+	nice +19 pt_shell -f run_ptpx.tcl |& tee run_ptpx.log ; \
+	mkdir -p logs.$(TECH)/$(MODNAME) ; \
+	mv power_ptpx_*.rpt run_ptpx.log logs.$(TECH)/$(MODNAME)/. "
 
 lib:
 	tcsh -c "add synopsys2015 ; \

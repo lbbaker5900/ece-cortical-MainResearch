@@ -1,2 +1,20 @@
 Makefile
 setup.tcl
+
+change_selection [get_ports *phy__*]
+create_floorplan -control_type width_and_height -core_width 2000 -core_height 100 -left_io2core 5 -bottom_io2core 5 -right_io2core 5 -top_io2core 5
+create_floorplan -control_type width_and_height -core_width 2000 -core_height 2000 -left_io2core 5 -bottom_io2core 5 -right_io2core 5 -top_io2core 5
+create_floorplan -control_type width_and_height -core_width 2000 -core_height 100 -left_io2core 5 -bottom_io2core 5 -right_io2core 5 -top_io2core 5
+create_floorplan -control_type width_and_height -core_width 2000 -core_height 200 -left_io2core 5 -bottom_io2core 5 -right_io2core 5 -top_io2core 5
+get_ports *phy__*
+set_pin_physical_constraints [get_ports *phy__*] -exclude_sides {1,2,3}
+set a [get_ports *]
+set b [remove_from_collection $a [get_ports *phy__*]]
+set_pin_physical_constraints $b -exclude_sides {4}
+create_floorplan -control_type width_and_height -core_width 2000 -core_height 200 -left_io2core 5 -bottom_io2core 5 -right_io2core 5 -top_io2core 5
+create_floorplan -control_type width_and_height -core_width 2000 -core_height 400 -left_io2core 5 -bottom_io2core 5 -right_io2core 5 -top_io2core 5
+create_floorplan -control_type width_and_height -core_width 2000 -core_height 400 -left_io2core 5 -bottom_io2core 5 -right_io2core 5 -top_io2core 5
+report_fp_pin_constraints
+set_fp_pin_constraints -pin_spacing 5
+h
+

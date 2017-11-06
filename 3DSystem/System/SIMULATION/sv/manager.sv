@@ -413,6 +413,22 @@ class manager;
         wait(mgr2up.num() == 0);
         $display("@%0t:%s:%0d:INFO: Manager {%0d} upstream checker has processed all operations", $time, `__FILE__, `__LINE__, Id);
 
+
+        `ifdef TB_GENERATE_MANAGER_ACTIVITY_FILE
+          if (Id == 2)
+            begin
+              $display("@%0t:%s:%0d:INFO: Manager {%0d} manager_%0d VCD dumpoff", $time, `__FILE__, `__LINE__, Id, Id);
+            end
+          $dumpoff;
+        `endif
+        `ifdef TB_GENERATE_PE_ACTIVITY_FILE
+          if (Id == 2)
+            begin
+              $display("@%0t:%s:%0d:INFO: Manager {%0d} pe_%0d VCD dumpoff", $time, `__FILE__, `__LINE__, Id, Id);
+            end
+          $dumpoff;
+        `endif
+
         // Wait a little time for the last result to be received by the upstream checker
         repeat (500) @(vDownstreamStackBusOOB.cb_test);  
 

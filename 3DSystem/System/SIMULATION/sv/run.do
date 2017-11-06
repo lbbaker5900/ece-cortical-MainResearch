@@ -1,1 +1,1 @@
-run 50us
+run 500us

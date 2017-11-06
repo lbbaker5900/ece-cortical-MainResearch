@@ -39,10 +39,17 @@ ln -s .synopsys_dc.setup .synopsys_lc.setup
 
 ARM Memory Compiler
 
+Modify and run run_create_arm_mem.sh
+
 /home/gf028/arm/SRAM/sram_dp_hdd_rvt_rvt/r4p0/bin/sram_dp_hdd_rvt_rvt &
 
 /home/gf028/arm/SRAM/sram_sp_hsc_rvt_rvt/r5p0/bin/sram_sp_hsc_rvt_rvt &
 
-WInstance name:  sram_dp_<wxd>_mw<mux_width>
-When generating liberty model, set library name to sram_dp_<wxd>_mw<mux_width>
+Instance name:  arm_sram_dp_<wxd>_mw<mux_width>
+When generating liberty model, set library name to arm_sram_28nm_2p<wxd>_mw<mux_width>
+
+
+Synthesis 28nm .vs. 65nm
+ - change Makefile
+ - change PEArray/HDL/common/common.vh
 

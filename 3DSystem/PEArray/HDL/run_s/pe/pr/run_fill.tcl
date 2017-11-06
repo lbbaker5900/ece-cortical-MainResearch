@@ -23,6 +23,9 @@ open_mw_lib ./work/${modname}
 open_mw_cel ${modname}_cts
 
 
+source ${modname}_constraints.tcl
+source constraints.tcl
+
 set_host_options -max_cores 4
 
 

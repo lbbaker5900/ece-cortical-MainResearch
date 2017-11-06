@@ -71,7 +71,10 @@ source constraints.tcl
 
 set_fp_placement_strategy \
       -min_distance_between_macros ${MIN_DISTANCE_BETWEEN_MACROS} \
-      -sliver_size ${SLIVER_DISTANCE_BETWEEN_MACROS}
+      -sliver_size ${SLIVER_DISTANCE_BETWEEN_MACROS} \
+      -auto_grouping high \
+      -macros_on_edge off
+
 
 if {$modname == "pe" || $modname == "manager"} {
 
@@ -83,6 +86,14 @@ if {$modname == "pe" || $modname == "manager"} {
         -bottom_io2core 5               \
         -right_io2core 5                \
         -top_io2core 5
+
+} elseif {$modname == "dfi"} {
+  set_pin_physical_constraints [get_ports *phy__*] -exclude_sides {1,2,3}
+  set a [get_ports *]
+  set b [remove_from_collection $a [get_ports *phy__*]]
+  set_pin_physical_constraints $b -exclude_sides {4}
+  #set_fp_pin_constraints -pin_spacing 5
+  create_floorplan -control_type width_and_height -left_io2core 5 -bottom_io2core 5 -right_io2core 5 -top_io2core 5 -core_width 850 -core_height 280
 
 } else {
 

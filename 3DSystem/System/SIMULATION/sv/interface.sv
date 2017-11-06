@@ -17,6 +17,7 @@
 `include "streamingOps.vh"
 `include "dma_cont.vh"
 `include "mem_acc_cont.vh"
+`include "pe_cntl.vh"
 `include "pe.vh"
 `include "pe_array.vh"
 `include "stack_interface.vh"
@@ -104,6 +105,20 @@ interface std_oob_ifc(
     modport TB_DownstreamStackBusOOB (
         clocking    cb_test  
     );
+
+  function void loadPeCntlMemory(int mgr  );
+
+    `ifndef TB_USES_PE_GATE_NETLIST
+      string entry  ;
+      string memFile;
+      int fileDesc ;
+      bit [`PE_CNTL_STOP_OPTION_MEMORY_ADDR_RANGE      ]  memory_address ;
+      bit [`PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_RANGE ]  memory_data    ;
+    `endif
+
+    `include "TB_system_pe_cntl_stop_memory_load.vh"
+
+  endfunction
 
 endinterface : std_oob_ifc
 

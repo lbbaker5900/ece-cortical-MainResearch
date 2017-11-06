@@ -1914,19 +1914,61 @@ else if ((GENERIC_MEM_DEPTH == 2048) && (GENERIC_MEM_DATA_WIDTH == 44) && (GENER
 //
 else if ((GENERIC_MEM_DEPTH == 4096) && (GENERIC_MEM_DATA_WIDTH == 57) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 1))
   begin : dw_mem
-    sasslnpky1p4096x57cm8sw0ltlc1 mem1p4096x57( 
-                   // Port A
-                   .CLK        ( clk                              ),
-                   .WE         ( portA_write_dly                  ),
-                   .ME         ( portA_enable_dly                 ),
-                   .ADR        ( portA_address_dly                ),
-                   .D          ( portA_write_data_dly             ),
-                   .Q          ( int_portA_read_data_dly          ),
-                
-                
-                   .TEST1      ( 1'b0 ),
-                   .RME        ( 1'b1 ),
-                   .RM         ( 4'b0011));
+    if (T65NM == 1)
+      begin
+    
+        sasslnpky1p4096x57cm8sw0ltlc1 mem1p4096x57( 
+                       // Port A
+                       .CLK        ( clk                              ),
+                       .WE         ( portA_write_dly                  ),
+                       .ME         ( portA_enable_dly                 ),
+                       .ADR        ( portA_address_dly                ),
+                       .D          ( portA_write_data_dly             ),
+                       .Q          ( int_portA_read_data_dly          ),
+                    
+                    
+                       .TEST1      ( 1'b0 ),
+                       .RME        ( 1'b1 ),
+                       .RM         ( 4'b0011));
+      end
+
+    else if (T28NM == 1)
+      begin
+
+        arm_sram_28nm_1p4096x57mw8 mem1p4096x57(
+
+                                   // Port
+                                  .CLK          ( clk                     ),
+                                  .CEN          (~portA_enable_dly        ),
+                                  .WEN          (~portA_write_dly         ),
+                                  .A            ( portA_address_dly       ),
+                                  .D            ( portA_write_data_dly    ),
+                                  .Q            ( int_portB_read_data_dly ),
+                                                
+
+                                  // Test/Configuration
+                                  // Outputs 
+                                  .CENY         (  ),
+                                  .WENY         (  ),
+                                  .AY           (  ),
+                                  .SO           (  ),
+                                  // Inputs 
+                                  .EMA          ( 3'b000             ),
+                                  .EMAW         ( 2'b00              ),
+                                  .EMAS         ( 1'b0               ),
+                                  .TEN          ( 1'b0               ),
+                                  .TCEN         ( 1'b0               ),
+                                  .TWEN         ( 1'b0               ),
+                                  .TA           ( 12'd0 ),  // same width as Address
+                                  .TD           ( 57'd0 ),  // same width as data
+                                  .SI           ( 2'b00              ),
+                                  .SE           ( 1'b0               ),
+
+                                  .RET1N         ( 1'b0               ),
+                                  .DFTRAMBYP     ( 1'b0               )
+          );
+
+      end
   end
 
 //------------------------------------------------------------------------------------------------------------------------

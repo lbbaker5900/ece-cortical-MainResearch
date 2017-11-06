@@ -13,19 +13,19 @@ set begintime [clock seconds]
 source setup.tcl
 
 
+# FIXME
+  set CLK_PER 10.0
+
+
 # setup name of the clock in your design.
 set clkname clk
 
 # set variable "modname" to the name of topmost module in design
-#set modname manager
+set modname pe
 set modname_id 2
 
 # set STRIP_PATH to the path of the instance to be analyzed in the VCD file
-if {$modname == "manager"} {
-  set STRIP_PATH "top/system_inst/manager_array_inst/mgr_inst\[2\].manager"
-} else {
-  set STRIP_PATH "top/system_inst/manager_array_inst/mgr_inst\[2\].manager.$modname"
-}
+set STRIP_PATH "top/system_inst/pe_array_inst/pe_inst\[2\].pe"
 
 # set variable "GATE_DIR" to the output directory w.r.t synthesis directory
 set GATE_DIR    ../synth/logs.65nm/${modname}/
@@ -138,19 +138,11 @@ if { $type ne "unrouted" } then {
 #read_saif "../sim/waves.saif" -strip_path $STRIP_PATH
 
 if { $PERIOD == -1 } then {
-  if {$modname == "manager"} {
-    read_vcd "../../../../../System/SIMULATION/sv/${modname}_${modname_id}.vcd" -strip_path $STRIP_PATH 
-    #read_saif "./logs.$tech/${modname}/${modname}_${modname_id}.saif" -strip_path $STRIP_PATH 
-  } else {
-    read_saif "./logs.$tech/manager/manager_2.saif" -strip_path $STRIP_PATH 
-  }
+  #read_vcd "../../../../../System/SIMULATION/sv/${modname}_${modname_id}.vcd" -strip_path $STRIP_PATH 
+  read_saif "./logs.$tech/${modname}/${modname}_${modname_id}.saif" -strip_path $STRIP_PATH 
 }  else {
-  if {$modname == "manager"} {
-    #read_vcd "../../../../../System/SIMULATION/sv/${modname}_${modname_id}.vcd" -strip_path $STRIP_PATH  -time " 0 $PERIOD"
-    read_saif "./logs.$tech/${modname}/${modname}_${modname_id}.saif" -strip_path $STRIP_PATH  -time " 0 $PERIOD"
-  } else {
-    read_saif "./logs.$tech/manager/manager_2.saif" -strip_path $STRIP_PATH -time " 0 $PERIOD"
-  }
+  #read_vcd "../../../../../System/SIMULATION/sv/${modname}_${modname_id}.vcd" -strip_path $STRIP_PATH  -time " 0 $PERIOD"
+  read_saif "./logs.$tech/${modname}/${modname}_${modname_id}.saif" -strip_path $STRIP_PATH  -time " 0 $PERIOD"
 }
 
 report_switching_activity -list_not_annotated
@@ -176,4 +168,4 @@ if { $PERIOD != -1 } then {
 }
 
 
-#exit
+exit

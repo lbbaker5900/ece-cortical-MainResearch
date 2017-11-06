@@ -144,9 +144,9 @@ module dfi(
           begin
             // FIXME : 32
             dfi__phy__data_e1 [(word+1)*32-1 : word*32]  <= ( ~clk ) ? mmc__dfi__data [0][word] :
-                                                                                mmc__dfi__data [1][word] ;
+                                                                       mmc__dfi__data [1][word] ;
 
-            dfi__phy__data    [(word+1)*32-1 : word*32]  <= dfi__phy__data_e1 ;
+            dfi__phy__data    [(word+1)*32-1 : word*32]  <= dfi__phy__data_e1 [(word+1)*32-1 : word*32];
           end
       end
   endgenerate

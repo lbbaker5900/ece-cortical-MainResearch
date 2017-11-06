@@ -30,7 +30,7 @@ if {$tech == "65nm"} {
   set path_slib "/home/gf028/arm/rvt/sc12mc_base_rvt_c30/r8p0/slib"
 }
 
-set path_this "/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/Manager/HDL/run_s/manager/synth"
+set path_this "/home/lbbaker/Cortical/ece-cortical-MainResearch/3DSystem/PEArray/HDL/run_s/pe/synth"
 set path_common "../../../../HDL/common"
 
 set search_path "$MGR_COM_DIR $PE_COM_DIR $PE_RTL_COM_DIR $SYS_RTL_COM_DIR $search_path";

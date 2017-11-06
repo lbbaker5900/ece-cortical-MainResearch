@@ -38,127 +38,127 @@ read_sverilog $RTL_COM_DIR/generic_pipelined_w_peek_fifo.v
 
 #                                     Registered Depth   Width   Thres
 #                                         v        v       v       v
-set gen_pipelined_fifo_w_peek_options {
-                                       {  0        8       7       4}
-                                       {  0        8       9       4}
-                                       {  0        8      10       4}
-                                       {  0        8      20       4}
-                                       {  0        8      21       4}
-                                       {  0        8      22       4}
-                                       {  0        8      29       4}
-                                       {  0        8      31       4}
-                                       {  0        8      32       4}
-                                       {  0        8      33       4}
-                                       {  0        8    2050       4}
-                                       {  0        8    2114       4}
-                                       {  0       16      57       4}
-                                       {  0       32       7       4}
-                                       {  0       32      25       4}
-                                       {  0       32      57       4}
-                                       {  0       64      18       4}
-                                       {  0       64      20       4}
-                                       {  0       64      24       4}
-                                       {  0       64      25       4}
-                                       {  0       64      46       4}
-                                       {  0       64      70       4}
-                                       {  0       70      15       4}
-                                       {  0      256      70       4}
-  }
-set gen_pipelined_fifo_options        {
-                                       {  0        8       9       4}
-                                       {  0        8      20       4}
-                                       {  0        8      27       4}
-                                       {  0       32    2050       4}
-                                       {  0       64      40       4}
-                                       {  0       64    2050       4}
-                                       {  0      128      12       4}
-                                       {  0      128      18       4}
-                                       {  0      128      21       4}
-  }
-set gen_fifo_options                  {
-                                       {  0        8      82       4}
-                                       {  0       16      32       8}
-                                       {  0       16      50       4}
-                                       {  0       32      58       8}
-                                       {  0       32     138       8}
-                                       {  0       70      18       4}
-                                       {  0       70      19       4}
-                                       {  0       70      21       4}
-  }
-set gen_1port_mem_options             {
-                                       {  0     1024      12        }
-                                       {  0     1024      21        }
-                                       {  0     1024      42        }
-                                       {  0     1024      46        }
-                                       {  0     1024      50        }
-                                       {  0     1024      57        }
-                                       {  0     2048      44        }
-                                       {  0     2048      46        }
-                                       {  0     4096      21        }
-                                       {  0     4096      57        }
-                                       {  0     8192      52        }
-                                       {  0     8192      57        }
-                                       {  0    16384      12        }
-                                       {  0    16384      18        }
-                                       {  0    65536      18        }
-  }
-
-foreach mem $gen_pipelined_fifo_w_peek_options {
-  
-  set registered [lindex $mem 0]
-  set depth      [lindex $mem 1]
-  set width      [lindex $mem 2]
-  set threshold  [lindex $mem 3]
-  
-  analyze -format sverilog -library WORK -define      GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}                                        $RTL_COM_DIR/generic_2port_memory.v
-  elaborate generic_2port_memory -parameter          "GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}"
-  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_fifo.v
-  elaborate generic_fifo -parameter                                                           "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
-  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_pipelined_fifo.v
-  elaborate generic_pipelined_fifo -parameter                                                 "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
-  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_pipelined_w_peek_fifo.v
-  elaborate generic_pipelined_w_peek_fifo -parameter                                          "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
-}
-
-foreach mem $gen_pipelined_fifo_options {
-  
-  set registered [lindex $mem 0]
-  set depth      [lindex $mem 1]
-  set width      [lindex $mem 2]
-  set threshold  [lindex $mem 3]
-  
-  analyze -format sverilog -library WORK -define      GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}                                        $RTL_COM_DIR/generic_2port_memory.v
-  elaborate generic_2port_memory -parameter          "GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}"
-  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_fifo.v
-  elaborate generic_fifo -parameter                                                           "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
-  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_pipelined_fifo.v
-  elaborate generic_pipelined_fifo -parameter                                                 "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
-}
-
-foreach mem $gen_fifo_options {
-  
-  set registered [lindex $mem 0]
-  set depth      [lindex $mem 1]
-  set width      [lindex $mem 2]
-  set threshold  [lindex $mem 3]
-  
-  analyze -format sverilog -library WORK -define      GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}                                        $RTL_COM_DIR/generic_2port_memory.v
-  elaborate generic_2port_memory -parameter          "GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}"
-  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_fifo.v
-  elaborate generic_fifo -parameter                                                           "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
-}
-foreach mem $gen_1port_mem_options {
-  
-  set registered [lindex $mem 0]
-  set depth      [lindex $mem 1]
-  set width      [lindex $mem 2]
-  
-  analyze -format sverilog -library WORK -define      GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}                                        $RTL_COM_DIR/generic_1port_memory.v
-  elaborate generic_2port_memory -parameter          "GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}"
-}
-
-
-
+########set gen_pipelined_fifo_w_peek_options {
+########                                       {  0        8       7       4}
+########                                       {  0        8       9       4}
+########                                       {  0        8      10       4}
+########                                       {  0        8      20       4}
+########                                       {  0        8      21       4}
+########                                       {  0        8      22       4}
+########                                       {  0        8      29       4}
+########                                       {  0        8      31       4}
+########                                       {  0        8      32       4}
+########                                       {  0        8      33       4}
+########                                       {  0        8    2050       4}
+########                                       {  0        8    2114       4}
+########                                       {  0       16      57       4}
+########                                       {  0       32       7       4}
+########                                       {  0       32      25       4}
+########                                       {  0       32      57       4}
+########                                       {  0       64      18       4}
+########                                       {  0       64      20       4}
+########                                       {  0       64      24       4}
+########                                       {  0       64      25       4}
+########                                       {  0       64      46       4}
+########                                       {  0       64      70       4}
+########                                       {  0       70      15       4}
+########                                       {  0      256      70       4}
+########  }
+########set gen_pipelined_fifo_options        {
+########                                       {  0        8       9       4}
+########                                       {  0        8      20       4}
+########                                       {  0        8      27       4}
+########                                       {  0       32    2050       4}
+########                                       {  0       64      40       4}
+########                                       {  0       64    2050       4}
+########                                       {  0      128      12       4}
+########                                       {  0      128      18       4}
+########                                       {  0      128      21       4}
+########  }
+########set gen_fifo_options                  {
+########                                       {  0        8      82       4}
+########                                       {  0       16      32       8}
+########                                       {  0       16      50       4}
+########                                       {  0       32      58       8}
+########                                       {  0       32     138       8}
+########                                       {  0       70      18       4}
+########                                       {  0       70      19       4}
+########                                       {  0       70      21       4}
+########  }
+########set gen_1port_mem_options             {
+########                                       {  0     1024      12        }
+########                                       {  0     1024      21        }
+########                                       {  0     1024      42        }
+########                                       {  0     1024      46        }
+########                                       {  0     1024      50        }
+########                                       {  0     1024      57        }
+########                                       {  0     2048      44        }
+########                                       {  0     2048      46        }
+########                                       {  0     4096      21        }
+########                                       {  0     4096      57        }
+########                                       {  0     8192      52        }
+########                                       {  0     8192      57        }
+########                                       {  0    16384      12        }
+########                                       {  0    16384      18        }
+########                                       {  0    65536      18        }
+########  }
+########
+########foreach mem $gen_pipelined_fifo_w_peek_options {
+########  
+########  set registered [lindex $mem 0]
+########  set depth      [lindex $mem 1]
+########  set width      [lindex $mem 2]
+########  set threshold  [lindex $mem 3]
+########  
+########  analyze -format sverilog -library WORK -define      GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}                                        $RTL_COM_DIR/generic_2port_memory.v
+########  elaborate generic_2port_memory -parameter          "GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}"
+########  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_fifo.v
+########  elaborate generic_fifo -parameter                                                           "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
+########  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_pipelined_fifo.v
+########  elaborate generic_pipelined_fifo -parameter                                                 "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
+########  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_pipelined_w_peek_fifo.v
+########  elaborate generic_pipelined_w_peek_fifo -parameter                                          "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
+########}
+########
+########foreach mem $gen_pipelined_fifo_options {
+########  
+########  set registered [lindex $mem 0]
+########  set depth      [lindex $mem 1]
+########  set width      [lindex $mem 2]
+########  set threshold  [lindex $mem 3]
+########  
+########  analyze -format sverilog -library WORK -define      GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}                                        $RTL_COM_DIR/generic_2port_memory.v
+########  elaborate generic_2port_memory -parameter          "GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}"
+########  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_fifo.v
+########  elaborate generic_fifo -parameter                                                           "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
+########  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_pipelined_fifo.v
+########  elaborate generic_pipelined_fifo -parameter                                                 "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
+########}
+########
+########foreach mem $gen_fifo_options {
+########  
+########  set registered [lindex $mem 0]
+########  set depth      [lindex $mem 1]
+########  set width      [lindex $mem 2]
+########  set threshold  [lindex $mem 3]
+########  
+########  analyze -format sverilog -library WORK -define      GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}                                        $RTL_COM_DIR/generic_2port_memory.v
+########  elaborate generic_2port_memory -parameter          "GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}"
+########  analyze -format sverilog -library WORK -define                                               GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}  $RTL_COM_DIR/generic_fifo.v
+########  elaborate generic_fifo -parameter                                                           "GENERIC_FIFO_DEPTH=${depth},GENERIC_FIFO_DATA_WIDTH=${width},GENERIC_FIFO_THRESHOLD=${threshold}"
+########}
+########foreach mem $gen_1port_mem_options {
+########  
+########  set registered [lindex $mem 0]
+########  set depth      [lindex $mem 1]
+########  set width      [lindex $mem 2]
+########  
+########  analyze -format sverilog -library WORK -define      GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}                                        $RTL_COM_DIR/generic_1port_memory.v
+########  elaborate generic_2port_memory -parameter          "GENERIC_MEM_REGISTERED_OUT=${registered},GENERIC_MEM_DEPTH=${depth},GENERIC_MEM_DATA_WIDTH=${width}"
+########}
+########
+########
+########
 
 
 #analyze -format sverilog -library WORK -define GENERIC_MEM_DEPTH=64,GENERIC_MEM_REGISTERED_OUT=0,GENERIC_MEM_DATA_WIDTH=70  $RTL_COM_DIR/generic_2port_memory.v

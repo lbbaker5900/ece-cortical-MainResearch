@@ -1,3 +1,50 @@
+proc proc_pt {tsv} {
+  global idx 
+  global x 
+  global y 
+  global lx 
+  global ly 
+  global dx 
+  global dy 
+  global sx 
+  global sy 
+  global numRows
+
+  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
+  set_attribute -quiet $tsv bbox $bbox
+  set_attribute -quiet $tsv status Fixed
+
+  set idx [expr $idx + 1]
+  set y [expr $y - $dy]
+
+  if {$idx == $numRows} {
+    set idx 0
+    set y $sy
+    set x [expr $x + $dx]
+
+  }
+}
+
+proc proc_rt {tsv} {
+  global idx 
+  global x 
+  global y 
+  global lx 
+  global ly 
+  global dx 
+  global dy 
+  global sx 
+  global sy 
+  global numRows
+
+  set idx 0
+  set y $sy
+  set x [expr $x + $dx]
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+# Stack Down Interface
+#------------------------------------------------------------------------------------------------------------------------------------------------------
 set d_area [get_attr [get_die_area] bbox]
 set c_area [get_attr [get_core_area] bbox]
 
@@ -7,47 +54,40 @@ set dy 10
 set lx 0.1
 set ly 0.1
 
-#------------------------------------------------------------------------------------------------------------------------------------------------------
-# Stack Down Interface
+set sx [expr [lindex [lindex $c_area 1] 0] /16]
+set sy [expr [lindex [lindex $c_area 1] 1] -50]
 
-set lane_down [get_terminals -quiet -filter "name =~ std__pe__*"]
-set lane_down [add_to_collection $lane_down [get_terminals -quiet -filter "name =~ pe__std__*ready*"] ]
-
-set oob_down [get_terminals -quiet -filter "name =~ std_-pe__oob*"]
-set oob_down [add_to_collection $oob_down [get_terminals -quiet -filter "name =~ pe__std__oob*"] ]
-
-set lane_down [remove_from_collection $lane_down $oob_down]
-
-sort_collection $lane_down -descending {name }
-sort_collection $oob_down  -descending {name }
-
-
-set sx [expr [lindex [lindex $c_area 1] 0] /5]
-set sy [expr [lindex [lindex $c_area 1] 1] -100]
+set llx [expr $sx -0.5]
+set lly [expr $sy -0.5]
 
 set x $sx
 set y $sy
 set idx 0
 
 set numCols 128
-set numRows 18
+set numRows 16
 set rhs [expr $sx + [expr $numCols * $dx]]
+for {set lane 0} {$lane < 32} {incr lane} {
+  for {set strm 0} {$strm < 2} {incr strm} {
 
-foreach_in_collection tsv $lane_down {
+    set tsv [get_terminals -quiet -filter "name =~ [format "std__pe__lane%s_strm%s_data_valid" $lane $strm]"]
+    #puts [get_attr $tsv name]
+    proc_pt $tsv
 
-  #set_attribute -quiet $tsv owner_port foobar
-  #set_attribute -quiet $tsv layer M6
-  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
-  set_attribute -quiet $tsv bbox $bbox
-  set_attribute -quiet $tsv status Fixed
+    for {set cntl 0} {$cntl < 2} {incr cntl} {
+      set tsv [get_terminals -quiet -filter "name =~ [format "std__pe__lane%s_strm%s_cntl\[%s\]" $lane $strm $cntl]"]
+      proc_pt $tsv
+    }
 
-  set idx [expr $idx + 1]
-  set y [expr $y - $dy]
+    set tsv [get_terminals -quiet -filter "name =~ [format "pe__std__lane%s_strm%s_ready" $lane $strm]"]
+    proc_pt $tsv
 
-  if {$idx == $numRows} {
-    set idx 0
-    set y $sy
-    set x [expr $x + $dx]
+    proc_rt $tsv
+
+    for {set data 0} {$data < 32} {incr data} {
+      set tsv [get_terminals -quiet -filter "name =~ [format "std__pe__lane%s_strm%s_data\[%s\]" $lane $strm $data]"]
+      proc_pt $tsv
+    }
 
   }
 }
@@ -57,7 +97,10 @@ set rhs $x
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # OOB Down Interface
 
-set sx [expr $rhs + [expr $dx * 5]]
+set oob_down [get_terminals -quiet -filter "name =~ std__pe__oob*"]
+set oob_down [add_to_collection $oob_down [get_terminals -quiet -filter "name =~ pe__std__oob*"] ]
+
+set sx [expr $rhs + [expr $dx * 2]]
 #et sy [expr $y - [expr $dy * 5]]
 
 set x $sx
@@ -66,29 +109,32 @@ set y $sy
 set idx 0
 
 set numCols 32
-set numRows 18
+set numRows 16
 set rhs [expr $sx + [expr $numCols * $dx]]
 
-foreach_in_collection tsv $oob_down {
 
-  #set_attribute -quiet $tsv owner_port foobar
-  #set_attribute -quiet $tsv layer M6
-  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
-  set_attribute -quiet $tsv bbox $bbox
-  set_attribute -quiet $tsv status Fixed
+set tsv [get_terminals -quiet -filter "name =~ [format "std__pe__oob_valid"]"]
+#puts [get_attr $tsv name]
+proc_pt $tsv
 
-  set idx [expr $idx + 1]
-  set y [expr $y - $dy]
+for {set cntl 0} {$cntl < 2} {incr cntl} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "std__pe__oob_cntl\[%s\]" $cntl]"]
+  proc_pt $tsv
+}
 
-  if {$idx == $numRows} {
-    set idx 0
-    set y $sy
-    set x [expr $x + $dx]
+set tsv [get_terminals -quiet -filter "name =~ [format "pe__std__oob_ready"]"]
+proc_pt $tsv
 
-  }
+proc_rt $tsv
+
+for {set data 0} {$data < 32} {incr data} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "std__pe__oob_data\[%s\]" $data]"]
+  proc_pt $tsv
 }
 
 set rhs $x
+
+
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # Stack Up Interface
@@ -98,13 +144,14 @@ set data_up [add_to_collection $data_up [get_terminals -quiet -filter "name =~ s
 sort_collection $data_up -descending {name }
 
 set oob_up [get_terminals -quiet -filter "name =~ pe__stu__oob*"]
-set oob_up [add_to_collection $oob_up [get_terminals -quiet -filter "name =~ pe__std__oob*"] ]
 sort_collection $oob_up -descending {name }
 
 set data_up [remove_from_collection $data_up $oob_up]
 
-set sx [expr $rhs + [expr $dx * 5]]
+set sx [expr $rhs + [expr $dx * 4]]
+
 set numCols 32
+set numRows 16
 set rhs [expr $sx + [expr $numCols * $dx]]
 
 set x $sx
@@ -112,44 +159,41 @@ set y $sy
 set idx 0
 
 
-foreach_in_collection tsv $oob_up {
+set tsv [get_terminals -quiet -filter "name =~ [format "pe__stu__valid"]"]
+#puts [get_attr $tsv name]
+proc_pt $tsv
 
-  #set_attribute -quiet $tsv owner_port foobar
-  #set_attribute -quiet $tsv layer M6
-  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
-  set_attribute -quiet $tsv bbox $bbox
-  set_attribute -quiet $tsv status Fixed
-
-  set idx [expr $idx + 1]
-  set y [expr $y - $dy]
-
-  if {$idx == $numRows} {
-    set idx 0
-    set y $sy
-    set x [expr $x + $dx]
-
-  }
+for {set cntl 0} {$cntl < 2} {incr cntl} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "pe__stu__cntl\[%s\]" $cntl]"]
+  proc_pt $tsv
 }
 
-
-foreach_in_collection tsv $data_up {
-
-  #set_attribute -quiet $tsv owner_port foobar
-  #set_attribute -quiet $tsv layer M6
-  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
-  set_attribute -quiet $tsv bbox $bbox
-  set_attribute -quiet $tsv status Fixed
-
-  set idx [expr $idx + 1]
-  set y [expr $y - $dy]
-
-  if {$idx == $numRows} {
-    set idx 0
-    set y $sy
-    set x [expr $x + $dx]
-
-  }
+for {set type 0} {$type < 4} {incr type} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "pe__stu__type\[%s\]" $type]"]
+  proc_pt $tsv
 }
+
+set tsv [get_terminals -quiet -filter "name =~ [format "stu__pe__ready"]"]
+proc_pt $tsv
+
+proc_rt $tsv
+
+for {set data 0} {$data < 32} {incr data} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "pe__stu__oob_data\[%s\]" $data]"]
+  proc_pt $tsv
+}
+
+proc_rt $tsv
+
+for {set data 0} {$data < 128} {incr data} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "pe__stu__data\[%s\]" $data]"]
+  proc_pt $tsv
+}
+
+set rhs $x
+
+create_placement_blockage -coordinate {{146.04 2476.0} {2271.24 2631.1}} -name placement_blockage_stackBus -type hard
+
 
 
 #--------------------------------------------------

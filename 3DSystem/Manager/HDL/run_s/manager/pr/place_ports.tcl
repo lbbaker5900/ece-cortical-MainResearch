@@ -1,3 +1,51 @@
+
+proc proc_pt {tsv} {
+  global idx 
+  global x 
+  global y 
+  global lx 
+  global ly 
+  global dx 
+  global dy 
+  global sx 
+  global sy 
+  global numRows
+
+  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
+  set_attribute -quiet $tsv bbox $bbox
+  set_attribute -quiet $tsv status Fixed
+
+  set idx [expr $idx + 1]
+  set y [expr $y - $dy]
+
+  if {$idx == $numRows} {
+    set idx 0
+    set y $sy
+    set x [expr $x + $dx]
+
+  }
+}
+
+proc proc_rt {tsv} {
+  global idx 
+  global x 
+  global y 
+  global lx 
+  global ly 
+  global dx 
+  global dy 
+  global sx 
+  global sy 
+  global numRows
+
+  set idx 0
+  set y $sy
+  set x [expr $x + $dx]
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+# Stack Down Interface
+#------------------------------------------------------------------------------------------------------------------------------------------------------
 set d_area [get_attr [get_die_area] bbox]
 set c_area [get_attr [get_core_area] bbox]
 
@@ -7,57 +55,55 @@ set dy 10
 set lx 0.1
 set ly 0.1
 
-#------------------------------------------------------------------------------------------------------------------------------------------------------
-# Stack Down Interface
+set sx [expr [lindex [lindex $c_area 1] 0] /16]
+set sy [expr [lindex [lindex $c_area 1] 1] -50]
 
-set lane_down [get_terminals -quiet -filter "name =~ mgr__std__*"]
-set lane_down [add_to_collection $lane_down [get_terminals -quiet -filter "name =~ std__mgr__*ready*"] ]
-
-set oob_down [get_terminals -quiet -filter "name =~ mgr__std__oob*"]
-set oob_down [add_to_collection $oob_down [get_terminals -quiet -filter "name =~ std__mgr__oob*"] ]
-
-set lane_down [remove_from_collection $lane_down $oob_down]
-
-sort_collection $lane_down -descending {name }
-sort_collection $oob_down  -descending {name }
-
-
-set sx [expr [lindex [lindex $c_area 1] 0] /5]
-set sy [expr [lindex [lindex $c_area 1] 1] -100]
+set llx [expr $sx -0.5]
+set lly [expr $sy -0.5]
 
 set x $sx
 set y $sy
 set idx 0
 
 set numCols 128
-set numRows 18
+set numRows 16
 set rhs [expr $sx + [expr $numCols * $dx]]
+for {set lane 0} {$lane < 32} {incr lane} {
+  for {set strm 0} {$strm < 2} {incr strm} {
 
-foreach_in_collection tsv $lane_down {
+    set tsv [get_terminals -quiet -filter "name =~ [format "mgr__std__lane%s_strm%s_data_valid" $lane $strm]"]
+    #puts [get_attr $tsv name]
+    proc_pt $tsv
 
-  #set_attribute -quiet $tsv owner_port foobar
-  #set_attribute -quiet $tsv layer M6
-  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
-  set_attribute -quiet $tsv bbox $bbox
-  set_attribute -quiet $tsv status Fixed
+    for {set cntl 0} {$cntl < 2} {incr cntl} {
+      set tsv [get_terminals -quiet -filter "name =~ [format "mgr__std__lane%s_strm%s_cntl\[%s\]" $lane $strm $cntl]"]
+      proc_pt $tsv
+    }
 
-  set idx [expr $idx + 1]
-  set y [expr $y - $dy]
+    set tsv [get_terminals -quiet -filter "name =~ [format "std__mgr__lane%s_strm%s_ready" $lane $strm]"]
+    proc_pt $tsv
 
-  if {$idx == $numRows} {
-    set idx 0
-    set y $sy
-    set x [expr $x + $dx]
+    proc_rt $tsv
+
+    for {set data 0} {$data < 32} {incr data} {
+      set tsv [get_terminals -quiet -filter "name =~ [format "mgr__std__lane%s_strm%s_data\[%s\]" $lane $strm $data]"]
+      proc_pt $tsv
+    }
 
   }
 }
 
 set rhs $x
 
+#create_placement_blockage -coordinate {{147.540 64.4} {778.5 395.6}} -name placement_blockage_std -type hard
+
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # OOB Down Interface
 
-set sx [expr $rhs + [expr $dx * 5]]
+set oob_down [get_terminals -quiet -filter "name =~ mgr__std__oob*"]
+set oob_down [add_to_collection $oob_down [get_terminals -quiet -filter "name =~ std__mgr__oob*"] ]
+
+set sx [expr $rhs + [expr $dx * 2]]
 #et sy [expr $y - [expr $dy * 5]]
 
 set x $sx
@@ -66,29 +112,31 @@ set y $sy
 set idx 0
 
 set numCols 32
-set numRows 18
+set numRows 16
 set rhs [expr $sx + [expr $numCols * $dx]]
 
-foreach_in_collection tsv $oob_down {
 
-  #set_attribute -quiet $tsv owner_port foobar
-  #set_attribute -quiet $tsv layer M6
-  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
-  set_attribute -quiet $tsv bbox $bbox
-  set_attribute -quiet $tsv status Fixed
+set tsv [get_terminals -quiet -filter "name =~ [format "mgr__std__oob_valid"]"]
+#puts [get_attr $tsv name]
+proc_pt $tsv
 
-  set idx [expr $idx + 1]
-  set y [expr $y - $dy]
+for {set cntl 0} {$cntl < 2} {incr cntl} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "mgr__std__oob_cntl\[%s\]" $cntl]"]
+  proc_pt $tsv
+}
 
-  if {$idx == $numRows} {
-    set idx 0
-    set y $sy
-    set x [expr $x + $dx]
+set tsv [get_terminals -quiet -filter "name =~ [format "std__mgr__oob_ready"]"]
+proc_pt $tsv
 
-  }
+proc_rt $tsv
+
+for {set data 0} {$data < 32} {incr data} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "mgr__std__oob_data\[%s\]" $data]"]
+  proc_pt $tsv
 }
 
 set rhs $x
+
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # Stack Up Interface
@@ -102,8 +150,10 @@ sort_collection $oob_up -descending {name }
 
 set data_up [remove_from_collection $data_up $oob_up]
 
-set sx [expr $rhs + [expr $dx * 5]]
+set sx [expr $rhs + [expr $dx * 4]]
+
 set numCols 32
+set numRows 16
 set rhs [expr $sx + [expr $numCols * $dx]]
 
 set x $sx
@@ -111,65 +161,60 @@ set y $sy
 set idx 0
 
 
-foreach_in_collection tsv $oob_up {
+set tsv [get_terminals -quiet -filter "name =~ [format "stu__mgr__valid"]"]
+#puts [get_attr $tsv name]
+proc_pt $tsv
 
-  #set_attribute -quiet $tsv owner_port foobar
-  #set_attribute -quiet $tsv layer M6
-  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
-  set_attribute -quiet $tsv bbox $bbox
-  set_attribute -quiet $tsv status Fixed
-
-  set idx [expr $idx + 1]
-  set y [expr $y - $dy]
-
-  if {$idx == $numRows} {
-    set idx 0
-    set y $sy
-    set x [expr $x + $dx]
-
-  }
+for {set cntl 0} {$cntl < 2} {incr cntl} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "stu__mgr__cntl\[%s\]" $cntl]"]
+  proc_pt $tsv
 }
 
-
-foreach_in_collection tsv $data_up {
-
-  #set_attribute -quiet $tsv owner_port foobar
-  #set_attribute -quiet $tsv layer M6
-  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
-  set_attribute -quiet $tsv bbox $bbox
-  set_attribute -quiet $tsv status Fixed
-
-  set idx [expr $idx + 1]
-  set y [expr $y - $dy]
-
-  if {$idx == $numRows} {
-    set idx 0
-    set y $sy
-    set x [expr $x + $dx]
-
-  }
+for {set type 0} {$type < 4} {incr type} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "stu__mgr__type\[%s\]" $type]"]
+  proc_pt $tsv
 }
 
+set tsv [get_terminals -quiet -filter "name =~ [format "mgr__stu__ready"]"]
+proc_pt $tsv
+
+proc_rt $tsv
+
+for {set data 0} {$data < 32} {incr data} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "stu__mgr__oob_data\[%s\]" $data]"]
+  proc_pt $tsv
+}
+
+proc_rt $tsv
+
+for {set data 0} {$data < 128} {incr data} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "stu__mgr__data\[%s\]" $data]"]
+  proc_pt $tsv
+}
+
+set rhs $x
+
+create_placement_blockage -coordinate {{146.04 2476.0} {2271.24 2631.1}} -name placement_blockage_stackBus -type hard
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # DRAM Interface
 
+#--------------------------
 # from DRAM
 
 set obj [sort_collection [get_terminals -quiet -filter "name =~ phy__dfi__*"] -descending {name }]
-set obj [add_to_collection $obj [get_terminals -quiet -filter "name =~ clk_diram_*cq*"] ]
+set obj_c [remove_from_collection $obj [get_terminals -quiet -filter "name =~ phy__dfi__data*"]]
+set obj_clk [add_to_collection $obj [get_terminals -quiet -filter "name =~ clk_diram_*cq*"] ]
 
 set numObjs [sizeof_collection $obj]
 #puts $numObjs
 
-set sx [expr [lindex [lindex $c_area 0] 0] +50]
-set sy [expr [lindex [lindex $c_area 0] 0] +50]
+set numCols 128
+set numRows 34
 
-set sx [expr [lindex [lindex $c_area 1] 0] * 0.7]
-set sy [expr [lindex [lindex $c_area 1] 1] /12]
+set sx [expr [lindex [lindex $c_area 1] 0] /16]
+set sy [expr [expr [lindex [lindex $c_area 0] 1] +50] + [expr $numRows *$dy]]
 
-set sx [expr $sx - [expr $dx * 20]]
-set sy [expr $sy /2]
 set x $sx
 set y $sy
 
@@ -183,64 +228,77 @@ set idx 0
 # 1471.2 1471
 # M2 Horiziontal tracks on 0.2
 #
-foreach_in_collection tsv $obj {
+set numWords [expr 2048 /32]
+#set numWords 4
+for {set word 0} {$word < $numWords} {incr word} {
 
-  #set_attribute -quiet $tsv owner_port foobar
-  #set_attribute -quiet $tsv layer M6
-  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
-  set_attribute -quiet $tsv bbox $bbox
-  set_attribute -quiet $tsv status Fixed
+  set tsv [get_terminals -quiet -filter "name =~ [format "clk_diram_cq\[%s\]" $word]"]
+  proc_pt $tsv
+  set tsv [get_terminals -quiet -filter "name =~ [format "phy__dfi__valid\[%s\]" $word]"]
+  proc_pt $tsv
 
+  #proc_rt $tsv
 
-  set idx [expr $idx + 1]
-  set x [expr $x + $dx]
-
-  if {$idx == 32} {
-    set idx 0
-    set rhs $x
-    set x $sx
-    set y [expr $y + $dy]
+  for {set bit 0} {$bit < 32} {incr bit} {
+    set tsv [get_terminals -quiet -filter "name =~ [format "phy__dfi__data\[%s\]" [expr [expr $word *32] +$bit]]"]
+    proc_pt $tsv
   }
-  set top $y
+  
 }
 
+create_placement_blockage -coordinate {{146.04 62.9} {781.0 397.1}} -name placement_blockage_fromDram -type hard
+
+#--------------------------
 # to DRAM
 
 set obj [sort_collection [get_terminals -quiet -filter "name =~ dfi__phy__*"] -descending {name }]
-set obj [add_to_collection $obj [get_terminals -quiet -filter "name =~ clk_diram_*ck*"] ]
+set obj_c [remove_from_collection $obj [get_terminals -quiet -filter "name =~ dfi__phy__data*"]]
+set obj_clk [add_to_collection $obj [get_terminals -quiet -filter "name =~ clk_diram_*ck*"] ]
 
 set numObjs [sizeof_collection $obj]
 #puts $numObjs
 
-set sy [expr $top +$dy]
-
+set sx [expr [lindex [lindex $c_area 1] 0] *0.7]
+set sy [expr [expr [lindex [lindex $c_area 0] 1] +50] + [expr $numRows *$dy]]
 
 set x $sx
 set y $sy
-set y [expr $y + [expr $dy * 5]]
+
 set idx 0
 
-foreach_in_collection tsv $obj {
 
-  #set_attribute -quiet $tsv owner_port foobar
-  #set_attribute -quiet $tsv layer M6
-  set bbox [list [list [expr $x -$lx] [expr $y - $ly]] [list [expr $x + $lx] [expr $y + $ly]]]
-  set_attribute -quiet $tsv bbox $bbox
-  set_attribute -quiet $tsv status Fixed
-  #create_via -net [get_attr $tsv owner_net] -no_snap -type via_array -master via23 -col 1 -row 1 -at [list $x $y ]
-  #create_via -net [get_attr $tsv owner_net] -no_snap -type via_array -master via23 -route_type pg_strap -col 2 -row 1 -x_pitch 4.16 -y_pitch 0.1  -at { 1630.84    80.82 }
+set tsv [get_terminals -quiet -filter "name =~ [format "clk_diram_cntl_ck" ]"]
+proc_pt $tsv
+set tsv [get_terminals -quiet -filter "name =~ [format "dfi__phy__cs" ]"]
+proc_pt $tsv
+for {set cmd 0} {$cmd < 2} {incr cmd} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "dfi__phy__cmd%s" $cmd]"]
+  proc_pt $tsv
+}
+for {set bank 0} {$bank < 5} {incr bank} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "dfi__phy__bank\[%s\]" $bank]"]
+  proc_pt $tsv
+}
+for {set addr 0} {$addr < 12} {incr addr} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "dfi__phy__addr\[%s\]" $addr]"]
+  proc_pt $tsv
+}
 
+proc_rt $tsv
 
-
-  set idx [expr $idx + 1]
-  set x [expr $x + $dx]
-
-  if {$idx == 32} {
-    set idx 0
-    set x $sx
-    set y [expr $y + $dy]
+for {set word 0} {$word < $numWords} {incr word} {
+  set tsv [get_terminals -quiet -filter "name =~ [format "clk_diram_data_ck\[%s\]" $word]"]
+  proc_pt $tsv
+  # For mask
+  #set tsv [get_terminals -quiet -filter "name =~ [format "dfi__phy__mask\[%s\]" $word]"]
+  proc_pt $tsv
+  for {set bit 0} {$bit < 32} {incr bit} {
+    set tsv [get_terminals -quiet -filter "name =~ [format "dfi__phy__data\[%s\]" [expr [expr $word *32] +$bit]]"]
+    proc_pt $tsv
   }
 }
+
+create_placement_blockage -coordinate {{1657.04 62.9} {2301.24 397.1}} -name placement_blockage_toDram -type hard
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # NoC

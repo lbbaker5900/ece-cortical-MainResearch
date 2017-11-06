@@ -22,7 +22,8 @@
 `timescale 1ns/10ps
 
 
-module generic_pipelined_w_peek_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   ,
+module generic_pipelined_w_peek_fifo 
+                                     #(parameter GENERIC_FIFO_DEPTH       = 8   ,
                                        parameter GENERIC_FIFO_THRESHOLD   = 32  ,
                                        parameter GENERIC_FIFO_DATA_WIDTH  = 4   ,
                                        localparam GENERIC_FIFO_ADDR_WIDTH = $clog2(GENERIC_FIFO_DEPTH))
@@ -54,6 +55,10 @@ module generic_pipelined_w_peek_fifo #(parameter GENERIC_FIFO_DEPTH       = 8   
           output  wire                                      almost_full  
 
              );
+
+  //--------------------------------------------------------
+  // Forces synthesis not to elaborate during first read
+  // synopsys template
 
   parameter GENERIC_PEEK_DEPTH = 3 ;
 

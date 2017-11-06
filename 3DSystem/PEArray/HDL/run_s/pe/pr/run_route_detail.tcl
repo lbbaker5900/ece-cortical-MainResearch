@@ -1,6 +1,6 @@
 #*********************************************************************************************
 #
-#    File name   : run_route.tcl
+#    File name   : run_route_detail.tcl
 #    Author      : Lee Baker
 #    Affiliation : North Carolina State University, Raleigh, NC
 #    Date        : Apr 2017
@@ -18,8 +18,12 @@
 source setup.tcl
 set begintime [clock seconds]
 open_mw_lib ./work/${modname}
-open_mw_cel ${modname}__post_track_route
+open_mw_cel ${modname}_post_track_route
 
+source ${modname}_constraints.tcl
+source constraints.tcl
+
+set test_route true
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # pr_tut
@@ -129,23 +133,41 @@ set_host_options -max_cores 4
 #	-postroute elmore | arnoldi
 #
 #
-set_delay_calculation_options \
+if {$test_route == "true"} {
+  set_delay_calculation_options \
+	-preroute elmore \
+	-routed_clock elmore \
+	-postroute elmore \
+	-awe_effort low \
+	-arnoldi_effort low
+} else {
+  set_delay_calculation_options \
 	-preroute elmore \
 	-routed_clock elmore \
 	-postroute elmore \
 	-awe_effort high \
 	-arnoldi_effort high
+}
 #
 #
 #################################################################	SIGNAL INTEGRITY ANALYSIS
 #
 #
-set_si_options \
+if {$test_route == "true"} {
+  set_si_options \
+	-delta_delay false \
+	-static_noise false \
+	-timing_window false \
+	-min_delta_delay false \
+	-route_xtalk_prevention false
+} else {
+  set_si_options \
 	-delta_delay true \
 	-static_noise true \
 	-timing_window true \
 	-min_delta_delay true \
 	-route_xtalk_prevention true
+}
 #
 #
 #################################################################	ROUTING LAYER CONSTRAINTS
@@ -199,6 +221,28 @@ set_route_mode_options -zroute true
 #
 #	-plan_group_aware : off | all_routing | top_level_routing_only		-> hierarchy
 #
+if {$test_route == "true"} {
+set_route_zrt_common_options \
+	-reroute_clock_shapes true \
+	-reroute_user_shapes false \
+	-plan_group_aware off \
+	-child_process_net_threshold -1 \
+	-verbose 1 \
+	-connect_floating_shapes false \
+	-rc_driven_setup_effort_level low \
+	-route_top_boundary_mode stay_half_min_space_inside \
+	-global_max_layer_mode allow_pin_connection \
+	-global_min_layer_mode soft \
+	-net_max_layer_mode allow_pin_connection \
+	-net_min_layer_mode soft \
+	-post_incremental_detail_route_fix_soft_violations false \
+	-route_soft_rule_effort_level low \
+	-post_detail_route_fix_soft_violations false \
+	-post_eco_route_fix_soft_violations false \
+	-post_group_route_fix_soft_violations false \
+	-tie_off_mode rail_only \
+	-rotate_default_vias false
+} else {
 set_route_zrt_common_options \
 	-reroute_clock_shapes true \
 	-reroute_user_shapes false \
@@ -219,6 +263,7 @@ set_route_zrt_common_options \
 	-post_group_route_fix_soft_violations true \
 	-tie_off_mode rail_only \
 	-rotate_default_vias false
+}
 #
 #
 #################################################################	ROUTE ZRT GLOBAL ROUTE OPTIONS
@@ -246,7 +291,22 @@ set_route_zrt_track_options \
 #	FYI - ANTENNA_X1M_19TH is a munaully placed antenna fix cell
 #		Tool does not route it
 #
-set_route_zrt_detail_options \
+if {$test_route == "true"} {
+  set_route_zrt_detail_options \
+	-antenna false \
+	-antenna_fixing_preference use_diodes \
+	-check_pin_min_area_min_length true \
+	-check_port_min_area_min_length true \
+	-diode_insertion_mode new \
+	-diode_libcell_names {SEN_TIEDIN_1} \
+	-diode_preference new \
+	-drc_convergence_effort low \
+	-timing_driven true \
+	-insert_diodes_during_routing true \
+	-optimize_tie_off_effort_level low \
+	-optimize_wire_via_effort_level low
+} else {
+  set_route_zrt_detail_options \
 	-antenna true \
 	-antenna_fixing_preference use_diodes \
 	-check_pin_min_area_min_length true \
@@ -259,6 +319,7 @@ set_route_zrt_detail_options \
 	-insert_diodes_during_routing true \
 	-optimize_tie_off_effort_level high \
 	-optimize_wire_via_effort_level high
+}
 #
 #
 #################################################################	ROUTE ZRT - GLOBAL
@@ -297,16 +358,29 @@ set_route_zrt_detail_options \
 #################################################################	ROUTE ZRT - DETAIL
 #
 #
-route_zrt_detail \
+if {$test_route == "true"} {
+  route_zrt_detail \
+	-max_number_iterations 10 \
+	-incremental true
+
+  verify_zrt_route \
+	-open_net true \
+	-report_all_open_nets true \
+	-drc false \
+	-antenna false \
+	-voltage_area false
+} else {
+  route_zrt_detail \
 	-max_number_iterations 100 \
 	-incremental true
 
-verify_zrt_route \
+  verify_zrt_route \
 	-open_net true \
 	-report_all_open_nets true \
 	-drc true \
 	-antenna true \
 	-voltage_area true
+}
 
 save_mw_cel -as ${modname}_post_detail_route_1
 #

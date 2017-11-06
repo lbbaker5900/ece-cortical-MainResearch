@@ -42,7 +42,17 @@ module top;
     initial begin
         reset_poweron            = 1;
         #1000ns reset_poweron     = 0;
+        `ifdef TB_GENERATE_MANAGER_ACTIVITY_FILE
+           $display("@%0t:%s:%0d:INFO:Start dumpvars", $time, `__FILE__, `__LINE__);
+           $dumpfile("manager_2.vcd");
+           $dumpvars (0, top.system_inst.manager_array_inst.mgr_inst[2].manager);
+        `elsif TB_GENERATE_PE_ACTIVITY_FILE
+           $display("@%0t:%s:%0d:INFO:Start dumpvars", $time, `__FILE__, `__LINE__);
+           $dumpfile("pe_2.vcd");
+           $dumpvars (0, top.system_inst.pe_array_inst.pe_inst[2].pe);
+        `endif
     end
+
 
     //----------------------------------------------------------------------------------------------------
     // Instantiate an interface for every pe/lane/stream pair
@@ -52,7 +62,6 @@ module top;
     std_oob_ifc     DownstreamStackBusOOB  [`PE_ARRAY_NUM_OF_PE]                        (.clk_oob             ( clk           ));  
     std_lane_ifc    DownstreamStackBusLane [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] [`MGR_NUM_OF_STREAMS] (.clk_lane            ( clk           ));  // [64] shorthand for [0:63] ....
     stu_ifc         UpstreamStackBus       [`PE_ARRAY_NUM_OF_PE]                        (.clk                 ( clk           ));  
-
 
 
     //----------------------------------------------------------------------------------------------------
@@ -283,26 +292,30 @@ module top;
     // DMA to memory interface for result check
     genvar pe;
     genvar lane;
+    `ifndef TB_USES_PE_GATE_NETLIST
     generate
        for (pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe=pe+1)
            begin
                for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
                    begin
                        // only observe stream 0
-                       assign Dma2Mem[pe][lane].dma__memc__write_valid      = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_valid0        ;
-                       assign Dma2Mem[pe][lane].dma__memc__write_address    = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_address0      ;
-                       assign Dma2Mem[pe][lane].dma__memc__write_data       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_data0         ;
-                       assign Dma2Mem[pe][lane].dma__memc__read_valid       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_valid0         ;
-                       assign Dma2Mem[pe][lane].dma__memc__read_address     = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_address0       ;
-                       assign Dma2Mem[pe][lane].dma__memc__read_pause       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_pause0         ;
-
-                       assign Dma2Mem[pe][lane].memc__dma__write_ready      = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__write_ready0        ;
-                       assign Dma2Mem[pe][lane].memc__dma__read_data        = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data0          ;
-                       assign Dma2Mem[pe][lane].memc__dma__read_data_valid  = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data_valid0    ;
-                       assign Dma2Mem[pe][lane].memc__dma__read_ready       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_ready0         ;
+                         assign Dma2Mem[pe][lane].dma__memc__write_valid      = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_valid0        ;
+                         assign Dma2Mem[pe][lane].dma__memc__write_address    = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_address0      ;
+                         assign Dma2Mem[pe][lane].dma__memc__write_data       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__write_data0         ;
+                         assign Dma2Mem[pe][lane].dma__memc__read_valid       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_valid0         ;
+                         assign Dma2Mem[pe][lane].dma__memc__read_address     = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_address0       ;
+                         assign Dma2Mem[pe][lane].dma__memc__read_pause       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.dma__memc__read_pause0         ;
+                         
+                         assign Dma2Mem[pe][lane].memc__dma__write_ready      = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__write_ready0        ;
+                         assign Dma2Mem[pe][lane].memc__dma__read_data        = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data0          ;
+                         assign Dma2Mem[pe][lane].memc__dma__read_data_valid  = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_data_valid0    ;
+                         assign Dma2Mem[pe][lane].memc__dma__read_ready       = system_inst.pe_array_inst.pe_inst[pe].pe.stOp_lane[lane].streamingOps_datapath.dma_cont.memc__dma__read_ready0         ;
                    end
            end
     endgenerate
+    `else
+      `include "TB_system_gate_sim_connect_to_dma.vh"
+    `endif
 
     //------------------------------------------------------------
     // Local NoC Interfaces

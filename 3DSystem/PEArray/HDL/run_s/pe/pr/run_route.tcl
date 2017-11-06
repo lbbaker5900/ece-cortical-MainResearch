@@ -20,6 +20,9 @@ set begintime [clock seconds]
 open_mw_lib ./work/${modname}
 open_mw_cel ${modname}_fill
 
+source ${modname}_constraints.tcl
+source constraints.tcl
+
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # pr_tut

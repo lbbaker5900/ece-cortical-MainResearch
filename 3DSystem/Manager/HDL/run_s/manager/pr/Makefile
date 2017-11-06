@@ -33,8 +33,10 @@ $(crDWlib): ../synth/dw_memories/compout/views/*/*.plef
 INIT = .init
 .PHONY: init
 init: $(INIT)
-$(INIT): $(crDWlib) run_init.tcl ../synth/logs.65nm/manager/$(MODNAME)_final.v 
+$(INIT): $(crDWlib) run_init.tcl ../synth/logs.65nm/$(MODNAME)/$(MODNAME)_final.v 
 	tcsh -c "add synopsys2015 ; \
+	mkdir -p work ; \
+	sed -i -e 's/^ *set modname .*/set modname $(MODNAME)/' setup.tcl ;\
 	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	nice +19 icc_shell -f run_init.tcl |& tee run_init.log ; \
@@ -97,13 +99,19 @@ $(ROUTE_TRACK): $(FILL) run_route_track.tcl
 	tcsh -c "add synopsys2015 ; \
 	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	mkdir -p logs.65nm ; \
+	mkdir -p logs.65nm/$(MODNAME) ; \
 	nice +19 icc_shell -f run_route_track.tcl |& tee run_route_track.log ; \
+	/bin/mv $(MODNAME)_routed_track.spef.max logs.65nm/$(MODNAME)/. ; \
+	/bin/mv $(MODNAME)_routed_track.spef.min logs.65nm/$(MODNAME)/. ; \
+	/bin/mv $(MODNAME)_routed_track.v logs.65nm/$(MODNAME)/. ; \
+	/bin/mv $(MODNAME)_routed_global.v logs.65nm/$(MODNAME)/. ; \
 	touch $(ROUTE_TRACK)"
 
 ROUTE_DETAIL = .route_detail
 .PHONY: route_detail
 route_detail: $(ROUTE_DETAIL)
-$(ROUTE_DETAIL): $(FILL) run_route_detail.tcl
+$(ROUTE_DETAIL): $(ROUTE_TRACK) run_route_detail.tcl
 	tcsh -c "add synopsys2015 ; \
 	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\

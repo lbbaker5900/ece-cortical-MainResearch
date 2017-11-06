@@ -462,6 +462,58 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../SIMULATION/common/TB_system_gate_sim_connect_to_dma.vh', 'w')
+  pLine = ""
+  for mgr in range (0, numOfMgr):
+    for lane in range (0, numOfExecLanes ):
+
+       pLine = pLine + '\n                            assign Dma2Mem[{0}][{1}].dma__memc__write_valid      = system_inst.pe_array_inst.pe_inst[{0}].pe.stOp_lane_{1}__streamingOps_datapath.dma_cont.dma__memc__write_valid0        ;'.format(mgr,lane)
+       pLine = pLine + '\n                            assign Dma2Mem[{0}][{1}].dma__memc__write_address    = system_inst.pe_array_inst.pe_inst[{0}].pe.stOp_lane_{1}__streamingOps_datapath.dma_cont.dma__memc__write_address0      ;'.format(mgr,lane)
+       pLine = pLine + '\n                            assign Dma2Mem[{0}][{1}].dma__memc__write_data       = system_inst.pe_array_inst.pe_inst[{0}].pe.stOp_lane_{1}__streamingOps_datapath.dma_cont.dma__memc__write_data0         ;'.format(mgr,lane)
+       pLine = pLine + '\n                            assign Dma2Mem[{0}][{1}].dma__memc__read_valid       = system_inst.pe_array_inst.pe_inst[{0}].pe.stOp_lane_{1}__streamingOps_datapath.dma_cont.dma__memc__read_valid0         ;'.format(mgr,lane)
+       pLine = pLine + '\n                            assign Dma2Mem[{0}][{1}].dma__memc__read_address     = system_inst.pe_array_inst.pe_inst[{0}].pe.stOp_lane_{1}__streamingOps_datapath.dma_cont.dma__memc__read_address0       ;'.format(mgr,lane)
+       pLine = pLine + '\n                            assign Dma2Mem[{0}][{1}].dma__memc__read_pause       = system_inst.pe_array_inst.pe_inst[{0}].pe.stOp_lane_{1}__streamingOps_datapath.dma_cont.dma__memc__read_pause0         ;'.format(mgr,lane)
+                         
+       pLine = pLine + '\n                            assign Dma2Mem[{0}][{1}].memc__dma__write_ready      = system_inst.pe_array_inst.pe_inst[{0}].pe.stOp_lane_{1}__streamingOps_datapath.dma_cont.memc__dma__write_ready0        ;'.format(mgr,lane)
+       pLine = pLine + '\n                            assign Dma2Mem[{0}][{1}].memc__dma__read_data        = system_inst.pe_array_inst.pe_inst[{0}].pe.stOp_lane_{1}__streamingOps_datapath.dma_cont.memc__dma__read_data0          ;'.format(mgr,lane)
+       pLine = pLine + '\n                            assign Dma2Mem[{0}][{1}].memc__dma__read_data_valid  = system_inst.pe_array_inst.pe_inst[{0}].pe.stOp_lane_{1}__streamingOps_datapath.dma_cont.memc__dma__read_data_valid0    ;'.format(mgr,lane)
+       pLine = pLine + '\n                            assign Dma2Mem[{0}][{1}].memc__dma__read_ready       = system_inst.pe_array_inst.pe_inst[{0}].pe.stOp_lane_{1}__streamingOps_datapath.dma_cont.memc__dma__read_ready0         ;'.format(mgr,lane)
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../SIMULATION/common/TB_system_pe_cntl_stop_memory_load.vh', 'w')
+  pLine = ""
+
+  pLine = pLine + '\n    case (mgr)'
+  for mgr in range (0, numOfMgr):
+    pLine = pLine + '\n         {0}:'.format(mgr)
+    pLine = pLine + '\n            begin'
+    pLine = pLine + '\n              `ifdef TB_USES_PE_GATE_NETLIST'
+    pLine = pLine + '\n                $readmemh(\"./inputFiles/pe{0}_pe_cntl_stOp_memory.dat\", top.system_inst.pe_array_inst.pe_inst[{0}].pe.pe_cntl.stOp_option_memory_0__gmemory.dw_mem_mem2prf256x149.u0.mem_core_array) ;'.format(mgr)
+    pLine = pLine + '\n              `else'
+    pLine = pLine + '\n                memFile = \"./inputFiles/pe{0}_pe_cntl_stOp_memory.dat\";'.format(mgr)
+    pLine = pLine + '\n                fileDesc = $fopen (memFile, "r");'.format(mgr)
+    pLine = pLine + '\n                if (fileDesc == 0)'.format(mgr)
+    pLine = pLine + '\n                  begin'.format(mgr)
+    pLine = pLine + '\n                    $display("ERROR:generic_1port_memory:LEE:readmem file error : %s ", memFile);'.format(mgr)
+    pLine = pLine + '\n                    $finish;'.format(mgr)
+    pLine = pLine + '\n                  end'.format(mgr)
+    pLine = pLine + '\n                while (!$feof(fileDesc)) '.format(mgr)
+    pLine = pLine + '\n                  begin '.format(mgr)
+    pLine = pLine + '\n                    void\'($fgets(entry, fileDesc)); '.format(mgr)
+    pLine = pLine + '\n                    void\'($sscanf(entry, "@%x %x", memory_address, memory_data));'.format(mgr)
+    pLine = pLine + '\n                    //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);'.format(mgr)
+    pLine = pLine + '\n                    system_inst.pe_array_inst.pe_inst[{0}].pe.pe_cntl.stOp_option_memory[0].gmemory.mem[memory_address] = memory_data ;'.format(mgr)
+    pLine = pLine + '\n                  end'.format(mgr)
+    pLine = pLine + '\n                $fclose(fileDesc);'.format(mgr)
+    pLine = pLine + '\n              `endif'
+    pLine = pLine + '\n            end'
+  pLine = pLine + '\n    endcase'
+
+  f.write(pLine)
+  f.close()
+
   ##----------------------------------------------------------------------------------------------------
   ##----------------------------------------------------------------------------------------------------
   ##----------------------------------------------------------------------------------------------------

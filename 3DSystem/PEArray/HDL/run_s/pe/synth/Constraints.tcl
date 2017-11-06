@@ -191,6 +191,7 @@ set verilogout_show_unconnected_pins true
 #  - DW FP MAC timing can be ignored as we assume horowitz performance
 #--------------------------------------------------------- 
 set_disable_timing [get_cells  -hier *DW_fp_mac*]
+set_false_path -through [get_cells  -hier *DW_fp_mac*]
 
 #------------------------------------------------------
 # During the initial map (synthesis), Synopsys might   
@@ -204,6 +205,8 @@ set_disable_timing [get_cells  -hier *DW_fp_mac*]
 #------------------------------------------------------
 
 # replace_synthetic -ungroup
+
+#ungroup -all -flatten
 
 #---------------------------------------------------------
 # check the design before optimization  

@@ -163,17 +163,15 @@ preroute_standard_cells \
 	-mode rail \
 	-connect horizontal \
 	-fill_empty_rows \
+	-fill_empty_sites \
 	-port_filter_mode off \
 	-cell_master_filter_mode off \
 	-cell_instance_filter_mode off \
 	-voltage_area_filter_mode off \
-	-extend_to_boundaries_and_generate_pins
-	-nets {VDD VSS} \
-	-mode rail \
-	-connect horizontal \
 	-remove_floating_pieces \
-	-fill_empty_rows \
-	-fill_empty_sites
+	-extend_to_boundaries_and_generate_pins
+
+
 #
 #
 #################################################################

@@ -64,9 +64,9 @@ create_mw_lib  \
 import_designs -format verilog \
 	-top ${modname} \
 	-cel ${modname} \
-	${GATE_DIR}/${modname}_final.v
+	${GATE_DIR}/logs.${tech}/${modname}/${modname}_final.v
 
-read_sdc ${GATE_DIR}/${modname}_tt.sdc
+read_sdc ${GATE_DIR}/logs.${tech}/${modname}/${modname}_tt.sdc
  
 save_mw_cel -as ${modname}
 

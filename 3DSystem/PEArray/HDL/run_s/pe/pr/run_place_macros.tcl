@@ -21,8 +21,40 @@ source setup.tcl
 open_mw_lib ./work/${modname}
 open_mw_cel ${modname}_init
 
-source place_macros.tcl
-source place_ports.tcl
+source ${modname}_constraints.tcl
+source constraints.tcl
+
+
+if {$modname == "pe" || $modname == "manager"} {
+
+  source place_ports.tcl
+
+  if {$USE_CREATE_FP_PLACEMENT =="true"} {
+
+    set_fp_placement_strategy \
+      -min_distance_between_macros ${MIN_DISTANCE_BETWEEN_MACROS} \
+      -sliver_size ${SLIVER_DISTANCE_BETWEEN_MACROS} \
+      -auto_grouping high \
+      -macros_on_edge off
+
+    create_fp_placement
+
+  } else {
+
+    source place_macros.tcl
+
+  }
+} else {
+
+  set_fp_placement_strategy \
+    -min_distance_between_macros ${MIN_DISTANCE_BETWEEN_MACROS} \
+    -sliver_size ${SLIVER_DISTANCE_BETWEEN_MACROS} \
+    -auto_grouping high \
+    -macros_on_edge off
+
+  create_fp_placement
+
+}
 
 save_mw_cel -as ${modname}_init_macros_placed
 

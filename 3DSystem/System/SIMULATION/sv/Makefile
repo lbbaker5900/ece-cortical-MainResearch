@@ -30,9 +30,29 @@ TB_WHO_DRIVES_SIMD_REGFILE_INPUTS=TB_DOES_NOT_DRIVE_SIMD_REGFILE_INPUTS
 #TB_CAN_MANAGER_PAUSE_WUD=TB_MGR_PAUSES_WUD
 TB_CAN_MANAGER_PAUSE_WUD=TB_MGR_CANNOT_PAUSE_WUD
 
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Gate netlist control
+
+# Manager
 TB_MANAGER_RTL_OR_GATES=TB_DOES_NOT_USE_MANAGER_GATE_NETLIST
 #TB_MANAGER_RTL_OR_GATES=TB_USES_MANAGER_GATE_NETLIST
 
+# PE
+TB_PE_RTL_OR_GATES=TB_DOES_NOT_USE_PE_GATE_NETLIST
+#TB_PE_RTL_OR_GATES=TB_USES_PE_GATE_NETLIST
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Simulation VCD generation
+#
+TB_CREATE_MANAGER_ACTIVITY_FILE=TB_DO_NOT_GENERATE_MANAGER_ACTIVITY_FILE
+#TB_CREATE_MANAGER_ACTIVITY_FILE=TB_GENERATE_MANAGER_ACTIVITY_FILE
+
+TB_CREATE_PE_ACTIVITY_FILE=TB_DO_NOT_GENERATE_PE_ACTIVITY_FILE
+#TB_CREATE_PE_ACTIVITY_FILE=TB_GENERATE_PE_ACTIVITY_FILE
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 TB_COMMON_ARG0=TB_COMMON_ARG0
 
@@ -42,7 +62,7 @@ TB_COMMON_ARG0=TB_COMMON_ARG0
 all : .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .armMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .generic_pipelined_w_peek_fifo .diram4 .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .sdp_cntl .sdp_request_cntl .sdp_stream_cntl .mwc_cntl .mgr_cntl .dram_access_timer .main_mem_cntl .mmc_final_queue .dfi .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .dram_utilities .mem_checker .upstream_checker .regFile_driver .dram_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .interface .environment .testbench .top 
 
 clean : 
-	/bin/rm .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .armMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .generic_pipelined_w_peek_fifo .diram4 .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .sdp_cntl .sdp_request_cntl .sdp_stream_cntl .mwc_cntl .mgr_cntl .dram_access_timer .main_mem_cntl .mmc_final_queue .dfi .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .dram_utilities .mem_checker .upstream_checker .regFile_driver .dram_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .interface .environment .testbench .top 
+	/bin/rm .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .armMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .generic_pipelined_w_peek_fifo .diram4 .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .sdp_cntl .sdp_request_cntl .sdp_stream_cntl .mwc_cntl .mgr_cntl .dram_access_timer .main_mem_cntl .mmc_final_queue .dfi .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .dram_utilities .mem_checker .upstream_checker .regFile_driver .dram_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .interface .environment .testbench .top .pe_gates_synth .pe_gates_pr .manager_gates_synth .manager_gates_pr
 	/bin/rm -rf mti_lib
 	vlib mti_lib
 
@@ -186,6 +206,23 @@ cleanPy :
 	echo "pe"
 	touch .pe
 
+.pe_gates_init : ../../../PEArray/HDL/run_s/pe/synth/logs.65nm/pe/pe_init.v 
+	vlog -sv +define+${TB_WHO_DRIVES_OOB} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common   ../../../PEArray/HDL/run_s/pe/synth/logs.65nm/pe/pe_init.v 
+	echo "pe gates_init"
+	touch .pe_gates_init
+
+.pe_gates_synth : ../../../PEArray/HDL/run_s/pe/synth/logs.65nm/pe/pe_final.v 
+	vlog -sv +define+${TB_WHO_DRIVES_OOB} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common   ../../../PEArray/HDL/run_s/pe/synth/logs.65nm/pe/pe_final.v 
+	echo "pe gates_synth"
+	touch .pe_gates_synth
+
+.pe_gates_pr : ../../../PEArray/HDL/run_s/pe/pr/logs.65nm/pe/pe_routed_track.v 
+	vlog -sv +define+${TB_WHO_DRIVES_OOB} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common    ../../../PEArray/HDL/run_s/pe/pr/logs.65nm/pe/pe_routed_track.v  
+	vlog -sv +delay_mode_zero +define+_fv+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET+VIRL_functiononly +incdir+../../../Manager/HDL/common  /home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/verilog/3.0/cp65npksdst_no_specify.v       2>&1   | tee -a $1
+	echo "pe gates_pr: WARNING: Compiling standard cell library with zero delay"
+	echo "pe gates_pr"
+	touch .pe_gates_pr
+
 .pe_array : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh ../../../PEArray/SIMULATION/common/*.vh        ../../../PEArray/HDL/run_s/pe_array.v 
 	vlog -sv      +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common        ../../../PEArray/HDL/run_s/pe_array.v 
 	echo "pe_array"
@@ -292,8 +329,8 @@ cleanPy :
 	echo "manager gates_synth"
 	touch .manager_gates_synth
 
-.manager_gates_pr : ../../../Manager/HDL/run_s/manager/pr/manager_routed_track.v 
-	vlog -sv +define+${TB_WHO_DRIVES_OOB} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common    ../../../Manager/HDL/run_s/manager/pr/manager_routed_track.v  
+.manager_gates_pr : ../../../Manager/HDL/run_s/manager/pr/logs.65nm/manager/manager_routed_track.v 
+	vlog -sv +define+${TB_WHO_DRIVES_OOB} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common +incdir+../../../PEArray/SIMULATION/common    ../../../Manager/HDL/run_s/manager/pr/logs.65nm/manager/manager_routed_track.v  
 	vlog -sv +delay_mode_zero +define+_fv+VIRAGE_FAST_VERILOG+MEM_CHECK_OFF+VIRAGE_IGNORE_RESET+VIRL_functiononly +incdir+../../../Manager/HDL/common  /home/GF065/synopsys/DesignWare_logic_libs/cp65npksdst4.00a/verilog/3.0/cp65npksdst_no_specify.v       2>&1   | tee -a $1
 	echo "manager gates_pr: WARNING: Compiling standard cell library with zero delay"
 	echo "manager gates_pr"
@@ -346,7 +383,7 @@ cleanPy :
 	touch .dram_utilities
 
 .tb_manager : .dram_utilities ../../HDL/common/*.vh ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/manager.sv
-	vlog -sv  +define+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}  +incdir+../../../Manager/HDL/common+../../HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/manager.sv
+	vlog -sv  +define+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}+${TB_PE_RTL_OR_GATES}+${TB_CREATE_MANAGER_ACTIVITY_FILE}+${TB_CREATE_PE_ACTIVITY_FILE}  +incdir+../../../Manager/HDL/common+../../HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      ../../../System/SIMULATION/sv/manager.sv
 	echo "manager.sv"
 	touch .tb_manager
 
@@ -391,13 +428,13 @@ cleanPy :
 	touch .system_interfaces
 
 .interface : ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh        interface.sv
-	vlog  -sv     +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        interface.sv
+	vlog  -sv  +define+${TB_PE_RTL_OR_GATES}+incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        interface.sv
 	echo "interface"
 	touch .interface
 
 # Note: environment includes all .sv files
 .environment : .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .armMgr .dwPe .definition .base_operation .driver .oob_driver .generator .tb_manager .dram_utilities .mem_checker .upstream_checker .regFile_driver .dram_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .interface  ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      environment.sv
-	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      environment.sv
+	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}+${TB_PE_RTL_OR_GATES}+${TB_CREATE_MANAGER_ACTIVITY_FILE}+${TB_CREATE_PE_ACTIVITY_FILE} +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      environment.sv
 	echo "environment"
 	touch .environment
                                                                                                                                                                                                              
@@ -406,12 +443,12 @@ cleanPy :
 #  - make sure any required defines are added to the testbench compile
 #
 .testbench : .environment ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      testbench.sv
-	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      testbench.sv
+	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}+${TB_PE_RTL_OR_GATES}+${TB_CREATE_MANAGER_ACTIVITY_FILE}+${TB_CREATE_PE_ACTIVITY_FILE}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      testbench.sv
 	echo "testbench"
 	touch .testbench
 
 .top : .environment ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh   ../../../PEArray/SIMULATION/common/*.vh      top.sv 
-	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
+	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}+${TB_PE_RTL_OR_GATES}+${TB_CREATE_MANAGER_ACTIVITY_FILE}+${TB_CREATE_PE_ACTIVITY_FILE}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	#vlog -sv  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	echo "top"
 	touch .top

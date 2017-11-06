@@ -255,7 +255,7 @@ module pe_cntl (
                         // Initialize
                         //
                         `ifndef SYNTHESIS
-                           .memFile ($sformatf("./inputFiles/pe%0d_pe_cntl_stOp_memory.dat", sys__pe__peId)),
+                           .memFile (""),
                         `endif
 
                         //---------------------------------------------------------------

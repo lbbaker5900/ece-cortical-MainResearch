@@ -53,6 +53,13 @@ class driver;
     vDownstreamStackBusOOB_T  vDownstreamStackBusOOB  ;  // FIXME: OOB is a per PE interface but we have driver objects for all PE/Lanes
     vDownstreamStackBusLane_T vDownstreamStackBusLane [`PE_NUM_OF_STREAMS] ;
 
+    //----------------------------------------------------------------------------------------------------
+    // Misc
+    int countActivity ;
+    int numberOfClocks;
+
+    //----------------------------------------------------------------------------------------------------
+
     function new (
                   input int                  Id[2]              ,
                   input mailbox              gen2drv            ,                  //Retrieving mailboxes and virtual system interface.

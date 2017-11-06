@@ -46,7 +46,8 @@
 `timescale 1ns/10ps
 
 
-module generic_2port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
+module generic_2port_memory  
+                            #(parameter GENERIC_MEM_DEPTH           = 1024   ,
                               parameter GENERIC_MEM_REGISTERED_OUT  = 0      ,
                               parameter GENERIC_MEM_DATA_WIDTH      = 32     ,
                               parameter GENERIC_MEM_INIT_FILE       = ""     )
@@ -72,6 +73,10 @@ module generic_2port_memory #(parameter GENERIC_MEM_DEPTH           = 1024   ,
                           reset_poweron        ,
                           clk            
                           );
+
+  //--------------------------------------------------------
+  // Forces synthesis not to elaborate during first read
+  // synopsys template
 
   // 
   localparam GENERIC_MEM_ADDR_WIDTH       = $clog2(GENERIC_MEM_DEPTH) ;
