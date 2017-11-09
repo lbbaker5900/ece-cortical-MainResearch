@@ -20,4 +20,12 @@
 
   set USE_CREATE_FP_PLACEMENT "true"
 
+  set test_route false
+
+  set_fp_pin_constraints \
+         -block_level \
+         -use_physical_constraints on \
+         -allowed_layers {M2 M3 M4 M5} 
+
+
 

@@ -36,6 +36,9 @@ init: $(INIT)
 $(INIT): $(crDWlib) run_init.tcl ../synth/logs.65nm/$(MODNAME)/$(MODNAME)_final.v 
 	tcsh -c "add synopsys2015 ; \
 	mkdir -p work ; \
+	sed -i -e 's/^ *set modname .*/set modname $(MODNAME)/' setup.tcl ;\
+	sed -i -e 's/set tech \"28nm\"/set tech \"$(TECH)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set tech \"65nm\"/set tech \"$(TECH)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	nice +19 icc_shell -f run_init.tcl |& tee run_init.log ; \
@@ -187,7 +190,7 @@ clean:
 	-rm -rf *.min
 	-rm -rf *.max
 	-rm -rf legalizer_debug_plots
-	-rm -f .init .place .cts .route .crDWlib .pp .so .fill
+	-rm -f .init .place_macros .place .cts .route .route_detail .route_track .crDWlib .pp .so .fill
 	-rm -f *.log* *.tcl.*
 	-rm -rf Nangate*
 	-rm -f skipped_contactCode_vias.sum

@@ -104,6 +104,7 @@ if {$modname == "pe" || $modname == "manager"} {
 	-bottom_io2core 5 \
 	-right_io2core 5 \
 	-top_io2core 5
+
 #	-control_type aspect_ratio \
 #	-core_utilization 0.3 \
 #	-start_first_row \

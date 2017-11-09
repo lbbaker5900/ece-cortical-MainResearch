@@ -174,7 +174,7 @@ gui:
 	icc_shell -gui"
 
 clean:
-	-rm -rf work/*
+	#-rm -rf work/*
 	-rm icc_output.txt
 	-rm -rf *.log
 	-rm -rf *.v
@@ -186,7 +186,7 @@ clean:
 	-rm -rf *.min
 	-rm -rf *.max
 	-rm -rf legalizer_debug_plots
-	-rm -f .init .place .cts .route .crDWlib .pp .so .fill
+	-rm -f .init .place .place_macros .cts .route -route_track .route_detail .crDWlib .pp .so .fill
 	-rm -f *.log* *.tcl.*
 	-rm -rf Nangate*
 	-rm -f skipped_contactCode_vias.sum

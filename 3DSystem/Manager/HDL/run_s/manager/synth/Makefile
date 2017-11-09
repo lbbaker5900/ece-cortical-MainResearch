@@ -63,6 +63,14 @@ arm:
 	/bin/mv *.ps documents/. "
 
 
+update: 
+	tcsh -c " \
+	sed -i -e 's/^ *set modname .*/set modname $(MODNAME)/' setup.tcl ;\
+	sed -i -e 's/set tech \"28nm\"/set tech \"$(TECH)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set tech \"65nm\"/set tech \"$(TECH)\"/g' .synopsys_dc.setup ;\
+	sed -i -e 's/set tech \"28nm\"/set tech \"$(TECH)\"/g' .synopsys_pt.setup ;\
+	sed -i -e 's/set tech \"65nm\"/set tech \"$(TECH)\"/g' .synopsys_pt.setup "
+
 
 clean:
 	-rm default.svf

@@ -23,8 +23,6 @@ open_mw_cel ${modname}_post_track_route
 source ${modname}_constraints.tcl
 source constraints.tcl
 
-set test_route true
-
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # pr_tut
 #------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -382,7 +380,7 @@ if {$test_route == "true"} {
 	-voltage_area true
 }
 
-save_mw_cel -as ${modname}_post_detail_route_1
+save_mw_cel -as ${modname}_post_detail_route
 #
 #
 #################################################################	ROUTE OTPIMIZATION
@@ -457,6 +455,7 @@ preroute_standard_cells \
 	-mode rail \
 	-connect horizontal \
 	-fill_empty_rows \
+	-fill_empty_sites \
 	-port_filter_mode off \
 	-cell_master_filter_mode off \
 	-cell_instance_filter_mode off \
@@ -480,7 +479,7 @@ verify_zrt_route \
 #
 #################################################################
 
-####save_mw_cel -as ${modname}_routed
+save_mw_cel -as ${modname}_routed
 
 
 

@@ -3,7 +3,7 @@
 #   - will probably have to vary
 #---------------------------------------------------------
 
-  set CORE_UTILIZATION 0.6
+  set CORE_UTILIZATION 0.7
 
   set MIN_DISTANCE_BETWEEN_MACROS 10
   set SLIVER_DISTANCE_BETWEEN_MACROS 10
@@ -19,5 +19,7 @@
 
 
   set USE_CREATE_FP_PLACEMENT "true"
+
+  set test_route false
 
 

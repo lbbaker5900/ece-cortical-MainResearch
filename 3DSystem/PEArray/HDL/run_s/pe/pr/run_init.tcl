@@ -71,7 +71,7 @@ source constraints.tcl
 
 set_fp_placement_strategy \
       -min_distance_between_macros ${MIN_DISTANCE_BETWEEN_MACROS} \
-      -sliver_size ${SLIVER_DISTANCE_BETWEEN_MACROS}
+      -sliver_size ${SLIVER_DISTANCE_BETWEEN_MACROS} \
       -auto_grouping high \
       -macros_on_edge off
 
