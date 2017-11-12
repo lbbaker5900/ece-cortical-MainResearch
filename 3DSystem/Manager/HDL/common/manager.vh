@@ -547,6 +547,12 @@
 `define MGR_DRAM_INTF_SIZE                        (`MGR_DRAM_INTF_MSB - `MGR_DRAM_INTF_LSB +1)
 `define MGR_DRAM_INTF_RANGE                        `MGR_DRAM_INTF_MSB : `MGR_DRAM_INTF_LSB
 
+`define MGR_DRAM_INTF_MASK_WIDTH                       `MGR_DRAM_INTF_WIDTH/`MGR_EXEC_LANE_WIDTH               
+`define MGR_DRAM_INTF_MASK_MSB                         `MGR_DRAM_INTF_MASK_WIDTH-1
+`define MGR_DRAM_INTF_MASK_LSB                         0
+`define MGR_DRAM_INTF_MASK_SIZE                        (`MGR_DRAM_INTF_MASK_MSB - `MGR_DRAM_INTF_MASK_LSB +1)
+`define MGR_DRAM_INTF_MASK_RANGE                        `MGR_DRAM_INTF_MASK_MSB : `MGR_DRAM_INTF_MASK_LSB
+
 `define MGR_DRAM_INTF_BITS_PER_CLOCK_GROUP          32
 `define MGR_DRAM_BUS_NUM_CLK_GROUPS                 `MGR_DRAM_INTF_WIDTH / `MGR_DRAM_INTF_BITS_PER_CLOCK_GROUP
 `define MGR_DRAM_CLK_GROUP_WIDTH                    `MGR_DRAM_BUS_NUM_CLK_GROUPS 

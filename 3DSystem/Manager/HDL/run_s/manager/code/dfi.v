@@ -44,6 +44,7 @@ module dfi(
             input   wire                                                                          mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ] ,
             input   wire                                                                          mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ] ,
             input   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ] ,
+            input   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 mmc__dfi__data_mask  [`MGR_DRAM_NUM_CHANNELS ] ,
             input   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ] ,
             input   wire  [`MGR_DRAM_PHY_ADDRESS_RANGE          ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ] ,
 
@@ -51,15 +52,16 @@ module dfi(
             //--------------------------------------------------------------------------------
             // DFI Interface to DRAM
             //
-            output   reg                                        clk_diram_cntl_ck ,  // Control group clock
-            output   reg                                        dfi__phy__cs      , 
-            output   reg                                        dfi__phy__cmd1    , 
-            output   reg                                        dfi__phy__cmd0    ,
-            output   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   dfi__phy__bank    ,
-            output   reg   [`MGR_DRAM_PHY_ADDRESS_RANGE     ]   dfi__phy__addr    ,
-                                                                                  
-            output   reg   [`MGR_DRAM_CLK_GROUP_RANGE       ]   clk_diram_data_ck ,  // Data group clocks
-            output   reg   [`MGR_DRAM_INTF_RANGE            ]   dfi__phy__data    ,
+            output   reg                                        clk_diram_cntl_ck   ,  // Control group clock
+            output   reg                                        dfi__phy__cs        , 
+            output   reg                                        dfi__phy__cmd1      , 
+            output   reg                                        dfi__phy__cmd0      ,
+            output   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   dfi__phy__bank      ,
+            output   reg   [`MGR_DRAM_PHY_ADDRESS_RANGE     ]   dfi__phy__addr      ,
+                                                                                    
+            output   reg   [`MGR_DRAM_CLK_GROUP_RANGE       ]   clk_diram_data_ck   ,  // Data group clocks
+            output   reg   [`MGR_DRAM_INTF_RANGE            ]   dfi__phy__data      ,
+            output   reg   [`MGR_DRAM_INTF_MASK_RANGE       ]   dfi__phy__data_mask ,
 
             //--------------------------------------------------------------------------------
             // DFI Interface from DRAM
@@ -115,14 +117,15 @@ module dfi(
 
   //----------------------------------------------------------------------------------------------------
   // Wires and registers
-  reg                                        dfi__phy__cs_e1     ; 
-  reg                                        dfi__phy__cmd1_e1   ; 
-  reg                                        dfi__phy__cmd0_e1   ;
-  reg   [ `MGR_DRAM_INTF_RANGE            ]  dfi__phy__data_e1   ;
-  reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank_e1   ;
-  reg   [ `MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr_e1   ;
-
-  reg   [`MGR_DRAM_PHY_BURST_RANGE        ]  burst_count   [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg                                        dfi__phy__cs_e1        ; 
+  reg                                        dfi__phy__cmd1_e1      ; 
+  reg                                        dfi__phy__cmd0_e1      ;
+  reg   [`MGR_DRAM_INTF_RANGE            ]   dfi__phy__data_e1      ;
+  reg   [`MGR_DRAM_INTF_MASK_RANGE       ]   dfi__phy__data_mask_e1 ;
+  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   dfi__phy__bank_e1      ;
+  reg   [`MGR_DRAM_PHY_ADDRESS_RANGE     ]   dfi__phy__addr_e1      ;
+                                              
+  reg   [`MGR_DRAM_PHY_BURST_RANGE       ]   burst_count   [`MGR_DRAM_NUM_CHANNELS ]  ;
 
   //----------------------------------------------------------------------------------------------------
   // Control page and cache clock phases
@@ -150,6 +153,13 @@ module dfi(
           end
       end
   endgenerate
+
+  always @(posedge clk_diram2x)
+    begin
+      dfi__phy__data_mask_e1 <= ( ~clk ) ? mmc__dfi__data_mask [0] :
+                                           mmc__dfi__data_mask [1] ;
+      dfi__phy__data_mask    <= dfi__phy__data_mask_e1 ;
+    end
 
   always @(posedge clk_diram2x)
     begin

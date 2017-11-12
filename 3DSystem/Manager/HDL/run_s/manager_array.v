@@ -41,6 +41,7 @@ module manager_array (
 
         clk_diram_data_ck   ,  
         dfi__phy__data      ,
+        dfi__phy__data_mask ,
 
         //-------------------------------------------------------------------------------------------
         // DFI Interface from DRAM
@@ -100,6 +101,7 @@ module manager_array (
                                                                       
   output   [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck     [`MGR_ARRAY_NUM_OF_MGR ] ;
   output   [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data        [`MGR_ARRAY_NUM_OF_MGR ] ;
+  output   [`MGR_DRAM_INTF_MASK_RANGE       ]  dfi__phy__data_mask   [`MGR_ARRAY_NUM_OF_MGR ] ;
 
   //--------------------------------------------------------------------------------
   // DFI Interface from DRAM
@@ -158,15 +160,16 @@ module manager_array (
         //--------------------------------------------------------------------------------
         // DFI Interface to DRAM
         //
-        wire                                      clk_diram_cntl_ck ;
-        wire                                      dfi__phy__cs      ; 
-        wire                                      dfi__phy__cmd1    ; 
-        wire                                      dfi__phy__cmd0    ;
-        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank    ;
-        wire  [`MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr    ;
-
-        wire  [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck ;
-        wire  [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data    ;
+        wire                                      clk_diram_cntl_ck   ;
+        wire                                      dfi__phy__cs        ; 
+        wire                                      dfi__phy__cmd1      ; 
+        wire                                      dfi__phy__cmd0      ;
+        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank      ;
+        wire  [`MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr      ;
+                                                                      
+        wire  [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck   ;
+        wire  [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data      ;
+        wire  [`MGR_DRAM_INTF_MASK_RANGE       ]  dfi__phy__data_mask ;
 
         //--------------------------------------------------------------------------------
         // DFI Interface from DRAM
@@ -217,15 +220,16 @@ module manager_array (
                 //--------------------------------------------------------------------------------
                 // DFI Interface to DRAM
                 //
-                .clk_diram_cntl_ck    ( clk_diram_cntl_ck ), 
-                .dfi__phy__cs         ( dfi__phy__cs      ),
-                .dfi__phy__cmd1       ( dfi__phy__cmd1    ),
-                .dfi__phy__cmd0       ( dfi__phy__cmd0    ),
-                .dfi__phy__addr       ( dfi__phy__addr    ),
-                .dfi__phy__bank       ( dfi__phy__bank    ),
-
-                .clk_diram_data_ck    ( clk_diram_data_ck ), 
-                .dfi__phy__data       ( dfi__phy__data    ),
+                .clk_diram_cntl_ck      ( clk_diram_cntl_ck     ), 
+                .dfi__phy__cs           ( dfi__phy__cs          ),
+                .dfi__phy__cmd1         ( dfi__phy__cmd1        ),
+                .dfi__phy__cmd0         ( dfi__phy__cmd0        ),
+                .dfi__phy__addr         ( dfi__phy__addr        ),
+                .dfi__phy__bank         ( dfi__phy__bank        ),
+                                                                
+                .clk_diram_data_ck      ( clk_diram_data_ck     ), 
+                .dfi__phy__data         ( dfi__phy__data        ),
+                .dfi__phy__data_mask    ( dfi__phy__data_mask   ),
 
                 //--------------------------------------------------------------------------------
                 // DFI Interface from DRAM
@@ -299,6 +303,7 @@ module manager_array (
                                                
         assign   clk_diram_data_ck   [mgr]      =  mgr_inst[mgr].clk_diram_data_ck   ;
         assign   dfi__phy__data      [mgr]      =  mgr_inst[mgr].dfi__phy__data      ;
+        assign   dfi__phy__data_mask [mgr]      =  mgr_inst[mgr].dfi__phy__data_mask ;
                                                                                      
         assign   mgr_inst[mgr].clk_diram_cq     =  clk_diram_cq    [mgr]             ;
         assign   mgr_inst[mgr].phy__dfi__valid  =  phy__dfi__valid [mgr]             ;

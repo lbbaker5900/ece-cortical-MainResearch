@@ -125,6 +125,7 @@ module top;
     
     wire     [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck   [`MGR_ARRAY_NUM_OF_MGR ] ;
     wire     [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data      [`MGR_ARRAY_NUM_OF_MGR ] ;
+    wire     [`MGR_DRAM_INTF_MASK_RANGE       ]  dfi__phy__data_mask [`MGR_ARRAY_NUM_OF_MGR ] ;
     
     //--------------------------------------------------------------------------------
     // DFI Interface from DRAM
@@ -139,15 +140,16 @@ module top;
         //--------------------------------------------------------------------------------
         // DFI Interface to DRAM
         //
-        .clk_diram_cntl_ck    ( clk_diram_cntl_ck  ), 
-        .dfi__phy__cs         ( dfi__phy__cs       ),
-        .dfi__phy__cmd1       ( dfi__phy__cmd1     ),
-        .dfi__phy__cmd0       ( dfi__phy__cmd0     ),
-        .dfi__phy__addr       ( dfi__phy__addr     ),
-        .dfi__phy__bank       ( dfi__phy__bank     ),
-                                                   
-        .clk_diram_data_ck    ( clk_diram_data_ck  ), 
-        .dfi__phy__data       ( dfi__phy__data     ),
+        .clk_diram_cntl_ck    ( clk_diram_cntl_ck    ), 
+        .dfi__phy__cs         ( dfi__phy__cs         ),
+        .dfi__phy__cmd1       ( dfi__phy__cmd1       ),
+        .dfi__phy__cmd0       ( dfi__phy__cmd0       ),
+        .dfi__phy__addr       ( dfi__phy__addr       ),
+        .dfi__phy__bank       ( dfi__phy__bank       ),
+                                                     
+        .clk_diram_data_ck    ( clk_diram_data_ck    ), 
+        .dfi__phy__data       ( dfi__phy__data       ),
+        .dfi__phy__data_mask  ( dfi__phy__data_mask  ),
 
         //--------------------------------------------------------------------------------
         // DFI Interface from DRAM
@@ -216,24 +218,25 @@ module top;
  
                 wire  qvld ;
                 wire  cq   ;
-                diram4_port_model   #(.DQ_WIDTH    (`MGR_DRAM_INTF_WIDTH),
+                diram4_port_model   #(.DQ_WIDTH    (`MGR_DRAM_INTF_WIDTH         ),
                                       .CL_PER_PAGE (`MGR_DRAM_NUM_CLINES_PER_PAGE)
                           )
                           diram_inst(
                                     .clk       ( clk ),
                                     .clk_n     (~clk ),
                                                 
-                                    .cs_n      ( dfi__phy__cs    [mgr] ),                     
-                                    .cmd1      ( dfi__phy__cmd1  [mgr] ), 
-                                    .cmd0      ( dfi__phy__cmd0  [mgr] ), 
-                                    .addr      ( dfi__phy__addr  [mgr] ),
-                                    .baddr     ( dfi__phy__bank  [mgr] ),
-                                                                 
-                                    .d         ( dfi__phy__data  [mgr] ),
-                                    .q         ( phy__dfi__data  [mgr] ),
-                                    .cq_n      (                       ),
-                                    .cq        ( cq                    ),
-                                    .qvld      ( qvld                  )
+                                    .cs_n      ( dfi__phy__cs         [mgr] ),                     
+                                    .cmd1      ( dfi__phy__cmd1       [mgr] ), 
+                                    .cmd0      ( dfi__phy__cmd0       [mgr] ), 
+                                    .addr      ( dfi__phy__addr       [mgr] ),
+                                    .baddr     ( dfi__phy__bank       [mgr] ),
+                                                                      
+                                    .d         ( dfi__phy__data       [mgr] ),
+                                    .dm        ( dfi__phy__data_mask  [mgr] ),
+                                    .q         ( phy__dfi__data       [mgr] ),
+                                    .cq_n      (                            ),
+                                    .cq        ( cq                         ),
+                                    .qvld      ( qvld                       )
                                     );
 
                 assign  phy__dfi__valid [mgr] = {`MGR_DRAM_CLK_GROUP_WIDTH {qvld}} ;

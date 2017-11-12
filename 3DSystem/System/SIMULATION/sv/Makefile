@@ -447,7 +447,7 @@ cleanPy :
 	echo "testbench"
 	touch .testbench
 
-.top : .environment ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh   ../../../PEArray/SIMULATION/common/*.vh      top.sv 
+.top : .environment .diram4 ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh   ../../../PEArray/SIMULATION/common/*.vh      top.sv 
 	vlog -sv  +define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}+${TB_PE_RTL_OR_GATES}+${TB_CREATE_MANAGER_ACTIVITY_FILE}+${TB_CREATE_PE_ACTIVITY_FILE}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	#vlog -sv  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	echo "top"

@@ -193,8 +193,8 @@ module mwc_cntl (
 
   always @(posedge clk)
     begin
-      mwc_cntl_input_arb_state <= ( reset_poweron ) ? `MWC_CNTL_INPUT_ARB_WAIT        :
-                                                          mwc_cntl_input_arb_state_next  ;
+      mwc_cntl_input_arb_state <= ( reset_poweron ) ? `MWC_CNTL_INPUT_ARB_WAIT       :
+                                                      mwc_cntl_input_arb_state_next  ;
     end
   
   //------------------------------------------------------------------------------------------------------------------------------------------------------
