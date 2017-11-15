@@ -82,6 +82,12 @@
 % When switching from latex to pdflatex and vice-versa, the compiler may
 % have to be run twice to clear warning/error messages.
 
+\usepackage{booktabs}  % professionally typeset tables
+\usepackage{amsmath}%,amssymb,amsfonts}
+\usepackage{textcomp}  % better copyright sign, among other things
+%\usepackage{xcolor}
+\usepackage{lipsum}    % filler text
+
 \usepackage{outlines} % for bullets
 \usepackage[%
 %    font={small,sf},
@@ -383,6 +389,19 @@
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%% Hack for alphanumeric bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+			
+%\usepackage{biblatex}		
+
+%\defbibheading{myheading}[BIBLIOGRAPHY]{
+%\chapter*{#1}
+%%\centerline{\bf{#1}}
+%\markboth{#1}{#1}}
+
+
+
 \begin{document}
 %
 % paper title
@@ -484,13 +503,13 @@ memory requirements to store the connection weights (parameters) therefore requi
 There have been many successful attempts to accelerate ANNs, but in most cases the focus is on a subset of the DNN known as the Convolutional Neural network (CNN).
 CNNs assume a significant amout of reuse of the weights connecting ANs and thus they can take advantage of local memory (SRAM).
 
-Much of the NN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory (SRAM).
+Much of the ANN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory (SRAM).
 These implementations can be shown to be effective with specific NN architectures, such as CNNs where the ANN parameters can be stored in SRAM in a cache-like architecture avoiding constant accessing of the "slower" DRAM.
 In addition, to achieve a high performance, these rely on processing a batch of inputs, such as processing a batch of images or voice recordings using the same ANN.
 
-The work in this paper considers applications that require the processing of a disparate set of useful sized ANNs. The work assumes that the application system is utilizing ANNs
+The work in this paper considers "edge" applications that require the processing of a disparate set of useful sized ANNs. The work assumes that the application system is utilizing ANNs
 for the processing of various sub-systems, such as navigation, engine monitoring etc.. This work also does not assume the ANN is specifically a CNN but a DNN where there may
-not be opportuities to store portions of the ANN in SRAM. This also includes no opportunities to perform batch processing.
+not be opportuities to store portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
 
 This work uses the DRAM as the primary processing storage and employs minimal or no SRAM for the processing of the AN.
 In additon, the work considers 3D integrated circuit technology and a custom 3D-DRAM. By employing 3DIC technology, this work takes advantage of the reduced energy and area and increased
@@ -583,7 +602,7 @@ The 3DIC system die stack (figure \ref{fig:3DICStack}) includes the 3D-DRAM with
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
 \centerline{
-\mbox{\includegraphics[width=2.5in]{StackDiagram.jpg}}
+\mbox{\includegraphics[width=2.75in]{StackDiagram.jpg}}
 }
 \caption{3DIC System Stack}
 \label{fig:3DICStack}
@@ -603,7 +622,9 @@ This work targeted a baselne system with:
   \item use the Tezzaron DiRAM4 DRAM for area estimates and memory controller design
 \end{itemize}
 The work includes customizing the interface to a 3D-DRAM, researching data structures to describe storage of ANN parameters, designing a memory manager with micro-coded instructions and a processing engine (PE) layer.  
-The system is designed such that a sub-system, known as a sub-system column (SSC) operates on one of these disjoint memories within the 3D-DRAM. When the sub-system columns need to share data or neuron activations, the data is passed between SSCs using a network-on-chip (NoC).
+The system is designed such that a sub-system, known as a sub-system column (SSC) operates on one of these disjoint memories within the 3D-DRAM  (see figure \ref{fig:diram4Layout}).
+
+When the sub-system columns need to share data or neuron activations, the data is passed between SSCs using a network-on-chip (NoC).
 
 An overview of the various blocks and interconnects are given below:
 
@@ -611,6 +632,16 @@ An overview of the various blocks and interconnects are given below:
 \subsubsection{3D-DRAM}
 The targetted 3D-DRAM, the Tezzaron DiRAM4 is a 3D-DRAM employs multiple memory array layers in conjunction with a control and IO layer.
 The memory is formed from 64 disjoint sub-memories each providing upwards of 1Gigabit with a total capacity of at least 64 gigabit.
+\begin{figure}[!t]
+% the [] contains position info e.g. [!t] means here
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=2.5in]{DiRAM4Layout.jpg}}
+}
+\caption{DRAM Interface Layout showing area for SSC}
+\label{fig:diram4Layout}
+\end{figure}
+
 
 % ----------------------------------------------------------------------------------------------------
 \subsubsection{Manager Layer}
@@ -645,17 +676,17 @@ By ensuring the system stays within the 3D footprint ensures we can take advanta
 During configuration and/or computations, data must be transported between managers. This inter-manager communication is provided by an NoC.
 When computing an ANN across multiple processing sub-systems, often neuron activation data must be shared between these SSCs. In our case, the SSC includes the DRAM port, the manager and the PE. An NoC within each management block communicates with each adjacent manager using a mesh network. This NoC has a forwarding table that can be reconfigured to provide more efficient routing for a given processing step.
 
-A detailed block diagram of the sub-system column can be seen in figure \ref{fig:DetailedBlockDiagram}.
-\begin{figure*}[!t]
+A control and data flow diagram of the stack showing the 64 sub-system columns can be seen in figure \ref{fig:FlowDiagram}.
+\begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
 \centering
 \captionsetup{justification=centering}
 \centerline{
-\mbox{\includegraphics[width=6.0in]{DetailedBlockDiagram.jpg}}
+\mbox{\includegraphics[width=3.0in]{FlowDiagram.jpg}}
 }
-\center\caption{Sub-System Column (SSC) Block Diagram}
-\label{fig:DetailedBlockDiagram}
-\end{figure*}
+\center\caption{System Flow Diagram}
+\label{fig:FlowDiagram}
+\end{figure}
 
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> System Operations <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
@@ -856,10 +887,32 @@ To configure these operations, we send two pointers to the PE. These pointers in
 
 Our PE is able to perform its operation concurrently on 32-lanes. However, there are cases when less than 32-lanes will be employed. This may occur if the number of ANs being processed is not modulo-32. In this case, we also need to provide the number of lanes being processed for any given operation. In addition, we also send the length of the vector of operands being sent from the manager to the PE.
 
+% >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DRAM Customizable <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
+\section{Suggested DRAM Customizations}
+\label{sec:Suggested DRAM Customizations}
+
+
+
 % #######################################################################################################################################
 % >>>>>>>>>>>>>>>>>>>>>>>>>>> Results <<<<<<<<<<<<<<<<<<<<<<
 \section{Results}
 \label{sec:Results}
+To take advantage of the benefits of 3DIC technology, the area of the SSC needs to fit within the area of a single sub-memory in the 3D-DRAM.
+The synthesized and place and routed design needed to fit within the area shown in figure \ref{fig:diram4Layout}.
+The target technology node was 28nm. This was chosen because its the technology node chosen for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
+The design was synthesized using a 65nm technology node and then scaled to 28nm.
+
+A detailed block diagram of the sub-system column can be seen in figure \ref{fig:DetailedBlockDiagram}.
+\begin{figure*}[!t]
+% the [] contains position info e.g. [!t] means here
+\centering
+\captionsetup{justification=centering}
+\centerline{
+\mbox{\includegraphics[width=6.0in]{DetailedBlockDiagram.jpg}}
+}
+\center\caption{Sub-System Column (SSC) Block Diagram}
+\label{fig:DetailedBlockDiagram}
+\end{figure*}
 
 % #######################################################################################################################################
 % >>>>>>>>>>>>>>>>>>>>>>>>>>> Conclusions and Further Work <<<<<<<<<<<<<<<<<<<<<<
@@ -900,53 +953,9 @@ Our PE is able to perform its operation concurrently on 32-lanes. However, there
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
 \bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,IEEETranOnNeuralNetworksAndlearningMachines}
 %\bibliography{Robot}
-\begin{thebibliography}{7}
-
-\bibitem{CRS}
-\url{http://www.cs.colostate.edu/~mcrob/toolbox/c++/sparseMatrix/sparse_matrix_compression.html}.
-\newblock Sparse Matrix Compression Formats.
-
-\bibitem{Adouane2009}
-Lounis Adouane.
-\newblock Orbital obstacle avoidance algorithm for reliable and on-line mobile
-  robot navigation.
-\newblock In {\em 9th Conference on Autonomous Robot Systems and Competitions},
-  2009.
-
-\bibitem{BouferaDebbatAdouaneKhelfi2014}
-Fatma Boufera, Fatima Debbat, Lounis Adouane, and Mohamed~Faycal Khelfi.
-\newblock Mobile robot navigation using fuzzy limit-cycles in cluttered
-  environment.
-\newblock {\em International Journal of Intelligent Systems and Applications},
-  6(7):12, 2014.
-
-\bibitem{ChenEtAl2014}
-Qiuwen Chen, Qinru Qiu, Qing Wu, Martin Bishop, and Mark Barnell.
-\newblock A confabulation model for abnormal vehicle events detection in
-  wide-area traffic monitoring.
-\newblock In {\em Cognitive Methods in Situation Awareness and Decision Support
-  (CogSIMA), 2014 IEEE International Inter-Disciplinary Conference on}, pages
-  216--222. IEEE, 2014.
-
-\bibitem{Hecht2005}
-Robert Hecht-Nielsen.
-\newblock Cogent confabulation.
-\newblock {\em Neural Networks}, 18(2):111--115, 2005.
-
-\bibitem{HechtBOOK}
-Robert Hecht-Nielsen.
-\newblock {\em Confabulation theory: the mechanism of thought}.
-\newblock Springer Heidelberg, 2007.
-
-\bibitem{OnoUchiyamaPotter2004}
-Y.~Ono, H.~Uchiyama, and W.~Potter.
-\newblock A mobile robot for corridor navigation: A multi-agent approach.
-\newblock In {\em Proceedings of the 42Nd Annual Southeast Regional
-  Conference}, ACM-SE 42, pages 379--384, New York, NY, USA, 2004. ACM.
-
-\end{thebibliography}
-\nocite{*}
+%\nocite{*}
 %\begin{thebibliography}{1}
 %\bibitem{IEEEhowto:kopka}
 %H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
