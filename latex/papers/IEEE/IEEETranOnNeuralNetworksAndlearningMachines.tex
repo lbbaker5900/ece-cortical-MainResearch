@@ -893,7 +893,7 @@ Our PE is able to perform its operation concurrently on 32-lanes. However, there
 
 The memory bus is essentially a customized version of a typical DRAM interface.
 
-Accessing a "typical" DRAM involveopening a page in a bank, reading or writing a portion of the contents of the page then closing the page.
+Accessing a "typical" DRAM involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page.
 
 Typically a bank may contain of the order of a few thousand pages and a page may contain of the order of a few thousand bits.
 
@@ -1004,6 +1004,47 @@ The holding registers have the potential in future to allow aggregation of data 
 \subsubsection{Configuration}
 \label{ssec:peConfiguration}
 
+A configuration controller within the PE (PE\_CNTL) takes the OOB packet from the Manager and extracts the stOp and SIMD operation pointers.
+
+The stOp pointer is used to point to a local stOp configuration memory. The memory contains the various configuration data required by the streaming operation controller (stOp\_CNTL). The stOp\_CNTL is not shown.
+
+The stOp\_CNTL configures the:
+
+\begin{outline}
+    \1 Operation type
+    \1 Number of active execution lanes
+    \1 Source of the argument data, which can be downstream data from the manager or from the small local SRAM
+    \1 Destination of the result data, which can be the SIMD or the small local SRAM
+\end{outline}
+
+The SIMD operation pointer is sent to the SIMD.
+
+\subsubsection{Streaming Operations}
+\label{ssec:stOps}
+
+The streaming Operations (stOp) are designed to operate on data passed from the Manager at or near line-rate. If line-rate cannot be maintained, a flow-control mechanism is employed to slow the data from the Manager.
+
+Once the stOp has processed the data, it passes the result to the SIMD. Note in some cases the result can be placed in local SRAM or sent to both SIMD and SRAM.
+
+It should also be stated that while the stOp is processing the current data, the SIMD may be operating on the result of the previous operation. It is expected the SIMD will have completed the previous operation before the stOp completes the current operation, but again, if necessary a flow control mechanism between SIMD and stOP will be engaged if the SIMD is not ready.
+
+\subsubsection{SIMD}
+\label{ssec:simd}
+
+The SIMD takes the result data and performs the operation starting at the program counter (PC) indicated by the SIMD operation pointer provided by the PE\_CNTL.
+
+The stOp provides the result to the SIMD via a local register. The result is also written, in most cases to the small local SRAM.
+
+The SIMD performs the specified operation on the data provided by the stOp.
+
+In most cases this will be the AN activation function and in our baseline system is the Rectified Linear function.
+
+When the SIMD has completed its operation, it passes the result to the SIMD Upstream controller to be returned to the Manager.
+
+\subsubsection{Result Data}
+\label{ssec:result}
+
+The SIMD Upstream Controller (SUI) takes the data and encapsulates it in an Upstream packet. Included in the packet is the tag required by the Return Data processor within the Manager.
 
 
 
