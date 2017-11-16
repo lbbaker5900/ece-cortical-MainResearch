@@ -638,7 +638,7 @@ The memory is formed from 64 disjoint sub-memories each providing upwards of 1Gi
 \centerline{
 \mbox{\includegraphics[width=2.5in]{DiRAM4Layout.jpg}}
 }
-\caption{DRAM Interface Layout showing area for SSC}
+\caption{DRAM Physical Interface Layout showing area for SSC}
 \label{fig:diram4Layout}
 \end{figure}
 
@@ -799,10 +799,10 @@ In figure \ref{fig:descriptorTuple} we see the format of a 6-tuple descriptor.
 
 
 % ----------------------------------------------------------------------------------------------------
-\subsubsection{Accessing of feeder AN states and connection weights}
+\subsubsection{Accessing of Pre-synaptic AN states and connection weights}
 \label{ssec:AccessingANStates}
 
-As we discussed previously, the NN input and configuration is stored in main DRAM memory. A part of our research is determining how to store the NN input and parameters in such a way to effectively make use of main DRAM bandwidth. To provide parameters for the up to 32 execution lanes within the PE, we store the AN parameters in consecutive address locations. With one read to the DRAM, we access 128 words. This provides four weights for each of the 32 ANs being processed. These weights are sent to each lane of the PE over four cycles. We will discuss memory efficiency later, but with careful use of DRAM banks and pages and along with pre-fetching and buffering, we are able to maintain data to the PE at the target 1GTps.
+As we discussed previously, the ANN input and configuration is stored in main DRAM memory. A part of our research is determining how to store the ANN input and parameters in such a way to effectively make use of main DRAM bandwidth. To provide parameters for the up to 32 execution lanes within the PE, we store the AN parameters in consecutive address locations. With one read to the DRAM, we access 128 words. This provides four weights for each of the 32 ANs being processed. These weights are sent to each lane of the PE over four cycles. We will discuss memory efficiency later, but by taking advantage of the multiple DRAM banks along with pre-fetching and buffering, we are able to achieve relatively high efficiency of the available maximum bandwidth.
 
 Although we are able to store the AN parameters (weights) in contiguous memory locations, providing the input state to a particular AN presents us with an interesting problem.
 
@@ -899,7 +899,7 @@ Our PE is able to perform its operation concurrently on 32-lanes. However, there
 \label{sec:Results}
 To take advantage of the benefits of 3DIC technology, the area of the SSC needs to fit within the area of a single sub-memory in the 3D-DRAM.
 The synthesized and place and routed design needed to fit within the area shown in figure \ref{fig:diram4Layout}.
-The target technology node was 28nm. This was chosen because its the technology node chosen for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
+The target technology node was 28nm. This was chosen because its the technology node employed for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
 The design was synthesized using a 65nm technology node and then scaled to 28nm.
 
 A detailed block diagram of the sub-system column can be seen in figure \ref{fig:DetailedBlockDiagram}.
