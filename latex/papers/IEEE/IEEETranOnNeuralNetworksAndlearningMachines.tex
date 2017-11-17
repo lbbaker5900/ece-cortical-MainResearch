@@ -577,7 +577,7 @@ By staying within the die footprint, 3DIC technology promises high connectivity 
 
 This work demonstrates a system that is able implement multiple useful sized DNNs whilst staying within the die stack footprint of a typical 3DIC DRAM.
 This work also removes a reliance on SRAM to achieve high performance thus allowing the proposed design to be utilized in edge applcations when processing multiple disparate ANNs at or near real-time.
-Although not optimized for specific ANNs, such as CNNs, this work demonstrates the potential for real-time performance when implementing fully connected DNNs or other such ANNs such as LSTM, at the edge.
+Although not optimized for specific ANNs, such as CNNs, this work demonstrates the potential for real-time performance at the edge when implementing fully connected DNNs or other similar ANNs such as LSTM.
 
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> System Description <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
@@ -590,7 +590,7 @@ Although not optimized for specific ANNs, such as CNNs, this work demonstrates t
 \label{sec:ANN System}
 
 The primary objectives of this work was to a) consider systems that are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using
-local SRAM to store ANN parameters or the ANN input, b) acknowedge that DRAM is required for storage of ANN parameters and c) that many edge devices will likely apply many disparate ANNs
+local SRAM to store ANN parameters or the ANN input, b) acknowedge that DRAM is required for storage of ANN parameters, c) that many edge devices will likely apply many disparate ANNs
 to perform various system functions, and d) it is assumed that many edge applications will have space and power limitations.
 
 These requirements suggest that reuse opportunities will not provide significant performance boosts and therefore this work focused on using the DRAM directly as the operational
@@ -660,7 +660,7 @@ The configuration includes:
 % ----------------------------------------------------------------------------------------------------
 \subsubsection{Processing Layer}
 \label{ssec:Processing Layer}
-The PE is able to operate on data streamed directly from the DRAM via the Manager layer. The PE is configured by the manager to perform operation on the operand data streamed from the manager. In our baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. These operands typically are the pre-synaptic neuron activation's and the connection weights. The PE also performs the activation function on the result of the MAC to generate the neuron activation value. These 32 activation values are sent back to the Manager layer.
+The PE is able to operate on data streamed directly from the DRAM via the Manager layer. The PE is configured by the manager to perform operations on the operand data streamed from the manager. In our baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. These operands typically are the pre-synaptic neuron activation's and the connection weights. The PE also performs the activation function on the result of the MAC to generate the neuron activation value. These 32 activation values are sent back to the Manager layer.
 
 % ----------------------------------------------------------------------------------------------------
 \subsubsection{Layer Interconnect}
@@ -695,16 +695,16 @@ A control and data flow diagram of the stack showing the 64 sub-system columns c
 In the context of our system and AN state calculation, the basic operations to determine the state of a neuron is to:
 
 \begin{itemize}
-    \item Inform the Manager and PE which operation is to be performed
-    \item Tell the manager to access the states of the feeder neurons
-    \item Tell the manager to access the weights of the connections from the feeder ANs
-    \item Provide the feeder neuron weights and states to the processing engine
-    \item Tell the manager (or PE) where to store the resulting AN state back to memory
+    \item Inform the Manager and PE which operations are to be performed
+    \item Tell the manager to access the states of the pre-synaptic neurons
+    \item Tell the manager to access the weights of the connections from the pre-synaptic ANs
+    \item Provide the pre-synaptic neuron weights and states to the processing engine execution lanes
+    \item Tell the manager where to store the resulting AN state back to memory
 \end{itemize}
 
-This work has researched an instruction architecture to describe these operations so they can be interpreted by the manager. 
+This work has researched an instruction architecture to describe the above operations which are interpreted by the manager. 
 
-In our baseline system, the manager is not responsible for performing specific algorithm operations but is responsible for coordinating the various data flow, configuration and coordination of the modules that make up our system.
+In our baseline system, the manager is not responsible for performing specific algorithm operations but is responsible for coordinating the various data flows and configuration of the modules that make up the system.
 
 The managers primary responsibility is:
 
@@ -733,7 +733,7 @@ The PE has three major blocks:
 % ----------------------------------------------------------------------------------------------------
 \subsubsection{Instructions}
 \label{ssec:Instructions}
-Lets first review what our instruction communicates:
+The instructions communicate:
 
 \begin{outline}
         \1 To the Manager
@@ -749,17 +749,13 @@ Lets first review what our instruction communicates:
             \2 Operand Vector length
 \end{outline}
 
-Our instructions have to include information to control the above operations.
+Instructions include information to control the above operations.
 
-We partition the instruction into sub-instruction we call descriptors. These descriptors contain the information to control the various operations associated with the processing of a group of ANs.
+Instructions contain sub-instruction called descriptors. These descriptors contain the information to control the various operations associated with the processing of a group of ANs.
 
-For want of a better word, we might consider this a variable length instruction word or VLIW.
+The group size is related to the number of execution lanes which for the baseline system is 32. So a group can be anywhere from 1-32. It should be said that unless the group size consistently approaches 32 the system performance will be poor.
 
-Remember, the group size is related to the number of execution lanes which for our baseline system is 32. So a group can be anywhere from 1-32. It should be said that unless we consistently have group sizes approaching 32 the system performance will be poor.
-
-So lets look at the format of our instruction.
-
-We typically have four descriptors:
+An instruction will typically have four descriptors:
 
 \begin{outline}
 \renewcommand{\outlinei}{enumerate}
@@ -769,9 +765,9 @@ We typically have four descriptors:
     \1 Result write
 \end{outline}
 
-Note: We will refer to an operand stream as an argument.
+Note: An operand stream will be reffered to as an argument.
 
-Now the instruction is actually an n-tuple where the tuple elements are descriptors and the number of elements can vary based on the operation being performed. In figure \ref{fig:instructionTuple} we see the format of a 4-tuple instruction which we use to perform an activation calculation for a group of neurons.
+The instruction is actually an n-tuple where the tuple elements are descriptors and the number of elements can vary based on the operation being performed. In figure \ref{fig:instructionTuple} we see the format of a 4-tuple instruction which we use to perform an activation calculation for a group of neurons.
 
 \begin{figure}[!t]
 \centerline{
@@ -806,12 +802,12 @@ As we discussed previously, the ANN input and configuration is stored in main DR
 
 Although we are able to store the AN parameters (weights) in contiguous memory locations, providing the input state to a particular AN presents us with an interesting problem.
 
-Now earlier we explained that DNNs are represented by layers of ANs whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the NN.
+Most often DNNs are represented by layers of ANs whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the NN.
 
 
-Now the input can be represented in the form of a 2-D array of AN states. For the sake of generality, We will even consider the input array elements as AN states.
+The input can be represented in the form of a 2-D array of AN states. For the sake of generality, We will even consider the input array elements as AN states.
 
-Now any given AN operates on a region of interest (ROI) within the input array.
+Any given AN operates on a region of interest (ROI) within the input array.
 
 In figure \ref{fig:roiStorage}, we see an input to a ANN layer in the form of a 2-D array along with the ROI of two ANs.
 
@@ -823,17 +819,18 @@ In figure \ref{fig:roiStorage}, we see an input to a ANN layer in the form of a 
 \label{fig:roiStorage}
 \end{figure}
 
-Now we mentioned the various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each ANs ROI can be stored in contiguous memory locations. The figure above shows a typical ROI arrangement. If we consider the input array stored in row-major order, we can see an ROI is drawn from disjoint sections of memory. These disjoint sections contain a number of AN states and the sections are separated by a gap of a number of memory addresses. When the parameters are accessed when performing a particular operation, the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. Now this looks problematic, and it is, but in practice groups of ANs share a common ROI. So once we solve the problem of efficiently reading an ROI from the DRAM, that ROI can be shared across a group of ANs
+The various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each ANs ROI can be stored in contiguous memory locations. The figure above shows a typical ROI arrangement. Assuming the input array is stored in row-major order, an ROI is drawn from disjoint sections of memory. 
+These disjoint sections contain a number of AN states and the sections are separated by a gap of a number of memory addresses. When the parameters are accessed when performing a particular operation, the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. Now this looks problematic, and it is, but in practice groups of ANs share a common ROI. So once we solve the problem of efficiently reading an ROI from the DRAM, that ROI can be shared across a group of ANs
 
 We solve this read efficiency problem by again taking advantage of the DRAMs banks and pages.
 
-But how do you describe these ROI storage locations?
+This work proposes a data structure to describe these ROI storage locations.
 
-Now although disparate groups of ANs may have a different start addresses for their ROI, we see commonality in the ROI section lengths and gaps. So for each AN group, we store that groups ROI starting address, but we point to a common set of section length/gaps. We term this structure storage descriptors.
+Although disparate groups of ANs may have a different start addresses for their ROI, we see commonality in the ROI section lengths and gaps. So for each AN group, the groups ROI starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
 
 This storage descriptor contains, amongst other things the start address of the ROI and a pointer to a section/gap descriptor. Many storage descriptors point to a common section/gap descriptor. This avoids having to have a unique section/gap descriptors for each AN group.
 
-Figure \ref{fig:storageDescriptor} shows the structure of our storage descriptor. The SOD, MOD and EOD are used to delineate each descriptor in memory and stand for start-of-descriptor, middle-of-descriptor and end-of-descriptor.
+Figure \ref{fig:storageDescriptor} shows the structure of the storage descriptor. The SOD, MOD and EOD are used to delineate each descriptor in memory and stand for start-of-descriptor, middle-of-descriptor and end-of-descriptor.
 
 \begin{figure}[!t]
 \centerline{
@@ -849,13 +846,14 @@ Figure \ref{fig:storageDescriptor} shows the structure of our storage descriptor
 
 When the PE has processed the group of ANs, the new AN states are sent back to the manager. The manager will store these back to DRAM most likely in the array format we described earlier.
 
-A significant difference we take advantage of is that for any given operation, we are writing far less than we are reading. For example, the ROI and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When we finish the operation, we are writing, in almost all cases one word per lane. Now that sounds like writing back has a very small impact on performance but that's not entirely true.
+A significant difference we take advantage of is that for any given operation, the system is writing far less than we are reading. For example, the ROI and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
+Now that sounds like writing back has a very small impact on performance but with DRAMs that's not always true.
 
-When we write, we are writing a small portion of a DRAM page and the nature of the DRAM protocol means this is a very inefficient use of DRAM bandwidth. So although the amount of data we write is small the performance impact cannot be ignored.
+When the system writes the result of an operation back to memory, it is often writing a small portion of a DRAM page and the nature of the DRAM protocol means this is a very inefficient use of DRAM bandwidth. So although the amount of data written is small the performance impact cannot be ignored.
 
-In addition, in many cases the results from a particular PE has to be provided not only to the PEs local manager but also to other managers. We handle this with a network-on-chip (NoC) which we will discuss later.
+In addition, in many cases the results from a particular PE has to be provided not only to the PEs local manager but also to other managers. This is handled with a network-on-chip (NoC).
 
-So how do we communicate result storage. Well, we use the same storage descriptor mechanism mentioned previously to describe where result data needs to be stored. However, the added complication is because the result may have to be written to other managers, we need to provide the storage descriptors for all destination managers.
+The result storage directives are communicated by using the same storage descriptor mechanism. However, the added complication is because the result will likely have to be replicated to other managers, the storage descriptors must be sent to all destination managers.
 
 
 % ----------------------------------------------------------------------------------------------------
@@ -891,15 +889,13 @@ Our PE is able to perform its operation concurrently on 32-lanes. However, there
 \section{Suggested DRAM Customizations}
 \label{sec:Suggested DRAM Customizations}
 
-The memory bus is essentially a customized version of a typical DRAM interface.
-
 Accessing a "typical" DRAM involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page.
 
 Typically a bank may contain of the order of a few thousand pages and a page may contain of the order of a few thousand bits.
 
 Once the page is open, the user accesses a portion of the requested page over a bus. With PCB based DRAMs the bus might vary from four to 16 bits wide, but with 3D DRAMs, such as HBM the bus might be up to 128 bits wide.
 
-Figure \ref{fig:dramBlockDiagram} is a block diagram of a typical DRAM.
+Figure \ref{fig:dramBlockDiagram} shows a block diagram of a typical DRAM.
 
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
@@ -915,9 +911,9 @@ Figure \ref{fig:dramBlockDiagram} is a block diagram of a typical DRAM.
 \subsection{Expose more of the Page}
 \label{sec:exposeMorePage}
 
-We achieve the increase in bandwidth by proposing that the DRAM expose more of its currently open page.
+This work achieves the increase in bandwidth by proposing that the DRAM expose more of its currently open page.
 
-Without the limitations of having to transfer data beyond the chip stack, we expose a larger portion of the page and by staying within the 3D footprint we can transfer data over a very wide through-silicon-via interface
+Without the limitations of having to transfer data beyond the chip stack, this work suggests exposing a larger portion of the page over a very wide bus. By staying within the 3D footprint, this bus can be implemented using fine pitch through-silicon-vias.
 (see figure \ref{fig:dramBusChange}).
 
 \begin{figure}[!t]
@@ -1037,7 +1033,7 @@ The stOp provides the result to the SIMD via a local register. The result is als
 
 The SIMD performs the specified operation on the data provided by the stOp.
 
-In most cases this will be the AN activation function and in our baseline system is the Rectified Linear function.
+In most cases this will be the AN activation function and in the baseline system is the Rectified Linear function (ReLu).
 
 When the SIMD has completed its operation, it passes the result to the SIMD Upstream controller to be returned to the Manager.
 
