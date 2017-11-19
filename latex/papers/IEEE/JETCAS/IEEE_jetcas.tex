@@ -581,8 +581,26 @@ Another technology that has been considered over the last decade is 3D integrate
 This 3DIC technology stacks multiple die together to form a system-on-chip with potentially disparate technology for each die in the stack.
 By staying within the die footprint, 3DIC technology promises high connectivity and consequently high bandwidth along with lower power all within a smaller footprint.
 
-This work demonstrates a system that is able implement multiple useful sized DNNs whilst staying within the die stack footprint of a typical 3DIC DRAM.
-This work also removes a reliance on SRAM to achieve high performance thus allowing the proposed design to be utilized in edge applcations when processing multiple disparate ANNs at or near real-time.
+As a metric, this work asumes that any useful DNN will employ 100's of thousands of ANs. Although there is a lot of debate regarding number formats for ANNs, this work also assumes single-precision floating point.
+Assuming an ANN with 250K neurons and an average fanin to each AN of 2000, a system employing 10 ANNs for various disparate functions and an average processing time of \SI{10}{\milli\second} suggests a average bandwidth of \SI{16}{\tera \bit \per \second} \eqref{eq:totalBandwidth}.
+
+\begin{alignat}{2} \label{eq:totalBandwidth}
+\text{Average }&\text{Bandwidth} \notag \\
+% size(int)=2 and size(float)=4
+= & \sum_{\mathbf{n}=0}^{\bar{\mathbf{N_n}}}\big(\frac{\Bar{\mathbf{N_a}}\cdot \Bar{\mathbf{C_p}} \cdot \bar{\mathbf{b_w}}}{\bar{\mathbf{T_p}}} \big) \notag  \\
+= & \sum_{\mathbf{n}=0}^{9}\big(\frac{\num{250d4} \cdot \num{2d3} \cdot 32}{\num{10d-3}} \big) \notag \\
+= & \SI{16}{\tera\bit\per\second} \\
+\text{where } &\mathbf{N}_n \text{ is the number of ANNs} \notag\\
+              &\mathbf{N}_a \text{ is the average number of ANs} \notag\\
+              &\mathbf{C_p} \text{ is the average number of connections} \notag\\
+\text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
+\end{alignat}
+
+Regardless of the combination of ANNs, this work suggests that these edge systems will require memory bandwidth of the order of 10's of \SI{}{\tera \bit \per \second}.
+
+This work demonstrates a system that is able implement multiple useful sized DNNs whilst maintaining an average memory bandwidth of $>$\SI{30}{\tera \bit \per \second}.
+This is made possible by ensuring the system stays within the die stack footprint of a typical 3DIC DRAM .
+This work removes a reliance on SRAM to achieve high performance thus allowing the proposed design to be utilized in edge applcations when processing multiple disparate ANNs at or near real-time.
 Although not optimized for specific ANNs, such as CNNs, this work demonstrates the potential for real-time performance at the edge when implementing fully connected DNNs or other similar ANNs such as LSTM.
 
 
@@ -1085,11 +1103,10 @@ The target technology node was 28nm. This was chosen because its the technology 
 The design was synthesized using an available 65nm technology node and then scaled to 28nm to demonstrate fitting within the 3DIC footprint.
 
 The primary control and datapaths of the system have been simulated in a system verilog environment. It has been synthesized using a 65nm technology node.
-The Manager and PE have been place and routed as shown in figure \ref{fig:Manager and PE Die layouts}.
+The design has been coded targeting a frequency of $>$\SI{500}{\mega\hertz}. Timing closure and place and route is ongoing.
+The approximate design targets are shown in Table \ref{tab:DesignTargets}.
 
-The design has been coded targeting a frequency of $>$\SI{500}{\MHz}. Timing closure and place and route is ongoing.
-
-The verification environment demonstrated
+To process approximately eight useful sized ANNs at a sample rate of 15mS requires a sustained bandwidth of the order of $\approx$ 10's \SI{}{\tera\bit/\second} to the PE.
 
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
@@ -1102,15 +1119,18 @@ The verification environment demonstrated
     % e.g. 4 columns could be lccr
     \begin{tabular}{lr}
       \toprule
-      Parameter & Target \\
+      Parameter         & Target \\
       \midrule
-      Power     & \SI{40}{\W}   \\
-      Bandwidth & \SI{54}{\tera\bit/\second} \\
-      Die Area  & \SI{175}{\mm^2} \\
+      Frequency         & $>$\SI{500}{\MHz}   \\
+      Power             & \SI{\approx 80}{\W}   \\
+      Bandwidth         & \SI{\approx 40}{\tera\bit/\second} \\
+      Overall Die Area  & \SI{175}{\mm^2} \\
       \bottomrule
     \end{tabular}
 %  \end{center}
 \end{table}
+
+The Manager and PE have been place and routed as shown in figure \ref{fig:Manager and PE Die layouts}.
 
 \begin{figure}
 \centering
