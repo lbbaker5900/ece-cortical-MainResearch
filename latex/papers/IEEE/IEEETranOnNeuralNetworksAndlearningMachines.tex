@@ -85,6 +85,9 @@
 \usepackage{booktabs}  % professionally typeset tables
 \usepackage{amsmath}%,amssymb,amsfonts}
 \usepackage{textcomp}  % better copyright sign, among other things
+\usepackage{mathtools}% http://ctan.org/pkg/mathtools
+\usepackage[binary-units=true]{siunitx}
+
 %\usepackage{xcolor}
 \usepackage{lipsum}    % filler text
 
@@ -456,8 +459,8 @@ paulf@ncsu.edu}
 
 
 % The paper headers
-\markboth{IEEE Transactions on Neural Networks and Learning Systems,~Vol.~XX, No.~XX, Month~2016}%
-{Shell \MakeLowercase{\textit{et al.}}:Custom 3D-DRAM based ANN Edge System }
+\markboth{IEEE Journal on Emerging and Selected Topics in Circuits and Systems,~Vol.~XX, No.~XX, Month~2017}%
+{Shell \MakeLowercase{\textit{et al.}}:Custom 3D-DRAM based ANN System for Edge Applications}
 % The only time the second header will appear is for the odd numbered pages
 % after the title page when using the twoside option.
 % 
@@ -1065,13 +1068,13 @@ The SIMD Upstream Controller (SUI) takes the data and encapsulates it in an Upst
 % >>>>>>>>>>>>>>>>>>>>>>>>>>> Results <<<<<<<<<<<<<<<<<<<<<<
 \section{Results}
 \label{sec:Results}
-The objectives of this work was to design a system able to accelerate ANNs in customer facing systems implementted at the edge. This means systems that are not designed
+The objectives of this work was to design a system able to accelerate ANNs in customer facing systems implemented at the edge. This means systems that are not designed
 to process multiple requests of essentially the same operation.
 One assumption is that these systems implement disparate ANNs performing various functions. These assumptions imply that the system is not able to take advantage of local SRAM when processing the ANN.
 Another assumption is that the target systems will be space and power constrained.
 Finally, this work assumes that implementing multiple disparate ANNs cannot be implemented purely with SRAM and that DRAM is required to store the ANN parameters.
 
-To demonstrate such a system, this work targeted 3DIC technology including 3D-DRAM. This work proposes that if a system can be purely 3DIC, thethe system can take advantage of the benefits
+To demonstrate such a system, this work targeted 3DIC technology including 3D-DRAM. This work proposes that if a system can be purely 3DIC, the system can take advantage of the benefits
 of 3DIC which inlcudes reduced energy, area and additional bandwidth due to high levels of connectivity.
 In addition, this work proposes that if the system is purely 3DIC, then a customized DRAM would provide a significant bandwidth boost over typical implementations using standard DRAM.
 This work targeted the Tezzaron DiRAM4 3D-DRAM.
@@ -1079,8 +1082,14 @@ This work targeted the Tezzaron DiRAM4 3D-DRAM.
 To ensure the system was purely 3DIC, the area of the system Manager and Processing Engine has to stay within the physical footprint of the DRAM.
 
 The target technology node was 28nm. This was chosen because its the technology node employed for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
-The design was synthesized using an available 65nm technology node and then scaled to 28nm.
+The design was synthesized using an available 65nm technology node and then scaled to 28nm to demonstrate fitting within the 3DIC footprint.
 
+The primary control and datapaths of the system have been simulated in a system verilog environment. It has been synthesized using a 65nm technology node.
+The Manager and PE have been place and routed as shown in figure \ref{fig:Manager and PE Die layouts}.
+
+The design has been coded targeting a frequency of $>$\SI{500}{\MHz}. Timing closure and place and route is ongoing.
+
+The verification environment demonstrated
 
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
