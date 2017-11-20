@@ -1103,7 +1103,7 @@ The target technology node was 28nm. This was chosen because its the technology 
 The design was synthesized using an available 65nm technology node and then scaled to 28nm to demonstrate fitting within the 3DIC footprint.
 
 The primary control and datapaths of the system have been simulated in a system verilog environment. It has been synthesized using a 65nm technology node.
-The design has been coded targeting a frequency of $>$\SI{500}{\mega\hertz}. Timing closure and place and route is ongoing.
+The design has been coded targeting a frequency of $>$\SI{500}{\mega\hertz}. Timing closure and place and route is ongoing. The system has been designed throughout to meet the timing target so minimal changes are expected to meet timing.
 
 As mention previously \eqref{eq:totalBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of ten's \SI{}{\tera\bit\per\second}.
 The approximate design targets are shown in Table \ref{tab:DesignTargets}.
@@ -1193,10 +1193,10 @@ The Manager and PE have been place and routed as shown in figure \ref{fig:Manage
 % <OR> manually copy in the resultant .bbl file
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
+\nocite{*}
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,IEEE_jetcas}
 %\bibliography{Robot}
-%\nocite{*}
 %\begin{thebibliography}{1}
 %\bibitem{IEEEhowto:kopka}
 %H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
