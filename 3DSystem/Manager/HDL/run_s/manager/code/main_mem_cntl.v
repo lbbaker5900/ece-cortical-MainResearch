@@ -350,7 +350,6 @@ module main_mem_cntl (
               end
            
             assign write_data_fifo[wr_intf].chan_fifo[chan].write   =   (xxx__mmc__data_channel_d1[wr_intf] == chan) & xxx__mmc__data_valid_d1 [wr_intf]       ;
-            assign  mmc__xxx__data_ready_e1 [wr_intf]  =  ~write_data_fifo[wr_intf].chan_fifo[chan].almost_full ;
            
             //assign write_data_fifo[wr_intf].pipe_read = write_data_fifo[wr_intf].pipe_valid ; // FIXME sdp__xxx__get_next_line[wr_intf] ;  
             assign write_data_fifo[wr_intf].chan_fifo[chan].pipe_read =  strm_write_data_read [chan][wr_intf] ;

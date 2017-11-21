@@ -7,6 +7,8 @@ set fg 50
 set x 50
 set y 50 
 
+
+
 # move_objects -delta {630.590 -1434.220} [get_selection]
 # move_objects -delta {-354.295 322.200} [get_selection]
 # move_objects -delta {-178.775 41.400} [get_selection]
@@ -152,7 +154,5 @@ eval set_attr $hcell_inst origin {$org}
 
 set y [expr [expr $lly + [get_attr $hcell height]] +$fg]
 set x [expr [expr $x + 0] + 0]
-
-
 
 

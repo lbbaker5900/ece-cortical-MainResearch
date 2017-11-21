@@ -136,6 +136,14 @@ interface std_lane_ifc(
     logic [`COMMON_STD_INTF_CNTL_RANGE   ]       std__pe__lane_strm_cntl        ;
     logic [`PE_STD_LANE_DATA_RANGE       ]       std__pe__lane_strm_data        ;
     logic                                        std__pe__lane_strm_data_valid  ;
+
+    //----------------------------------------------------------------------
+    // Debug
+    time  startTime        ;
+    time  endTime          ;
+    int   activeCycles     ;
+    int   totalCycles      ;
+    bit   observeCycles    ;
  
     clocking cb_test @(posedge clk_lane);
         output       std__pe__lane_type              ;
@@ -166,6 +174,47 @@ interface std_lane_ifc(
     modport TB_SysLane2PeArray (
         clocking    cb_test  
     );
+
+  //----------------------------------------------------------------------
+  // Tasks
+  //
+  // Efficiency
+  
+  task startObserve;
+    observeCycles   = 1     ;
+    startTime       = $time ;
+  endtask
+
+  task stopObserve;
+    observeCycles = 0;
+    endTime       = $time ;
+  endtask
+    
+  task clearObserve;
+    activeCycles    = 0 ;
+    totalCycles     = 0 ;
+    startTime       = 0 ;
+    endTime         = 0 ;
+  endtask
+    
+  always @(posedge clk_lane)
+   begin
+    if (observeCycles == 1'b1)
+      begin
+        if (std__pe__lane_strm_data_valid)
+          begin
+            activeCycles  += 1   ;
+            totalCycles   += 1   ;
+          end
+        else
+          begin
+            totalCycles   += 1   ;
+          end
+      end
+   end
+
+  //end tasks
+  //----------------------------------------------------------------------
 
 endinterface : std_lane_ifc
 
@@ -488,6 +537,90 @@ interface diram_ifc(
 
   endclocking : cb_out
 
+  //----------------------------------------------------------------------
+  // Debug
+  time  startAccessTime                                ;
+  time  endAccessTime                                  ;
+  int   activeOps       [`MGR_DRAM_NUM_CHANNELS] [`MGR_DRAM_COMMAND_NUM_OF_OPS] ; // NOP,PO,PC,PR,CR,CW
+  int   totalCycles                                    ;
+  bit   observeAccesses                                ;
+  bit   isPageOp                                       ;
+  bit   initDone                                      ;
+ 
+  //----------------------------------------------------------------------
+  // Tasks
+  //
+  // Efficiency
+  
+  task startAccessObserve;
+    observeAccesses   = 1     ;
+    startAccessTime   = $time ;
+  endtask
+
+  task stopAccessObserve;
+    observeAccesses = 0;
+    endAccessTime   = $time ;
+  endtask
+    
+  task clearAccessObserve;
+    for (int ch=0; ch<`MGR_DRAM_NUM_CHANNELS; ch++)
+      begin   
+        for (int op=0; op<`MGR_DRAM_COMMAND_NUM_OF_OPS; op++)
+          begin   
+            activeOps [ch][op]   = 0 ;
+          end
+      end
+    totalCycles     = 0 ;
+    startAccessTime = 0 ;
+    endAccessTime   = 0 ;
+  endtask
+    
+  initial
+    begin
+      isPageOp = 1;
+      initDone = 0;
+      wait ({dfi__phy__cs, dfi__phy__cmd1, dfi__phy__cmd0} != 3'b000)
+      initDone = 1;
+    end
+
+  always @(posedge clk)
+   begin
+    isPageOp = (initDone) ? ~isPageOp :
+                             isPageOp ;
+   end
+    
+  always @(posedge clk2x)
+   begin
+    if (observeAccesses == 1'b1)
+      begin
+        case ({dfi__phy__cs, dfi__phy__cmd1, dfi__phy__cmd0})
+            `MGR_DRAM_COMMAND_NOP :
+              begin
+                activeOps[clk][0] += 1;
+              end
+            `MGR_DRAM_COMMAND_PO  :
+              begin
+                if (isPageOp)
+                  activeOps[clk][1] += 1;
+                else
+                  activeOps[clk][5] += 1;
+              end
+            `MGR_DRAM_COMMAND_PC  :
+              begin
+                if (isPageOp)
+                  activeOps[clk][2] += 1;
+                else
+                  activeOps[clk][4] += 1;
+              end
+        endcase
+
+        totalCycles   += 1   ;
+
+      end
+   end
+
+  //end tasks
+  //----------------------------------------------------------------------
 endinterface : diram_ifc
 
 typedef virtual diram_ifc vDiRam_T;
@@ -495,9 +628,9 @@ typedef virtual diram_ifc vDiRam_T;
 interface diram_cfg_ifc(
                            input bit clk   );
 
-    //--------------------------------------------------------------------------------
-    // Memory Load Interface to DRAM
-    //
+  //--------------------------------------------------------------------------------
+  // Memory Load Interface to DRAM
+  //
   logic [`MGR_DRAM_BANK_ADDRESS_RANGE         ]  config_bank_addr ;
   logic [`MGR_DRAM_PAGE_ADDRESS_RANGE         ]  config_row_addr  ;
   logic [`MGR_DRAM_WORD_ADDRESS_RANGE         ]  config_word_addr ;
@@ -517,6 +650,11 @@ interface diram_cfg_ifc(
     output   config_load       ;
 
   endclocking : cb_out
+
+  //----------------------------------------------------------------------
+  // Functions
+  //
+  // DRAM load and read
 
   function void loadDram(int mgr  ,
                          int chan ,
@@ -583,7 +721,137 @@ interface diram_cfg_ifc(
 
   endfunction
 
+
 endinterface : diram_cfg_ifc
 
 typedef virtual diram_cfg_ifc vDiRamCfg_T;
+
+interface int_diram_ifc(
+                           input bit clk   );
+
+    //--------------------------------------------------------------------------------
+    // DFI Interface to DRAM
+    //
+    logic                                      ck        ; 
+    logic                                      cs_n      ; 
+    logic                                      cmd1      ; 
+    logic                                      cmd0      ;
+    logic [`MGR_DRAM_BANK_ADDRESS_RANGE    ]   addr      ;
+    logic [`MGR_DRAM_ADDRESS_RANGE         ]   bank      ;
+
+    logic [`MGR_DRAM_INTF_RANGE            ]   rd_data   ;
+
+    //--------------------------------------------------------------------------------
+    // DFI Interface from DRAM
+    //
+    logic                                      cq        ; 
+    logic [`MGR_DRAM_INTF_RANGE            ]   wr_data   ;
+
+
+
+  //----------------------------------------------------------------------
+  // Debug
+  time  startAccessTime                                ;
+  time  endAccessTime                                  ;
+  int   activeOps       [`MGR_DRAM_COMMAND_NUM_OF_OPS] ; // NOP,PO,PC,PR,CR,CW
+  int   totalCycles                                    ;
+  bit   observeAccesses                                ;
+  bit   isPageOp                                       ;
+  bit   initDone                                       ;
+ 
+  //----------------------------------------------------------------------
+  // Tasks
+  //
+  // Efficiency
+  
+  task startAccessObserve;
+    observeAccesses   = 1     ;
+    startAccessTime   = $time ;
+  endtask
+
+  task stopAccessObserve;
+    observeAccesses = 0;
+    endAccessTime   = $time ;
+  endtask
+    
+  task clearAccessObserve;
+    for (int op=0; op<`MGR_DRAM_COMMAND_NUM_OF_OPS; op++)
+      begin   
+        activeOps [op]   = 0 ;
+      end
+    totalCycles     = 0 ;
+    startAccessTime = 0 ;
+    endAccessTime   = 0 ;
+  endtask
+    
+  initial
+    begin
+      isPageOp = 1;
+      initDone = 0;
+      wait ({cs_n, cmd1, cmd0} != 3'b000)
+      initDone = 1;
+    end
+
+  always @(posedge clk)
+   begin
+    isPageOp = (initDone) ? ~isPageOp :
+                             isPageOp ;
+   end
+    
+  always @(posedge ck)
+   begin
+    if (observeAccesses == 1'b1)
+      begin
+        case ({cs_n, cmd1, cmd0})
+            `MGR_DRAM_COMMAND_NOP :
+              begin
+                activeOps[0] += 1;
+              end
+            `MGR_DRAM_COMMAND_PO  :
+              begin
+                activeOps[1] += 1;
+              end
+            `MGR_DRAM_COMMAND_PC  :
+              begin
+                activeOps[2] += 1;
+              end
+            `MGR_DRAM_COMMAND_PR  :
+              begin
+                activeOps[3] += 1;
+              end
+        endcase
+
+        totalCycles   += 1   ;
+
+      end
+   end
+  always @(negedge ck)
+   begin
+    if (observeAccesses == 1'b1)
+      begin
+        case ({cs_n, cmd1, cmd0})
+            `MGR_DRAM_COMMAND_NOP :
+              begin
+                activeOps[0] += 1;
+              end
+            `MGR_DRAM_COMMAND_CR :
+              begin
+                activeOps[4] += 1;
+              end
+            `MGR_DRAM_COMMAND_CW  :
+              begin
+                activeOps[5] += 1;
+              end
+        endcase
+
+        totalCycles   += 1   ;
+
+      end
+   end
+
+  //end tasks
+  //----------------------------------------------------------------------
+endinterface : int_diram_ifc
+
+typedef virtual int_diram_ifc vIntDiRam_T;
 

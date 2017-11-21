@@ -291,20 +291,23 @@ route_zrt_track
 verify_zrt_route \
 	-open_net true \
 	-report_all_open_nets true \
-	-drc true \
-	-antenna true \
+	-drc false \
+	-antenna false \
 	-voltage_area true
 
 save_mw_cel -as ${modname}_post_track_route
 
 report_timing
 
-extract_rc
 
-write_parasitics -output ${modname}_routed_track.spef
-write_verilog -pg -no_physical_only_cells xbar_wpg.v
-write_verilog -no_physical_only_cells -unconnected_ports ${modname}_routed_track.v
-write_def -output ${modname}_track.def
+if {$test_route == "true"} {
+  #extract_rc
+
+  #write_parasitics -output ${modname}_routed_track.spef
+  #write_verilog -pg -no_physical_only_cells xbar_wpg.v
+  #write_verilog -no_physical_only_cells -unconnected_ports ${modname}_routed_track.v
+  #write_def -output ${modname}_track.def
+}
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # end Josh

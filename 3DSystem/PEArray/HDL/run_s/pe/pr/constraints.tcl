@@ -25,16 +25,37 @@
 # Specify a 5000ps clock period with 50% duty cycle     
 # and a skew of 50ps                                 
 #---------------------------------------------------------
- set CLK_SKEW 0.05
+set CLK_SKEW 0.05
 
 
- create_clock -name $clkname -period $CLK_PER -waveform "0 [expr $CLK_PER / 2]" $clkname
+create_clock -name $clkname     -period $CLK_PER           -waveform "0 [expr $CLK_PER / 2]" $clkname
 
- create_generated_clock [get_ports clk_diram2x ] -name [format "%s%s" "clk_diram" "2x" ] -source [get_ports clk] -master_clock clk -add -combinational -multiply_by 2
- create_generated_clock [get_ports clk_diram   ] -name [format "%s%s" "clk_diram" ""   ] -source [get_ports clk] -master_clock clk -add -combinational -multiply_by 1
- create_generated_clock [get_ports clk_diram_cq] -name [format "%s%s" "clk_diram" "_cq"] -source [get_ports clk] -master_clock clk -add -combinational -multiply_by 1
+if {($modname == "dfi") || ($modname == "manager")} {
+  create_clock -name clk_diram    -period $CLK_PER           -waveform "0 [expr $CLK_PER / 2]" clk_diram
+  create_clock -name clk_diram2x  -period [expr $CLK_PER /2] -waveform "0 [expr $CLK_PER / 4]" clk_diram2x
+}
 
- set_clock_uncertainty $CLK_SKEW $clkname
+foreach_in_collection ck [get_ports clk_diram_cq[*]]  {
+  create_clock -name [format "%s" [get_attr $ck name]] -period $CLK_PER           -waveform "0 [expr $CLK_PER / 2]" [format "%s" [get_attr $ck name]]
+}
+
+if {($modname == "dfi") || ($modname == "manager")} {
+
+  create_generated_clock [get_ports clk_diram_cntl_ck    ] -name clk_diram_cntl_ck    -source [get_ports clk] -master_clock clk -add -combinational -multiply_by 1
+
+  foreach_in_collection ck [get_ports clk_diram_data_ck[*]]  {
+
+    create_generated_clock [format "%s" [get_attr $ck name]] -name [format "%s" [get_attr $ck name]] -source [get_ports clk] -master_clock clk -add -combinational -multiply_by 1
+
+  }
+}
+
+set_clock_uncertainty $CLK_SKEW $clkname
+
+if {($modname == "dfi") || ($modname == "manager")} {
+  set_false_path -from [get_clocks clk_diram2x] -to [get_clocks clk        ]
+  set_false_path -from [get_clocks clk        ] -to [get_clocks clk_diram2x]
+}
 
 #---------------------------------------------------------
 # Now set up the 'CONSTRAINTS' on the design:          
@@ -63,18 +84,24 @@ if {$tech == "65nm"} {
  set IP_DELAY [expr 0.02 + $DFF_CKQ]
  set all_in [all_inputs]
  set all_in [remove_from_collection $all_in $clkname]
- set all_in [remove_from_collection $all_in [format "%s%s" "clk_diram" "2x" ]]
- set all_in [remove_from_collection $all_in [format "%s%s" "clk_diram" ""   ]]
- set all_in [remove_from_collection $all_in [format "%s%s" "clk_diram" "_cq"]]
+
+ if {($modname == "dfi") || ($modname == "manager")} {
+   set all_in [remove_from_collection $all_in clk_diram2x ]
+   set all_in [remove_from_collection $all_in clk_diram   ]
+   set all_in [remove_from_collection $all_in clk_diram_cq]
+  }
+
  set_input_delay $IP_DELAY -clock $clkname $all_in
 
 } elseif {($tech == "28nm")} {
 
- set_input_delay 0.0060452 -clock $clkname $all_in 
- set_input_delay 0.0060452 -clock [format "%s%s" "clk_diram" "2x" ] $all_in 
- set_input_delay 0.0060452 -clock [format "%s%s" "clk_diram" ""   ] $all_in 
- set_input_delay 0.0060452 -clock [format "%s%s" "clk_diram" "_cq"] $all_in 
+ set_input_delay 0.0060452 -clock $clkname    $all_in 
 
+ if {($modname == "dfi") || ($modname == "manager")} {
+   set_input_delay 0.0060452 -clock clk_diram    $all_in 
+   set_input_delay 0.0060452 -clock clk_diram    $all_in 
+   set_input_delay 0.0060452 -clock clk_diram_cq $all_in 
+  }
 }
 
 #---------------------------------------------------------
@@ -89,17 +116,22 @@ if {$tech == "65nm"} {
  set DFF_SETUP 0.546
  set OP_DELAY [expr 0.02 + $DFF_SETUP]
  set_output_delay $OP_DELAY -clock $clkname [all_outputs]
- set_output_delay $OP_DELAY -clock [format "%s%s" "clk_diram" "2x" ] [all_outputs]
- set_output_delay $OP_DELAY -clock [format "%s%s" "clk_diram" ""   ] [all_outputs]
- set_output_delay $OP_DELAY -clock [format "%s%s" "clk_diram" "_cq"] [all_outputs]
+
+ if {($modname == "dfi") || ($modname == "manager")} {
+   set_output_delay $OP_DELAY -clock clk_diram2x  [all_outputs]
+   set_output_delay $OP_DELAY -clock clk_diram    [all_outputs]
+   set_output_delay $OP_DELAY -clock clk_diram_cq [all_outputs]
+  }
 
 } elseif {($tech == "28nm")} {
 
  set_output_delay 0.0263 -clock $clkname [all_outputs]
- set_output_delay 0.0263 -clock [format "%s%s" "clk_diram" "2x" ] [all_outputs]
- set_output_delay 0.0263 -clock [format "%s%s" "clk_diram" ""   ] [all_outputs]
- set_output_delay 0.0263 -clock [format "%s%s" "clk_diram" "_cq"] [all_outputs]
 
+ if {($modname == "dfi") || ($modname == "manager")} {
+   set_output_delay 0.0263 -clock clk_diram2x  [all_outputs]
+   set_output_delay 0.0263 -clock clk_diram    [all_outputs]
+   set_output_delay 0.0263 -clock clk_diram_cq [all_outputs]
+  }
 }
 
 #---------------------------------------------------------	

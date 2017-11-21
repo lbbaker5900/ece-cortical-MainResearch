@@ -505,12 +505,13 @@
 
 // Define state of signals
 // CS, CMD1, CMD0
-`define MGR_DRAM_COMMAND_NOP    3'b000
-`define MGR_DRAM_COMMAND_PO     3'b011
-`define MGR_DRAM_COMMAND_PC     3'b010
-`define MGR_DRAM_COMMAND_PR     3'b001
-`define MGR_DRAM_COMMAND_CR     3'b010
-`define MGR_DRAM_COMMAND_CW     3'b011
+`define MGR_DRAM_COMMAND_NOP          3'b000
+`define MGR_DRAM_COMMAND_PO           3'b011
+`define MGR_DRAM_COMMAND_PC           3'b010
+`define MGR_DRAM_COMMAND_PR           3'b001
+`define MGR_DRAM_COMMAND_CR           3'b010
+`define MGR_DRAM_COMMAND_CW           3'b011
+`define MGR_DRAM_COMMAND_NUM_OF_OPS   6
 
 // cache line size 
 `define MGR_DRAM_NUM_CLINES_PER_PAGE             (`MGR_DRAM_PAGE_SIZE/(`MGR_DRAM_INTF_WIDTH*`MGR_DRAM_BURST_SIZE))    // CLINE is the DRAM burst size

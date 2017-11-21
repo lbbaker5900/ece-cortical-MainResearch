@@ -2,7 +2,7 @@
 set clkname clk
 
 # set variable "modname" to the name of topmost module in design
-set modname streamingOps
+set modname pe
 
 set GATE_DIR	../synth
 

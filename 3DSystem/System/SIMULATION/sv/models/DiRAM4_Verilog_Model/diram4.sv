@@ -596,7 +596,7 @@ timeprecision 1ps;
   //     d : 32 =
   // TOTAL : 52
   localparam TRAINING_PATTERN = 16'hE89A;
-  localparam NUM_OF_NETS = 52; // Max number of nets to inspect to detect training pattern
+  localparam NUM_OF_NETS = 53; // Max number of nets to inspect to detect training pattern
   localparam NUM_OF_TRANS_2_REC = 48; // Number of clock transitions to record
 
 //---------------------------------------------------------------------------
@@ -708,6 +708,7 @@ assign diram_net[diram4_cmd1] = cmd1;
 assign diram_net[diram4_addr11:diram4_addr0] = addr;
 assign diram_net[diram4_baddr4:diram4_baddr0] = baddr;
 assign diram_net[diram4_d31:diram4_d0] = d;
+assign diram_net[diram4_dm] = dm;
 
 
 
@@ -745,6 +746,10 @@ generate
    end
 endgenerate
 
+always @ (dm)
+   delayed_diram_net[diram4_dm] <= #(added_data_delay[diram4_dm]) dm;
+
+
 
 
 //---------------------------------------------------------------------------
@@ -756,6 +761,7 @@ assign delayed_cmd1  = delayed_diram_net[diram4_cmd1];
 assign delayed_addr  = delayed_diram_net[diram4_addr11:diram4_addr0];
 assign delayed_baddr = delayed_diram_net[diram4_baddr4:diram4_baddr0];
 assign delayed_d     = delayed_diram_net[diram4_d31:diram4_d0];
+assign delayed_dm    = delayed_diram_net[diram4_dm];
 
 
 
@@ -853,6 +859,7 @@ always @(posedge clk_in_dly) begin // sample for "_r" or rising edge channel
   addr_r  <= delayed_addr;
   baddr_r <= delayed_baddr;
   din_r   <= delayed_d;
+  dinm_r  <= delayed_dm;
 
   if (port_mem_debug >= 2)
      $display("PORT_DEBUG_r:@%0t %m:\tposedge clk: cs_n=%0d, cmd1=%0d, cmd0=%0d, addr=0x%0x, baddr=0x%0x, d=0x%0x",
@@ -866,6 +873,7 @@ always @(negedge clk_in_dly) begin // sample for "_f" or falling edge channel
   addr_f  <= delayed_addr;
   baddr_f <= delayed_baddr;
   din_f   <= delayed_d;
+  dinm_f  <= delayed_dm;
 
   if (port_mem_debug >= 2)
      $display("PORT_DEBUG_f:@%0t %m:\tposedge clk: cs_n=%0d, cmd1=%0d, cmd0=%0d, addr=0x%0x, baddr=0x%0x, d=0x%0x",
@@ -883,6 +891,7 @@ assign diram_net_r[diram4_cmd1] = cmd1_r;
 assign diram_net_r[diram4_addr11:diram4_addr0] = addr_r;
 assign diram_net_r[diram4_baddr4:diram4_baddr0] = baddr_r;
 assign diram_net_r[diram4_d31:diram4_d0] = din_r;
+assign diram_net_r[diram4_dm] = dinm_r;
 
 assign diram_net_f[diram4_cs_n] = cs_n_f;
 assign diram_net_f[diram4_cmd0] = cmd0_f;
@@ -890,6 +899,7 @@ assign diram_net_f[diram4_cmd1] = cmd1_f;
 assign diram_net_f[diram4_addr11:diram4_addr0] = addr_f;
 assign diram_net_f[diram4_baddr4:diram4_baddr0] = baddr_f;
 assign diram_net_f[diram4_d31:diram4_d0] = din_f;
+assign diram_net_f[diram4_dm] = dinm_f;
 
 
 

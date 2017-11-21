@@ -152,6 +152,26 @@ if __name__ == "__main__":
   f.write(pLine)
   f.close()
 
+  f = open('../SIMULATION/common/TB_system_stack_bus_downstream_observe.vh', 'w')
+  pLine = ""
+
+  for pe in range (0, numOfPe):
+    for lane in range (0, numOfExecLanes):
+      pLine = pLine + '\n        // PE {1}, Lane {0}                 '.format(lane,pe)
+      for strm in range (0, numOfStrms):
+        pLine = pLine + '\n        //  - doesnt seem to work if you use cb_test for observed signals '
+        pLine = pLine + '\n        assign DownstreamStackBusLane[{0}][{1}][{2}].pe__std__lane_strm_ready   =   system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst[{2}].mrc_cntl.std__mrc__lane_ready [{1}]    ;'.format(pe,lane,strm)
+        pLine = pLine + '\n        always @(*)'
+        pLine = pLine + '\n          begin'
+        pLine = pLine + '\n            DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_cntl       =   system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst[{2}].mrc_cntl.mrc__std__lane_cntl_e1 [{1}]  ;'.format(pe,lane,strm)
+        pLine = pLine + '\n            DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_data       =   system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst[{2}].mrc_cntl.mrc__std__lane_data_e1 [{1}]  ;'.format(pe,lane,strm)
+        pLine = pLine + '\n            DownstreamStackBusLane[{0}][{1}][{2}].std__pe__lane_strm_data_valid =   system_inst.manager_array_inst.mgr_inst[{0}].manager.mrc_cntl_strm_inst[{2}].mrc_cntl.mrc__std__lane_valid_e1[{1}]  ;'.format(pe,lane,strm)
+        pLine = pLine + '\n          end'
+        pLine = pLine + '\n        '
+                                             
+  f.write(pLine)
+  f.close()
+
   f = open('../SIMULATION/common/TB_system_stack_bus_upstream_assignments.vh', 'w')
   pLine = ""
 
@@ -604,6 +624,7 @@ if __name__ == "__main__":
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/baddr}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/addr}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/din}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/dinm}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/dout}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group EVEN -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_even/rdstrb}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/clk}}'.format(mgr)
@@ -613,6 +634,7 @@ if __name__ == "__main__":
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/baddr}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/addr}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/din}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/dinm}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/dout}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group DRAM -group ODD -radix hexadecimal {{/top/diram/diram_port_arrays[{0}]/diram_inst/ram_odd/rdstrb}}'.format(mgr)
 
@@ -1002,6 +1024,35 @@ if __name__ == "__main__":
 
 
 
+  f = open("../SIMULATION/sv/stu.do", "w")
+
+  pLine = ""
+  for mgr in range (0, numOfMgr):
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group STU -radix hexadecimal {{/top/system_inst/stu__mgr{0}__valid   }}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group STU -radix hexadecimal {{/top/system_inst/stu__mgr{0}__cntl    }}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group STU -radix hexadecimal {{/top/system_inst/mgr{0}__stu__ready   }}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group STU -radix hexadecimal {{/top/system_inst/stu__mgr{0}__type    }}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group STU -radix hexadecimal {{/top/system_inst/stu__mgr{0}__data    }}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group STU -radix hexadecimal {{/top/system_inst/stu__mgr{0}__oob_data}}'.format(mgr)
+
+
+  f.write(pLine)
+  f.close()
+
+  f = open("../SIMULATION/sv/std.do", "w")
+
+  pLine = ""
+  for mgr in range (0, numOfMgr):
+    for strm in range (0, numOfStrms):
+      for lane in [0,7,15,23,31] :
+          pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group STD -radix hexadecimal {{/top/system_inst/mgr{0}__std__lane{1}_strm{2}_data_valid}}'.format(mgr,lane,strm)
+          pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group STD -radix hexadecimal {{/top/system_inst/mgr{0}__std__lane{1}_strm{2}_cntl      }}'.format(mgr,lane,strm)
+          pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group STD -radix hexadecimal {{/top/system_inst/mgr{0}__std__lane{1}_strm{2}_data      }}'.format(mgr,lane,strm)
+          pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group STD -radix hexadecimal {{/top/system_inst/std__mgr{0}__lane{1}_strm{2}_ready     }}'.format(mgr,lane,strm)
+
+
+  f.write(pLine)
+  f.close()
 
   f = open("../SIMULATION/sv/sdp.do", "w")
 

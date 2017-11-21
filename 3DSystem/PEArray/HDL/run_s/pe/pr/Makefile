@@ -37,8 +37,6 @@ $(INIT): $(crDWlib) run_init.tcl ../synth/logs.65nm/$(MODNAME)/$(MODNAME)_final.
 	tcsh -c "add synopsys2015 ; \
 	mkdir -p work ; \
 	sed -i -e 's/^ *set modname .*/set modname $(MODNAME)/' setup.tcl ;\
-	sed -i -e 's/set tech \"28nm\"/set tech \"$(TECH)\"/g' .synopsys_dc.setup ;\
-	sed -i -e 's/set tech \"65nm\"/set tech \"$(TECH)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	nice +19 icc_shell -f run_init.tcl |& tee run_init.log ; \
@@ -101,7 +99,13 @@ $(ROUTE_TRACK): $(FILL) run_route_track.tcl
 	tcsh -c "add synopsys2015 ; \
 	sed -i -e 's/set corner \"typical\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set corner \"slow\"/set corner \"$(CORNER)\"/g' .synopsys_dc.setup ;\
+	mkdir -p logs.65nm ; \
+	mkdir -p logs.65nm/$(MODNAME) ; \
 	nice +19 icc_shell -f run_route_track.tcl |& tee run_route_track.log ; \
+	/bin/mv $(MODNAME)_routed_track.spef.max logs.65nm/$(MODNAME)/. ; \
+	/bin/mv $(MODNAME)_routed_track.spef.min logs.65nm/$(MODNAME)/. ; \
+	/bin/mv $(MODNAME)_routed_track.v logs.65nm/$(MODNAME)/. ; \
+	/bin/mv $(MODNAME)_routed_global.v logs.65nm/$(MODNAME)/. ; \
 	touch $(ROUTE_TRACK)"
 
 ROUTE_DETAIL = .route_detail
@@ -161,14 +165,6 @@ $(rest): import.tcl setup.tcl ../synth/$(MODNAME)_final.v $(crDWlib) $(IMPORT)
 	nice +19 icc_shell -f rest.tcl |& tee rest.log ; \
 	touch $(rest)"
 
-FOO = .foo
-.PHONY: foo
-foo: $(FOO)
-$(FOO): 
-	tcsh -c "add synopsys2015 ; \
-	mkdir -p foo ; \
-	touch $(FOO)"
-
 #----------------------------------------------------------------------------------------------------
 
 gui:
@@ -178,7 +174,7 @@ gui:
 	icc_shell -gui"
 
 clean:
-	-rm -rf work/*
+	#-rm -rf work/*
 	-rm icc_output.txt
 	-rm -rf *.log
 	-rm -rf *.v
@@ -190,7 +186,7 @@ clean:
 	-rm -rf *.min
 	-rm -rf *.max
 	-rm -rf legalizer_debug_plots
-	-rm -f .init .place_macros .place .cts .route .route_detail .route_track .crDWlib .pp .so .fill
+	-rm -f .init .place .place_macros .cts .route -route_track .route_detail .crDWlib .pp .so .fill
 	-rm -f *.log* *.tcl.*
 	-rm -rf Nangate*
 	-rm -f skipped_contactCode_vias.sum

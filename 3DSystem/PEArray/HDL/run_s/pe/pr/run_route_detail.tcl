@@ -182,7 +182,34 @@ set_net_routing_layer_constraints \
 #
 #	May only apply to route_opt, not route_zrt
 #
-set_route_options \
+if {$test_route == "true"} {
+  set_route_options \
+	-groute_timing_driven false \
+	-groute_timing_driven_weight 3 \
+	-groute_skew_control false \
+	-groute_skew_weight 3 \
+	-groute_congestion_weight 5 \
+	-groute_clock_routing balanced \
+	-groute_incremental false \
+	-track_assign_timing_driven false \
+	-track_assign_timing_driven_weight 1 \
+	-droute_connect_tie_off false \
+	-droute_connect_open_nets false \
+	-droute_reroute_user_wires false \
+	-droute_CTS_nets minor_change_only \
+	-droute_single_row_column_via_array optimize \
+	-droute_stack_via_less_than_min_area add_metal_stub \
+	-droute_stack_via_less_than_min_area_cost 0 \
+	-poly_pin_access off \
+	-drc_distance diagonal \
+	-same_net_notch ignore \
+	-fat_wire_check quick \
+	-merge_fat_wire_on  preroute_signal \
+	-fat_blockage_as fat_wire \
+	-wire_contact_eol_rule ignore \
+	-enable_user_enter_sub_route_type false
+} else {
+  set_route_options \
 	-groute_timing_driven true \
 	-groute_timing_driven_weight 3 \
 	-groute_skew_control true \
@@ -206,7 +233,7 @@ set_route_options \
 	-merge_fat_wire_on  preroute_signal \
 	-fat_blockage_as fat_wire \
 	-wire_contact_eol_rule check_and_fix \
-	-enable_user_enter_sub_route_type false
+}
 #
 #
 #################################################################	ENABLE ZRT ROUTE
@@ -299,7 +326,7 @@ if {$test_route == "true"} {
 	-diode_libcell_names {SEN_TIEDIN_1} \
 	-diode_preference new \
 	-drc_convergence_effort low \
-	-timing_driven true \
+	-timing_driven false \
 	-insert_diodes_during_routing true \
 	-optimize_tie_off_effort_level low \
 	-optimize_wire_via_effort_level low
@@ -380,7 +407,7 @@ if {$test_route == "true"} {
 	-voltage_area true
 }
 
-save_mw_cel -as ${modname}_post_detail_route
+save_mw_cel -as ${modname}_post_detail_route_1
 #
 #
 #################################################################	ROUTE OTPIMIZATION
@@ -389,6 +416,8 @@ save_mw_cel -as ${modname}_post_detail_route
 set_si_options \
 	-route_xtalk_prevention true
 
+if {$test_route == "true"} {
+} else {
 route_opt \
 	-stage detail \
 	-area_recovery \
@@ -429,11 +458,13 @@ verify_zrt_route \
 	-voltage_area true
 
 save_mw_cel -as ${modname}_post_opt_route
+}
 #
 #
 #################################################################	FOCAL optimization
 #
 #
+if {$test_route == "false"} {
 focal_opt -setup_endpoints all -effort high
 
 focal_opt -hold_enpoints all -effort high
@@ -445,17 +476,18 @@ focal_opt -drc_pins all -effort high
 #focal_opt -power -effort high
 
 save_mw_cel -as ${modname}_post_opt_focal
-#
+}
+
 #
 #################################################################	RECHECK PG NETS
 #
 #
+if {$test_route == "false"} {
 preroute_standard_cells \
 	-nets {VDD VSS} \
 	-mode rail \
 	-connect horizontal \
 	-fill_empty_rows \
-	-fill_empty_sites \
 	-port_filter_mode off \
 	-cell_master_filter_mode off \
 	-cell_instance_filter_mode off \
@@ -468,13 +500,32 @@ verify_pg_nets \
 	-macro_pin_connection all \
 	-pad_pin_connection all
 
+}
 
 verify_zrt_route \
 	-open_net true \
 	-report_all_open_nets true \
-	-drc true \
-	-antenna true \
-	-voltage_area true
+	-drc false \
+	-antenna false \
+	-voltage_area false
+
+
+if {$generate_parasitics == "true"} {
+  if {$test_route == "false"} {
+    extract_rc -estimate
+  } else {
+    # create estimate for unrouted nets
+    extract_rc -estimate
+  }
+  write_parasitics -output ${modname}_routed_detail.spef
+}
+
+if {$generate_verilog == "true"} {
+  #write_verilog -pg -no_physical_only_cells xbar_wpg.v
+  write_verilog -no_physical_only_cells -unconnected_ports ${modname}_routed_detail.v
+  write_def -output ${modname}_detail.def
+}
+
 #
 #
 #################################################################

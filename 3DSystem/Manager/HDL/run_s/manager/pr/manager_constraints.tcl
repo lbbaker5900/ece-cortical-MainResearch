@@ -20,6 +20,9 @@
 
   set USE_CREATE_FP_PLACEMENT "true"
 
-  set test_route false
+  set test_route true
+  set run_fill false
+  set generate_parasitics true
+  set generate_verilog    true
 
 

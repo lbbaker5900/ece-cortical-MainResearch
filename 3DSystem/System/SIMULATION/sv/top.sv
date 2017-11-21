@@ -108,6 +108,8 @@ module top;
                                                            ); 
     diram_cfg_ifc   DramCfgIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_DRAM_NUM_CHANNELS] (.clk   ( clk  )
                                                               ); 
+    int_diram_ifc   IntDramIfc        [`MGR_ARRAY_NUM_OF_MGR] [`MGR_DRAM_NUM_CHANNELS] (.clk   ( clk  )
+                                                              ); 
 
     //----------------------------------------------------------------------------------------------------
     // System
@@ -200,6 +202,7 @@ module top;
 
                    // DRAM
                    .DramIfc                    ( DramIfc                   ) ,  // array of dram interfaces
+                   .IntDramIfc                 ( IntDramIfc                ) ,  // array of internal dram interfaces
                    .DramCfgIfc                 ( DramCfgIfc                ) ,  // array of dram config interfaces
 
                    .reset                      ( reset_poweron             ) 
@@ -282,6 +285,8 @@ module top;
     //  StackBuslane assignments
     `ifdef TB_DRIVES_STACK_DOWN_DATA
       `include "TB_system_stack_bus_downstream_assignments.vh"
+    `else
+      `include "TB_system_stack_bus_downstream_observe.vh"
     `endif
     
     // Upstream Stack bus Interface
@@ -500,6 +505,27 @@ module top;
 
            end
     endgenerate
+
+    // internal DRAM 
+    generate
+       for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+           begin
+             assign IntDramIfc[mgr][0].ck       =   diram.diram_port_arrays[mgr].diram_inst.ram_even.clk   ;
+             assign IntDramIfc[mgr][0].cs_n     =   diram.diram_port_arrays[mgr].diram_inst.ram_even.cs_n  ;
+             assign IntDramIfc[mgr][0].cmd1     =   diram.diram_port_arrays[mgr].diram_inst.ram_even.cmd1  ;
+             assign IntDramIfc[mgr][0].cmd0     =   diram.diram_port_arrays[mgr].diram_inst.ram_even.cmd0  ;
+             assign IntDramIfc[mgr][0].addr     =   diram.diram_port_arrays[mgr].diram_inst.ram_even.addr  ;
+             assign IntDramIfc[mgr][0].bank     =   diram.diram_port_arrays[mgr].diram_inst.ram_even.baddr ;
+                                                    
+             assign IntDramIfc[mgr][1].ck       =   diram.diram_port_arrays[mgr].diram_inst.ram_odd.clk    ;
+             assign IntDramIfc[mgr][1].cs_n     =   diram.diram_port_arrays[mgr].diram_inst.ram_odd.cs_n   ;
+             assign IntDramIfc[mgr][1].cmd1     =   diram.diram_port_arrays[mgr].diram_inst.ram_odd.cmd1   ;
+             assign IntDramIfc[mgr][1].cmd0     =   diram.diram_port_arrays[mgr].diram_inst.ram_odd.cmd0   ;
+             assign IntDramIfc[mgr][1].addr     =   diram.diram_port_arrays[mgr].diram_inst.ram_odd.addr   ;
+             assign IntDramIfc[mgr][1].bank     =   diram.diram_port_arrays[mgr].diram_inst.ram_odd.baddr  ;
+           end
+    endgenerate
+
 
 
     //------------------------------------------------------------
