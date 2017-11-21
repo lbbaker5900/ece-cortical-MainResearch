@@ -1,0 +1,3 @@
+run TexShop
+bibtex LeeBaker-prelim
+run TexShop
