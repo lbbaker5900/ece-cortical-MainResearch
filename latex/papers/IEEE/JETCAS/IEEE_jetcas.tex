@@ -1131,8 +1131,9 @@ As mention previously \eqref{eq:totalBandwidth}, to process multiple useful size
 %%%%\end{table}
 
 The Manager and PE have been place and routed as shown in figure \ref{fig:Manager and PE Die layouts}. Although the design is yet to close timing, the parasitics
-were extracted from these layouts and simulated against a group of operations.
-The primetime-PX power and bandwidth estimates for \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz} are shown in table \ref{tab:Simulation-based estimates}.
+were extracted from these layouts and simulated against a group of operations. The simulation generated an activity file which was then used by the 
+Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates. Those estimates were used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz}
+which are shown in table \ref{tab:Simulation-based estimates}.
 
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
