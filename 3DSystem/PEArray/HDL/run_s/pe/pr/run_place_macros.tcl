@@ -24,6 +24,13 @@ open_mw_cel ${modname}_init
 source ${modname}_constraints.tcl
 source constraints.tcl
 
+# Allocate area for SIMD
+# 720 sq-um based on info from Josh (850 on a side)
+create_placement_blockage -coordinate {{750.0 700.0} {1600.0 1550.0}} -name placement_blockage_simd -type hard
+create_routing_blockage -layers {metal1Blockage via1Blockage metal2Blockage via2Blockage metal3Blockage via3Blockage metal4Blockage via4Blockage } -bbox {{750.0 700.0} {1600.0 1550.0}}
+# remove_routing_blockage *
+# remove_placement_blockage -all
+
 
 if {$modname == "pe" || $modname == "manager"} {
 

@@ -22,6 +22,10 @@ open_mw_lib ./work/${modname}
 open_mw_cel ${modname}_power_plan
 
 
+source ${modname}_constraints.tcl
+source constraints.tcl
+
+
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # pr_tut
 #------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -91,19 +95,27 @@ set_host_options -max_cores 4
 #	-max_fanout
 #
 #
-set_clock_tree_options \
-	-clock_trees $clkname \
+foreach ck [get_clocks] {
+  set_clock_tree_options \
+	-clock_trees $ck \
 	-layer_list {M1 M2 M3 M4 M5} \
 	-buffer_relocation true \
 	-buffer_sizing true \
 	-gate_relocation true \
 	-gate_sizing true \
 	-logic_level_balance false \
-	-ocv_clustering true \
-	-ocv_path_sharing true \
-	-advanced_drc_fixing true \
-	-insert_boundary_cell true \
-	-operating_condition max
+	-ocv_clustering false \
+	-ocv_path_sharing false \
+	-advanced_drc_fixing false \
+	-insert_boundary_cell false \
+	-operating_condition max   \
+	-max_fanout 120
+}
+
+# saw 
+                               
+
+# OCV ~ on-chip-variation
 #
 #
 #################################################################
@@ -111,11 +123,11 @@ set_clock_tree_options \
 
 set cts_add_clock_domain_name true
 set cts_blockage_aware true
-set cts_do_characterization true
-set cts_enable_drc_fixing_on_data true
-set cts_fix_drc_beyond_exceptions true
+set cts_do_characterization false
+set cts_enable_drc_fixing_on_data false
+set cts_fix_drc_beyond_exceptions false
 set cts_region_aware true
-set cts_use_debug_mode true
+set cts_use_debug_mode false
 
 #set_route_mode_options \
 #	-zroute true
@@ -132,15 +144,24 @@ set cts_use_debug_mode true
 #	-optimize_dft : clock-aware scan chaning reording
 #	
 #
-clock_opt \
-	-fix_hold_all_clocks \
-	-inter_clock_balance \
-	-update_clock_latency \
-	-operating_condition max \
-	-continue_on_missing_scandef \
-	-area_recovery \
-	-power \
-	-congestion
+# Avoid hold time fix on clk
+
+foreach ck [get_clocks] {
+  clock_opt \
+        -clock_trees $ck \
+        -only_cts
+
+#	-inter_clock_balance \
+#	-update_clock_latency \
+#	-operating_condition max \
+#	-continue_on_missing_scandef \
+#	-area_recovery \
+#	-power 
+}
+
+#	-congestion
+
+#	-fix_hold_all_clocks \
 #
 #
 #################################################################
@@ -158,7 +179,9 @@ clock_opt \
 #	-do_not_route_over_macros : might be required for hierarchical route
 #
 #
-preroute_standard_cells \
+if {$test_route == "true"} {
+} else {
+  preroute_standard_cells \
 	-nets {VDD VSS} \
 	-mode rail \
 	-connect horizontal \
@@ -170,6 +193,7 @@ preroute_standard_cells \
 	-voltage_area_filter_mode off \
 	-remove_floating_pieces \
 	-extend_to_boundaries_and_generate_pins
+}
 
 
 #
@@ -177,15 +201,20 @@ preroute_standard_cells \
 #################################################################
 
 
-verify_pg_nets \
+if {$test_route == "true"} {
+} else {
+  verify_pg_nets \
 	-std_cell_pin_connection check \
 	-macro_pin_connection all \
 	-pad_pin_connection all
+}
 
 
-report_timing
-
-check_routeability -error_cell post_clock_synth.err
+if {$test_route == "true"} {
+} else {
+  report_timing
+  check_routeability -error_cell post_clock_synth.err
+}
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # end Josh

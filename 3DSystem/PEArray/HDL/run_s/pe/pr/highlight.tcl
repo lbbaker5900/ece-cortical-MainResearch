@@ -49,3 +49,9 @@ change_selection $stu
 gui_set_highlight_options -current_color light_green
 gui_change_highlight -add -collection global
 
+gui_set_setting -window [gui_get_current_window -types Layout -mru] -setting colorCellHardMacro -value sandybrown
+gui_set_setting -window [gui_get_current_window -types Layout -mru] -setting hatchCellHardMacro -value SolidPattern
+gui_set_setting -window [gui_get_current_window -types Layout -mru] -setting hatchFillInst -value SolidPattern
+gui_set_setting -window [gui_get_current_window -types Layout -mru] -setting selectHighlightOnly -value true
+gui_set_setting -window [gui_get_current_window -types Layout -mru] -setting showCellColorAttr -value false
+

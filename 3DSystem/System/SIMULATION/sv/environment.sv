@@ -142,6 +142,7 @@ class Environment;
     // DRAM Interfaces
     vDiRam_T          vDramIfc            [`MGR_ARRAY_NUM_OF_MGR]       ;
     vDiRamCfg_T       vDramCfgIfc         [`MGR_ARRAY_NUM_OF_MGR] [`MGR_DRAM_NUM_CHANNELS] ;
+    vIntDiRam_T       vIntDramIfc         [`MGR_ARRAY_NUM_OF_MGR] [`MGR_DRAM_NUM_CHANNELS] ;
 
     //----------------------------------------------------------------------------------------------------
     // 
@@ -160,7 +161,8 @@ class Environment;
                     input vRegFileLaneDrv2stOpCntl_T   vRegFileLaneDrv2stOpCntl        [`PE_ARRAY_NUM_OF_PE   ] [`PE_NUM_OF_EXEC_LANES]                        ,
                     input vLoadStoreDrv2memCntl_T      vLoadStoreDrv2memCntl           [`PE_ARRAY_NUM_OF_PE   ]                                                ,
                     input vDiRam_T                     vDramIfc                        [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
-                    input vDiRamCfg_T                  vDramCfgIfc                     [`MGR_ARRAY_NUM_OF_MGR ] [`MGR_DRAM_NUM_CHANNELS]                                               
+                    input vDiRamCfg_T                  vDramCfgIfc                     [`MGR_ARRAY_NUM_OF_MGR ] [`MGR_DRAM_NUM_CHANNELS]                       ,
+                    input vIntDiRam_T                  vIntDramIfc                     [`MGR_ARRAY_NUM_OF_MGR ] [`MGR_DRAM_NUM_CHANNELS]                       
                 );
         this.vGenStackBus                =   vGenStackBus                ;
         this.vDownstreamStackBusOOB      =   vDownstreamStackBusOOB      ;
@@ -179,6 +181,7 @@ class Environment;
         this.vLoadStoreDrv2memCntl       =   vLoadStoreDrv2memCntl       ;
 
         this.vDramIfc                    =   vDramIfc                    ;
+        this.vIntDramIfc                 =   vIntDramIfc                 ;
         this.vDramCfgIfc                 =   vDramCfgIfc                 ;
 
     endfunction
@@ -238,6 +241,7 @@ class Environment;
                                           .mrc2mgr_m                 ( mrc2mgr_m[pe]                ), 
                                           .wud2mgr_m                 ( wud2mgr_m[pe]                ),
                                           .vWudToOobIfc              ( vWudToOobIfc[pe]             ),
+                                          .vIntDramIfc               ( vIntDramIfc[pe]              ),
                                           .vDramCfgIfc               ( vDramCfgIfc[pe]              ));
 
                 oob_drv     [pe]  = new ( .Id                      ( pe                              ),
@@ -286,6 +290,24 @@ class Environment;
                     main_mem_driver [mgr].reset();
                   end
             end
+            begin
+              for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr++)
+                begin
+                  vDramIfc [mgr].clearAccessObserve;
+                end
+            end
+            begin
+              for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr++)
+                begin
+                  for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+                    begin
+                      for (int strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
+                          begin
+                            vDownstreamStackBusLane [mgr][lane][strm].clearObserve;
+                          end
+                    end
+                end
+            end
 
         join_none
 
@@ -293,7 +315,24 @@ class Environment;
         $display("@%0t%s:%0d: INFO: Wait for final operations\n", $time, `__FILE__, `__LINE__,);
         fork                                                          //These end after the manager triggers the event "final_operation" after generating the final transaction.
             `include "TB_wait_for_final_operation.vh"
+            /*
+            begin:lane_stats
+              for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr++)
+                begin
+                  for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+                    begin
+                      for (int strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
+                          begin
+                            vDownstreamStackBusLane [mgr][lane][strm].startObserve;
+                          end
+                    end
+                end
+            end
+            */
         join
+        //join_any
+        //disable lane_stats;
+        //wait fork;
 
         //join_none
         //wait fork ;
@@ -314,6 +353,48 @@ class Environment;
                     end
             end
 */
+        //----------------------------------------------------------------------
+        // Display efficiency stats
+        //
+        // DRAM
+        //    vDramIfc [mgr].start
+        for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr++)
+          begin
+            for (int ch=0; ch<`MGR_DRAM_NUM_CHANNELS; ch++)
+              begin   
+                //for (int op=0; op<`MGR_DRAM_COMMAND_NUM_OF_OPS; op++)
+                //  begin   
+                    $display("@%0t:%s:%0d: INFO: {%0d} : DRAM Channel %0d Operations :: %0t, %0t: %0d, %0d, %0d, %0d, %0d, %0d\n", $time, `__FILE__, `__LINE__, mgr, ch,
+                                                                                       vIntDramIfc [mgr][0].startAccessTime  ,
+                                                                                       vIntDramIfc [mgr][0].endAccessTime    ,
+                                                                                       vIntDramIfc [mgr][0].activeOps [0],
+                                                                                       vIntDramIfc [mgr][0].activeOps [1],
+                                                                                       vIntDramIfc [mgr][0].activeOps [2],
+                                                                                       vIntDramIfc [mgr][0].activeOps [3],
+                                                                                       vIntDramIfc [mgr][0].activeOps [4],
+                                                                                       vIntDramIfc [mgr][0].activeOps [5]);
+                //  end
+              end
+          end
+
+        // STD
+        for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr++)
+          begin
+            for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+              begin
+                for (int strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
+                    begin
+                      $display("@%0t:%s:%0d: INFO: STD Efficiency : {%0d, %0d, %0d} :: %0t, %0t: %0d, %0d, %0d : %0d\n", $time, `__FILE__, `__LINE__, mgr, lane, strm, 
+                                                                                       vDownstreamStackBusLane [mgr][lane][strm].startTime    ,
+                                                                                       vDownstreamStackBusLane [mgr][lane][strm].endTime    ,
+                                                                                       vDownstreamStackBusLane [mgr][lane][strm].observeCycles,
+                                                                                       vDownstreamStackBusLane [mgr][lane][strm].activeCycles,
+                                                                                       vDownstreamStackBusLane [mgr][lane][strm].totalCycles,
+                                                                                       vDownstreamStackBusLane [mgr][lane][strm].activeCycles/vDownstreamStackBusLane [mgr][lane][strm].totalCycles);
+                    end
+              end
+          end
+        //----------------------------------------------------------------------
 
     endtask
 

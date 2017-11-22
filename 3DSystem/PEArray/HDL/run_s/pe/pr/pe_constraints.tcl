@@ -3,7 +3,7 @@
 #   - will probably have to vary
 #---------------------------------------------------------
 
-  set CORE_UTILIZATION 0.6
+  set CORE_UTILIZATION 0.7
 
   set MIN_DISTANCE_BETWEEN_MACROS 10
   set SLIVER_DISTANCE_BETWEEN_MACROS 10
@@ -20,12 +20,9 @@
 
   set USE_CREATE_FP_PLACEMENT "true"
 
-  set test_route false
-
-  set_fp_pin_constraints \
-         -block_level \
-         -use_physical_constraints on \
-         -allowed_layers {M2 M3 M4 M5} 
-
+  set test_route true
+  set run_fill false
+  set generate_parasitics true
+  set generate_verilog    true
 
 

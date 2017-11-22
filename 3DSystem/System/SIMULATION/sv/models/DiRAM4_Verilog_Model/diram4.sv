@@ -50,24 +50,25 @@ module diram4 #(
             //    (a) diram4_memory.txt.sample_BL_2 or
             //    (b) diram4_memory.txt.sample_BL_8
 
-  parameter PORT_COUNT = 64,
+  parameter PORT_COUNT = 64, 
   parameter ROW_WIDTH  = 12,
   parameter BANK_WIDTH = 5,
   parameter DQ_WIDTH   = 32,
   parameter BL = 2)
 (
-  input [PORT_COUNT-1:0]                 clk,   // Main Input Clock - 1 GHz
-  input [PORT_COUNT-1:0]                 clk_n, // Differential Input Clock
-  input [PORT_COUNT-1:0]                 cs_n,
-  input [PORT_COUNT-1:0]                 cmd0,
-  input [PORT_COUNT-1:0]                 cmd1,
-  input [PORT_COUNT-1:0][ ROW_WIDTH-1:0] addr,
-  input [PORT_COUNT-1:0][BANK_WIDTH-1:0] baddr,
-  input [PORT_COUNT-1:0][  DQ_WIDTH-1:0] d,
-  output[PORT_COUNT-1:0]                 cq,    // Output clock
-  output[PORT_COUNT-1:0]                 cq_n,  // Output clock_n
-  output[PORT_COUNT-1:0][  DQ_WIDTH-1:0] q,     // Output
-  output[PORT_COUNT-1:0]                 qvld   // Output data valid
+  input [PORT_COUNT-1:0]                    clk,   // Main Input Clock - 1 GHz
+  input [PORT_COUNT-1:0]                    clk_n, // Differential Input Clock
+  input [PORT_COUNT-1:0]                    cs_n,
+  input [PORT_COUNT-1:0]                    cmd0,
+  input [PORT_COUNT-1:0]                    cmd1,
+  input [PORT_COUNT-1:0][ ROW_WIDTH-1:0]    addr,
+  input [PORT_COUNT-1:0][BANK_WIDTH-1:0]    baddr,
+  input [PORT_COUNT-1:0][  DQ_WIDTH-1:0]    d,
+  input [PORT_COUNT-1:0][  DQ_WIDTH/32-1:0] dm,
+  output[PORT_COUNT-1:0]                    cq,    // Output clock
+  output[PORT_COUNT-1:0]                    cq_n,  // Output clock_n
+  output[PORT_COUNT-1:0][  DQ_WIDTH-1:0]    q,     // Output
+  output[PORT_COUNT-1:0]                    qvld   // Output data valid
 );
 timeunit 1ps;
 timeprecision 1ps;
@@ -564,18 +565,19 @@ module diram4_port_model #(
   parameter BITS_PER_PAGE  = 4096,
   parameter BL = 2)
 (
-  input                  clk,   // Main Input Clock - 1 GHz
-  input                  clk_n, // Differential Input Clock pin
-  input                  cs_n,
-  input                  cmd0,
-  input                  cmd1,
-  input [ ROW_WIDTH-1:0] addr,
-  input [BANK_WIDTH-1:0] baddr,
-  input [  DQ_WIDTH-1:0] d,
-  output                 cq,
-  output                 cq_n,
-  output[  DQ_WIDTH-1:0] q,
-  output                 qvld
+  input                     clk,   // Main Input Clock - 1 GHz
+  input                     clk_n, // Differential Input Clock pin
+  input                     cs_n,
+  input                     cmd0,
+  input                     cmd1,
+  input [ ROW_WIDTH-1:0]    addr,
+  input [BANK_WIDTH-1:0]    baddr,
+  input [  DQ_WIDTH-1:0]    d,
+  input [  DQ_WIDTH/32-1:0] dm,
+  output                    cq,
+  output                    cq_n,
+  output[  DQ_WIDTH-1:0]    q,
+  output                    qvld
 );
 
 timeunit 1ps;
@@ -594,34 +596,36 @@ timeprecision 1ps;
   //     d : 32 =
   // TOTAL : 52
   localparam TRAINING_PATTERN = 16'hE89A;
-  localparam NUM_OF_NETS = 52; // Max number of nets to inspect to detect training pattern
+  localparam NUM_OF_NETS = 53; // Max number of nets to inspect to detect training pattern
   localparam NUM_OF_TRANS_2_REC = 48; // Number of clock transitions to record
 
 //---------------------------------------------------------------------------
 // Internal declarations
 //---------------------------------------------------------------------------
-  bit                    clk_in_dly;
-  bit                    clk_out_ddr;
-  bit                    port_clk_r;
-  bit                    port_clk_f;
-  logic                  cs_n_r;
-  logic                  cs_n_f;
-  logic                  cmd0_r;
-  logic                  cmd1_r;
-  logic                  cmd0_f;
-  logic                  cmd1_f;
-  logic [ ROW_WIDTH-1:0] addr_r;
-  logic [BANK_WIDTH-1:0] baddr_r;
-  logic [  DQ_WIDTH-1:0] din_r;
-  logic [ ROW_WIDTH-1:0] addr_f;
-  logic [BANK_WIDTH-1:0] baddr_f;
-  logic [  DQ_WIDTH-1:0] din_f;
-  logic [  DQ_WIDTH-1:0] dout_ddr;
-  logic [  DQ_WIDTH-1:0] dout_r;
-  logic [  DQ_WIDTH-1:0] dout_f;
-  logic                  rdstrb_r;
-  logic                  rdstrb_f;
-  logic                  rdstrb_ddr;
+  bit                       clk_in_dly;
+  bit                       clk_out_ddr;
+  bit                       port_clk_r;
+  bit                       port_clk_f;
+  logic                     cs_n_r;
+  logic                     cs_n_f;
+  logic                     cmd0_r;
+  logic                     cmd1_r;
+  logic                     cmd0_f;
+  logic                     cmd1_f;
+  logic [ ROW_WIDTH-1:0]    addr_r;
+  logic [BANK_WIDTH-1:0]    baddr_r;
+  logic [  DQ_WIDTH-1:0]    din_r;
+  logic [  DQ_WIDTH/32-1:0] dinm_r;
+  logic [ ROW_WIDTH-1:0]    addr_f;
+  logic [BANK_WIDTH-1:0]    baddr_f;
+  logic [  DQ_WIDTH-1:0]    din_f;
+  logic [  DQ_WIDTH/32-1:0] dinm_f;
+  logic [  DQ_WIDTH-1:0]    dout_ddr;
+  logic [  DQ_WIDTH-1:0]    dout_r;
+  logic [  DQ_WIDTH-1:0]    dout_f;
+  logic                     rdstrb_r;
+  logic                     rdstrb_f;
+  logic                     rdstrb_ddr;
 
   int                    port_mem_debug;
   bit                    training_mode_flag;
@@ -650,6 +654,7 @@ timeprecision 1ps;
   logic  [ ROW_WIDTH-1:0] delayed_addr;
   logic  [BANK_WIDTH-1:0] delayed_baddr;
   logic  [  DQ_WIDTH-1:0] delayed_d;
+  logic  [  DQ_WIDTH/32-1:0] delayed_dm;
 
   logic [NUM_OF_NETS-1:0] delayed_diram_net;   // bus of delayed inputs
   logic [NUM_OF_NETS-1:0]         diram_net;
@@ -703,6 +708,7 @@ assign diram_net[diram4_cmd1] = cmd1;
 assign diram_net[diram4_addr11:diram4_addr0] = addr;
 assign diram_net[diram4_baddr4:diram4_baddr0] = baddr;
 assign diram_net[diram4_d31:diram4_d0] = d;
+assign diram_net[diram4_dm] = dm;
 
 
 
@@ -740,6 +746,10 @@ generate
    end
 endgenerate
 
+always @ (dm)
+   delayed_diram_net[diram4_dm] <= #(added_data_delay[diram4_dm]) dm;
+
+
 
 
 //---------------------------------------------------------------------------
@@ -751,6 +761,7 @@ assign delayed_cmd1  = delayed_diram_net[diram4_cmd1];
 assign delayed_addr  = delayed_diram_net[diram4_addr11:diram4_addr0];
 assign delayed_baddr = delayed_diram_net[diram4_baddr4:diram4_baddr0];
 assign delayed_d     = delayed_diram_net[diram4_d31:diram4_d0];
+assign delayed_dm    = delayed_diram_net[diram4_dm];
 
 
 
@@ -848,6 +859,7 @@ always @(posedge clk_in_dly) begin // sample for "_r" or rising edge channel
   addr_r  <= delayed_addr;
   baddr_r <= delayed_baddr;
   din_r   <= delayed_d;
+  dinm_r  <= delayed_dm;
 
   if (port_mem_debug >= 2)
      $display("PORT_DEBUG_r:@%0t %m:\tposedge clk: cs_n=%0d, cmd1=%0d, cmd0=%0d, addr=0x%0x, baddr=0x%0x, d=0x%0x",
@@ -861,6 +873,7 @@ always @(negedge clk_in_dly) begin // sample for "_f" or falling edge channel
   addr_f  <= delayed_addr;
   baddr_f <= delayed_baddr;
   din_f   <= delayed_d;
+  dinm_f  <= delayed_dm;
 
   if (port_mem_debug >= 2)
      $display("PORT_DEBUG_f:@%0t %m:\tposedge clk: cs_n=%0d, cmd1=%0d, cmd0=%0d, addr=0x%0x, baddr=0x%0x, d=0x%0x",
@@ -878,6 +891,7 @@ assign diram_net_r[diram4_cmd1] = cmd1_r;
 assign diram_net_r[diram4_addr11:diram4_addr0] = addr_r;
 assign diram_net_r[diram4_baddr4:diram4_baddr0] = baddr_r;
 assign diram_net_r[diram4_d31:diram4_d0] = din_r;
+assign diram_net_r[diram4_dm] = dinm_r;
 
 assign diram_net_f[diram4_cs_n] = cs_n_f;
 assign diram_net_f[diram4_cmd0] = cmd0_f;
@@ -885,6 +899,7 @@ assign diram_net_f[diram4_cmd1] = cmd1_f;
 assign diram_net_f[diram4_addr11:diram4_addr0] = addr_f;
 assign diram_net_f[diram4_baddr4:diram4_baddr0] = baddr_f;
 assign diram_net_f[diram4_d31:diram4_d0] = din_f;
+assign diram_net_f[diram4_dm] = dinm_f;
 
 
 
@@ -906,6 +921,7 @@ diram4_ram_model # (
   .addr        (addr_r),
   .baddr       (baddr_r),
   .din         (din_r),
+  .dinm        (dinm_r),
   .dout        (dout_r),
   .rdstrb      (rdstrb_r),
   .err_count   (count_r),
@@ -927,6 +943,7 @@ diram4_ram_model # (
   .addr        (addr_f),
   .baddr       (baddr_f),
   .din         (din_f),
+  .dinm        (dinm_f),
   .dout        (dout_f),
   .rdstrb      (rdstrb_f),
   .err_count   (count_f),
@@ -1521,6 +1538,7 @@ module diram4_ram_model # (
   input  [ ROW_WIDTH-1:0] addr,
   input  [BANK_WIDTH-1:0] baddr,
   input  [  DQ_WIDTH-1:0] din,
+  input  [  DQ_WIDTH/32-1:0] dinm,
   output [  DQ_WIDTH-1:0] dout,
   output                  rdstrb,
   output                  err_count,
@@ -1568,8 +1586,10 @@ bit [(IDX_BITS-1):0] rd_idx;
 bit [DQ_WIDTH-1:0] dout_r,dout_f;
 
 bit [(IDX_BITS-1):0] wr_idx;
-wire [63:0] wr_data [DQ_WIDTH/32];
-bit [DQ_WIDTH-1:0] wr_data_r,wr_data_f;
+wire [63:0] wr_data      [DQ_WIDTH/32];
+wire [1:0 ] wr_data_mask [DQ_WIDTH/32];
+bit [DQ_WIDTH-1:0   ] wr_data_r     ,wr_data_f;
+bit [DQ_WIDTH/32-1:0] wr_data_mask_r,wr_data_mask_f;
 bit wrclk_dly;
 bit rdclk_o;
 
@@ -1663,9 +1683,11 @@ assign wrclk_dly = clk;
 
 always@(posedge wrclk_dly) begin
   wr_data_r <= din;
+  wr_data_mask_r <= dinm;
 end
 always@(negedge wrclk_dly) begin
   wr_data_f <= din;
+  wr_data_mask_f <= dinm;
 end
 
 genvar gvi ;
@@ -1675,7 +1697,8 @@ generate
       assign wr_data[gvi] = {wr_data_f[gvi*32+31:gvi*32],wr_data_r[gvi*32+31:gvi*32]};
     end
 endgenerate
-assign wr_data = {wr_data_f,wr_data_r};
+assign wr_data      = {wr_data_f     ,wr_data_r     };
+assign wr_data_mask = {wr_data_mask_f,wr_data_mask_r};
 
 //---------------------------------------------------------------------------
 // Command decode and capture of row, column and bank addresses
@@ -1840,6 +1863,7 @@ else
 	  .wr_en(wr_en_mem ),
 	  .wr_idx(wr_idx ),
 	  .wr_data(wr_data ),
+	  .wr_data_mask(wr_data_mask ),
 	  .wr_cnt(wr_cnt_mem),
 	  .rd_en(rd_en_mem ),
 	  .rd_idx(rd_idx ),
@@ -2853,7 +2877,8 @@ module diram4_ram_sparse #(
   input clk,
   input wr_en,
   input [IDX_BITS-1:0] wr_idx,
-  input [63:0] wr_data [DQ_WIDTH/32],
+  input [63:0] wr_data      [DQ_WIDTH/32],
+  input [1:0 ] wr_data_mask [DQ_WIDTH/32],
   input [2:0] wr_cnt,
   input rd_en,
   input [IDX_BITS-1:0] rd_idx,
@@ -2897,8 +2922,10 @@ always@(posedge clk) begin
         begin
           for (int m = 0; m < DQ_WIDTH/32; m++)
             begin
-              mem[m][0][wr_idx]  = wr_data[m][31: 0];
-              mem[m][1][wr_idx]  = wr_data[m][63:32];
+              if (wr_data_mask[m][0] == 1)
+                mem[m][0][wr_idx]  = wr_data[m][31: 0];
+              if (wr_data_mask[m][1] == 1)
+                mem[m][1][wr_idx]  = wr_data[m][63:32];
             end
         end
     endcase

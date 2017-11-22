@@ -37,6 +37,7 @@ program automatic test (
         // dram interface                                                                                             
         diram_ifc                                DramIfc                  [`MGR_ARRAY_NUM_OF_MGR]                       ,
         diram_cfg_ifc                            DramCfgIfc               [`MGR_ARRAY_NUM_OF_MGR] [`MGR_DRAM_NUM_CHANNELS] ,
+        int_diram_ifc                            IntDramIfc               [`MGR_ARRAY_NUM_OF_MGR] [`MGR_DRAM_NUM_CHANNELS] ,
 
         input logic reset
         );
@@ -58,7 +59,8 @@ program automatic test (
                     .vRegFileLaneDrv2stOpCntl    ( RegFileLane2StOpCntl   ), 
                     .vLoadStoreDrv2memCntl       ( LoadStore2memCntl      ),
                     .vDramIfc                    ( DramIfc                ),
-                    .vDramCfgIfc                 ( DramCfgIfc             )
+                    .vDramCfgIfc                 ( DramCfgIfc             ),
+                    .vIntDramIfc                 ( IntDramIfc             )
                    );
         env.build();
         env.run();

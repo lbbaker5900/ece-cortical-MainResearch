@@ -37,15 +37,16 @@ module manager (
             //--------------------------------------------------------------------------------
             // DFI Interface to DRAM
             //
-            output   wire                                      clk_diram_cntl_ck ,  // Control group clock
-            output   wire                                      dfi__phy__cs      ,
-            output   wire                                      dfi__phy__cmd1    ,
-            output   wire                                      dfi__phy__cmd0    ,
-            output   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank    ,
-            output   wire  [`MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr    ,
-
-            output   wire  [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck ,  // Data group clocks
-            output   wire  [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data    ,
+            output   wire                                      clk_diram_cntl_ck   ,  // Control group clock
+            output   wire                                      dfi__phy__cs        ,
+            output   wire                                      dfi__phy__cmd1      ,
+            output   wire                                      dfi__phy__cmd0      ,
+            output   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE    ]  dfi__phy__bank      ,
+            output   wire  [`MGR_DRAM_PHY_ADDRESS_RANGE     ]  dfi__phy__addr      ,
+                                                                                   
+            output   wire  [`MGR_DRAM_CLK_GROUP_RANGE       ]  clk_diram_data_ck   ,  // Data group clocks
+            output   wire  [`MGR_DRAM_INTF_RANGE            ]  dfi__phy__data      ,
+            output   wire  [`MGR_DRAM_INTF_MASK_RANGE       ]  dfi__phy__data_mask ,
 
             //--------------------------------------------------------------------------------
             // DFI Interface from DRAM
@@ -484,6 +485,7 @@ module manager (
   wire                                                                           mmc__dfi__cmd0       [`MGR_DRAM_NUM_CHANNELS ]   ;
   wire                                                                           mmc__dfi__cmd1       [`MGR_DRAM_NUM_CHANNELS ]   ;
   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE  ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ]   ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE  ]                                 mmc__dfi__data_mask  [`MGR_DRAM_NUM_CHANNELS ]   ;
   wire  [`MGR_DRAM_BANK_ADDRESS_RANGE          ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]   ;
   wire  [`MGR_DRAM_PHY_ADDRESS_RANGE           ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]   ;
 
@@ -527,7 +529,8 @@ module manager (
             .mmc__dfi__cs            ( mmc__dfi__cs           ),
             .mmc__dfi__cmd0          ( mmc__dfi__cmd0         ),
             .mmc__dfi__cmd1          ( mmc__dfi__cmd1         ),
-            .mmc__dfi__data          ( mmc__dfi__data         ),
+            .mmc__dfi__data          ( mmc__dfi__data         ), 
+            .mmc__dfi__data_mask     ( mmc__dfi__data_mask    ),
             .mmc__dfi__bank          ( mmc__dfi__bank         ),
             .mmc__dfi__addr          ( mmc__dfi__addr         ),
 
@@ -582,6 +585,7 @@ module manager (
             .mmc__dfi__cmd0       ( mmc__dfi__cmd0         ),
             .mmc__dfi__cmd1       ( mmc__dfi__cmd1         ),
             .mmc__dfi__data       ( mmc__dfi__data         ),
+            .mmc__dfi__data_mask  ( mmc__dfi__data_mask    ),
             .mmc__dfi__bank       ( mmc__dfi__bank         ),
             .mmc__dfi__addr       ( mmc__dfi__addr         ),
             
@@ -597,6 +601,7 @@ module manager (
             .dfi__phy__bank       ( dfi__phy__bank         ),
             .clk_diram_data_ck    ( clk_diram_data_ck      ), 
             .dfi__phy__data       ( dfi__phy__data         ),
+            .dfi__phy__data_mask  ( dfi__phy__data_mask    ),
                                                            
             //--------------------------------------------------------------------------------
             // DFI Interface from DRAM                     

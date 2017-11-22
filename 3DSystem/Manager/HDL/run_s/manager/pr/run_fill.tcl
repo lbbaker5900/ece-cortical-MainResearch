@@ -36,31 +36,35 @@ set_host_options -max_cores 4
 set_host_options -max_cores 4
 
 
-#################################################################	ADD FILLER CELLS
-#
-#	if CAP is in the name of a fill cell, it has metal
-#
-#	-cell_without_metal {...}
-#	-cell_without_metal_prefix noMetalFill
-#
-#
-insert_stdcell_filler \
-	-cell_with_metal {SEN_FILL32 SEN_FILL16 SEN_FILL8 SEN_FILL4 SEN_FILL2} \
-	-cell_with_metal_prefix FILLER \
-	-respect_keepout \
-	-connect_to_power VDD \
-	-connect_to_ground VSS
+if {$run_fill == "true"} {
+  #################################################################	ADD FILLER CELLS
+  #
+  #	if CAP is in the name of a fill cell, it has metal
+  #
+  #	-cell_without_metal {...}
+  #	-cell_without_metal_prefix noMetalFill
+  #
+  #
+  insert_stdcell_filler \
+  	-cell_with_metal {SEN_FILL32 SEN_FILL16 SEN_FILL8 SEN_FILL4 SEN_FILL2} \
+  	-cell_with_metal_prefix FILLER \
+  	-respect_keepout \
+  	-connect_to_power VDD \
+  	-connect_to_ground VSS
+  
+  
+  insert_well_filler \
+  	-layer NW \
+  	-higher_edge max \
+  	-lower_edge min
+  #
+  #
+  #################################################################	RECHECK PG NETS
+  #
+  #
+}
 
-
-insert_well_filler \
-	-layer NW \
-	-higher_edge max \
-	-lower_edge min
-#
-#
-#################################################################	RECHECK PG NETS
-#
-#
+if {$test_route == "false"} {
 preroute_standard_cells \
 	-nets {VDD VSS} \
 	-mode rail \
@@ -76,6 +80,7 @@ verify_pg_nets \
 	-std_cell_pin_connection check \
 	-macro_pin_connection all \
 	-pad_pin_connection all
+}
 
 
 ####save_mw_cel -as ${modname}_post_fill

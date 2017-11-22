@@ -73,6 +73,7 @@ module main_mem_cntl (
             output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE         ]                                 mmc__dfi__bank       [`MGR_DRAM_NUM_CHANNELS ]  ,
             output  reg   [`MGR_DRAM_PHY_ADDRESS_RANGE          ]                                 mmc__dfi__addr       [`MGR_DRAM_NUM_CHANNELS ]  ,
             output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   mmc__dfi__data       [`MGR_DRAM_NUM_CHANNELS ]  ,
+            output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 mmc__dfi__data_mask  [`MGR_DRAM_NUM_CHANNELS ]  ,
 
   
             //------------------------------------------------------------------------------------------------------------------------
@@ -214,12 +215,13 @@ module main_mem_cntl (
         end
     end
 
-  reg                                                                          mmc__dfi__cs_e1     [`MGR_DRAM_NUM_CHANNELS ]  ;
-  reg                                                                          mmc__dfi__cmd0_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
-  reg                                                                          mmc__dfi__cmd1_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
-  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE       ]                                  mmc__dfi__bank_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
-  reg   [`MGR_DRAM_PHY_ADDRESS_RANGE        ]                                  mmc__dfi__addr_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
-  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]  mmc__dfi__data_e1   [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg                                                                          mmc__dfi__cs_e1         [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg                                                                          mmc__dfi__cmd0_e1       [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg                                                                          mmc__dfi__cmd1_e1       [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE       ]                                  mmc__dfi__bank_e1       [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg   [`MGR_DRAM_PHY_ADDRESS_RANGE        ]                                  mmc__dfi__addr_e1       [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]  mmc__dfi__data_e1       [`MGR_DRAM_NUM_CHANNELS ]  ;
+  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                mmc__dfi__data_mask_e1  [`MGR_DRAM_NUM_CHANNELS ]  ;
 
   always @(posedge clk)
     begin
@@ -230,11 +232,12 @@ module main_mem_cntl (
           mmc__dfi__cmd0 [chan]            <=  mmc__dfi__cmd0_e1 [chan] ;
           mmc__dfi__cmd1 [chan]            <=  mmc__dfi__cmd1_e1 [chan] ;
           mmc__dfi__bank [chan]            <=  mmc__dfi__bank_e1 [chan] ;
-          mmc__dfi__addr [chan]            <=  mmc__dfi__addr_e1 [chan] ;
+          mmc__dfi__addr [chan]            <=  mmc__dfi__addr_e1 [chan] ; 
 
+          mmc__dfi__data_mask [chan]       <=  mmc__dfi__data_mask_e1 [chan] ;
           for (int word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
             begin: to_dfi_data_word
-              mmc__dfi__data [chan][word]  <=  mmc__dfi__data_e1 [chan][word] ;
+              mmc__dfi__data      [chan][word]  <=  mmc__dfi__data_e1      [chan][word] ;
             end
         end
     end
@@ -247,83 +250,86 @@ module main_mem_cntl (
   generate
     for (wr_intf=0; wr_intf<`MMC_CNTL_NUM_OF_WRITE_INTF ; wr_intf=wr_intf+1) 
       begin: write_data_fifo
-
-        wire                                                 clear        ;
-        wire                                                 almost_full  ;
-        wire                                                 empty        ;
-
-        wire                                                 write        ;
-        wire  [`MMC_CNTL_FROM_MWC_AGGREGATE_FIFO_RANGE   ]   write_data   ;
-
-        wire                                                 read         ;
-        wire  [`MMC_CNTL_FROM_MWC_AGGREGATE_FIFO_RANGE   ]   read_data    ;
-
-        generic_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_FROM_MWC_FIFO_DEPTH                 ),
-                       .GENERIC_FIFO_THRESHOLD  (`MMC_CNTL_FROM_MWC_FIFO_ALMOST_FULL_THRESHOLD ),
-                       .GENERIC_FIFO_DATA_WIDTH (`MMC_CNTL_FROM_MWC_AGGREGATE_FIFO_WIDTH       )
-                        ) gfifo (
-                                 // Status
-                                .almost_full      ( almost_full           ),
-                                .empty            ( empty                 ),
-                                .depth            (                       ),
-                                .almost_empty     (                       ),
-
-                                 // Write                                 
-                                .write            ( write                 ),
-                                .write_data       ( write_data            ),
-
-                                 // Read                                  
-                                .read_data        ( read_data             ),
-                                .read             ( read                  ),
-
-                                // General
-                                .clear            ( clear                 ),
-                                .reset_poweron    ( reset_poweron         ),
-                                .clk              ( clk                   )
-                                );
-
-        assign clear = 1'b0 ;
-
-        // Note: First stage of pipeline is inside FIFO
-        // fifo output stage
-        reg                                                  fifo_pipe_valid   ;
-        wire                                                 fifo_pipe_read    ;
-        // pipe stage
-        always @(posedge clk)
-          begin
-            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
-                               ( read               ) ? 'b1               :
-                               ( fifo_pipe_read     ) ? 'b0               :
-                                                         fifo_pipe_valid  ;
+        for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
+          begin: chan_fifo
+    
+            wire                                                 clear        ;
+            wire                                                 almost_full  ;
+            wire                                                 empty        ;
+    
+            wire                                                 write        ;
+            wire  [`MMC_CNTL_FROM_MWC_AGGREGATE_FIFO_RANGE   ]   write_data   ;
+    
+            wire                                                 read         ;
+            wire  [`MMC_CNTL_FROM_MWC_AGGREGATE_FIFO_RANGE   ]   read_data    ;
+    
+            generic_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_FROM_MWC_FIFO_DEPTH                 ),
+                           .GENERIC_FIFO_THRESHOLD  (`MMC_CNTL_FROM_MWC_FIFO_ALMOST_FULL_THRESHOLD ),
+                           .GENERIC_FIFO_DATA_WIDTH (`MMC_CNTL_FROM_MWC_AGGREGATE_FIFO_WIDTH       )
+                            ) gfifo (
+                                     // Status
+                                    .almost_full      ( almost_full           ),
+                                    .empty            ( empty                 ),
+                                    .depth            (                       ),
+                                    .almost_empty     (                       ),
+    
+                                     // Write                                 
+                                    .write            ( write                 ),
+                                    .write_data       ( write_data            ),
+    
+                                     // Read                                  
+                                    .read_data        ( read_data             ),
+                                    .read             ( read                  ),
+    
+                                    // General
+                                    .clear            ( clear                 ),
+                                    .reset_poweron    ( reset_poweron         ),
+                                    .clk              ( clk                   )
+                                    );
+    
+            assign clear = 1'b0 ;
+    
+            // Note: First stage of pipeline is inside FIFO
+            // fifo output stage
+            reg                                                  fifo_pipe_valid   ;
+            wire                                                 fifo_pipe_read    ;
+            // pipe stage
+            always @(posedge clk)
+              begin
+                fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
+                                   ( read               ) ? 'b1               :
+                                   ( fifo_pipe_read     ) ? 'b0               :
+                                                             fifo_pipe_valid  ;
+              end
+    
+            reg                                                  pipe_valid   ;
+            wire                                                 pipe_read    ;
+            reg   [`MMC_CNTL_FROM_MWC_AGGREGATE_FIFO_RANGE   ]   pipe_data    ;
+    
+            assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
+            assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
+    
+            always @(posedge clk)
+              begin
+                // If we are reading the previous stage, then this stage will be valid
+                // otherwise if we are reading this stage this stage will not be valid
+                pipe_valid      <= ( reset_poweron      ) ? 'b0              :
+                                   ( fifo_pipe_read     ) ? 'b1              :
+                                   ( pipe_read          ) ? 'b0              :
+                                                             pipe_valid      ;
+            
+                // if we are reading, transfer from previous pipe stage. 
+                pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
+                                                                pipe_data            ;
+              end
+    
+            reg pipe_has_two  ;
+            always @(*)
+              begin
+                pipe_has_two  =  pipe_valid & fifo_pipe_valid ; // need two lines before we initiates a write
+              end
+    
           end
-
-        reg                                                  pipe_valid   ;
-        wire                                                 pipe_read    ;
-        reg   [`MMC_CNTL_FROM_MWC_AGGREGATE_FIFO_RANGE   ]   pipe_data    ;
-
-        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
-        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
-
-        always @(posedge clk)
-          begin
-            // If we are reading the previous stage, then this stage will be valid
-            // otherwise if we are reading this stage this stage will not be valid
-            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
-                               ( fifo_pipe_read     ) ? 'b1              :
-                               ( pipe_read          ) ? 'b0              :
-                                                         pipe_valid      ;
-        
-            // if we are reading, transfer from previous pipe stage. 
-            pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
-                                                            pipe_data            ;
-          end
-
-        reg pipe_has_two  ;
-        always @(*)
-          begin
-            pipe_has_two  =  pipe_valid & fifo_pipe_valid ; // need two lines before we initiates a write
-          end
-
       end
   endgenerate
 
@@ -333,29 +339,37 @@ module main_mem_cntl (
   generate
     for (wr_intf=0; wr_intf<`MMC_CNTL_NUM_OF_WRITE_INTF ; wr_intf++)
       begin : wr_data_to_fifo
-        assign write_data_fifo[wr_intf].write_data [`MMC_CNTL_FROM_MWC_AGGREGATE_CNTL_RANGE ]  = xxx__mmc__data_cntl_d1 [wr_intf]  ;
-        assign write_data_fifo[wr_intf].write_data [`MMC_CNTL_FROM_MWC_AGGREGATE_MASK_RANGE ]  = xxx__mmc__data_mask_d1 [wr_intf]  ;
-
-        for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
-          begin: mmc_fifo_data
-            assign write_data_fifo[wr_intf].write_data [(word+1)*`MGR_EXEC_LANE_WIDTH-1 : word*`MGR_EXEC_LANE_WIDTH]   = xxx__mmc__data_d1 [wr_intf][word] ;
+        for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
+          begin: ch
+            assign write_data_fifo[wr_intf].chan_fifo[chan].write_data [`MMC_CNTL_FROM_MWC_AGGREGATE_CNTL_RANGE ]  = xxx__mmc__data_cntl_d1 [wr_intf]  ;
+            assign write_data_fifo[wr_intf].chan_fifo[chan].write_data [`MMC_CNTL_FROM_MWC_AGGREGATE_MASK_RANGE ]  = xxx__mmc__data_mask_d1 [wr_intf]  ;
+           
+            for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
+              begin: mmc_fifo_data
+                assign write_data_fifo[wr_intf].chan_fifo[chan].write_data [(word+1)*`MGR_EXEC_LANE_WIDTH-1 : word*`MGR_EXEC_LANE_WIDTH]   = xxx__mmc__data_d1 [wr_intf][word] ;
+              end
+           
+            assign write_data_fifo[wr_intf].chan_fifo[chan].write   =   (xxx__mmc__data_channel_d1[wr_intf] == chan) & xxx__mmc__data_valid_d1 [wr_intf]       ;
+           
+            //assign write_data_fifo[wr_intf].pipe_read = write_data_fifo[wr_intf].pipe_valid ; // FIXME sdp__xxx__get_next_line[wr_intf] ;  
+            assign write_data_fifo[wr_intf].chan_fifo[chan].pipe_read =  strm_write_data_read [chan][wr_intf] ;
           end
-
-        assign write_data_fifo[wr_intf].write   =   xxx__mmc__data_valid_d1 [wr_intf]       ;
-        assign  mmc__xxx__data_ready_e1 [wr_intf]  =  ~write_data_fifo[wr_intf].almost_full ;
-
-        //assign write_data_fifo[wr_intf].pipe_read = write_data_fifo[wr_intf].pipe_valid ; // FIXME sdp__xxx__get_next_line[wr_intf] ;  
-        assign write_data_fifo[wr_intf].pipe_read =  strm_write_data_read [0][wr_intf] | strm_write_data_read [1][wr_intf]; // either channel might read fifo
+        assign  mmc__xxx__data_ready_e1 [wr_intf]  =  ~(write_data_fifo[wr_intf].chan_fifo[0].almost_full) & ~(write_data_fifo[wr_intf].chan_fifo[1].almost_full) ;
       end
   endgenerate
 
-  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   write_data_fifo_output_data [`MMC_CNTL_NUM_OF_WRITE_INTF ] ;
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [`MGR_EXEC_LANE_WIDTH_RANGE ]   write_data_fifo_output_data      [`MMC_CNTL_NUM_OF_WRITE_INTF ] [`MGR_DRAM_NUM_CHANNELS ];
+  wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 write_data_fifo_output_data_mask [`MMC_CNTL_NUM_OF_WRITE_INTF ] [`MGR_DRAM_NUM_CHANNELS ];
   generate
     for (wr_intf=0; wr_intf<`MMC_CNTL_NUM_OF_WRITE_INTF ; wr_intf++)
       begin : wr_data_fifo_output
-        for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
-          begin: mmc_fifo_data
-            assign write_data_fifo_output_data [wr_intf][word]  =  write_data_fifo[wr_intf].pipe_data[(word+1)*`MGR_EXEC_LANE_WIDTH-1 : word*`MGR_EXEC_LANE_WIDTH] ;
+        for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
+          begin: ch
+            assign write_data_fifo_output_data_mask [wr_intf] [chan]        =  write_data_fifo[wr_intf].chan_fifo[chan].pipe_data[`MMC_CNTL_FROM_MWC_AGGREGATE_MASK_RANGE ];
+            for (word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
+              begin: mmc_fifo_data
+                assign write_data_fifo_output_data  [wr_intf] [chan] [word]  =  write_data_fifo[wr_intf].chan_fifo[chan].pipe_data[(word+1)*`MGR_EXEC_LANE_WIDTH-1 : word*`MGR_EXEC_LANE_WIDTH] ;
+              end
           end
       end
   endgenerate
@@ -1123,7 +1137,7 @@ module main_mem_cntl (
             //  - the stream has not yet been granted cache access
             if (strm == 2)
               begin
-                assign  strm_wr_data_available = write_data_fifo[0].pipe_has_two ;  // need a full cache line before we initiate a write
+                assign  strm_wr_data_available = write_data_fifo[0].chan_fifo[chan].pipe_has_two ;  // need a full cache line before we initiate a write
                 assign  strm_request           = (mmc_cntl_cmd_gen_state == `MMC_CNTL_CMD_GEN_WAIT ) & 
                                                  ( ~cmd_seq_pc_fifo  [chan].almost_full && ~cmd_seq_po_fifo  [chan].almost_full && ~cmd_seq_cache_fifo [chan].almost_full)              &
                                                  (request_fifo[strm].pipe_valid & (strm_request_chan == chan) & (&xxx__mmc__ready_d1[chan]) & 
@@ -2410,12 +2424,16 @@ module main_mem_cntl (
             // Default drive values
         
             {mmc__dfi__cs_e1 [chan], mmc__dfi__cmd1_e1 [chan], mmc__dfi__cmd0_e1 [chan]} = `MGR_DRAM_COMMAND_NOP ;
-            mmc__dfi__bank_e1 [chan]                                                     = 'd0                   ; 
-            mmc__dfi__addr_e1 [chan]                                                     = 'd0                   ; 
+            mmc__dfi__bank_e1      [chan]                                                = 'd0                   ; 
+            mmc__dfi__addr_e1      [chan]                                                = 'd0                   ; 
+
+            mmc__dfi__data_mask_e1 [chan]  = write_data_fifo_output_data_mask [0][chan];  // FIXME: hard coded write interface
+
             for (int word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
               begin
-                mmc__dfi__data_e1 [chan] [word]                                          = 'd0                   ;
+                mmc__dfi__data_e1 [chan] [word]  = write_data_fifo_output_data [0][chan][word];  // FIXME: hard coded write interface
               end
+
 
             final_page_cmd_fifo [chan].pipe_read  = 1'b0 ;
             final_cache_cmd_fifo[chan].pipe_read  = 1'b0 ;
@@ -2522,10 +2540,6 @@ module main_mem_cntl (
                         final_cache_cmd_fifo[chan].pipe_read  = 1'b1 ;
 
                         strm_write_data_read [chan][0] = 1'b1 ;  // FIXME: only one write interface???
-                        for (int word=0; word<`MGR_MMC_TO_MRC_INTF_NUM_WORDS ; word++)
-                          begin
-                            mmc__dfi__data_e1 [chan] [word]  = write_data_fifo_output_data [0][word];  // FIXME: hard coded write interface
-                          end
 
 
                         mmc__dfi__bank_e1 [chan]  =  final_page_cmd_fifo[chan].pipe_bank ;
@@ -2612,6 +2626,9 @@ module main_mem_cntl (
                         // This state dram_cmd_mode == 1
                         // There should be nothing at the head of the fifo(s)
                         // We already know the next 'RW' phase is a write so transition to the WR_CMD unless an error is detected
+
+                        strm_write_data_read [chan][0] = 1'b1 ;  // FIXME: only one write interface???
+
                         if (final_cache_cmd_fifo[chan].pipe_valid)
                           begin
                             mmc_cntl_seq_state_next = `MMC_CNTL_DFI_SEQ_ERR;

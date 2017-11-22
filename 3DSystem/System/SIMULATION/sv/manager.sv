@@ -38,6 +38,7 @@ import virtual_interface::*;
 import operation::*;
 import dram_utils::*;
 
+
 class manager;
 
     //----------------------------------------------------------------------------------------------------
@@ -79,6 +80,7 @@ class manager;
     //  Misc
 
     vDiRamCfg_T                 vDramCfgIfc  [`MGR_DRAM_NUM_CHANNELS]  ;
+    vIntDiRam_T                 vIntDramIfc  [`MGR_DRAM_NUM_CHANNELS]  ;
     dram_utils::dram_utilities  dram_utils   ;
 
     string              fileName          ;
@@ -88,7 +90,7 @@ class manager;
 
     //-------------------------------------------------------------------------
     // HOW MANY?
-    integer num_operations = 8;  // fp mac:{std,std}->mem, copy:std->mem, fp mac:{std,mem}->mem
+    integer num_operations = `TB_NUM_OPS ;  // fp mac:{std,std}->mem, copy:std->mem, fp mac:{std,mem}->mem
 
    
     // Use multiple of 3 if we want to see std_std_fpmac_mem, std_na_nop_mem, std_mem_fpmac_mem
@@ -146,6 +148,7 @@ class manager;
                   input mailbox                      mrc2mgr_m                                       [`MGR_NUM_OF_STREAMS ] ,
                   input mailbox                      wud2mgr_m                                                              ,
                   input vDiRamCfg_T                  vDramCfgIfc             [`MGR_DRAM_NUM_CHANNELS]                       ,                        
+                  input vIntDiRam_T                  vIntDramIfc             [`MGR_DRAM_NUM_CHANNELS]                       , 
                   input vWudToOob_T                  vWudToOobIfc                                                           
                  );
 
@@ -164,6 +167,7 @@ class manager;
         this.wud2mgr_m                 = wud2mgr_m               ;
         this.dram_utils                = new (Id )               ;
         this.vDramCfgIfc               = vDramCfgIfc             ;
+        this.vIntDramIfc               = vIntDramIfc             ;
         this.vWudToOobIfc              = vWudToOobIfc            ;
 
     endfunction
@@ -207,202 +211,231 @@ class manager;
 
         $display("@%0t:%s:%0d:INFO:Manager {%0d} Running %0d operations", $time, `__FILE__, `__LINE__, Id, num_operations);
         repeat (num_operations)                 //Number of transactions to be generated
-            begin
+          begin
 
-                @(vDownstreamStackBusOOB.cb_test);  
+              @(vDownstreamStackBusOOB.cb_test);  
 
-                //----------------------------------------------------------------------------------------------------
-                // Create the operation and send to OOB driver and lane driver
+              //----------------------------------------------------------------------------------------------------
+              // Create the operation and send to OOB driver and lane driver
 
-                // A WU Decoder command to OOB Downstream controller initiates the operation
-                `ifdef TB_WUD_INITIATES_OP
+              // A WU Decoder command to OOB Downstream controller initiates the operation
+              `ifdef TB_WUD_INITIATES_OP
 
-                  wait ( wud2mgr_m.num() != 0 ) 
-                  wud2mgr_m.get(rcvd_wud_to_oob_cmd);
-                  $display("@%0t:%s:%0d:INFO: Manager {%0d} received WUD Downstream OOB Command from WUD\'s", $time, `__FILE__, `__LINE__, Id);
-                  rcvd_wud_to_oob_cmd.display();
-                  $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause WUD ", $time, `__FILE__, `__LINE__, Id);
-                `endif
-
-                // Create a base operation and send the generator which will then spawn further operations for each lane.
-                // The generator will maintain operation type and number of operands for all lanes but will randomize operands.
-                sys_operation_mgr        =  new ()  ;  // seed operation object.  Generators will copy this and then re-create different operand values
-                sys_operation_mgr.Id[0]  =  Id      ;  // Id in manager is only PE
-                sys_operation_mgr.Id[1]  =  0       ;  // set to lane 0 to avoid error in randomize
-                `ifdef TB_WUD_INITIATES_OP
-                  sys_operation_mgr.numberOfLanes  = rcvd_wud_to_oob_cmd.num_lanes ;
-                  $display("@%0t:%s:%0d:INFO: Manager {%0d} : Instruction %0d is utilizing %0d lane\'s", $time, `__FILE__, `__LINE__, Id, WU_num, sys_operation_mgr.numberOfLanes);
-                `endif
-
-                // Set number of operands based on instruction
-                instruction = descriptorObjs [WU_num] ;
-                instruction[0].displayDesc();
-                $display("@%0t:%s:%0d:INFO: Manager {%0d} : Instruction %0d has %0d operands\'s", $time, `__FILE__, `__LINE__, Id, WU_num, instruction[0].getOptionValue(PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS));
-                sys_operation_mgr.setNumOperands(instruction[0].getOptionValue(PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS));
-                sys_operation_mgr.setNumOperands(instruction[0].getOptionValue(PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS));
-
-                // FIXME: currently the operation class decides what type of operation based on transaction ID
-                sys_operation_mgr.c_operationType_definedOrder .constraint_mode(0) ;
-                sys_operation_mgr.c_operationType_all          .constraint_mode(0) ;
-                sys_operation_mgr.c_operationType_fpMac        .constraint_mode(1) ;
-                sys_operation_mgr.c_operationType_copyStdToMem .constraint_mode(0) ;
-                //
-                sys_operation_mgr.c_streamSize.constraint_mode(1)                 ;
-                sys_operation_mgr.c_operandValues.constraint_mode(1)              ;
-                sys_operation_mgr.c_memoryLocalized.constraint_mode(1)            ;
-                sys_operation_mgr.tId      = operationNum             ;
-                //
-                // create new operation
-                assert(sys_operation_mgr.randomize()) ;
-
-                //----------------------------------------------------------------------------------------------------
-                // Create an oob_packet and send to OOB driver
-                //
-                // FIXME: Not sure why I created an operation object for oob
-                // I think we can just :
-                //   oob_packet_mgr.createFromOperation(sys_operation_mgr.tId, sys_operation_mgr)     ;
-
-                // we need to randomize to update fields such as number of operands based on prior operation. 
-                // This randomize takes place in the generator when it sends operations to the driver so we should be the same although the OOB
-                // only cares about a subset of the fields e.g. doesnt need operands.
-                sys_operation_oob = new sys_operation_mgr ;                                                                                 
-                //
-                sys_operation_oob.setPriorOperations(priorOperations)   ;  // object may need to know what went before
-                sys_operation_oob.c_operationType_definedOrder .constraint_mode(0) ;
-                sys_operation_oob.c_operationType_all          .constraint_mode(0) ;
-                sys_operation_oob.c_operationType_fpMac        .constraint_mode(1) ;
-                sys_operation_oob.c_operationType_copyStdToMem .constraint_mode(0) ;
-                //
-                sys_operation_oob.c_streamSize.constraint_mode(1)                 ;
-                sys_operation_oob.c_operandValues.constraint_mode(1)              ;
-                sys_operation_oob.c_memoryLocalized.constraint_mode(1)            ;
-                //
-                assert(sys_operation_oob.randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
-
-                // Keep copy of previous operations as they may influence future operations
-                // Note: this is also kept in the sys_operation_mgr as we dont create a new for each transaction
-                priorOperations.push_back(sys_operation_mgr)       ;
+                wait ( wud2mgr_m.num() != 0 ) 
+                wud2mgr_m.get(rcvd_wud_to_oob_cmd);
+                $display("@%0t:%s:%0d:INFO: Manager {%0d} received WUD Downstream OOB Command from WUD\'s", $time, `__FILE__, `__LINE__, Id);
+                rcvd_wud_to_oob_cmd.display();
+                $display("@%0t:%s:%0d:INFO: Manager {%0d} Pause WUD ", $time, `__FILE__, `__LINE__, Id);
+              `endif
 
 
-                // Create duplicates of the operation and randomize the operands
-                // operands
-                for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
-                  begin
-                    // Making sure we create new operand arrays using a deep copy method doesnt seem to be neccessary, but do it anyway (flaky SV)    
-                    //sys_operation_lane[0] = new sys_operation_mgr ;                                                                               
-                    // base_operation deep copy also reseeds RNG                                                                                      
-                    sys_operation_lane[lane] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
-                    // The copy copies RNG so need to reseed otherwise we will create the same contents for each lane                                 
-                    // sys_operation_lane[0].srandom($urandom)       ; // done by deep copy routine                                                 
-                    sys_operation_lane[lane].Id[1]  =  lane      ;  // set lane for address generation                                                  
-                                                                                                                                                      
-                    sys_operation_lane_gen[lane]             =  new sys_operation_lane[lane]  ;  // seed object. Dont use directly as all lanes will use the same operation
-                    //sys_operation_lane_gen.setPriorOperations(priorOperations)   ;  // object may need to know what went before
-                   
-                    sys_operation_lane_gen[lane].c_operationType_definedOrder .constraint_mode(0) ;
-                    sys_operation_lane_gen[lane].c_operationType_all          .constraint_mode(0) ;
-                    sys_operation_lane_gen[lane].c_operationType_fpMac        .constraint_mode(1) ;
-                    sys_operation_lane_gen[lane].c_operationType_copyStdToMem .constraint_mode(0) ;
-                    //
-                    sys_operation_lane_gen[lane].c_streamSize.constraint_mode(1)                 ;
-                    sys_operation_lane_gen[lane].c_operandValues.constraint_mode(1)              ;
-                    sys_operation_lane_gen[lane].c_memoryLocalized.constraint_mode(1)            ;
-                    //
-                    assert(sys_operation_lane_gen[lane].randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
+              //----------------------------------------------------------------------------------------------------
+              // Start stats gathering
 
-                    // FIXME: right now we are testing 
-                    `ifdef TB_COMMON_ARG0
-                      // use lane0's operand[0] for all lanes
-                        if (lane == 0)
+              // DRAM
+              for (int ch=0; ch<`MGR_DRAM_NUM_CHANNELS; ch++)
+                begin
+                  if (vIntDramIfc[ch].observeAccesses == 0)
+                    begin
+                      $display("@%0t:%s:%0d:INFO: Manager {%0d} Start stats gathering for DRAM channel %0d", $time, `__FILE__, `__LINE__, Id, ch);
+                      vIntDramIfc[ch].startAccessObserve ;
+                    end
+                end
+
+              // STD bus
+              for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+                begin
+                  for (int strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
+                      begin
+                        if (vDownstreamStackBusLane [lane][strm].observeCycles == 0)
                           begin
-                            sys_operation_lane_gen[lane].displayOperation();    
+                            $display("@%0t:%s:%0d:INFO: Manager {%0d} Start stats gathering for lane/stream {%0d,%0d}", $time, `__FILE__, `__LINE__, Id, lane, strm);
+                            vDownstreamStackBusLane [lane][strm].startObserve;
                           end
-                        else
-                          begin
-                            sys_operation_lane_gen[lane].copyOperands(sys_operation_lane_gen[0], 0);
-                            sys_operation_lane_gen[lane].calculateResult();                         // need to recalculate result
-                            sys_operation_lane_gen[lane].displayOperation();                         // need to recalculate result
-                          end
-                    `endif
-                  end
+                      end
+                end
+              //----------------------------------------------------------------------------------------------------
 
-                //---------------------------------------------------------------------------------------------------------------
-                // create the oob_packet object from the operation
-                // - also used to load pe_cntl memory
+              //----------------------------------------------------------------------------------------------------
+              // Create a base operation and send the generator which will then spawn further operations for each lane.
+              // The generator will maintain operation type and number of operands for all lanes but will randomize operands.
+              sys_operation_mgr        =  new ()  ;  // seed operation object.  Generators will copy this and then re-create different operand values
+              sys_operation_mgr.Id[0]  =  Id      ;  // Id in manager is only PE
+              sys_operation_mgr.Id[1]  =  0       ;  // set to lane 0 to avoid error in randomize
+              `ifdef TB_WUD_INITIATES_OP
+                sys_operation_mgr.numberOfLanes  = rcvd_wud_to_oob_cmd.num_lanes ;
+                $display("@%0t:%s:%0d:INFO: Manager {%0d} : Instruction %0d is utilizing %0d lane\'s", $time, `__FILE__, `__LINE__, Id, WU_num, sys_operation_mgr.numberOfLanes);
+              `endif
 
-                oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
-                oob_packet_mgr.createFromOperation(sys_operation_oob.tId, sys_operation_oob)     ;
-                `ifdef TB_WUD_INITIATES_OP
-                  oob_packet_mgr.stOp_optionPtr     = rcvd_wud_to_oob_cmd.stOp_cmd;
-                  oob_packet_mgr.simd_optionPtr     = rcvd_wud_to_oob_cmd.simd_cmd;
-                `else
-                  oob_packet_mgr.stOp_optionPtr     = 1;  // FIXME
-                  oob_packet_mgr.simd_optionPtr     = 1;
-                `endif
-                mgr2oob.put(oob_packet_mgr)                                  ;  // oob needs to prepare the PE
-                $display("@%0t:%s:%0d:INFO: Manager {%0d} sent oob_packet {%0d} to oob_driver", $time, `__FILE__, `__LINE__, Id, operationNum);
+              // Set number of operands based on instruction
+              instruction = descriptorObjs [WU_num] ;
+              instruction[0].displayDesc();
+              $display("@%0t:%s:%0d:INFO: Manager {%0d} : Instruction %0d has %0d operands\'s", $time, `__FILE__, `__LINE__, Id, WU_num, instruction[0].getOptionValue(PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS));
+              sys_operation_mgr.setNumOperands(instruction[0].getOptionValue(PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS));
+              sys_operation_mgr.setNumOperands(instruction[0].getOptionValue(PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS));
 
-                //  The manager sends OOB packet to oob_driver and the same operation to each generator
-                //  The oob_driver will get oob information from the generator in case the generator has made changes to the operation
-                //  e.g. perhaps we have different operations per lane
-                //
-                // so we will not get the ack from the oob or geneators until we have sent both the oob-packet and the operations
-                // the oob_driver and generator make sure the OOB WU gets sent before operation data
-                $display("@%0t:%s:%0d:INFO:Manager {%0d} Loading DRAMs with operation %0d operands for WU %0d", $time, `__FILE__, `__LINE__, Id, operationNum, WU_num);
-                fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num );
-                $display("@%0t:%s:%0d:INFO:Manager {%0d} Before", $time, `__FILE__, `__LINE__, Id);
-                for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
-                  begin
-                    sys_operation_lane_gen[lane].displayOperation();
-                  end
-                dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
-                                                     .sys_operation_data  ( sys_operation_lane_gen),
-                                                     .vDramCfgIfc         ( vDramCfgIfc           ) 
-                                                         );
-                $display("@%0t:%s:%0d:INFO:Manager {%0d} After", $time, `__FILE__, `__LINE__, Id);
-                for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
-                  begin
-                    sys_operation_lane_gen[lane].displayOperation();
-                  end
-                
-                // Load the next WU also as some data might be stuck in
-                // intermediate fifos
+              // FIXME: currently the operation class decides what type of operation based on transaction ID
+              sys_operation_mgr.c_operationType_definedOrder .constraint_mode(0) ;
+              sys_operation_mgr.c_operationType_all          .constraint_mode(0) ;
+              sys_operation_mgr.c_operationType_fpMac        .constraint_mode(1) ;
+              sys_operation_mgr.c_operationType_copyStdToMem .constraint_mode(0) ;
+              //
+              sys_operation_mgr.c_streamSize.constraint_mode(1)                 ;
+              sys_operation_mgr.c_operandValues.constraint_mode(1)              ;
+              sys_operation_mgr.c_memoryLocalized.constraint_mode(1)            ;
+              sys_operation_mgr.tId      = operationNum             ;
+              //
+              // create new operation
+              assert(sys_operation_mgr.randomize()) ;
+
+              //----------------------------------------------------------------------------------------------------
+              // Create an oob_packet and send to OOB driver
+              //
+              // FIXME: Not sure why I created an operation object for oob
+              // I think we can just :
+              //   oob_packet_mgr.createFromOperation(sys_operation_mgr.tId, sys_operation_mgr)     ;
+
+              // we need to randomize to update fields such as number of operands based on prior operation. 
+              // This randomize takes place in the generator when it sends operations to the driver so we should be the same although the OOB
+              // only cares about a subset of the fields e.g. doesnt need operands.
+              sys_operation_oob = new sys_operation_mgr ;                                                                                 
+              //
+              sys_operation_oob.setPriorOperations(priorOperations)   ;  // object may need to know what went before
+              sys_operation_oob.c_operationType_definedOrder .constraint_mode(0) ;
+              sys_operation_oob.c_operationType_all          .constraint_mode(0) ;
+              sys_operation_oob.c_operationType_fpMac        .constraint_mode(1) ;
+              sys_operation_oob.c_operationType_copyStdToMem .constraint_mode(0) ;
+              //
+              sys_operation_oob.c_streamSize.constraint_mode(1)                 ;
+              sys_operation_oob.c_operandValues.constraint_mode(1)              ;
+              sys_operation_oob.c_memoryLocalized.constraint_mode(1)            ;
+              //
+              assert(sys_operation_oob.randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
+
+              // Keep copy of previous operations as they may influence future operations
+              // Note: this is also kept in the sys_operation_mgr as we dont create a new for each transaction
+              priorOperations.push_back(sys_operation_mgr)       ;
+
+
+              // Create duplicates of the operation and randomize the operands
+              // operands
+              for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane=lane+1)
+                begin
+                  // Making sure we create new operand arrays using a deep copy method doesnt seem to be neccessary, but do it anyway (flaky SV)    
+                  //sys_operation_lane[0] = new sys_operation_mgr ;                                                                               
+                  // base_operation deep copy also reseeds RNG                                                                                      
+                  sys_operation_lane[lane] = sys_operation_mgr.copy() ; // deep copy creates new operand arrays                                      
+                  // The copy copies RNG so need to reseed otherwise we will create the same contents for each lane                                 
+                  // sys_operation_lane[0].srandom($urandom)       ; // done by deep copy routine                                                 
+                  sys_operation_lane[lane].Id[1]  =  lane      ;  // set lane for address generation                                                  
+                                                                                                                                                    
+                  sys_operation_lane_gen[lane]             =  new sys_operation_lane[lane]  ;  // seed object. Dont use directly as all lanes will use the same operation
+                  //sys_operation_lane_gen.setPriorOperations(priorOperations)   ;  // object may need to know what went before
+                 
+                  sys_operation_lane_gen[lane].c_operationType_definedOrder .constraint_mode(0) ;
+                  sys_operation_lane_gen[lane].c_operationType_all          .constraint_mode(0) ;
+                  sys_operation_lane_gen[lane].c_operationType_fpMac        .constraint_mode(1) ;
+                  sys_operation_lane_gen[lane].c_operationType_copyStdToMem .constraint_mode(0) ;
+                  //
+                  sys_operation_lane_gen[lane].c_streamSize.constraint_mode(1)                 ;
+                  sys_operation_lane_gen[lane].c_operandValues.constraint_mode(1)              ;
+                  sys_operation_lane_gen[lane].c_memoryLocalized.constraint_mode(1)            ;
+                  //
+                  assert(sys_operation_lane_gen[lane].randomize()) ;  // A previous randomize in the manager will have set the number of operands and addresses, so everything will be randomized except numberOfOperands and address
+
+                  // FIXME: right now we are testing 
+                  `ifdef TB_COMMON_ARG0
+                    // use lane0's operand[0] for all lanes
+                      if (lane == 0)
+                        begin
+                          sys_operation_lane_gen[lane].displayOperation();    
+                        end
+                      else
+                        begin
+                          sys_operation_lane_gen[lane].copyOperands(sys_operation_lane_gen[0], 0);
+                          sys_operation_lane_gen[lane].calculateResult();                         // need to recalculate result
+                          sys_operation_lane_gen[lane].displayOperation();                         // need to recalculate result
+                        end
+                  `endif
+                end
+
+              //---------------------------------------------------------------------------------------------------------------
+              // create the oob_packet object from the operation
+              // - also used to load pe_cntl memory
+
+              oob_packet_mgr                    = new                      ;  // create a OOB packet constructed from sys_operation
+              oob_packet_mgr.createFromOperation(sys_operation_oob.tId, sys_operation_oob)     ;
+              `ifdef TB_WUD_INITIATES_OP
+                oob_packet_mgr.stOp_optionPtr     = rcvd_wud_to_oob_cmd.stOp_cmd;
+                oob_packet_mgr.simd_optionPtr     = rcvd_wud_to_oob_cmd.simd_cmd;
+              `else
+                oob_packet_mgr.stOp_optionPtr     = 1;  // FIXME
+                oob_packet_mgr.simd_optionPtr     = 1;
+              `endif
+              mgr2oob.put(oob_packet_mgr)                                  ;  // oob needs to prepare the PE
+              $display("@%0t:%s:%0d:INFO: Manager {%0d} sent oob_packet {%0d} to oob_driver", $time, `__FILE__, `__LINE__, Id, operationNum);
+
+              //  The manager sends OOB packet to oob_driver and the same operation to each generator
+              //  The oob_driver will get oob information from the generator in case the generator has made changes to the operation
+              //  e.g. perhaps we have different operations per lane
+              //
+              // so we will not get the ack from the oob or geneators until we have sent both the oob-packet and the operations
+              // the oob_driver and generator make sure the OOB WU gets sent before operation data
+              $display("@%0t:%s:%0d:INFO:Manager {%0d} Loading DRAMs with operation %0d operands for WU %0d", $time, `__FILE__, `__LINE__, Id, operationNum, WU_num);
+              fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num );
+              $display("@%0t:%s:%0d:INFO:Manager {%0d} Before", $time, `__FILE__, `__LINE__, Id);
+              for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+                begin
+                  sys_operation_lane_gen[lane].displayOperation();
+                end
+              dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
+                                                   .sys_operation_data  ( sys_operation_lane_gen),
+                                                   .vDramCfgIfc         ( vDramCfgIfc           ) 
+                                                       );
+              $display("@%0t:%s:%0d:INFO:Manager {%0d} After", $time, `__FILE__, `__LINE__, Id);
+              for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+                begin
+                  sys_operation_lane_gen[lane].displayOperation();
+                end
+              
+              // Load the next WU also as some data might be stuck in
+              // intermediate fifos
 /*
-                fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num+1 );
-                dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
-                                                     .sys_operation_data  ( sys_operation_lane_gen),
-                                                     .vDramCfgIfc         ( vDramCfgIfc           ) 
-                                                             );
+              fileName  =    $sformatf("./configFiles/manager_%0d_%0d_layer1_group_%0d_AllGroupMemory.txt", Id/MGR_ARRAY_XY, Id%MGR_ARRAY_XY, WU_num+1 );
+              dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
+                                                   .sys_operation_data  ( sys_operation_lane_gen),
+                                                   .vDramCfgIfc         ( vDramCfgIfc           ) 
+                                                           );
 */
 
 
-                // send actual base operation to upstream checker 
-                mgr2up.put(sys_operation_mgr)                      ; 
+              // send actual base operation to upstream checker 
+              mgr2up.put(sys_operation_mgr)                      ; 
 
 
-                //----------------------------------------------------------------------------------------------------
-                // Create copies of the base_operation and send to each lane generator 
+              //----------------------------------------------------------------------------------------------------
+              // Create copies of the base_operation and send to each lane generator 
 
-                // send this to all the lane generators for this PE and wait for acknowledge
-                        
-                $display("@%0t:%s:%0d:INFO: Manager {%0d} sending operation {%0d} to generators and waiting for ack", $time, `__FILE__, `__LINE__, Id, operationNum);
-                // include has mgr2gen and mgr2gen_ack
-                // Note: couldnt get this to work with a for loop, so used python
-                `include "TB_manager_send_operation_to_generators.vh"
-                //wait fork;
-                // this should have waited till generator, driver and mem_checker are done 
+              // send this to all the lane generators for this PE and wait for acknowledge
+                      
+              $display("@%0t:%s:%0d:INFO: Manager {%0d} sending operation {%0d} to generators and waiting for ack", $time, `__FILE__, `__LINE__, Id, operationNum);
+              // include has mgr2gen and mgr2gen_ack
+              // Note: couldnt get this to work with a for loop, so used python
+              `include "TB_manager_send_operation_to_generators.vh"
+              //wait fork;
+              // this should have waited till generator, driver and mem_checker are done 
 
-                // wait till OOB packet is complete before startng next operation
-                //@mgr2oob_ack ;
-                //wait(mgr2oob_ack.triggered) ;
-                //
-                
-                $display("@%0t:%s:%0d:INFO: Manager {%0d} operation {%0d} acked by generators", $time, `__FILE__, `__LINE__, Id, operationNum);
+              // wait till OOB packet is complete before startng next operation
+              //@mgr2oob_ack ;
+              //wait(mgr2oob_ack.triggered) ;
+              //
+              
+              $display("@%0t:%s:%0d:INFO: Manager {%0d} operation {%0d} acked by generators", $time, `__FILE__, `__LINE__, Id, operationNum);
 
-                operationNum++   ;
-                WU_num++         ;
-                
-            end
+              operationNum++   ;
+              WU_num++         ;
+              
+          end  // num_operations
 
         for (int lane = 0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
           begin
@@ -429,8 +462,28 @@ class manager;
           $dumpoff;
         `endif
 
+        // ----------------------------------------------------------------------------------------------------
+        // Stats
+        //  - Do not take stats during final idle time
+        //
+        //  DRAM
+        for (int ch=0; ch<`MGR_DRAM_NUM_CHANNELS; ch++)
+          begin
+            vIntDramIfc[ch].stopAccessObserve;
+          end
+
+        //  STD
+        for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+          begin
+            for (int strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
+                begin
+                  vDownstreamStackBusLane [lane][strm].stopObserve;
+                end
+          end
+        // ----------------------------------------------------------------------------------------------------
+
         // Wait a little time for the last result to be received by the upstream checker
-        repeat (500) @(vDownstreamStackBusOOB.cb_test);  
+        repeat (100) @(vDownstreamStackBusOOB.cb_test);  
 
 
         -> final_operation;

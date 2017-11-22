@@ -19,6 +19,7 @@ package virtual_interface;
 
     typedef virtual diram_ifc                               vDiRam_T                      ;
     typedef virtual diram_cfg_ifc                           vDiRamCfg_T                   ;
+    typedef virtual int_diram_ifc                           vIntDiRam_T                   ;  // poke inside DiRam
 
 
     typedef virtual pe_dma2mem_ifc                             vDma2Mem_T                    ;
