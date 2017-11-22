@@ -1292,6 +1292,26 @@ There is no doubt CNN accelerators combined with batch processing achieve a perf
 
 This work demonstrates a 3D-DRAM system that at the surface has a relatively low FLOPs, but the target applcation is memory bound and under these circumstances this work is potentially 10-100X better that existing ASIC/ASIPs or GPUs.
 
+\section{Further Work}
+\label{sec:Further Work}
+This work does not ut a high level of importance to the processing engine. The choice of using single-precision floating point format was in some part convenient. In fact, half-precision might have been a better choice especially as there
+is a level of acceptance that lower precision is acceptable in ANN inference.
+Therefore, further work should include :
+\begin {outline}
+  \1 Manager changes to support half-precision format
+    \2 supports 16-bit FP would require additional muxing logic when directing words in the wide DRAM bus to execution lanes, but the bulk of the design should remain relatively intact.
+  \1 PE Single-Precision
+    \2 modifying the PE to support 16-bit FP would be trivial
+  \1 PE pipeling
+    \2 Adding layers of processing to the PE would effectively increase the operations per second
+      \3 using a reduction array would effectively double the FLOPs
+      \3 looking at storing weights and inputs would be required and the manager would likely be customized to the PE, but the belief is the complexity should be similar
+  \1 Systolic PE
+    \2 systolic arrays have shown efficacy when used in server applications such as TPU, but its not clear how effective they would be in an edge application
+      \3 consider how to effective feed a systolic array
+      \3 consider types of systolic array
+ 
+\end{outline}
 
 
 % Can use something like this to put references on a page
