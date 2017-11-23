@@ -1279,9 +1279,9 @@ which are shown in table \ref{tab:Simulation-based estimates}.
 \section{Conclusions}
 \label{sec:Conclusions}
 There have been many attempts to accelerate ANNs. Many have shown excellent performance mainly when implementing CNNs. The improvement mostly comes from the ability to 
-hold weights and/or AN activations in local SRAM and perform multiple operations whilst that data is held in local SRAM.
-The ability to hold data in local SRAM is often due to pooling of batch requests or storing of CNN kernel weights or input Regions-of-Interest.
-When considering applications where this local storage cannot be used effectively, all these implementation suffer large degradation in performance.
+hold kernel weights and/or AN activations in local SRAM. Another method of employing local memory is often due to pooling of batch requests, especially in server applications.
+This local storage allows the system to take advantage of the low latency and random access benefits of SRAM whilst performing multiple operations on that data.
+When considering applications where this local storage cannot be used effectively, all these implementations suffer a large degradation in performance.
 
 
 This work considers edge applications where a system is processing single requests into a disparate set of ANNs. The assumpiton is that local SRAM is no longer effective and performance is based on DRAM bandwidth.
