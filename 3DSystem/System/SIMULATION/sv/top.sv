@@ -286,7 +286,9 @@ module top;
     `ifdef TB_DRIVES_STACK_DOWN_DATA
       `include "TB_system_stack_bus_downstream_assignments.vh"
     `else
-      `include "TB_system_stack_bus_downstream_observe.vh"
+      `ifndef TB_USES_MANAGER_GATE_NETLIST
+        `include "TB_system_stack_bus_downstream_observe.vh"
+      `endif
     `endif
     
     // Upstream Stack bus Interface
