@@ -310,11 +310,13 @@ module streamingOps (
     stOp__reg__valid             =   'b0                       ;
     // to Memory (via dma)
     stOp__dma__strm0_data        =    32'hFFFF_FFFF            ;
+    stOp__dma__strm0_data_mask   =    32'hFFFF_FFFF            ;
     stOp__dma__strm0_cntl        =   'd0                       ;
     stOp__dma__strm0_data_valid  =   'b0                       ;
 
     `ifndef DMA_CONT_ONLY_ONE_PORT 
       stOp__dma__strm1_data        =    32'hFFFF_FFFF            ;
+      stOp__dma__strm1_data_mask   =    32'hFFFF_FFFF            ;
       stOp__dma__strm1_cntl        =   'd0                       ;
       stOp__dma__strm1_data_valid  =   'b0                       ;
     `endif

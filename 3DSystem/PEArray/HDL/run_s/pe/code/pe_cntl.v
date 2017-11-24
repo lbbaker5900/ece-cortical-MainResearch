@@ -50,8 +50,10 @@ module pe_cntl (
             //-------------------------------
             // Configuration output
             //
+
             cntl__simd__tag_valid                         ,
             cntl__simd__tag                               ,
+            cntl__simd__tag_optionPtr                     ,
             cntl__simd__tag_num_lanes                     ,
             simd__cntl__tag_ready                         ,
 
@@ -85,6 +87,7 @@ module pe_cntl (
                                                 
   output                                           cntl__simd__tag_valid          ;  // tag to simd needs to be a fifo interface as the next stOp may start while the 
   output [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]        cntl__simd__tag                ;  // simd is processing the previosu stOp result
+  output [`PE_CNTL_OOB_OPTION_RANGE       ]        cntl__simd__tag_optionPtr      ;  // SIMD operation PC
   output [`PE_NUM_LANES_RANGE             ]        cntl__simd__tag_num_lanes      ;  // number of active lanes associated with this tag
   input                                            simd__cntl__tag_ready          ;
 
@@ -95,6 +98,7 @@ module pe_cntl (
 
   `include "pe_cntl_simd_port_declarations.vh"
 
+  reg  [`PE_CNTL_OOB_OPTION_RANGE            ]    cntl__simd__optionPtr      ; 
   //----------------------------------------------------------------------------------------------------
   // Configuration output
 
@@ -556,6 +560,7 @@ module pe_cntl (
   //   - this assumes we only use FPMAC operations that send a result to a reg in the simd
   assign cntl__simd__tag_valid   = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_START_CMD) & simd__cntl__tag_ready_d1 & (stOp_operation[`STREAMING_OP_CNTL_OPERATION_OPCODE_RANGE ] == `STREAMING_OP_CNTL_OPERATION_FP_MAC ) ;  // FIXME : may need to handle tags in simd
 
+  assign cntl__simd__tag_optionPtr            =  simd_optionPtr                 ;
 
 endmodule
 

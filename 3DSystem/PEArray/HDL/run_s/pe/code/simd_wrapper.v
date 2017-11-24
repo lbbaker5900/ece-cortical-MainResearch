@@ -21,6 +21,7 @@
 `include "common.vh"
 `include "pe_array.vh"
 `include "pe.vh"
+`include "pe_cntl.vh"
 `include "simd_wrapper.vh"
 `include "stack_interface.vh"
 `include "noc_cntl.vh"
@@ -48,6 +49,7 @@ module simd_wrapper (
                           // Additional PE control configuration 
                           cntl__simd__tag_valid     ,
                           cntl__simd__tag           ,
+                          cntl__simd__tag_optionPtr ,
                           cntl__simd__tag_num_lanes ,
                           simd__cntl__tag_ready     ,
 
@@ -101,8 +103,9 @@ module simd_wrapper (
   //----------------------------------------------------------------------------------------------------
   // PE control
   input                                              cntl__simd__tag_valid          ;  // tag to simd needs to be a fifo interface as the next stOp may start while the 
-  input   [`STACK_DOWN_OOB_INTF_TAG_RANGE]           cntl__simd__tag                ;
-  input   [`PE_NUM_LANES_RANGE           ]           cntl__simd__tag_num_lanes      ;  // number of active lanes associated with this tag
+  input   [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]         cntl__simd__tag                ;
+  input   [`PE_CNTL_OOB_OPTION_RANGE       ]         cntl__simd__tag_optionPtr      ; 
+  input   [`PE_NUM_LANES_RANGE             ]         cntl__simd__tag_num_lanes      ;  // number of active lanes associated with this tag
   output                                             simd__cntl__tag_ready          ;
 
   //-------------------------------------------------------------------------------------------
@@ -181,16 +184,25 @@ module simd_wrapper (
                                                                                           
   wire                                    cntl__simd__tag_valid                           ;  // tag to simd needs to be a fifo interface as the next stOp may start while the 
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag                                 ;  // simd is processing the previosu stOp result
+  wire  [`PE_CNTL_OOB_OPTION_RANGE     ]  cntl__simd__tag_optionPtr                       ; 
   wire  [`PE_NUM_LANES_RANGE           ]  cntl__simd__tag_num_lanes                       ;  // number of active lanes associated with this tag
   reg                                     simd__cntl__tag_ready                           ;
   reg                                     cntl__simd__tag_valid_d1                        ;
   reg   [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag_d1                              ; 
+  reg   [`PE_CNTL_OOB_OPTION_RANGE     ]  cntl__simd__tag_optionPtr_d1                    ; 
   reg   [`PE_NUM_LANES_RANGE           ]  cntl__simd__tag_num_lanes_d1                    ;  
 
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  scntl__reg__valid_d1                            ;
   reg   [`COMMON_STD_INTF_CNTL_RANGE   ]  scntl__reg__cntl_d1  [`PE_NUM_OF_EXEC_LANES ]   ;
   reg   [`PE_EXEC_LANE_WIDTH_RANGE     ]  scntl__reg__data_d1  [`PE_NUM_OF_EXEC_LANES ]   ;
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  reg__scntl__ready                               ;  // FIXME
+
+  wire                                    cntl__simd__start                               ;
+  wire                                    simd__smdw__complete                            ;
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  smdw__simd__regs      [`PE_NUM_OF_EXEC_LANES ]  ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  smdw__simd__regs_cntl [`PE_NUM_OF_EXEC_LANES ]  ;
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__smdw__regs      [`PE_NUM_OF_EXEC_LANES ]  ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__smdw__regs_cntl [`PE_NUM_OF_EXEC_LANES ]  ;
 
   //----------------------------------------------------------------------------------------------------
   // Assignments
@@ -244,7 +256,7 @@ module simd_wrapper (
         always @(posedge clk)
           begin
             simd__sui__regs_cntl [gvi]  <= ( reset_poweron ) ? 'd0 :  simd__sui__regs_cntl_e1 [gvi];
-            simd__sui__regs      [gvi] <= ( reset_poweron ) ? 'd0 :  simd__sui__regs_e1      [gvi];
+            simd__sui__regs      [gvi]  <= ( reset_poweron ) ? 'd0 :  simd__sui__regs_e1      [gvi];
           end
       end
   endgenerate
@@ -258,6 +270,7 @@ module simd_wrapper (
                                                                                                
       cntl__simd__tag_valid_d1          <= ( reset_poweron ) ? 'd0 : cntl__simd__tag_valid      ;
       cntl__simd__tag_d1                <= ( reset_poweron ) ? 'd0 : cntl__simd__tag            ;
+      cntl__simd__tag_optionPtr_d1      <= ( reset_poweron ) ? 'd0 : cntl__simd__tag_optionPtr  ;
       cntl__simd__tag_num_lanes_d1      <= ( reset_poweron ) ? 'd0 : cntl__simd__tag_num_lanes  ;
 
     end
@@ -364,12 +377,14 @@ module simd_wrapper (
 
         // Write data
         wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]          write_tag           ;
+        wire   [`PE_CNTL_OOB_OPTION_RANGE       ]          write_tag_optionPtr ; 
         wire   [`PE_NUM_LANES_RANGE             ]          write_tag_num_lanes ;  // number of active lanes associated with this tag
                                                  
         // Read data                              
         wire                                               pipe_valid         ; 
         wire                                               pipe_read          ; 
         wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]          pipe_tag           ;
+        wire   [`PE_CNTL_OOB_OPTION_RANGE       ]          pipe_tag_optionPtr ; 
         wire   [`PE_NUM_LANES_RANGE             ]          pipe_tag_num_lanes ;  // number of active lanes associated with this tag
 
         // Control
@@ -386,11 +401,11 @@ module simd_wrapper (
                                          .almost_full      ( almost_full                      ),
                                           // Write                                            
                                          .write            ( write                            ),
-                                         .write_data       ( {write_tag_num_lanes, write_tag} ),
+                                         .write_data       ( {write_tag_optionPtr, write_tag_num_lanes, write_tag} ),
                                           // Read                                          
                                          .pipe_valid       ( pipe_valid                       ),
                                          .pipe_read        ( pipe_read                        ),
-                                         .pipe_data        ( {pipe_tag_num_lanes, pipe_tag}   ),
+                                         .pipe_data        ( {pipe_tag_optionPtr, pipe_tag_num_lanes, pipe_tag}   ),
                                                                                               
                                          // General                                           
                                          .clear            ( clear                            ),
@@ -405,6 +420,7 @@ module simd_wrapper (
 
         assign write                      =   cntl__simd__tag_valid_d1       ;
         assign write_tag                  =   cntl__simd__tag_d1             ;
+        assign write_tag_optionPtr        =   cntl__simd__tag_optionPtr_d1   ;
         assign write_tag_num_lanes        =   cntl__simd__tag_num_lanes_d1   ;
         assign clear                      =   1'b0                           ;  // just in case
 
@@ -493,15 +509,20 @@ module simd_wrapper (
   // Assignments
   //
 
+  assign cntl__simd__start = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA) & simd__scntl__rs1;
+
   // read the FIFO and assert the valid to the stack upstream interface
-  assign from_stOp_reg_fifo_reads = {`PE_EXEC_LANE_WIDTH { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA) }} & (simd__scntl__rs1);
+  assign from_stOp_reg_fifo_reads = {`PE_EXEC_LANE_WIDTH { simd__smdw__complete }};
 
 
   assign  simd__sui__tag_e1             =  from_Cntl_Tag_Fifo[0].pipe_tag ;
   assign  simd__sui__tag_num_lanes_e1   =  from_Cntl_Tag_Fifo[0].pipe_tag_num_lanes ;
-  assign  simd__sui__regs_valid_e1      =  {`PE_EXEC_LANE_WIDTH { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA) }} & (simd__scntl__rs1);
-  assign  simd__sui__regs_cntl_e1       =  from_stOp_reg_fifo_pipe_cntl   ;
-  assign  simd__sui__regs_e1            =  from_stOp_reg_fifo_pipe_data   ;
+  assign  simd__sui__regs_valid_e1      =  {`PE_EXEC_LANE_WIDTH { simd__smdw__complete }};
+  assign  simd__sui__regs_cntl_e1       =  simd__smdw__regs_cntl          ;
+  assign  simd__sui__regs_e1            =  simd__smdw__regs               ;
+
+  assign  smdw__simd__regs_cntl         =  from_stOp_reg_fifo_pipe_cntl   ;
+  assign  smdw__simd__regs              =  from_stOp_reg_fifo_pipe_data   ;
 
 
   //-------------------------------------------------------------------------------------------------
@@ -509,6 +530,17 @@ module simd_wrapper (
   // 
   
   simd_core simd_core (
+
+            .cntl__simd__valid             ( cntl__simd__tag_valid_d1     ),  // load PC
+            .cntl__simd__pc                ( cntl__simd__tag_optionPtr_d1 ),  // operation PC for simd
+
+            .cntl__simd__start             ( cntl__simd__start            ),  // start SIMD
+            .smdw__simd__regs_cntl         ( smdw__simd__regs_cntl        ),        
+            .smdw__simd__regs              ( smdw__simd__regs             ),        
+
+            .simd__smdw__complete          ( simd__smdw__complete         ),  // SIMD complete
+            .simd__smdw__regs_cntl         ( simd__smdw__regs_cntl        ),        
+            .simd__smdw__regs              ( simd__smdw__regs             ),        
 
              //-------------------------------
              // LD/ST Interface 
