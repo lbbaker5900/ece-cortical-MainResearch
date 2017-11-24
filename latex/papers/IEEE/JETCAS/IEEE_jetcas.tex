@@ -375,6 +375,7 @@
 \usepackage[binary-units=true]{siunitx}
 \sisetup{load-configurations = abbreviations}
 \usepackage{enumitem}
+\usepackage{adjustbox}
 
 % Custom commands
 \newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{max}}\;}
@@ -507,7 +508,7 @@ There have been many successful attempts to accelerate ANNs, but in most cases t
 CNNs assume a significant amout of reuse of the weights connecting ANs and thus they can take advantage of local memory (SRAM).
 
 Much of the ANN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory (SRAM).
-These implementations can be shown to be effective with specific NN architectures, such as CNNs where the ANN parameters can be stored in SRAM in a cache-like architecture avoiding constant accessing of the "slower" DRAM.
+These implementations can be shown to be effective with specific ANN architectures, such as CNNs where the ANN parameters can be stored in SRAM in a cache-like architecture avoiding constant accessing of the "slower" DRAM.
 In addition, to achieve a high performance, these rely on processing a batch of inputs, such as processing a batch of images or voice recordings using the same ANN.
 
 The work in this paper considers "edge" applications that require the processing of a disparate set of useful sized ANNs. The work assumes that the application system is utilizing ANNs
@@ -570,11 +571,11 @@ So in these ANNs, the memory requirements are significant. The storage is requir
 
 When these ANNs are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
 
-In most cases, Graphics processing Units (GPU) are used to implement large NNs. In many NN architectures, such as Convolutional NNs (CNN), they are quite effective. However, we should not forget they are not optimized purely for 
+In most cases, Graphics processing Units (GPU) are used to implement large ANNs. In many ANN architectures, such as Convolutional ANNs (CNN), they are quite effective. However, we should not forget they are not optimized purely for 
 NN processing and are restricted by available SRAM and they are power hungry. These limitations limit the effectiveness of GPUs.
 
-Much of the NN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or SRAM. 
-These implementations can be shown to be effective with specific NN architectures (CNN), server applications or the "toy examples" but when a system requires multiple disparate ANNs in an edge application, 
+Much of the ANN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or SRAM. 
+These implementations can be shown to be effective with specific ANN architectures (CNN), server applications or the "toy examples" but when a system requires multiple disparate ANNs in an edge application, 
 these implementations do not provide the required flexibility, storage capacity and deterministic performance.
 
 Another technology that has been considered over the last decade is 3D integrated circuit technology (3DIC). 
@@ -582,7 +583,7 @@ This 3DIC technology stacks multiple die together to form a system-on-chip with 
 By staying within the die footprint, 3DIC technology promises high connectivity and consequently high bandwidth along with lower power all within a smaller footprint.
 
 As a metric, this work asumes that any useful DNN will employ 100's of thousands of ANs. Although there is a lot of debate regarding number formats for ANNs, this work also assumes single-precision floating point.
-Assuming an ANN with 250K neurons and an average fanin to each AN of 2000, a system employing 10 ANNs for various disparate functions and an average processing time of \SI{10}{\milli\second} suggests a average bandwidth of \SI{16}{\tera \bit \per \second} \eqref{eq:totalBandwidth}.
+Assuming an ANN with 250K neurons and an average fanin to each AN of 2000, a system employing 10 ANNs for various disparate functions and an average processing time of \SI{10}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{16}{\tera \bit \per \second} \eqref{eq:totalBandwidth}.
 
 \begin{alignat}{2} \label{eq:totalBandwidth}
 \text{Average }&\text{Bandwidth} \notag \\
@@ -596,9 +597,9 @@ Assuming an ANN with 250K neurons and an average fanin to each AN of 2000, a sys
 \text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
 \end{alignat}
 
-Regardless of the combination of ANNs, this work suggests that these edge systems will require memory bandwidth of the order of 10's of \SI{}{\tera \bit \per \second}.
+Regardless of the combination of ANNs, this work suggests that these edge systems will require memory bandwidth of the order of 10's of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
 
-This work demonstrates a system that is able implement multiple useful sized DNNs whilst maintaining an average memory bandwidth of $>$\SI{30}{\tera \bit \per \second}.
+This work demonstrates a system that is able implement multiple useful sized DNNs whilst maintaining an average memory bandwidth of $>$\SI[per-mode=symbol]{30}{\tera \bit \per \second}.
 This is made possible by ensuring the system stays within the die stack footprint of a typical 3DIC DRAM .
 This work removes a reliance on SRAM to achieve high performance thus allowing the proposed design to be utilized in edge applcations when processing multiple disparate ANNs at or near real-time.
 Although not optimized for specific ANNs, such as CNNs, this work demonstrates the potential for real-time performance at the edge when implementing fully connected DNNs or other similar ANNs such as LSTM.
@@ -826,16 +827,16 @@ In figure \ref{fig:descriptorTuple} we see the format of a 6-tuple descriptor.
 
 As was discussed previously, the ANN input and configuration is stored in main DRAM memory. A part of the research is determining how to store the ANN input and parameters in such a way to effectively make use of main DRAM bandwidth. To provide parameters for the up to 32 execution lanes within the PE, we store the AN parameters in consecutive address locations. With one read to the DRAM, we access 128 words. This provides four weights for each of the 32 ANs being processed. These weights are sent to each lane of the PE over four cycles. We will discuss memory efficiency later, but by taking advantage of the multiple DRAM banks along with pre-fetching and buffering, we are able to achieve relatively high efficiency of the available maximum bandwidth.
 
-Although we are able to store the AN parameters (weights) in contiguous memory locations, providing the input state to a particular AN presents us with an interesting problem.
+Although AN parameters (weights) are stored in contiguous memory locations, providing the input state to a particular AN presents us with an interesting problem.
 
-Most often DNNs are represented by layers of ANs whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the NN.
+Most often DNNs are represented by layers of ANs whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the ANN.
 
 
-The input can be represented in the form of a 2-D array of AN states. For the sake of generality, We will even consider the input array elements as AN states.
+The input can be represented in the form of a 2-D array of AN states. For the sake of generality, the input array elements are considered as AN states.
 
 Any given AN operates on a region of interest (ROI) within the input array.
 
-In figure \ref{fig:roiStorage}, we see an input to a ANN layer in the form of a 2-D array along with the ROI of two ANs.
+In figure \ref{fig:roiStorage}, an input to a ANN layer in the form of a 2-D array along with the ROI of two ANs.
 
 \begin{figure}[!t]
 \centerline{
@@ -848,11 +849,11 @@ In figure \ref{fig:roiStorage}, we see an input to a ANN layer in the form of a 
 The various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each ANs ROI can be stored in contiguous memory locations. The figure above shows a typical ROI arrangement. Assuming the input array is stored in row-major order, an ROI is drawn from disjoint sections of memory. 
 These disjoint sections contain a number of AN states and the sections are separated by a gap of a number of memory addresses. When the parameters are accessed when performing a particular operation, the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. Now this looks problematic, and it is, but in practice groups of ANs share a common ROI. So once we solve the problem of efficiently reading an ROI from the DRAM, that ROI can be shared across a group of ANs
 
-We solve this read efficiency problem by again taking advantage of the DRAMs banks and pages.
+The read efficiency problem is solved by again taking advantage of the DRAMs banks and pages.
 
 This work proposes a data structure to describe these ROI storage locations.
 
-Although disparate groups of ANs may have a different start addresses for their ROI, we see commonality in the ROI section lengths and gaps. So for each AN group, the groups ROI starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
+Although disparate groups of ANs may have a different start addresses for their ROI, a commonality is observed in the ROI section lengths and gaps. So for each AN group, the groups ROI starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
 
 This storage descriptor contains, amongst other things the start address of the ROI and a pointer to a section/gap descriptor. Many storage descriptors point to a common section/gap descriptor. This avoids having to have a unique section/gap descriptors for each AN group.
 
@@ -870,9 +871,9 @@ Figure \ref{fig:storageDescriptor} shows the structure of the storage descriptor
 \subsubsection{Writing AN state results to memory}
 \label{ssec:writingANStates}
 
-When the PE has processed the group of ANs, the new AN states are sent back to the manager. The manager will store these back to DRAM most likely in the array format we described earlier.
+When the PE has processed the group of ANs, the new AN states are sent back to the manager. The manager will store these back to DRAM most likely in the array format as described earlier.
 
-A significant difference we take advantage of is that for any given operation, the system is writing far less than we are reading. For example, the ROI and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
+A significant difference taken advantage of is that for any given operation, the system is writing far less than is being read. For example, the ROI and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
 Now that sounds like writing back has a very small impact on performance but with DRAMs that's not always true.
 
 When the system writes the result of an operation back to memory, it is often writing a small portion of a DRAM page and the nature of the DRAM protocol means this is a very inefficient use of DRAM bandwidth. So although the amount of data written is small the performance impact cannot be ignored.
@@ -892,7 +893,7 @@ The result storage directives are communicated by using the same storage descrip
 \label{ssec:streamingOps}
 The operations performed by the stOp are primarily multiple-accumulate with a transfer to the SIMD or to local memory.
 
-Even though we will focus on the AN multiply-accumulate followed by a ReLu activation function, we have built flexibility into the stOp function to allow other functions to be added
+Even though the baseline system focuses on the AN multiply-accumulate followed by a ReLu activation function, the system has built in flexibility into the stOp function to allow other functions to be added
 
 In most cases, the stOp module will operate on the AN state and weights provided by the manager and provide the result to the SIMD.
 % ----------------------------------------------------------------------------------------------------
@@ -907,9 +908,9 @@ The SIMD will take the result provided by the stOp and perform a ReLu. The resul
 \subsubsection{Configuration}
 \label{ssec:peConfiguration}
 
-To configure these operations, we send two pointers to the PE. These pointers index into a small local memory which provides a program counter (PC) to the function to be performed by the SIMD and a configuration entry for the operation to be performed by the stOp.
+To configure these operations, two pointers are sent to the PE. These pointers index into a small local memory which provides a program counter (PC) to the function to be performed by the SIMD and a configuration entry for the operation to be performed by the stOp.
 
-The PE is able to perform its operation concurrently on 32-lanes. However, there are cases when less than 32-lanes will be employed. This may occur if the number of ANs being processed is not modulo-32. In this case, we also need to provide the number of lanes being processed for any given operation. In addition, we also send the length of the vector of operands being sent from the manager to the PE.
+The PE is able to perform its operation concurrently on 32-lanes. However, there are cases when less than 32-lanes will be employed. This may occur if the number of ANs being processed is not modulo-32. In this case, the manager provides the number of lanes being processed for any given operation. In addition, the length of the vector of operands is also sent by the manager to the PE.
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DRAM Customizable <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
 \section{Suggested DRAM Customizations}
@@ -956,7 +957,7 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 
 \subsection{DRAM Write Mask}
 \label{sec:dramWriteMask}
-When processing an ANN, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed. The activation of the processed AN is written back to memory. The ratio of reads to writes is high, 100's or 1000's to one. Therefore, we often need to write a portion of the page back to memory. To avoid a read/modify/write, we propose adding a write data mask to the DRAM write path.
+When processing an ANN, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed. The activation of the processed AN is written back to memory. The ratio of reads to writes is high, 100's or 1000's to one. Therefore, the system often needs to write a portion of the page back to memory. To avoid a read/modify/write, a customization to the DRAM is the addition of a write data mask to the DRAM write path.
 
 
 % #######################################################################################################################################
@@ -1105,32 +1106,87 @@ The design was synthesized using an available 65nm technology node and then scal
 The primary control and datapaths of the system have been simulated in a system verilog environment. It has been synthesized using a 65nm technology node.
 The design has been coded targeting a frequency of $>$\SI{500}{\mega\hertz}. Timing closure and place and route is ongoing. The system has been designed throughout to meet the timing target so minimal changes are expected to meet timing.
 
-As mention previously \eqref{eq:totalBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of ten's \SI{}{\tera\bit\per\second}.
-The approximate design targets are shown in Table \ref{tab:DesignTargets}.
+As mention previously \eqref{eq:totalBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
+%%%%The approximate design targets are shown in Table \ref{tab:DesignTargets}.
+%%%%
+%%%%\begin{table}[h]
+%%%%%  \captionsetup{justification=centering, skip=-5pt}
+%%%%  \captionsetup{justification=centering, skip=3pt}
+%%%%  \caption{Design targets}
+%%%%  \label{tab:DesignTargets}
+%%%%  \centering
+%%%%%  \begin{center}
+%%%%    % [lr] ~ left align col 0 and right align col 1
+%%%%    % e.g. 4 columns could be lccr
+%%%%    \begin{tabular}{lr}
+%%%%      \toprule
+%%%%      Parameter         & Target \\
+%%%%      \midrule
+%%%%      Frequency         & $>$\SI{700}{\MHz}   \\
+%%%%      Power             & \SI{\approx 80}{\W}   \\
+%%%%      Bandwidth         & \SI[per-mode=symbol]{\approx 64}{\tera\bit\per\second} \\
+%%%%      Overall Die Area  & \SI{175}{\mm^2} \\
+%%%%      \bottomrule
+%%%%    \end{tabular}
+%%%%%  \end{center}
+%%%%\end{table}
+
+The Manager and PE have been place and routed as shown in figure \ref{fig:Manager and PE Die layouts}. Although the design is yet to close timing, the parasitics
+were extracted from these layouts and simulated against a group of operations. The simulation generated an activity file which was then used by the 
+Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates. Those estimates were used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz}
+which are shown in table \ref{tab:Simulation-based estimates}.
 
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
   \captionsetup{justification=centering, skip=3pt}
-  \caption{Design targets}
-  \label{tab:DesignTargets}
+  \caption{Simulation-based estimates}
+  \label{tab:Simulation-based estimates}
   \centering
 %  \begin{center}
     % [lr] ~ left align col 0 and right align col 1
     % e.g. 4 columns could be lccr
-    \begin{tabular}{lr}
-      \toprule
-      Parameter         & Target \\
-      \midrule
-      Frequency         & $>$\SI{500}{\MHz}   \\
-      Power             & \SI{\approx 80}{\W}   \\
-      Bandwidth         & \SI{\approx 40}{\tera\bit/\second} \\
-      Overall Die Area  & \SI{175}{\mm^2} \\
-      \bottomrule
+  \begin{adjustbox}{width=0.45\textwidth}
+    \begin{tabular}{cccccc}
+          \toprule
+                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                         &                       &  Usable    &          &          &  \\  %\cline{1-1}
+                         &                       &   DRAM     & Expected &          &  \\  %\cline{1-1}
+                   Tech  & Freq                  & Bandwidth  &  Power   &  FLOPS   &  \\  %\cline{1-1}
+          \hline  % instead of \midrule %midrule doesnt overlap with column lines
+                   28    & \SI{500}{\mega\hertz} & \SI[per-mode=symbol]{\sim 46}{\tera\bit\per\second}&53W&  \SI[per-mode=symbol]{2.0}{\tera FLOP\per\second}\\ %\cline{2-2}
+                   28    & \SI{700}{\mega\hertz} & \SI[per-mode=symbol]{\sim 64}{\tera\bit\per\second}&73W&  \SI[per-mode=symbol]{2.8}{\tera FLOP\per\second}\\ %\cline{2-2}
+          \bottomrule
     \end{tabular}
+\end{adjustbox}
 %  \end{center}
 \end{table}
 
-The Manager and PE have been place and routed as shown in figure \ref{fig:Manager and PE Die layouts}.
+
+%%%%\begin{table}[h]
+%%%%%  \captionsetup{justification=centering, skip=-5pt}
+%%%%  \captionsetup{justification=centering, skip=3pt}
+%%%%  \caption{Design targets}
+%%%%  \label{tab:DesignTargets}
+%%%%  \centering
+%%%%%  \begin{center}
+%%%%    % [lr] ~ left align col 0 and right align col 1
+%%%%    % e.g. 4 columns could be lccr
+%%%%    \begin{tabular}{lccccc}
+%%%%          \toprule
+%%%%                            %& \multicolumn{4}{c}{Technology}   \\
+%%%%                            &       &       &  Usable    &          &  \\  %\cline{1-1}
+%%%%                            &       &       &   DRAM     & Expected &  \\  %\cline{1-1}
+%%%%                            & Tech  & Freq  & Bandwidth  &  Power   &  \\  %\cline{1-1}
+%%%%          \hline  % instead of \midrule %midrule doesnt overlap with column lines
+%%%%                  3D-System & 28    & \SI{700}{\mega\hertz}      &       \SI[per-mode=symbol]{\sim 64}{\tera\bit\per\second}   &  73W   &  \\ %\cline{2-2}
+%%%%                  NVidia    & 28    &       &  $\ll$\SI[per-mode=symbol]{1.28}{\tera\bit\per\second} &  100W  &  \\
+%%%%                  TPU       & 28    &       &  $<$  \SI[per-mode=symbol]{224}{\giga\bit\per\second}  &  40W   &  \\
+%%%%          \bottomrule
+%%%%    \end{tabular}
+%%%%%  \end{center}
+%%%%\end{table}
+
+
 
 \begin{figure}
 \centering
@@ -1154,13 +1210,110 @@ The Manager and PE have been place and routed as shown in figure \ref{fig:Manage
 \end{figure}
 
 
+%%%%\begin{figure}[h]
+%%%%\centering
+%%%%\captionsetup{justification=centering}
+%%%%    \begin{subtable}{.50\textwidth}
+%%%%    %  \captionsetup{justification=centering, skip=-5pt}
+%%%%      \centering
+%%%%    %  \begin{center}
+%%%%        % [lr] ~ left align col 0 and right align col 1
+%%%%        % e.g. 4 columns could be lccr
+%%%%        \resizebox{\textwidth}{!}{ % Scale table
+%%%%        \begin{tabular}{r|ccc}
+%%%%          \toprule
+%%%%                         & \multicolumn{3}{c}{Technology} \\
+%%%%                    Unit & \SI{130}{\nm} & \SI{65}{\nm} & \SI{45}{\nm}  \\
+%%%%          \hline
+%%%%          SIMD (32-lane) & 3200000 \\
+%%%%                    DMA  &               & 368000  \\
+%%%%      Memory Controller  &               & 294000  \\
+%%%%                Control  &               & 1032000 \\
+%%%%                   SRAM  &               & 740098  \\
+%%%%                    FMA  &               &              & 405440 \\
+%%%%          \bottomrule
+%%%%        \end{tabular}
+%%%%        }
+%%%%      \captionsetup{justification=centering, skip=9pt}
+%%%%      \vspace{-1mm}
+%%%%      \caption{Original area estimates}
+%%%%      \label{tab:areaEstimates}
+%%%%    %  \end{center}
+%%%%    \end{subtable}
+%%%%    \hfill
+%%%%    %\vfill
+%%%%    \begin{subtable}{.45\textwidth}
+%%%%    %  \captionsetup{justification=centering, skip=-5pt}
+%%%%      \centering
+%%%%    %  \begin{center}
+%%%%        % [lr] ~ left align col 0 and right align col 1
+%%%%        % e.g. 4 columns could be lccr
+%%%%        \resizebox{\textwidth}{!}{%
+%%%%        \begin{tabular}{r|cccc}
+%%%%          \toprule
+%%%%                            %& \multicolumn{4}{c}{Technology}   \\
+%%%%                            &       &  Usable    &          &  \\  %\cline{1-1}
+%%%%                            &       &   DRAM     & Expected &  \\  %\cline{1-1}
+%%%%                            & Tech  & Bandwidth  &  Power   &  \\  %\cline{1-1}
+%%%%          \hline  % instead of \midrule %midrule doesnt overlap with column lines
+%%%%                  3D-System & 28    &       \SI[per-mode=symbol]{\sim 64}{\tera\bit\per\second}   &  73W   &  \\ %\cline{2-2}
+%%%%                  NVidia    & 28    &  $\ll$\SI[per-mode=symbol]{1.28}{\tera\bit\per\second} &  100W  &  \\
+%%%%                  TPU       & 28    &  $<$  \SI[per-mode=symbol]{224}{\giga\bit\per\second}  &  40W   &  \\
+%%%%          \bottomrule
+%%%%        \end{tabular}
+%%%%        }
+%%%%      \captionsetup{justification=centering, skip=9pt}
+%%%%      \vspace{3mm}
+%%%%      \caption{Scaling numbers (from \cite{schabel2014energy})}
+%%%%      \label{tab:scalingNumbers}
+%%%%    %  \end{center}
+%%%%    \end{subtable}
+%%%%\vspace{-2mm}
+%%%%\caption{Original area estimates and scaling numbers}
+%%%%\label{fig:areaAndScalingEstimates}
+%%%%\end{figure}
+
 
 % #######################################################################################################################################
 % >>>>>>>>>>>>>>>>>>>>>>>>>>> Conclusions and Further Work <<<<<<<<<<<<<<<<<<<<<<
 \section{Conclusions}
 \label{sec:Conclusions}
+There have been many attempts to accelerate ANNs. Many have shown excellent performance mainly when implementing CNNs. The improvement mostly comes from the ability to 
+hold kernel weights and/or AN activations in local SRAM. Another method of employing local memory is often due to pooling of batch requests, especially in server applications.
+This local storage allows the system to take advantage of the low latency and random access benefits of SRAM whilst performing multiple operations on that data.
+When considering applications where this local storage cannot be used effectively, all these implementations suffer a large degradation in performance.
 
 
+This work considers edge applications where a system is processing single requests into a disparate set of ANNs. The assumpiton is that local SRAM is no longer effective and performance is based on DRAM bandwidth.
+This work considers 3DIC technology and the performance benefits it provides. In addition, a customized 3D-DRAM is proposed. The customized 3D-DRAM combined with a design based on custom instructions and operation descriptors
+allows the system to achieve high levels of memory bandwidth efficiency.
+
+There is no doubt CNN accelerators combined with batch processing achieve a performance that is difficult to better, but applying these systems to this works target application exposes the DRAM bandwidth limitations.
+
+This work demonstrates a 3D-DRAM system that at the surface has a relatively low FLOPs, but the target applcation is memory bound and under these circumstances this work is potentially 10-100X better that existing ASIC/ASIPs or GPUs.
+
+\section{Further Work}
+\label{sec:Further Work}
+This work does not put a high level of importance to the processing engine. The choice of using single-precision floating point format was in some part convenient. In fact, half-precision might have been a better choice especially as there
+is a level of acceptance that lower precision is acceptable in ANN inference.
+Therefore, further work should include :
+\begin {outline}
+  \1 Manager changes to support half-precision format
+    \2 supports 16-bit FP would require additional muxing logic when directing words in the wide DRAM bus to execution lanes, but the bulk of the design should remain relatively intact.
+  \1 Half-Precision PE
+    \2 modifying the PE to support 16-bit FP would be relatively trivial
+  \1 Additional PE pipelining
+    \2 Adding layers of processing to the PE would effectively increase the operations per second
+      \3 the PE area utilization is relatively low so it could support some additional pipelining
+      \3 using a reduction array would effectively double the FLOPs
+      \3 looking at storing weights and inputs for a pipelined PE would be required and the manager would likely be customized to the PE, but the belief is the Manager design and complexity should be similar
+  \1 Systolic PE
+    \2 systolic arrays have shown efficacy when used in server applications such as TPU, but its not clear how effective they would be in an edge application
+      \3 consider how to effectively feed a systolic array PE
+      \3 consider types of systolic array
+      \3 consider situations such as multiple Managers feeding a single PE. For example, a systolic PE might use two managers to feed X and Y inputs of the array
+ 
+\end{outline}
 
 
 % Can use something like this to put references on a page
