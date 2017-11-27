@@ -3755,9 +3755,9 @@ def main():
     #network.addLayer('Convolutional',   13,  13,  4,    3,   3,   4,   1 ) #  384,
     
     # FC-7
-    #network.addLayer('Input',         4096,    1,    1,                      ) #   96,
-    #network.addLayer('Convolutional', 4096,    1,    1, 4096,   1,    1,   0 ) #  256,
-    #network.addLayer('Convolutional', 1024,    1,    1, 4096,   1,    1,   0 ) #  384,
+    network.addLayer('Input',         4096,    1,    1,                      ) #   96,
+    network.addLayer('Convolutional', 4096,    1,    1, 4096,   1,    1,   0 ) #  256,
+    network.addLayer('Convolutional', 1024,    1,    1, 4096,   1,    1,   0 ) #  384,
     
     # Small 2x2 and 8x8
     #network.addLayer('Input',           55,  55,    3,                      ) #   96,
@@ -3766,9 +3766,9 @@ def main():
     #
     
     # Small 2x2 and 8x8
-    network.addLayer('Input',           55,  55,    9,                      ) #   96,
-    network.addLayer('Convolutional',   27,  27,  32,    5,   5,    9,   2 ) #  256,
-    network.addLayer('Convolutional',   13,  13,   64,    3,   3,  32,   2 ) #  384,
+    #network.addLayer('Input',           55,  55,    9,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,  32,    5,   5,    9,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,   64,    3,   3,  32,   2 ) #  384,
     #
     
     
