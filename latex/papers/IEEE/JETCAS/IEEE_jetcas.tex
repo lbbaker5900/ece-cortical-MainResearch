@@ -642,7 +642,7 @@ The question becomes, can a useful system coexist within the same 3D footprint?
 
 This work targeted a baselne system with:
 \begin{itemize}
-  \itemsep0em 
+  %\itemsep0em 
   \item target single precision floating point for computations
   \item use the Tezzaron DiRAM4 DRAM for area estimates and memory controller design
 \end{itemize}
@@ -745,6 +745,8 @@ In the baseline system, the PE is responsible for the main algorithm operations.
 The PE has three major blocks:
 
 \begin{outline}
+  %\setlength{\baselineskip}{10pt}
+  %\setlength{\itemsep}{6pt}
     \1 Streaming operation function (stOp)
       \2 Processes data from the manager on-the-fly without storing in local SRAM
     \1 SIMD
@@ -763,6 +765,17 @@ The PE has three major blocks:
 The instructions communicate:
 
 \begin{outline}
+  %\setlength{\baselineskip}{10pt}
+  %\setlength{\itemsep}{6pt}
+  %\setlength{\baselineskip}{10pt}
+  %\setlength\itemsep{0pt}
+  %\setlength{\partopsep}{0pt}
+  %\setlength{\parskip}{0pt}
+  %\setlength{\parsep}{0pt}
+  %\setlength{\topsep}{0pt}
+  %\setlength{\itemsep}{3pt}
+  %\setlength{\itemindent}{\leftmargin}
+  %\setlength{\leftmargin}{0pt}
         \1 To the Manager
             \2 ROI Storage descriptor
             \2 Parameter/Weight Storage Descriptor
