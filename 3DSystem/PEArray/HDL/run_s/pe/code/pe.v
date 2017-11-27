@@ -19,6 +19,7 @@
 `include "common.vh"
 `include "pe_array.vh"
 `include "pe.vh"
+`include "pe_cntl.vh"
 `include "stack_interface.vh"
 //`include "noc_cntl.vh"
 `include "mem_acc_cont.vh"
@@ -278,6 +279,8 @@ module pe (
   //-------------------------------------------------------------------------------------------------
   // PE Control
   // 
+  wire  [`PE_CNTL_OOB_OPTION_RANGE            ]    cntl__simd__tag_optionPtr      ; 
+
   pe_cntl pe_cntl (
 
             //-------------------------------
@@ -298,6 +301,7 @@ module pe (
             .stOp_complete                        ( pe__sys__complete                 ),
             .cntl__simd__tag_valid                ( cntl__simd__tag_valid             ),
             .cntl__simd__tag                      ( cntl__simd__tag                   ),
+            .cntl__simd__tag_optionPtr            ( cntl__simd__tag_optionPtr         ),  // operation PC for simd
             .cntl__simd__tag_num_lanes            ( cntl__simd__tag_num_lanes         ),
             .simd__cntl__tag_ready                ( simd__cntl__tag_ready             ),
 
@@ -377,6 +381,7 @@ module pe (
             // Additional PE control
             .cntl__simd__tag_valid     ( cntl__simd__tag_valid     ),
             .cntl__simd__tag           ( cntl__simd__tag           ),
+            .cntl__simd__tag_optionPtr ( cntl__simd__tag_optionPtr ),  // operation PC for simd
             .cntl__simd__tag_num_lanes ( cntl__simd__tag_num_lanes ),
             .simd__cntl__tag_ready     ( simd__cntl__tag_ready     ),
 
