@@ -1140,26 +1140,53 @@ which are shown in table \ref{tab:Simulation-based estimates}.
 %  \captionsetup{justification=centering, skip=-5pt}
   \captionsetup{justification=centering, skip=3pt}
   \caption{Simulation-based estimates}
+  \vspace{3pt}
   \label{tab:Simulation-based estimates}
   \centering
-%  \begin{center}
     % [lr] ~ left align col 0 and right align col 1
     % e.g. 4 columns could be lccr
-  \begin{adjustbox}{width=0.45\textwidth}
-    \begin{tabular}{cccccc}
-          \toprule
+  \begin{subtable}{0.5\textwidth}
+    \centering
+    \begin{adjustbox}{width=0.9\textwidth}
+      \begin{tabular}{cccc}
+        \toprule
                             % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
-                         &                       &  Usable    &          &          &  \\  %\cline{1-1}
-                         &                       &   DRAM     & Expected &          &  \\  %\cline{1-1}
-                   Tech  & Freq                  & Bandwidth  &  Power   &  FLOPS   &  \\  %\cline{1-1}
-          \hline  % instead of \midrule %midrule doesnt overlap with column lines
-                   28    & \SI{500}{\mega\hertz} & \SI[per-mode=symbol]{\sim 46}{\tera\bit\per\second}&53W&  \SI[per-mode=symbol]{2.0}{\tera FLOP\per\second}\\ %\cline{2-2}
-                   28    & \SI{700}{\mega\hertz} & \SI[per-mode=symbol]{\sim 64}{\tera\bit\per\second}&73W&  \SI[per-mode=symbol]{2.8}{\tera FLOP\per\second}\\ %\cline{2-2}
-          \bottomrule
-    \end{tabular}
-\end{adjustbox}
-%  \end{center}
-\end{table}
+                         &                       &          &                                       \\  %\cline{1-1}
+                         &                       & Expected &                                       \\  %\cline{1-1}
+                   Tech  & Freq                  &  Power   &  Test \cite{krizhevsky2012imagenet}   \\  %\cline{1-1}
+        \hline  % instead of \midrule %midrule doesnt overlap with column lines
+                   28    & \SI{500}{\mega\hertz} &   53W    &  CONV2                                \\ %\cline{2-2}
+                   28    & \SI{700}{\mega\hertz} &   73W    &  CONV2                                \\ %\cline{2-2}
+        \bottomrule
+      \end{tabular}
+    \end{adjustbox}
+    \vspace{3pt}
+    \captionsetup{justification=centering, skip=10pt}
+    \caption{Power Dissipation}
+    \label{tab:Power Dissipation}
+  \end{subtable}
+  \bigskip
+  \begin{subtable}{0.5\textwidth}
+    \centering
+    \begin{adjustbox}{width=0.7\textwidth}
+      \begin{tabular}{cc}
+        \toprule
+                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                                                      &                                          \\  %\cline{1-1}
+                                                      & Downstream Stack                         \\  %\cline{1-1}
+                   Test \cite{krizhevsky2012imagenet} & Bus Efficiency                           \\  %\cline{1-1}
+        \hline  % instead of \midrule %midrule doesnt overlap with column lines
+                   CONV2                              &\SI[per-mode=symbol]{\sim 70}{\percent}   \\ %\cline{2-2}
+                   FC-7                               &\SI[per-mode=symbol]{\sim 94}{\percent}   \\ %\cline{2-2}
+        \bottomrule
+      \end{tabular}
+    \end{adjustbox}
+    \vspace{3pt}
+    \captionsetup{justification=centering, skip=10pt}
+    \caption{Bus Efficiency}
+    \label{tab:Bus Efficiency}
+  \end{subtable}
+  \end{table}
 
 
 %%%%\begin{table}[h]
