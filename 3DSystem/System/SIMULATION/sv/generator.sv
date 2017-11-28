@@ -229,7 +229,9 @@ class generator;
 
                         // Send to driver
                         $display("@%0t:%s:%0d:INFO:{%0d,%0d} Send operation to driver", $time, `__FILE__, `__LINE__, Id[0], Id[1]);
-                        sys_operation.displayOperation();
+                        `ifdef TB_VERBOSITY_HIGH
+                          sys_operation.displayOperation();
+                        `endif
                         gen2drv.put(sys_operation)                    ;
 
                         // now wait for driver to take our sequence of operations

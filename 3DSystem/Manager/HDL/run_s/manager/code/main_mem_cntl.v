@@ -1553,29 +1553,29 @@ module main_mem_cntl (
     for (chan=0; chan<`MGR_DRAM_NUM_CHANNELS ; chan=chan+1) 
       begin: cmd_seq_pc_fifo
 
-        wire                                                   clear                 ;
-        wire                                                   almost_full           ;
-        reg                                                    write                 ;
+        wire                                                      clear                 ;
+        wire                                                      almost_full           ;
+        reg                                                       write                 ;
         wire  [`MMC_CNTL_PAGE_CMD_SEQ_PC_AGGREGATE_FIFO_RANGE ]   write_data            ;
-        reg   [`MMC_CNTL_CMD_GEN_TAG_RANGE                 ]   write_tag             ;
-        reg   [`DRAM_ACC_SEQ_TYPE_RANGE                    ]   write_seq_type        ;
-        reg   [`MMC_CNTL_NUM_OF_INTF_RANGE                 ]   write_strm            ;
-        reg   [`DRAM_ACC_NUM_OF_CMDS_RANGE                 ]   write_cmd             ;
-        reg   [`MGR_DRAM_BANK_ADDRESS_RANGE                ]   write_bank            ;
-        reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE                ]   write_page            ;
-        reg   [`MMC_CNTL_CMD_GEN_OP_COUNT_RANGE            ]   write_cci             ;  // cache command count
+        reg   [`MMC_CNTL_CMD_GEN_TAG_RANGE                    ]   write_tag             ;
+        reg   [`DRAM_ACC_SEQ_TYPE_RANGE                       ]   write_seq_type        ;
+        reg   [`MMC_CNTL_NUM_OF_INTF_RANGE                    ]   write_strm            ;
+        reg   [`DRAM_ACC_NUM_OF_CMDS_RANGE                    ]   write_cmd             ;
+        reg   [`MGR_DRAM_BANK_ADDRESS_RANGE                   ]   write_bank            ;
+        reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE                   ]   write_page            ;
+        reg   [`MMC_CNTL_CMD_GEN_OP_COUNT_RANGE               ]   write_cci             ;  // cache command count
 
-        wire                                                   pipe_valid            ;
-        reg                                                    pipe_read             ;
+        wire                                                      pipe_valid            ;
+        reg                                                       pipe_read             ;
                                                                                 
         wire  [`MMC_CNTL_PAGE_CMD_SEQ_PC_AGGREGATE_FIFO_RANGE ]   pipe_data             ;
-        wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                 ]   pipe_tag              ;
-        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                    ]   pipe_seq_type         ;
-        wire  [`MMC_CNTL_NUM_OF_INTF_RANGE                 ]   pipe_strm             ;
-        wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                 ]   pipe_cmd              ;
-        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                ]   pipe_bank             ;
-        wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE                ]   pipe_page             ;
-        reg   [`MMC_CNTL_CMD_GEN_OP_COUNT_RANGE            ]   pipe_cci              ;  // cache command count
+        wire  [`MMC_CNTL_CMD_GEN_TAG_RANGE                    ]   pipe_tag              ;
+        wire  [`DRAM_ACC_SEQ_TYPE_RANGE                       ]   pipe_seq_type         ;
+        wire  [`MMC_CNTL_NUM_OF_INTF_RANGE                    ]   pipe_strm             ;
+        wire  [`DRAM_ACC_NUM_OF_CMDS_RANGE                    ]   pipe_cmd              ;
+        wire  [`MGR_DRAM_BANK_ADDRESS_RANGE                   ]   pipe_bank             ;
+        wire  [`MGR_DRAM_PAGE_ADDRESS_RANGE                   ]   pipe_page             ;
+        reg   [`MMC_CNTL_CMD_GEN_OP_COUNT_RANGE               ]   pipe_cci              ;  // cache command count
 
 
         generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MMC_CNTL_PAGE_CMD_SEQ_PC_FIFO_DEPTH                 ),
@@ -1600,7 +1600,7 @@ module main_mem_cntl (
 
           assign write_data  = {write_strm, write_tag, write_seq_type, write_cmd, write_bank, write_page, write_cci} ;
 
-          assign {pipe_strm, pipe_tag, pipe_seq_type, pipe_cmd, pipe_bank, pipe_page, pipe_cci} = pipe_data            ;
+          assign                {pipe_strm,  pipe_tag,  pipe_seq_type,  pipe_cmd,  pipe_bank,  pipe_page,  pipe_cci} = pipe_data ;
 
         assign clear = 1'b0 ;
  
@@ -1658,9 +1658,9 @@ module main_mem_cntl (
                                 .clk                   ( clk                   )
                                 );
 
-          assign write_data  = {write_strm, write_tag, write_seq_type, write_cmd, write_bank, write_page} ;
+          assign write_data  = {write_strm, write_tag, write_seq_type, write_cmd, write_bank, write_page } ;
 
-          assign {pipe_strm,            pipe_tag,            pipe_seq_type,            pipe_cmd,            pipe_bank,            pipe_page           } = pipe_data            ;
+          assign               { pipe_strm,  pipe_tag,  pipe_seq_type,  pipe_cmd,  pipe_bank,  pipe_page } = pipe_data ;
 
         assign clear = 1'b0 ;
  
@@ -1723,13 +1723,13 @@ module main_mem_cntl (
                                 );
 
         `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                       
-          assign write_data  = {write_strm, write_tag, write_seq_type, write_cmd, write_bank, write_page, write_line} ;
+          assign write_data  = {write_strm, write_tag, write_seq_type, write_cmd, write_bank, write_page, write_line } ;
 
-          assign {pipe_strm,            pipe_tag,            pipe_seq_type,            pipe_cmd,            pipe_bank,            pipe_page,            pipe_line           } = pipe_data            ;
+          assign               { pipe_strm,  pipe_tag,  pipe_seq_type,  pipe_cmd,  pipe_bank,  pipe_page,  pipe_line } = pipe_data ;
         `else
-          assign write_data  = {write_strm, write_tag, write_cmd, write_bank, write_page} ;
+          assign write_data  = {write_strm, write_tag, write_seq_type, write_cmd, write_bank, write_page } ;
 
-          assign {pipe_strm,            pipe_tag,            pipe_seq_type,            pipe_cmd,            pipe_bank,            pipe_page           } = pipe_data            ;
+          assign               { pipe_strm,  pipe_tag,  pipe_seq_type,  pipe_cmd,  pipe_bank,  pipe_page } = pipe_data ;
         `endif
 
         assign clear = 1'b0 ;

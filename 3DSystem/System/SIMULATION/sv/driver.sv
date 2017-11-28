@@ -122,7 +122,9 @@ class driver;
                             // put operations into golden mailbox
                             drv2memP.put(sys_operation) ;  //Putting the instruction into the golden model mailbox                                              
                             $display("@%0t:%s:%0d:DEBUG:{%0d,%0d} Send operation to mem_checker with expected result of %f, %f <> %f", $time, `__FILE__, `__LINE__, Id[0], Id[1], sys_operation.result, sys_operation.resultHigh, sys_operation.resultLow, );
-                            sys_operation.displayOperation();
+                            `ifdef TB_VERBOSITY_HIGH
+                              sys_operation.displayOperation();
+                            `endif
                             
                             gen2drv.get(sys_operation)  ;  //Removing the instruction from generator mailbox
                             `ifdef TB_DRIVES_STACK_DOWN_DATA

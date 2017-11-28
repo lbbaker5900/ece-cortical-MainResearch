@@ -218,12 +218,16 @@ package dram_utils;
                       begin
                         if(vDramCfgIfc[0].entryStatusDram(Id, 0, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()) == 0)
                           begin
-                            $display("@%0t :%s:%0d:INFO: Manager {%0d} : %0d, %h : New value loaded at %0d: %h %h %h %h = %h ", $time, `__FILE__, `__LINE__, Id, vDramCfgIfc[0].entryStatusDram(Id, 0, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()), vDramCfgIfc[0].readDram(Id, 0, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()), 0, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), config_data);
+                            `ifdef TB_VERBOSITY_HIGH
+                              $display("@%0t :%s:%0d:INFO: Manager {%0d} : %0d, %h : New value loaded at %0d: %h %h %h %h = %h ", $time, `__FILE__, `__LINE__, Id, vDramCfgIfc[0].entryStatusDram(Id, 0, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()), vDramCfgIfc[0].readDram(Id, 0, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()), 0, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), config_data);
+                            `endif
                             vDramCfgIfc[0].loadDram(Id, 0, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), config_data);
                           end
                         else
                           begin
-                            $display("@%0t :%s:%0d:INFO: Manager {%0d} : Pre-existing value found at %0d: %h %h %h = %h", $time, `__FILE__, `__LINE__, Id, 0, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), vDramCfgIfc[0].readDram(Id, 0, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()));
+                            `ifdef TB_VERBOSITY_HIGH
+                              $display("@%0t :%s:%0d:INFO: Manager {%0d} : Pre-existing value found at %0d: %h %h %h = %h", $time, `__FILE__, `__LINE__, Id, 0, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), vDramCfgIfc[0].readDram(Id, 0, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()));
+                            `endif
                             if (i == 0)
                               begin
                                 // Replicate ROI existing value across all lanes
@@ -245,12 +249,16 @@ package dram_utils;
                       begin
                         if(vDramCfgIfc[1].entryStatusDram(Id, 1, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()) == 0)
                           begin
-                            $display("@%0t :%s:%0d:INFO: Manager {%0d} : %0d, %h : New value loaded at %0d: %h %h %h %h = %h ", $time, `__FILE__, `__LINE__, Id, vDramCfgIfc[1].entryStatusDram(Id, 1, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()), vDramCfgIfc[1].readDram(Id, 1, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()), 0, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), config_data);
+                            `ifdef TB_VERBOSITY_HIGH
+                              $display("@%0t :%s:%0d:INFO: Manager {%0d} : %0d, %h : New value loaded at %0d: %h %h %h %h = %h ", $time, `__FILE__, `__LINE__, Id, vDramCfgIfc[1].entryStatusDram(Id, 1, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()), vDramCfgIfc[1].readDram(Id, 1, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()), 0, cbpw[0].atoi(), cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), config_data);
+                            `endif
                             vDramCfgIfc[1].loadDram(Id, 1, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), config_data);
                           end
                         else
                           begin
-                            $display("@%0t :%s:%0d:INFO: Manager {%0d} : Pre-existing value found at %0d: %h %h %h = %h ", $time, `__FILE__, `__LINE__, Id, 1, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), vDramCfgIfc[1].readDram(Id, 1, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()));
+                            `ifdef TB_VERBOSITY_HIGH
+                              $display("@%0t :%s:%0d:INFO: Manager {%0d} : Pre-existing value found at %0d: %h %h %h = %h ", $time, `__FILE__, `__LINE__, Id, 1, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi(), vDramCfgIfc[1].readDram(Id, 1, cbpw[1].atoi(), cbpw[2].atoi(), cbpw[3].atoi()));
+                            `endif
                             if (i == 0)
                               begin
                                 // Replicate ROI existing value across all lanes

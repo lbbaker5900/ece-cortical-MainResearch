@@ -13,8 +13,10 @@ cp -p  ../../../Manager/scripts/nocConfig_mesh2x2.txt ../../../Manager/scripts/n
 cp -p  ../common/noc_interMgr_port_Bitmasks_2x2.vh ../../../Manager/HDL/common/noc_interMgr_port_Bitmasks.vh
 cp -p  inputFiles.2x2/* inputFiles/.  ;  cp -p  configFiles.2x2/* configFiles/.
 
-cp  configFiles.2x2/* configFiles/.      ; cp inputFiles.2x2/* inputFiles/.
+cp  configFiles.2x2.CONV1/* configFiles/.      ; cp inputFiles.2x2.CONV1/* inputFiles/.
 cp  configFiles.2x2.long/* configFiles/. ; cp inputFiles.2x2.long/* inputFiles/.
+
+cp  configFiles.2x2.FC7/* configFiles/.      ; cp inputFiles.2x2.FC7/* inputFiles/.
 
 # restrict number of instructions
 #  modified files in tmp/.

@@ -788,12 +788,12 @@ module sdp_request_cntl (
                      end
                  endcase  // case ({force_cons_chan01_request, force_cons_chan10_request })
                end
-             else if (/*requests_complete &&*/ ~first_time_thru && (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP))
+             else if (requests_complete && ~first_time_thru && (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP))
                begin
                  // if we are completing a consequtive zone, the access order is CWBP and we havent fetched both channels, then anticipate we have jumped over a channel
                  // e.g. pbc_start = 0,24,1,  pbc_end = 0,26,0
                  //      pbc_start = 0, 8,1,  pbc_end = 0,10,1
-                 // We saw this mainly during the writeback testing where we are writing back 32 words in CWBP order and the address crossed a bak/channel boundary
+                 // We saw this mainly during the writeback testing where we are writing back 32 words in CWBP order and the address crossed a bank/channel boundary
                  //case ({(~pbc_last_requested_valid[1] | (pbc_last_end_addr_bank != pbc_bank_last_requested[1]) | (pbc_last_end_addr_page != pbc_page_last_requested[1])), (~pbc_last_requested_valid[0] | (pbc_last_end_addr_bank != pbc_bank_last_requested[0]) | (pbc_last_end_addr_page != pbc_page_last_requested[0]))})  
                  case ({pbc_last_requested_mismatch[1],  pbc_last_requested_mismatch[0]})
                    2'b00:

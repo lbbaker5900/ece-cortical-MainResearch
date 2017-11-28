@@ -960,7 +960,9 @@ package operation;
               begin
                 tmp_payload_tuple_type       = payload_tuple_type  [i] ;
                 tmp_payload_extd_tuple_value = payload_tuple_value [i] ;
-                $display("@%0t:%s:%0d:INFO: Tuple: {%2h, %2h}", $time, `__FILE__, `__LINE__, payload_tuple_type[i], payload_tuple_value [i]);
+                `ifdef TB_VERBOSITY_HIGH
+                  $display("@%0t:%s:%0d:INFO: Tuple: {%2h, %2h}", $time, `__FILE__, `__LINE__, payload_tuple_type[i], payload_tuple_value [i]);
+                `endif
 
                 if (int'(tmp_payload_tuple_type) == tuple_option)
                   begin

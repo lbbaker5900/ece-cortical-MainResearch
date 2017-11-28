@@ -348,13 +348,17 @@ class manager;
                     // use lane0's operand[0] for all lanes
                       if (lane == 0)
                         begin
-                          sys_operation_lane_gen[lane].displayOperation();    
+                          `ifdef TB_VERBOSITY_HIGH
+                            sys_operation_lane_gen[lane].displayOperation();    
+                          `endif
                         end
                       else
                         begin
                           sys_operation_lane_gen[lane].copyOperands(sys_operation_lane_gen[0], 0);
                           sys_operation_lane_gen[lane].calculateResult();                         // need to recalculate result
-                          sys_operation_lane_gen[lane].displayOperation();                         // need to recalculate result
+                          `ifdef TB_VERBOSITY_HIGH
+                            sys_operation_lane_gen[lane].displayOperation();                         // need to recalculate result
+                          `endif
                         end
                   `endif
                 end
@@ -386,7 +390,7 @@ class manager;
               $display("@%0t:%s:%0d:INFO:Manager {%0d} Before", $time, `__FILE__, `__LINE__, Id);
               for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                 begin
-                  sys_operation_lane_gen[lane].displayOperation();
+                  //sys_operation_lane_gen[lane].displayOperation();
                 end
               dram_utils.loadDramFromAllGroupFile( .allGroupFileName    ( fileName              ), 
                                                    .sys_operation_data  ( sys_operation_lane_gen),
@@ -395,7 +399,9 @@ class manager;
               $display("@%0t:%s:%0d:INFO:Manager {%0d} After", $time, `__FILE__, `__LINE__, Id);
               for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                 begin
-                  sys_operation_lane_gen[lane].displayOperation();
+                  `ifdef TB_VERBOSITY_HIGH
+                    sys_operation_lane_gen[lane].displayOperation();
+                  `endif
                 end
               
               // Load the next WU also as some data might be stuck in
