@@ -2743,7 +2743,7 @@ class Manager():
                 if cnt > 0 :
                     wuPerMgrDestination['Consequtive'].append(cnt)
                 wuDestination.append(wuPerMgrDestination)
-                print '{0}:{1}:LEE:ERROR:DEBUG: {2}'.format(__FILE__(), __LINE__(), wuDestination)
+                #print '{0}:{1}:LEE:ERROR:DEBUG: {2}'.format(__FILE__(), __LINE__(), wuDestination)
 
             wuDestinations.append(wuDestination)
 
@@ -3749,15 +3749,50 @@ def main():
     #network.addLayer('Fully Connected',  1,   1, 1024,    1,   1, 4096,   1 ) # 1024,
     
     # 2x2 and 8x8
-    #network.addLayer('Input',           55,  55,    32,                      ) #   96,
-    #network.addLayer('Convolutional',   27,  27,   32,    5,   5,    32,   2 ) #  256,
-    #network.addLayer('Convolutional',   13,  13,  4,    3,   3,   32,   2 ) #  384,
-    #network.addLayer('Convolutional',   13,  13,  4,    3,   3,   4,   1 ) #  384,
+    #network.addLayer('Input',           55,  55,   32,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,   64,    5,   5,  32,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,    4,    3,   3,  64,   2 ) #  384,
+    #network.addLayer('Convolutional',   13,  13,    4,    3,   3,   4,   1 ) #  384,
     
+    #------------------------------------------------------------------------------------------------------------------------
+    # Make sure
+    # a) # of features in layer 2 >32
+    # b) stride matches XxY
+    
+    # CONV2 (CONV-225)
+    #network.addLayer('Input',           55,  55,    9,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,   64,    5,   5,   9,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,   64,    3,   3,  64,   2 ) #  384,
+
+    # CONV-300
+    #network.addLayer('Input',           55,  55,  12,                     ) #   96,
+    #network.addLayer('Convolutional',   27,  27,  64,    5,   5,  12,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
+   
+    # CONV-294 (CONV-300-2)
+    network.addLayer('Input',          110, 110,   6,                      ) #   96,
+    network.addLayer('Convolutional',   55,  55,  64,     7,   7,   6,   2 ) #  256,
+    network.addLayer('Convolutional',   27,  27,  64,     5,   5,  64,   2 ) #  384,
+   
     # FC-7
-    network.addLayer('Input',         4096,    1,    1,                      ) #   96,
-    network.addLayer('Convolutional', 4096,    1,    1, 4096,   1,    1,   0 ) #  256,
-    network.addLayer('Convolutional', 1024,    1,    1, 4096,   1,    1,   0 ) #  384,
+    #network.addLayer('Input',         4096,    1,    1,                      ) #   96,
+    #network.addLayer('Convolutional', 4096,    1,    1, 4096,   1,    1,   0 ) #  256,
+    #network.addLayer('Convolutional', 1024,    1,    1, 4096,   1,    1,   0 ) #  384,
+    
+    # FC-300
+    #network.addLayer('Input',          300,    1,    1,                      ) #   96,
+    #network.addLayer('Convolutional', 2048,    1,    1,  300,   1,    1,   0 ) #  256,
+    #network.addLayer('Convolutional', 1024,    1,    1, 2048,   1,    1,   0 ) #  384,
+    
+    # FC-350
+    #network.addLayer('Input',          350,    1,    1,                      ) #   96,
+    #network.addLayer('Convolutional', 2048,    1,    1,  350,   1,    1,   0 ) #  256,
+    #network.addLayer('Convolutional', 1024,    1,    1, 2048,   1,    1,   0 ) #  384,
+    
+    # FC-500
+    #network.addLayer('Input',          500,    1,    1,                      ) #   96,
+    #network.addLayer('Convolutional', 2048,    1,    1,  500,   1,    1,   0 ) #  256,
+    #network.addLayer('Convolutional', 1024,    1,    1, 2048,   1,    1,   0 ) #  384,
     
     # Small 2x2 and 8x8
     #network.addLayer('Input',           55,  55,    3,                      ) #   96,
@@ -3765,11 +3800,6 @@ def main():
     #network.addLayer('Convolutional',   13,  13,   64,    3,   3,  32,   2 ) #  384,
     #
     
-    # Small 2x2 and 8x8
-    #network.addLayer('Input',           55,  55,    9,                      ) #   96,
-    #network.addLayer('Convolutional',   27,  27,  32,    5,   5,    9,   2 ) #  256,
-    #network.addLayer('Convolutional',   13,  13,   64,    3,   3,  32,   2 ) #  384,
-    #
     
     
     #------------------------------------------------------------------------------------------------------------------------
