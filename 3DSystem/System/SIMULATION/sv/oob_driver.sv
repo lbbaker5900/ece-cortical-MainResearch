@@ -331,6 +331,11 @@ class oob_driver;
                     vDownstreamStackBusOOB.loadPeCntlMemory(this.Id);        
 
                     //--------------------------------------------------------------------------------------------
+                    // Load SIMD option memory
+                    //
+                    vDownstreamStackBusOOB.loadSimdWrapperOptionMemory(this.Id);        
+
+                    //--------------------------------------------------------------------------------------------
                     $display("@%0t:%s:%0d: INFO:{%0d}: Driving WU via OOB with contents of OOB packet from manager : {%0d}", $time, `__FILE__, `__LINE__, this.Id, oob_packet_mgr.Id[0], oob_packet_mgr.Id[1]);
                     oob_packet_mgr.displayPacket();
                

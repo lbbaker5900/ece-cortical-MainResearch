@@ -5,6 +5,36 @@
 
 # Embed-It! (R) Integrator Shell H-2013.03
 
+set current_version [get_product_version]
+if { [compare_product_versions $current_version H-2013.03] != 0 } {
+   puts "** WARNING: Current Embed-It version differs from original one: H-2013.03"
+}
+
+############### Procedures ###############
+# Support for '-custom' option
+proc load_custom_info { comp orig_custom_section } {
+   set orig_custom_params {}
+   foreach { name value } $orig_custom_section {
+       component $comp set_parameter $name $value
+       lappend orig_custom_params $name
+   }
+   set dst_parameters_list [component $comp list_parameter_names]
+   foreach param $dst_parameters_list {
+      if { [component $comp has_parameter .CUSTOM_GLB.$param] && \
+           [lsearch -exact $orig_custom_params $param] == -1 } {
+         if { [component $comp has_parameter .GLB.$param] } {
+            set value [component $comp get_parameter .GLB.$param]
+            component $comp set_parameter $param $value
+         } elseif { [component $comp has_parameter .DEFAULT.$param] } {
+            set value [component $comp get_parameter .DEFAULT.$param]
+            component $comp set_parameter $param $value
+         } else {
+            component $comp unset_parameter_value $param
+         }
+      }
+   }
+}
+
 ############### Project ###############
 set p [project new]
 project $p create [file join [pwd] [lindex $argv 0]]
@@ -14,7 +44,16 @@ project $p add_compiler_library /local/home/GF065/synopsys/1-Port-HSpd-SRAM-512K
 
 
 ############### Components ###############
+set c [project $p create_component asdrlnpky2p128x32cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 32
+  component $c set_parameter NW 128
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
 set c [project $p create_component asdrlnpky2p16x38cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
   component $c set_parameter CM 1
   component $c set_parameter Freq 800.0
   component $c set_parameter NB 38
@@ -22,20 +61,61 @@ set c [project $p create_component asdrlnpky2p16x38cm1sw0 cp65npky2p11asdrl32ksa
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
 set c [project $p create_component asdrlnpky2p256x149cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
   component $c set_parameter CM 1
   component $c set_parameter Freq 800.0
   component $c set_parameter NB 149
   component $c set_parameter NW 256
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p256x32cm2sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
+  component $c set_parameter CM 2
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 32
+  component $c set_parameter NW 256
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p64x256cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 500.0
+  component $c set_parameter NB 256
+  component $c set_parameter NW 64
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p64x32cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 32
+  component $c set_parameter NW 64
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p8x128cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} pvt2 {W 1.08 125 ss1p08v125c} pvt3 {B 1.32 -40 ff1p32vn40c} pvt4 {W 1.08 -40 ss1p08vn40c} pvt5 {FFF 1.32 125 ff1p32v125c} pvt6 {B 1.32 -55 ff1p32vn55c} pvt7 {W 1.08 -55 ss1p08vn55c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 128
+  component $c set_parameter NW 8
+  component $c set_parameter licensekey integrator
 set c [project $p create_component asdrlnpky2p8x150cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
   component $c set_parameter CM 1
   component $c set_parameter Freq 800.0
   component $c set_parameter NB 150
   component $c set_parameter NW 8
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p8x256cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} pvt2 {W 1.08 125 ss1p08v125c} pvt3 {B 1.32 -40 ff1p32vn40c} pvt4 {W 1.08 -40 ss1p08vn40c} pvt5 {FFF 1.32 125 ff1p32v125c} pvt6 {B 1.32 -55 ff1p32vn55c} pvt7 {W 1.08 -55 ss1p08vn55c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 256
+  component $c set_parameter NW 8
+  component $c set_parameter licensekey integrator
 set c [project $p create_component asdrlnpky2p8x32cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
   component $c set_parameter CM 1
   component $c set_parameter Freq 800.0
   component $c set_parameter NB 32
@@ -43,52 +123,121 @@ set c [project $p create_component asdrlnpky2p8x32cm1sw0 cp65npky2p11asdrl32ksa0
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
 set c [project $p create_component asdrlnpky2p8x34cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
   component $c set_parameter CM 1
   component $c set_parameter Freq 800.0
   component $c set_parameter NB 34
   component $c set_parameter NW 8
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
+set c [project $p create_component asdrlnpky2p8x64cm1sw0 cp65npky2p11asdrl32ksa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE ccst_enable 0 clk_name CLK clk_q_best_tcqx 0 control_active_high 1 di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 port_1_suffix A port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} pvt2 {W 1.08 125 ss1p08v125c} pvt3 {B 1.32 -40 ff1p32vn40c} pvt4 {W 1.08 -40 ss1p08vn40c} pvt5 {FFF 1.32 125 ff1p32v125c} pvt6 {B 1.32 -55 ff1p32vn55c} pvt7 {W 1.08 -55 ss1p08vn55c} qm_name QM rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rst_name RST spice_brackets 1 taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM wmen_name WMEN}
+  component $c set_parameter CM 1
+  component $c set_parameter Freq 800.0
+  component $c set_parameter NB 64
+  component $c set_parameter NW 8
+  component $c set_parameter licensekey integrator
 set c [project $p create_component sasslnpky1p1024x32cm4sw0ltlc1 cp65npky1p11sassl512sa05p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK clk_q_best_tcqx 0 control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 inst_char 0 ipr_name VSS layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME memory_array_in_atpg_netlist 0 noise_enable 0 pipe_line_read 0 pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M1BLK M2BLK M3BLK M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 verilog_brackets 1 we_name WE wem_name WEM xpr_name VDD}
   component $c set_parameter CM 4
   component $c set_parameter NB 32
   component $c set_parameter NW 1024
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky1p2048x32cm8sw0ltlc1 cp65npky1p11sassl512sa05p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK clk_q_best_tcqx 0 control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 inst_char 0 ipr_name VSS layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME memory_array_in_atpg_netlist 0 noise_enable 0 pipe_line_read 0 pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M1BLK M2BLK M3BLK M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 verilog_brackets 1 we_name WE wem_name WEM xpr_name VDD}
+  component $c set_parameter CM 8
+  component $c set_parameter NB 32
+  component $c set_parameter NW 2048
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky1p256x13cm4sw0ltlc1 cp65npky1p11sassl512sa05p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK clk_q_best_tcqx 0 control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 inst_char 0 ipr_name VSS layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME memory_array_in_atpg_netlist 0 noise_enable 0 pipe_line_read 0 pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M1BLK M2BLK M3BLK M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 verilog_brackets 1 we_name WE wem_name WEM xpr_name VDD}
+  component $c set_parameter CM 4
+  component $c set_parameter NB 13
+  component $c set_parameter NW 256
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky1p256x32cm4sw0ltlc1 cp65npky1p11sassl512sa05p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK clk_q_best_tcqx 0 control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 inst_char 0 ipr_name VSS layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME memory_array_in_atpg_netlist 0 noise_enable 0 pipe_line_read 0 pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M1BLK M2BLK M3BLK M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 verilog_brackets 1 we_name WE wem_name WEM xpr_name VDD}
+  component $c set_parameter CM 4
+  component $c set_parameter NB 32
+  component $c set_parameter NW 256
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
 set c [project $p create_component sasslnpky1p512x32cm4sw0ltlc1 cp65npky1p11sassl512sa05p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK clk_q_best_tcqx 0 control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 inst_char 0 ipr_name VSS layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME memory_array_in_atpg_netlist 0 noise_enable 0 pipe_line_read 0 pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M1BLK M2BLK M3BLK M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 verilog_brackets 1 we_name WE wem_name WEM xpr_name VDD}
   component $c set_parameter CM 4
   component $c set_parameter NB 32
   component $c set_parameter NW 512
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky1p64x32cm16sw0ltlc1 cp65npky1p11sassl512sa05p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK clk_q_best_tcqx 0 control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 inst_char 0 ipr_name VSS layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME memory_array_in_atpg_netlist 0 noise_enable 0 pipe_line_read 0 pvt1 {T 1.2 25 tt1p2v25c} pvt2 {B 1.32 -40 ff1p32vn40c} pvt3 {W 1.08 125 ss1p08v125c} pvt4 {W 1.08 -40 ss1p08vn40c} pvt5 {FFF 1.32 125 ff1p32v125c} pvt6 {B 1.32 -55 ff1p32vn55c} pvt7 {W 1.08 -55 ss1p08vn55c} raise_blocking {M1BLK M2BLK M3BLK M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 verilog_brackets 1 we_name WE wem_name WEM xpr_name VDD}
+  component $c set_parameter CM 16
+  component $c set_parameter NB 32
+  component $c set_parameter NW 64
+  component $c set_parameter licensekey integrator
+set c [project $p create_component sasslnpky1p64x32cm4sw0ltlc1 cp65npky1p11sassl512sa05p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK clk_q_best_tcqx 0 control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 inst_char 0 ipr_name VSS layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME memory_array_in_atpg_netlist 0 noise_enable 0 pipe_line_read 0 pvt1 {T 1.2 25 tt1p2v25c} pvt2 {B 1.32 -40 ff1p32vn40c} pvt3 {W 1.08 125 ss1p08v125c} pvt4 {W 1.08 -40 ss1p08vn40c} pvt5 {FFF 1.32 125 ff1p32v125c} pvt6 {B 1.32 -55 ff1p32vn55c} pvt7 {W 1.08 -55 ss1p08vn55c} raise_blocking {M1BLK M2BLK M3BLK M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 verilog_brackets 1 we_name WE wem_name WEM xpr_name VDD}
+  component $c set_parameter CM 4
+  component $c set_parameter NB 32
+  component $c set_parameter NW 64
+  component $c set_parameter licensekey integrator
 set c [project $p create_component sasslnpky1p8192x32cm16sw0ltlc1 cp65npky1p11sassl512sa05p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK clk_q_best_tcqx 0 control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 inst_char 0 ipr_name VSS layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME memory_array_in_atpg_netlist 0 noise_enable 0 pipe_line_read 0 pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M1BLK M2BLK M3BLK M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 verilog_brackets 1 we_name WE wem_name WEM xpr_name VDD}
   component $c set_parameter CM 16
   component $c set_parameter NB 32
   component $c set_parameter NW 8192
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
 set c [project $p create_component sasslnpky2p1024x32cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 pipe_line_read 0 port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM}
   component $c set_parameter CM 4
   component $c set_parameter NB 32
   component $c set_parameter NW 1024
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p128x32cm8sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 pipe_line_read 0 port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM}
+  component $c set_parameter CM 8
+  component $c set_parameter NB 32
+  component $c set_parameter NW 128
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
 set c [project $p create_component sasslnpky2p2048x32cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 pipe_line_read 0 port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM}
   component $c set_parameter CM 4
   component $c set_parameter NB 32
   component $c set_parameter NW 2048
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p256x32cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 pipe_line_read 0 port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM}
+  component $c set_parameter CM 4
+  component $c set_parameter NB 32
+  component $c set_parameter NW 256
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
 set c [project $p create_component sasslnpky2p4096x32cm8sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 pipe_line_read 0 port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM}
   component $c set_parameter CM 8
   component $c set_parameter NB 32
   component $c set_parameter NW 4096
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
 set c [project $p create_component sasslnpky2p512x32cm4sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 pipe_line_read 0 port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM}
   component $c set_parameter CM 4
   component $c set_parameter NB 32
   component $c set_parameter NW 512
+  component $c set_parameter licensekey integrator
+  component $c set_parameter pvt_enable 1
+set c [project $p create_component sasslnpky2p64x32cm8sw0bk1ltlc1 cp65npky2p22sassl512sa04p1]
+  load_custom_info $c {LEF_M1_NAME M1 LEF_M2_NAME M2 LEF_M3_NAME M3 LEF_M4_NAME M4 LEF_M5_NAME M5 LEF_VIA12_NAME V1 LEF_VIA23_NAME V2 LEF_VIA34_NAME V3 LEF_VIA45_NAME V4 SW 0 active_low_suffix B addr_name ADR awt_name AWT bist_enable 0 biste_name BISTE bistm_name BISTMODE capt_name CAPT ccst_enable 0 cd_name CD clk_name CLK control_active_high 1 dftm_name DFTMODE di_name D do_name Q ecsm_enable 0 fanout_load_unity 0 gds_brackets 1 layers_file vl2ibm.ltt lib_mode_analysis 0 me_name ME noise_enable 0 pipe_line_read 0 port_2_suffix B pvt1 {T 1.2 25 tt1p2v25c} raise_blocking {M4BLK VIA34} rename_op_conditions 1 report_worst_power 0 reset_enable 0 retain_lib 1 rm_name RM rmen_name RME rscen_name RSCEN rscin_name RSCIN rscout_name RSCOUT rscreset_name RSCRST se_name SE si_name SI so_name SO spice_brackets 1 swt_name SWT taddr_name TADR tclk_name TCLK tdi_name TD test1_name TEST1 timing_mode DEFAULT tme_name TME twe_name TWE twem_name TWEM use_bundle_in_liberty 0 vdd_name VDD verilog_brackets 1 vss_name VSS we_name WE wem_name WEM}
+  component $c set_parameter CM 8
+  component $c set_parameter NB 32
+  component $c set_parameter NW 64
   component $c set_parameter licensekey integrator
   component $c set_parameter pvt_enable 1
 

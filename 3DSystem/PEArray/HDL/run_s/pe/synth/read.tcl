@@ -106,16 +106,36 @@ read_sverilog $RTL_COM_DIR/generic_pipelined_fifo.v
 #
 
 
-read_sverilog $RTL_DIR/streamingOps.v
-read_sverilog $RTL_DIR/streamingOps_cntl.v
-read_sverilog $RTL_DIR/dma_cont.v
-read_sverilog $RTL_DIR/streamingOps_datapath.v
-read_sverilog $RTL_DIR/pe_cntl.v
-read_sverilog $RTL_DIR/simd_upstream_intf.v
-read_sverilog $RTL_DIR/simd_wrapper.v
-read_sverilog $RTL_DIR/simd_core.v
-read_sverilog $RTL_DIR/stack_interface.v
-read_sverilog $RTL_DIR/mem_acc_cont.v
+if {($modname == "streamingOps") || ($modname == "streamingOps_datapath") || ($modname == "pe")} {
+  read_sverilog $RTL_DIR/streamingOps.v
+}
+if {($modname == "dma_cont") || ($modname == "streamingOps_datapath") || ($modname == "pe")} {
+  read_sverilog $RTL_DIR/dma_cont.v
+}
+if {($modname == "streamingOps_datapath") || ($modname == "pe")} {
+  read_sverilog $RTL_DIR/streamingOps_datapath.v
+}
+if {($modname == "streamingOps_cntl") || ($modname == "pe")} {
+  read_sverilog $RTL_DIR/streamingOps_cntl.v
+}
+if {($modname == "pe_cntl") || ($modname == "pe")} {
+  read_sverilog $RTL_DIR/pe_cntl.v
+}
+if {($modname == "simd_upstream_intf") || ($modname == "pe")} {
+  read_sverilog $RTL_DIR/simd_upstream_intf.v
+}
+if {($modname == "simd_core") || ($modname == "simd_wrapper") || ($modname == "pe")} {
+  read_sverilog $RTL_DIR/simd_core.v
+}
+if {($modname == "simd_wrapper") || ($modname == "pe")} {
+  read_sverilog $RTL_DIR/simd_wrapper.v
+}
+if {($modname == "stack_interface") || ($modname == "pe")} {
+  read_sverilog $RTL_DIR/stack_interface.v
+}
+if {($modname == "mem_acc_cont") || ($modname == "pe")} {
+  read_sverilog $RTL_DIR/mem_acc_cont.v
+}
 
 #read_sverilog $RTL_DIR/pe.v
 
@@ -123,8 +143,9 @@ read_sverilog $RTL_DIR/mem_acc_cont.v
 # WIP
 #
 
-read_sverilog $RTL_DIR/pe.v
-
+if {($modname == "pe")} {
+  read_sverilog $RTL_DIR/pe.v
+}
 
 
 #------------------------------------------------------------------------------------------------------------------------

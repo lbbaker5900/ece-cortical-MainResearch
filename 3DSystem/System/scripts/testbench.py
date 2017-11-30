@@ -533,6 +533,37 @@ if __name__ == "__main__":
 
   f.write(pLine)
   f.close()
+  f = open('../SIMULATION/common/TB_system_simd_wrapper_simd_option_memory_load.vh', 'w')
+  pLine = ""
+
+  pLine = pLine + '\n    case (mgr)'
+  for mgr in range (0, numOfMgr):
+    pLine = pLine + '\n         {0}:'.format(mgr)
+    pLine = pLine + '\n            begin'
+    pLine = pLine + '\n              `ifdef TB_USES_PE_GATE_NETLIST'
+    pLine = pLine + '\n                $readmemh(\"./inputFiles/pe{0}_simd_wrapper_simd_option_memory.dat\", top.system_inst.pe_array_inst.pe_inst[{0}].pe.simd_wrapper.simd_option_memory_0__gmemory.dw_mem_mem1p256x13.u0.mem_core_array) ;'.format(mgr)
+    pLine = pLine + '\n              `else'
+    pLine = pLine + '\n                memFile = \"./inputFiles/pe{0}_simd_wrapper_simd_option_memory.dat\";'.format(mgr)
+    pLine = pLine + '\n                fileDesc = $fopen (memFile, "r");'.format(mgr)
+    pLine = pLine + '\n                if (fileDesc == 0)'.format(mgr)
+    pLine = pLine + '\n                  begin'.format(mgr)
+    pLine = pLine + '\n                    $display("ERROR:generic_1port_memory:LEE:readmem file error : %s ", memFile);'.format(mgr)
+    pLine = pLine + '\n                    $finish;'.format(mgr)
+    pLine = pLine + '\n                  end'.format(mgr)
+    pLine = pLine + '\n                while (!$feof(fileDesc)) '.format(mgr)
+    pLine = pLine + '\n                  begin '.format(mgr)
+    pLine = pLine + '\n                    void\'($fgets(entry, fileDesc)); '.format(mgr)
+    pLine = pLine + '\n                    void\'($sscanf(entry, "@%x %x", memory_address, memory_data));'.format(mgr)
+    pLine = pLine + '\n                    //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);'.format(mgr)
+    pLine = pLine + '\n                    system_inst.pe_array_inst.pe_inst[{0}].pe.simd_wrapper.simd_option_memory[0].gmemory.mem[memory_address] = memory_data ;'.format(mgr)
+    pLine = pLine + '\n                  end'.format(mgr)
+    pLine = pLine + '\n                $fclose(fileDesc);'.format(mgr)
+    pLine = pLine + '\n              `endif'
+    pLine = pLine + '\n            end'
+  pLine = pLine + '\n    endcase'
+
+  f.write(pLine)
+  f.close()
 
   ##----------------------------------------------------------------------------------------------------
   ##----------------------------------------------------------------------------------------------------

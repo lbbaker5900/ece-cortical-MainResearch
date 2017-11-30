@@ -788,7 +788,7 @@ module sdp_request_cntl (
                      end
                  endcase  // case ({force_cons_chan01_request, force_cons_chan10_request })
                end
-             else if (requests_complete && ~first_time_thru && (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP))
+             else if (/*requests_complete &&*/ ~first_time_thru && (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP))
                begin
                  // if we are completing a consequtive zone, the access order is CWBP and we havent fetched both channels, then anticipate we have jumped over a channel
                  // e.g. pbc_start = 0,24,1,  pbc_end = 0,26,0

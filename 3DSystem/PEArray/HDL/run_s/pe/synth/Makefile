@@ -1,5 +1,5 @@
 
-MODNAME = pe
+MODNAME = simd_wrapper
 INST    = 2
 TECH    = 65nm
 

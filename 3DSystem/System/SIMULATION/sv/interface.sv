@@ -120,6 +120,20 @@ interface std_oob_ifc(
 
   endfunction
 
+  function void loadSimdWrapperOptionMemory(int mgr  );
+
+    `ifndef TB_USES_PE_GATE_NETLIST
+      string entry  ;
+      string memFile;
+      int fileDesc ;
+      bit [`PE_CNTL_STOP_OPTION_MEMORY_ADDR_RANGE      ]  memory_address ;
+      bit [`PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_RANGE ]  memory_data    ;
+    `endif
+
+    `include "TB_system_simd_wrapper_simd_option_memory_load.vh"
+
+  endfunction
+
 endinterface : std_oob_ifc
 
 typedef virtual std_oob_ifc vDownstreamStackBusOOB_T;

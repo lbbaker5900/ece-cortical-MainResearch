@@ -22,6 +22,7 @@
 `include "pe_array.vh"
 `include "pe.vh"
 `include "pe_cntl.vh"
+`include "simd_core.vh"
 `include "simd_wrapper.vh"
 `include "stack_interface.vh"
 `include "noc_cntl.vh"
@@ -38,124 +39,98 @@ module simd_wrapper (
                           //-------------------------------
                           // PE control configuration to stOp via simd
                           //
-                          `include "pe_cntl_simd_ports.vh"
+                          // Common (Scalar) Register(s)                
+                          // Common (Scalar) Register(s)                
+                          input  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      cntl__simd__rs0   ,
+                          input  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      cntl__simd__rs1   ,
+                                                                                
+                          // Lane Register(s)                                  
+                          input  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      cntl__simd__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ,
+                          input  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      cntl__simd__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ,
+                          input  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      cntl__simd__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ,
+                          input  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      cntl__simd__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ,
+                          input  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      cntl__simd__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ,
+                          input  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      cntl__simd__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ,
+                          input  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      cntl__simd__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ,
+                          input  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      cntl__simd__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ,
+                          //`include "pe_cntl_simd_ports.vh"
+                          //`include "pe_simd_wrapper_input_port_declarations.vh"
 
                           //-------------------------------
                           // Configuration output to stOp
                           //
-                          `include "pe_simd_ports.vh"
+                          // Lane Registers                 
+                          // Common (Scalar) Register(s)                
+                          output reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      simd__scntl__rs0   ,
+                          output reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      simd__scntl__rs1   ,
+                                                                               
+                          // Lane Register(s)                                  
+                          output reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      simd__scntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      simd__scntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      simd__scntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      simd__scntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      simd__scntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      simd__scntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      simd__scntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      simd__scntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ,
+                          //`include "pe_simd_ports.vh"
+                          //`include "pe_simd_wrapper_output_port_declarations.vh"
 
                           //-------------------------------
                           // Additional PE control configuration 
-                          cntl__simd__tag_valid     ,
-                          cntl__simd__tag           ,
-                          cntl__simd__tag_optionPtr ,
-                          cntl__simd__tag_num_lanes ,
-                          simd__cntl__tag_ready     ,
+                          input  wire                                            cntl__simd__tag_valid          ,  // tag to simd needs to be a fifo interface as the next stOp may start while the 
+                          input  wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE   ]      cntl__simd__tag                ,
+                          input  wire   [`PE_CNTL_OOB_OPTION_RANGE        ]      cntl__simd__tag_optionPtr      , 
+                          input  wire   [`PE_NUM_LANES_RANGE              ]      cntl__simd__tag_num_lanes      ,  // number of active lanes associated with this tag
+                          output reg                                             simd__cntl__tag_ready          ,
 
                           //-------------------------------
                           // Result from stOp to regFile (via scntl)
-                          scntl__reg__valid        ,
-                          scntl__reg__cntl         ,
-                          scntl__reg__data         ,
-                          reg__scntl__ready        ,
+                          input  wire   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      scntl__reg__valid                          ,
+                          input  wire   [`COMMON_STD_INTF_CNTL_RANGE      ]      scntl__reg__cntl  [`PE_NUM_OF_EXEC_LANES ] ,
+                          input  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      scntl__reg__data  [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg    [`PE_NUM_OF_EXEC_LANES_RANGE      ]      reg__scntl__ready                          ,
+                          //`include "simd_wrapper_scntl_to_simd_regfile_ports_declaration.vh"
                           //`include "simd_wrapper_scntl_to_simd_regfile_ports.vh"
 
                           //--------------------------------------------------
                           // Register(s) to stack upstream
-                          simd__sui__tag           ,
-                          simd__sui__tag_num_lanes ,
-                          simd__sui__regs_valid    ,
-                          simd__sui__regs_cntl     ,
-                          simd__sui__regs          ,
-                          sui__simd__regs_complete ,
-                          sui__simd__regs_ready    ,
-
-                          //-------------------------------
-                          // LD/ST Interface
-                          ldst__memc__request         ,
-                          memc__ldst__granted         ,
-                          ldst__memc__released        ,
-                       
-                          ldst__memc__write_valid     ,  // Valid must remain active for entire DMA
-                          ldst__memc__write_address   ,
-                          ldst__memc__write_data      ,
-                          memc__ldst__write_ready     ,  // output flow control to ldst
-                          ldst__memc__read_valid      ,
-                          ldst__memc__read_address    ,
-                          memc__ldst__read_data       ,
-                          memc__ldst__read_data_valid ,  // Valid must remain active for entire DMA, only accepted when ready is asserted
-                          memc__ldst__read_ready      ,  // output flow control to ldst, valid only "valid" when ready is asserted
-                          ldst__memc__read_pause      ,  // pipeline flow control from ldst, dont send any more requests
-
-                          //--------------------------------------------------------
-                          // System
-                          peId              ,
-                          clk               ,
-                          reset_poweron     
+                          output reg   [`STACK_DOWN_OOB_INTF_TAG_RANGE    ]      simd__sui__tag                                 ,
+                          output reg   [`PE_NUM_LANES_RANGE               ]      simd__sui__tag_num_lanes                       ,  // number of active lanes associated with this tag
+                          output reg   [`PE_NUM_OF_EXEC_LANES_RANGE       ]      simd__sui__regs_valid                          ,
+                          output reg   [`COMMON_STD_INTF_CNTL_RANGE       ]      simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg   [`PE_EXEC_LANE_WIDTH_RANGE         ]      simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ,
+                          input  reg                                             sui__simd__regs_complete                       ,
+                          input  reg                                             sui__simd__regs_ready                          ,
+                                                                                 
+                                                                                 
+                          //-------------------------------                      
+                          // LD/ST Interface                                     
+                          output wire                                            ldst__memc__request         ,
+                          input  wire                                            memc__ldst__granted         ,
+                          output wire                                            ldst__memc__released        ,
+                          //                                                                                 
+                          output wire                                            ldst__memc__write_valid     ,  // Valid must remain active for entire DMA
+                          output wire [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]      ldst__memc__write_address   ,
+                          output wire [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]      ldst__memc__write_data      ,
+                          input  wire                                            memc__ldst__write_ready     ,  // output wire flow control to ldst
+                          output wire                                            ldst__memc__read_valid      ,
+                          output wire [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]      ldst__memc__read_address    ,
+                          input  wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE   ]      memc__ldst__read_data       ,
+                          input  wire                                            memc__ldst__read_data_valid ,  // Valid must remain active for entire DMA, only accepted when ready is asserted
+                          input  wire                                            memc__ldst__read_ready      ,  // output wire flow control to ldst, valid only "valid" when ready is asserted
+                          output wire                                            ldst__memc__read_pause      ,  // pipeline flow control from ldst, dont send any more requests
+                                                                                 
+                          //--------------------------------------------------------------------------------------------------------
+                          // System                                              
+                          input  wire   [`PE_PE_ID_RANGE                  ]      peId                        , 
+                          input  wire                                            clk                         ,
+                          input  wire                                            reset_poweron               
     );
 
-  input                       clk            ;
-  input                       reset_poweron  ;
-  input [`PE_PE_ID_RANGE   ]  peId           ; 
 
 
-  //----------------------------------------------------------------------------------------------------
-  // PE control
-  input                                              cntl__simd__tag_valid          ;  // tag to simd needs to be a fifo interface as the next stOp may start while the 
-  input   [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]         cntl__simd__tag                ;
-  input   [`PE_CNTL_OOB_OPTION_RANGE       ]         cntl__simd__tag_optionPtr      ; 
-  input   [`PE_NUM_LANES_RANGE             ]         cntl__simd__tag_num_lanes      ;  // number of active lanes associated with this tag
-  output                                             simd__cntl__tag_ready          ;
-
-  //-------------------------------------------------------------------------------------------
-  // Register File interface to stack interface
-  //
-  output  [`STACK_DOWN_OOB_INTF_TAG_RANGE]           simd__sui__tag                                 ;
-  output  [`PE_NUM_LANES_RANGE           ]           simd__sui__tag_num_lanes                       ;  // number of active lanes associated with this tag
-  output  [`PE_NUM_OF_EXEC_LANES_RANGE   ]           simd__sui__regs_valid                          ;
-  output  [`COMMON_STD_INTF_CNTL_RANGE   ]           simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ;
-  output  [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ;
-  input                                              sui__simd__regs_complete                       ;
-  input                                              sui__simd__regs_ready                          ;
-   
-  //----------------------------------------------------------------------------------------------------
-  // RegFile Outputs to stOp controller
-
-  `include "pe_simd_wrapper_output_port_declarations.vh"
-
-  //----------------------------------------------------------------------------------------------------
-  // PE control to stOp via SIMD
-
-  `include "pe_simd_wrapper_input_port_declarations.vh"
-
-  //----------------------------------------------------------------------------------------------------
-  // Result from stOp to regFile
-
-  input   [`PE_NUM_OF_EXEC_LANES_RANGE ]      scntl__reg__valid                          ;
-  input   [`COMMON_STD_INTF_CNTL_RANGE ]      scntl__reg__cntl  [`PE_NUM_OF_EXEC_LANES ] ;
-  input   [`PE_EXEC_LANE_WIDTH_RANGE   ]      scntl__reg__data  [`PE_NUM_OF_EXEC_LANES ] ;
-  output  [`PE_NUM_OF_EXEC_LANES_RANGE ]      reg__scntl__ready                          ;
-  //`include "simd_wrapper_scntl_to_simd_regfile_ports_declaration.vh"
-
-
-  //----------------------------------------------------------------------------------------------------
-  // interface to LD/ST unit                                         
-  output                                        ldst__memc__request          ;
-  input                                         memc__ldst__granted          ;
-  output                                        ldst__memc__released         ;
-  // 
-  output                                        ldst__memc__write_valid     ; 
-  output [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  ldst__memc__write_address   ;
-  output [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  ldst__memc__write_data      ; 
-  input                                         memc__ldst__write_ready     ;
-  output                                        ldst__memc__read_valid      ; 
-  output [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  ldst__memc__read_address    ;
-  input  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__ldst__read_data       ; 
-  input                                         memc__ldst__read_data_valid ; 
-  input                                         memc__ldst__read_ready      ; 
-  output                                        ldst__memc__read_pause      ; 
-
+  
   //----------------------------------------------------------------------------------------------------
   // Registers/Wires
   //
@@ -165,12 +140,6 @@ module simd_wrapper (
   reg   [`PE_EXEC_LANE_WIDTH_RANGE     ]  allLanes_results  [`PE_NUM_OF_EXEC_LANES ]      ;
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  allLanes_valid                                  ;
                                                                                           
-  reg   [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag                                  ;
-  reg   [`PE_NUM_LANES_RANGE           ]  simd__sui__tag_num_lanes                        ;  // number of active lanes associated with this tag
-  reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid                           ;
-  reg   [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__sui__regs_cntl   [`PE_NUM_OF_EXEC_LANES ] ;
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs        [`PE_NUM_OF_EXEC_LANES ] ;
-  reg                                     sui__simd__regs_complete                        ;
 
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag_e1                                  ;
   reg   [`PE_NUM_LANES_RANGE           ]  simd__sui__tag_num_lanes_e1                        ;  // number of active lanes associated with this tag
@@ -179,14 +148,8 @@ module simd_wrapper (
   wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs_e1        [`PE_NUM_OF_EXEC_LANES ] ;
 
   reg                                     sui__simd__regs_complete_d1                     ;
-  wire                                    sui__simd__regs_ready                           ;
   reg                                     sui__simd__regs_ready_d1                        ;
                                                                                           
-  wire                                    cntl__simd__tag_valid                           ;  // tag to simd needs to be a fifo interface as the next stOp may start while the 
-  wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag                                 ;  // simd is processing the previosu stOp result
-  wire  [`PE_CNTL_OOB_OPTION_RANGE     ]  cntl__simd__tag_optionPtr                       ; 
-  wire  [`PE_NUM_LANES_RANGE           ]  cntl__simd__tag_num_lanes                       ;  // number of active lanes associated with this tag
-  reg                                     simd__cntl__tag_ready                           ;
   reg                                     cntl__simd__tag_valid_d1                        ;
   reg   [`STACK_DOWN_OOB_INTF_TAG_RANGE]  cntl__simd__tag_d1                              ; 
   reg   [`PE_CNTL_OOB_OPTION_RANGE     ]  cntl__simd__tag_optionPtr_d1                    ; 
@@ -195,32 +158,21 @@ module simd_wrapper (
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  scntl__reg__valid_d1                            ;
   reg   [`COMMON_STD_INTF_CNTL_RANGE   ]  scntl__reg__cntl_d1  [`PE_NUM_OF_EXEC_LANES ]   ;
   reg   [`PE_EXEC_LANE_WIDTH_RANGE     ]  scntl__reg__data_d1  [`PE_NUM_OF_EXEC_LANES ]   ;
-  reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  reg__scntl__ready                               ;  // FIXME
 
-  wire                                    cntl__simd__start                               ;
-  wire                                    simd__smdw__complete                            ;
+
+  wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  smdw__simd__regs_valid                          ;
   wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  smdw__simd__regs      [`PE_NUM_OF_EXEC_LANES ]  ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  smdw__simd__regs_cntl [`PE_NUM_OF_EXEC_LANES ]  ;
+
+  wire                                    simd__smdw__complete                            ;
   wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__smdw__regs      [`PE_NUM_OF_EXEC_LANES ]  ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__smdw__regs_cntl [`PE_NUM_OF_EXEC_LANES ]  ;
 
+  wire                                     simd_enable      ;
+  wire  [`SIMD_CORE_OPERATION_RANGE    ]   simd_operation   ;
   //----------------------------------------------------------------------------------------------------
   // Assignments
 
-  // Common (Scalar) Register(s)                
-  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs0   ;
-  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__rs1   ;
-
-  // Lane Register(s)                
-  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r128  [`PE_NUM_OF_EXEC_LANES ] ;
-  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r129  [`PE_NUM_OF_EXEC_LANES ] ;
-  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r130  [`PE_NUM_OF_EXEC_LANES ] ;
-  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r131  [`PE_NUM_OF_EXEC_LANES ] ;
-  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r132  [`PE_NUM_OF_EXEC_LANES ] ;
-  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r133  [`PE_NUM_OF_EXEC_LANES ] ;
-  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r134  [`PE_NUM_OF_EXEC_LANES ] ;
-  reg [`PE_EXEC_LANE_WIDTH_RANGE]  simd__scntl__lane_r135  [`PE_NUM_OF_EXEC_LANES ] ;
-  //`include "pe_simd_wrapper_assignments.vh"
   genvar gvi;
   generate
     always @(posedge clk)
@@ -471,25 +423,32 @@ module simd_wrapper (
 
         
         `SIMD_WRAP_UPSTREAM_CNTL_WAIT: 
-          simd_wrap_upstream_cntl_state_next =  ( tag_and_data_ready && sui__simd__regs_ready_d1) ? `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA    :  // start the data transfer to the sui
-                                                                                                    `SIMD_WRAP_UPSTREAM_CNTL_WAIT         ;
+          simd_wrap_upstream_cntl_state_next =  ( tag_and_data_ready && sui__simd__regs_ready_d1) ? `SIMD_WRAP_UPSTREAM_CNTL_CHECK_SIMD_ENABLE :  // check simd option memory
+                                                                                                    `SIMD_WRAP_UPSTREAM_CNTL_WAIT              ;
   
-
+        // check simd enable bit in simd operation memory
+        `SIMD_WRAP_UPSTREAM_CNTL_CHECK_SIMD_ENABLE: 
+          simd_wrap_upstream_cntl_state_next =  ( simd_enable ) ? `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD    :  // SIMD will provide data
+                                                                  `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA        ;  // start the data transfer to the sui with data from stOp
+          
+        `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD: 
+          simd_wrap_upstream_cntl_state_next =  ( simd__smdw__complete ) ? `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD    : 
+                                                                           `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA        ;  // start the data transfer to the sui with data from simd
+          
         `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA: 
-          // Assert the valid to the stack upstream interface e.g. pulse
-          // The interface to the stack upstream interface isnt a FIFO
-          // When the stack interface has sent the data, it will assert complete
+          
+          // Assert a valid pulse to the SIMD core but dont read fifo until SIMD asserts comlete
           simd_wrap_upstream_cntl_state_next =  `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_COMPLETE          ;
 
 
         `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_COMPLETE:
           simd_wrap_upstream_cntl_state_next =   ( sui__simd__regs_complete_d1 ) ? `SIMD_WRAP_UPSTREAM_CNTL_WAIT_COMPLETE_DEASSERTED   : 
-                                                                                `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_COMPLETE          ;
+                                                                                   `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_COMPLETE          ;
 
 
         `SIMD_WRAP_UPSTREAM_CNTL_WAIT_COMPLETE_DEASSERTED:
           simd_wrap_upstream_cntl_state_next =   ( ~sui__simd__regs_complete_d1 ) ? `SIMD_WRAP_UPSTREAM_CNTL_WAIT_COMPLETE_DEASSERTED   : 
-                                                                                 `SIMD_WRAP_UPSTREAM_CNTL_COMPLETE                   ;
+                                                                                    `SIMD_WRAP_UPSTREAM_CNTL_COMPLETE                   ;
 
         `SIMD_WRAP_UPSTREAM_CNTL_COMPLETE:
           simd_wrap_upstream_cntl_state_next =   `SIMD_WRAP_UPSTREAM_CNTL_WAIT    ; 
@@ -509,32 +468,42 @@ module simd_wrapper (
   // Assignments
   //
 
-  assign cntl__simd__start = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA) & simd__scntl__rs1;
+  
+  wire    smdw__simd__cfg_valid  = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD    ) ;
+
 
   // read the FIFO and assert the valid to the stack upstream interface
-  assign from_stOp_reg_fifo_reads = {`PE_EXEC_LANE_WIDTH { simd__smdw__complete }};
+  wire   return_data               = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA);
+  assign from_stOp_reg_fifo_reads = {`PE_NUM_OF_EXEC_LANES { return_data }} & from_stOp_reg_fifo_valids ;
 
 
   assign  simd__sui__tag_e1             =  from_Cntl_Tag_Fifo[0].pipe_tag ;
   assign  simd__sui__tag_num_lanes_e1   =  from_Cntl_Tag_Fifo[0].pipe_tag_num_lanes ;
-  assign  simd__sui__regs_valid_e1      =  {`PE_EXEC_LANE_WIDTH { simd__smdw__complete }};
-  assign  simd__sui__regs_cntl_e1       =  simd__smdw__regs_cntl          ;
-  assign  simd__sui__regs_e1            =  simd__smdw__regs               ;
+
+  assign  simd__sui__regs_valid_e1      =  {`PE_NUM_OF_EXEC_LANES { return_data }} & simd__scntl__rs1 ;
+
+  assign  simd__sui__regs_cntl_e1       =  ( simd_enable ) ? simd__smdw__regs_cntl          :
+                                                             from_stOp_reg_fifo_pipe_cntl   ;
+
+  assign  simd__sui__regs_e1            =  ( simd_enable ) ? simd__smdw__regs               :
+                                                             from_stOp_reg_fifo_pipe_data   ;
 
   assign  smdw__simd__regs_cntl         =  from_stOp_reg_fifo_pipe_cntl   ;
   assign  smdw__simd__regs              =  from_stOp_reg_fifo_pipe_data   ;
+  assign  smdw__simd__regs_valid        = from_stOp_reg_fifo_valids & {`PE_NUM_OF_EXEC_LANES { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_CHECK_SIMD_ENABLE) & simd_enable }} & simd__scntl__rs1 ; // pulse valid to simd
 
 
   //-------------------------------------------------------------------------------------------------
   // SIMD core
   // 
+  //
   
   simd_core simd_core (
 
-            .cntl__simd__valid             ( cntl__simd__tag_valid_d1     ),  // load PC
-            .cntl__simd__pc                ( cntl__simd__tag_optionPtr_d1 ),  // operation PC for simd
+            .cntl__simd__cfg_valid         ( smdw__simd__cfg_valid        ),  // load PC
+            .cntl__simd__cfg_operation     ( simd_operation           ),  // operation PC for simd
 
-            .cntl__simd__start             ( cntl__simd__start            ),  // start SIMD
+            .smdw__simd__regs_valid        ( smdw__simd__regs_valid       ),  // start SIMD
             .smdw__simd__regs_cntl         ( smdw__simd__regs_cntl        ),        
             .smdw__simd__regs              ( smdw__simd__regs             ),        
 
@@ -568,6 +537,43 @@ module simd_wrapper (
                           
   );
 
+  //----------------------------------------------------------------------------------------------------
+  // SIMD configuration memory
+  //
+  //  - 
+  //
+
+  generate
+    for (gvi=0; gvi<1 ; gvi=gvi+1) 
+      begin: simd_option_memory
+  
+        generic_1port_memory #(.GENERIC_MEM_DEPTH          (`SIMD_WRAP_SIMD_OPTION_MEMORY_DEPTH           ),
+                               .GENERIC_MEM_REGISTERED_OUT (0                                             ),
+                               .GENERIC_MEM_DATA_WIDTH     (`SIMD_WRAP_SIMD_OPTION_AGGREGATE_MEMORY_WIDTH )
+                        ) gmemory ( 
+                        
+                        //---------------------------------------------------------------
+                        // Initialize
+                        //
+                        `ifndef SYNTHESIS
+                           .memFile (""),
+                        `endif
+
+                        //---------------------------------------------------------------
+                        // Port 
+                        .portA_address       ( from_Cntl_Tag_Fifo[0].pipe_tag_optionPtr               ),
+                        .portA_write_data    ( {`SIMD_WRAP_SIMD_OPTION_AGGREGATE_MEMORY_WIDTH {1'b0}} ),
+                        .portA_read_data     ( { simd_enable, simd_operation                        } ),
+                        .portA_enable        ( 1'b1                                                   ),
+                        .portA_write         ( 1'b0                                                   ),
+                        
+                        //---------------------------------------------------------------
+                        // General
+                        .reset_poweron       ( reset_poweron             ),
+                        .clk                 ( clk                       )
+                        ) ;
+      end
+  endgenerate
   
 endmodule
 
