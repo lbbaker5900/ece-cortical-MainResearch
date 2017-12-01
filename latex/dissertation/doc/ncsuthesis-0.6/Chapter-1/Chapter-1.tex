@@ -8,9 +8,7 @@
 %\section{Introduction}
 \label{sec:chap-one}
 
-Recently, there has been much interest in the use of artificial neural networks  
-in systems that employ tasks such as image recognition\cite{krizhevsky2012imagenet}, text recognition\cite{qiu2013parallel} 
-and game playing\cite{maddison2014move}.
+Recently, there has been much interest in the use of artificial neural networks in systems that employ tasks such as image recognition\cite{krizhevsky2012imagenet}, text recognition\cite{qiu2013parallel} and game playing\cite{maddison2014move}.
 In particular, in the field of image recognition these artificial neural network models have demonstrated superior performance
 over other state-of-the-art technology\cite{krizhevsky2012imagenet}.
 %There is reason to believe 
@@ -19,6 +17,31 @@ face recognition and autonomous control.
 
 Artificial neural networks (ANN) take their inspiration from neuron behavior observed in the mammalian brain, although
 implementations are simplifications of what actually exists in the brain.
+
+\iftrue
+It is known that mammalian neurons generate "spikes" in response to inputs which for humans include sight, touch, sound etc.. This spiking behavior is often referred to as the neuron being activated.
+When these neurons are activated, their spikes propagate to other neurons causing them to activate. A particular neuron may have many hundreds, perhaps thousands of other neurons connected to its "input".
+These input neurons are often referred to as pre-synaptic neurons. These pre-synaptic neurons may provide input to many neurons which are referred to as post-synaptic neurons.
+A particular neuron can get activated by a particular arrival pattern of pre-synaptic neuron spikes or simply by the intensity of the pre-synaptic spikes. The spiking behavior of a neuron also varies and many
+spiking patterns have been observed. The generation and propagation of these spikes is beyond the scope of this dissertation propagation.
+
+
+\subsection*{Artificial Neural Networks}
+\label{sec:Artificial Neural Networks}
+
+When modeling these neurons in artificial neural networks, the outputs of the neuron models either generate actual spikes or
+produce a value which is proportional to the rate at which spikes occur.
+These artificial neural networks can be categorized as rate-based coded or spike time coded neurons.
+
+When used in networks of neurons, both model types employ a connection weight between the pre and post-synaptic neuron, however, the
+spiking neuron network also introduces a time delay associated with the connection.
+Although the spiking neural network more closely models the behavior of real neurons, over the last 20 years there 
+have been breakthroughs in the configuring of rate-based models especially in the application of the back-propagation
+algorithm and stochastic gradient descent. Along with the abundance of data now available in the form of voice, images etc. to "teach" these networks
+using back-propagation, most of the effective applications of artificial neural networks have employed these rate-based models.
+Our research will focus on these rate-based models which we will now refer to as ANNs.
+\fi
+
 To approach the capabilities observed in human behavior, such as object recognition these ANNs become very large.
 They often utilize hundreds of thousands of neurons to implement what we would consider a relatively straightforward task.
 For example, a "useful" ANN similar to that described in \cite{krizhevsky2012imagenet} that is used
@@ -34,31 +57,15 @@ This research explores a 3DIC solution using a custom organized 3DIC memory in c
 area and power footprint of an application that needs to support the processing associated with multiple ANNs.
 
 
-\subsection*{Artificial Neural Networks}
-\label{sec:Artificial Neural Networks}
-
 Artificial Neural Networks are a network of inter-connected processing elements inspired by the 
 connectivity and processing observed in the brain.
+% Uncomment for dissertation
+
 They are characterized by the connections between a pre-synaptic neuron and a post-synaptic
 neuron having a weight which determines the impact the pre-synaptic neuron has on the 
 "activation" of a post-synaptic neuron.
 Typically the processing portion of the neuron performs a multiplication and accumulation on the outputs from all
 the pre-synaptic neurons followed by a non-linear "activation" function, such as a rectified linear unit or sigmoid function to create the neuron output.
-
-% Uncomment for dissertation
-\iftrue
-It is known that mammalian neurons generate "spikes" when activated. When modeling these neurons
-in artificial neural networks, the outputs of the neuron models either generate actual spikes or
-produce a value which is proportional to the rate at which spikes occur.
-These artificial neural networks can be categorized as rate-based coded or spike time coded neurons.
-When used in networks of neurons, both model types employ a connection weight between the pre and post-synaptic neuron, however, the
-spiking neuron network also introduces a time delay associated with the connection.
-Although the spiking neural network more closely models the behavior of real neurons, over the last 20 years there 
-have been breakthroughs in the configuring of rate-based models especially in the application of the back-propagation
-algorithm and stochastic gradient descent. Along with the abundance of data now available in the form of voice, images etc. to "teach" these networks
-using back-propagation, most of the effective applications of artificial neural networks have employed these rate-based models.
-Our research will focus on these rate-based models which we will now refer to as ANNs.
-\fi
 
 It is well understood a single layer of these neurons can be configured to perform a linear function approximation.
 A collection of these neurons, when connected in layers with one layers neurons connected to

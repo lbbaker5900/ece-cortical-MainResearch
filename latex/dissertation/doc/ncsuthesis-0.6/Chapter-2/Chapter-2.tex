@@ -89,7 +89,7 @@ To reiterate, state-of-the-art does not:
 NeuroCube\cite{kim2016neurocube} is the only solution to explicitly discuss 3D-memory but will again be limited by its focus on utilizing local SRAM where our focus is on
 providing silicon for processing and not local storage.
 Neuflow\cite{farabet2011neuflow} has processing elements that are limited to CNNs.
-The Tensor processing Unit (TPU) \cite{jouppi2017datacenter} employs an array of eight bit processing elements but specifically states it is bandwidth limited with fully connected (MLP) networks
+The Tensor processing Unit (TPU) \cite{jouppi2017datacenter} employs an 256x256 array of eight bit processing elements but specifically states it is bandwidth limited with fully connected (MLP) networks
 NnSP{\cite{esmaeilzadeh2005nnsp} transfers weights and inputs to local PE memory prior to processing.
 nn-X\cite{gokhale2014240} limits the number format to integer, and although there is some acceptance that similar
 results can be obtained compared to floating point, this will likely limit the applcation space. 
@@ -160,10 +160,11 @@ Eyeriss ignores the pooling and classifier stages which although not as compute 
 Therefore Eyeriss limits network size and does not implement the network.
 
 \section[TPU]{TPU \cite{jouppi2017datacenter}}
-The TPU utilizes an array of 256 processing elements and demonstrates significant (~30X) performance improvements over GPUs and CPUs. It does employ DRAM which provides the required storage capacity
+The TPU utilizes an array of 64K eight bit fixed point processing elements and demonstrates significant (~30X) performance improvements over GPUs and CPUs. It does employ DRAM which provides the required storage capacity
 but employs SRAM as an intermediate store between the DRAM and the PEs.
-This Google designed solution acknowledges that it is bandwidth limited when implementing the fully connected MLP type NNs.
-It also states that their experience of implementing NNs in the Google server farms suggests that these fully connected NNs represent the bulk of their processing requirements.
+This Google designed solution acknowledges that it is bandwidth limited when implementing the fully connected MLP type NNs but they still achieve significant perfroamce because of the reliance on very high levels of batch processing.
+The DRAM bandwidth is \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second}, which is relatively low for a 2D solution. 
+The paper also states that their experience of implementing NNs in the Google server farms suggests that these fully connected NNs represent the bulk of their processing requirements.
 The simpler CNNs only represent 5\% of the servers NN processing requirements.
 It should also be stated that this paper also believes that GPU solutions cannot reach the performance targets even though the GPU community might state otherwise.
 
