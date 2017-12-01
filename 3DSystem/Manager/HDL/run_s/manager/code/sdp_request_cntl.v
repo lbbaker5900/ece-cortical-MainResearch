@@ -747,6 +747,36 @@ module sdp_request_cntl (
 
                        endcase  // case ({pbc_inc_addr_chan, pbc_end_addr_chan})
                      end
+                   // Consider the case where we jump to a new consequtive and the start bank isnt equal to the end bank
+                   // If the start channel is 1, we will increment to the next bank but we wont have requested channel 0
+                   else if ((pbc_inc_addr_bank != pbc_end_addr_bank) && pbc_last_end_is_cons_tm1_end )
+                     begin
+                       case ({first_time_thru, pbc_inc_addr_chan})
+                         2'b01:
+                           begin
+                             force_cons_chan0_request  <= 1'b0 ;
+                             force_cons_chan1_request  <= 1'b0 ;
+                             force_cons_chan01_request <= 1'b0 ;
+                             force_cons_chan10_request <= 1'b1 ;
+                           end
+                         // first time thru we assume the first request has been performed
+                         2'b11:
+                           begin
+                             force_cons_chan0_request  <= 1'b1 ;
+                             force_cons_chan1_request  <= 1'b0 ;
+                             force_cons_chan01_request <= 1'b0 ;
+                             force_cons_chan10_request <= 1'b0 ;
+                           end
+                         default
+                           begin
+                             force_cons_chan0_request  <= 1'b0 ;
+                             force_cons_chan1_request  <= 1'b0 ;
+                             force_cons_chan01_request <= 1'b0 ;
+                             force_cons_chan10_request <= 1'b0 ;
+                           end
+
+                       endcase  // case ({pbc_inc_addr_chan, pbc_end_addr_chan})
+                     end
                  end
                default:
                  begin
@@ -788,7 +818,7 @@ module sdp_request_cntl (
                      end
                  endcase  // case ({force_cons_chan01_request, force_cons_chan10_request })
                end
-             else if (/*requests_complete &&*/ ~first_time_thru && (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP))
+             else if (requests_complete && ~first_time_thru && (storage_desc_accessOrder == PY_WU_INST_ORDER_TYPE_CWBP))
                begin
                  // if we are completing a consequtive zone, the access order is CWBP and we havent fetched both channels, then anticipate we have jumped over a channel
                  // e.g. pbc_start = 0,24,1,  pbc_end = 0,26,0

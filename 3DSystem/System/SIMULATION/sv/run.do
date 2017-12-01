@@ -1,2 +1,2 @@
 set SolveArrayResizeMax 20000 
-run 500us
+run 1000us
