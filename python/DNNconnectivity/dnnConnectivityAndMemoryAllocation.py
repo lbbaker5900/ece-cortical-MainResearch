@@ -1025,7 +1025,7 @@ class Cell():
             # if this is the last layer, the copiedTo field will be empty because there isnt an ROI from the next layer
             if (self.layerID < self.parentLayer.parentNetwork.numberOfLayers-1) :
                 if isinstance(self.managerLocation, list) :
-                    print '{0}:{1}:WARNING:CopiedTo list empty: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
+                    print '{0}:{1}:WARNING:CopiedTo list empty: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}. Make sure the next layer uses all of this layer??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
                 else:
                     print '{0}:{1}:ERROR:CopiedTo list empty, not an original cell: Layer {2} cell {{{3:^4}  {4:^4}  {5:^4}}}??'.format(__FILE__(), __LINE__(), self.layerID, self.ID[0], self.ID[1], self.ID[2])
         pLine = pLine + '\n-------------------------------------------------------'
@@ -2909,7 +2909,7 @@ class Manager():
                 readDesc.consequtive.append(toHexPad(ker['Consequtive'][c],3))
                 try :
                     #kerRowStr = kerRowStr + '1 {0:>3} '.format(toHexPad(ker['Jump'][c], 3))
-                    readDesc.jump.append(toHexPad(ker['Jump'][c], 3))
+                    readDesc.jump.append(toHexPad(ker['Jump'][c], 3)) 
                 except:
                     pass
             # Add descriptor to manager list
@@ -2931,13 +2931,16 @@ class Manager():
             #----------------------------------------------------------------------------------------------------
             # MEMORY_WRITE Descriptor
             #  - Vector to memory
-            dRowStr = ''
-            dRowStr =   dRowStr + '{0:^{1}}, '.format(toHexPad(descDelin.SOD           , descDelin .WIDTH ), descDelin .WIDTH ) 
-            dRowStr =   dRowStr + '{0:^{1}}, '.format(toHexPad(descType.MW             , descType  .WIDTH ), descType  .WIDTH )         
-            # option tuples
-            dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.SRC          , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(srcValues.STACK_UP       , srcValues  .WIDTH), srcValues  .WIDTH )
-            dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TXFER        , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(txferValues.VECTOR       , txferValues.WIDTH), txferValues.WIDTH )
-            dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_LANES , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(dest[0]['NumberOfCells'] , 2                ), txferValues.WIDTH )
+            try:
+              dRowStr = ''
+              dRowStr =   dRowStr + '{0:^{1}}, '.format(toHexPad(descDelin.SOD           , descDelin .WIDTH ), descDelin .WIDTH ) 
+              dRowStr =   dRowStr + '{0:^{1}}, '.format(toHexPad(descType.MW             , descType  .WIDTH ), descType  .WIDTH )         
+              # option tuples
+              dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.SRC          , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(srcValues.STACK_UP       , srcValues  .WIDTH), srcValues  .WIDTH )
+              dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TXFER        , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(txferValues.VECTOR       , txferValues.WIDTH), txferValues.WIDTH )
+              dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_LANES , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(dest[0]['NumberOfCells'] , 2                ), txferValues.WIDTH )
+            except:
+              pass
 
             #dRowStr = dRowStr + '{0:>2} '.format(toHexPad(dest.__len__(), 2))
             #  - memory option
@@ -3760,9 +3763,9 @@ def main():
     # b) stride matches XxY
     
     # CONV2 (CONV-225)
-    #network.addLayer('Input',           55,  55,    9,                      ) #   96,
-    #network.addLayer('Convolutional',   27,  27,   64,    5,   5,   9,   2 ) #  256,
-    #network.addLayer('Convolutional',   13,  13,   64,    3,   3,  64,   2 ) #  384,
+    network.addLayer('Input',           55,  55,    9,                      ) #   96,
+    network.addLayer('Convolutional',   27,  27,   64,    5,   5,   9,   2 ) #  256,
+    network.addLayer('Convolutional',   13,  13,   64,    3,   3,  64,   2 ) #  384,
 
     # CONV-300
     #network.addLayer('Input',           55,  55,  12,                     ) #   96,
@@ -3770,10 +3773,25 @@ def main():
     #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
    
     # CONV-294 (CONV-300-2)
-    network.addLayer('Input',          110, 110,   6,                      ) #   96,
-    network.addLayer('Convolutional',   55,  55,  64,     7,   7,   6,   2 ) #  256,
-    network.addLayer('Convolutional',   27,  27,  64,     5,   5,  64,   2 ) #  384,
+    #network.addLayer('Input',           57,  57,   6,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,  64,     7,   7,   6,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,  16,     3,   3,  64,   2 ) #  384,
    
+    # CONV-500
+    #network.addLayer('Input',           55,  55,  20,                     ) #   96,
+    #network.addLayer('Convolutional',   27,  27,  64,    5,   5,  20,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
+
+    # CONV-1000
+    #network.addLayer('Input',           55,  55,  40,                     ) #   96,
+    #network.addLayer('Convolutional',   27,  27,  64,    5,   5,  40,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
+
+    # CONV-4000
+    #network.addLayer('Input',           55,  55, 160,                     ) #   96,
+    #network.addLayer('Convolutional',   27,  27,  64,    5,   5, 160,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
+
     # FC-7
     #network.addLayer('Input',         4096,    1,    1,                      ) #   96,
     #network.addLayer('Convolutional', 4096,    1,    1, 4096,   1,    1,   0 ) #  256,
@@ -3794,10 +3812,15 @@ def main():
     #network.addLayer('Convolutional', 2048,    1,    1,  500,   1,    1,   0 ) #  256,
     #network.addLayer('Convolutional', 1024,    1,    1, 2048,   1,    1,   0 ) #  384,
     
-    # Small 2x2 and 8x8
-    #network.addLayer('Input',           55,  55,    3,                      ) #   96,
-    #network.addLayer('Convolutional',   27,  27,  32,    5,   5,    3,   2 ) #  256,
-    #network.addLayer('Convolutional',   13,  13,   64,    3,   3,  32,   2 ) #  384,
+    # FC-1000
+    #network.addLayer('Input',         1000,    1,    1,                      ) #   96,
+    #network.addLayer('Convolutional', 2048,    1,    1, 1000,   1,    1,   0 ) #  256,
+    #network.addLayer('Convolutional', 1024,    1,    1, 2048,   1,    1,   0 ) #  384,
+    
+    # Test
+    #network.addLayer('Input',           27,  27,    3,                      ) #   96,
+    #network.addLayer('Convolutional',   13,  13,   32,    3,   3,  32,   2 ) #  384,
+    #network.addLayer('Convolutional',    5,   5,   32,    3,   3,  32,   2 ) #  384,
     #
     
     
