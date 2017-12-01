@@ -1165,12 +1165,12 @@ These estimates were used to estimate power dissipation for operating frequencie
       \begin{tabular}{cccc}
         \toprule
                             % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
-                         &                       &          &                                       \\  %\cline{1-1}
-            Technology   & Clock                 & Expected &                                       \\  %\cline{1-1}
-                Node     & Frequency             &  Power   &  Test \cite{krizhevsky2012imagenet}   \\  %\cline{1-1}
+                         &                       &          &                                          \\  %\cline{1-1}
+            Technology   & Clock                 & Expected &  Bus                                     \\  %\cline{1-1}
+                Node     & Frequency             &  Power   &  Efficiency                              \\  %\cline{1-1}
         \hline  % instead of \midrule %midrule doesnt overlap with column lines
-                   28nm  & \SI{500}{\mega\hertz} &   53W    &  CONV2                                \\ %\cline{2-2}
-                   28nm  & \SI{700}{\mega\hertz} &   73W    &  CONV2                                \\ %\cline{2-2}
+                   28nm  & \SI{500}{\mega\hertz} &   53W    &  \SI[per-mode=symbol]{\sim 70}{\percent} \\ %\cline{2-2}
+                   28nm  & \SI{700}{\mega\hertz} &   73W    &  \SI[per-mode=symbol]{\sim 70}{\percent} \\ %\cline{2-2}
         \bottomrule
       \end{tabular}
     \end{adjustbox}
@@ -1186,12 +1186,19 @@ These estimates were used to estimate power dissipation for operating frequencie
       \begin{tabular}{cccc}
         \toprule
                             % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
-                                                      & Downstream                              &                                        \multicolumn{2}{c}{Average Downstream Bandwidth}                      \\  %\cline{1-1}
-                                                      & Stack                                   &                                        \multicolumn{2}{c}{At Frequency}                                      \\  %\cline{1-1}
-                   Test \cite{krizhevsky2012imagenet} & Bus Efficiency                          &       \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\  %\cline{1-1}
+                                                       & Downstream                              &                                        \multicolumn{2}{c}{Average Downstream Bandwidth}                      \\  %\cline{1-1}
+                                                       & Stack                                   &                                        \multicolumn{2}{c}{At Frequency}                                      \\  %\cline{1-1}
+                   Test                                & Bus Efficiency                          &       \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\  %\cline{1-1}
         \hline  % instead of \midrule %midrule doesnt overlap with column lines                                       
-                   CONV2                              &\SI[per-mode=symbol]{\sim 70}{\percent}  & \SI[per-mode=symbol]{\sim 46}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 64}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-7                               &\SI[per-mode=symbol]{\sim 94}{\percent}  & \SI[per-mode=symbol]{\sim 62}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 86}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV2 \cite{krizhevsky2012imagenet} &\SI[per-mode=symbol]{\sim 65}{\percent}  & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-294                            &\SI[per-mode=symbol]{\sim 67}{\percent}  & \SI[per-mode=symbol]{\sim 44}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 61}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-300                            &\SI[per-mode=symbol]{\sim 73}{\percent}  & \SI[per-mode=symbol]{\sim 48}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 67}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-500                            &\SI[per-mode=symbol]{\sim 82}{\percent}  & \SI[per-mode=symbol]{\sim 54}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 75}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-1000                           &\SI[per-mode=symbol]{\sim 89}{\percent}  & \SI[per-mode=symbol]{\sim 58}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 82}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-350                              &\SI[per-mode=symbol]{\sim 78}{\percent}  & \SI[per-mode=symbol]{\sim 51}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 72}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-500                              &\SI[per-mode=symbol]{\sim 84}{\percent}  & \SI[per-mode=symbol]{\sim 55}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 77}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-1000                             &\SI[per-mode=symbol]{\sim 91}{\percent}  & \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 83}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-7 \cite{krizhevsky2012imagenet}  &\SI[per-mode=symbol]{\sim 94}{\percent}  & \SI[per-mode=symbol]{\sim 62}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 86}{\tera\bit\per\second} \\ %\cline{2-2}
         \bottomrule
       \end{tabular}
     \end{adjustbox}
