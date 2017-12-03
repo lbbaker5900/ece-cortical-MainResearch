@@ -46,10 +46,11 @@ A particular neuron may have many hundreds, perhaps thousands of other neurons c
 These input neurons are referred to as pre-synaptic neurons. These pre-synaptic neurons may provide input to many neurons which are referred to as post-synaptic neurons.
 A particular neuron can get activated by a particular arrival pattern of pre-synaptic neuron spikes or simply by the intensity of the pre-synaptic spikes. 
 
-The spiking behavior of a neuron also varies and many spiking patterns have been observed. 
-It is the delays and strength of the connections that contain the "information" in the neural network.
+The spiking behavior of a neuron also varies and many spiking profiles have been observed, including single spikes, groups of spikes and repetitive spiking. 
+It is believed that information is carried in the delay and strength of the connections and how pre-synaptic neurons combine to cause a neuron to activate.
 In simple terms, if a neuron is activated by its pre-synaptic neurons, then the activation of the neuron means a pattern has been detected which will influence a reaction.
 In mammalian terms, that might be the detection of a threat from both smell and sight neurons and the reaction is to control muscles resulting in flight.
+
 
 The various chemical and electrical processes that result in the generation and propagation of these neuron spikes is beyond the scope of this dissertation, but how neurons and networks of neurons are artificially emulated is what we will duscuss next.
 
@@ -57,12 +58,176 @@ The various chemical and electrical processes that result in the generation and 
 \subsection*{Artificial Neural Networks}
 \label{sec:Artificial Neural Networks}
 
-When modeling these neurons in artificial neural networks, the outputs of the neuron models either generate actual spikes or
+When modeling these neurons in artificial neural networks, the neuron models either generate actual spikes similar to actual neurons or
 produce a value which is proportional to the rate at which spikes occur.
 These artificial neural networks can be categorized as rate-based coded or spike time coded neurons.
 
-When used in networks of neurons, both model types employ a connection weight between the pre and post-synaptic neuron, however, the
-spiking neuron network also introduces a time delay associated with the connection.
+
+When used in networks of neurons, both model types employ a connection weight between the pre and post-synaptic neuron, however, the spiking neuron network also introduces a time delay associated with the connection.
+
+The spiking neuron model is characterized by:
+\begin{outline}
+  %\setlength{\baselineskip}{10pt}
+  %\setlength{\itemsep}{6pt}
+  %\setlength{\baselineskip}{10pt}
+  %\setlength\itemsep{0pt}
+  %\setlength{\partopsep}{0pt}
+  %\setlength{\parskip}{0pt}
+  %\setlength{\parsep}{0pt}
+  %\setlength{\topsep}{0pt}
+  %\setlength{\itemsep}{3pt}
+  %\setlength{\itemindent}{\leftmargin}
+  %\setlength{\leftmargin}{0pt}
+        \1 Connections between neurons have both a strength and a delay
+          \2 The pre-synaptic neuron output is multiplied by the connection weight and delayed
+        \1 The weighted inputs from all pre-synaptic neurons are accumulated
+        \1 The accumulated inputs drives an activation function
+          \2 the activation function $f(x)$ is a spiking model is based on differential equations
+          \2 many models have been proposed with varying levels of complexity
+            \3 examples are:
+              \4 Leaky integrate and fire
+              \4 Izhikevich \cite{Iz2005} (see \fref{fig:Izhikevich Model})
+         
+\end{outline}
+
+The Rate-based neuron model is characterized by:
+\begin{outline}
+        \1 Connections between neurons have only a strength
+          \2 The pre-synaptic neuron output is multiplied by the connection weight
+        \1 The weighted inputs from all pre-synaptic neurons are accumulated
+        \1 The accumulated inputs drives an activation function
+          \2 the activation function $f(x)$ is a non-linear function
+          \2 early models used binary functions although in practice the function needs to be differentiable
+            \3 examples are (see \fref{fig:Example Rated-Based Model Activation functions}):
+              \4 sigmoid
+              \4 rectified linear unit
+\end{outline}
+
+\begin{figure}
+\centering
+\begin{subfigure}{.4\textwidth}
+  \centering
+  \includegraphics[width=0.85\textwidth]{SpikeBasedModel}
+  \captionsetup{justification=centering, skip=5pt}
+  \caption{Spiking Model}
+  \label{fig:simpleNetwork}
+\end{subfigure}%
+\begin{subfigure}{.4\textwidth}
+  \centering
+  \includegraphics[width=0.7\textwidth]{RatebasedModel}
+  \captionsetup{justification=centering, skip=5pt}
+  \caption{Rate-Based Model}
+  \label{fig:cellContents}
+\end{subfigure}
+\captionsetup{justification=centering, skip=5pt}
+\caption{Simple Artificial Neural Network}
+\label{fig:Artificial Neuron Models}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{subfigure}{.3\textwidth}
+  \begin{tikzpicture}[scale=0.5]
+    \begin{axis}[
+        title={Sigmoid},
+        %grid = major,
+        xmin=-6,xmax=6,
+        ymin=0,ymax=1,
+        legend style={draw=none, fill=white},      
+        legend pos= outer north east
+        ]
+        \addplot[myBlueThickStyle] expression[domain=-6:6,samples=100]{1/(1+e^(-x))} 
+                    node at (axis cs:3,0.7){}; 
+        \legend{{\large $f(x)=\frac{1}{1+e^{-t}}$}}
+    \end{axis}
+  \end{tikzpicture}
+  \captionsetup{justification=centering, skip=5pt}
+  \caption{Sigmoid}
+  \label{fig:Sigmoid}
+\end{subfigure}%
+\begin{subfigure}{.3\textwidth}
+  \begin{tikzpicture}[scale=0.5]
+    \begin{axis}[
+        title={ReLu},
+        xmin=-1,xmax=1,
+        ymin=0,ymax=1,
+        legend style={draw=none, fill=white},      
+        legend pos= outer north east
+        ]
+        \addplot[myBlueThickStyle] expression[domain=0:1,samples=100]{x} node at (axis cs:0.6,0.15){}; 
+         \addplot[myBlueThickStyle] expression[domain=-1:0,samples=100]{0};       
+         \legend  {{ $f(x)= \begin{cases} 0,      &\text{if $x < 0$;}\\   x,       &\text{otherwise.}  \end{cases}$}}  
+    \end{axis}
+  \end{tikzpicture}
+  \captionsetup{justification=centering, skip=5pt}
+  \caption{Relu}
+  \label{fig:Relu}
+\end{subfigure}
+\captionsetup{justification=centering, skip=5pt}
+\caption{Example Rated-Based Model Activation functions}
+\label{fig:Example Rated-Based Model Activation functions}
+\end{figure}
+
+\begin{figure}
+\centering
+\captionsetup{justification=centering}
+\vspace{0.5cm}
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \begin{equation}
+  \begin{split}
+  &v' = 0.04v^2+5v + 140 - u - I\\
+  &u' = a(bv-u)  \\
+  &\text{if } v\ge  \SI{30}{\mV}, \text{ then } 
+  \begin{cases}
+      v \leftarrow c\\           
+      u \leftarrow u+d\\           
+  \end{cases} \nonumber
+  \end{split}
+  \end{equation}
+    \caption{Izhikevich Model}
+    \label{fig:Izhikevich Model}
+  \end{subfigure}
+\begin{subfigure}{.7\textwidth}
+  \centering
+  \mbox{\includegraphics[width=4.0in]{SpikingExample.pdf}}
+  \captionsetup{justification=centering, skip=3pt}
+  \caption{Izhikevich \cite{Iz2005} Model Simulation}
+  \label{fig:spiking example}
+\end{subfigure}
+\caption{Example Spiking Activation Function Model}
+\label{fig:Example Spiking Model}
+\end{figure}
+
+To emulate complex behavior, the artifical neurons are connected in networks, typically with layers of sub-networks which are in affect separated by the non-linear activation function.
+Examples of both rate-based and spiking artificial neural networks can be seen in \fref{fig:Rate-based Model Network} and \fref{fig:Spiking Model Network} respectively.
+
+
+
+\begin{figure}[!t]
+% the [] contains position info e.g. [!t] means here
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=4.0in]{RateBasedNeuralNetwork.pdf}}
+}
+\caption{Rate-based Model Artificial Neural Network}
+\label{fig:Rate-based Model Network}
+\end{figure}
+
+\begin{figure}[!t]
+% the [] contains position info e.g. [!t] means here
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=4.0in]{SpikingNeuralNetwork.pdf}}
+}
+\caption{Spiking-based Model Artificial Neural Network}
+\label{fig:Spiking Model Network}
+\end{figure}
+
 Although the spiking neural network more closely models the behavior of real neurons, over the last 20 years there 
 have been breakthroughs in the configuring of rate-based models especially in the application of the back-propagation
 algorithm and stochastic gradient descent. Along with the abundance of data now available in the form of voice, images etc. to "teach" these networks
@@ -89,8 +254,7 @@ Artificial Neural Networks are a network of inter-connected processing elements 
 connectivity and processing observed in the brain.
 % Uncomment for dissertation
 
-They are characterized by the connections between a pre-synaptic neuron and a post-synaptic
-neuron having a weight which determines the impact the pre-synaptic neuron has on the 
+They are characterized by the connections between a pre-synaptic neuron and a post-synaptic neuron having a weight which determines the impact the pre-synaptic neuron has on the 
 "activation" of a post-synaptic neuron.
 Typically the processing portion of the neuron performs a multiplication and accumulation on the outputs from all
 the pre-synaptic neurons followed by a non-linear "activation" function, such as a rectified linear unit or sigmoid function to create the neuron output.
@@ -98,6 +262,7 @@ the pre-synaptic neurons followed by a non-linear "activation" function, such as
 It is well understood a single layer of these neurons can be configured to perform a linear function approximation.
 A collection of these neurons, when connected in layers with one layers neurons connected to
 the next layers neurons, are known to be able to act as non-linear function approximators.
+The layering not only allows the ANN to replicate non-linear functions, but also means the ANN layers can be processed in disjoint sections that make it suitable for sequential processing.
 As well as being effective function approximators, these neurons can be configured to act as 
 classifiers, attractor networks or associative memories.
 A simple example of an ANN can be seen in \fref{fig:simpleNetwork} and the contents of an artificial neuron 
