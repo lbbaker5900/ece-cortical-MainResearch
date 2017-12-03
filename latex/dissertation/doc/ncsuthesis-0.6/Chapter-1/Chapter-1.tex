@@ -119,9 +119,16 @@ The Rate-based neuron model is characterized by:
   \caption{Rate-Based Model}
   \label{fig:cellContents}
 \end{subfigure}
-\captionsetup{justification=centering, skip=5pt}
-\caption{Simple Artificial Neural Network}
-\label{fig:Artificial Neuron Models}
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=0.7\textwidth]{SimpleNetwork}
+  \captionsetup{justification=centering, skip=5pt}
+  \caption{Network of Artificial Neurons}
+  \label{fig:cellContents}
+\end{subfigure}
+\captionsetup{justification=centering, skip=2pt}
+\caption{Artificial Neural Network}
+\label{fig:Artificial Neural Network}
 \end{figure}
 
 \begin{figure}
@@ -212,7 +219,7 @@ Examples of both rate-based and spiking artificial neural networks can be seen i
 \centerline{
 \mbox{\includegraphics[width=4.0in]{RateBasedNeuralNetwork.pdf}}
 }
-\caption{Rate-based Model Artificial Neural Network}
+\caption{Rate-based Model Artificial Neural Network (with ReLu activation function))}
 \label{fig:Rate-based Model Network}
 \end{figure}
 
@@ -232,18 +239,34 @@ Although the spiking neural network more closely models the behavior of real neu
 have been breakthroughs in the configuring of rate-based models especially in the application of the back-propagation
 algorithm and stochastic gradient descent. Along with the abundance of data now available in the form of voice, images etc. to "teach" these networks
 using back-propagation, most of the effective applications of artificial neural networks have employed these rate-based models.
+
 Our research will focus on these rate-based models which we will now refer to as ANNs.
 \fi
 
+
+\subsubsection*{The Problem}
+\label{sec:The Problem}
+
 To approach the capabilities observed in human behavior, such as object recognition these ANNs become very large.
-They often utilize hundreds of thousands of neurons to implement what we would consider a relatively straightforward task.
-For example, a "useful" ANN similar to that described in \cite{krizhevsky2012imagenet} that is used
-to recognize up to 1000 different object classes has a network size of approximately 650,000 neurons and 
-630 million synaptic connections \cite{krizhevsky2012imagenetPreso}. 
-Many applications require multiple instances of ANNs of similar size to the ANN described in \cite{krizhevsky2012imagenet}.
-For example employing multiple cameras in a drone or automobile each with an image recognition ANN\cite{krizhevsky2012imagenet}\cite{bojarski2016end}.
-These implementations have very large memory and processing requirements.
-The requirements of these applications are typically satisified by employing multiple graphics processor units(GPU).
+They often utilize hundreds of thousands of neurons to implement what a human would consider a relatively straightforward task.
+For example, a "useful" ANN similar to that described in \cite{krizhevsky2012imagenet} that is used to recognize up to 1000 different object classes has a network size of approximately 650,000 neurons and 630 million synaptic connections \cite{krizhevsky2012imagenetPreso}. 
+
+The increased performance of ANNs over classical methods in image recognition and voice recognition might suggest that ANNs might out-perform other existing systems in other applications.
+There is reason to believe that these ANNs will replace existing control and monitoring functions in existing systems.
+
+If ANNs fulfill their potential, systems employing ANNs will utilize them for various functions, such as engine monitoring, anomaly detection, navigation etc. all within the same system.
+Considering the various functions a complex customer facing or edge application system performs, it is likely that many real-world applications will employ multiple disparate instances of these useful sized ANNs.
+Assuming these complex functions will require ANNs similar in size to \cite{krizhevsky2012imagenet}, these implementations will be processing multiple large ANNs at or near real-time.
+
+\iffalse
+So considering the performance improvements observed in other applications, it is expected that many customer facing or edge applications will implement multiple instances of artificial neural networks to perform various functions.
+have very large memory and processing requirements.
+require multiple instances of ANNs of similar size to the ANN described in \cite{krizhevsky2012imagenet}.
+
+For example employing multiple cameras or monitoring and controlling different systems in a drone, a automobile each with an image recognition ANN\cite{krizhevsky2012imagenet}\cite{bojarski2016end} for navigation, engine monitoring along with other system control.
+\fi
+
+The requirements of these applications would currently be satisified by employing multiple graphics processor units(GPU).
 These multiple GPU systems have high real-estate and power requirements that may exceed the target applications requirements.
 
 This research explores a 3DIC solution using a custom organized 3DIC memory in conjunction with unique data structures and custom processing modules to significantly reduce the 
