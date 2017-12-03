@@ -15,15 +15,43 @@ over other state-of-the-art technology\cite{krizhevsky2012imagenet}.
 These artificial neural networks will continue to be applied to numerous other areas such as voice recognition, text recognition, 
 face recognition and autonomous control.
 
-Artificial neural networks (ANN) take their inspiration from neuron behavior observed in the mammalian brain, although
-implementations are simplifications of what actually exists in the brain.
+Artificial neural networks (ANN) take their inspiration from neuron behavior observed in the mammalian brain, although implementations are simplifications of what actually exists in the brain.
+
+The mammalian neuron is a cell that receives input and generates output in the form of electrical and chemical processes.
+The neuron has a cell body (or soma), a group of dendrites which provide the inputs from other cells, a cell body, an axom which generates the output signals, and the axom terminals which are the outputs of the cell.
+The connection from a cells output, or axom terminal to another cells input, or dendrite is known as a synapse. 
+The connection in the synapse is a chemical process stimulated by electrical impulses.
+The neuron can be seen in figure \ref{fig:neuron}.
+
+The connection from one cell to another has both an associated delay and a strength. The strength of the connection can be influenced by the size of the pre-synaptic neuron spike or by the pre-synaptic neuron generating a series of spikes rather than a single spike.
+
+\begin{figure}[!t]
+% the [] contains position info e.g. [!t] means here
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=4.0in]{Neuron.pdf}}
+}
+\caption{Neuron}
+\label{fig:neuron}
+\end{figure}
+
+
 
 \iftrue
-It is known that mammalian neurons generate "spikes" in response to inputs which for humans include sight, touch, sound etc.. This spiking behavior is often referred to as the neuron being activated.
-When these neurons are activated, their spikes propagate to other neurons causing them to activate. A particular neuron may have many hundreds, perhaps thousands of other neurons connected to its "input".
-These input neurons are often referred to as pre-synaptic neurons. These pre-synaptic neurons may provide input to many neurons which are referred to as post-synaptic neurons.
-A particular neuron can get activated by a particular arrival pattern of pre-synaptic neuron spikes or simply by the intensity of the pre-synaptic spikes. The spiking behavior of a neuron also varies and many
-spiking patterns have been observed. The generation and propagation of these spikes is beyond the scope of this dissertation propagation.
+So it is known that mammalian neurons generate "spikes" in response to inputs which for humans include sight, touch, sound etc.. This spiking behavior is often referred to as the neuron being activated.
+When these neurons are activated, their spikes propagate to other neurons. Under certain conditions, the combination of the various inputs to a neuron cause it to activate. 
+A particular neuron may have many hundreds, perhaps thousands of other neurons connected to its "input".
+These input neurons are referred to as pre-synaptic neurons. These pre-synaptic neurons may provide input to many neurons which are referred to as post-synaptic neurons.
+A particular neuron can get activated by a particular arrival pattern of pre-synaptic neuron spikes or simply by the intensity of the pre-synaptic spikes. 
+
+The spiking behavior of a neuron also varies and many spiking patterns have been observed. 
+It is the delays and strength of the connections that contain the "information" in the neural network.
+In simple terms, if a neuron is activated by its pre-synaptic neurons, then the activation of the neuron means a pattern has been detected which will influence a reaction.
+In mammalian terms, that might be the detection of a threat from both smell and sight neurons and the reaction is to control muscles resulting in flight.
+
+The various chemical and electrical processes that result in the generation and propagation of these neuron spikes is beyond the scope of this dissertation, but how neurons and networks of neurons are artificially emulated is what we will duscuss next.
 
 
 \subsection*{Artificial Neural Networks}
