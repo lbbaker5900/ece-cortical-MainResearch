@@ -66,16 +66,14 @@ These artificial neural networks can be categorized as rate-based coded or spike
 When used in networks of neurons, both model types employ a connection weight between the pre and post-synaptic neuron, however, the spiking neuron network also introduces a time delay associated with the connection.
 
 The spiking neuron model is characterized by:
+
 \begin{outline}
   %\setlength{\baselineskip}{10pt}
-  %\setlength{\itemsep}{6pt}
-  %\setlength{\baselineskip}{10pt}
-  %\setlength\itemsep{0pt}
+  %\setlength{\itemsep}{12pt}
   %\setlength{\partopsep}{0pt}
   %\setlength{\parskip}{0pt}
   %\setlength{\parsep}{0pt}
   %\setlength{\topsep}{0pt}
-  %\setlength{\itemsep}{3pt}
   %\setlength{\itemindent}{\leftmargin}
   %\setlength{\leftmargin}{0pt}
         \1 Connections between neurons have both a strength and a delay
@@ -163,7 +161,8 @@ The Rate-based neuron model is characterized by:
         ]
         \addplot[myBlueThickStyle] expression[domain=0:1,samples=100]{x} node at (axis cs:0.6,0.15){}; 
          \addplot[myBlueThickStyle] expression[domain=-1:0,samples=100]{0};       
-         \legend  {{ $f(x)= \begin{cases} 0,      &\text{if $x < 0$;}\\   x,       &\text{otherwise.}  \end{cases}$}}  
+         % had to change , to f&%$$#$g \text{,} on max.ece.ncsu.edu, what BS
+         \legend  {{ $f(x)= \begin{cases} 0\text{,}      &\text{if $x < 0$;}\\   x\text{,}       &\text{otherwise.}  \end{cases}$}}  
     \end{axis}
   \end{tikzpicture}
   \captionsetup{justification=centering, skip=5pt}
@@ -218,34 +217,35 @@ There have been implementations that use different number formats from double pr
 
 
 \begin{figure}[!t]
-% the [] contains position info e.g. [!t] means here
-\centering
-\captionsetup{justification=centering}
-\captionsetup{width=.9\linewidth}
-\centerline{
-\mbox{\includegraphics[width=4.0in]{RateBasedNeuralNetwork.pdf}}
-}
-\caption{Rate-based Model Artificial Neural Network (with ReLu activation function))}
-\label{fig:Rate-based Model Network}
-\end{figure}
-
-\begin{figure}[!t]
-% the [] contains position info e.g. [!t] means here
-\centering
-\captionsetup{justification=centering}
-\captionsetup{width=.9\linewidth}
-\centerline{
-\mbox{\includegraphics[width=4.0in]{SpikingNeuralNetwork.pdf}}
-}
-\caption{Spiking-based Model Artificial Neural Network}
-\label{fig:Spiking Model Network}
+  % the [] contains position info e.g. [!t] means here
+  \centering
+  \captionsetup{justification=centering}
+  \captionsetup{width=.9\linewidth}
+  \begin{subfigure}{.9\textwidth}
+    \centerline{
+    \mbox{\includegraphics[width=6.0in]{RateBasedNeuralNetwork.pdf}}
+    }
+    \caption{Rate-based Model Artificial Neural Network (with ReLu activation function))}
+    \label{fig:Rate-based Model Network}
+  \end{subfigure}
+  
+  \begin{subfigure}{.9\textwidth}
+    \centerline{
+    \mbox{\includegraphics[width=6.0in]{SpikingNeuralNetwork.pdf}}
+    }
+    \caption{Spiking-based Model Artificial Neural Network}
+    \label{fig:Spiking Model Network}
+  \end{subfigure}
+  \caption{Example Artificial Neural Networks}
+  \label{Example Artificial Neural Networks}
 \end{figure}
 
 Although the spiking neural network more closely models the behavior of real neurons, over the last 20 years there 
-have been breakthroughs in the configuring of rate-based models especially in the application of the back-propagation
+have been breakthroughs in the configuring of rate-based models especially with the introduction of the back-propagation
 algorithm and stochastic gradient descent. Along with the abundance of data now available in the form of voice, images etc. to "teach" these networks
 using back-propagation, most of the effective applications of artificial neural networks have employed these rate-based models.
 
+\iffalse
 Our research will focus on these rate-based models which we will now refer to as ANNs.
 \fi
 
@@ -264,7 +264,7 @@ If ANNs fulfill their potential, systems employing ANNs will utilize them for va
 Considering the various functions a complex customer facing or edge application system performs, it is likely that many real-world applications will employ multiple disparate instances of these useful sized ANNs.
 Assuming these complex functions will require ANNs similar in size to \cite{krizhevsky2012imagenet}, these implementations will be processing multiple large ANNs at or near real-time.
 
-So in these ANNs, the memory requirements are significant. The storage is required for the input, the AN state and most significantly the weights for each of the ANs. This storage requirement often results in gigabytes of memory.
+Considering the storage required for the input, the AN states and most significantly the weights for each of the ANs, the storage requirements results in gigabytes of memory.
 When these ANNs are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
 
 As a metric, this work asumes that any useful DNN will employ 100's of thousands of ANs. Although there is a lot of debate regarding number formats for ANNs, this work also assumes single-precision floating point.
@@ -281,8 +281,55 @@ Assuming an ANN with 250K neurons and an average fanin to each AN of 2000, a sys
 \text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
 \end{alignat}
 
-Regardless of the combination of ANNs, this work suggests that these edge systems will require usable memory bandwidth of the order of 10's of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
+Therefore, when imlementing ANNs, the memory requirements are significant. The storage is required for the input, the AN state and most significantly the weights for each of the ANs. This storage requirement often results in gigabytes of memory.
 
+In addtion, in edge applications, it is anticipated that these ANNs are required to be solved in fractions of a second, in which case the processing and memory bandwidth becomes prohibitive.
+
+The problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for edge systems employing inference on multiple disparate useful-sized neural networks.}}}
+%\hlc[gray]{hello}
+
+In most cases, Graphics processing Units (GPU) are used to implement large ANNs. In many ANN architectures, such as Convolutional NNs (CNN), they are quite effective. However, we should not forget they are not optimized purely for ANN processing and are restricted by available SRAM and they are power hungry. These limitations will limit the effectiveness of GPUs regardless of what we might hear from the GPU community.
+
+Much of the ANN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or SRAM. These implementations can be shown to be effective with specific ANN architectures (CNN), server applications or the "toy examples" but when a system requires multiple disparate ANNs in an edge application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
+
+Considering that DRAM is required to store the NN parameters, why use SRAM as an intermediate store? Well, in practice there are benefits if you can operate solely out of SRAM.
+Certainly good performance and potentially low power.
+But use of SRAM makes assumptions on the NNs that can be supported.
+The primary requirement of the NN to allow effective use of SRAM is "reuse". Once parameters are stored in SRAM, can they be reused such that the SRAM isn't simply an intermediate memory but something akin to a cache.
+
+In some ANNs there are reuse opportunities. Specifially, with CNNs, the weights are reused. A convolutional filter is passed across an input to form the next layer. These filter "kernels" can be held in memory and the input is read from DRAM thus reducing the DRAM bandwidth.
+Even with DNNs where weights may not be reused, when implementing multiple DNNs, there is opportunity to hold the input in memory.
+If the system is being employed in cloud applications or in training, there is opportunity to reuse inputs whilst performing batch processing.
+
+But SRAM comes at a price, its big. Often when we see physical layouts of NN processors, they are dominated by the silicon area of the SRAM. The area required for SRAM has been understood for quite some time and companies attempt to create custom SRAMs to minimize the area impact.
+
+So the question becomes, can a system employ DRAM with minimal SRAM and still provide a high performance system within acceptable area constraints?
+
+\iffalse
+We believe a system can be designed with DRAM as the primary processing store. This will require careful use of data structures to describe storage within DRAM to ensure we make good use of the potential bandwidth. But there are other benefits we will take advantage of, but more about that later.
+\fi
+
+\iffalse
+There important application is disparate ANNs because specifically a form of DNN, Convolutional Neural networks (CNN) have gotten good press recently, but they are not the only DNN.
+\fi
+
+Even in cloud applications, there are limitations on reuse. We paraphrase a quote from a Google paper [Jou17] on their Tensor Processing Unit ASIC (TPU):
+
+\hyphenquote{american}{the architecture research community is paying attention to NNs, but of all the papers at ISCA 2016 on hardware accelerators for NNs, alas, all nine papers looked at CNNs, and only two mentioned other NNs. Unfortunately CNNs represent only about 5\% of our datacenter NN workload}
+
+The applications targeted by the google TPU [Jou17] assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in [Jou17] are fully-connected DNNs and in these cases weight reuse is not as benefitial and the performance of the TPU is degraded when implementing these fully-connected DNNs.
+
+Therefore, implementations that focus on CNNs can suffer from severe degradation in performance when targeting generic types of ANN, such as locally and fully connected DNNs and LSTMs.
+
+This work focuses on edge applications employing disparate ANNs and assumes both weight reuse and batch processing do not apply.
+Considering systems will want to perform multiple DNNs simultaneously suggests that these edge systems will require usable memory bandwidth of the order of 10's of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
+In these cases, \textbf{\textcolor{black}{DRAM bandwidth is the bottleneck}}.
+
+
+
+
+\subsubsection*{The Solution}
+\label{sec:The Solution}
 
 
 \iffalse
