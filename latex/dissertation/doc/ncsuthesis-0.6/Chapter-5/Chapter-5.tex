@@ -4,241 +4,135 @@
 %    subsection* to section
 %    subsubsection* to subsection
 
-\chapter{Preliminary Work}
-%\section{Preliminary Work}
+
+% #######################################################################################################################################
+\chapter{Detailed System Description}
 \label{chap-five}
+%\label{sec:detailedSystemDescription}
 
-A small team within the NCSU ECE department, known as the DARPA Cortical team worked on accelerating two types of ANN known as Sparsey and HTM.
-The work\cite{afrl_cortical} focused on comparing GPU implementations to one solution implemented using a pure ASIC and another solution using an ASIP.
-Both Sparsey and HTM were implemented on a GPU and then power and speed were compared against the custom ASIC and ASIP solutions.
-The DARPA Cortical team were able to demonstrate a overall performance improvement of better than two orders of magnitude over a GPU solution.
-Although these designs employed only SRAM, and the size of the networks were constrained, the Cortical team demonstrated the 
-potential for significant performance gains accelerating ANNs using ASIC or ASIP solutions.
-
-This works research will propose a custom organized 3D-DRAM and special processing functions optimized for a family of popular ANNs. 
-The solution is contained within a 3DIC footprint which inherently reduces power and increases bandwidth by keeping communication largely "on silicon".
-
-To achieve the performance improvement over current generation GPU's, this work is targeting a 3DIC stack with ten's of thousands of
-connections (TSV's) between die with logic running at approximately 1GHz.
-The preliminary work carried out to date was a feasibility study to ensure the various research goals were achievable.
-This work was based on a proposed partially re-organized version of the DRAM described in \cite{tezzaron:diram4}.
-The initial re-organization proposes gaining access to an entire page within the DRAM. This will provide a raw DRAM bandwidth of
-131Tbps spread over an array of 64 processing engines. 
-The feasibility study involved:
-\vspace{-2mm}
-\begin{itemize}
-  \itemsep-0.9mm
-  \item a baseline application with eight CNNs \cite{krizhevsky2012imagenetPreso}
-  \item a custom organized 3D-DRAM DiRAM4 \cite{tezzaron:diram4} 
-  \item a power estimate of the primary energy consumers
-  \item a real-estate study of the processing layer
-\end{itemize}
-
-During the DARPA Cortical project, a rudimentary design was completed that managed and performed floating point streaming operations.
-The design included a streaming operation module, a circuit-switched Network-on-chip (NoC) module, a DMA engine, a memory controller and general control logic.
-The synthesis results from that work were used in the feasibility study.
-In addition, \cite{galal2011energy} was used to estimate fused multiply-accumulate (FMA) function power and size, \cite{liu2012compact} was used to estimate energy in TSV's in a die stack,
-\cite{patti20142} was used to estimate real-estate for TSV's and \cite{tezzaron:diram4} was used to estimate energy associated with 3D-DRAM accesses.
-
-For much of the feasibility study, this work used the Tezzaron DiRAM4 \cite{tezzaron:diram4}.
-The area of the Tezzaron DiRAM4 die is approximately \SI{12.5}{\mm} by \SI{14.0}{\mm} or \SI{175}{\mm^2}.
-This area was used as the baseline for the 3D stack die size.
-
-
-For comparison, a typical GPU \cite{techpowerupteslak20c} has a silicon area of \SI{550}{\mm^2} using a \SI{28}{\nm} technology node 
-and consumes in excess of \SI{100}{\W}.
-
-Assuming these ANNs are processing images at a frame rate of 60fps, we will allocate \SI{10}{\ms} to complete computations
-associated with the ANNs. We will also assume each NN is of a similar size to the CNN described in \cite{krizhevsky2012imagenetPreso}
-which we estimate to have 2.1 billion floating point operations.
-The floating point operations per second (FLOPS) estimate for eight NN's is therefore \SI{1.7}{TFLOPS} which correlates to a bandwidth of
-\SI{54}{\tera bits/sec}.
-The design target summary is shown in table \ref{tab:DesignTargets}.
-
-% [h] forces that table to be here after the text above (not float)
-\vspace{-5mm}
-\begin{table}[h]
-%  \captionsetup{justification=centering, skip=-5pt}
-  \captionsetup{justification=centering, skip=3pt}
-  \caption{Design targets}
-  \label{tab:DesignTargets}
-  \centering
-%  \begin{center}
-    % [lr] ~ left align col 0 and right align col 1
-    % e.g. 4 columns could be lccr
-    \begin{tabular}{lr}
-      \toprule
-      Parameter & Target \\
-      \midrule
-      Power     & \SI{40}{\W}   \\
-      Bandwidth & \SI{54}{\tera\bit/\second} \\
-      Die Area  & \SI{175}{\mm^2} \\
-      \bottomrule
-    \end{tabular}
-%  \end{center}
-\end{table}
-\vspace{-5mm}
-In the feasibility study, we assume the DiRAM4 port can be re-organized to provide access to the \SI{4096}{\bit} cacheline. 
-The DRAM page open and close constraints are such that we can only gain access to a page every two clocks. Therefore, the port manager
-transfers 2048 bits down the stack bus every clock period of \SI{1}{\ns}.
-
-With 64-ports this provides a raw bandwidth of \SI{131}{\tera bits/sec}. This work anticipates that the data structure resulting from the research will result in 
-the solution being able to meet or exceed the 42\% bandwidth utilization of the baseline.
-
-The port manager shown in \fref{fig:blockDiagram} will transmit computation operands to a processing element (PE) on the processing layer.
-The PE will contain a number of executions lanes and each execution lane can receive up to two operands every clock
-cycle from the port manager. A "float" is 32 bits, therefore the stack bus width of 2048 bits will support 32 execution lanes on the corresponding PE.
-The DiRAM4 has 64-ports, therefore the processing layer will support 64 PE's with each PE supporting 32 execution lanes.
-In practice, each execution lane will be performing a multiply-accumulate on the weight/input tuple from the stack bus.
-Therefore, for the PE design we assume 32 FMA's, a small amount of SRAM, a 32-lane NCSU SIMD core
-and dma/control logic whose size is estimated from \cite{afrl_cortical}.
-
-%\subsection*{Power Dissipation}
-The overall power estimate is based on estimates of the PE FMA's, the SIMD, the DRAM, the TSV interconnects and an estimate for the
-general control logic.
-The main concern with respect to area is supporting the number of computational units in each PE within the processing layer. 
-The area of each PE is based on the SIMD, FMA, SRAM, DMA and control logic.
-
-The SIMD and control logic is based on the work from \cite{afrl_cortical}. The area and power of the FMA is based on \cite{galal2011energy}.
-The DRAM power is based on \cite{tezzaron:diram4}.
-The overall power estimate is shown in Table \ref{tab:powerEstimates}.
-%\subsection*{Area}
-The available area is based on the size of the DiRAM4. The area of the PE is estimated by scaling the area of the individual units.
-The area was estimated using nations of best through worst case scaling numbers from \cite{schabel2014energy}
-The PE area for the various scaling can be seen in \fref{fig:peAreaWithScaling}. Only the estimated area using worst case scaling exceeds the area available.
-
-\begin{figure}[h]
+A detailed flow diagram and block diagram of the sub-system column can be seen in figures \ref{fig:DetailedFlowDiagram} and \ref{fig:DetailedBlockDiagram} respectively.
+\begin{figure}
+% the [] contains position info e.g. [!t] means here
 \centering
 \captionsetup{justification=centering}
-    \begin{subtable}{.50\textwidth}
-    %  \captionsetup{justification=centering, skip=-5pt}
-      \centering
-    %  \begin{center}
-        % [lr] ~ left align col 0 and right align col 1
-        % e.g. 4 columns could be lccr
-        \resizebox{\textwidth}{!}{ % Scale table
-        \begin{tabular}{r|ccc}
-          \toprule
-                         & \multicolumn{3}{c}{Technology} \\
-                    Unit & \SI{130}{\nm} & \SI{65}{\nm} & \SI{45}{\nm}  \\
-          \hline
-          SIMD (32-lane) & 3200000 \\
-                    DMA  &               & 368000  \\
-      Memory Controller  &               & 294000  \\
-                Control  &               & 1032000 \\
-                   SRAM  &               & 740098  \\
-                    FMA  &               &              & 405440 \\
-          \bottomrule
-        \end{tabular}
-        }
-      \captionsetup{justification=centering, skip=9pt}
-      \vspace{-1mm}
-      \caption{Original area estimates}
-      \label{tab:areaEstimates}
-    %  \end{center}
-    \end{subtable}
-    \hfill
-    %\vfill
-    \begin{subtable}{.45\textwidth}
-    %  \captionsetup{justification=centering, skip=-5pt}
-      \centering
-    %  \begin{center}
-        % [lr] ~ left align col 0 and right align col 1
-        % e.g. 4 columns could be lccr
-        \resizebox{\textwidth}{!}{%
-        \begin{tabular}{r|cccc}
-          \toprule
-                         & \multicolumn{4}{c}{Technology} \\
-                 Source  & \SI{130}{\nm} & \SI{65}{\nm} & \SI{45}{\nm} & \SI{32}{\nm}  \\  \cline{1-1}
-          \hline  % instead of \midrule %midrule doesnt overlap with column lines
-                    ITRS & 8.00          & 2.00         & 1.00         & 0.66\\ %\cline{2-2}
-                    PTM  & 8.00          & 2.00         & 1.00         & 0.50\\
-                  Intel  & 2.37          & 1.33         & 1.00         & 0.75\\
-          \bottomrule
-        \end{tabular}
-        }
-      \captionsetup{justification=centering, skip=9pt}
-      \vspace{3mm}
-      \caption{Scaling numbers (from \cite{schabel2014energy})}
-      \label{tab:scalingNumbers}
-    %  \end{center}
-    \end{subtable}
-\vspace{-2mm}
-\caption{Original area estimates and scaling numbers}
-\label{fig:areaAndScalingEstimates}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[scale=0.07]{DetailedFlowDiagram.jpg}}
+}
+\center\caption{Sub-System Column (SSC) Detailed Flow Diagram}
+\label{fig:DetailedFlowDiagram}
 \end{figure}
 
-%The estimated power dissipation of \SI{40}{\W} and supporting eight baseline ANNs suggests an overall improvement over a GPU solution of 20x.
-\vspace{-1cm}
-\begin{figure}[h]
+\begin{figure}[t]
+% the [] contains position info e.g. [!H] means here
+% H 	Place exactly at spot in source text
+% h 	Place approximately at spot in source test
+% t 	Place at top of page
+% b 	Place at bottom of page
+% p 	Place on page for floats only
+% ! 	Override internal LaTeX parameters for determining float position
 \centering
 \captionsetup{justification=centering}
-    \begin{subtable}{.3\textwidth}
-    %  \captionsetup{justification=centering, skip=-5pt}
-      \centering
-    %  \begin{center}
-        % [lr] ~ left align col 0 and right align col 1
-        % e.g. 4 columns could be lccr
-        \begin{tabular}{ccc}
-          \toprule
-          Function & Power \\
-          \midrule
-          FMA      & \SI{4.7}{\W}  \\
-          General  & \SI{16}{\W}   \\
-          SIMD     & \SI{1.6}{\W}  \\
-          DRAM     & \SI{3.4}{\W}  \\
-          TSV's    & \SI{13.2}{\W} \\
-          \midrule                 
-          Total    & \SI{38.9}{\W} \\
-          \bottomrule
-        \end{tabular}
-      \captionsetup{justification=centering, skip=9pt}
-      \vspace{0.5cm}
-      \caption{Power estimates}
-      \label{tab:powerEstimates}
-    %  \end{center}
-    \end{subtable}
-    \begin{subfigure}{.65\textwidth}
-      \centering
-      \begin{tikzpicture}
-          \begin{axis}[
-              height=7cm,
-              width=7cm,
-              grid=major,
-              ylabel={\small area(\footnotesize $mm^2$)},
-              %ylabel style={rotate=90,left},
-              ylabel near ticks,
-              ymin=75,ymax=275,
-              symbolic x coords={left, worst, ave worst 2, average, ave best 2, best, right},
-              xtick=data,
-              xticklabels={\footnotesize worst, \footnotesize ave worst 2, \footnotesize average, \footnotesize ave best 2, \footnotesize best },
-              x tick label style={rotate=325,anchor=west},
-              xlabel={\small scaling},
-              xlabel style={below right},
-              %nodes near coords,
-              %nodes near coords align={vertical},
-          ]
-          \addplot[color=black,mark=square,line width=1pt,-] coordinates {
-                 (worst,           258.82  )
-                 (ave worst 2,     168.57  )
-                 (average,         140.81  )
-                 (ave best 2,      112.89  )
-                 (best,             97.32  )
-              };
-          \addlegendentry{\footnotesize estimated area}
-          \addplot[color=blue,mark=o,line width=1pt,-] coordinates {
-                 (left,          175  )
-                 (right,         175  )
-          };
-          \addlegendentry{\footnotesize available area}
-          \end{axis}
-      \end{tikzpicture}
-      \captionsetup{justification=centering, skip=3pt}
-      \caption{PE layer area estimate after scaling (using \cite{schabel2014energy})}
-      \label{fig:peAreaWithScaling}
-    \end{subfigure}%
-\caption{Power and area estimates}
-\label{fig:powerAndAreaEstimates}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[angle=90, height=8in]{DetailedBlockDiagram.jpg}}
+}
+\center\caption{Sub-System Column (SSC) Detailed Block Diagram}
+\label{fig:DetailedBlockDiagram}
 \end{figure}
 
-    
+\section{Manager}
+\label{sec:manager}
+
+\subsection{Operation Decode}
+\label{ssec:operationDecode}
+
+In figure \ref{fig:DetailedBlockDiagram}, instructions are read from instruction memory and passed to the instruction decoder.
+
+The operation tuple is decoded and a streaming operation (stOp) pointer and a SIMD operation pointer are sent to the PE inside an OOB control packet.
+
+The stOp pointer specifies what streaming operation is to take place on the data directly streamed to the PE. In the baseline system, typically this would be a floating-point multiply accumulate on two arguments, the pre-synaptic neuron states and the pre-synaptic weights.
+
+The SIMD pointer is essentially a program counter that will be invoked when the stOp result is passed to the SIMD.
+
+Note that other types of stOp includes a NOP with a destination of local memory. This allows us to transfer block of instruction or data from the manager to the PE.
+
+
+\subsection{Argument Decode}
+\label{ssec:argumentDecode}
+The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
+
+As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
+
+
+\subsection{Result data Processing}
+\label{ssec:resultDataprocessing}
+The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
+
+As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
+
+
+\subsection{Memory Write Controller}
+\label{ssec:memoryWriteController}
+
+The Memory Write Controller (MWC) receives data from to sources, the NoC via the MCNTL and the RDP.
+
+In both cases, the MWC read the actual storage descriptor from their local memory and immediately start forming data that will be written back to main memory.
+
+When the data is formed, a write command is sent to the memory via the MMC. Again, the MMC is not shown in the diagram but takes the memory write requests along with the data and converts them into the DRAM write protocol.
+
+The MWC can only operate on one of the two sources at any one time. However, there are four 4096-bit holding registers where data is formed prior to the write request.
+
+The holding registers have the potential in future to allow aggregation of data from one or more operations to allow a coalesced write back to main memory.
+
+
+\section{Processing Engine}
+\label{sec:pe}
+
+\subsection{Configuration}
+\label{ssec:peConfiguration}
+
+A configuration controller within the PE (PE\_CNTL) takes the OOB packet from the Manager and extracts the stOp and SIMD operation pointers.
+
+The stOp pointer is used to point to a local stOp configuration memory. The memory contains the various configuration data required by the streaming operation controller (stOp\_CNTL). The stOp\_CNTL is not shown.
+
+The stOp\_CNTL configures the:
+
+\begin{outline}
+    \1 Operation type
+    \1 Number of active execution lanes
+    \1 Source of the argument data, which can be downstream data from the manager or from the small local SRAM
+    \1 Destination of the result data, which can be the SIMD or the small local SRAM
+\end{outline}
+
+The SIMD operation pointer is sent to the SIMD.
+
+\subsection{Streaming Operations}
+\label{ssec:stOps}
+
+The streaming Operations (stOp) are designed to operate on data passed from the Manager at or near line-rate. If line-rate cannot be maintained, a flow-control mechanism is employed to slow the data from the Manager.
+
+Once the stOp has processed the data, it passes the result to the SIMD. Note in some cases the result can be placed in local SRAM or sent to both SIMD and SRAM.
+
+It should also be stated that while the stOp is processing the current data, the SIMD may be operating on the result of the previous operation. It is expected the SIMD will have completed the previous operation before the stOp completes the current operation, but again, if necessary a flow control mechanism between SIMD and stOP will be engaged if the SIMD is not ready.
+
+\subsection{SIMD}
+\label{ssec:simd}
+
+The SIMD takes the result data and performs the operation starting at the program counter (PC) indicated by the SIMD operation pointer provided by the PE\_CNTL.
+
+The stOp provides the result to the SIMD via a local register. The result is also written, in most cases to the small local SRAM.
+
+The SIMD performs the specified operation on the data provided by the stOp.
+
+In most cases this will be the AN activation function and in the baseline system is the Rectified Linear function (ReLu).
+
+When the SIMD has completed its operation, it passes the result to the SIMD Upstream controller to be returned to the Manager.
+
+\subsection{Result Data}
+\label{ssec:result}
+
+The SIMD Upstream Controller (SUI) takes the data and encapsulates it in an Upstream packet. Included in the packet is the tag required by the Return Data processor within the Manager.
+
+
+

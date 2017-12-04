@@ -33,7 +33,7 @@ The connection from one cell to another has both an associated delay and a stren
 \centerline{
 \mbox{\includegraphics[width=4.0in]{Neuron.pdf}}
 }
-\caption{Neuron}
+\caption{Artists impression of a Mammalian Neuron}
 \label{fig:neuron}
 \end{figure}
 
@@ -55,7 +55,8 @@ In mammalian terms, that might be the detection of a threat from both smell and 
 The various chemical and electrical processes that result in the generation and propagation of these neuron spikes is beyond the scope of this dissertation, but how neurons and networks of neurons are artificially emulated is what we will duscuss next.
 
 
-\subsection*{Artificial Neural Networks}
+%\section[NnSP]{NnSP{\cite{esmaeilzadeh2005nnsp}}}
+\section[Artificial Neural Networks]{Artificial Neural Networks}
 \label{sec:Artificial Neural Networks}
 
 When modeling these neurons in artificial neural networks, the neuron models either generate actual spikes similar to actual neurons or
@@ -107,7 +108,7 @@ The Rate-based neuron model is characterized by:
   \centering
   \includegraphics[width=0.85\textwidth]{SpikeBasedModel}
   \captionsetup{justification=centering, skip=5pt}
-  \caption{Spiking Model}
+  \caption[Spiking Model]{Spiking Model}
   \label{fig:simpleNetwork}
 \end{subfigure}%
 \begin{subfigure}{.4\textwidth}
@@ -124,8 +125,8 @@ The Rate-based neuron model is characterized by:
   \caption{Network of Artificial Neurons}
   \label{fig:cellContents}
 \end{subfigure}
-\captionsetup{justification=centering, skip=2pt}
-\caption{Artificial Neural Network}
+\captionsetup{justification=centering, skip=6pt}
+\caption[Artificial Neural Network]{Artificial Neurons and Network}
 \label{fig:Artificial Neural Network}
 \end{figure}
 
@@ -191,7 +192,7 @@ The Rate-based neuron model is characterized by:
     \end{cases} \nonumber
     \end{split}
   \end{equation}
-  \caption{Izhikevich Model}
+  \caption{Izhikevich Model\cite{Iz2005}}
   \label{fig:Izhikevich Model}
   \end{subfigure}
 \begin{subfigure}{.7\textwidth}
@@ -250,7 +251,7 @@ Our research will focus on these rate-based models which we will now refer to as
 \fi
 
 
-\subsubsection*{The Problem}
+\section[The Problem]{The Problem}
 \label{sec:The Problem}
 
 To approach the capabilities observed in human behavior, such as object recognition these ANNs become very large.
@@ -288,10 +289,6 @@ In addtion, in edge applications, it is anticipated that these ANNs are required
 The problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for edge systems employing inference on multiple disparate useful-sized neural networks.}}}
 %\hlc[gray]{hello}
 
-In most cases, Graphics processing Units (GPU) are used to implement large ANNs. In many ANN architectures, such as Convolutional NNs (CNN), they are quite effective. However, we should not forget they are not optimized purely for ANN processing and are restricted by available SRAM and they are power hungry. These limitations will limit the effectiveness of GPUs regardless of what we might hear from the GPU community.
-
-Much of the ANN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or SRAM. These implementations can be shown to be effective with specific ANN architectures (CNN), server applications or the "toy examples" but when a system requires multiple disparate ANNs in an edge application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
-
 Considering that DRAM is required to store the NN parameters, why use SRAM as an intermediate store? Well, in practice there are benefits if you can operate solely out of SRAM.
 Certainly good performance and potentially low power.
 But use of SRAM makes assumptions on the NNs that can be supported.
@@ -313,23 +310,20 @@ We believe a system can be designed with DRAM as the primary processing store. T
 There important application is disparate ANNs because specifically a form of DNN, Convolutional Neural networks (CNN) have gotten good press recently, but they are not the only DNN.
 \fi
 
-Even in cloud applications, there are limitations on reuse. We paraphrase a quote from a Google paper [Jou17] on their Tensor Processing Unit ASIC (TPU):
+Even in cloud applications, there are limitations on reuse. We paraphrase a quote from a Google paper \cite{tensorflow2015-whitepaper} on their Tensor Processing Unit ASIC (TPU):
 
 \hyphenquote{american}{the architecture research community is paying attention to NNs, but of all the papers at ISCA 2016 on hardware accelerators for NNs, alas, all nine papers looked at CNNs, and only two mentioned other NNs. Unfortunately CNNs represent only about 5\% of our datacenter NN workload}
 
-The applications targeted by the google TPU [Jou17] assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in [Jou17] are fully-connected DNNs and in these cases weight reuse is not as benefitial and the performance of the TPU is degraded when implementing these fully-connected DNNs.
+The applications targeted by the google TPU \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected DNNs and in these cases weight reuse is not as benefitial and the performance of the TPU is degraded when implementing these fully-connected DNNs.
 
 Therefore, implementations that focus on CNNs can suffer from severe degradation in performance when targeting generic types of ANN, such as locally and fully connected DNNs and LSTMs.
 
 This work focuses on edge applications employing disparate ANNs and assumes both weight reuse and batch processing do not apply.
 Considering systems will want to perform multiple DNNs simultaneously suggests that these edge systems will require usable memory bandwidth of the order of 10's of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
+
 In these cases, \textbf{\textcolor{black}{DRAM bandwidth is the bottleneck}}.
 
 
-
-
-\subsubsection*{The Solution}
-\label{sec:The Solution}
 
 
 \iffalse
@@ -340,284 +334,49 @@ require multiple instances of ANNs of similar size to the ANN described in \cite
 For example employing multiple cameras or monitoring and controlling different systems in a drone, a automobile each with an image recognition ANN\cite{krizhevsky2012imagenet}\cite{bojarski2016end} for navigation, engine monitoring along with other system control.
 \fi
 
-The requirements of these applications would currently be satisified by employing multiple graphics processor units(GPU).
-These multiple GPU systems have high real-estate and power requirements that may exceed the target applications requirements.
+Some might suggest the requirements of these applications would be satisified by employing multiple graphics processor units(GPU).
+In fact, Graphics processing Units (GPU) are used to implement large ANNs and in some ANN architectures, such as Convolutional NNs (CNN), they are quite effective. However, we should not forget they are not optimized purely for ANN processing and are restricted by available SRAM and they are power hungry. These limitations will limit the effectiveness of GPUs regardless of what we might hear from the GPU community.
+Even in the case of newer GPUs which are employing 2.5DIC technology, the memory bandwidth will still be limited by available DRAM tecnology.
+For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwith of the order of \SI[per-mode=symbol]{4}{\tera \bit \per \second}.
+Also, its has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
+Given these multiple GPU systems have high real-estate and power requirements and given each instance consumes of the order of \SI{100}{\watt} to \SI{200}{\watt}.
+Overall GPUs have limited suitability to meet edge application requirements.
+
+
+Much of the ANN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or SRAM. These implementations can be shown to be effective with specific ANN architectures (CNN), server applications or the "toy examples" but when a system requires multiple disparate ANNs in an edge application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
+
+
+\section[The Solution]{The Solution}
+\label{sec:The Solution}
+
+Most researchers acknowledge that realistically, DRAM is required to meet the main storage requirements of useful sized ANNs.
+
+We further believe that to support all types of disparate ANNs, we need to be able to operate directly from the DRAM memory.
+
+This is because SRAM-based solutions assume memory locality when processing a neural network. However, when ANNs do not provide sufficient locality these solutions become DRAM bandwidth bound. If we then ensure the DRAM can feed the SRAM at the necessary bandwidth, why use an SRAM and waste the significant silicon area they require.
+
+This works system operates directly from DRAM, but not just DRAM, 3D-DRAM.
+
+In addition, this work has designed a system that can stay within the physical footprint of the 3D-DRAM.
+
+By ensuring the system stays physically within the 3D stack, we take advantage of high density connectivity provided by TSVs. 
+Therefore, this work is able to propose a custom 3D-DRAM that exposes more of the DRAMs internal page and thus generates interface bandwidth that is of the order of 64 times that of the standard 3D-DRAM.
+
+\subsection[Novelty]{Novelty}
+\label{sec:Novelty}
+
+The novelty of this work includes:
+\begin{outline}
+    \1 A custom 3D-DRAM providing a ~64X bandwidth benefit compared to standard 3D-DRAM
+    \1 A system that benefits from the power and performance benefits of 3DIC technology by remaining within a 3DIC stack
+    \1 New data structures that allow use to operate directly out of DRAM whilst ensuring effective use of DRAM bandwidth
+    \1 A system that can simultaneously process multiple disparate ANNs at or near real-time
+\end{outline}
+
 
 This research explores a 3DIC solution using a custom organized 3DIC memory in conjunction with unique data structures and custom processing modules to significantly reduce the 
 area and power footprint of an application that needs to support the processing associated with multiple ANNs.
-
-
-Artificial Neural Networks are a network of inter-connected processing elements inspired by the 
-connectivity and processing observed in the brain.
-% Uncomment for dissertation
-
-They are characterized by the connections between a pre-synaptic neuron and a post-synaptic neuron having a weight which determines the impact the pre-synaptic neuron has on the 
-"activation" of a post-synaptic neuron.
-Typically the processing portion of the neuron performs a multiplication and accumulation on the outputs from all
-the pre-synaptic neurons followed by a non-linear "activation" function, such as a rectified linear unit or sigmoid function to create the neuron output.
-
-It is well understood a single layer of these neurons can be configured to perform a linear function approximation.
-A collection of these neurons, when connected in layers with one layers neurons connected to
-the next layers neurons, are known to be able to act as non-linear function approximators.
-The layering not only allows the ANN to replicate non-linear functions, but also means the ANN layers can be processed in disjoint sections that make it suitable for sequential processing.
-As well as being effective function approximators, these neurons can be configured to act as 
-classifiers, attractor networks or associative memories.
-A simple example of an ANN can be seen in \fref{fig:simpleNetwork} and the contents of an artificial neuron 
-with the multiplication and summation stages and the activation function $f(x)$ can be seen in \fref{fig:cellContents}. 
-
-
-\begin{figure}
-\centering
-\begin{subfigure}{.65\textwidth}
-  \centering
-  \includegraphics[width=0.9\textwidth]{Chapter-1/figs/simpleANN}
-  \captionsetup{justification=centering, skip=-20pt}
-  \caption{network}
-  \label{fig:simpleNetwork}
-\end{subfigure}%
-\begin{subfigure}{.3\textwidth}
-  \centering
-  \includegraphics[width=0.7\textwidth]{Chapter-1/figs/cellContents}
-  \captionsetup{justification=centering, skip=3pt}
-  \caption{neuron}
-  \label{fig:cellContents}
-\end{subfigure}
-\captionsetup{justification=centering, skip=10pt}
-\caption{Simple Artificial Neural Network}
-\label{fig:Simple Artificial Neural Network}
-\end{figure}
-
-For the most part, different ANNs are characterized by the function contained in the
-processing element, how the neurons are interconnected and how the weights of the inter-connections are configured or learnt.
-Most of the effective applications of ANNs require 10's of thousands of neurons and millions of synaptic connections.
-When the entire network must generate a result in near real-time, the result is a system requiring billions
-of floating point operations per second. When multiple ANNs need to be processed in parallel, the power and area requirements may not always be satisifed
-using current technology.
-
-%%
-%%When multiple of these networks must be processed in parallel \cite{qiu2013parallel}\cite{bojarski2016end},
-%%we quickly exceed the capabilities of current state-of-the-art technology.
-%-------------------------------------------------------------------------------------
-% FIXME - do we need activation function figures?
-% start FIXME
-\iftrue
-Some typical examples of the 
-activation function can be seen in \fref{fig:Typical neuron activation functions}.
-
-\begin{figure}
-\centering
-\begin{subfigure}{.32\textwidth}
-  \centering
-    \begin{tikzpicture}[scale=0.55]
-      \begin{axis}[
-          xlabel={$$},
-          ylabel={$$},
-          xlabel style={below right},
-          ylabel style={above left},
-          title={Sigmoid},
-          %grid = major,
-          xmin=-6,xmax=6,
-          ymin=0,ymax=1,
-          legend style={draw=none, fill=white},      
-          legend pos= outer north east
-          ]
-          \addplot[myBlackThickStyle] expression[domain=-6:6,samples=100]{1/(1+e^(-x))} 
-                      node at (axis cs:3,0.7){}; 
-          %\legend{{\large $f(x)=\frac{1}{1+e^{-t}}$}}
-      \end{axis}
-    \end{tikzpicture}
-  \captionsetup{justification=centering, skip=3pt}
-  \caption{Sigmoid}
-  \label{fig:SigmoidFunction}
-\end{subfigure}%
-\begin{subfigure}{.32\textwidth}
-  \centering
-    \begin{tikzpicture}[scale=0.55, transform shape]
-      \begin{axis}[
-          xlabel={$$},
-          ylabel={$$},
-          xlabel style={below right},
-          ylabel style={above left},
-          title={ReLu},
-          xmin=-1,xmax=1,
-          ymin=0,ymax=1,
-          legend style={draw=none, fill=white},      
-          legend pos= outer north east
-          ]
-           \addplot[myBlackThickStyle] expression[domain=0:1,samples=100]{x} node at (axis cs:0.6,0.15){}; 
-           \addplot[myBlackThickStyle] expression[domain=-1:0,samples=100]{0};       
-           %\legend  {{ $f(x)= \begin{cases} 0,      &\text{if $x < 0$;}\\   x,       &\text{otherwise.}  \end{cases}$}}  
-      \end{axis}
-    \end{tikzpicture}
-  \captionsetup{justification=centering, skip=3pt}
-  \caption{ReLu}
-  \label{fig:ReLuFunction}
-\end{subfigure}
-\begin{subfigure}{.32\textwidth}
-  \centering
-    \begin{tikzpicture}[scale=0.55]
-      \begin{axis}[
-          xlabel={$$},
-          ylabel={$$},
-          xlabel style={below right},
-          ylabel style={above left},
-          title={Saturation},
-          xmin=-2,xmax=2,
-          ymin=-1.5,ymax=1.5,
-          legend style={draw=none, fill=white},      
-          legend pos= outer north east
-          ]
-           \addplot[myBlackThickStyle] expression[domain=-1:1,samples=100]{x} node at (axis cs:0.6,0.15){}; 
-           \addplot[myBlackThickStyle] expression[domain=-2:-1,samples=100]{-1};       
-           \addplot[myBlackThickStyle] expression[domain=1:2,samples=100]{1};       
-           %\legend  {{ $f(x)= \begin{cases} 1,      &\text{if $x \ge 1$;}\\ x,      &\text{if $-1<x<1$;}\\  -1,      &\text{if $x \le -1$;} \end{cases}$}}  
-      \end{axis}
-    \end{tikzpicture}
-  \captionsetup{justification=centering, skip=3pt}
-  \caption{Saturation}
-  \label{fig:SaturationFunction}
-\end{subfigure}
-\captionsetup{justification=centering, skip=3pt}
-\caption{Typical neuron activation functions}
-\label{fig:Typical neuron activation functions}
-\end{figure}
-
-\fi
-% end FIXME
-%-------------------------------------------------------------------------------------
-
-%%This research will target a family of ANNs that have demonstrated efficacy in
-%%a family of popular applications. These applications have large neural networks requiring a large amount of memory 
-%%to support weight storage and the requirement of processing multiple ANNs at or near real-time.
-% FIXME - should I use this line or a version of it
-%As mentioned in section \ref{sec:chap-one}, it is our belief that most useful applications of ANNs fall into this category.
-
-%% Moved to chapter 3
-%%\subsection*{Targeted Applications}
-%%\label{sec:Targeted Applications}
-%%
-%%This work will target:
-%%\begin{outline}
-%%\renewcommand{\outlinei}{enumerate}
-%%  \vspace{-3mm}
-%%  \1 Brain-state-in-a-Box (BsB) and Cogent Confabulation (CC) because of their demonstrated efficacy in text recognition \cite{qiu2013parallel}.
-%%    \vspace{-3mm}
-%%    \2 The system described in \cite{qiu2013parallel} utilized 78 clusters with each cluster incorporating 22 Sony PS3 game stations and two NVidia GPU
-%%       cards. The text recognition system was segmented into character recognition performed by the BsB networks and the word and sentence construction was
-%%       performed by Cogent Confabulation.
-%%       There is opportunity to accelerate BsB and potential to accelerate portions of the Cogent Confabulation networks.
-%%  \vspace{-08mm}
-%%  \1 Deep neural networks \cite{krizhevsky2012imagenet} because of their demonstrated efficacy in image recognition 
-%%    \vspace{-3mm}
-%%    \2 The application space includes autonomous navigation of automobiles \cite{bojarski2016end}
-%%       with a need to process multiple deep neural networks simultaneously at real-time.
-%%  \vspace{-3mm}
-%%  \1 Reinforcement learning in the context of ANNs
-%%    \vspace{-3mm}
-%%    \2 The reinforcement learning algorithm employs deep neural networks in action-value function approximation \cite{mnih2013playing}. 
-%%       Considering most environments will have very large state spaces,
-%%       environment exploration will result in large numbers of action-value calculations and therefore acceleration will improve learning times.
-%%       It should be noted that supporting reinforcement learning will require provisions for acceleration of back-propagation.
-%%\end{outline}
-
-%%---------------------------------------------------------------------------------------------------------
-%%---------------------------------------------------------------------------------------------------------
-%% FIXME
-%% uncomment for dissertation
-\iffalse
-
-\subsubsection*{Brain-State-in-a-Box}
-
-This ANN is an auto-associative memory implemented as a recursive neural network. The network employs the saturation function, shown in \fref{fig:SaturationFunction} 
-as its activation function.
-The network is trained to a set of attractor primitives as described in \cite{lillo1994synthesis}.
-During inference, the network neurons are loaded with the state of the input which is typically a noisy version of one of the stored primitives.
-The network is then iteratively processed until the value of each node approaches unity indicating the network has converged on a stored primitive.
-The iterative process taking multiple passes through the neural network and that many BsB networks are employed in a given application
-provides opportunity for a solution that provide acceleration and large storage.
-
-\fi
-
-
-\iffalse
-
-\subsubsection*{Cogent Confabulation}
-
-Cogent confabulation is a probabilistic model where the synaptic weight reflects the coexistence likelihood between symbols in different lexicons.
-Each neuron represents a specific symbol in a lexicon and the activation value of each neuron is proportional to the co-existence likelihood between
-the symbol the neuron represents and other symbols in the observation.
-
-The weights are typically stored in the form of a matrix known as a knowledge base (KB).
-What makes this ANN different is that the processing is not deterministic where with most neural networks, all neurons are processed in a regular fashion.
-With cogent confabulation only neurons which have links to an observed or inferred symbol are processed.
-An example of predicting a symbols likelihood from other observed symbols can be seen in \fref{fig:Cogent confabulation likelihood calculation}.
-\begin{figure}[hbtp]
-\centering
-\includegraphics[width=0.4\textwidth]{Chapter-1/figs/CCnetwork}
-\captionsetup{justification=centering, skip=3pt}
-\caption{Cogent confabulation likelihood calculation}
-\label{fig:Cogent confabulation likelihood calculation}
-\end{figure}
-There is no activation function employed with cogent confabulation neurons.
-
-Cogent confabulation is often used in a process whereby a system converges on the most likely combination of symbols given an obervation \cite{qiu2013parallel}.
-It is this converging and the raw size of the knowledge bases that provides opportunity for a solution that provides acceleration and large storage.
-
-\fi
-
-
-\iftrue
-
-\subsubsection*{Deep Neural Networks}
-
-A single layer of neurons is a linear classifier and therefore cannot be used to classify unless the classes can be separated using a linear function.
-Even some simple cases cannot be linearly separated, an example often used is an exclusive-OR gate.
-To allow classes in these cases to be linearly separated, the input space needs to be transformed.
-Deep neural networks are ANNs that incorporate many layers of neurons which are often up to 10 layers deep.
-These additional layers are incorporated to translate the space of the input so the various classes being identified can be separated using linear classifiers in the later
-layers.
-A very successful early example known as a convolutional neural network (CNN) is which in \cite{krizhevsky2012imagenet} was used to classify objects in images
-and shown in \fref{fig:simple Imagenet network}.
-\begin{figure}[hbtp]
-\centering
-\includegraphics[width=0.9\textwidth]{Chapter-1/figs/deepNetworkShowingFeatureLayers}
-\captionsetup{justification=centering, skip=-5pt}
-\caption{Imagenet convolutional neural network from \cite{krizhevsky2012imagenetPreso}}
-\label{fig:simple Imagenet network}
-\end{figure}
-These CNN's use the early layers to identify low-level features and later layers are used combine these features into yet more higher-level features.
-Finally, the combination of high-level features are used to classify.
-This layering is shown in \fref{fig:Deep network showing feature layers}.
-\begin{figure}[hbtp]
-\centering
-\includegraphics[width=0.8\textwidth]{Chapter-1/figs/deepNetworkBlockDiagram}
-\captionsetup{justification=centering, skip=5pt}
-\caption{Deep network showing feature layers}
-\label{fig:Deep network showing feature layers}
-\end{figure}
-Finally, a fully connected linear classify is used to classify the object using this translated input.
-These deep neural networks can be used as classifiers or as function approximators as in our implementation of reinforcement learning.
-In practice, useful deep neural networks are very large and often exceed the capacity of single GPU's. Therefore,  there is opportunity for a solution that provides
-real-time acceleration and storage of of these systems.
-
-\fi
-
-
-\iftrue
-
-\subsubsection*{Reinforcement Learning}
-In the context of this work, reinforcement learning is the process by which a system identifies the actions to take to maximize reward.
-For example, what actions should an aircraft take to avoid crashing (low reward) versus landing (high reward).
-In this context of this work, we are discussing solving the action-reward function associated with a complex Markov-Decision-Process (MDP).
-The action-reward function tells an agent operating in an environment the expected accumulated reward if an action is taken
-in a particular state. The idea being the agent should always take the action that provides maximum expected reward.
-The action-value function is defined for any state an agent may find itself in.
-There are various dynamic programming methods employed to "learn" this action-value function and in most cases through repeated trials.
-However, in most useful environments, the size of the state-space is too large to learn and/or store each states action-value table, therefore action-value function
-approximators are used and deep neural networks are used as these approximators \cite{mnih2013playing}.
-The focus of this work will be on accelerating the application of deep NNs to action-value function approximators.
-
-\fi
+This works system will provide at or near real-time performance required for systems employing multiple ANNs whilst staying within acceptable area and power limits and will provide greater than an order of magnitude benefit over comparable solutions.
 
 %%---------------------------------------------------------------------------------------------------------
 %%---------------------------------------------------------------------------------------------------------

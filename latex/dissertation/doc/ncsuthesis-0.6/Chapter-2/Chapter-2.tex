@@ -1,179 +1,121 @@
 %% Lee
 %% In dissertation, change section* to chapter and subsection* to section
 
-\chapter{State of the Art}
-%\section{State of the Art}
+
+\chapter{System Description}
 \label{chap-two}
 
-For the most part, large scale ANNs have been implemented using GPU's.
-In some cases, these GPU's have demonstrated efficacy in the highly parallel processing required for some specific NNs such as Convolutional NNs.
-There are also custom implementations that have targeted specific ANNs\cite{chen201614}\cite{farabet2011neuflow}, 
-again such as convolutional neural networks (CNN). In most cases, these implementations focus on
-solving specific "hot-spots" inherent in the processing of the network\cite{chen201614}.
-%% Dissertation
-\iffalse
-%% convnets use shared parameters that 
-%% a) help with translation invariance
-%% b) reduce parameter space
-%% CNNs are not always used in face recognition \cite{Taigman_2014_CVPR}
-\fi
-Almost all ASIC solutions employ arrays of processing elements (PE) each with local processing capability and local memory.
-For most of these, the size of the network supported is limited by the size of the local memory and this large
-local memory limits the number of available processing functions. % (MAC etc.).
-In some cases \iftrue, as seen in \fref{fig:Example state-of-the-art die}\fi the area consumed for local memory can exceed of the order of 65\% of the 
-processing element die \cite{kim2016neurocube}\cite{chen2014diannao}.
-Those that employ external DRAM, such as NnSP{\cite{esmaeilzadeh2005nnsp} and NeuroCube\cite{kim2016neurocube} still 
-load weights and inputs to local SRAM prior to processing.
-In the case of NnSP{\cite{esmaeilzadeh2005nnsp}, the paper discusses caching data to bridge the speed gap between external memory and the PE 
-but does not provide details on how to ensure data locality when reading a DRAM cacheline and how to minimize the impact of the DRAM protocol.
-%% dissertion - mention overlapping kernels etc. ????
-%%NnSP recognizes the need to stream from SDRAM but does not address the significant issues associated with
-%%data structures in DRAM to facilitate streaming and minimize the access protocol limitations of DRAM.
-NnSP does not provide any detail regarding network size and supported types.
-Neuflow\cite{farabet2011neuflow} is limited to CNNs and the external memory is QDR SRAM 
-and thus will be limited by the network size.
-NeuroCube uses a 3D stack along with HMC 3D-DRAM and data is transferred from the DRAM to the PE's via a network-on-chip (NoC).
-The combination of limited HMC interface bandwidth and the NoC limits the processing performance.
-%%NeuroCube appears to transfer operands as packets so is not a "stream" processor.
-Eyeriss\cite{chen201614} focuses on CNNs and specifically on the convolution "hot-spots". It does not support the pooling operations although these can
-be supported by a local CPU but it does not support the memory intensive classifier stage. 
-Eyeriss can not be effectively applied to locally-connected type ANNs such as Deepface \cite{Taigman_2014_CVPR}.
+% ----------------------------------------------------------------------------------------------------
+% ----------------------------------------------------------------------------------------------------
+\section{ANN System}
+\label{sec:ANN System}
 
-%% Dissertation
-%\iffalse
-\iftrue
-Unlike the current state-of-the-art, this work focuses on processing data directly as that data is read out of the DRAM thus avoiding requiring excessive SRAM
-in the PE's thus allowing optimum logic assignment to the processing functions.
+The primary design considerations of this work are :
+\begin{outline}
+  \1 Consider systems that are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using local SRAM to store ANN parameters or the ANN input 
+  \1 Acknowedge that DRAM is required for storage of ANN parameters 
+  \1 Assume edge devices will likely apply many disparate ANNs to perform various system functions
+  \1 Assume that many edge applications will have space and power limitations
+\end{outline}
 
-To reiterate, state-of-the-art does not:
-\vspace{-3mm}
-\begin{itemize}
-  \itemsep-1.5mm
-  \item currently propose streaming data directly from 3D-DRAM through the processing functions to avoid the use of large local memory
-  \item propose data structures to support continuous streaming from DRAM
-  \item propose a 3D-stack supporting more than one processing layer
-%%  \item provide specific special streaming functions to support a family of ANNs
-\end{itemize}
-%%%
+These requirements suggest that reuse opportunities will not provide significant performance boosts and therefore this work focused on using the DRAM directly as the operational
+storage and not rely on a significant amount of local SRAM.
+This work employs 3DIC technology along with a custom 3D-DRAM. The objective was to demonstrate that a pure 3DIC system can implement multiple disparate ANNs. By staying within the 3DIC footprint and taking advantage of high
+density through-silicon-vias (TSV) this work is able to maintain a significantly higher bandwidth over 2D or 2.5D ASIC/ASIP solutions.
 
-%% Dissertation
-\vspace{-1mm}
-\begin{figure}
+The 3DIC system die stack (figure \ref{fig:3DICStack}) includes the 3D-DRAM with a system manager below and one or more processing layers below the manager.
+\begin{figure}[!t]
+% the [] contains position info e.g. [!t] means here
 \centering
-\begin{subfigure}{.45\textwidth}
-  \centering
-  \includegraphics[width=0.8\textwidth]{Chapter-2/figs/kim2016neurocube_fig4}
-  \captionsetup{justification=centering, skip=6pt}
-  \caption{NeuroCube}
-  \label{fig:NeuroCubeDie}
-\end{subfigure}%
-\begin{subfigure}{.45\textwidth}
-  \centering
-  \includegraphics[width=0.8\textwidth]{Chapter-2/figs/chen2014diannao_fig15}
-  \captionsetup{justification=centering, skip=10pt}
-  \caption{Diannao (SB and NBx are SRAM)}
-  \label{fig:DiannaoDie}
-\end{subfigure}
-\captionsetup{justification=centering, skip=3pt}
-\caption{Example state-of-the-art die}
-\label{fig:Example state-of-the-art die}
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=.9\linewidth]{StackDiagram.jpg}}
+}
+\caption{3DIC System Stack}
+\label{fig:3DICStack}
 \end{figure}
-\vspace{-5mm}
-\fi
+
+3D-DRAM has recently become available in standards such as High Bandwidth Memory (HBM) and Hybrid Memory Cube (HMC) and proprietary devices such as the DiRAM4 available from Tezzaron. 
+These technologies provide high capacity within a small footprint.
+
+In the case of HBM and DiRAM4, the technology can be combined with additional custom layers to provide a system solution.
+
+The question becomes, can a useful system coexist within the same 3D footprint?
+
+This work targeted a baselne system with:
+\begin{itemize}
+  %\itemsep0em 
+  \item target single precision floating point for computations
+  \item use the Tezzaron DiRAM4 DRAM for area estimates and memory controller design
+\end{itemize}
+The work includes customizing the interface to a 3D-DRAM, researching data structures to describe storage of ANN parameters, designing a memory manager with micro-coded instructions and a processing engine (PE) layer.  
+The system is designed such that a sub-system, known as a sub-system column (SSC) operates on one of these disjoint memories within the 3D-DRAM  (see figure \ref{fig:diram4Layout}).
+
+When the sub-system columns need to share data or neuron activations, the data is passed between SSCs using a network-on-chip (NoC).
+
+An overview of the various blocks and interconnects are given below:
+
+% ----------------------------------------------------------------------------------------------------
+\subsection{3D-DRAM}
+The targetted 3D-DRAM, the Tezzaron DiRAM4 is a 3D-DRAM employs multiple memory array layers in conjunction with a control and IO layer.
+The memory is formed from 64 disjoint sub-memories each providing upwards of 1Gigabit with a total capacity of at least 64 gigabit.
+\begin{figure}[!t]
+% the [] contains position info e.g. [!t] means here
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=.6\linewidth]{DiRAM4Layout.jpg}}
+}
+\caption{DRAM Physical Interface Layout showing area for SSC}
+\label{fig:diram4Layout}
+\end{figure}
 
 
-%% Uncomment for dissertation
-\iftrue
+% ----------------------------------------------------------------------------------------------------
+\subsection{Manager Layer}
+The Manager block is the main controller in the system. The operations required to process an ANN are formed from individual instructions which are decoded by the Manager. 
+These instructions include descriptors to describe memory read operations, processing engine operations and memory write operations. The manager reads these system instructions from an instruction memory, decodes the instruction and configures the various blocks in the system.
+The configuration includes:
+\begin{itemize}
 
-\vspace{5mm}
-NeuroCube\cite{kim2016neurocube} is the only solution to explicitly discuss 3D-memory but will again be limited by its focus on utilizing local SRAM where our focus is on
-providing silicon for processing and not local storage.
-Neuflow\cite{farabet2011neuflow} has processing elements that are limited to CNNs.
-The Tensor processing Unit (TPU) \cite{jouppi2017datacenter} employs an 256x256 array of eight bit processing elements but specifically states it is bandwidth limited with fully connected (MLP) networks
-NnSP{\cite{esmaeilzadeh2005nnsp} transfers weights and inputs to local PE memory prior to processing.
-nn-X\cite{gokhale2014240} limits the number format to integer, and although there is some acceptance that similar
-results can be obtained compared to floating point, this will likely limit the applcation space. 
-nn-X is also limited to performing the convolution operation and SRAM size will limit its capability when performing the classifier stage.
+      \item initiate operand reads from DRAM
+      \item prepare the processing engine (PE) to operate on the operands
+      \item prepare the result processing engine to take the resulting neuron activations from the PE and write those results back to the DRAM
+      \item replicate the resulting neuron activation's to neighbor managers for processing of other ANN layers
 
-Below is a summary of current technology.
+\end{itemize}
 
-\section[NnSP]{NnSP{\cite{esmaeilzadeh2005nnsp}}}
+% ----------------------------------------------------------------------------------------------------
+\subsection{Processing Layer}
+\label{ssec:Processing Layer}
+The PE is able to operate on data streamed directly from the DRAM via the Manager layer. The PE is configured by the manager to perform operations on the operand data streamed from the manager. In the baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. These operands typically are the pre-synaptic neuron activation's and the connection weights. The PE also performs the activation function on the result of the MAC to generate the neuron activation value. These 32 activation values are sent back to the Manager layer.
 
-Uses external DRAM with a cache.
- Does not address the main issue of DRAM access limitations and providing data structures.
- It simply says "use a cache" but doesnt justify locality issues.
+% ----------------------------------------------------------------------------------------------------
+\subsection{Layer Interconnect}
+\label{ssec:Layer Interconnect}
 
-Transfers weights and inputs to local PE prior to processing
-Similar "Streaming" terminlogy but streams from local memory.
-Neuron outputs are kept locally and transferred to other neurons thru NoC
+The layers are connected using through-silicon-vias (TSVs) which provide high connection density, high bandwidth and low energy.
+By ensuring the system stays within the 3D footprint ensures we can take advantage of the huge benefits provided by TSVs.
 
-Implemented in FPGA
+% ----------------------------------------------------------------------------------------------------
+\subsection{Inter-Manager Communication}
+\label{ssec:Inter-Manager Communication}
 
-No detail on processing element but likely limited to "standard" feedforward NN's
+During configuration and/or computations, data must be transported between managers. This inter-manager communication is provided by an NoC.
+When computing an ANN across multiple processing sub-systems, often neuron activation data must be shared between these SSCs. The SSC includes the DRAM port, the manager and the PE. An NoC within each management block communicates with each adjacent manager using a mesh network. This NoC has a forwarding table that can be reconfigured to provide more efficient routing for a given processing step.
 
-
-%% Note: add \section[<section>]{<section> \cite{}} instead of \section{<section> \cite...}
-%% to avoid case mismatch issues when running bibtex
-\section[NeuroCube]{NeuroCube{\cite{kim2016neurocube}}}
-NeuroCube\cite{kim2016neurocube} transfers data to PE prior to processing which can limit classifier size although most
-convolution kernels can be supported.
-The SRAM on the PE is significant (see \fref{fig:NeuroCubeDie}).
-NeuroCube uses HMC 3D-DRAM which has limited bandwidth and this will limit network processing performance.
-The NeuroCube implements a processing layer but does not address adding additional layers. 
-
-3D uses HMC
- - limited by HMC bandwidth
- - is serdes a good choice for die-to-die communication (typically used for die to chip/board?)
- - doesnt really discuss adding additional layers
-
-Transfers data to PE prior to processing
-
-
-\section[IMAPCAR]{IMAPCAR \cite{kyo2011imapcar}}
-IMAPCAR uses external SRAM so will be limited by network size.
-The architecture of IMAPCAR is optimized for processing video.
-
-In general will not scale to ANNs of interest.
+A control and data flow diagram of the stack showing the 64 sub-system columns can be seen in figure \ref{fig:FlowDiagram}.
+\begin{figure}[!t]
+% the [] contains position info e.g. [!t] means here
+\centering
+\captionsetup{justification=centering}
+\centerline{
+\mbox{\includegraphics[width=.8\linewidth]{FlowDiagram.jpg}}
+}
+\center\caption{System Flow Diagram}
+\label{fig:FlowDiagram}
+\end{figure}
 
 
-\section{NeuFlow \cite{farabet2011neuflow}}
-Neuflow\cite{farabet2011neuflow} has processing elements that are "highly optimized" to CNNs.
-Neuflow is designed around external QDR memory and does not address the issues associated with supporting large networks.
-
-
-\section[nn-X]{nn-X \cite{gokhale2014240}}
-nn-X\cite{gokhale2014240} limits the number format to integer, and although there is some acceptance that similar
-results can be obtained, this will likely limit the applcation space. nn-X is also limited to performing the convolution operation
-and SRAM size will limit its capability when performing the classifier stage.
-nn-X was implemented in an fpga and does not address SRAM size when scaling to larger networks.
-
-
-\section[Diannao]{Diannao \cite{chen2014diannao}}
-Diannao\cite{chen2014diannao} acknowledges the need for large amounts of storage which will exceed the capability of local memory.
-The kernel sizes are limited by SRAM size although it does state kernels can be "broken up".
-The SRAM use on the PE is significant (see \fref{fig:DiannaoDie}).
-
-
-\section[Eyeriss]{Eyeriss \cite{chen201614}}
-Eyeris\cite{chen201614} focuses on CNNs and specifically the convolution stage.
-Eyeriss ignores the pooling and classifier stages which although not as compute intensive they are memory intensive.
-Therefore Eyeriss limits network size and does not implement the network.
-
-\section[TPU]{TPU \cite{jouppi2017datacenter}}
-The TPU utilizes an array of 64K eight bit fixed point processing elements and demonstrates significant (~30X) performance improvements over GPUs and CPUs. It does employ DRAM which provides the required storage capacity
-but employs SRAM as an intermediate store between the DRAM and the PEs.
-This Google designed solution acknowledges that it is bandwidth limited when implementing the fully connected MLP type NNs but they still achieve significant perfroamce because of the reliance on very high levels of batch processing.
-The DRAM bandwidth is \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second}, which is relatively low for a 2D solution. 
-The paper also states that their experience of implementing NNs in the Google server farms suggests that these fully connected NNs represent the bulk of their processing requirements.
-The simpler CNNs only represent 5\% of the servers NN processing requirements.
-It should also be stated that this paper also believes that GPU solutions cannot reach the performance targets even though the GPU community might state otherwise.
-
-\fi
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
