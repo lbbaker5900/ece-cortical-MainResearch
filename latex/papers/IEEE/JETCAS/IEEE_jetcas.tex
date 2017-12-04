@@ -501,7 +501,7 @@ With popular DNNs, the artificial neural network (ANN) is often formed from tens
 In most cases, these layers are processed in a feed-forward manner with one layer being the inputs to the next layer.
 Therefore, useful DNNs often require hundreds of thousands of ANs and within the network, each AN can have hundreds, even thousands of feeder or pre-synaptic ANs.
 
-There have been implementations that use different number formats from double precision floating to eight bit integers, but in all cases these useful ANNs require significant
+There have been implementations that use different number formats from double precision floating point to eight bit integers, but in all cases these useful ANNs have significant
 memory requirements to store the connection weights (parameters) therefore requiring Dynamic Random Access memory (DRAM) to store the AN parameters.
 
 There have been many successful attempts to accelerate ANNs, but in most cases the focus is on a subset of the DNN known as the Convolutional Neural network (CNN).
@@ -583,14 +583,14 @@ This 3DIC technology stacks multiple die together to form a system-on-chip with 
 By staying within the die footprint, 3DIC technology promises high connectivity and consequently high bandwidth along with lower power all within a smaller footprint.
 
 As a metric, this work asumes that any useful DNN will employ 100's of thousands of ANs. Although there is a lot of debate regarding number formats for ANNs, this work also assumes single-precision floating point.
-Assuming an ANN with 250K neurons and an average fanin to each AN of 2000, a system employing 10 ANNs for various disparate functions and an average processing time of \SI{10}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{16}{\tera \bit \per \second} \eqref{eq:totalBandwidth}.
+Assuming an ANN with 250K neurons and an average fanin to each AN of 2000, a system employing 10 ANNs for various disparate functions and an average processing time of \SI{10}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{16}{\tera \bit \per \second} \eqref{eq:averageBandwidth}.
 
-\begin{alignat}{2} \label{eq:totalBandwidth}
+\begin{alignat}{2} \label{eq:averageBandwidth}
 \text{Average }&\text{Bandwidth} \notag \\
 % size(int)=2 and size(float)=4
 = & \sum_{\mathbf{n}=0}^{\bar{\mathbf{N_n}}}\big(\frac{\Bar{\mathbf{N_a}}\cdot \Bar{\mathbf{C_p}} \cdot \bar{\mathbf{b_w}}}{\bar{\mathbf{T_p}}} \big) \notag  \\
 = & \sum_{\mathbf{n}=0}^{9}\big(\frac{\num{250d4} \cdot \num{2d3} \cdot 32}{\num{10d-3}} \big) \notag \\
-= & \SI{16}{\tera\bit\per\second} \\
+= & \SI[per-mode=symbol]{16}{\tera\bit\per\second} \\
 \text{where } &\mathbf{N}_n \text{ is the number of ANNs} \notag\\
               &\mathbf{N}_a \text{ is the average number of ANs} \notag\\
               &\mathbf{C_p} \text{ is the average number of connections} \notag\\
@@ -1119,7 +1119,7 @@ The design was synthesized using an available 65nm technology node and then scal
 The primary control and datapaths of the system have been simulated in a system verilog environment. It has been synthesized using a 65nm technology node.
 The design has been coded targeting a frequency of $>$\SI{500}{\mega\hertz}. Timing closure and place and route is ongoing. The system has been designed throughout to meet the timing target so minimal changes are expected to meet timing.
 
-As mention previously \eqref{eq:totalBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
+As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
 %%%%The approximate design targets are shown in Table \ref{tab:DesignTargets}.
 %%%%
 %%%%\begin{table}[h]

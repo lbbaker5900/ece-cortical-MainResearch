@@ -182,18 +182,18 @@ The Rate-based neuron model is characterized by:
 \begin{subfigure}{.9\textwidth}
   \centering
   \begin{equation}
-  \begin{split}
-  &v' = 0.04v^2+5v + 140 - u - I\\
-  &u' = a(bv-u)  \\
-  &\text{if } v\ge  \SI{30}{\mV}, \text{ then } 
-  \begin{cases}
-      v \leftarrow c\\           
-      u \leftarrow u+d\\           
-  \end{cases} \nonumber
-  \end{split}
+    \begin{split}
+    &v' = 0.04v^2+5v + 140 - u - I\\
+    &u' = a(bv-u)  \\
+    &\text{if } v\ge  \SI{30}{\mV}, \text{ then } 
+    \begin{cases}
+        v \leftarrow c\\           
+        u \leftarrow u+d\\           
+    \end{cases} \nonumber
+    \end{split}
   \end{equation}
-    \caption{Izhikevich Model}
-    \label{fig:Izhikevich Model}
+  \caption{Izhikevich Model}
+  \label{fig:Izhikevich Model}
   \end{subfigure}
 \begin{subfigure}{.7\textwidth}
   \centering
@@ -208,7 +208,13 @@ The Rate-based neuron model is characterized by:
 
 To emulate complex behavior, the artifical neurons are connected in networks, typically with layers of sub-networks which are in affect separated by the non-linear activation function.
 Examples of both rate-based and spiking artificial neural networks can be seen in \fref{fig:Rate-based Model Network} and \fref{fig:Spiking Model Network} respectively.
+Typically neural networks process in a feed-forward fashion. Considering \fref{fig:Artificial Neural Network}, this means the input arrives on the left, the inputs propagate to neurons N0 through N3. WHen N0 through N3 are processed, their values propagate forward to neurons N4 and N5 etc.. SOmetime ANNs also include recursion where for example neurons N0 through N4 are not only influenced
+by the input, but also by themselves. Many ANNs operate only in feed-forward fashion but some popular ANNs, such as Long short-term memory (LSTM), employ recursion.
 
+Another popular ANN known as Deep Neural Networks (DNN) have proved very popular over the last few years. They get good press in applications such as image recognition and speech recognition. 
+Deep Neural Networks are often formed from tens of layers of ANs with each layer containing many ANs. DNNs are also processed in a feed-forward manner with one layer being the inputs to the next layer. 
+As mentioned \cite{krizhevsky2012imagenet}, these useful DNNs often require hundreds of thousands of ANs and within the network, each AN can have hundreds, even thousands of feeder or pre-synaptic ANs.
+There have been implementations that use different number formats from double precision floating point to eight bit integers, but in all cases these useful ANNs require a significant amount of memory to store the connection weights (parameters).
 
 
 \begin{figure}[!t]
@@ -257,6 +263,27 @@ There is reason to believe that these ANNs will replace existing control and mon
 If ANNs fulfill their potential, systems employing ANNs will utilize them for various functions, such as engine monitoring, anomaly detection, navigation etc. all within the same system.
 Considering the various functions a complex customer facing or edge application system performs, it is likely that many real-world applications will employ multiple disparate instances of these useful sized ANNs.
 Assuming these complex functions will require ANNs similar in size to \cite{krizhevsky2012imagenet}, these implementations will be processing multiple large ANNs at or near real-time.
+
+So in these ANNs, the memory requirements are significant. The storage is required for the input, the AN state and most significantly the weights for each of the ANs. This storage requirement often results in gigabytes of memory.
+When these ANNs are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
+
+As a metric, this work asumes that any useful DNN will employ 100's of thousands of ANs. Although there is a lot of debate regarding number formats for ANNs, this work also assumes single-precision floating point.
+Assuming an ANN with 250K neurons and an average fanin to each AN of 2000, a system employing 10 ANNs for various disparate functions and an average processing time of \SI{10}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{16}{\tera \bit \per \second} (see equation \ref{eq:averageBandwidth}).
+
+% {2} means 2 columns
+\begin{alignat}{2} \label{eq:averageBandwidth}
+\text{Average }\text{Bandwidth} & = \sum_{\mathbf{n}=0}^{\bar{\mathbf{N_n}}}\big(\frac{\Bar{\mathbf{N_a}}\cdot \Bar{\mathbf{C_p}} \cdot \bar{\mathbf{b_w}}}{\bar{\mathbf{T_p}}} \big) \notag  \\
+& = \sum_{\mathbf{n}=0}^{9}\big(\frac{\num{250d4} \cdot \num{2d3} \cdot 32}{\num{10d-3}} \big) \notag \\
+& = \SI[per-mode=symbol]{16}{\tera\bit\per\second} \\
+\text{where } &\mathbf{N}_n \text{ is the number of ANNs} \notag\\
+              &\mathbf{N}_a \text{ is the average number of ANs} \notag\\
+              &\mathbf{C_p} \text{ is the average number of connections} \notag\\
+\text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
+\end{alignat}
+
+Regardless of the combination of ANNs, this work suggests that these edge systems will require usable memory bandwidth of the order of 10's of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
+
+
 
 \iffalse
 So considering the performance improvements observed in other applications, it is expected that many customer facing or edge applications will implement multiple instances of artificial neural networks to perform various functions.
