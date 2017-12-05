@@ -12,20 +12,20 @@
 \section{Overview}
 \label{sec:overview}
 
-Machine Learning in the form of Deep Neural Networks (\ac{dnn}) have gained traction over the last few years.
+Machine Learning in the form of \acfp{dnn} have gained traction over the last few years.
 They get good press in applications such as image recognition and speech recognition.
-\ac{dnn}s are constructed from a basic building block, the artificial neuron(\ac{an}).
-With popular \ac{dnn}s, the artificial neural network (\ac{ann}) is often formed from tens of layers of \ac{an}s with each layer containing many \ac{an}s.
+\acp{dnn} are constructed from a basic building block, the \acf{an}.
+With popular \acp{dnn}, the \acf{ann} is often formed from tens of layers with each layer containing many \acp{an}.
 In most cases, these layers are processed in a feed-forward manner with one layer being the inputs to the next layer.
-Therefore, useful \ac{dnn}s often require hundreds of thousands of \ac{an}s and within the network, each \ac{an} can have hundreds, even thousands of feeder or pre-synaptic \ac{an}s.
+Therefore, useful \acp{dnn} often require hundreds of thousands of \acp{an} and within the network, each \ac{an} can have hundreds, even thousands of feeder or pre-synaptic \acp{an}.
 
 There have been implementations that use different number formats from double precision floating point to eight bit integers, but in all cases these useful \ac{ann}s have significant
 memory requirements to store the connection weights (parameters) therefore requiring Dynamic Random Access memory (\ac{dram}) to store the \ac{an} parameters.
 
 There have been many successful attempts to accelerate \ac{ann}s, but in most cases the focus is on a subset of the \ac{dnn} known as the Convolutional Neural network (\ac{cnn}).
-\ac{cnn}s assume a significant amout of reuse of the weights connecting \ac{an}s and thus they can take advantage of local memory (\ac{sram}).
+\acp{cnn} assume a significant amout of reuse of the weights connecting \acp{an} and thus they can take advantage of local memory (\ac{sram}).
 
-Much of the \ac{ann} application specific (\ac{asic}/\ac{asip}) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory (\ac{sram}).
+Much of the \ac{asic} and \ac{asip} \ac{ann} research has focused on taking advantage of the performance and ease of use of Static Random Access Memory (\ac{sram}).
 These implementations can be shown to be effective with specific \ac{ann} architectures, such as \ac{cnn}s where the \ac{ann} parameters can be stored in \ac{sram} in a cache-like architecture avoiding constant accessing of the "slower" \ac{dram}.
 In addition, to achieve a high performance, these rely on processing a batch of inputs, such as processing a batch of images or voice recordings using the same \ac{ann}.
 
