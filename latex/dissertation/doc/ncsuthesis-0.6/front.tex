@@ -40,7 +40,7 @@ Considering the storage required for the input and the \ac{ann} parameters, the 
 When these \acp{ann} are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
 
 Unfortunately, to achieve a high performance, existing implementations rely on processing a batch of inputs, such as processing a batch of images or voice recordings which all use the same \ac{ann} or by employing a sub-family of \acp{dnn}, known as \acp{cnn}, which reuse portions of the \ac{ann} parameters.
-These techniques allow these implementation to hold and reuse data in fast local \ac{sram}.
+These techniques allow these implementations to hold and reuse data in fast local \ac{sram}.
 With this works target application, the assumption is there is little opportunity for batch processing or reuse therefore data must be drawn constantly from main memory, which generally is \ac{dram}.
 
 

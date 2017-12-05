@@ -23,7 +23,7 @@ There have been implementations that use different number formats from double pr
 memory requirements to store the connection weights (parameters) therefore requiring Dynamic Random Access memory (\ac{dram}) to store the \ac{an} parameters.
 
 There have been many successful attempts to accelerate \ac{ann}s, but in most cases the focus is on a subset of the \ac{dnn} known as the Convolutional Neural network (\ac{cnn}).
-\acp{cnn} assume a significant amout of reuse of the weights connecting \acp{an} and thus they can take advantage of local memory (\ac{sram}).
+\acp{cnn} assume a significant amount of reuse of the weights connecting \acp{an} and thus they can take advantage of local memory (\ac{sram}).
 
 Much of the \ac{asic} and \ac{asip} \ac{ann} research has focused on taking advantage of the performance and ease of use of Static Random Access Memory (\ac{sram}).
 These implementations can be shown to be effective with specific \ac{ann} architectures, such as \ac{cnn}s where the \ac{ann} parameters can be stored in \ac{sram} in a cache-like architecture avoiding constant accessing of the "slower" \ac{dram}.

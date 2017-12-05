@@ -1,25 +1,16 @@
 
 
-%% Lee
-%% In dissertation, change 
-%    section* to chapter 
-%    subsection* to section
-%    subsubsection* to subsection
-
-
-
-
-% >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> System Operations <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
 \chapter{System Operations}
 \label{chap-three}
-In the context of this system and AN state calculation, the basic operations to determine the state of a neuron is to:
-\begin{itemize}
-    \item Inform the Manager and \ac{pe} which operations are to be performed
-    \item Tell the manager to access the states of the pre-synaptic neurons
-    \item Tell the manager to access the weights of the connections from the pre-synaptic ANs
-    \item Provide the pre-synaptic neuron weights and states to the processing engine execution lanes
-    \item Tell the manager where to store the resulting AN state back to memory
-\end{itemize}
+
+In the context of this system and AN state calculation, the basic operations to determine the state of a neuron is to :
+\begin{outline}
+    \1 Inform the Manager and \ac{pe} which operations are to be performed
+    \1 Tell the manager to access the states of the pre-synaptic neurons
+    \1 Tell the manager to access the weights of the connections from the pre-synaptic ANs
+    \1 Provide the pre-synaptic neuron weights and states to the processing engine execution lanes
+    \1 Tell the manager where to store the resulting AN state back to memory
+\end{outline}
 
 
 This work has researched an instruction architecture to describe the above operations which are interpreted by the manager. 
