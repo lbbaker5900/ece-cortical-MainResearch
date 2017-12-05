@@ -4,174 +4,135 @@
 %    subsection* to section
 %    subsubsection* to subsection
 
-\chapter{Results}
-\label{chap-six}
-\label{sec:Results}
-The objectives of this work was to design a system able to accelerate ANNs in customer facing systems implemented at the edge. This means systems that are not designed
-to process multiple requests of essentially the same operation.
-One assumption is that these systems implement disparate ANNs performing various functions. These assumptions imply that the system is not able to take advantage of local SRAM when processing the ANN.
-Another assumption is that the target systems will be space and power constrained.
-Finally, this work assumes that implementing multiple disparate ANNs cannot be implemented purely with SRAM and that DRAM is required to store the ANN parameters.
 
-To demonstrate such a system, this work targeted 3DIC technology including 3D-DRAM. This work proposes that if a system can be purely 3DIC, the system can take advantage of the benefits
-of 3DIC which inlcudes reduced energy, area and additional bandwidth due to high levels of connectivity.
-In addition, this work proposes that if the system is purely 3DIC, then a customized DRAM would provide a significant bandwidth boost over typical implementations using standard DRAM.
-This work targeted the Tezzaron DiRAM4 3D-DRAM.
+% #######################################################################################################################################
+\chapter{Detailed System Description}
+\label{chap-five}
+%\label{sec:detailedSystemDescription}
 
-To ensure the system was purely 3DIC, the area of the system Manager and Processing Engine has to stay within the physical footprint of the DRAM.
-
-The target technology node was 28nm. This was chosen because its the technology node employed for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
-The design was synthesized using an available 65nm technology node and then scaled to 28nm to demonstrate fitting within the 3DIC footprint.
-
-The primary control and datapaths of the system have been simulated in a system verilog environment. It has been synthesized using a 65nm technology node.
-The design has been coded targeting a frequency of $>$\SI{500}{\mega\hertz}. Timing closure and place and route is ongoing. The system has been designed throughout to meet the timing target so minimal changes are expected to meet timing.
-
-As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
-%%%%The approximate design targets are shown in Table \ref{tab:DesignTargets}.
-%%%%
-%%%%\begin{table}[h]
-%%%%%  \captionsetup{justification=centering, skip=-5pt}
-%%%%  \captionsetup{justification=centering, skip=3pt}
-%%%%  \caption{Design targets}
-%%%%  \label{tab:DesignTargets}
-%%%%  \centering
-%%%%%  \begin{center}
-%%%%    % [lr] ~ left align col 0 and right align col 1
-%%%%    % e.g. 4 columns could be lccr
-%%%%    \begin{tabular}{lr}
-%%%%      \toprule
-%%%%      Parameter         & Target \\
-%%%%      \midrule
-%%%%      Frequency         & $>$\SI{700}{\MHz}   \\
-%%%%      Power             & \SI{\approx 80}{\W}   \\
-%%%%      Bandwidth         & \SI[per-mode=symbol]{\approx 64}{\tera\bit\per\second} \\
-%%%%      Overall Die Area  & \SI{175}{\mm^2} \\
-%%%%      \bottomrule
-%%%%    \end{tabular}
-%%%%%  \end{center}
-%%%%\end{table}
-
-The Manager and PE have been place and routed as shown in figure \ref{fig:Manager and PE Die layouts}. 
-Although the design is yet to close timing, the parasitics were extracted from these layouts and simulated against a group of operations. The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. These were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} and represent a pre-synaptic fanin of 225 and 4000 respectively.
-The simulation generated an activity file which was then used by the Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates.
-The DRAM accesses were captured and calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from \cite{liu2012compact}.
-These estimates were used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz} which are shown in table \ref{tab:Simulation-based estimates}.
-
-\begin{table}
-%  \captionsetup{justification=centering, skip=-5pt}
-  \captionsetup{justification=centering, skip=12pt}
-  \caption{Simulation-based estimates}
-  \vspace{12pt}
-  \label{tab:Simulation-based estimates}
-  \centering
-    % [lr] ~ left align col 0 and right align col 1
-    % e.g. 4 columns could be lccr
-  \begin{subtable}{0.55\linewidth}
-    \centering
-    \begin{adjustbox}{width=1\linewidth}
-      \begin{tabular}{cccc}
-        \toprule
-                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
-                         &                       &          &                                          \\  %\cline{1-1}
-            Technology   & Clock                 & Expected &  Bus                                     \\  %\cline{1-1}
-                Node     & Frequency             &  Power   &  Efficiency                              \\  %\cline{1-1}
-        \hline  % instead of \midrule %midrule doesnt overlap with column lines
-                   28nm  & \SI{500}{\mega\hertz} &   53W    &  \SI[per-mode=symbol]{\sim 70}{\percent} \\ %\cline{2-2}
-                   28nm  & \SI{700}{\mega\hertz} &   73W    &  \SI[per-mode=symbol]{\sim 70}{\percent} \\ %\cline{2-2}
-        \bottomrule
-      \end{tabular}
-    \end{adjustbox}
-    \vspace{3pt}
-    \captionsetup{justification=centering, skip=10pt}
-    \caption{Power Dissipation}
-    \label{tab:Power Dissipation}
-  \end{subtable}
-
-  \bigskip
-
-  \begin{subtable}{0.65\linewidth}
-    \centering
-    \begin{adjustbox}{width=1\linewidth}
-      \begin{tabular}{cccc}
-        \toprule
-                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
-                                                       & Downstream                              &                                        \multicolumn{2}{c}{Average Downstream Bandwidth}                      \\  %\cline{1-1}
-                                                       & Stack                                   &                                        \multicolumn{2}{c}{At Frequency}                                      \\  %\cline{1-1}
-                   Test                                & Bus Efficiency                          &       \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\  %\cline{1-1}
-        \hline  % instead of \midrule %midrule doesnt overlap with column lines                                       
-                   CONV2 \cite{krizhevsky2012imagenet} &\SI[per-mode=symbol]{\sim 65}{\percent}  & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-294                            &\SI[per-mode=symbol]{\sim 67}{\percent}  & \SI[per-mode=symbol]{\sim 44}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 61}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-300                            &\SI[per-mode=symbol]{\sim 73}{\percent}  & \SI[per-mode=symbol]{\sim 48}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 67}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-500                            &\SI[per-mode=symbol]{\sim 82}{\percent}  & \SI[per-mode=symbol]{\sim 54}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 75}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-1000                           &\SI[per-mode=symbol]{\sim 89}{\percent}  & \SI[per-mode=symbol]{\sim 58}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 82}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-350                              &\SI[per-mode=symbol]{\sim 78}{\percent}  & \SI[per-mode=symbol]{\sim 51}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 72}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-500                              &\SI[per-mode=symbol]{\sim 84}{\percent}  & \SI[per-mode=symbol]{\sim 55}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 77}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-1000                             &\SI[per-mode=symbol]{\sim 91}{\percent}  & \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 83}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-7 \cite{krizhevsky2012imagenet}  &\SI[per-mode=symbol]{\sim 94}{\percent}  & \SI[per-mode=symbol]{\sim 62}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 86}{\tera\bit\per\second} \\ %\cline{2-2}
-        \bottomrule
-      \end{tabular}
-    \end{adjustbox}
-    \vspace{3pt}
-    \captionsetup{justification=centering, skip=10pt}
-    \caption{Bus Efficiency}
-    \label{tab:Bus Efficiency}
-  \end{subtable}
-  \end{table}
-
-
-%%%%\begin{table}[h]
-%%%%%  \captionsetup{justification=centering, skip=-5pt}
-%%%%  \captionsetup{justification=centering, skip=3pt}
-%%%%  \caption{Design targets}
-%%%%  \label{tab:DesignTargets}
-%%%%  \centering
-%%%%%  \begin{center}
-%%%%    % [lr] ~ left align col 0 and right align col 1
-%%%%    % e.g. 4 columns could be lccr
-%%%%    \begin{tabular}{lccccc}
-%%%%          \toprule
-%%%%                            %& \multicolumn{4}{c}{Technology}   \\
-%%%%                            &       &       &  Usable    &          &  \\  %\cline{1-1}
-%%%%                            &       &       &   DRAM     & Expected &  \\  %\cline{1-1}
-%%%%                            & Tech  & Freq  & Bandwidth  &  Power   &  \\  %\cline{1-1}
-%%%%          \hline  % instead of \midrule %midrule doesnt overlap with column lines
-%%%%                  3D-System & 28    & \SI{700}{\mega\hertz}      &       \SI[per-mode=symbol]{\sim 64}{\tera\bit\per\second}   &  73W   &  \\ %\cline{2-2}
-%%%%                  NVidia    & 28    &       &  $\ll$\SI[per-mode=symbol]{1.28}{\tera\bit\per\second} &  100W  &  \\
-%%%%                  TPU       & 28    &       &  $<$  \SI[per-mode=symbol]{224}{\giga\bit\per\second}  &  40W   &  \\
-%%%%          \bottomrule
-%%%%    \end{tabular}
-%%%%%  \end{center}
-%%%%\end{table}
-
-
-
-\begin{figure}[h]
+A detailed flow diagram and block diagram of the sub-system column can be seen in figures \ref{fig:DetailedFlowDiagram} and \ref{fig:DetailedBlockDiagram} respectively.
+\begin{figure}
+% the [] contains position info e.g. [!t] means here
 \centering
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \centerline{
-    \mbox{\includegraphics[width=1\linewidth]{ManagerLayout.png}}
-  }
-  \captionsetup{justification=centering, width=.8\linewidth}
-  \caption{Manager}
-  %\vspace{40pt}
-  \label{fig:managerLayout}
-\end{subfigure}%
-
-\bigskip
-
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \centerline{
-    \mbox{\includegraphics[width=1\linewidth]{PElayout.png}}
-  }
-  \captionsetup{justification=centering, width=.8\linewidth}
-  \caption{PE}
-  \label{fig:peLayout}
-\end{subfigure}
-\captionsetup{justification=centering, width=.9\linewidth}
-\caption{Manager and PE Die layouts}
-\label{fig:Manager and PE Die layouts}
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[scale=0.07]{DetailedFlowDiagram.jpg}}
+}
+\center\caption{Sub-System Column (SSC) Detailed Flow Diagram}
+\label{fig:DetailedFlowDiagram}
 \end{figure}
+
+\begin{figure}[t]
+% the [] contains position info e.g. [!H] means here
+% H 	Place exactly at spot in source text
+% h 	Place approximately at spot in source test
+% t 	Place at top of page
+% b 	Place at bottom of page
+% p 	Place on page for floats only
+% ! 	Override internal LaTeX parameters for determining float position
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[angle=90, height=8in]{DetailedBlockDiagram.jpg}}
+}
+\center\caption{Sub-System Column (SSC) Detailed Block Diagram}
+\label{fig:DetailedBlockDiagram}
+\end{figure}
+
+\section{Manager}
+\label{sec:manager}
+
+\subsection{Operation Decode}
+\label{ssec:operationDecode}
+
+In figure \ref{fig:DetailedBlockDiagram}, instructions are read from instruction memory and passed to the instruction decoder.
+
+The operation tuple is decoded and a streaming operation (stOp) pointer and a SIMD operation pointer are sent to the PE inside an OOB control packet.
+
+The stOp pointer specifies what streaming operation is to take place on the data directly streamed to the PE. In the baseline system, typically this would be a floating-point multiply accumulate on two arguments, the pre-synaptic neuron states and the pre-synaptic weights.
+
+The SIMD pointer is essentially a program counter that will be invoked when the stOp result is passed to the SIMD.
+
+Note that other types of stOp includes a NOP with a destination of local memory. This allows us to transfer block of instruction or data from the manager to the PE.
+
+
+\subsection{Argument Decode}
+\label{ssec:argumentDecode}
+The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
+
+As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
+
+
+\subsection{Result data Processing}
+\label{ssec:resultDataprocessing}
+The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
+
+As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
+
+
+\subsection{Memory Write Controller}
+\label{ssec:memoryWriteController}
+
+The Memory Write Controller (MWC) receives data from to sources, the NoC via the MCNTL and the RDP.
+
+In both cases, the MWC read the actual storage descriptor from their local memory and immediately start forming data that will be written back to main memory.
+
+When the data is formed, a write command is sent to the memory via the MMC. Again, the MMC is not shown in the diagram but takes the memory write requests along with the data and converts them into the DRAM write protocol.
+
+The MWC can only operate on one of the two sources at any one time. However, there are four 4096-bit holding registers where data is formed prior to the write request.
+
+The holding registers have the potential in future to allow aggregation of data from one or more operations to allow a coalesced write back to main memory.
+
+
+\section{Processing Engine}
+\label{sec:pe}
+
+\subsection{Configuration}
+\label{ssec:peConfiguration}
+
+A configuration controller within the PE (PE\_CNTL) takes the OOB packet from the Manager and extracts the stOp and SIMD operation pointers.
+
+The stOp pointer is used to point to a local stOp configuration memory. The memory contains the various configuration data required by the streaming operation controller (stOp\_CNTL). The stOp\_CNTL is not shown.
+
+The stOp\_CNTL configures the:
+
+\begin{outline}
+    \1 Operation type
+    \1 Number of active execution lanes
+    \1 Source of the argument data, which can be downstream data from the manager or from the small local SRAM
+    \1 Destination of the result data, which can be the SIMD or the small local SRAM
+\end{outline}
+
+The SIMD operation pointer is sent to the SIMD.
+
+\subsection{Streaming Operations}
+\label{ssec:stOps}
+
+The streaming Operations (stOp) are designed to operate on data passed from the Manager at or near line-rate. If line-rate cannot be maintained, a flow-control mechanism is employed to slow the data from the Manager.
+
+Once the stOp has processed the data, it passes the result to the SIMD. Note in some cases the result can be placed in local SRAM or sent to both SIMD and SRAM.
+
+It should also be stated that while the stOp is processing the current data, the SIMD may be operating on the result of the previous operation. It is expected the SIMD will have completed the previous operation before the stOp completes the current operation, but again, if necessary a flow control mechanism between SIMD and stOP will be engaged if the SIMD is not ready.
+
+\subsection{SIMD}
+\label{ssec:simd}
+
+The SIMD takes the result data and performs the operation starting at the program counter (PC) indicated by the SIMD operation pointer provided by the PE\_CNTL.
+
+The stOp provides the result to the SIMD via a local register. The result is also written, in most cases to the small local SRAM.
+
+The SIMD performs the specified operation on the data provided by the stOp.
+
+In most cases this will be the AN activation function and in the baseline system is the Rectified Linear function (ReLu).
+
+When the SIMD has completed its operation, it passes the result to the SIMD Upstream controller to be returned to the Manager.
+
+\subsection{Result Data}
+\label{ssec:result}
+
+The SIMD Upstream Controller (SUI) takes the data and encapsulates it in an Upstream packet. Included in the packet is the tag required by the Return Data processor within the Manager.
+
 
 
