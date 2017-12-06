@@ -5,8 +5,8 @@
 %    subsubsection* to subsection
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DRAM Customizable <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
-\chapter{Suggested DRAM Customizations}
-\label{sec:Suggested DRAM Customizations}
+\chapter{DRAM Customizations}
+\label{sec:DRAM Customizations}
 
 Accessing a "typical" DRAM involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page.
 
@@ -27,8 +27,8 @@ Figure \ref{fig:dramBlockDiagram} shows a block diagram of a typical DRAM.
 \label{fig:dramBlockDiagram}
 \end{figure}
 
-\section{Expose more of the Page}
-\label{sec:exposeMorePage}
+\section{Very-Wide Bus}
+\label{sec:Very-Wide Bus}
 
 This work achieves the increase in bandwidth by proposing that the DRAM expose more of its currently open page.
 
@@ -47,7 +47,7 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 \label{fig:dramBusChange}
 \end{figure}
 
-\section{DRAM Write Mask}
-\label{sec:dramWriteMask}
+\section{Write Mask}
+\label{sec:Write Mask}
 When processing an ANN, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed. The activation of the processed AN is written back to memory. The ratio of reads to writes is high, 100's or 1000's to one. Therefore, the system often needs to write a portion of the page back to memory. To avoid a read/modify/write, a customization to the DRAM is the addition of a write data mask to the DRAM write path.
 
