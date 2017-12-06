@@ -802,7 +802,7 @@ An instruction will typically have four descriptors:
     \1 Operation
     \1 Memory read for operand stream 0
     \1 Memory read for operand stream 1
-    \1 Result write
+    \1 Result Write
 \end{outline}
 
 Note: An operand stream will be reffered to as an argument.
@@ -973,7 +973,6 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 When processing an ANN, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed. The activation of the processed AN is written back to memory. The ratio of reads to writes is high, 100's or 1000's to one. Therefore, the system often needs to write a portion of the page back to memory. To avoid a read/modify/write, a customization to the DRAM is the addition of a write data mask to the DRAM write path.
 
 
-% #######################################################################################################################################
 \section{Detailed System Description}
 \label{sec:detailedSystemDescription}
 
@@ -1000,6 +999,15 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 \center\caption{Sub-System Column (SSC) Detailed Block Diagram}
 \label{fig:DetailedBlockDiagram}
 \end{figure*}
+
+% #######################################################################################################################################
+%
+%            IFFALSE
+%
+% #######################################################################################################################################
+
+\iffalse
+
 
 \subsection{Manager}
 \label{sec:manager}
@@ -1094,6 +1102,7 @@ When the SIMD has completed its operation, it passes the result to the SIMD Upst
 
 The SIMD Upstream Controller (SUI) takes the data and encapsulates it in an Upstream packet. Included in the packet is the tag required by the Return Data processor within the Manager.
 
+\fi
 
 
 % #######################################################################################################################################
