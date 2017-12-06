@@ -624,14 +624,39 @@ This work employs 3DIC technology along with a custom 3D-DRAM. The objective was
 density through-silicon-vias (TSV) this work is able to maintain a significantly higher bandwidth over 2D or 2.5D ASIC/ASIP solutions.
 
 The 3DIC system die stack (figure \ref{fig:3DICStack}) includes the 3D-DRAM with a system manager below and one or more processing layers below the manager.
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\textwidth]{StackDiagram.jpg}
+  \captionsetup{justification=centering, width=.8\linewidth}
+  \caption{DRAM, Manager and PE Layers}
+  \label{fig:3DICStack}
+\end{subfigure}%
+
+\bigskip
+
+\begin{subfigure}{.35\textwidth}
+  \centering
+  \includegraphics[width=1\textwidth]{TSVs.pdf}
+  \captionsetup{justification=centering, width=1\linewidth}
+  \caption{Example Stack profile with metal layers and TSVs}
+  \label{fig:tsv}
+\end{subfigure}
+\captionsetup{justification=centering, width=.9\linewidth}
+\caption{3DIC System Stack}
+\label{fig:3DICStack}
+\end{figure}
+
+\iffalse
 \begin{figure}[!t]
-% the [] contains position info e.g. [!t] means here
 \centerline{
 \mbox{\includegraphics[width=2.75in]{StackDiagram.jpg}}
 }
 \caption{3DIC System Stack}
 \label{fig:3DICStack}
 \end{figure}
+\fi
 
 3D-DRAM has recently become available in standards such as High Bandwidth Memory (HBM) and Hybrid Memory Cube (HMC) and proprietary devices such as the DiRAM4 available from Tezzaron. 
 These technologies provide high capacity within a small footprint.
