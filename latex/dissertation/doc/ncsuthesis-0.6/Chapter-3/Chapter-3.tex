@@ -2,117 +2,96 @@
 %% In dissertation, change section* to chapter and subsection* to section
 
 
-\chapter{System Description}
-\label{chap-two}
+\chapter{Three-Dimensional Integrated Circuits (3DIC)}
+\label{chap-three}
 
-% ----------------------------------------------------------------------------------------------------
-% ----------------------------------------------------------------------------------------------------
-%\section{ANN System}
-%\label{sec:ANN System}
+Over the last couple of decades, the ever shrinking world of \ac{ic} has enabled the introduction of devices society takes for granted such as personal computing and cell phones.
 
-The primary design considerations that drove the architecture of this work are :
+As \ac{ic} technology has shrunk, design complexity has grown to take advantage where hundreds of millions of transistors are placed on a typical \ac{ic}.
+These \acp{ic} have evolved from performing small functions to becoming systems on a chip.
+
+However, at some point, an \ac{ic} has to interface with another function and often that communication involves the moving of data to and from memory and the increase in complexity often drives a need for higher memory data bandwidth. 
+
+The \ac{ic} complexity has been doubling approximately every two years but the external interfaces are restricted by physical limitations.
+Within the \ac{soc}, the designer can take advantage of very wide interfaces, often thousands of bits wide to increase bandwidth, but when data is moved to off-chip memory, the widest buses are usually hundreds of buts wide.
+
+One way to avoid this limitation is to employ \ac{3dic}. The advantages of \ac{3dic} are well understood. reducing the amount of off-chip communication increase bandwidth and reduces power. The power reduction comes from not having to drive the relatively
+high capacitance inputs and outputs.
+Taking advantage of \ac{3dic} means stacking die on top of one another and making connections directly between the die. Conenctions between the die can be made at the edges of the die
+
+Other benefits to \ac{3dic} are:
 \begin{outline}
-  \1 Target applications are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using local \ac{sram} to store \ac{ann} parameters or the \ac{ann} input 
-  \1 \ac{dram} is required for storage of \ac{ann} parameters 
-  \1 Target application will likely apply many disparate \acp{ann} to perform various system functions
-  \1 Target application will have space and power limitations
+  \1 Ability to mix heterogeneous technology
+    \2 Mixed Analog/Digital
+    \2 Mixing memory technology and logic technology
+  \1 Increase density and mitigate against the slowing of Moores Law
+    \2 using the vertical domain to increase perceived transistor per $mm^2$
+  \1 Potentially lower costs by combining simpler die rather than build a large die
+    \2 yield benefits from combining higher yield die
+  \1 Possibility of novel architectures \cite{Kim2016}
 \end{outline}
 
-\section{Overview}
-\label{sec:chap1_overview}
-This work employs \ac{3dic} technology along with a custom 3D-DRAM. The objective was to demonstrate that a pure \ac{3dic} system can implement multiple disparate \acp{ann}. By staying within the \ac{3dic} footprint and taking advantage of high
-density \acp{tsv} this work is able to maintain a significantly higher bandwidth over 2D or 2.5D \ac{asic} or \ac{asip} solutions.
+Some disadvantages of \ac{3dic} are:
+\begin{outline}
+  \1 Reliability
+  \1 Cost
+    \2 being a relatively new technology it is still expensive 
+    \2 \ac{tsv} technology is still unreliable
+\end{outline}
 
-The \ac{3dic} system die stack (figure \ref{fig:3DICStack}) includes the 3D-\ac{dram} with a system manager below and one or more processing layers below the manager.
-\begin{figure}[!t]
-% the [] contains position info e.g. [!t] means here
-\centering
-\captionsetup{justification=centering}
-\captionsetup{width=.9\linewidth}
-\centerline{
-\mbox{\includegraphics[width=.9\linewidth]{StackDiagram.jpg}}
-}
-\caption{3DIC System Stack}
-\label{fig:3DICStack}
-\end{figure}
+There is still some reluctance to fully embrace \ac{3dic} but undoubtly the various barriers will be broken down.
 
-3D-DRAM has recently become available in standards such as \ac{hbm} and \ac{hmc} and proprietary devices such as the DiRAM4 available from Tezzaron. 
-These technologies provide high capacity within a small footprint.
+The ability to mix heterogenous technology is of particular interest to this works target application because mixing technology targeted toward \ac{dram} with cmos logic technology is a heterogenous mix of which this work takes advantage.
 
-In the case of \ac{hbm} and DiRAM4, the technology can be combined with additional custom layers to provide a system solution.
+In \cite{itrs2015_interconn} there are four definitions of \ac{3dic} interconnects:
 
-The question becomes, can a useful system coexist within the same 3D footprint?
+\begin{outline}
+%\section{3D-Wafer level package \cite{itrs2015_interconn}}
+%\label{sec:3D-Wafer level package}
 
-This work targeted a baselne system with:
-\begin{itemize}
-  \item Computations require single precision floating point precision
-  \item Utilize the Tezzaron DiRAM4 \ac{dram} for for main memory
-\end{itemize}
-The work includes customizing the interface to a 3D-\ac{dram}, researching data structures to describe storage of \ac{ann} parameters, designing a memory manager with unique micro-coded instructions and a \ac{pe} layer.  
-The system is designed such that a sub-system, known as a \ac{ssc} operates on one of these disjoint memories within the 3D-\ac{dram} (see figure \ref{fig:diram4Layout}).
+  \1 3D-Wafer level package \cite{itrs2015_interconn}
+    \2 In this case, different die are stacked and then connected using traditional bond bumps and/or bond wires at the periphery of the chip.
+    \2 This technique provides better transistor density compared to traditional 2D-IC with improvements in interconnect density.
 
-When the \acp{ssc} need to share data or neuron activations, the data is passed between \acp{ssc} using a \ac{noc}.
+%\section{3D-Stacked SoC\ac{soc} \cite{itrs2015_interconn}}
+%\label{sec:3D-Stacked \ac{soc}}
+  \1 3D-Stacked \ac{soc} \cite{itrs2015_interconn}
+    \2 In this case, different die are stacked and then connected using \acp{tsv}. The \acp{tsv} connect the dies to intermediate metal layers known as global metal layers. This allows the indivial die to maintain a high level of functionality and thus is similar to connecting functional building blocks meaning the individual die are likely to be significant functional pieces of \ac{ip}.
+    \2 using \acp{tsv} provides a medium level of interconnect
 
-An overview of the various blocks and interconnects are given below:
+%\section{3D-Stack \ac{ic} \cite{itrs2015_interconn}}
+%\label{sec:3D-Stack \ac{ic}}
+  \1 3D-Stack \ac{ic} \cite{itrs2015_interconn}
+    \2 In this case, different die are stacked and then connected using \acp{tsv}. The \acp{tsv} connect the dies to intermediate higher metal layers known as global metal layers. This infers the individual die are not large functioning pieces of \ac{ip}.
+    \2 using \acp{tsv} provides a high level of interconnect
 
-% ----------------------------------------------------------------------------------------------------
-\section{3D-DRAM}
-The targetted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs multiple memory array layers in conjunction with a control and IO layer.
-The memory is formed from 64 disjoint sub-memories each providing upwards of 1Gigabit with a total capacity of at least 64 gigabit.
-\begin{figure}[!t]
-% the [] contains position info e.g. [!t] means here
-\centering
-\captionsetup{justification=centering}
-\captionsetup{width=.9\linewidth}
-\centerline{
-\mbox{\includegraphics[width=.6\linewidth]{DiRAM4Layout.jpg}}
-}
-\caption{\ac{dram} Physical Interface Layout showing area for \ac{ssc}}
-\label{fig:diram4Layout}
-\end{figure}
+%\section{3D-Integrated Circuit \cite{itrs2015_interconn}}
+%\label{sec:3D-Integrated Circuit}
+  \1 3D-Integrated Circuit \cite{itrs2015_interconn}
+    \2 In this case there are not multiple dies. Instead the additional silicon layers are deposited on top of each other with the final \ac{3dic} device having multiple layers of transistors
+    \2 Local metal layers are used which along with \acp{tsv} provides a very high level of interconnect
+\end{outline}
+
+There are other definitions on how the dies are onded together:
+\begin{outline}
+  \1 Wafer-to-Wafer
+    \2 current \ac{esd} mitigation allows implementation of unbuffered IO
+    \2 potential low yield because of lack of knowledge regarding \ac{kgd}
+  \1 Die-to-Wafer
+    \2 will need additional \ac{esd} mitigation support
+    \2 higher yield because of knowledge of \ac{kgd}
+  \1 Die-to-Die
+    \2 will need additional \ac{esd} mitigation support
+    \2 higher yield because of knowledge of \ac{kgd}
+\end{outline}
+
+This work is targeting \ac{3dic} technology that supports 3D-Stacked \ac{soc} or 3D-Stack \ac{ic}.
+In addition, this works requires high levels of interconnect that supports unbuffered interconnects. This would suggest wafer-to-wafer bonding because of the existing \ac{esd} mitigation during wafer handling although it is anticipated that improved \ac{esd} mitigation will be introduced in future manufacturing steps.
+
+The technology roadmap in \cite{itrs2015_interconn} and the information in \cite{patti2014} suggests \SI{5}{\micro\meter} pitch \acp{tsv} is a reasonable design goal.
 
 
-% ----------------------------------------------------------------------------------------------------
-\section{Manager Layer}
-The Manager block is the main controller in the system. The operations required to process an \ac{ann} are formed from individual instructions which are decoded by the Manager. 
-These instructions include descriptors to describe memory read operations, processing engine operations and memory write operations. The manager reads these system instructions from an instruction memory, decodes the instruction and configures the various blocks in the system.
-The configuration includes:
-\begin{itemize}
-      \item initiate operand reads from \ac{dram}
-      \item prepare the processing engine (\ac{pe}) to operate on the operands
-      \item prepare the result processing engine to take the resulting neuron activations from the \ac{pe} and write those results back to the \ac{dram}
-      \item replicate the resulting neuron activation's to neighbor managers for processing of other \ac{ann} layers
-\end{itemize}
 
-% ----------------------------------------------------------------------------------------------------
-\section{Processing Layer}
-\label{ssec:Processing Layer}
-The \ac{pe} is able to operate on data streamed directly from the \ac{dram} via the Manager layer. The \ac{pe} is configured by the manager to perform operations on the operand data streamed from the manager. In the baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. These operands typically are the pre-synaptic neuron activation's and the connection weights. The \ac{pe} also performs the activation function on the result of the MAC to generate the neuron activation value. These 32 activation values are sent back to the Manager layer.
 
-% ----------------------------------------------------------------------------------------------------
-\section{Layer Interconnect}
-\label{ssec:Layer Interconnect}
-
-The layers are connected using through-silicon-vias (\ac{tsv}s) which provide high connection density, high bandwidth and low energy.
-By ensuring the system stays within the 3D footprint ensures we can take advantage of the huge benefits provided by \ac{tsv}s.
-
-% ----------------------------------------------------------------------------------------------------
-\section{Inter-Manager Communication}
-\label{ssec:Inter-Manager Communication}
-
-During configuration and/or computations, data must be transported between managers. This inter-manager communication is provided by an \ac{noc}.
-When computing an \ac{ann} across multiple processing sub-systems, often neuron activation data must be shared between these \ac{ssc}s. The \ac{ssc} includes the \ac{dram} port, the manager and the \ac{pe}. An \ac{noc} within each management block communicates with each adjacent manager using a mesh network. This \ac{noc} has a forwarding table that can be reconfigured to provide more efficient routing for a given processing step.
-
-A control and data flow diagram of the stack showing the 64 sub-system columns can be seen in figure \ref{fig:FlowDiagram}.
-\begin{figure}[!t]
-% the [] contains position info e.g. [!t] means here
-\centering
-\captionsetup{justification=centering}
-\centerline{
-\mbox{\includegraphics[width=.8\linewidth]{FlowDiagram.jpg}}
-}
-\caption{System Flow Diagram}
-\label{fig:FlowDiagram}
-\end{figure}
 
 
