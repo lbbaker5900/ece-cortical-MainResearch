@@ -651,6 +651,8 @@ The system is designed such that a sub-system, known as a sub-system column (SSC
 
 When the sub-system columns need to share data or neuron activations, the data is passed between SSCs using a network-on-chip (NoC).
 
+A detailed flow diagram and block diagram of the sub-system column can be seen in figures \ref{fig:DetailedFlowDiagram} and \ref{fig:DetailedBlockDiagram} respectively.
+
 An overview of the various blocks and interconnects are given below:
 
 % ----------------------------------------------------------------------------------------------------
@@ -973,6 +975,41 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 When processing an ANN, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed. The activation of the processed AN is written back to memory. The ratio of reads to writes is high, 100's or 1000's to one. Therefore, the system often needs to write a portion of the page back to memory. To avoid a read/modify/write, a customization to the DRAM is the addition of a write data mask to the DRAM write path.
 
 
+% #######################################################################################################################################
+%
+%            IFFALSE
+%
+% #######################################################################################################################################
+\iftrue
+
+\begin{figure}[!t]
+% the [] contains position info e.g. [!t] means here
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=2.75in]{DetailedFlowDiagram.jpg}}
+}
+\center\caption{Sub-System Column (SSC) Detailed Flow Diagram}
+\label{fig:DetailedFlowDiagram}
+\end{figure}
+
+\begin{figure*}[!t]
+% the [] contains position info e.g. [!t] means here
+\centering
+\captionsetup{justification=centering}
+\centerline{
+\mbox{\includegraphics[width=6.0in]{DetailedBlockDiagram.jpg}}
+}
+\center\caption{Sub-System Column (SSC) Detailed Block Diagram}
+\label{fig:DetailedBlockDiagram}
+\end{figure*}
+
+\fi
+
+\iffalse
+
+
 \section{Detailed System Description}
 \label{sec:detailedSystemDescription}
 
@@ -999,15 +1036,6 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 \center\caption{Sub-System Column (SSC) Detailed Block Diagram}
 \label{fig:DetailedBlockDiagram}
 \end{figure*}
-
-% #######################################################################################################################################
-%
-%            IFFALSE
-%
-% #######################################################################################################################################
-
-\iffalse
-
 
 \subsection{Manager}
 \label{sec:manager}
