@@ -944,14 +944,16 @@ To limit the amount of storage required, a repeat operation can also be used to 
 
 When the PE has processed the group of ANs, the new AN states are sent back to the manager. The manager will store these back to DRAM most likely in the array format as described earlier.
 
-A significant difference taken advantage of is that for any given operation, the system is writing far less than is being read. For example, the ROI and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
+For any given operation, the system is writing far less than is being read. For example, the ROI and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
+\iffalse
 Now that sounds like writing back has a very small impact on performance but with DRAMs that's not always true.
+\fi
 
 When the system writes the result of an operation back to memory, it is often writing a small portion of a DRAM page and the nature of the DRAM protocol means this is a very inefficient use of DRAM bandwidth. So although the amount of data written is small the performance impact cannot be ignored.
 
-In addition, in many cases the results from a particular PE has to be provided not only to the PEs local manager but also to other managers. This is handled with a network-on-chip (NoC).
+In addition, in many cases the results from a particular PE has to be provided not only to the PEs local manager but also to other managers. This is handled with the network-on-chip (NoC).
 
-The result storage directives are communicated by using the same storage descriptor mechanism. However, the added complication is because the result will likely have to be replicated to other managers, the storage descriptors must be sent to all destination managers.
+The result storage directives are communicated by using the same storage descriptor mechanism. When the result has to be replicated to other managers, the storage descriptors are sent, along with the data to all destination managers.
 
 
 % ----------------------------------------------------------------------------------------------------
@@ -963,8 +965,9 @@ The result storage directives are communicated by using the same storage descrip
 \subsubsection{Streaming Operations (stOp)}
 \label{ssec:streamingOps}
 The operations performed by the stOp are primarily multiple-accumulate with a transfer to the SIMD or to local memory.
-
+\iffalse
 Even though the baseline system focuses on the AN multiply-accumulate followed by a ReLu activation function, the system has built in flexibility into the stOp function to allow other functions to be added
+\fi
 
 In most cases, the stOp module will operate on the AN state and weights provided by the manager and provide the result to the SIMD.
 % ----------------------------------------------------------------------------------------------------
@@ -973,8 +976,10 @@ In most cases, the stOp module will operate on the AN state and weights provided
 
 The SIMD is a 32-lane processor with some builtin special functions including $e^x$ and divide to allow on-the-fly operations. 
 
-The SIMD will take the result provided by the stOp and perform additonal operations such as neuron activation, pooling or softMax. The result will, in most cases, then be transmitted back to the manager.
+The SIMD will take the result provided by the stOp and perform additonal operations such as neuron activation, pooling or softMax. The result will then be transmitted back to the manager.
+\iffalse
 In some cases, the manager uses the result from a previous instruction on a following instruction, an example being a softMax operation.
+\fi
 
 % ----------------------------------------------------------------------------------------------------
 \subsubsection{Configuration}
@@ -982,8 +987,9 @@ In some cases, the manager uses the result from a previous instruction on a foll
 
 To configure the various PE operations, the manager extracts two pointers from the instruction and sends them in a configuration packet to the PE. These pointers index into a small local memory which provides a program counter (PC) to the function to be performed by the SIMD and a configuration entry for the operation to be performed by the stOp.
 
-The PE is able to perform its operation concurrently on 32-lanes. However, there are cases when less than 32-lanes will be employed. This may occur if the number of ANs being processed is not modulo-32. In this case, the configuration packet also provides the number of lanes being processed for any given operation. 
-In addition, the length of the vector of operands is also sent in the configuration packet.
+The PE is able to perform its operation concurrently on 32-lanes. 
+In cases when less than 32-lanes will be employed, the configuration packet also provides the number of lanes being processed.
+In addition, the length of the vector of operands is contained in the configuration packet.
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DRAM Customizable <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
 \section{Suggested DRAM Customizations}
@@ -1013,7 +1019,7 @@ Figure \ref{fig:dramBlockDiagram} shows a block diagram of a typical DRAM.
 
 This work achieves the increase in bandwidth by proposing that the DRAM expose more of its currently open page.
 
-Without the limitations of having to transfer data beyond the chip stack, this work suggests exposing a larger portion of the page over a very wide bus. By staying within the 3D footprint, this bus can be implemented using fine pitch through-silicon-vias.
+Without the limitations of having to transfer data beyond the chip stack, this work suggests exposing a larger portion of the page over a 2048-bit wide bus. By staying within the 3D footprint, this bus can be implemented using fine pitch TSVs.
 (see figure \ref{fig:dramBusChange}).
 
 \begin{figure}[!t]
@@ -1030,7 +1036,14 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 
 \subsection{DRAM Write Mask}
 \label{sec:dramWriteMask}
-When processing an ANN, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed. The activation of the processed AN is written back to memory. The ratio of reads to writes is high, 100's or 1000's to one. Therefore, the system often needs to write a portion of the page back to memory. To avoid a read/modify/write, a customization to the DRAM is the addition of a write data mask to the DRAM write path.
+\iffalse
+When processing an ANN, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed.
+\fi
+For every group of ANs processed, the state of the group of ANs is written back to memory.
+Because of the high average pre-synaptic fanin, the ratio of reading AN states and connection weights to writing back the AN states is high, 100's or 1000's to one. 
+This results in the system often having to write a portion of a page back to memory. 
+Typically this would require a read/modify/write of a DRAM cacheline. In the case writing back 32 AN states into a 4096 bit cacheline means the read/modify/write is inefficient.
+To inimize the inefficiency, a customization to the DRAM is the addition of a write data mask to the DRAM write path eliminating the additional read.
 
 
 % #######################################################################################################################################
@@ -1195,26 +1208,35 @@ The SIMD Upstream Controller (SUI) takes the data and encapsulates it in an Upst
 % >>>>>>>>>>>>>>>>>>>>>>>>>>> Results <<<<<<<<<<<<<<<<<<<<<<
 \section{Results}
 \label{sec:Results}
-The objectives of this work was to design a system able to accelerate ANNs in customer facing systems implemented at the edge. This means systems that are not designed
-to process multiple requests of essentially the same operation.
+The objectives of this work was to design a system able to accelerate ANNs in customer facing systems implemented at the edge. 
+\iffalse
+This means systems that are not designed to process multiple requests of essentially the same operation.
+\fi
 One assumption is that these systems implement disparate ANNs performing various functions. These assumptions imply that the system is not able to take advantage of local SRAM when processing the ANN.
 Another assumption is that the target systems will be space and power constrained.
-Finally, this work assumes that implementing multiple disparate ANNs cannot be implemented purely with SRAM and that DRAM is required to store the ANN parameters.
+Finally, this work assumes that implementing multiple disparate ANNs cannot be implemented with SRAM as the main processing memory.
 
-To demonstrate such a system, this work targeted 3DIC technology including 3D-DRAM. This work proposes that if a system can be purely 3DIC, the system can take advantage of the benefits
-of 3DIC which inlcudes reduced energy, area and additional bandwidth due to high levels of connectivity.
-In addition, this work proposes that if the system is purely 3DIC, then a customized DRAM would provide a significant bandwidth boost over typical implementations using standard DRAM.
-This work targeted the Tezzaron DiRAM4 3D-DRAM.
-
+To demonstrate such a system, this work targeted 3DIC technology including 3D-DRAM. This work proposes that if a system can be purely in 3DIC, the system can take advantage of the benefits
+of 3DIC which includes reduced energy, area and high bandwidth.
+In addition, this work proposes that given the system is 3DIC, then a customized DRAM would provide a significant bandwidth boost over typical implementations using standard DRAM.
+\iffalse
 To ensure the system was purely 3DIC, the area of the system Manager and Processing Engine has to stay within the physical footprint of the DRAM.
+\fi
 
-The target technology node was 28nm. This was chosen because its the technology node employed for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
-The design was synthesized using an available 65nm technology node and then scaled to 28nm to demonstrate fitting within the 3DIC footprint.
+The target technology node was 28nm because its the technology node employed for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
+As a 28nm was not available to this team, the design was synthesized using an available 65nm technology node and then scaled to 28nm.
 
-The primary control and datapaths of the system have been simulated in a system verilog environment. It has been synthesized using a 65nm technology node.
-The design has been coded targeting a frequency of $>$\SI{500}{\mega\hertz}. Timing closure and place and route is ongoing. The system has been designed throughout to meet the timing target so minimal changes are expected to meet timing.
+The primary control and datapaths of the system have been simulated in a system verilog environment. 
+\iffalse
+It has been synthesized using a 65nm technology node.
+\fi
+The design has been coded targeting a frequency of $>$\SI{500}{\mega\hertz}. 
+Although timing closure and place and route is ongoing, because the system has been designed throughout to meet the timing target, minimal changes are expected to meet timing.
 
+\iffalse
 As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
+\fi
+
 %%%%The approximate design targets are shown in Table \ref{tab:DesignTargets}.
 %%%%
 %%%%\begin{table}[h]
@@ -1240,7 +1262,12 @@ As mention previously \eqref{eq:averageBandwidth}, to process multiple useful si
 %%%%\end{table}
 
 The Manager and PE have been place and routed as shown in figure \ref{fig:Manager and PE Die layouts}. 
-Although the design is yet to close timing, the parasitics were extracted from these layouts and simulated against a group of operations. The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. These were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} and represent a pre-synaptic fanin of 225 and 4000 respectively.
+\iffalse
+Although the design is yet to close timing, the 
+\else
+The
+\fi
+parasitics were extracted from these layouts and simulated against a group of operations. The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. These were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} and represent a pre-synaptic fanin of 225 and 4000 respectively.
 The simulation generated an activity file which was then used by the Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates.
 The DRAM accesses were captured and DRAM energy dissipation calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from \cite{liu2012compact}.
 These estimates were used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz} which are shown in table \ref{tab:Simulation-based estimates}.
@@ -1427,13 +1454,19 @@ This local storage allows the system to take advantage of the low latency and ra
 When considering applications where this local storage cannot be used effectively, all these implementations suffer a large degradation in performance.
 
 
-This work considers edge applications where a system is processing single requests into a disparate set of ANNs. The assumpiton is that local SRAM is no longer effective and performance is based on DRAM bandwidth.
-This work considers 3DIC technology and the performance benefits it provides. In addition, a customized 3D-DRAM is proposed. The customized 3D-DRAM combined with a design based on custom instructions and operation descriptors
-allows the system to achieve high levels of memory bandwidth efficiency.
+This work considers edge applications where a system is processing requests with a disparate set of ANNs. The assumption is that local SRAM is no longer effective and performance is based on DRAM bandwidth.
+This work considers 3DIC technology and a customized 3D-DRAM is proposed. 
 
-There is no doubt CNN accelerators combined with batch processing achieve a performance that is difficult to better, but applying these systems to this works target application exposes the DRAM bandwidth limitations.
+The customized 3D-DRAM combined with a design based on custom instructions and operation descriptors allows the system to achieve high levels of memory bandwidth efficiency.
 
-This work demonstrates a 3D-DRAM system that at the surface has a relatively low FLOPs, but considering the target applcation is memory bound this work is potentially 10-100X better that existing ASIC/ASIPs or GPUs.
+There is no doubt existing CNN accelerators that take advantage of batch processing achieve a performance that is difficult to better, but applying these systems to this works target application exposes those systems DRAM bandwidth limitations.
+
+This work demonstrates a 3D-DRAM system that 
+\iffalse
+at the surface has a relatively low FLOPs, but considering the target applcation is memory bound this work is potentially 10-100X better that existing ASIC/ASIPs or GPUs.
+\else
+given the target application, provides a potentially 10-100X performance improvement over existing ASIC/ASIPs or GPUs.
+\fi
 
 \section{Acknowledhements}
 \label{sec:Acknowledhements}
