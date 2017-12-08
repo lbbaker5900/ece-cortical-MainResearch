@@ -5,7 +5,7 @@
 \chapter{Three-Dimensional Integrated Circuits (3DIC)}
 \label{chap-three}
 
-Over the last couple of decades, the ever shrinking world of \ac{ic} has enabled the introduction of devices society takes for granted such as personal computing and cell phones.
+Over the last couple of decades, the ever shrinking world of \acp{ic} has enabled the introduction of devices society takes for granted such as personal computing and cell phones.
 
 As \ac{ic} technology has shrunk, design complexity has grown to take advantage where hundreds of millions of transistors are placed on a typical \ac{ic}.
 These \acp{ic} have evolved from performing small functions to becoming systems on a chip.
@@ -13,18 +13,24 @@ These \acp{ic} have evolved from performing small functions to becoming systems 
 However, at some point, an \ac{ic} has to interface with another function and often that communication involves the moving of data to and from memory and the increase in complexity often drives a need for higher memory data bandwidth. 
 
 The \ac{ic} complexity has been doubling approximately every two years but the external interfaces are restricted by physical limitations.
-Within the \ac{soc}, the designer can take advantage of very wide interfaces, often thousands of bits wide to increase bandwidth, but when data is moved to off-chip memory, the widest buses are usually hundreds of buts wide.
+Within the \ac{soc}, the designer can take advantage of very wide interfaces, often thousands of bits wide to increase bandwidth, but when data is moved to off-chip memory, the widest buses are usually hundreds of bits wide.
 
-One way to avoid this limitation is to employ \ac{3dic}. The advantages of \ac{3dic} are well understood. reducing the amount of off-chip communication increase bandwidth and reduces power. The power reduction comes from not having to drive the relatively
+One way to avoid this limitation is to employ \ac{3dic}. The advantages of \ac{3dic} are well understood. reducing the amount of off-chip communication increases bandwidth and reduces power. The power reduction comes from not having to drive the relatively
 high capacitance inputs and outputs.
-Taking advantage of \ac{3dic} means stacking die on top of one another and making connections directly between the die. Conenctions between the die can be made at the edges of the die
 
-Other benefits to \ac{3dic} are:
+Taking advantage of \ac{3dic} means stacking die on top of one another and making connections directly between the die. These connections can be in the form of wire made at the edges of the die or using vias buried in the die itself.
+
+
+Below is a summary the benefits of \ac{3dic} :
 \begin{outline}
+  \1 Reduced Power
+    \2 mainly from not having to drive external outputs and receiving external inputs
+  \1 Increased Connectivity
+    \2 maintaining very wides buses through the \ac{soc} increases bandwidth
   \1 Ability to mix heterogeneous technology
     \2 Mixed Analog/Digital
     \2 Mixing memory technology and logic technology
-  \1 Increase density and mitigate against the slowing of Moores Law
+  \1 Increase density and mitigation against the slowing of Moores Law
     \2 using the vertical domain to increase perceived transistor per $mm^2$
   \1 Potentially lower costs by combining simpler die rather than build a large die
     \2 yield benefits from combining higher yield die

@@ -291,7 +291,7 @@ The problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide 
 
 Considering that DRAM is required to store the NN parameters, why use SRAM as an intermediate store? Well, in practice there are benefits if you can operate solely out of SRAM.
 Certainly good performance and potentially low power.
-But use of SRAM makes assumptions on the NNs that can be supported.
+But use of SRAM makes assumptions on the NNs that can be supported and the application.
 The primary requirement of the NN to allow effective use of SRAM is "reuse". Once parameters are stored in SRAM, can they be reused such that the SRAM isn't simply an intermediate memory but something akin to a cache.
 
 In some \ac{ann}s there are reuse opportunities. Specifially, with \ac{cnn}s, the weights are reused. A convolutional filter is passed across an input to form the next layer. These filter "kernels" can be held in memory and the input is read from DRAM thus reducing the DRAM bandwidth.
