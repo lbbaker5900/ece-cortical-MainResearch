@@ -15,8 +15,32 @@ However, at some point, an \ac{ic} has to interface with another function and of
 The \ac{ic} complexity has been doubling approximately every two years but the external interfaces are restricted by physical limitations.
 Within the \ac{soc}, the designer can take advantage of very wide interfaces, often thousands of bits wide to increase bandwidth, but when data is moved to off-chip memory, the widest buses are usually hundreds of bits wide.
 
-One way to avoid this limitation is to employ \ac{3dic}. The advantages of \ac{3dic} are well understood. reducing the amount of off-chip communication increases bandwidth and reduces power. The power reduction comes from not having to drive the relatively
+One way to avoid this limitation is to employ \ac{3dic} (see figure \ref{fig:Die Stack}. The advantages of \ac{3dic} are well understood. reducing the amount of off-chip communication increases bandwidth and reduces power. The power reduction comes from not having to drive the relatively
 high capacitance inputs and outputs.
+
+\begin{figure}
+\centering
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=1\textwidth]{DieStack}
+  \captionsetup{justification=centering, skip=5pt}
+  \caption{Different Die types stacked with an interposer}
+  \label{fig:Die Stack}
+\end{subfigure}%
+
+\bigskip
+
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=1\textwidth]{DieStackConnections}
+  \captionsetup{justification=centering, skip=5pt}
+  \caption{Connection Types}
+  \label{fig:Die Stack Connection Types}
+\end{subfigure}
+\captionsetup{justification=centering, skip=12pt}
+\caption[3DIC Stack of Die]{3DIC Stack of Die}
+\label{fig:3DIC Die}
+\end{figure}
 
 Taking advantage of \ac{3dic} means stacking die on top of one another and making connections directly between the die. These connections can be in the form of wire made at the edges of the die or using vias buried in the die itself.
 
@@ -88,7 +112,7 @@ A die stack with \acp{tsv} can be seen in \fref{fig:tsv}.
 \centerline{
 \mbox{\includegraphics[width=6.0in]{TSVs.pdf}}
 }
-\caption{Die Stack \cite{itrs2015_interconn} with \acp{tsv}}
+\caption{Die Stack profile \cite{itrs2015_interconn} with \acp{tsv}}
 \label{fig:tsv}
 \end{figure}
 
