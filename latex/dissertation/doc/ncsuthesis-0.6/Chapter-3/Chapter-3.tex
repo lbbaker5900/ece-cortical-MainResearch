@@ -20,17 +20,17 @@ high capacitance inputs and outputs.
 
 \begin{figure}
 \centering
-\begin{subfigure}{.9\textwidth}
+\begin{subfigure}{.8\textwidth}
   \centering
   \includegraphics[width=1\textwidth]{DieStack}
   \captionsetup{justification=centering, skip=5pt}
-  \caption{Different Die types stacked with an interposer}
+  \caption{Different Die types stacked mounted on an interposer/package substrate}
   \label{fig:Die Stack}
 \end{subfigure}%
 
 \bigskip
 
-\begin{subfigure}{.9\textwidth}
+\begin{subfigure}{.8\textwidth}
   \centering
   \includegraphics[width=1\textwidth]{DieStackConnections}
   \captionsetup{justification=centering, skip=5pt}
@@ -110,7 +110,7 @@ A die stack with \acp{tsv} can be seen in \fref{fig:tsv}.
 \captionsetup{justification=centering}
 \captionsetup{width=.9\linewidth}
 \centerline{
-\mbox{\includegraphics[width=6.0in]{TSVs.pdf}}
+\mbox{\includegraphics[width=4.5in]{TSVs.pdf}}
 }
 \caption{Die Stack profile \cite{itrs2015_interconn} with \acp{tsv}}
 \label{fig:tsv}
@@ -129,10 +129,17 @@ There are other definitions on how the dies are bonded together:
     \2 higher yield because of knowledge of \ac{kgd}
 \end{outline}
 
-This work is targeting \ac{3dic} technology that supports 3D-Stacked \ac{soc} or 3D-Stack \ac{ic}.
-In addition, this works requires high levels of interconnect that supports unbuffered interconnects. This would suggest wafer-to-wafer bonding because of the existing \ac{esd} mitigation during wafer handling although it is anticipated that improved \ac{esd} mitigation will be introduced in future manufacturing steps.
+This work is targeting \ac{3dic} technology that supports 3D-Stacked \ac{soc} or 3D-Stack \ac{ic} with high levels of interconnect.
+To avoid using large IO buffers for the \ac{tsv} interconenct, this work assumes that the \ac{3dic} technology supports unbuffered interconnects. 
+This would suggest wafer-to-wafer bonding because of the existing \ac{esd} mitigation during wafer handling although it is anticipated that improved \ac{esd} mitigation will be introduced in future manufacturing steps.
 
-The technology roadmap in \cite{itrs2015_interconn} and the information in \cite{patti2014} suggests \SI{5}{\micro\meter} pitch \acp{tsv} is a reasonable design goal.
+The technology roadmap in \cite{itrs2015_interconn} and the information in \cite{patti2014} suggests \SI{5}{\micro\meter} pitch \acp{tsv} is a reasonable design goal. This work assumes a one-to-one ration of signal \acp{tsv} to power/grod \ac{tsv} so when accounting for area associated with \acp{tsv}, the number of signal \acp{tsv} are doubled.
+
+As a large amount of \acp{tsv} are employed, \ac{tsv} energy cannot be ignored.
+Most of the energy dissipated in the \ac{tsv} is associated with the charging and discharging of the \acp{tsv} capacitance. For a \SI{5}{\micro\meter} pitch and \SI{2}{\micro\meter} radius \acp{tsv}, \cite{Bamberg2017} suggests an average capacitance of \SI{4.2}{\femto\farad}.
+
+Therefore, this work assumes \acp{tsv} with a \SI{5}{\micro\meter} pitch and a power dissipation of \SI[per-mode=symbol]{4.2}{\micro \watt \per \giga \bit\per\second \per \ac{tsv}}.
+
 
 
 
