@@ -22,7 +22,7 @@ The primary design considerations that drove the architecture of this work are :
 
 \section{Overview}
 \label{sec:chap1_overview}
-This work employs \ac{3dic} technology along with a custom 3D-DRAM. The objective was to demonstrate that a pure \ac{3dic} system can implement multiple disparate \acp{ann}. By staying within the \ac{3dic} footprint and taking advantage of high
+This work employs \ac{3dic} technology along with a customized 3D-DRAM. The objective was to demonstrate that a pure \ac{3dic} system can implement multiple disparate \acp{ann}. By staying within the \ac{3dic} footprint and taking advantage of high
 density \acp{tsv} this work is able to maintain a significantly higher bandwidth over 2D or 2.5D \ac{asic} or \ac{asip} solutions.
 
 The \ac{3dic} system die stack (figure \ref{fig:3DICStack}) includes the 3D-\ac{dram} with a system manager below and one or more processing layers below the manager.
@@ -47,8 +47,8 @@ The question becomes, can a useful system coexist within the same 3D footprint?
 
 This work targeted a baselne system with:
 \begin{itemize}
-  \item Computations require single precision floating point precision
-  \item Utilize the Tezzaron DiRAM4 \ac{dram} for for main memory
+  \item Computations requiring single precision floating point precision
+  \item Tezzaron \acf{diram4} \cite{tezzaron:diram4} for main memory
 \end{itemize}
 The work includes customizing the interface to a 3D-\ac{dram}, researching data structures to describe storage of \ac{ann} parameters, designing a memory manager with unique micro-coded instructions and a \ac{pe} layer.  
 The system is designed such that a sub-system, known as a \ac{ssc} operates on one of these disjoint memories within the 3D-\ac{dram} (see figure \ref{fig:diram4Layout}).
