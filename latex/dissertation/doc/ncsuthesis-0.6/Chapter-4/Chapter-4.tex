@@ -73,10 +73,12 @@ using \ac{sram} as this first level memory is called a cache and these have been
 As mentioned in section \ref{sec:overview} much of the \ac{asic} and \ac{asip} \ac{ann} research has focused on taking advantage of the performance and ease of use of \ac{sram}, but with this works target application an \ac{asic} or \ac{asip} employing \ac{sram} as its primary memory cannot be implemented with adequate storage capacity.
 Under these circustances, \ac{dram} bandwidth will be the bottleneck.
 
-This work focuses on using \ac{dram} as the primary storage and managing the accesses to ensure the \ac{dram} is used effectively. With the additional \ac{dram} customizations discussed in section \ref{sec:Very-Wide Bus} and \ref{sec:Write Mask}, this work demonstrates the ability to process multiple disparate \acp{ann} at or near real-time.
+This work focuses on using \ac{dram} as the primary storage and managing the accesses to ensure the \ac{dram} is used effectively. 
+With the additional \ac{dram} customizations discussed in section \ref{sec:Very-Wide Bus} and \ref{sec:Write Mask}, this work demonstrates \ac{dram} bandwidths 10X faster than what is available with 2 or 2.5D solutions.
+This high level of \ac{dram} bandwidth provides this work the ability to process multiple disparate \acp{ann} at or near real-time whilst being \textbf{\textcolor{black}{10-100X faster than state-of-the-art solutions}}.
 
 
-\section{Very-Wide Bus}
+\section{Customization One: Very-Wide Bus}
 \label{sec:Very-Wide Bus}
 
 Typically a bank may contain of the order of a few thousand pages and a page may contain of the order of a few thousand bits.
@@ -113,7 +115,11 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 \label{fig:dramBusChange}
 \end{figure}
 
-\section{Write Mask}
+This work assumes the \ac{dram} interface protocol uses \ac{ddr} with a bus width of 2048. Given the \ac{diram4} employs a burst of two for read and write cycles, an entire \ac{diram4} page of 4096-bits is accessed during each read or write. 
+
+\section{Customization Two: Write Mask}
 \label{sec:Write Mask}
 When processing an ANN, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed. The activation of the processed AN is written back to memory. The ratio of reads to writes is high, 100's or 1000's to one. Therefore, the system often needs to write a portion of the page back to memory. To avoid a read/modify/write, a customization to the DRAM is the addition of a write data mask to the DRAM write path.
+
+This work assumes single precision floating point for \ac{ann} weights and activation, so a mask bit will be provided on a word basis or every 32-bits.
 
