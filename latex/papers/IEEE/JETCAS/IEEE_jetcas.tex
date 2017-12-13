@@ -434,7 +434,6 @@ Tel/Fax:
 919-515-5460/5523
 Email: 
 lbbaker@ncsu.edu,
-jasteve4@ncsu.edu,
 paulf@ncsu.edu}
 
 \thanks{Manuscript received Month Day, 2016; revised Month Day, 2016.}}
@@ -1129,7 +1128,7 @@ Note that other types of stOp includes a NOP with a destination of local memory.
 \label{ssec:argumentDecode}
 The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
 
-As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
+As soon as read data is sent back to the MRC via the MMC, that data is aligned with to the 32 Streaming Operations inside the PE.
 
 
 \subsubsection{Result data Processing}
@@ -1470,8 +1469,7 @@ given the target application, provides a potentially 10-100X performance improve
 
 \section{Acknowledhements}
 \label{sec:Acknowledhements}
-
-DARPA
+This work was funded in part by DARPA and AFRL under FA8650-15-1-7518 and DARPA and ONR under N00014-17-1-3013, as part of the CHIPS program.
 
 \iffalse
 \section{Further Work}
@@ -1524,7 +1522,6 @@ Therefore, further work should include :
 % http://www.michaelshell.org/tex/ieeetran/bibtex/
 %\bibliographystyle{IEEEtran}
 % argument is your BibTeX string definitions and bibliography database(s)
-%\bibliography{IEEEabrv,../bib/Robot}
 %
 % <OR> manually copy in the resultant .bbl file
 % set second argument of \begin to the number of references
@@ -1555,7 +1552,7 @@ His current research interests include acceleration of artificial neural network
 \end{IEEEbiographynophoto}
 % if you will not have a photo at all:
 \begin{IEEEbiographynophoto}{Paul Franzon}
-is currently a Distinguished Alumni Professor of Electrical and Computer Engineering at North Carolina State University.  He earned his Ph.D. from the University of Adelaide, Adelaide, Australia in 1988.  He has also worked at AT\&T Bell Laboratories, DSTO Australia, Australia Telecom and three companies he cofounded, Communica, LightSpin Technologies and Polymer Braille Inc. His current interests center on the technology and design of complex microsystems incorporating VLSI, MEMS, advanced packaging and nano-electronics. He has lead several major efforts and published over 200 papers in these areas.  In 1993 he received an NSF Young Investigators Award, in 2001 was selected to join the NCSU Academy of Outstanding Teachers, in 2003, selected as a Distinguished Alumni Professor, and received the Alcoa Research Award in 2005.  He served with the Australian Army Reserve for 13 years as an Infantry Soldier and Officer.  He is a Fellow of the IEEE.
+is currently the Cirrus Logic Distinguished Professor of Electrical and Computer Engineering at North Carolina State University.  He earned his Ph.D. from the University of Adelaide, Adelaide, Australia in 1988.  He has also worked at AT\&T Bell Laboratories, DSTO Australia, Australia Telecom and three companies he cofounded, Communica, LightSpin Technologies and Polymer Braille Inc. His current interests center on the technology and design of complex microsystems incorporating VLSI, MEMS, advanced packaging and nano-electronics. He has lead several major efforts and published over 300 papers in these areas.  In 1993 he received an NSF Young Investigators Award, in 2001 was selected to join the NCSU Academy of Outstanding Teachers, in 2003, selected as a Distinguished Alumni Professor, and received the Alcoa Research Award in 2005.  He served with the Australian Army Reserve for 13 years as an Infantry Solider and Officer.  He is a Fellow of the IEEE.
 \end{IEEEbiographynophoto}
 
 % You can push biographies down or up by placing
