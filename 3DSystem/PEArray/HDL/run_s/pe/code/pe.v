@@ -711,6 +711,15 @@ module pe (
   //
   `include "pe_stOp_control_to_stOp_connections.vh"
   `include "pe_stOp_control_to_dma_connections.vh"
+/*
+  genvar lane;
+  generate
+    for (lane=0; lane < `PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        assign stOp_lane[lane].scntl__dma__operation    = scntl__sdp__lane_dma_operation [lane] ;
+      end
+  endgenerate
+*/
 
   // Regfile signals from stOp
   `include "pe_stOp_to_cntl_regfile_connections.vh"
@@ -732,6 +741,16 @@ module pe (
   //-------------------------------------------------------------------------------------------------
   // Memory Controller
 
+  wire                                        dma__memc__write_valid     [`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS ][`MEM_ACC_CONT_BANK_NUM_OF_PORTS ];
+  wire [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__write_address   [`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS ][`MEM_ACC_CONT_BANK_NUM_OF_PORTS ];
+  wire [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  dma__memc__write_data      [`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS ][`MEM_ACC_CONT_BANK_NUM_OF_PORTS ];
+  wire                                        memc__dma__write_ready     [`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS ][`MEM_ACC_CONT_BANK_NUM_OF_PORTS ];
+  wire                                        dma__memc__read_valid      [`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS ][`MEM_ACC_CONT_BANK_NUM_OF_PORTS ];
+  wire [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  dma__memc__read_address    [`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS ][`MEM_ACC_CONT_BANK_NUM_OF_PORTS ];
+  wire [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__dma__read_data       [`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS ][`MEM_ACC_CONT_BANK_NUM_OF_PORTS ];
+  wire                                        memc__dma__read_data_valid [`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS ][`MEM_ACC_CONT_BANK_NUM_OF_PORTS ];
+  wire                                        memc__dma__read_ready      [`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS ][`MEM_ACC_CONT_BANK_NUM_OF_PORTS ];
+  wire                                        dma__memc__read_pause      [`MEM_ACC_CONT_NUM_OF_MEMORY_BANKS ][`MEM_ACC_CONT_BANK_NUM_OF_PORTS ];
 
   mem_acc_cont mem_acc_cont (
                                         
@@ -754,17 +773,29 @@ module pe (
 
             //-------------------------------
             // DMA Interface
-            .scntl__memc__request            ( scntl__memc__request           ), 
-            .memc__scntl__granted            ( memc__scntl__granted           ),
-            .scntl__memc__released           ( scntl__memc__released          ),
+            .scntl__memc__request          ( scntl__memc__request           ), 
+            .memc__scntl__granted          ( memc__scntl__granted           ),
+            .scntl__memc__released         ( scntl__memc__released          ),
 
-            `include "mem_acc_cont_instance_ports.vh"
-            //`include "mem_acc_cont_unused_streams.vh"
+            // Memory Port 0                 
+            .dma__memc__write_valid        ( dma__memc__write_valid    ),
+            .dma__memc__write_address      ( dma__memc__write_address  ),
+            .dma__memc__write_data         ( dma__memc__write_data     ),
+            .memc__dma__write_ready        ( memc__dma__write_ready    ),
+            .dma__memc__read_valid         ( dma__memc__read_valid     ),
+            .dma__memc__read_address       ( dma__memc__read_address   ),
+            .memc__dma__read_data          ( memc__dma__read_data      ),
+            .memc__dma__read_data_valid    ( memc__dma__read_data_valid),
+            .memc__dma__read_ready         ( memc__dma__read_ready     ),
+            .dma__memc__read_pause         ( dma__memc__read_pause     ),
+            //`include "mem_acc_cont_instance_ports.vh"
 
             .clk                         ( clk             ),
             .reset_poweron               ( reset_poweron   )
 
     );
+
+  `include "mem_acc_cont_instance_wires.vh"
 
 
 

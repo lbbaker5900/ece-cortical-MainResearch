@@ -21,11 +21,20 @@
 `define MEM_ACC_CONT_NUM_OF_MEMORY_BANKS    32
 `define MEM_ACC_CONT_NUM_OF_PORTS           32
 
+`define MEM_ACC_CONT_NUM_OF_MEMORY_BANKS_VECTOR_RANGE    `MEM_ACC_CONT_NUM_OF_MEMORY_BANKS-1 : 0
+`define MEM_ACC_CONT_NUM_OF_PORTS_VECTOR_RANGE           `MEM_ACC_CONT_NUM_OF_PORTS-1 : 0
+
 //------------------------------------------------
 // Do we allow each lane to access any bank
+// - uncomment if any memory bank port can access any memory bank 
+// - default is only the memory bank interface 0 can access all bmemory banks
 // `define MEM_ACC_CONT_ALLOW_ACCESS_ANY 
+
+
+// Does each memory bank have one or two ports
 // Are the memories 1 or 2 port
 `define MEM_ACC_CONT_BANK_NUM_OF_PORTS 1
+`define MEM_ACC_CONT_BANK_NUM_OF_PORTS_VECTOR_RANGE           `MEM_ACC_CONT_BANK_NUM_OF_PORTS-1 : 0
 
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------

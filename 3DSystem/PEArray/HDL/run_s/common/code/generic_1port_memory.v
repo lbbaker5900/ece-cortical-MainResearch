@@ -98,6 +98,10 @@ module generic_1port_memory
 
   `ifndef SYNTHESIS
     reg    [GENERIC_MEM_DATA_WIDTH-1 :0  ]    reg_portA_read_data ;
+    if (GENERIC_MEM_REGISTERED_OUT == 1)
+      begin : mem_reg
+        reg    [GENERIC_MEM_DATA_WIDTH-1 :0  ]    mem_reg_portA_read_data ;
+      end
   `else
     wire   [GENERIC_MEM_DATA_WIDTH-1 :0  ]    int_portA_read_data ;
   `endif
@@ -184,15 +188,9 @@ module generic_1port_memory
 
   `ifndef SYNTHESIS
     //--------------------------------------------------------
-    // Registered outputs ??
+    // Registered/UnRegistered outputs
     //
-    reg   portA_enable_d1      ; 
-    always @(posedge clk)
-      begin
-        portA_enable_d1  <=   portA_enable  ; 
-      end
-
-    if (GENERIC_MEM_REGISTERED_OUT == 0)
+    if (GENERIC_MEM_REGISTERED_OUT == 0)  // Not registered
      begin
       always @(posedge clk)
         begin
@@ -200,20 +198,14 @@ module generic_1port_memory
                                                        reg_portA_read_data ;
         end
      end
-    else  // Not registers
+    else  // registered
      begin
       always @(posedge clk)
         begin
-          reg_portA_read_data   <= ( portA_enable_d1 ) ? mem [portA_address] : 
-                                                         reg_portA_read_data ;
+          mem_reg.mem_reg_portA_read_data <= ( portA_enable ) ? mem [portA_address] : 
+                                                                mem_reg.mem_reg_portA_read_data ;
+          reg_portA_read_data    <= mem_reg.mem_reg_portA_read_data ;
         end
-      /*
-      always @(*)
-        begin
-          reg_portA_read_data = mem [portA_address] ;
-          reg_portB_read_data = mem [portB_address] ;
-        end
-      */
      end
 
     always @(posedge clk)

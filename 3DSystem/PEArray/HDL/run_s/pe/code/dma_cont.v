@@ -236,6 +236,41 @@ module dma_cont (
   //-------------------------------------------------------------------------------------------
   // Wires and Register
   //
+  reg                                         strm0_read_enable_d1            ;
+  reg                                         strm0_write_enable_d1           ;
+  reg  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  strm0_read_start_address_d1     ;  // streaming op arg0
+  reg  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  strm0_write_start_address_d1    ;  // streaming op result start address
+  reg  [`DMA_CONT_DATA_TYPES_RANGE         ]  type0_d1                        ;
+  reg  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ]  num_of_types0_d1                ;
+
+  always @(posedge clk)
+    begin
+      strm0_read_enable_d1            <=   strm0_read_enable         ;
+      strm0_write_enable_d1           <=   strm0_write_enable        ;
+      strm0_read_start_address_d1     <=   strm0_read_start_address  ;  // streaming op arg0
+      strm0_write_start_address_d1    <=   strm0_write_start_address ;  // streaming op result start address
+      type0_d1                        <=   type0                     ;
+      num_of_types0_d1                <=   num_of_types0             ;
+    end
+
+  `ifndef DMA_CONT_ONLY_ONE_PORT 
+    reg                                         strm1_read_enable_d1            ;
+    reg                                         strm1_write_enable_d1           ;
+    reg  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  strm1_read_start_address_d1     ;  // streaming op arg1
+    reg  [`DMA_CONT_STRM_ADDRESS_RANGE       ]  strm1_write_start_address_d1    ;  // streaming op result start address
+    reg  [`DMA_CONT_DATA_TYPES_RANGE         ]  type1_d1                        ;
+    reg  [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE   ]  num_of_types1_d1                ;
+
+    always @(posedge clk)
+      begin
+        strm1_read_enable_d1            <=   strm1_read_enable         ;
+        strm1_write_enable_d1           <=   strm1_write_enable        ;
+        strm1_read_start_address_d1     <=   strm1_read_start_address  ;  // streaming op arg1
+        strm1_write_start_address_d1    <=   strm1_write_start_address ;  // streaming op result start address
+        type1_d1                        <=   type1                     ;
+        num_of_types1_d1                <=   num_of_types1             ;
+      end
+  `endif
   //------------------------------------------------------------
   // Operation related fields
   //
@@ -274,9 +309,6 @@ module dma_cont (
 
   wire strm_first_read0           ;
   wire strm_last_read0            ;
-  wire strm0_read_enable          ;
-
-  wire strm0_write_enable         ;
 
   // indicators to main streaming controller
   reg  strm0_read_complete        ;
@@ -294,9 +326,6 @@ module dma_cont (
   
     wire strm_first_read1           ;
     wire strm_last_read1            ;
-    wire strm1_read_enable          ;
-  
-    wire strm1_write_enable         ;
   
     // indicators to main streaming controller
     reg  strm1_read_complete        ;
@@ -313,7 +342,6 @@ module dma_cont (
   // e.g. In the case of 32 bit wide memory, if we want 64 bytes, then we need to read
   // 16 words, if we need 65 bytes we read 17 words and only need one byte in
   // the last access.
-  wire [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]  num_of_types0            ;
 
   // Input FIFO from stOp
   wire                                        strm0_from_stOp_fifo_valid           ; 
@@ -321,7 +349,6 @@ module dma_cont (
   wire [`DMA_CONT_STRM_CNTL_RANGE     ]       strm0_from_stOp_fifo_read_cntl       ; 
 
   `ifndef DMA_CONT_ONLY_ONE_PORT 
-    wire [`DMA_CONT_MAX_NUM_OF_TYPES_RANGE ]  num_of_types1            ;
     
     // Input FIFO from stOp
     wire                                        strm1_from_stOp_fifo_valid           ; 
@@ -449,9 +476,9 @@ module dma_cont (
   endgenerate
 
   // Stream 0
-  assign read_strm[0].enable                   = strm0_read_enable                    ;
+  assign read_strm[0].enable                   = strm0_read_enable_d1                    ;
   assign read_strm[0].ready                    = memc__dma__read_ready0               ;
-  assign read_strm[0].start_address            = strm0_read_start_address             ;
+  assign read_strm[0].start_address            = strm0_read_start_address_d1             ;
   assign read_strm[0].type_count_init          = strm_type_info[0].type_count_init    ;
   assign read_strm[0].types_in_last_data       = strm_type_info[0].types_in_last_data ;
   assign read_strm[0].to_stOp_valid            = dma__stOp__strm0_data_valid          ;
@@ -465,9 +492,9 @@ module dma_cont (
 
   `ifndef DMA_CONT_ONLY_ONE_PORT 
     // Stream 1
-    assign read_strm[1].enable                   = strm1_read_enable                    ;
+    assign read_strm[1].enable                   = strm1_read_enable_d1                    ;
     assign read_strm[1].ready                    = memc__dma__read_ready1               ;
-    assign read_strm[1].start_address            = strm1_read_start_address             ;
+    assign read_strm[1].start_address            = strm1_read_start_address_d1             ;
     assign read_strm[1].type_count_init          = strm_type_info[1].type_count_init    ;
     assign read_strm[1].types_in_last_data       = strm_type_info[1].types_in_last_data ;
     assign read_strm[1].to_stOp_valid            = dma__stOp__strm1_data_valid          ;
@@ -555,9 +582,9 @@ module dma_cont (
   endgenerate
 
   // Stream 0
-  assign write_strm[0].enable                  =  strm0_write_enable ;
+  assign write_strm[0].enable                  =  strm0_write_enable_d1 ;
   assign write_strm[0].ready                   = memc__dma__write_ready0              ;
-  assign write_strm[0].start_address           = strm0_write_start_address            ;
+  assign write_strm[0].start_address           = strm0_write_start_address_d1            ;
   assign write_strm[0].data_available          = strm0_from_stOp_fifo_valid          ;
   assign write_strm[0].types_in_last_data      = strm_type_info[0].types_in_last_data ;
   assign write_strm[0].last_write_transaction  = strm0_from_stOp_fifo_valid & 
@@ -569,9 +596,9 @@ module dma_cont (
 
   `ifndef DMA_CONT_ONLY_ONE_PORT 
     // Stream 1
-    assign write_strm[1].enable                  =  strm1_write_enable ;
+    assign write_strm[1].enable                  =  strm1_write_enable_d1 ;
     assign write_strm[1].ready                   = memc__dma__write_ready1              ;
-    assign write_strm[1].start_address           = strm1_write_start_address            ;
+    assign write_strm[1].start_address           = strm1_write_start_address_d1            ;
     assign write_strm[1].data_available          = strm1_from_stOp_fifo_valid          ;
     assign write_strm[1].types_in_last_data      = strm_type_info[1].types_in_last_data ;
     assign write_strm[1].last_write_transaction  = strm1_from_stOp_fifo_valid & 
@@ -590,10 +617,10 @@ module dma_cont (
   //   - performed externally if we split into dma_read_cont and dma_write_cont with each 
   //     controlling a single stream
   //
-  assign strm_complete0                        = (~strm0_read_enable | read_strm[0].complete) & (~strm0_write_enable | write_strm[0].complete) ;
+  assign strm_complete0                        = (~strm0_read_enable_d1 | read_strm[0].complete) & (~strm0_write_enable_d1 | write_strm[0].complete) ;
 
   `ifndef DMA_CONT_ONLY_ONE_PORT 
-    assign strm_complete1                        = (~strm1_read_enable | read_strm[1].complete) & (~strm1_write_enable | write_strm[1].complete) ;
+    assign strm_complete1                        = (~strm1_read_enable_d1 | read_strm[1].complete) & (~strm1_write_enable_d1 | write_strm[1].complete) ;
     wire   strm_complete                         = strm_complete0 & strm_complete1      ;
   `else
     wire   strm_complete                         = strm_complete0 ;
@@ -759,12 +786,12 @@ module dma_cont (
       end
   endgenerate
 
-  assign strm_type_info[0].typee        = type0;
-  assign strm_type_info[0].num_of_types = num_of_types0;
+  assign strm_type_info[0].typee        = type0_d1;
+  assign strm_type_info[0].num_of_types = num_of_types0_d1;
 
   `ifndef DMA_CONT_ONLY_ONE_PORT 
-    assign strm_type_info[1].typee        = type1;
-    assign strm_type_info[1].num_of_types = num_of_types1;
+    assign strm_type_info[1].typee        = type1_d1;
+    assign strm_type_info[1].num_of_types = num_of_types1_d1;
   `endif
 
   //-------------------------------------------------------------------------------------------------
@@ -778,8 +805,8 @@ module dma_cont (
 
   always @(posedge clk)
     begin
-      strm0_read_ready  <= strm0_read_enable ;  // FIXME
-      strm0_write_ready <= strm0_write_enable;
+      strm0_read_ready  <= strm0_read_enable_d1 ;  // FIXME
+      strm0_write_ready <= strm0_write_enable_d1;
     end
 
   `ifndef DMA_CONT_ONLY_ONE_PORT 
@@ -789,8 +816,8 @@ module dma_cont (
   
     always @(posedge clk)
       begin
-        strm1_read_ready  <= strm1_read_enable ;  // FIXME
-        strm1_write_ready <= strm1_write_enable;
+        strm1_read_ready  <= strm1_read_enable_d1 ;  // FIXME
+        strm1_write_ready <= strm1_write_enable_d1;
       end
   `endif
 
@@ -909,7 +936,7 @@ module dma_cont (
 
   //-----------------------
   // Stream 0
-  assign  from_stOp_fifo[0].clear              = ~strm0_write_enable                ;  // FIFO is from stOp to memory, so clear using write enable
+  assign  from_stOp_fifo[0].clear              = ~strm0_write_enable_d1                ;  // FIFO is from stOp to memory, so clear using write enable
   assign  strm0_from_stOp_fifo_valid           = from_stOp_fifo[0].pipe_valid       ; 
   assign  from_stOp_fifo[0].pipe_read          = from_stOp_fifo[0].pipe_valid & memc__dma__write_ready0;  // FIFO feeds write stream 0 into memory controller
   assign  strm0_from_stOp_fifo_read_data       = from_stOp_fifo[0].pipe_data        ; 
@@ -924,7 +951,7 @@ module dma_cont (
   `ifndef DMA_CONT_ONLY_ONE_PORT 
     //-----------------------
     // Stream 1
-    assign  from_stOp_fifo[1].clear              = ~strm1_write_enable                ;
+    assign  from_stOp_fifo[1].clear              = ~strm1_write_enable_d1                ;
     assign  strm1_from_stOp_fifo_valid           = from_stOp_fifo[1].pipe_valid       ; 
     assign  from_stOp_fifo[1].pipe_read          = from_stOp_fifo[1].pipe_valid & memc__dma__write_ready1;  // FIFO feeds write stream 0 into memory controller
     assign  strm1_from_stOp_fifo_read_data       = from_stOp_fifo[1].pipe_data        ; 

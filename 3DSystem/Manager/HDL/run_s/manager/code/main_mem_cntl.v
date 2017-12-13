@@ -673,6 +673,7 @@ module main_mem_cntl (
   reg  [`DRAM_ACC_NUM_OF_CMDS_RANGE           ]    strm_access_cmd             [`MGR_DRAM_NUM_CHANNELS] [`MMC_CNTL_NUM_OF_INTF ] ;
   reg  [`DRAM_ACC_SEQ_TYPE_RANGE              ]    strm_access_sequence        [`MGR_DRAM_NUM_CHANNELS] [`MMC_CNTL_NUM_OF_INTF ] ;
   reg  [`MGR_DRAM_BANK_ADDRESS_RANGE          ]    strm_access_bank            [`MGR_DRAM_NUM_CHANNELS] [`MMC_CNTL_NUM_OF_INTF ] ;
+  reg  [`MGR_DRAM_BANK_ADDRESS_RANGE          ]    strm_access_bank_d1         [`MGR_DRAM_NUM_CHANNELS] [`MMC_CNTL_NUM_OF_INTF ] ;  // hold the bank value because the output of the fifo is read immediately its selected
   reg  [`MGR_DRAM_PAGE_ADDRESS_RANGE          ]    strm_access_page            [`MGR_DRAM_NUM_CHANNELS] [`MMC_CNTL_NUM_OF_INTF ] ;
   `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                             
     reg  [`MGR_DRAM_LINE_ADDRESS_RANGE        ]    strm_access_line            [`MGR_DRAM_NUM_CHANNELS] [`MMC_CNTL_NUM_OF_INTF ] ;
@@ -1167,16 +1168,21 @@ module main_mem_cntl (
 
             always @(*)
               begin
-                strm_access_request  [chan] [strm] = strm_request              ;
-                strm_access_done     [chan] [strm] = strm_request_done         ;
-                strm_access_sequence [chan] [strm] = strm_request_sequence     ;
-                strm_access_bank     [chan] [strm] = strm_request_bank         ;
-                strm_access_page     [chan] [strm] = strm_request_page         ;
-                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                               
-                  strm_access_line   [chan] [strm] = strm_request_line         ;
+                strm_access_request  [chan] [strm] = strm_request                   ;
+                strm_access_done     [chan] [strm] = strm_request_done              ;
+                strm_access_sequence [chan] [strm] = strm_request_sequence          ;
+                strm_access_bank     [chan] [strm] = strm_request_bank              ;
+                strm_access_page     [chan] [strm] = strm_request_page              ;
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE                                    
+                  strm_access_line   [chan] [strm] = strm_request_line              ;
                 `endif
 
                 strm_write_data_available [chan] [strm] = strm_wr_data_available ;
+              end
+            always @(posedge clk)
+              begin
+                strm_access_bank_d1  [chan] [strm] = ( strm_enable [chan][strm]) ? strm_request_bank                 :
+                                                                                   strm_access_bank_d1 [chan] [strm] ;
               end
           end
       end
@@ -1343,17 +1349,17 @@ module main_mem_cntl (
               `MMC_CNTL_STRM_SEL_STRM0 :
                 begin
                   last_bank_valid  <= ( reset_poweron ) ? 'd0   : 1'b1 ;
-                  last_bank        <= ( reset_poweron ) ? 'd0   : strm_access_bank [chan][0] ;
+                  last_bank        <= ( reset_poweron ) ? 'd0   : strm_access_bank_d1 [chan][0] ;
                 end
               `MMC_CNTL_STRM_SEL_STRM1 :
                 begin
                   last_bank_valid  <= ( reset_poweron ) ? 'd0   : 1'b1 ;
-                  last_bank        <= ( reset_poweron ) ? 'd0   : strm_access_bank [chan][1] ;
+                  last_bank        <= ( reset_poweron ) ? 'd0   : strm_access_bank_d1 [chan][1] ;
                 end
               `MMC_CNTL_STRM_SEL_WRITE_INTF0:
                 begin
                   last_bank_valid  <= ( reset_poweron ) ? 'd0   : 1'b1 ;
-                  last_bank        <= ( reset_poweron ) ? 'd0   : strm_access_bank [chan][2] ;
+                  last_bank        <= ( reset_poweron ) ? 'd0   : strm_access_bank_d1 [chan][2] ;
                 end
               default:
                 begin

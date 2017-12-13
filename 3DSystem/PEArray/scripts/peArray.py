@@ -1689,7 +1689,7 @@ if __name__ == "__main__":
 
   f.write(pLine)
   f.close()
-
+ 
   f = open('../HDL/common/mem_acc_cont_instance_ports.vh', 'w')
   pLine = ""
 
@@ -1709,6 +1709,28 @@ if __name__ == "__main__":
       pLine = pLine + '\n                .memc__dma__read_data_valid{2}   ( memc__dma__lane{0}_read_data_valid{1} ),'.format(lane,dma,dmaPort)
       pLine = pLine + '\n                .memc__dma__read_ready{2}        ( memc__dma__lane{0}_read_ready{1}      ),'.format(lane,dma,dmaPort)
       pLine = pLine + '\n                .dma__memc__read_pause{2}        ( dma__memc__lane{0}_read_pause{1}      ),'.format(lane,dma,dmaPort)
+
+  f.write(pLine)
+  f.close()
+
+  f = open('../HDL/common/mem_acc_cont_instance_wires.vh', 'w')
+  pLine = ""
+
+  numOfMemPortsPerExecLane = numOfMemPorts/numOfExecLanes
+
+  for lane in range (0, numOfExecLanes):
+    for port in range (0, numOfMemPortsPerExecLane):
+      pLine = pLine + '\n    // Lane {0}, Memory Port {1}                 '.format(lane,port)
+      pLine = pLine + '\n    assign  dma__memc__write_valid       [{0}] [{1}] =  dma__memc__lane{0}_write_valid{1}     ;'.format(lane,port)
+      pLine = pLine + '\n    assign  dma__memc__write_address     [{0}] [{1}] =  dma__memc__lane{0}_write_address{1}   ;'.format(lane,port)
+      pLine = pLine + '\n    assign  dma__memc__write_data        [{0}] [{1}] =  dma__memc__lane{0}_write_data{1}      ;'.format(lane,port)
+      pLine = pLine + '\n    assign  dma__memc__read_valid        [{0}] [{1}] =  dma__memc__lane{0}_read_valid{1}      ;'.format(lane,port)
+      pLine = pLine + '\n    assign  dma__memc__read_address      [{0}] [{1}] =  dma__memc__lane{0}_read_address{1}    ;'.format(lane,port)
+      pLine = pLine + '\n    assign  dma__memc__read_pause        [{0}] [{1}] =  dma__memc__lane{0}_read_pause{1}      ;'.format(lane,port)
+      pLine = pLine + '\n    assign  memc__dma__lane{0}_write_ready{1}        =  memc__dma__write_ready       [{0}] [{1}] ;'.format(lane,port)
+      pLine = pLine + '\n    assign  memc__dma__lane{0}_read_data{1}          =  memc__dma__read_data         [{0}] [{1}] ;'.format(lane,port)
+      pLine = pLine + '\n    assign  memc__dma__lane{0}_read_data_valid{1}    =  memc__dma__read_data_valid   [{0}] [{1}] ;'.format(lane,port)
+      pLine = pLine + '\n    assign  memc__dma__lane{0}_read_ready{1}         =  memc__dma__read_ready        [{0}] [{1}] ;'.format(lane,port)
 
   f.write(pLine)
   f.close()

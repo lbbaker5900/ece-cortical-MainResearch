@@ -1045,6 +1045,8 @@ if __name__ == "__main__":
         pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MMC -group SEL_FSM -group CHAN{1} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/channel_strm_select_fsm[{1}]/strm_ena[0]/strm}}              '.format(mgr,chan)
         pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MMC -group SEL_FSM -group CHAN{1} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/channel_strm_select_fsm[{1}]/strm_ena[1]/strm}}              '.format(mgr,chan)
         pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MMC -group SEL_FSM -group CHAN{1} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/channel_strm_select_fsm[{1}]/strm_ena[2]/strm}}              '.format(mgr,chan)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MMC -group SEL_FSM -group CHAN{1} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/channel_strm_select_fsm[{1}]/last_bank_valid}}               '.format(mgr,chan)
+        pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MMC -group SEL_FSM -group CHAN{1} -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/main_mem_cntl/channel_strm_select_fsm[{1}]/last_bank}}                     '.format(mgr,chan)
 
   for mgr in range (0, numOfMgr):
     for chan in range (0, numOfChannels):

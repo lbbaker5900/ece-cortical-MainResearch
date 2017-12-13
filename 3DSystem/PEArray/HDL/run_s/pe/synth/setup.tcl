@@ -29,7 +29,7 @@ set clkname clk
 # WIP
 #
 
-set modname simd_wrapper
+set modname mem_acc_cont
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
@@ -54,14 +54,14 @@ if {$tech == "65nm"} {
   #set CLK_PER 2.6
   #set CLK_PER 5.0
   #set CLK_PER 1.0
-  set CLK_PER 10.0
+  set CLK_PER 2.0
 
 } elseif {($tech == "28nm")} {
 
   #set CLK_PER 2.6
   #set CLK_PER 1.0
   #set CLK_PER 5.0
-  set CLK_PER 10.0
+  set CLK_PER 2.0
 
 }
 
