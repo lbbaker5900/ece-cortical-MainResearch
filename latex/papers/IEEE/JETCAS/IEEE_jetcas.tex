@@ -493,6 +493,8 @@ paulf@ncsu.edu}
 % in the abstract or keywords.
 \begin{abstract}
 
+
+
 Machine Learning in the form of Deep Neural Networks (DNN) have gained traction over the last few years.
 They get good press in applications such as image recognition and speech recognition.
 \iffalse
@@ -511,17 +513,32 @@ Much of the ANN application specific (ASIC/ASIP) research has focused on taking 
 These implementations can be shown to be effective with specific ANN architectures, such as CNNs where the ANN parameters can be stored in SRAM in a cache-like architecture avoiding constant accessing of the "slower" DRAM.
 In addition, to achieve a high performance, these rely on processing a batch of inputs, such as processing a batch of images or voice recordings using the same ANN.
 
-The work in this paper considers "edge" applications that require the processing of a disparate set of useful sized ANNs. The work assumes that the application system is utilizing ANNs
-for the processing of various sub-systems, such as navigation, engine monitoring etc.. This work also does not assume the ANN is specifically a CNN but a DNN where there may
-not be opportuities to store and reuse portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
+The work in this paper considers "edge" applications which perform multiple complex functions, such as navigation, engine monitoring etc. for systems employed "in the field".
+The target applcation assumes that a) there is no access to cloud servers, b) the system processes a disparate set of useful sized ANNs and c) there are not opportuities to store and reuse portions of the ANN in SRAM. 
+Therefore this work makes no assumptions regarding opportuities to store and reuse portions of the ANN in local SRAM, such as with CNNs or batch processing.
+These requirements dictate the need for DRAM for ANN storage and a sustained average bandwidth of 10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when accessing that DRAM.
+
+This work employs 3D integrated circuit technology and a proposed custom 3D-DRAM. By employing 3DIC technology, this work takes advantage of the reduced energy and area and increased connectivity and bandwidth to allow the DRAM to be employed efficiently.
+This work demonstrates the required average bandwidth exceeding  10's of \SI[per-mode=symbol]{}{\tera \bit \per \second} when run against various ANN fully and locally connected ANN layers.
+
+\iffalse
+ where there may not be opportuities to store and reuse portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
+
+This work also does not assume the ANN is specifically a CNN but a DNN where there may not be opportuities to store and reuse portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
 Under these circumstance, when these implemenations need to contantly load ANN parameters directly from main memory, the performance is constrained to the DRAM interface bandwidth. Therefore, the performance of SRAM-based ASIC/ASIP implementations are severely degraded to the point of being unacceptable.
 
-This work uses the DRAM as the primary processing storage and employs minimal SRAM for the processing of the AN.
-In additon, the work considers 3D integrated circuit technology and a custom 3D-DRAM. By employing 3DIC technology, this work takes advantage of the reduced energy and area and increased
-connectivity and bandwidth to allow the DRAM to be employed efficiently without the need for local SRAM.
-This work demonstrates that a 3DIC system based on a customized 3D-DRAM could be used in edge applications requiring at or near real-time performance for systems running multiple ANNs.
+This work uses the DRAM as the primary processing storage 
+\fi
+
+\iffalse
+a collection of testcases which  which is requred to support multiple disparate ANNs for at or near real-time performance.
+The bus efficiency is the main metric, and demonstrating sustained average bandwidth over a collection of fanins was the goal.
 
 It should be noted that this work does not design a custom 3D-DRAM but answers the question "if such a device were available, can we employ it within a useful ANN system".
+\fi
+
+
+
 
 
 \end{abstract}
@@ -682,8 +699,8 @@ The system is designed such that a sub-system, known as a sub-system column (SSC
 
 When the sub-system columns need to share data or neuron activations, the data is passed between SSCs using a mesh connected network-on-chip (NoC).
 
-A detailed flow diagram and block diagram of the sub-system column can be seen in figures \ref{fig:DetailedFlowDiagram} and \ref{fig:DetailedBlockDiagram} respectively.
-
+\bigskip
+A block diagram of the sub-system column can be seen in figure \ref{fig:DetailedFlowDiagram}. \iffalse and \ref{fig:DetailedBlockDiagram} respectively. \fi
 An overview of the various blocks and interconnects are given below:
 
 % ----------------------------------------------------------------------------------------------------
@@ -735,17 +752,25 @@ By ensuring the system stays within the 3D footprint ensures we can take advanta
 \subsection{Inter-Manager Communication}
 \label{ssec:Inter-Manager Communication}
 
-During configuration and/or computations, data must be transported between managers. This inter-manager communication is provided by an NoC.
-When computing an ANN across multiple processors, often neuron activation data must be shared. 
-\iffalse
-The SSC includes the DRAM port, the manager and the PE. 
-\fi
-An NoC within each management block communicates with each adjacent manager using a mesh network. 
+An Network-on-Chip(NoC) allows each management block to communicate with other managers.
+
 \iffalse
 This NoC has a forwarding table that can be reconfigured to provide more efficient routing for a given processing step.
 \fi
 
-A control and data flow diagram of the stack showing the 64 sub-system columns can be seen in figure \ref{fig:FlowDiagram}.
+During configuration and/or computations, data must be transported between managers. This inter-manager communication is provided by an NoC.
+When computing an ANN across multiple processors, often neuron activation data must be shared. 
+Each manager contains a NoC module and all the managers are connected in a mesh network.
+\iffalse
+The NoC architecture includes the ability to multicast where a NoC packet gets replicated as it traverses the mesh.
+\fi
+The NoC bandwidth was chosen to ensure the results can be multicast to any destination manager without an adverse affect on the pipelined instructions.
+The NoC bus width is 64 data bits plus control signals running at the system clock rate. Future testing may require additional NoC bandwidth.
+
+\iffalse
+The SSC includes the DRAM port, the manager and the PE. 
+\fi
+A control and data block diagram of the 3DIC stack showing the 64 sub-system columns can be seen in figure \ref{fig:FlowDiagram}.
 
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
@@ -754,7 +779,7 @@ A control and data flow diagram of the stack showing the 64 sub-system columns c
 \centerline{
 \mbox{\includegraphics[width=3.0in]{FlowDiagram.jpg}}
 }
-\caption{System Flow Diagram}
+\caption{System Diagram}
 \label{fig:FlowDiagram}
 \end{figure}
 
@@ -839,9 +864,8 @@ The instructions include information to control the following operations.
 \end{outline}
 
 
-Instructions contain sub-instructions called descriptors. These descriptors contain the information to control the various operations associated with the processing of a group of ANs.
-
-Each instruction contains information to operate on a group of ANs.
+Instructions contain sub-instructions called descriptors. 
+These descriptors contain the information to control the various operations associated with the processing of a group of ANs.
 The group size is related to the number of execution lanes which for the baseline system is 32. A group can be anywhere from 1-32. It should be said that unless the group size consistently approaches 32 the system performance will be poor.
 
 An instruction will typically have four descriptors:
@@ -854,8 +878,6 @@ An instruction will typically have four descriptors:
     \1 Result Write
 \end{outline}
 
-Note: An operand stream will be reffered to as an argument.
-
 The instruction is an n-tuple where the tuple elements are descriptors and the number of elements can vary based on the operation being performed. In figure \ref{fig:instructionTuple} is shown the format of a 4-tuple instruction which is used to perform an activation calculation for a group of neurons.
 
 \begin{figure}[!t]
@@ -866,7 +888,9 @@ The instruction is an n-tuple where the tuple elements are descriptors and the n
 \label{fig:instructionTuple}
 \end{figure}
 
+\iffalse
 Within a descriptor there are fields to describe the various options such as storage descriptor pointer, number of operands etc..
+\fi
 
 The fields within the descriptor are n-tuples where the first tuple element describes the descriptors operation followed by an m-tuple whose elements contain the options required for the operation.
 
@@ -881,79 +905,92 @@ The format of a 6-tuple descriptor can be seen in figure \ref{fig:descriptorTupl
 \label{fig:descriptorTuple}
 \end{figure}
 
-
+%%%% Feedback from Paul
+%%%%  % ----------------------------------------------------------------------------------------------------
+%%%%  \subsubsection{Accessing of Pre-synaptic AN states and connection weights}
+%%%%  \label{ssec:AccessingANStates}
+%%%%  
+%%%%  As was discussed previously, the ANN input and configuration is stored in main DRAM memory. A part of the research is determining how to store the ANN input and parameters in such a way to effectively make use of main DRAM bandwidth. To provide parameters for the up to 32 execution lanes within the PE, the AN parameters are stored in consecutive address locations. A single read to the DRAM accesses 128 words. This provides four weights for each of the 32 ANs being processed. 
+%%%%  These weights are sent to each lane of the PE over four cycles. 
+%%%%  By taking advantage of the multiple DRAM banks along with pre-fetching and buffering, this system is able to achieve relatively high efficiency of the available maximum bandwidth.
+%%%%  
+%%%%  Although AN parameters (weights) are stored in contiguous memory locations, providing the input state to a particular AN presents us with an interesting problem.
+%%%%  
+%%%%  Most often DNNs are represented by layers of ANs whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the ANN.
+%%%%  
+%%%%  The input can be represented in the form of a 2-D array of AN states. For the sake of generality, the input array elements are considered as AN states.
+%%%%  
+%%%%  Any given AN operates on a region of interest (ROI) within the layers input array.
+%%%%  
+%%%%  
+%%%%  \begin{figure}[!t]
+%%%%  \centerline{
+%%%%  \mbox{\includegraphics[width=2.75in]{roiStorage.jpg}}
+%%%%  }
+%%%%  \caption{ROI Storage}
+%%%%  \label{fig:roiStorage}
+%%%%  \end{figure}
+%%%%  
+%%%%  The various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each ANs ROI can be stored in contiguous memory locations. 
+%%%%  An input to a ANN layer in the form of a 2-D array along with the ROI of two ANs is shown in figure \ref{fig:roiStorage}. 
+%%%%  Assuming the input array is stored in row-major order, an ROI is drawn from disjoint sections of memory. 
+%%%%  These disjoint sections contain a number of AN states and the sections are separated by a gap of a number of memory addresses. When the parameters are accessed the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. 
+%%%%  \iffalse
+%%%%  Now this looks problematic, and it is, but in practice groups of ANs share a common ROI. So once we solve the problem of efficiently reading an ROI from the DRAM, that ROI can be shared across a group of ANs
+%%%%  \fi
+%%%%  
+%%%%  This work proposes a data structure to describe these ROI storage locations.  
+%%%%  The ROI is read efficiently by taking advantage of the DRAMs banks and pages.
+%%%%  
+%%%%  Although disparate groups of ANs may have a different start addresses for their ROI, a commonality is observed in the ROI section lengths and gaps. So for each AN group, the groups ROI starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
+%%%%  
+%%%%  This storage descriptor contains the start address of the ROI and a pointer to a section/gap descriptor. 
+%%%%  \iffalse
+%%%%  Many storage descriptors point to a common section/gap descriptor. This avoids having to have a unique section/gap descriptors for each AN group.
+%%%%  \fi
+%%%%  
+%%%%  Figure \ref{fig:storageDescriptor} shows the structure of the storage descriptor. The SOD, MOD and EOD are used to delineate each descriptor in memory and stand for start-of-descriptor, middle-of-descriptor and end-of-descriptor.
+%%%%  To limit the amount of storage required, a repeat operation can also be used to use a pair of section/gap fields multiple times.
+%%%%  
+%%%%  \begin{figure}[!t]
+%%%%  \centerline{
+%%%%  \mbox{\includegraphics[width=2.75in]{storageDesc.jpg}}
+%%%%  }
+%%%%  \caption{Storage Descriptor}
+%%%%  \label{fig:storageDescriptor}
+%%%%  \end{figure}
+%%%%  
+%%%%  
 
 % ----------------------------------------------------------------------------------------------------
-\subsubsection{Accessing of Pre-synaptic AN states and connection weights}
-\label{ssec:AccessingANStates}
-
-As was discussed previously, the ANN input and configuration is stored in main DRAM memory. A part of the research is determining how to store the ANN input and parameters in such a way to effectively make use of main DRAM bandwidth. To provide parameters for the up to 32 execution lanes within the PE, the AN parameters are stored in consecutive address locations. A single read to the DRAM accesses 128 words. This provides four weights for each of the 32 ANs being processed. 
-These weights are sent to each lane of the PE over four cycles. 
-By taking advantage of the multiple DRAM banks along with pre-fetching and buffering, this system is able to achieve relatively high efficiency of the available maximum bandwidth.
-
-Although AN parameters (weights) are stored in contiguous memory locations, providing the input state to a particular AN presents us with an interesting problem.
-
-Most often DNNs are represented by layers of ANs whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the ANN.
-
-The input can be represented in the form of a 2-D array of AN states. For the sake of generality, the input array elements are considered as AN states.
-
-Any given AN operates on a region of interest (ROI) within the layers input array.
-
-
-\begin{figure}[!t]
-\centerline{
-\mbox{\includegraphics[width=2.75in]{roiStorage.jpg}}
-}
-\caption{ROI Storage}
-\label{fig:roiStorage}
-\end{figure}
-
-The various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each ANs ROI can be stored in contiguous memory locations. 
-An input to a ANN layer in the form of a 2-D array along with the ROI of two ANs is shown in figure \ref{fig:roiStorage}. 
-Assuming the input array is stored in row-major order, an ROI is drawn from disjoint sections of memory. 
-These disjoint sections contain a number of AN states and the sections are separated by a gap of a number of memory addresses. When the parameters are accessed the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. 
-\iffalse
-Now this looks problematic, and it is, but in practice groups of ANs share a common ROI. So once we solve the problem of efficiently reading an ROI from the DRAM, that ROI can be shared across a group of ANs
-\fi
-
-This work proposes a data structure to describe these ROI storage locations.  
-The ROI is read efficiently by taking advantage of the DRAMs banks and pages.
-
-Although disparate groups of ANs may have a different start addresses for their ROI, a commonality is observed in the ROI section lengths and gaps. So for each AN group, the groups ROI starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
-
-This storage descriptor contains the start address of the ROI and a pointer to a section/gap descriptor. 
-\iffalse
-Many storage descriptors point to a common section/gap descriptor. This avoids having to have a unique section/gap descriptors for each AN group.
-\fi
-
-Figure \ref{fig:storageDescriptor} shows the structure of the storage descriptor. The SOD, MOD and EOD are used to delineate each descriptor in memory and stand for start-of-descriptor, middle-of-descriptor and end-of-descriptor.
-To limit the amount of storage required, a repeat operation can also be used to use a pair of section/gap fields multiple times.
-
-\begin{figure}[!t]
-\centerline{
-\mbox{\includegraphics[width=2.75in]{storageDesc.jpg}}
-}
-\caption{Storage Descriptor}
-\label{fig:storageDescriptor}
-\end{figure}
-
-% ----------------------------------------------------------------------------------------------------
-\subsubsection{Writing AN state results to memory}
+\subsubsection{Write Back to Memory}
 \label{ssec:writingANStates}
 
-When the PE has processed the group of ANs, the new AN states are sent back to the manager. The manager will store these back to DRAM most likely in the array format as described earlier.
+When the PE has processed the group of ANs, the new AN states are sent back to the manager for storing in the DRAM. 
+\iffalse
+The manager will store these back to DRAM most likely in the array format as described earlier.
+For any given operation, the system is writing far less than is being read. 
+\fi
 
-For any given operation, the system is writing far less than is being read. For example, the ROI and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
+\iffalse
+For example, the ROI and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
+\fi
+
 \iffalse
 Now that sounds like writing back has a very small impact on performance but with DRAMs that's not always true.
 \fi
 
-When the system writes the result of an operation back to memory, it is often writing a small portion of a DRAM page and the nature of the DRAM protocol means this is a very inefficient use of DRAM bandwidth. So although the amount of data written is small the performance impact cannot be ignored.
+\iffalse
+When the system writes the result of an operation back to memory, it is typically writing a small portion of a DRAM page and the nature of the DRAM protocol means this is a very inefficient use of DRAM bandwidth. 
+So although the amount of data written is small the performance impact cannot be ignored.
+\fi
 
-In addition, in many cases the results from a particular PE has to be provided not only to the PEs local manager but also to other managers. This is handled with the network-on-chip (NoC).
-
+In many cases the AN activations from a particular PE have to be replicated not only to the local manager but also to other managers. This is handled with the network-on-chip (NoC).
+\iffalse
 The result storage directives are communicated by using the same storage descriptor mechanism. When the result has to be replicated to other managers, the storage descriptors are sent, along with the data to all destination managers.
-
+\else
+When the result has to be replicated to other managers, the data is sent, along with storage information over the NoC to all destination managers.
+\fi
 
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
@@ -984,11 +1021,16 @@ In some cases, the manager uses the result from a previous instruction on a foll
 \subsubsection{Configuration}
 \label{ssec:peConfiguration}
 
-To configure the various PE operations, the manager extracts two pointers from the instruction and sends them in a configuration packet to the PE. These pointers index into a small local memory which provides a program counter (PC) to the function to be performed by the SIMD and a configuration entry for the operation to be performed by the stOp.
-
+To configure the PE operations, the manager extracts two pointers from the instruction and sends them in a configuration packet to the PE. These pointers index into a small local memory which provides a program counter (PC) to the function to be performed by the SIMD and a configuration entry for the operation to be performed by the stOp.
+ 
+\iffalse
 The PE is able to perform its operation concurrently on 32-lanes. 
 In cases when less than 32-lanes will be employed, the configuration packet also provides the number of lanes being processed.
 In addition, the length of the vector of operands is contained in the configuration packet.
+\fi
+
+\bigskip
+A detailed block diagram of the sub-system column (SSC) can be seen in figure \ref{fig:DetailedFlowDiagram}.
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DRAM Customizable <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
 \section{Suggested DRAM Customizations}
@@ -1000,6 +1042,7 @@ Typically a bank may contain of the order of a few thousand pages and a page may
 
 Once the page is open, the user accesses a portion of the requested page over a bus. With PCB based DRAMs the bus might vary from four to 16 bits wide, but with 3D DRAMs, such as HBM the bus might be up to 128 bits wide.
 
+\iffalse
 Figure \ref{fig:dramBlockDiagram} shows a block diagram of a typical DRAM.
 
 \begin{figure}[!t]
@@ -1012,6 +1055,8 @@ Figure \ref{fig:dramBlockDiagram} shows a block diagram of a typical DRAM.
 \center\caption{Typical DRAM Block Diagram}
 \label{fig:dramBlockDiagram}
 \end{figure}
+
+\fi
 
 \subsection{Expose more of the Page}
 \label{sec:exposeMorePage}
@@ -1039,10 +1084,13 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 When processing an ANN, to compute the activation of an individual AN involves reading the pre-synaptic AN activation's and the weights of the connections between the pre-synaptic ANs and the AN being processed.
 \fi
 For every group of ANs processed, the state of the group of ANs is written back to memory.
+
+\iffalse
 Because of the high average pre-synaptic fanin, the ratio of reading AN states and connection weights to writing back the AN states is high, 100's or 1000's to one. 
 This results in the system often having to write a portion of a page back to memory. 
+\fi
 Typically this would require a read/modify/write of a DRAM cacheline. In the case writing back 32 AN states into a 4096 bit cacheline means the read/modify/write is inefficient.
-To inimize the inefficiency, a customization to the DRAM is the addition of a write data mask to the DRAM write path eliminating the additional read.
+To minimize the inefficiency, a customization to the DRAM is the addition of a write data mask to the DRAM write path eliminating the additional read.
 
 
 % #######################################################################################################################################
@@ -1060,9 +1108,13 @@ To inimize the inefficiency, a customization to the DRAM is the addition of a wr
 \centerline{
 \mbox{\includegraphics[width=2.75in]{DetailedFlowDiagram.jpg}}
 }
-\center\caption{Sub-System Column (SSC) Detailed Flow Diagram}
+\center\caption{Sub-System Column (SSC) Block Diagram}
 \label{fig:DetailedFlowDiagram}
 \end{figure}
+
+\fi
+
+\iffalse
 
 \begin{figure*}[!t]
 % the [] contains position info e.g. [!t] means here
@@ -1211,9 +1263,10 @@ The objectives of this work was to design a system able to accelerate ANNs in cu
 \iffalse
 This means systems that are not designed to process multiple requests of essentially the same operation.
 \fi
-One assumption is that these systems implement disparate ANNs performing various functions. These assumptions imply that the system is not able to take advantage of local SRAM when processing the ANN.
-Another assumption is that the target systems will be space and power constrained.
-Finally, this work assumes that implementing multiple disparate ANNs cannot be implemented with SRAM as the main processing memory.
+Given that these systems cannot effectively utilize SRAM, the main objective was to demonstrate a system that can operate out of 3D-DRAM efficiently.
+
+The system decodes instructions, sends configuration to various functions, pre-fetchs and pipelines data.
+This parallelism allows the system to constantly stream data whilst results from previous operations are being operated on.
 
 To demonstrate such a system, this work targeted 3DIC technology including 3D-DRAM. This work proposes that if a system can be purely in 3DIC, the system can take advantage of the benefits
 of 3DIC which includes reduced energy, area and high bandwidth.
@@ -1229,8 +1282,8 @@ The primary control and datapaths of the system have been simulated in a system 
 \iffalse
 It has been synthesized using a 65nm technology node.
 \fi
-The design has been coded targeting a frequency of $>$\SI{500}{\mega\hertz}. 
-Although timing closure and place and route is ongoing, because the system has been designed throughout to meet the timing target, minimal changes are expected to meet timing.
+%The design has been coded . 
+Initial synthesis timing closure at a frequency of \SI{500}{\mega\hertz} is complete.
 
 \iffalse
 As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
@@ -1260,21 +1313,12 @@ As mention previously \eqref{eq:averageBandwidth}, to process multiple useful si
 %%%%%  \end{center}
 %%%%\end{table}
 
-The Manager and PE have been place and routed as shown in figure \ref{fig:Manager and PE Die layouts}. 
-\iffalse
-Although the design is yet to close timing, the 
-\else
-The
-\fi
-parasitics were extracted from these layouts and simulated against a group of operations. The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. These were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} and represent a pre-synaptic fanin of 225 and 4000 respectively.
-The simulation generated an activity file which was then used by the Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates.
-The DRAM accesses were captured and DRAM energy dissipation calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from \cite{liu2012compact}.
-These estimates were used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz} which are shown in table \ref{tab:Simulation-based estimates}.
-
+Initial place and route for the Manager and PE are shown in figure \ref{fig:Manager and PE Die layouts}. 
+The area contribution of each block within the manager and PE can be seen in table \ref{tab:Simulation-based estimates}.
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
   \captionsetup{justification=centering, skip=3pt}
-  \caption{Simulation-based estimates}
+  \caption{Area Contribution}
   \vspace{3pt}
   \label{tab:Simulation-based estimates}
   \centering
@@ -1283,15 +1327,95 @@ These estimates were used to estimate power dissipation for operating frequencie
   \begin{subtable}{0.5\textwidth}
     \centering
     \begin{adjustbox}{width=0.75\textwidth}
+      \begin{tabular}{ccc}
+        \toprule
+                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                         &          &                                         \\  %\cline{1-1}
+            Block        &Instances &Percentage                               \\  %\cline{1-1}
+            Name         &          &Contribution                             \\  %\cline{1-1}
+        \hline  % instead of \midrule %midrule doesnt overlap with column lines
+  Memory Controller      & 1&\SI[per-mode=symbol]{15.0}{\percent}  \\ 
+        NoC              & 1&\SI[per-mode=symbol]{ 7.1}{\percent}  \\
+        Read Control     & 2&\SI[per-mode=symbol]{53.1}{\percent}  \\
+        Write Control    & 1&\SI[per-mode=symbol]{ 7.4}{\percent}  \\
+      Instruction Proc   & 1&\SI[per-mode=symbol]{ 1.6}{\percent}  \\
+      Return Data Proc   & 1&\SI[per-mode=symbol]{ 1.6}{\percent}  \\
+        Misc             & 1&\SI[per-mode=symbol]{14.2}{\percent}  \\
+        \bottomrule
+      \end{tabular}
+    \end{adjustbox}
+    \vspace{3pt}
+    \captionsetup{justification=centering, skip=10pt}
+    \caption{Manager}
+    \label{tab:Manager Area Contribution}
+  \end{subtable}
+  \bigskip
+  \begin{subtable}{0.5\textwidth}
+    \centering
+    \begin{adjustbox}{width=0.85\textwidth}
+      \begin{tabular}{ccc}
+        \toprule
+                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                         &          &                                          \\  %\cline{1-1}
+            Block        &Instances & Percentage                               \\  %\cline{1-1}
+            Name         &          & Contribution                             \\  %\cline{1-1}
+        \hline  % instead of \midrule %midrule doesnt overlap with column lines
+ Local Memory + Control  & 1&\SI[per-mode=symbol]{17.7}{\percent}  \\ 
+     Operation Decode    & 1&\SI[per-mode=symbol]{ 3.4}{\percent}  \\
+   Return Data Control   & 1&\SI[per-mode=symbol]{ 1.5}{\percent}  \\
+    SIMD Control         & 1&\SI[per-mode=symbol]{ 8.1}{\percent}  \\
+        SIMD             & 1&\SI[per-mode=symbol]{19.3}{\percent}  \\
+  Streaming Operations   &32&\SI[per-mode=symbol]{43.3}{\percent}  \\
+  Streaming Op Control   & 1&\SI[per-mode=symbol]{ 2.1}{\percent}  \\
+        Misc             & 1&\SI[per-mode=symbol]{ 4.6}{\percent}  \\
+        \bottomrule
+      \end{tabular}
+    \end{adjustbox}
+    \vspace{3pt}
+    \captionsetup{justification=centering, skip=10pt}
+    \caption{PE}
+    \label{tab:PE Area Contribution}
+  \end{subtable}
+  \end{table}
+
+
+\iffalse
+Although the design is yet to close timing, the 
+\else
+The
+\fi
+parasitics were extracted from these layouts and simulated against a group of operations. 
+The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. 
+These testcases were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} and represent a pre-synaptic fanin of 225 and 4000 respectively.
+Additional testcases were employed representng a pre-synaptic fanins of 294, 300, 500 and 1000. Both locally connected (CONV) and fully connected (FC) type fanins were tested.
+The results sohwing sustained average bandiwtdh can be seen in table \ref{tab:Bandwidth Estimates}.
+
+The simulation generated an activity file which was then used by the Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates.
+The DRAM accesses were captured and DRAM energy dissipation calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from \cite{liu2012compact}.
+These estimates were used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz}.
+The estimated overall power along with per block contribution are shown in table \ref{tab:Simulation-based estimates}.
+
+\begin{table}[h]
+%  \captionsetup{justification=centering, skip=-5pt}
+  \captionsetup{justification=centering, skip=3pt}
+  \caption{Power Estimates}
+  \vspace{3pt}
+  \label{tab:Simulation-based estimates}
+  \centering
+    % [lr] ~ left align col 0 and right align col 1
+    % e.g. 4 columns could be lccr
+  \begin{subtable}{0.5\textwidth}
+    \centering
+    \begin{adjustbox}{width=0.85\textwidth}
       \begin{tabular}{cccc}
         \toprule
                             % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
-                         &                       &          &                                          \\  %\cline{1-1}
-            Technology   & Clock                 & Expected &  Bus                                     \\  %\cline{1-1}
-                Node     & Frequency             &  Power   &  Efficiency                              \\  %\cline{1-1}
+                         &                       & Total    &                                          \\  %\cline{1-1}
+            Technology   & Clock                 & Expected &                                          \\  %\cline{1-1}
+                Node     & Frequency             &  Power   &  Testcase                                \\  %\cline{1-1}
         \hline  % instead of \midrule %midrule doesnt overlap with column lines
-                   28nm  & \SI{500}{\mega\hertz} &   53W    &  \SI[per-mode=symbol]{\sim 70}{\percent} \\ %\cline{2-2}
-                   28nm  & \SI{700}{\mega\hertz} &   73W    &  \SI[per-mode=symbol]{\sim 70}{\percent} \\ %\cline{2-2}
+                   28nm  & \SI{500}{\mega\hertz} &   48W    &  CONV-294\iffalse \SI[per-mode=symbol]{\sim 70}{\percent} \fi \\ %\cline{2-2}
+                   28nm  & \SI{700}{\mega\hertz} &   65W    &  CONV-294\iffalse \SI[per-mode=symbol]{\sim 70}{\percent} \fi \\ %\cline{2-2}
         \bottomrule
       \end{tabular}
     \end{adjustbox}
@@ -1303,33 +1427,60 @@ These estimates were used to estimate power dissipation for operating frequencie
   \bigskip
   \begin{subtable}{0.5\textwidth}
     \centering
-    \begin{adjustbox}{width=0.95\textwidth}
-      \begin{tabular}{cccc}
+    \begin{adjustbox}{width=0.55\textwidth}
+      \begin{tabular}{cc}
         \toprule
                             % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
-                                                       & Downstream                              &                                        \multicolumn{2}{c}{Average Downstream Bandwidth}                      \\  %\cline{1-1}
-                                                       & Stack                                   &                                        \multicolumn{2}{c}{At Frequency}                                      \\  %\cline{1-1}
-                   Test                                & Bus Efficiency                          &       \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\  %\cline{1-1}
-        \hline  % instead of \midrule %midrule doesnt overlap with column lines                                       
-                   CONV2 \cite{krizhevsky2012imagenet} &\SI[per-mode=symbol]{\sim 65}{\percent}  & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-294                            &\SI[per-mode=symbol]{\sim 67}{\percent}  & \SI[per-mode=symbol]{\sim 44}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 61}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-300                            &\SI[per-mode=symbol]{\sim 73}{\percent}  & \SI[per-mode=symbol]{\sim 48}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 67}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-500                            &\SI[per-mode=symbol]{\sim 82}{\percent}  & \SI[per-mode=symbol]{\sim 54}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 75}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-1000                           &\SI[per-mode=symbol]{\sim 89}{\percent}  & \SI[per-mode=symbol]{\sim 58}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 82}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-350                              &\SI[per-mode=symbol]{\sim 78}{\percent}  & \SI[per-mode=symbol]{\sim 51}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 72}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-500                              &\SI[per-mode=symbol]{\sim 84}{\percent}  & \SI[per-mode=symbol]{\sim 55}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 77}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-1000                             &\SI[per-mode=symbol]{\sim 91}{\percent}  & \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 83}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-7 \cite{krizhevsky2012imagenet}  &\SI[per-mode=symbol]{\sim 94}{\percent}  & \SI[per-mode=symbol]{\sim 62}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 86}{\tera\bit\per\second} \\ %\cline{2-2}
+                         &                                          \\  %\cline{1-1}
+            Block        & Percentage                               \\  %\cline{1-1}
+            Name         & Contribution                             \\  %\cline{1-1}
+        \hline  % instead of \midrule %midrule doesnt overlap with column lines
+                Manager  & \SI[per-mode=symbol]{61.1}{\percent}  \\ 
+                     PE  & \SI[per-mode=symbol]{31.6}{\percent}  \\
+                   DRAM  & \SI[per-mode=symbol]{ 3.4}{\percent}  \\
+              DRAM TSVs  & \SI[per-mode=symbol]{ 2.4}{\percent}  \\
+         Stack Bus TSVs  & \SI[per-mode=symbol]{ 1.6}{\percent}  \\
         \bottomrule
       \end{tabular}
     \end{adjustbox}
     \vspace{3pt}
     \captionsetup{justification=centering, skip=10pt}
-    \caption{Bus Efficiency}
-    \label{tab:Bus Efficiency}
+    \caption{Power Contribution}
+    \label{tab:Power Dissipation}
   \end{subtable}
   \end{table}
 
+As bus efficiency is the main metric, table \ref{tab:Bandwidth Estimates} shows sustained average bandwidth over the fanin testcases.
+
+\begin{table}[h]
+%  \captionsetup{justification=centering, skip=-5pt}
+  \captionsetup{justification=centering, skip=3pt}
+  \caption{Fanin Bandwidth Tests}
+  \vspace{3pt}
+  \label{tab:Bandwidth Estimates}
+  \centering
+    \begin{adjustbox}{width=0.37\textwidth}
+      \begin{tabular}{ccc}
+        \toprule
+                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                                                       & \iffalse Downstream                              &\fi                                        \multicolumn{2}{c}{Average Bandwidth}                      \\  %\cline{1-1}
+                                                       & \iffalse Stack                                   &\fi                                        \multicolumn{2}{c}{At Frequency}                                      \\  %\cline{1-1}
+                   Test                                & \iffalse Bus Efficiency                          &\fi       \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\  %\cline{1-1}
+        \hline  % instead of \midrule %midrule doesnt overlap with column lines                                       
+                   CONV2 \cite{krizhevsky2012imagenet} &\iffalse \SI[per-mode=symbol]{\sim 65}{\percent}  &\fi \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-294                            &\iffalse \SI[per-mode=symbol]{\sim 67}{\percent}  &\fi \SI[per-mode=symbol]{\sim 44}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 61}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-300                            &\iffalse \SI[per-mode=symbol]{\sim 73}{\percent}  &\fi \SI[per-mode=symbol]{\sim 48}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 67}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-500                            &\iffalse \SI[per-mode=symbol]{\sim 82}{\percent}  &\fi \SI[per-mode=symbol]{\sim 54}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 75}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-1000                           &\iffalse \SI[per-mode=symbol]{\sim 89}{\percent}  &\fi \SI[per-mode=symbol]{\sim 58}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 82}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-350                              &\iffalse \SI[per-mode=symbol]{\sim 78}{\percent}  &\fi \SI[per-mode=symbol]{\sim 51}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 72}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-500                              &\iffalse \SI[per-mode=symbol]{\sim 84}{\percent}  &\fi \SI[per-mode=symbol]{\sim 55}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 77}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-1000                             &\iffalse \SI[per-mode=symbol]{\sim 91}{\percent}  &\fi \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 83}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-7 \cite{krizhevsky2012imagenet}  &\iffalse \SI[per-mode=symbol]{\sim 94}{\percent}  &\fi \SI[per-mode=symbol]{\sim 62}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 86}{\tera\bit\per\second} \\ %\cline{2-2}
+        \bottomrule
+      \end{tabular}
+    \end{adjustbox}
+    \vspace{3pt}
+  \end{table}
 
 %%%%\begin{table}[h]
 %%%%%  \captionsetup{justification=centering, skip=-5pt}
