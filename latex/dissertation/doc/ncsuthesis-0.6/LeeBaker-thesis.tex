@@ -4,6 +4,14 @@
                ]{ncsuthesis}
 
 %%----------------------------------------------------------------------------%%
+%%------------------------------ Bugs ----------------------------------------%%
+
+% Dont put \center\caption, cause missing \item error
+% use \caption only
+
+%%----------------------------------------------------------------------------%%
+
+%%----------------------------------------------------------------------------%%
 %%------------------------------ Import Packages -----------------------------%%
 %%----------------------------------------------------------------------------%%
 
@@ -14,6 +22,8 @@
 \usepackage{lipsum}    % filler text
 % LEE \usepackage{subfig}    % composite figures
 \usepackage{outlines} % for bullets
+\usepackage{enumitem}
+\usepackage{adjustbox}
 
 \usepackage[%
     font={small,sf},
@@ -27,6 +37,7 @@
 
 \usepackage{url}
 
+\usepackage{enumitem}
 
 \usepackage{geometry} 
 \usepackage{units}
@@ -34,12 +45,22 @@
 \usepackage{pst-plot}
 \usepackage{pgfplots}
 
+\usepackage{acro}
+
 % for quotes
 \usepackage[utf8]{inputenc}
 \usepackage{quotchap}
 \usepackage{epigraph}
 \usepackage{quotchap}
 \usepackage{csquotes}
+
+% Highlighting
+\usepackage{color,soul}
+\newcommand{\hlc}[2][yellow]{{%
+    \colorlet{foo}{#1}%
+    \sethlcolor{foo}\hl{#2}}%
+}
+
 
 % help reduce whitespace
 %\usepackage{savetrees}
@@ -189,7 +210,7 @@
 %%%%% Hack to allow more levels in outline
 %%%%%%%%%%
 %\setcounter{secnumdepth}{5}
-%\setcounter{tocdepth}{5} %may violate ETD
+\setcounter{tocdepth}{5} %may violate ETD
 %Usage http://pleasemakeanote.blogspot.com/2010/06/how-to-activate-subsubsubsection-in.html
 %\section{} % level 1
 %\subsection{} % level 2
@@ -297,7 +318,7 @@
 %%  Note: To break the title onto multiple lines, use \break instead of \\.
 %\thesistitle{A North Carolina State University Sample \LaTeX{} Thesis \break 
 %with a Title So Long it Needs a Line Break}
-\thesistitle{Design of a 3DIC system to aid in the acceleration of systems that \break employ multiple instances of artificial neural networks}
+\thesistitle{Design of a 3DIC system to aid in the acceleration of edge systems that \break employ multiple instances of disparate artificial neural networks}
 
 %% Degree year.  Necessary if your degree year doesn't equal the current year.
 %\degreeyear{1995}
@@ -333,7 +354,7 @@
 \newcommand{\mum}{\ensuremath{{\mu}\text{m}}}
 
 %This makes it so that you can add short paths in your .tex by including the folders where you store your images in the search path
-\graphicspath{{./Chapter-1/figs/}{./Chapter-2/figs/}{./Chapter-3/figs/}{./Chapter-4/figs/}{./Chapter-5/figs/}{./Chapter-6/figs/}}
+\graphicspath{{./Chapter-1/figs/}{./Chapter-2/figs/}{./Chapter-3/figs/}{./Chapter-4/figs/}{./Chapter-5/figs/}{./Chapter-6/figs/}{./Chapter-7/figs/}{../../../../3DSystem/DOC/wikiImages/}{./wikiImages/}{./eps/}}
 
 
 %%----------------------------------------------------------------------------%%
@@ -411,6 +432,7 @@
 \renewcommand{\footrulewidth}{0pt}
 }
 
+\include{abbrev}
                       
 \begin{document}
 \pagestyle{plain}
@@ -433,6 +455,7 @@
 \include{Chapter-4/Chapter-4}
 \include{Chapter-5/Chapter-5}
 \include{Chapter-6/Chapter-6}
+\include{Chapter-7/Chapter-7}
 %\restoregeometry
 
 
