@@ -519,7 +519,7 @@ Therefore this work makes no assumptions regarding opportuities to store and reu
 These requirements dictate the need for DRAM for ANN storage and a sustained average bandwidth of 10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when accessing that DRAM.
 
 This work employs 3D integrated circuit technology and a proposed custom 3D-DRAM. By employing 3DIC technology, this work takes advantage of the reduced energy and area and increased connectivity and bandwidth to allow the DRAM to be employed efficiently.
-This work demonstrates the required average bandwidth exceeding  10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when run against various fully and locally connected ANN layers providing a potentially 10-100X performance improvement over existing ASIC/ASIPs or GPUs.
+This work demonstrates the required average bandwidth exceeding  10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when run against various fully and locally connected ANN layers providing a potentially 10-50X performance improvement over existing ASIC/ASIPs or GPUs.
 
 \iffalse
  where there may not be opportuities to store and reuse portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
@@ -1615,9 +1615,9 @@ There is no doubt existing CNN accelerators that take advantage of batch process
 
 This work demonstrates a 3D-DRAM system that 
 \iffalse
-at the surface has a relatively low FLOPs, but considering the target applcation is memory bound this work is potentially 10-100X better that existing ASIC/ASIPs or GPUs.
+at the surface has a relatively low FLOPs, but considering the target applcation is memory bound this work potentially provides a 10-50X improvement over existing ASIC/ASIPs or GPUs.
 \else
-given the target application, provides a potentially 10-100X performance improvement over existing ASIC/ASIPs or GPUs.
+given the target application, provides a potentially 10-50X performance improvement over existing ASIC/ASIPs or GPUs.
 \fi
 
 \section{Acknowledhements}
