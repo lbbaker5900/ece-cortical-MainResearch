@@ -1362,13 +1362,13 @@ The area contribution of each block within the Manager and PE can be seen in tab
             Block        &Instances & Percentage                               \\  %\cline{1-1}
             Name         &          & Contribution                             \\  %\cline{1-1}
         \hline  % instead of \midrule %midrule doesnt overlap with column lines
- Local Memory + Control  & 1&\SI[per-mode=symbol]{17.7}{\percent}  \\ 
      Operation Decode    & 1&\SI[per-mode=symbol]{ 3.4}{\percent}  \\
    Return Data Control   & 1&\SI[per-mode=symbol]{ 1.5}{\percent}  \\
     SIMD Control         & 1&\SI[per-mode=symbol]{ 8.1}{\percent}  \\
         SIMD             & 1&\SI[per-mode=symbol]{19.3}{\percent}  \\
   Streaming Operations   &32&\SI[per-mode=symbol]{43.3}{\percent}  \\
   Streaming Op Control   & 1&\SI[per-mode=symbol]{ 2.1}{\percent}  \\
+ Local Memory + Control\footnote{A small amount of scratchpad memory was provided between stOps and SIMD but in practice could be much smaller. It is not used in any of the fanin tests.}  & 1&\SI[per-mode=symbol]{17.7}{\percent}  \\ 
         Misc             & 1&\SI[per-mode=symbol]{ 4.6}{\percent}  \\
         \bottomrule
       \end{tabular}
@@ -1416,8 +1416,8 @@ The estimated overall power along with per block contribution are shown in table
             Technology   & Clock                 & Expected &                                          \\  %\cline{1-1}
                 Node     & Frequency             &  Power   &  Testcase                                \\  %\cline{1-1}
         \hline  % instead of \midrule %midrule doesnt overlap with column lines
-                   28nm  & \SI{500}{\mega\hertz} &   48W    &  CONV-294\iffalse \SI[per-mode=symbol]{\sim 70}{\percent} \fi \\ %\cline{2-2}
-                   28nm  & \SI{700}{\mega\hertz} &   65W    &  CONV-294\iffalse \SI[per-mode=symbol]{\sim 70}{\percent} \fi \\ %\cline{2-2}
+                   28nm  & \SI{500}{\mega\hertz} &   64W    &  CONV-294\iffalse \SI[per-mode=symbol]{\sim 70}{\percent} \fi \\ %\cline{2-2}
+                   28nm  & \SI{700}{\mega\hertz} &   88W    &  CONV-294\iffalse \SI[per-mode=symbol]{\sim 70}{\percent} \fi \\ %\cline{2-2}
         \bottomrule
       \end{tabular}
     \end{adjustbox}
@@ -1437,11 +1437,11 @@ The estimated overall power along with per block contribution are shown in table
             Block        & Percentage                               \\  %\cline{1-1}
             Name         & Contribution                             \\  %\cline{1-1}
         \hline  % instead of \midrule %midrule doesnt overlap with column lines
-                Manager  & \SI[per-mode=symbol]{61.1}{\percent}  \\ 
-                     PE  & \SI[per-mode=symbol]{31.6}{\percent}  \\
-                   DRAM  & \SI[per-mode=symbol]{ 3.4}{\percent}  \\
-              DRAM TSVs  & \SI[per-mode=symbol]{ 2.4}{\percent}  \\
-         Stack Bus TSVs  & \SI[per-mode=symbol]{ 1.6}{\percent}  \\
+                Manager  & \SI[per-mode=symbol]{66.6}{\percent}  \\ 
+                     PE  & \SI[per-mode=symbol]{28.0}{\percent}  \\
+                   DRAM  & \SI[per-mode=symbol]{ 2.5}{\percent}  \\
+              DRAM TSVs  & \SI[per-mode=symbol]{ 1.8}{\percent}  \\
+         Stack Bus TSVs  & \SI[per-mode=symbol]{ 1.2}{\percent}  \\
         \bottomrule
       \end{tabular}
     \end{adjustbox}
