@@ -519,7 +519,7 @@ Therefore this work makes no assumptions regarding opportuities to store and reu
 These requirements dictate the need for DRAM for ANN storage and a sustained average bandwidth of 10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when accessing that DRAM.
 
 This work employs 3D integrated circuit technology and a proposed custom 3D-DRAM. By employing 3DIC technology, this work takes advantage of the reduced energy and area and increased connectivity and bandwidth to allow the DRAM to be employed efficiently.
-This work demonstrates the required average bandwidth exceeding  10's of \SI[per-mode=symbol]{}{\tera \bit \per \second} when run against various ANN fully and locally connected ANN layers.
+This work demonstrates the required average bandwidth exceeding  10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when run against various fully and locally connected ANN layers providing a potentially 10-100X performance improvement over existing ASIC/ASIPs or GPUs.
 
 \iffalse
  where there may not be opportuities to store and reuse portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
@@ -630,7 +630,7 @@ Although not optimized for specific ANNs, such as CNNs, this work demonstrates t
 % ----------------------------------------------------------------------------------------------------
 
 The primary objectives of this work was to a) consider systems that are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using
-local SRAM to store ANN parameters or the ANN input, b) acknowedge that DRAM is required for storage of ANN parameters, c) that many edge devices will likely apply many disparate ANNs
+local SRAM to store ANN parameters or the ANN input, b) acknowledge that DRAM is required for storage of ANN parameters, c) that many edge devices will likely apply many disparate ANNs
 to perform various system functions, and d) it is assumed that many edge applications will have space and power limitations.
 
 \iffalse
@@ -755,7 +755,7 @@ By ensuring the system stays within the 3D footprint ensures we can take advanta
 \subsection{Inter-Manager Communication}
 \label{ssec:Inter-Manager Communication}
 
-An Network-on-Chip(NoC) allows each management block to communicate with other managers.
+A Network-on-Chip (NoC) allows each management block to communicate with other managers.
 
 \iffalse
 This NoC has a forwarding table that can be reconfigured to provide more efficient routing for a given processing step.
@@ -1265,7 +1265,7 @@ The objectives of this work was to design a system able to accelerate ANNs in cu
 \iffalse
 This means systems that are not designed to process multiple requests of essentially the same operation.
 \fi
-Given that these systems cannot effectively utilize SRAM, the main objective was to demonstrate a system that can operate out of 3D-DRAM efficiently.
+Given that these systems cannot effectively utilize SRAM, the main objective was to demonstrate a system that can operate efficiently using 3D-DRAM.
 
 The system decodes instructions, sends configuration to various functions, pre-fetchs and pipelines data.
 This parallelism allows the system to constantly stream data whilst results from previous operations are being operated on.
@@ -1316,13 +1316,13 @@ As mention previously \eqref{eq:averageBandwidth}, to process multiple useful si
 %%%%\end{table}
 
 Initial place and route for the Manager and PE are shown in figure \ref{fig:Manager and PE Die layouts}. 
-The area contribution of each block within the manager and PE can be seen in table \ref{tab:Simulation-based estimates}.
+The area contribution of each block within the Manager and PE can be seen in table \ref{tab:Area contribution}.
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
   \captionsetup{justification=centering, skip=3pt}
   \caption{Area Contribution}
   \vspace{3pt}
-  \label{tab:Simulation-based estimates}
+  \label{tab:Area contribution}
   \centering
     % [lr] ~ left align col 0 and right align col 1
     % e.g. 4 columns could be lccr
@@ -1389,8 +1389,8 @@ The
 parasitics were extracted from these layouts and simulated against a group of operations. 
 The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. 
 These testcases were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} and represent a pre-synaptic fanin of 225 and 4000 respectively.
-Additional testcases were employed representng a pre-synaptic fanins of 294, 300, 500 and 1000. Both locally connected (CONV) and fully connected (FC) type fanins were tested.
-The results sohwing sustained average bandiwtdh can be seen in table \ref{tab:Bandwidth Estimates}.
+Additional testcases were employed representing pre-synaptic fanins of 294, 300, 500 and 1000. Both locally connected (CONV) and fully connected (FC) type fanins were tested.
+The results showing sustained average bandwidth can be seen in table \ref{tab:Bandwidth Estimates}.
 
 The simulation generated an activity file which was then used by the Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates.
 The DRAM accesses were captured and DRAM energy dissipation calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from \cite{liu2012compact}.
