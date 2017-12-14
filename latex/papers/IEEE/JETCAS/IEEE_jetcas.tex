@@ -514,17 +514,17 @@ These implementations can be shown to be effective with specific ANN architectur
 In addition, to achieve a high performance, these rely on processing a batch of inputs, such as processing a batch of images or voice recordings using the same ANN.
 
 The work in this paper considers "edge" applications which perform multiple complex functions, such as navigation, engine monitoring etc. for systems employed "in the field".
-The target applcation assumes that a) there is no access to cloud servers, b) the system processes a disparate set of useful sized ANNs and c) there are not opportuities to store and reuse portions of the ANN in SRAM. 
-Therefore this work makes no assumptions regarding opportuities to store and reuse portions of the ANN in local SRAM, such as with CNNs or batch processing.
+The target application assumes that a) there is no access to cloud servers, b) the system processes a disparate set of useful sized ANNs and c) there are not opportunities to store and reuse portions of the ANN in SRAM. 
+Therefore this work makes no assumptions regarding opportunities to store and reuse portions of the ANN in local SRAM, such as with CNNs or batch processing.
 These requirements dictate the need for DRAM for ANN storage and a sustained average bandwidth of 10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when accessing that DRAM.
 
 This work employs 3D integrated circuit technology and a proposed custom 3D-DRAM. By employing 3DIC technology, this work takes advantage of the reduced energy and area and increased connectivity and bandwidth to allow the DRAM to be employed efficiently.
 This work demonstrates the required average bandwidth exceeding  10's of \SI[detect-weight,per-mode=symbol]{}{\tera \bit \per \second} when run against various fully and locally connected ANN layers providing a potentially 10-50X performance improvement over existing ASIC/ASIPs or GPUs.
 
 \iffalse
- where there may not be opportuities to store and reuse portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
+ where there may not be opportunities to store and reuse portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
 
-This work also does not assume the ANN is specifically a CNN but a DNN where there may not be opportuities to store and reuse portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
+This work also does not assume the ANN is specifically a CNN but a DNN where there may not be opportunities to store and reuse portions of the ANN in SRAM. A further assumption is that the target edge devices do not include opportunities to perform batch processing.
 Under these circumstance, when these implemenations need to contantly load ANN parameters directly from main memory, the performance is constrained to the DRAM interface bandwidth. Therefore, the performance of SRAM-based ASIC/ASIP implementations are severely degraded to the point of being unacceptable.
 
 This work uses the DRAM as the primary processing storage 
