@@ -109,14 +109,14 @@ The Rate-based neuron model is characterized by:
   \includegraphics[width=0.85\textwidth]{SpikeBasedModel}
   \captionsetup{justification=centering, skip=5pt}
   \caption[Spiking Model]{Spiking Model}
-  \label{fig:simpleNetwork}
+  \label{fig:Spiking Model}
 \end{subfigure}%
 \begin{subfigure}{.4\textwidth}
   \centering
   \includegraphics[width=0.7\textwidth]{RatebasedModel}
   \captionsetup{justification=centering, skip=5pt}
   \caption{Rate-Based Model}
-  \label{fig:cellContents}
+  \label{fig:Rate Based Model}
 \end{subfigure}
 \begin{subfigure}{.9\textwidth}
   \centering
@@ -250,6 +250,18 @@ using back-propagation, most of the effective applications of artificial neural 
 Our research will focus on these rate-based models which we will now refer to as \ac{ann}s.
 \fi
 
+This work does not address the training of these rate-based \acp{ann}, the training is mostly performed offline. This work is addressing the inference of \acp{ann}.
+During inference, the most computationally intensive operation is the multiply accumulate associated with the \ac{an} activation, which can involve hundreds or thousands of multiply-accumulates.
+The \ac{an} activation calculation for the rate-based \ac{an} in figure \ref{fig:Rate Based Model} is shown in equation \eqref{eq:activation function}.
+
+\begin{alignat}{2} 
+\label{eq:activation function}
+\text{\ac{an} Activation }\hspace{4mm} A & = f\bigg(\sum_{n=0}^{C_n}W_n \cdot A_n\bigg)  \\
+              &\mathbf{C_p} \text{ is the number of pre-synaptic connections} \notag\\
+              &\mathbf{W_p} \text{ is the weight of a connection} \notag\\
+              &\mathbf{A_p} \text{ is the activation value of the pre-synaptic neuron} \notag \\
+\text{and }   &f(x) \text{ is the activation function such as ReLu } \notag 
+\end{alignat}
 
 \section[The Problem]{The Problem}
 \label{sec:The Problem}
@@ -272,14 +284,15 @@ As a metric, this work asumes that any useful \ac{dnn} will employ 100's of thou
 Assuming an \ac{ann} with 250K neurons and an average fanin to each \ac{an} of 2000, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{10}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{16}{\tera \bit \per \second} (see equation \ref{eq:averageBandwidth}).
 
 % {2} means 2 columns
-\begin{alignat}{2} \label{eq:averageBandwidth}
-\text{Average }\text{Bandwidth} & = \sum_{\mathbf{n}=0}^{\bar{\mathbf{N_n}}}\big(\frac{\Bar{\mathbf{N_a}}\cdot \Bar{\mathbf{C_p}} \cdot \bar{\mathbf{b_w}}}{\bar{\mathbf{T_p}}} \big) \notag  \\
-& = \sum_{\mathbf{n}=0}^{9}\big(\frac{\num{250d4} \cdot \num{2d3} \cdot 32}{\num{10d-3}} \big) \notag \\
-& = \SI[per-mode=symbol]{16}{\tera\bit\per\second} \\
-\text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
-              &\mathbf{N}_a \text{ is the average number of \ac{an}s} \notag\\
-              &\mathbf{C_p} \text{ is the average number of connections} \notag\\
-\text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
+\begin{alignat}{2} 
+  \label{eq:averageBandwidth}
+  \text{Average }\text{Bandwidth} & = \sum_{\mathbf{n}=0}^{\bar{\mathbf{N_n}}}\big(\frac{\Bar{\mathbf{N_a}}\cdot \Bar{\mathbf{C_p}} \cdot \bar{\mathbf{b_w}}}{\bar{\mathbf{T_p}}} \big) \notag  \\
+  & = \sum_{\mathbf{n}=0}^{9}\big(\frac{\num{250d4} \cdot \num{2d3} \cdot 32}{\num{10d-3}} \big) \notag \\
+  & = \SI[per-mode=symbol]{16}{\tera\bit\per\second} \\
+  \text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
+                &\mathbf{N}_a \text{ is the average number of \ac{an}s} \notag\\
+                &\mathbf{C_p} \text{ is the average number of connections} \notag\\
+  \text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
 \end{alignat}
 
 Therefore, when imlementing \ac{ann}s, the memory requirements are significant. The storage is required for the input, the \ac{an} state and most significantly the weights for each of the \ac{an}s. This storage requirement often results in gigabytes of memory.
@@ -343,40 +356,11 @@ Given these multiple GPU systems have high real-estate and power requirements an
 Overall GPUs have limited suitability to meet edge application requirements.
 
 
-Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or SRAM. These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an edge application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
+Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or SRAM. 
+These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an edge application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
 
+How this work addresses the problem are outlined in section \ref{chap-five}.
 
-\section[The Solution]{The Solution}
-\label{sec:The Solution}
-
-Most researchers acknowledge that realistically, DRAM is required to meet the main storage requirements of useful sized \ac{ann}s.
-
-We further believe that to support all types of disparate \ac{ann}s, we need to be able to operate directly from the DRAM memory.
-
-This is because SRAM-based solutions assume memory locality when processing a neural network. However, when \ac{ann}s do not provide sufficient locality these solutions become DRAM bandwidth bound. If we then ensure the DRAM can feed the SRAM at the necessary bandwidth, why use an SRAM and waste the significant silicon area they require.
-
-This works system operates directly from DRAM, but not just DRAM, 3D-DRAM.
-
-In addition, this work has designed a system that can stay within the physical footprint of the 3D-DRAM.
-
-By ensuring the system stays physically within the 3D stack, we take advantage of high density connectivity provided by TSVs. 
-Therefore, this work is able to propose a custom 3D-DRAM that exposes more of the DRAMs internal page and thus generates interface bandwidth that is of the order of 64 times that of the standard 3D-DRAM.
-
-\subsection[Novelty]{Novelty}
-\label{sec:Novelty}
-
-The novelty of this work includes:
-\begin{outline}
-    \1 A custom 3D-DRAM providing a ~64X bandwidth benefit compared to standard 3D-DRAM
-    \1 A system that benefits from the power and performance benefits of 3DIC technology by remaining within a 3DIC stack
-    \1 New data structures that allow use to operate directly out of DRAM whilst ensuring effective use of DRAM bandwidth
-    \1 A system that can simultaneously process multiple disparate \ac{ann}s at or near real-time
-\end{outline}
-
-
-This research explores a 3DIC solution using a custom organized 3DIC memory in conjunction with unique data structures and custom processing modules to significantly reduce the 
-area and power footprint of an application that needs to support the processing associated with multiple \ac{ann}s.
-This works system will provide at or near real-time performance required for systems employing multiple disparate \ac{ann}s whilst staying within acceptable area and power limits and will provide greater than an order of magnitude benefit over comparable solutions.
 
 %%---------------------------------------------------------------------------------------------------------
 %%---------------------------------------------------------------------------------------------------------

@@ -5,7 +5,7 @@
 
 
 \chapter{System Description}
-\label{chap-four}
+\label{chap-five}
 
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
@@ -20,8 +20,50 @@ The primary design considerations that drove the architecture of this work are :
   \1 Target application will have space and power limitations
 \end{outline}
 
-\section{Overview}
-\label{sec:chap1_overview}
+When performing inference in \ac{ann}, the computational hotspot is the \ac{an} activation calculation shown in figure \ref{fig:Rate Based Model} and equation \eqref{eq:activation function}.
+This \ac{an} activation involves hundreds or thousands of multiply-accumulates of \ac{an} activations and corresponding connection weights. 
+In this work, the \ac{an} activations and weights are stored in \ac{dram}. 
+Therefore, because of the complex access protocol associated with \ac{dram}, one of the main objectives is to demonstrate the 3DDRAM can be accessed with relatively high levels of bus efficiency.
+
+The system has to process thousands of \acp{an} concurrently and do this with minimal unused bus cycles.
+Therefore, the system must decode instructions, configure the various functions, pre-fetch and pipeline \ac{dram} data and perform the actual activation calculation. To achieve high average \ac{dram} bandwidth usage, these functions are all performed in parallel and this work demonstrates a average system bandwidth able to meet the ten's of \SI[per-mode=symbol]{16}{\tera \bit \per \second} of bandwidth requirement outlined in equation \eqref{eq:averageBandwidth}.
+
+The problem associated with processing \acp{ann} are outlined in section \ref{sec:The Problem}. 
+
+\section[The Solution]{The Solution}
+\label{sec:The Solution}
+
+Most researchers acknowledge that realistically, DRAM is required to meet the main storage requirements of useful sized \ac{ann}s.
+
+We further believe that to support all types of disparate \ac{ann}s, we need to be able to operate directly from the DRAM memory.
+
+This is because SRAM-based solutions assume memory locality when processing a neural network. However, when \ac{ann}s do not provide sufficient locality these solutions become DRAM bandwidth bound. If we then ensure the DRAM can feed the SRAM at the necessary bandwidth, why use an SRAM and waste the significant silicon area they require.
+
+This works system operates directly from DRAM, but not just DRAM, 3D-DRAM.
+
+In addition, this work has designed a system that can stay within the physical footprint of the 3D-DRAM.
+
+By ensuring the system stays physically within the 3D stack, we take advantage of high density connectivity provided by TSVs. 
+Therefore, this work is able to propose a custom 3D-DRAM that exposes more of the DRAMs internal page and thus generates interface bandwidth that is of the order of 64 times that of the standard 3D-DRAM.
+
+\subsection[Novelty]{Novelty}
+\label{sec:Novelty}
+
+The novelty of this work includes:
+\begin{outline}
+    \1 A custom 3D-DRAM providing a ~64X bandwidth benefit compared to standard 3D-DRAM
+    \1 A system that benefits from the power and performance benefits of 3DIC technology by remaining within a 3DIC stack
+    \1 New data structures that allow use to operate directly out of DRAM whilst ensuring effective use of DRAM bandwidth
+    \1 A system that can simultaneously process multiple disparate \ac{ann}s at or near real-time
+\end{outline}
+
+
+This research explores a 3DIC solution using a custom organized 3DIC memory in conjunction with unique data structures and custom processing modules to significantly reduce the 
+area and power footprint of an application that needs to support the processing associated with multiple \ac{ann}s.
+This works system will provide at or near real-time performance required for systems employing multiple disparate \ac{ann}s whilst staying within acceptable area and power limits and will provide greater than an order of magnitude benefit over comparable solutions.
+
+\section{System Overview}
+\label{sec:System Overview}
 This work employs \ac{3dic} technology along with a customized 3D-DRAM. The objective was to demonstrate that a pure \ac{3dic} system can implement multiple disparate \acp{ann}. By staying within the \ac{3dic} footprint and taking advantage of high
 density \acp{tsv} this work is able to maintain a significantly higher bandwidth over 2D or 2.5D \ac{asic} or \ac{asip} solutions.
 
@@ -45,7 +87,7 @@ In the case of \ac{hbm} and DiRAM4, the technology can be combined with addition
 
 The question becomes, can a useful system coexist within the same 3D footprint?
 
-This work targeted a baselne system with:
+This work targeted a baseline system with:
 \begin{itemize}
   \item Computations requiring single precision floating point precision
   \item Tezzaron \acf{diram4} \cite{tezzaron:diram4} for main memory
@@ -58,7 +100,7 @@ When the \acp{ssc} need to share data or neuron activations, the data is passed 
 An overview of the various blocks and interconnects are given below:
 
 % ----------------------------------------------------------------------------------------------------
-\section{3D-DRAM}
+\subsection{3D-DRAM}
 The targetted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs multiple memory array layers in conjunction with a control and IO layer.
 The memory is formed from 64 disjoint sub-memories each providing upwards of 1Gigabit with a total capacity of at least 64 gigabit.
 \begin{figure}[!t]
@@ -75,7 +117,7 @@ The memory is formed from 64 disjoint sub-memories each providing upwards of 1Gi
 
 
 % ----------------------------------------------------------------------------------------------------
-\section{Manager Layer}
+\subsection{Manager Layer}
 The Manager block is the main controller in the system. The operations required to process an \ac{ann} are formed from individual instructions which are decoded by the Manager. 
 These instructions include descriptors to describe memory read operations, processing engine operations and memory write operations. The manager reads these system instructions from an instruction memory, decodes the instruction and configures the various blocks in the system.
 The configuration includes:
@@ -87,19 +129,19 @@ The configuration includes:
 \end{itemize}
 
 % ----------------------------------------------------------------------------------------------------
-\section{Processing Layer}
+\subsection{Processing Layer}
 \label{sec:Processing Layer}
 The \ac{pe} is able to operate on data streamed directly from the \ac{dram} via the Manager layer. The \ac{pe} is configured by the manager to perform operations on the operand data streamed from the manager. In the baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. These operands typically are the pre-synaptic neuron activation's and the connection weights. The \ac{pe} also performs the activation function on the result of the MAC to generate the neuron activation value. These 32 activation values are sent back to the Manager layer.
 
 % ----------------------------------------------------------------------------------------------------
-\section{Layer Interconnect}
+\subsection{Layer Interconnect}
 \label{sec:Layer Interconnect}
 
 The layers are connected using through-silicon-vias (\ac{tsv}s) which provide high connection density, high bandwidth and low energy.
 By ensuring the system stays within the 3D footprint ensures we can take advantage of the huge benefits provided by \ac{tsv}s.
 
 % ----------------------------------------------------------------------------------------------------
-\section{Inter-Manager Communication}
+\subsection{Inter-Manager Communication}
 \label{sec:Inter-Manager Communication}
 
 During configuration and/or computations, data must be transported between managers. This inter-manager communication is provided by an \ac{noc}.
