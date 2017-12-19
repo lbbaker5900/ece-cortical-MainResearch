@@ -26,7 +26,7 @@ In this work, the \ac{an} activations and weights are stored in \ac{dram}.
 Therefore, because of the complex access protocol associated with \ac{dram}, one of the main objectives is to demonstrate the 3DDRAM can be accessed with relatively high levels of bus efficiency.
 
 The system has to process thousands of \acp{an} concurrently and do this with minimal unused bus cycles.
-Therefore, the system must decode instructions, configure the various functions, pre-fetch and pipeline \ac{dram} data and perform the actual activation calculation. To achieve high average \ac{dram} bandwidth usage, these functions are all performed in parallel and this work demonstrates a average system bandwidth able to meet the ten's of \SI[per-mode=symbol]{16}{\tera \bit \per \second} of bandwidth requirement outlined in equation \eqref{eq:averageBandwidth}.
+Therefore, the system must decode instructions, configure the various functions, pre-fetch and pipeline \ac{dram} data and perform the actual activation calculation. To achieve high average \ac{dram} bandwidth usage, these functions are all performed in parallel and this work demonstrates a average system bandwidth able to meet the tens of \SI[per-mode=symbol]{16}{\tera \bit \per \second} of bandwidth requirement outlined in equation \eqref{eq:averageBandwidth}.
 
 The problem associated with processing \acp{ann} are outlined in section \ref{sec:The Problem}. 
 
@@ -125,13 +125,13 @@ The configuration includes:
       \item initiate operand reads from \ac{dram}
       \item prepare the processing engine (\ac{pe}) to operate on the operands
       \item prepare the result processing engine to take the resulting neuron activations from the \ac{pe} and write those results back to the \ac{dram}
-      \item replicate the resulting neuron activation's to neighbor managers for processing of other \ac{ann} layers
+      \item replicate the resulting neuron activations to neighbor managers for processing of other \ac{ann} layers
 \end{itemize}
 
 % ----------------------------------------------------------------------------------------------------
 \subsection{Processing Layer}
 \label{sec:Processing Layer}
-The \ac{pe} is able to operate on data streamed directly from the \ac{dram} via the Manager layer. The \ac{pe} is configured by the manager to perform operations on the operand data streamed from the manager. In the baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. These operands typically are the pre-synaptic neuron activation's and the connection weights. The \ac{pe} also performs the activation function on the result of the MAC to generate the neuron activation value. These 32 activation values are sent back to the Manager layer.
+The \ac{pe} is able to operate on data streamed directly from the \ac{dram} via the Manager layer. The \ac{pe} is configured by the manager to perform operations on the operand data streamed from the manager. In the baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. These operands typically are the pre-synaptic neuron activations and the connection weights. The \ac{pe} also performs the activation function on the result of the MAC to generate the neuron activation value. These 32 activation values are sent back to the Manager layer.
 
 % ----------------------------------------------------------------------------------------------------
 \subsection{Layer Interconnect}
@@ -346,7 +346,7 @@ Figure \ref{fig:storageDescriptor} shows the structure of the storage descriptor
 When the \ac{pe} has processed the group of ANs, the new AN states are sent back to the manager. The manager will store these back to \ac{dram} most likely in the array format as described earlier.
 
 A significant difference taken advantage of is that for any given operation, the system is writing far less than is being read. For example, the ROI and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
-Now that sounds like writing back has a very small impact on performance but with \ac{dram}s that's not always true.
+Now that sounds like writing back has a very small impact on performance but with \ac{dram}s thats not always true.
 
 When the system writes the result of an operation back to memory, it is often writing a small portion of a \ac{dram} page and the nature of the \ac{dram} protocol means this is a very inefficient use of \ac{dram} bandwidth. So although the amount of data written is small the performance impact cannot be ignored.
 
@@ -412,7 +412,7 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 \centerline{
 \mbox{\includegraphics[scale=0.07]{DetailedFlowDiagram.jpg}}
 }
-\center\caption{Sub-System Column (SSC) Detailed Flow Diagram}
+\center\caption{Sub-System Column (SSC) Flow Diagram}
 \label{fig:DetailedFlowDiagram}
 \end{figure}
 
@@ -430,7 +430,7 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 \centerline{
 \mbox{\includegraphics[angle=90, height=8in]{DetailedBlockDiagram.jpg}}
 }
-\center\caption{Sub-System Column (SSC) Detailed Block Diagram}
+\center\caption{Sub-System Column (SSC) Block Diagram}
 \label{fig:DetailedBlockDiagram}
 \end{figure}
 
