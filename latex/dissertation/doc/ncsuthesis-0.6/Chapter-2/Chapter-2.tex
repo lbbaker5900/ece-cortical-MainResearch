@@ -415,8 +415,83 @@ The feature kernels employed in the locally-conencted layers can be unique to th
 In the case of employing the same kernels across the entire input layer the \ac{ann} is known as a \acf{cnn}. The \acp{cnn} are examples of \acp{ann} which can take advantage of reuse described in \ref{sec:chap-one}. 
 These \acp{cnn} can store the filter kernels in local \ac{sram} and construct an entire feature plane. These \acp{cnn} can be considered a subset of the generic case of \ac{dnn} where the kernels can be unique across the entire input layer.
 This work considers the more generic \ac{dnn} case and supports acceleration of both \acp{dnn} and the subset \acp{cnn}.
-%%
 
+An example of a \ac{cnn} can be seen in figure \ref{fig:Example DNN} with the layer configurations shown in table \ref{tab:Layer Configuration}. An \ac{cnn} similar to this has demonstrated high levels of efficacy in image recognition applications.
+{\textbf{\textcolor{black}{Therefore, this work considers this \ac{ann} to be a this particular \ac{dnn} will be used as a template for estimating the storage and processing requirements and the range of pre-synaptic fanins for a .}}}
+
+%%
+\iffalse
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|}\cline{3-8}
+\multicolumn{2}{c|}{\multirow{2}{*}{}}&\multicolumn{3}{c|}{Singular}&\multicolumn{3}{c|}{Plural}\\\cline{3-8}
+\multicolumn{2}{c|}{}&Neuter&Masculine&Feminine&Masculine&Feminine&Neuter\\\hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{I}}&Inclusive&\multicolumn{3}{|c|}{\multirow{2}{*}{O}}&\multicolumn{3}{c|}{X}\\\cline{2-2}\cline{6-8}
+&Exclusive&\multicolumn{3}{c|}{}&\multicolumn{3}{c|}{X}\\\hline
+\multirow{2}{*}{II}&Informal&\multicolumn{3}{|c|}{X}&\multicolumn{3}{c|}{X}\\\cline{2-8}
+&Formal&\multicolumn{6}{|c|}{X}\\\hline
+\multirow{2}{*}{III}&Informal&\multicolumn{1}{c|}{\multirow{2}{*}{O}}&X&X&\multicolumn{2}{|c|}{X}&\multicolumn{1}{c|}{\multirow{2}{*}{O}}\\\cline{2-2}\cline{4-7}
+&Formal&&\multicolumn{4}{|c|}{X}&\\\hline
+
+\end{tabular}
+\end{table}
+\fi
+
+\begin{sidewaysfigure}[h]
+  %\begin{adjustbox}{angle=0, width=1.0\textwidth}
+    \centering
+    \captionsetup{justification=centering}
+    \begin{subtable}{.9\textwidth}
+      %\captionsetup{justification=centering, skip=-5pt}
+      \centering
+      %\begin{center}
+       % [lr] ~ left align col 0 and right align col 1
+       % e.g. 4 columns could be lccr
+      \begin{adjustbox}{width=1\textwidth}
+        \begin{tabular}{|r|c|c|c|c|c|c|c|c|c|c|c|c|c}\cline{3-13}
+          %\toprule
+           \multicolumn{2}{c|}  {\multirow{2}{*}{}}    & \multicolumn{11}{c|}{Layers}    \\\cline{3-13}
+           \multicolumn{2}{c|}{}                       &  1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11  \\\cline{3-13} \cline{1-13}
+           \multicolumn{2}{|r|}{Type}                  &  Input          & Locally      & Pooling           & Locally             & Pooling             & Locally             & Locally             & Locally             &  Fully              &  Fully                 &  Fully         &                                    \\\cline{1-13}
+           \multirow{3}{*}{Dimensions}               &X& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{      4096}    & \num{     4096}        & \num{    1024} &                                    \\
+                                                     &Y& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\
+                                                     &Z& \num{         3}& \num{     96}& \num{    96}      & \num{    256}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{    256}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\\cline{1-13}
+           \multirow{3}{*}{Filter Dimensions}        &X&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{     4096}        & \num{    4096} &                                    \\
+                                                     &Y&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{        1}        & \num{       1} &                                    \\
+                                                     &Z&    na           & \num{      3}& \num{     1}      & \num{     96}       & \num{      1}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{       256}    & \num{        1}        & \num{       1} &                                    \\
+            \multicolumn{2}{|r|}{Stride           }    &    na           & \num{      4}& \num{     2}      & \num{      2}       & \num{      2}       & \num{      1}       & \num{      1}       & \num{      1}       &              na     &             na         &            na  &                                    \\\hline
+            \multicolumn{2}{|r|}{Pre-synaptic Fanin}   &    na           & \num{    363}& \num{     4}      & \num{   2400}       & \num{      4}       & \num{   2304}       & \num{   3456}       & \num{   3456}       & \num{     43264}    & \num{     4096}        & \num{    4096} & \multicolumn{1}{c|}{Total        } \\\cline{14-14}
+            \multicolumn{2}{|r|}{Number of \ac{an}}    & \num{    196608}& \num{ 290400}& \num{ 69984}      & \num{ 186624}       & \num{  43264}       & \num{  64896}       & \num{  64896}       & \num{  43264}       & \num{      4096}    & \num{     4096}        & \num{    1024} & \multicolumn{1}{c|}{\num{ 969152}} \\
+            \multicolumn{2}{|r|}{Number of Weights}    &    na           & \num{  34848}& na                & \num{ 614400}       & na                  & \num{ 884736}       & \num{ 1327104}      & \num{ 884736}       & \num{ 177209344}    & \num{ 16777216}        & \num{ 4194304} & \multicolumn{1}{c|}{\num{ 2.02e8}} \\\hline
+        \end{tabular}
+      \end{adjustbox}
+      \captionsetup{justification=centering, skip=9pt}
+      \vspace{0.5cm}
+      \caption{Layer Configuration \cite{krizhevsky2012imagenet}}
+      \label{tab:Layer Configuration}
+      %  \end{center}
+    \end{subtable}
+  
+    \bigskip
+
+    %\begin{adjustbox}{width=1.0\textwidth}
+      \begin{subfigure}{1\textwidth}
+        \centering
+        \includegraphics[width=1.0\textwidth]{fullDNN}
+        \captionsetup{justification=centering, skip=15pt}
+        \caption{Example DNN \cite{krizhevsky2012imagenet}}
+        \label{fig:Example DNN}
+      \end{subfigure}
+    %\end{adjustbox}
+  
+  %\end{adjustbox}
+  \caption{Typical DNN\cite{krizhevsky2012imagenet}}
+  \label{fig:Typical DNN}
+\end{sidewaysfigure}
+
+
+
+\iffalse
 \begin{sidewaysfigure}[h]
 \centering
 \includegraphics[width=1.0\textwidth]{fullDNN}
@@ -424,6 +499,7 @@ This work considers the more generic \ac{dnn} case and supports acceleration of 
 \caption{Example DNN \cite{krizhevsky2012imagenet}}
 \label{fig:Example DNN}
 \end{sidewaysfigure}
+\fi
 
 
 \section[The Problem]{The Problem}
