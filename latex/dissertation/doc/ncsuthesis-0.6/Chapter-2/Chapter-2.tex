@@ -285,11 +285,11 @@ In addition, to ensure the multiple layers cannot be mathematically collapsed in
     \centering
     \includegraphics[width=0.7\textwidth]{complexDiscrimination}
     \captionsetup{width=.8\textwidth, justification=centering, skip=10pt}
-    \caption{Complex Classification using multiple layers}
+    \caption{Complex Classification requires multiple layers}
     \label{fig:complex discrimination}
   \end{subfigure}
 \captionsetup{justification=centering, skip=10pt}
-\caption{Discrimination using \acp{ann} layers}
+\caption{Classification using \acp{ann} layers}
 \label{fig:Discrimination}
 \end{figure}
 
@@ -308,7 +308,7 @@ A recent very successful example of a \ac{dnn}, known as a \acf{cnn} was used to
 These \acp{cnn} use the early layers to identify low-level features and later layers are used combine these features into yet more higher-level features.
 Finally, the combination of high-level features are used to identify the required classes.
 This layering is shown in \fref{fig:Deep network showing feature layers}.
-\begin{figure}[hbtp]
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.95\textwidth]{deepNetworkBlockDiagram}
 \captionsetup{justification=centering, skip=5pt}
@@ -335,11 +335,11 @@ There are some types of \ac{dnn} which also include recursive connections where 
 A popular recursive \ac{dnn} is \acf{lstm}. Although this work does not preclude supporting \ac{lstm} in the future, the focus of this work is on the feed-forward type \ac{dnn}.
 
 As described in \ref{sec:Deep Neural Networks}, a \ac{dnn} layer transforms the previous layer with each higher layer providing a coarser grained transformation. This is best seen in image recognition application were the early layers identify low level shapes or features, such as angled lines with higher layers identifying higher order shapes such as circles, blocks etc. 
-Although the image recognition applcaition is somewhat intuitive, it is believed that in less intuitive applications the \ac{dnn} performs a similar fine to coarse feature extraction.
+Although the image recognition applicaition is somewhat intuitive, it is believed that in less intuitive applications the \ac{dnn} performs a similar fine to coarse feature extraction.
 
-The connection between layers can be locally-connected or fully-connected. 
+The connections between layers can be locally-connected or fully-connected. 
 With locally-connected layers (see figure \ref{fig:Locally-Connected Interconnects}), a particular layer \acp{an} pre-synaptic \acp{an} are formed from regions of the previous layer.
-With fully-connected layers (see figure \ref{fig:Fully-Connected Interconnects}), a particular layer \acp{an} pre-synaptic \acp{an} are formed all \acp{an} in the previous layer.
+With fully-connected layers (see figure \ref{fig:Fully-Connected Interconnects}), a particular layer \acp{an} pre-synaptic \acp{an} are formed from all \acp{an} in the previous layer.
 In many cases, a \ac{dnn} is constructed with lower layers being locally-connected and higher layers being fully connected.
 
 \begin{figure}[h]
@@ -387,7 +387,7 @@ Some contrived examples of locally-connected feature detectors are shown in figu
     \label{fig:3D layers of Features}
   \end{subfigure}
 \captionsetup{justification=centering, skip=10pt}
-\caption{Layer Features}
+\caption{Layer Feature Planes}
 \label{fig:Layer Features}
 \end{figure}
 
@@ -407,10 +407,23 @@ Some contrived examples of locally-connected feature detectors are shown in figu
 %%\label{fig:Features form 3D layers}
 %%\end{figure}
 
-These locally-conencted layers have multiple filters applied to the same region-of-interest in the previous layer. The next layer therefore becomes a 3D array with the Z-axis representing the features. These number of feature filters applied at each layer can be tens to hundreds of filters.
-The filters operating on these layers are often 3D and the number of weights associated with each filter is usually hundreds to thousands of weights. 
+These locally-connected layers have multiple filters applied to the same region-of-interest in the previous layer. The next layer therefore becomes a 3D array with the Z-axis representing the features. 
+The number of feature filters applied at each layer can be tens to hundreds of filters.
+The filters operating on these 3D layers are themselves 3D and therefore the number of weights associated with each filter is usually hundreds to thousands of weights. 
 
+The feature kernels employed in the locally-conencted layers can be unique to the regions of the previous layer or the same filter kernels can be employed across the entire previous layer.
+In the case of employing the same kernels across the entire input layer the \ac{ann} is known as a \acf{cnn}. The \acp{cnn} are examples of \acp{ann} which can take advantage of reuse described in \ref{sec:chap-one}. 
+These \acp{cnn} can store the filter kernels in local \ac{sram} and construct an entire feature plane. These \acp{cnn} can be considered a subset of the generic case of \ac{dnn} where the kernels can be unique across the entire input layer.
+This work considers the more generic \ac{dnn} case and supports acceleration of both \acp{dnn} and the subset \acp{cnn}.
+%%
 
+\begin{sidewaysfigure}[h]
+\centering
+\includegraphics[width=1.0\textwidth]{fullDNN}
+\captionsetup{justification=centering, skip=15pt}
+\caption{Example DNN \cite{krizhevsky2012imagenet}}
+\label{fig:Example DNN}
+\end{sidewaysfigure}
 
 
 \section[The Problem]{The Problem}
