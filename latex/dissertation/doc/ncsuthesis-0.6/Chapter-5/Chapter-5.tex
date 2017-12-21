@@ -12,23 +12,28 @@
 %\section{ANN System}
 %\label{sec:ANN System}
 
-The primary design considerations that drove the architecture of this work are :
+Given the problem description outlined in section \ref{sec:The Problem}, the primary design considerations that drove the architecture of this work are :
 \begin{outline}
-  \1 Target applications are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using local \ac{sram} to store \ac{ann} parameters or the \ac{ann} input 
+  \1 Target applications are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using local \ac{sram} \iffalse to store \ac{ann} parameters or the \ac{ann} input \fi
   \1 \ac{dram} is required for storage of \ac{ann} parameters 
   \1 Target application will likely apply many disparate \acp{ann} to perform various system functions
   \1 Target application will have space and power limitations
 \end{outline}
 
-When performing inference in \ac{ann}, the computational hotspot is the \ac{an} activation calculation shown in figure \ref{fig:Rate Based Model} and equation \eqref{eq:activation function}.
-This \ac{an} activation involves hundreds or thousands of multiply-accumulates of \ac{an} activations and corresponding connection weights. 
+When performing inference in \acp{ann}, the computational hotspot is the \ac{an} activation calculation shown in figure \ref{fig:Rate Based Model} and equation \eqref{eq:activation function}.
+This \ac{an} activation involves hundreds or thousands of multiply-accumulates of the pre-synaptic \ac{an} activations and corresponding connection weights. 
 In this work, the \ac{an} activations and weights are stored in \ac{dram}. 
-Therefore, because of the complex access protocol associated with \ac{dram}, one of the main objectives is to demonstrate the 3DDRAM can be accessed with relatively high levels of bus efficiency.
+Therefore, because of the complex access protocol associated with \ac{dram}, one of the main objectives is to demonstrate the 3DDRAM can be accessed while maintaining the required average bandwidth to the processing elements.
+\iffalse with relatively high levels of bus efficiency. \fi
 
 The system has to process thousands of \acp{an} concurrently and do this with minimal unused bus cycles.
-Therefore, the system must decode instructions, configure the various functions, pre-fetch and pipeline \ac{dram} data and perform the actual activation calculation. To achieve high average \ac{dram} bandwidth usage, these functions are all performed in parallel and this work demonstrates a average system bandwidth able to meet the tens of \SI[per-mode=symbol]{16}{\tera \bit \per \second} of bandwidth requirement outlined in equation \eqref{eq:averageBandwidth}.
+Therefore, the system must decode instructions, configure the various functions, pre-fetch and pipeline \ac{dram} data and perform the actual activation calculation. 
 
+To maximize the processing bandwidth, these operations are all performed concurrently enabling this work to demonstrate the ability to meet and exceed the required \SI[per-mode=symbol]{30}{\tera \bit \per \second} of processing bandwidth as outlined in equation \eqref{eq:averageBandwidth}.
+
+\iffalse
 The problem associated with processing \acp{ann} are outlined in section \ref{sec:The Problem}. 
+\fi
 
 \section[The Solution]{The Solution}
 \label{sec:The Solution}
