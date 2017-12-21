@@ -9,20 +9,17 @@
 
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
-%\section{ANN System}
-%\label{sec:ANN System}
-
 Given the problem description outlined in section \ref{sec:The Problem}, the primary design considerations that drove the architecture of this work are :
 \begin{outline}
-  \1 Target applications are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using local \ac{sram} \iffalse to store \ac{ann} parameters or the \ac{ann} input \fi
   \1 \ac{dram} is required for storage of \ac{ann} parameters 
+  \1 Target applications are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using local \ac{sram} \iffalse to store \ac{ann} parameters or the \ac{ann} input \fi
   \1 Target application will likely apply many disparate \acp{ann} to perform various system functions
   \1 Target application will have space and power limitations
 \end{outline}
 
-When performing inference in \acp{ann}, the computational hotspot is the \ac{an} activation calculation shown in figure \ref{fig:Rate Based Model} and equation \eqref{eq:activation function}.
-This \ac{an} activation involves hundreds or thousands of multiply-accumulates of the pre-synaptic \ac{an} activations and corresponding connection weights. 
-In this work, the \ac{an} activations and weights are stored in \ac{dram}. 
+When performing inference in \acp{ann}, the computational hotspot is the \ac{an} pre-synaptic summation shown in figure \ref{fig:Rate Based Model} and equation \eqref{eq:activation function}.
+This \ac{an} summation involves hundreds or thousands of multiply-accumulates of the pre-synaptic \ac{an} activations and corresponding connection weights. 
+In this work, the \ac{an} activations and weights are stored in \ac{dram} with minimal local \ac{sram}. 
 Therefore, because of the complex access protocol associated with \ac{dram}, one of the main objectives is to demonstrate the 3DDRAM can be accessed while maintaining the required average bandwidth to the processing elements.
 \iffalse with relatively high levels of bus efficiency. \fi
 
@@ -56,14 +53,22 @@ Therefore, this work is able to propose a custom 3D-DRAM that exposes more of th
 
 The novelty of this work includes:
 \begin{outline}
-    \1 A custom 3D-DRAM providing a ~64X bandwidth benefit compared to standard 3D-DRAM
-    \1 A system that benefits from the power and performance benefits of 3DIC technology by remaining within a 3DIC stack
-    \1 New data structures that allow use to operate directly out of DRAM whilst ensuring effective use of DRAM bandwidth
     \1 A system that can simultaneously process multiple disparate \ac{ann}s at or near real-time
+      \2 with low power and real-estate demands
+    \1 A custom 3D-DRAM providing a ~64X bandwidth benefit compared to standard 3D-DRAM
+      \2 the \ac{dram} could be employed in other applications
+    \1 A system that employs pure \ac{3dic} technology
+      \2 providing power and performance benefits of remaining within a \ac{3dic} stack
+    \1 New instructions and data structures that facilitate operating directly out of DRAM 
+      \2 maximizing processing bandwidth by ensuring effective use of the \ac{dram}
+      \2 instruction format allow system functions to operate concurrently 
 \end{outline}
 
 
-This research explores a 3DIC solution using a custom organized 3DIC memory in conjunction with unique data structures and custom processing modules to significantly reduce the 
+\subsection[Summary]{Summary}
+\label{sec:Summary}
+
+This research explores a \ac{3dic} solution using a custom organized \ac{3dic} memory in conjunction with unique data structures and custom processing modules to significantly reduce the 
 area and power footprint of an application that needs to support the processing associated with multiple \ac{ann}s.
 This works system will provide at or near real-time performance required for systems employing multiple disparate \ac{ann}s whilst staying within acceptable area and power limits and will provide greater than an order of magnitude benefit over comparable solutions.
 
@@ -421,7 +426,7 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 \label{fig:DetailedFlowDiagram}
 \end{figure}
 
-\begin{figure}[t]
+\begin{sidewaysfigure}[h]
 % the [] contains position info e.g. [!H] means here
 % H 	Place exactly at spot in source text
 % h 	Place approximately at spot in source test
@@ -431,13 +436,13 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 % ! 	Override internal LaTeX parameters for determining float position
 \centering
 \captionsetup{justification=centering}
-\captionsetup{width=.9\linewidth}
+\captionsetup{width=0.9\textwidth}
 \centerline{
-\mbox{\includegraphics[angle=90, height=8in]{DetailedBlockDiagram.jpg}}
+\mbox{\includegraphics[angle=0, width=1.0\textwidth]{DetailedBlockDiagram.jpg}}
 }
 \center\caption{Sub-System Column (SSC) Block Diagram}
 \label{fig:DetailedBlockDiagram}
-\end{figure}
+\end{sidewaysfigure}
 
 \subsection{Manager}
 \label{sec:manager}
