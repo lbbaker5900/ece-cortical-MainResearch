@@ -7,7 +7,7 @@
 \chapter{System Overview}
 \label{chap-five}
 \label{sec:System Overview}
-This work employs \ac{3dic} technology along with a customized 3D-DRAM. The objective was to demonstrate that a pure \ac{3dic} system can implement multiple disparate \acp{ann}. By staying within the \ac{3dic} footprint and taking advantage of high
+This work employs \ac{3dic} technology along with a customized 3D-DRAM. The objective was to demonstrate that a pure \ac{3dic} system can implement multiple disparate \acp{ann}. By physically staying within the \ac{3dic} footprint and taking advantage of high
 density \acp{tsv} this work is able to maintain a significantly higher bandwidth over 2D or 2.5D \ac{asic} or \ac{asip} solutions.
 
 The \ac{3dic} system die stack (figure \ref{fig:3DICStack}) includes the 3D-\ac{dram} with a system manager below and one or more processing layers below the manager.
@@ -38,14 +38,15 @@ This work targeted a baseline system with:
 The work includes customizing the interface to a 3D-\ac{dram}, researching data structures to describe storage of \ac{ann} parameters, designing a memory manager with unique micro-coded instructions and a \ac{pe} layer.  
 The system is designed such that a sub-system, known as a \ac{ssc} operates on one of these disjoint memories within the 3D-\ac{dram} (see figure \ref{fig:diram4Layout}).
 
-When the \acp{ssc} need to share data or neuron activations, the data is passed between \acp{ssc} using a \ac{noc}.
+When the \acp{ssc} need to share data or \ac{an} activations, the data is passed between \acp{ssc} using a \ac{noc}.
 
 An overview of the various blocks and interconnects are given below:
 
 % ----------------------------------------------------------------------------------------------------
 \section{3D-DRAM}
 The targetted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs multiple memory array layers in conjunction with a control and IO layer.
-The memory is formed from 64 disjoint sub-memories each providing upwards of 1Gigabit with a total capacity of at least 64 gigabit.
+The memory is formed from 64 disjoint sub-memories each providing upwards of \SI[per-mode=symbol]{1}{\giga\bit} with a total capacity of at least \SI[per-mode=symbol]{64}{\giga\bit}.
+
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
 \centering
@@ -67,8 +68,8 @@ The configuration includes:
 \begin{itemize}
       \item initiate operand reads from \ac{dram}
       \item prepare the processing engine (\ac{pe}) to operate on the operands
-      \item prepare the result processing engine to take the resulting neuron activations from the \ac{pe} and write those results back to the \ac{dram}
-      \item replicate the resulting neuron activations to neighbor managers for processing of other \ac{ann} layers
+      \item prepare the result processing engine to take the resulting \ac{an} activations from the \ac{pe} and write those results back to the \ac{dram}
+      \item replicate the resulting \ac{an} activations to neighbor managers for processing of other \ac{ann} layers
 \end{itemize}
 
 % ----------------------------------------------------------------------------------------------------
@@ -89,6 +90,10 @@ By ensuring the system stays within the 3D footprint ensures we can take advanta
 
 During configuration and/or computations, data must be transported between managers. This inter-manager communication is provided by an \ac{noc}.
 When computing an \ac{ann} across multiple processing sub-systems, often neuron activation data must be shared between these \ac{ssc}s. The \ac{ssc} includes the \ac{dram} port, the manager and the \ac{pe}. An \ac{noc} within each management block communicates with each adjacent manager using a mesh network. This \ac{noc} has a forwarding table that can be reconfigured to provide more efficient routing for a given processing step.
+
+% ----------------------------------------------------------------------------------------------------
+\section{Summary}
+\label{sec:Overview Summary}
 
 A control and data flow diagram of the stack showing the 64 sub-system columns can be seen in figure \ref{fig:FlowDiagram}.
 \begin{figure}[!t]

@@ -3,27 +3,29 @@
 \chapter{System Operations}
 \label{sec:System Operations}
 
-In the context of this system and AN state calculation, the basic operations to determine the state of a neuron is to :
+In the context of this system and \ac{an} state calculation, the basic operations to determine the state of a neuron is to :
 \begin{outline}
+    \1 Synchronization to other managers
     \1 Inform the Manager and \ac{pe} which operations are to be performed
-    \1 Tell the manager to access the states of the pre-synaptic neurons
-    \1 Tell the manager to access the weights of the connections from the pre-synaptic ANs
+    \1 Inform the manager to access the states of the pre-synaptic neurons
+    \1 Inform the manager to access the weights of the connections from the pre-synaptic ANs
     \1 Provide the pre-synaptic neuron weights and states to the processing engine execution lanes
-    \1 Tell the manager where to store the resulting AN state back to memory
+    \1 Inform the manager where to store the resulting AN state back to memory
 \end{outline}
 
 
-This work has researched an instruction architecture to describe the above operations which are interpreted by the manager. 
-
-In the baseline system, the manager is not responsible for performing specific algorithm operations but is responsible for coordinating the various data flows and configuration of the modules that make up the system.
+This work has researched an instruction architecture to describe the above operations.
+In the baseline system, the manager is not responsible for performing specific algorithm computational operations but is responsible for coordinating the various data flows and configuration of the modules that make up the system.
 
 The managers primary responsibility is:
 
 \begin{outline}
+    \1 System Control
     \1 Instruction decode
     \1 Internal Configuration messages
     \1 Operand read
     \1 Result write
+    \1 Inter-manager communication
 \end{outline}
 
 In the baseline system, the \ac{pe} is responsible for the main algorithm operations.
@@ -36,9 +38,9 @@ The \ac{pe} has three major blocks:
     \1 Streaming operation function (\ac{stop})
       \2 Processes data from the manager on-the-fly without storing in local \ac{sram}
     \1 \ac{simd}
-      \2 processes the data from the \ac{stop} function, usually neuron activation such as ReLu
+      \2 processes the data from the \ac{stop} before returning data to the manager
     \1 DMA/local memory controller
-      \2 transfer configuration data to \ac{pe} conroller or to store \ac{stop} results to a small local \ac{sram} which can be used for access by \ac{simd} or by the \ac{stop} function
+      \2 transfer configuration data to \ac{pe} controller or to store \ac{stop} results to a small local \ac{sram} which can be used for access by \ac{simd} or by the \ac{stop} function
 \end{outline}
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
@@ -48,7 +50,7 @@ The \ac{pe} has three major blocks:
 % ----------------------------------------------------------------------------------------------------
 \subsection{Instructions}
 \label{sec:Instructions}
-The instructions communicate:
+The instructions include information to control the operations below:
 
 \begin{outline}
   %\setlength{\baselineskip}{10pt}
@@ -63,11 +65,13 @@ The instructions communicate:
   %\setlength{\itemindent}{\leftmargin}
   %\setlength{\leftmargin}{0pt}
         \1 To the Manager
-            \2 ROI Storage descriptor
-            \2 Parameter/Weight Storage Descriptor
-                \3 Broadcast or Vectored
+            \2 Operation descriptor
+            \2 Parameter/Weight Storage Descriptor(s)
+                \3 reads for the two argument streams to the \ac{pe}
+                \3 read data can be broadcast or vectored to the \ac{pe}
             \2 Result write storage descriptor
                 \3 include descriptors for all destination managers
+            \2 Synchronization to other managers
         \1 To the \ac{pe}
             \2 \ac{stop} operation
             \2 \ac{simd} operation
@@ -75,13 +79,11 @@ The instructions communicate:
             \2 Operand Vector length
 \end{outline}
 
-Instructions include information to control the above operations.
 
-Instructions contain sub-instruction called descriptors. These descriptors contain the information to control the various operations associated with the processing of a group of ANs.
+Instructions contain sub-instructions called descriptors. These descriptors contain, amongst other things the information to control the various operations associated with the processing of a group of \acp{an}.
+The size of this group of \acp{an} is related to the number of execution lanes, which for this work is 32. A group can be anywhere from 1-32. It should be said that unless the group size consistently approaches 32 the system performance will be poor.
 
-The group size is related to the number of execution lanes which for the baseline system is 32. So a group can be anywhere from 1-32. It should be said that unless the group size consistently approaches 32 the system performance will be poor.
-
-An instruction will typically have four descriptors:
+An instruction will typically have up to four descriptors, although variable lengths are supported and will typically communicate:
 
 \begin{outline}
 \renewcommand{\outlinei}{enumerate}
@@ -91,9 +93,8 @@ An instruction will typically have four descriptors:
     \1 Result write
 \end{outline}
 
-Note: An operand stream will be reffered to as an argument.
-
-The instruction is actually an n-tuple where the tuple elements are descriptors and the number of elements can vary based on the operation being performed. In figure \ref{fig:instructionTuple} we see the format of a 4-tuple instruction which we use to perform an activation calculation for a group of neurons.
+The instruction is an n-tuple where the tuple elements are descriptors. The number of descriptors can vary based on the operation being performed. 
+In figure \ref{fig:instructionTuple} we see the format of a 4-tuple instruction which is used to perform an activation calculation for a group of \acp{an}.
 
 \begin{figure}[!t]
 \centering
@@ -106,11 +107,9 @@ The instruction is actually an n-tuple where the tuple elements are descriptors 
 \label{fig:instructionTuple}
 \end{figure}
 
-Now within a descriptor, we need to describe the various options such as storage descriptor pointer, number of operands etc..
-
-Again, we employ a n-tuple format where the first tuple element describes the descriptors operation followed by an m-tuple whose elements contain the options required for the operation.
-
-These option elements are a two-tuple with option and associated value.
+Within a descriptor, various options are described, such as storage descriptor pointer, number of operands etc..
+The descriptor also employs an n-tuple format where the first tuple element always describes the descriptor operation followed by an m-tuple whose elements contain the options required by the operation.
+The option elements within a descriptor are a two-tuple with option and associated value.
 In figure \ref{fig:descriptorTuple} we see the format of a 6-tuple descriptor.
 
 \begin{figure}[!t]

@@ -343,24 +343,88 @@ With fully-connected layers (see figure \ref{fig:Fully-Connected Interconnects})
 In many cases, a \ac{dnn} is constructed with lower layers being locally-connected and higher layers being fully connected.
 
 \begin{figure}[h]
-\centering
-  \begin{subfigure}{.4\textwidth}
+  \centering
+  \begin{subfigure}{.99\textwidth}
     \centering
-    \includegraphics[width=0.65\textwidth]{locallyConnectedInterconnects}
-    \captionsetup{width=.8\textwidth, justification=centering, skip=10pt}
-    \caption{Locally-Connected Interconnects}
-    \label{fig:Locally-Connected Interconnects}
-  \end{subfigure}%
-  \begin{subfigure}{.4\textwidth}
-    \centering
-    \includegraphics[width=0.85\textwidth]{fullyConnectedInterconnects}
-    \captionsetup{width=.8\textwidth, justification=centering, skip=10pt}
-    \caption{Fully-Connected Interconnects}
-    \label{fig:Fully-Connected Interconnects}
+    \begin{subfigure}{.4\textwidth}
+      \centering
+      \includegraphics[width=0.50\textwidth]{localArrayToArrayConnections}
+      \captionsetup{width=.8\textwidth, justification=centering, skip=10pt}
+      \caption{Local Array to Array}
+      \label{fig:Local Array to Array}
+    \end{subfigure}%
+    \begin{subfigure}{.4\textwidth}
+      \centering
+      \includegraphics[width=0.70\textwidth]{localArrayToLinearConnections}
+      \captionsetup{width=.8\textwidth, justification=centering, skip=10pt}
+      \caption{Local Array to Linear}
+      \label{fig:Local Array to Linear}
+    \end{subfigure}
   \end{subfigure}
+
+  \bigskip
+
+  \begin{subfigure}{.99\textwidth}
+    \centering
+    \begin{subfigure}{.4\textwidth}
+      \centering
+      \includegraphics[width=0.60\textwidth]{localLinearToArrayConnections}
+      \captionsetup{width=.8\textwidth, justification=centering, skip=10pt}
+      \caption{Local Linear to Array}
+      \label{fig:Local Linear to Array}
+    \end{subfigure}%
+    \begin{subfigure}{.4\textwidth}
+      \centering
+      \includegraphics[width=0.60\textwidth]{localLinearToLinearConnections}
+      \captionsetup{width=.8\textwidth, justification=centering, skip=10pt}
+      \caption{Local Linear to Linear}
+      \label{fig:Local Linear to Linear}
+    \end{subfigure}
+  \end{subfigure}
+
+  \bigskip
+
+  \begin{subfigure}{.99\textwidth}
+    \centering
+    \begin{subfigure}{.4\textwidth}
+      \centering
+      \includegraphics[width=0.60\textwidth]{fullLinearToArrayConnections}
+      \captionsetup{width=.8\textwidth, justification=centering, skip=10pt}
+      \caption{Full Linear to Array}
+      \label{fig:Full Linear to Array}
+    \end{subfigure}%
+    \begin{subfigure}{.4\textwidth}
+      \centering
+      \includegraphics[width=0.60\textwidth]{fullLinearToLinearConnections}
+      \captionsetup{width=.8\textwidth, justification=centering, skip=10pt}
+      \caption{Full Linear to Linear}
+      \label{fig:Full Linear to Linear}
+    \end{subfigure}
+  \end{subfigure}
+
+  \bigskip
+
+  \begin{subfigure}{.99\textwidth}
+    \centering
+    \begin{subfigure}{.4\textwidth}
+      \centering
+      \includegraphics[width=0.50\textwidth]{fullArrayToArrayConnections}
+      \captionsetup{width=.8\textwidth, justification=centering, skip=10pt}
+      \caption{Full Array to Array}
+      \label{fig:Full Array to Array}
+    \end{subfigure}%
+    \begin{subfigure}{.4\textwidth}
+      \centering
+      \includegraphics[width=0.7\textwidth]{fullArrayToLinearConnections}
+      \captionsetup{width=.8\textwidth, justification=centering, skip=10pt}
+      \caption{Full Array to Linear}
+      \label{fig:Full Array to Linear}
+    \end{subfigure}
+  \end{subfigure}
+
 \captionsetup{justification=centering, skip=10pt}
-\caption{Layer Connection Types}
-\label{fig:Layer Connection Types}
+\caption{Layer to Layer Connection Types}
+\label{fig:Layer to Layer Connection Types}
 \end{figure}
 
 With locally-connected layers, the pre-synaptic \acp{an} connection weights are often formed from identifying particular features. In early uses of locally-connected \acp{ann}, the first layers weights were often hand-generated. With automatically trained \acp{ann}, the feature detectors at each layer are often created during training.
@@ -377,7 +441,7 @@ Some contrived examples of locally-connected feature detectors are shown in figu
     \label{fig:Features and locally-connected filters (kernels)}
   \end{subfigure}%
 
-\bigskip
+  \bigskip
 
   \begin{subfigure}{.7\textwidth}
     \centering
@@ -411,7 +475,7 @@ These locally-connected layers have multiple filters applied to the same region-
 The number of feature filters applied at each layer can be tens to hundreds of filters.
 The filters operating on these 3D layers are themselves 3D and therefore the number of weights associated with each filter is usually hundreds to thousands of weights. 
 
-The feature kernels employed in the locally-conencted layers can be unique to the regions of the previous layer or the same filter kernels can be employed across the entire previous layer.
+The feature kernels employed in the locally-connected layers can be unique to the regions of the previous layer or the same filter kernels can be employed across the entire previous layer.
 In the case of employing the same kernels across the entire input layer the \ac{ann} is known as a \acf{cnn}. The \acp{cnn} are examples of \acp{ann} which can take advantage of reuse described in \ref{sec:chap-one}. 
 These \acp{cnn} can store the filter kernels in local \ac{sram} and construct an entire feature plane. These \acp{cnn} can be considered a subset of the generic case of \ac{dnn} where the kernels can be unique across the entire input layer.
 This work considers the more generic \ac{dnn} case and supports acceleration of both \acp{dnn} and the subset \acp{cnn}.

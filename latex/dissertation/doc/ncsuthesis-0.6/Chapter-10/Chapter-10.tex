@@ -16,7 +16,7 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 \captionsetup{justification=centering}
 \captionsetup{width=.9\linewidth}
 \centerline{
-\mbox{\includegraphics[scale=0.07]{DetailedFlowDiagram.jpg}}
+\mbox{\includegraphics[scale=0.07]{DetailedFlowDiagram}}
 }
 \center\caption{Sub-System Column (SSC) Flow Diagram}
 \label{fig:DetailedFlowDiagram}
@@ -34,16 +34,16 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 \captionsetup{justification=centering}
 \captionsetup{width=0.9\textwidth}
 \centerline{
-\mbox{\includegraphics[angle=0, width=1.0\textwidth]{DetailedBlockDiagram.jpg}}
+\mbox{\includegraphics[angle=0, width=1.0\textwidth]{DetailedBlockDiagram}}
 }
 \center\caption{Sub-System Column (SSC) Block Diagram}
 \label{fig:DetailedBlockDiagram}
 \end{sidewaysfigure}
 
-\subsection{Manager}
+\section{Manager}
 \label{sec:manager}
 
-\subsubsection{Operation Decode}
+\subsection{Operation Decode}
 \label{ssec:operationDecode}
 
 In figure \ref{fig:DetailedBlockDiagram}, instructions are read from instruction memory and passed to the instruction decoder.
@@ -57,21 +57,21 @@ The SIMD pointer is essentially a program counter that will be invoked when the 
 Note that other types of stOp includes a NOP with a destination of local memory. This allows us to transfer block of instruction or data from the manager to the PE.
 
 
-\subsubsection{Argument Decode}
+\subsection{Argument Decode}
 \label{ssec:argumentDecode}
 The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
 
 As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
 
 
-\subsubsection{Result data Processing}
+\subsection{Result data Processing}
 \label{ssec:resultDataprocessing}
 The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
 
 As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
 
 
-\subsubsection{Memory Write Controller}
+\subsection{Memory Write Controller}
 \label{ssec:memoryWriteController}
 
 The Memory Write Controller (MWC) receives data from to sources, the NoC via the MCNTL and the RDP.
@@ -85,10 +85,10 @@ The MWC can only operate on one of the two sources at any one time. However, the
 The holding registers have the potential in future to allow aggregation of data from one or more operations to allow a coalesced write back to main memory.
 
 
-\subsection{Processing Engine}
+\section{Processing Engine}
 \label{sec:pe}
 
-\subsubsection{Configuration}
+\subsection{Configuration}
 \label{ssec:peConfiguration}
 
 A configuration controller within the PE (PE\_CNTL) takes the OOB packet from the Manager and extracts the stOp and SIMD operation pointers.
@@ -106,7 +106,7 @@ The stOp\_CNTL configures the:
 
 The SIMD operation pointer is sent to the SIMD.
 
-\subsubsection{Streaming Operations}
+\subsection{Streaming Operations}
 \label{ssec:stOps}
 
 The streaming Operations (stOp) are designed to operate on data passed from the Manager at or near line-rate. If line-rate cannot be maintained, a flow-control mechanism is employed to slow the data from the Manager.
@@ -115,7 +115,7 @@ Once the stOp has processed the data, it passes the result to the SIMD. Note in 
 
 It should also be stated that while the stOp is processing the current data, the SIMD may be operating on the result of the previous operation. It is expected the SIMD will have completed the previous operation before the stOp completes the current operation, but again, if necessary a flow control mechanism between SIMD and stOP will be engaged if the SIMD is not ready.
 
-\subsubsection{SIMD}
+\subsection{SIMD}
 \label{ssec:simd}
 
 The SIMD takes the result data and performs the operation starting at the program counter (PC) indicated by the SIMD operation pointer provided by the PE\_CNTL.
@@ -128,7 +128,7 @@ In most cases this will be the AN activation function and in the baseline system
 
 When the SIMD has completed its operation, it passes the result to the SIMD Upstream controller to be returned to the Manager.
 
-\subsubsection{Result Data}
+\subsection{Result Data}
 \label{ssec:result}
 
 The SIMD Upstream Controller (SUI) takes the data and encapsulates it in an Upstream packet. Included in the packet is the tag required by the Return Data processor within the Manager.
