@@ -31,12 +31,13 @@ In the case of \ac{hbm} and DiRAM4, the technology can be combined with addition
 The question becomes, can a useful system coexist within the same 3D footprint?
 
 This work targeted a baseline system with:
-\begin{itemize}
-  \item Computations requiring single precision floating point precision
-  \item Tezzaron \acf{diram4} \cite{tezzaron:diram4} for main memory
-\end{itemize}
+\begin{outline}
+  \1 Computations requiring single precision floating point precision
+  \1 Tezzaron \acf{diram4} \cite{tezzaron:diram4} for main memory
+\end{outline}
 The work includes customizing the interface to a 3D-\ac{dram}, researching data structures to describe storage of \ac{ann} parameters, designing a memory manager with unique micro-coded instructions and a \ac{pe} layer.  
-The system is designed such that a sub-system, known as a \ac{ssc} operates on one of these disjoint memories within the 3D-\ac{dram} (see figure \ref{fig:diram4Layout}).
+The targetted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs 64 disjoint memories arranged in a pjhysical array.
+The system is designed such that a sub-system, known as a \ac{ssc} operates on one of the disjoint memories within the 3D-\ac{dram} (see figure \ref{fig:diram4Layout}).
 
 When the \acp{ssc} need to share data or \ac{an} activations, the data is passed between \acp{ssc} using a \ac{noc}.
 
@@ -46,6 +47,16 @@ An overview of the various blocks and interconnects are given below:
 \section{3D-DRAM}
 The targetted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs multiple memory array layers in conjunction with a control and IO layer.
 The memory is formed from 64 disjoint sub-memories each providing upwards of \SI[per-mode=symbol]{1}{\giga\bit} with a total capacity of at least \SI[per-mode=symbol]{64}{\giga\bit}.
+Unlike traditional \ac{dram}, the \ac{diram4} has two independent channel which are accessed using \ac{ddr} signalling on the control signals.
+Each channel has 32 banks and 4096 pages per bank with \SI[per-mode=symbol]{4096}{\bit\per page}.
+
+The standard \ac{diram4} has a 32-bit read databus and a 32-bit write databus enabling simultaneous read and write. Both read and write databus employ \ac{ddr} signaling.
+The read and write transactions are burst-of-two providing 64bits per read/write. When accessing a \ac{dram}, a read and write are often referred to as a cacheline.
+The device is designed to operate at \SI[per-mode=symbol]{1}{\giga\hertz} although this work targeted a \SI[per-mode=symbol]{500}{\mega\hertz} clock frequency.
+
+This work is proposing some changes to the \ac{diram4} which are outlined in chapter \ref{sec:DRAM Customizations}. One of these proposed changes is to widen the read and write databuses to 2048-bits.
+Using the same burst-of-two means each read and write will access an entire page. A cacheline becomes 4096-bits.
+Another proposed change is the add mask bits to the write databuse to avoid having to perform read/modify/writes when writing back data much smaller than the new large cacheline.
 
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
@@ -63,7 +74,8 @@ The memory is formed from 64 disjoint sub-memories each providing upwards of \SI
 % ----------------------------------------------------------------------------------------------------
 \section{Manager Layer}
 The Manager block is the main controller in the system. The operations required to process an \ac{ann} are formed from individual instructions which are decoded by the Manager. 
-These instructions include descriptors to describe memory read operations, processing engine operations and memory write operations. The manager reads these system instructions from an instruction memory, decodes the instruction and configures the various blocks in the system.
+These instructions include descriptors to describe memory read operations, processing engine operations, memory write operations and general system operations for synchronization. 
+The manager reads these system instructions from an instruction memory, decodes the instruction and configures the various blocks in the system.
 The configuration includes:
 \begin{itemize}
       \item initiate operand reads from \ac{dram}
@@ -75,7 +87,12 @@ The configuration includes:
 % ----------------------------------------------------------------------------------------------------
 \section{Processing Layer}
 \label{sec:Processing Layer}
-The \ac{pe} is able to operate on data streamed directly from the \ac{dram} via the Manager layer. The \ac{pe} is configured by the manager to perform operations on the operand data streamed from the manager. In the baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. These operands typically are the pre-synaptic neuron activations and the connection weights. The \ac{pe} also performs the activation function on the result of the MAC to generate the neuron activation value. These 32 activation values are sent back to the Manager layer.
+The \ac{pe} is able to operate on data streamed directly from the \ac{dram} via the Manager layer. 
+The \ac{pe} is configured by the manager to perform operations on the operand data streamed from the manager. 
+In the baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. 
+These operands typically are the pre-synaptic neuron activations and the connection weights. 
+The \ac{pe} also performs the activation function on the result of the MAC to generate the neuron activation value. 
+These 32 activation values are sent back to the Manager layer.
 
 % ----------------------------------------------------------------------------------------------------
 \section{Layer Interconnect}

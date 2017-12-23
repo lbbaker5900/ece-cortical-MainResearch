@@ -599,11 +599,12 @@ If \ac{ann}s fulfill their potential, systems employing \ac{ann}s will utilize t
 Considering the various functions a complex customer facing or edge application system performs, it is likely that many real-world applications will employ multiple disparate instances of these useful sized \ac{ann}s.
 Assuming these complex functions will require \ac{ann}s similar in size to figure \ref{fig:Baseline DNN} and \cite{krizhevsky2012imagenet}, these implementations will be processing multiple large \ac{ann}s at or near real-time.
 
+\subsection[ANN Processing]{ANN Processing}
+\label{sec:ANN Processing}
+
 Considering the storage required for the input, the \ac{an} states and most significantly the weights for each of the \ac{an}s, the storage requirements results in gigabytes of memory.
 When these \ac{ann}s are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
 
-\subsection[ANN Processing]{ANN Processing}
-\label{sec:ANN Processing}
 As a metric, this work assumes that any useful \ac{ann} will be similar to \ref{fig:Baseline DNN} which utilizes $>\num{900e3}$\acp{an} and $\approx\num{200e6}$ parameters. 
 Although there is a lot of debate regarding number formats for \ac{ann}s, this work also assumes single-precision floating point.
 Assuming an \ac{ann} with \num{900e3}\acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{30}{\tera \bit \per \second} (see equation \ref{eq:averageBandwidth}).
