@@ -229,12 +229,14 @@ descDelin = DescriptorDelin()
 
 # FIXME : VERILOG
 # must match manager_typedef.vh
-DescriptorType = namedtuple('DescriptorType',   \
+DescriptorType = namedtuple('DescriptorType',    \
                                      'WIDTH      \
                                       NOP        \
                                       OP         \
                                       MR         \
-                                      MW         ')
+                                      MW         \
+                                      CFG        \
+                                      Status     ')
 descType  = DescriptorType._make([int(math.ceil(math.log(len(DescriptorType._fields)-1,16)))] + range(len(DescriptorType._fields)-1))
 
 OptionType = namedtuple('OptionType',   \
@@ -296,6 +298,7 @@ orderValues  = OrderValues._make([int(math.ceil(math.log(len(OrderValues._fields
 
 cfgValues = namedtuple('cfgValues',              \
                                      'SYNC       \
+                                      SYNC_GROUP \
                                       NOP        ')
 cfgValues  = cfgValues._make([int(math.ceil(math.log(len(cfgValues._fields)-1,16)))] + range(len(cfgValues._fields)-1))
 

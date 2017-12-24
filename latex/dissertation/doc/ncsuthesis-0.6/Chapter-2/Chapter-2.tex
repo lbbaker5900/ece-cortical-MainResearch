@@ -56,8 +56,8 @@ The various chemical and electrical processes that result in the generation and 
 
 
 %\section[NnSP]{NnSP{\cite{esmaeilzadeh2005nnsp}}}
-\section[Artificial Neural Networks]{Artificial Neural Networks}
-\label{sec:Artificial Neural Networks}
+\section[ANN Overview]{ANN Overview}
+\label{sec:ANN Overview}
 
 When modeling these neurons in artificial neural networks, the neuron models either generate actual spikes similar to actual neurons or
 produce a value which is proportional to the rate at which spikes occur.
@@ -263,7 +263,7 @@ The \ac{an} activation calculation for the rate-based \ac{an} in figure \ref{fig
 \text{and }   &f(x) \text{ is the activation function such as ReLu } \notag 
 \end{alignat}
 
-\section[ANN Layers Problem]{ANN Layers}
+\section[ANN Layers]{ANN Layers}
 \label{sec:ANN Layers}
 
 In figures \ref{fig:Network of ANs} and \ref{fig:Rate-based Model Network}, the \ac{ann} is shown to be constructed using layers of \acp{an}. It has long been known that a single layer of \acp{an} can be used linearly partition an n-dimensional input, as shown in figure \ref{fig:linear discrimination}.
@@ -584,10 +584,6 @@ An example of a \ac{dnn} can be seen in figure \ref{fig:DNN showing layer order}
 \end{sidewaysfigure}
 \fi
 
-
-\section[The Problem]{The Problem}
-\label{sec:The Problem}
-
 To approach the capabilities observed in human behavior, such as object recognition \ac{ann}s have become very large. The example shown in figure \ref{fig:Baseline DNN}, which is based on the work from \cite{krizhevsky2012imagenet}, has hundreds of thousands of \acp{an} and hundreds of millions of connection weights (see table \ref{tab:Layer Configuration}).
 These \acp{ann} utilize these hundreds of thousands of \acp{an} to implement what a human would consider a relatively straightforward task.
 For example, a "useful" \ac{ann} similar to that described in \cite{krizhevsky2012imagenet} that is used to recognize up to 1000 different object classes, has a network size of approximately 650,000 \acp{an} and 630 million synaptic connections \cite{krizhevsky2012imagenetPreso}. 
@@ -599,51 +595,13 @@ If \ac{ann}s fulfill their potential, systems employing \ac{ann}s will utilize t
 Considering the various functions a complex customer facing or edge application system performs, it is likely that many real-world applications will employ multiple disparate instances of these useful sized \ac{ann}s.
 Assuming these complex functions will require \ac{ann}s similar in size to figure \ref{fig:Baseline DNN} and \cite{krizhevsky2012imagenet}, these implementations will be processing multiple large \ac{ann}s at or near real-time.
 
-\subsection[ANN Processing]{ANN Processing}
+\section[ANN Processing]{ANN Processing}
 \label{sec:ANN Processing}
 
-Considering the storage required for the input, the \ac{an} states and most significantly the weights for each of the \ac{an}s, the storage requirements results in gigabytes of memory.
+Considering the storage required for the input, the \ac{an} states and most significantly the weights for connections, the storage requirements results in gigabytes of memory.
 When these \ac{ann}s are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
 
-As a metric, this work assumes that any useful \ac{ann} will be similar to \ref{fig:Baseline DNN} which utilizes $>\num{900e3}$\acp{an} and $\approx\num{200e6}$ parameters. 
-Although there is a lot of debate regarding number formats for \ac{ann}s, this work also assumes single-precision floating point.
-Assuming an \ac{ann} with \num{900e3}\acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{30}{\tera \bit \per \second} (see equation \ref{eq:averageBandwidth}).
-
-% {2} means 2 columns
-\begin{alignat}{2} 
-  \label{eq:averageBandwidth}
-  \text{Average }\text{Bandwidth} & = \sum_{\mathbf{n}=0}^{\bar{\mathbf{N_n}}}\big(\frac{\Bar{\mathbf{N_a}}\cdot \Bar{\mathbf{C_p}} \cdot \bar{\mathbf{b_w}}}{\bar{\mathbf{T_p}}} \big) \notag  \\
-  & = \sum_{\mathbf{n}=0}^{9}\big(\frac{\num{900d3} \cdot \num{1.65d3} \cdot 32}{\num{16d-3}} \big) \notag \\
-  & = \sum_{\mathbf{n}=0}^{9} \SI[per-mode=symbol]{2.97}{\tera \bit \per \second}  \notag \\
-  & \approx \SI[per-mode=symbol]{30}{\tera\bit\per\second} \\
-  \text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
-                &\mathbf{N}_a \text{ is the average number of \ac{an}s} \notag\\
-                &\mathbf{C_p} \text{ is the average number of connections} \notag\\
-  \text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
-\end{alignat}
-
-When implementing \ac{ann}s, the memory requirements are also significant. The storage is required for the input, the \ac{an} states and most significantly the parameters for each of the \acp{an} pre-synaptic connections. 
-For the case shown in \ref{fig:Baseline DNN}, there are \num{200e6} parameters requiring \SI[per-mode=symbol]{0.8}{\giga\byte} and \num{900e3} \acp{an} requiring \SI[per-mode=symbol]{3.6}{\mega\byte} storage.
-
-The storage required for 10 \acp{ann} is of the order of \SI[per-mode=symbol]{8.0}{\giga\byte}.
-
-\begin{table}[h]
-  \captionsetup{justification=centering, skip=3pt}
-  \caption{Bandwidth and Storage Design Requirements}
-  \vspace{3pt}
-  \label{tab:Bandwidth and Storage Design Requirements}
-  \centering
-    \begin{adjustbox}{width=0.25\textwidth}
-      \begin{tabular}{cccc}
-        \toprule
-                   Parameter             &        Value                                  \\\hline
-                   Bandwidth             &\SI[per-mode=symbol]{30}{\tera\bit\per\second} \\
-                   Storage               &\SI[per-mode=symbol]{8.0}{\giga\byte}          \\
-        \bottomrule
-      \end{tabular}
-    \end{adjustbox}
-    \vspace{3pt}
-\end{table}
+As a metric, this work assumes that any useful \ac{ann} will be similar to that shown in figure \ref{fig:Baseline DNN} which utilizes $>\num{900e3}$\acp{an} and $\approx\num{200e6}$ parameters. 
 Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for edge systems employing inference on multiple disparate useful-sized neural networks.}}}
 %\hlc[gray]{hello}
 
@@ -692,6 +650,7 @@ require multiple instances of \ac{ann}s of similar size to the \ac{ann} describe
 For example employing multiple cameras or monitoring and controlling different systems in a drone, a automobile each with an image recognition \ac{ann}\cite{krizhevsky2012imagenet}\cite{bojarski2016end} for navigation, engine monitoring along with other system control.
 \fi
 
+\iffalse
 Some might suggest the requirements of these applications would be satisified by employing multiple graphics processor units(GPU).
 In fact, Graphics processing Units (GPU) are used to implement large \ac{ann}s and in some \ac{ann} architectures, such as \acp{cnn}, they are quite effective. However, we should not forget they are not optimized purely for \ac{ann} processing and are restricted by available SRAM and they are power hungry. These limitations will limit the effectiveness of GPUs regardless of what we might hear from the GPU community.
 Even in the case of newer GPUs which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} tecnology.
@@ -704,8 +663,121 @@ Overall GPUs have limited suitability to meet edge application requirements.
 Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or \ac{sram}. 
 These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an edge application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
 
-How this work addresses the problem are outlined in section \ref{chap-five}.
+\fi
 
+\iffalse
+How this work addresses the problem are outlined in section \ref{chap-five}.
+\fi
+
+
+Although there is a lot of debate regarding number formats for \ac{ann}s, this work also assumes single-precision floating point.
+Assuming an \ac{ann} with \num{900e3}\acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{30}{\tera \bit \per \second} (see equation \ref{eq:averageBandwidth}).
+
+% {2} means 2 columns
+\begin{alignat}{2} 
+  \label{eq:averageBandwidth}
+  \text{Average }\text{Bandwidth} & = \sum_{\mathbf{n}=0}^{\bar{\mathbf{N_n}}}\big(\frac{\Bar{\mathbf{N_a}}\cdot \Bar{\mathbf{C_p}} \cdot \bar{\mathbf{b_w}}}{\bar{\mathbf{T_p}}} \big) \notag  \\
+  & = \sum_{\mathbf{n}=0}^{9}\big(\frac{\num{900d3} \cdot \num{1.65d3} \cdot 32}{\num{16d-3}} \big) \notag \\
+  & = \sum_{\mathbf{n}=0}^{9} \SI[per-mode=symbol]{2.97}{\tera \bit \per \second}  \notag \\
+  & \approx \SI[per-mode=symbol]{30}{\tera\bit\per\second} \\
+  \text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
+                &\mathbf{N}_a \text{ is the average number of \ac{an}s} \notag\\
+                &\mathbf{C_p} \text{ is the average number of connections} \notag\\
+  \text{and }   &\mathbf{T_p} \text{ is the processing time} \notag
+\end{alignat}
+
+When implementing \ac{ann}s, the memory requirements are also significant. The storage is required for the input, the \ac{an} states and most significantly the parameters for each of the \acp{an} pre-synaptic connections. 
+For the case shown in \ref{fig:Baseline DNN}, there are \num{200e6} parameters requiring \SI[per-mode=symbol]{0.8}{\giga\byte} and \num{900e3} \acp{an} requiring \SI[per-mode=symbol]{3.6}{\mega\byte} storage.
+
+The storage required for 10 \acp{ann} is of the order of \SI[per-mode=symbol]{8.0}{\giga\byte}.
+
+\begin{table}[h]
+  \captionsetup{justification=centering, skip=3pt}
+  \caption{Bandwidth and Storage Design Requirements}
+  \vspace{3pt}
+  \label{tab:Bandwidth and Storage Design Requirements}
+  \centering
+    \begin{adjustbox}{width=0.25\textwidth}
+      \begin{tabular}{cccc}
+        \toprule
+                   Parameter             &        Value                                  \\\hline
+                   Bandwidth             &\SI[per-mode=symbol]{30}{\tera\bit\per\second} \\
+                   Storage               &\SI[per-mode=symbol]{8.0}{\giga\byte}          \\
+        \bottomrule
+      \end{tabular}
+    \end{adjustbox}
+    \vspace{3pt}
+\end{table}
+
+
+
+Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, 
+the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for edge systems employing inference on multiple disparate useful-sized neural networks.}}}
+%\hlc[gray]{hello}
+
+\iffalse
+Considering that \ac{dram} is required to store the \ac{ann} parameters, why is it that much of the \ac{asic} and \ac{asip} \ac{ann} research employs \ac{sram} as an intermediate store? Well, in practice there are benefits if you can operate solely out of \ac{sram}.
+Certainly good performance and potentially low power.
+But use of \ac{sram} makes assumptions on the type of \acp{ann} that can be supported and the application in which the \ac{ann} is being deployed.
+The primary requirement of the type of \ac{ann} and the deployed application to allow effective use of \ac{sram} is "reuse". Reuse means that once parameters are transferred and stored in \ac{sram}, these parameters can be reused such that the \ac{sram} \iffalse isn't simply an intermediate memory but \fi is something akin to a cache.
+
+In some \ac{ann}s there are reuse opportunities. A prime example is \acp{cnn}, where the connection weights are reused. In \acp{cnn}, a common filter is passed across an input to form the next layer. These feature filters can be held in memory and the input is read from \ac{dram} thus reducing the \ac{dram} bandwidth.
+Even with \ac{dnn}s where weights may not be reused, when implementing multiple \ac{dnn}s, there is opportunity to hold the input in memory.
+If the system is being employed in cloud applications or in training, there is opportunity to reuse inputs whilst performing batch processing.
+
+But \ac{sram} comes at a price, its big. Often when we see physical layouts of NN processors, they are dominated by the silicon area of the \ac{sram}. The area required for \ac{sram} has been understood for quite some time and companies attempt to create custom \acp{sram} to minimize the area impact.
+
+So the question becomes, can a system employ \ac{dram} with minimal \ac{sram} and still provide a high performance system within acceptable area constraints?
+
+\iffalse
+We believe a system can be designed with \ac{dram} as the primary processing store. This will require careful use of data structures to describe storage within \ac{dram} to ensure we make good use of the potential bandwidth. But there are other benefits we will take advantage of, but more about that later.
+\fi
+
+\iffalse
+There important application is disparate \ac{ann}s because specifically a form of \ac{dnn}, Convolutional Neural networks (\ac{cnn}) have gotten good press recently, but they are not the only \ac{dnn}.
+\fi
+
+Even in cloud applications, there are limitations on reuse. We paraphrase a quote from a Google paper \cite{tensorflow2015-whitepaper} on their Tensor Processing Unit ASIC (TPU):
+
+\hyphenquote{american}{the architecture research community is paying attention to NNs, but of all the papers at ISCA 2016 on hardware accelerators for NNs, alas, all nine papers looked at \ac{cnn}s, and only two mentioned other NNs. Unfortunately \ac{cnn}s represent only about 5\% of our datacenter NN workload}
+
+The applications targeted by the google TPU \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected \ac{dnn}s and in these cases weight reuse is not as benefitial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
+
+Therefore, implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally and fully connected \ac{dnn}s and LSTMs.
+
+This work focuses on edge applications employing disparate \ac{ann}s and assumes both weight reuse and batch processing do not apply.
+Considering systems will want to perform multiple \ac{dnn}s simultaneously suggests that these edge systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
+
+In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
+\fi
+
+
+\iffalse
+
+\iffalse
+So considering the performance improvements observed in other applications, it is expected that many customer facing or edge applications will implement multiple instances of artificial neural networks to perform various functions.
+have very large memory and processing requirements.
+require multiple instances of \ac{ann}s of similar size to the \ac{ann} described in \cite{krizhevsky2012imagenet}.
+
+For example employing multiple cameras or monitoring and controlling different systems in a drone, a automobile each with an image recognition \ac{ann}\cite{krizhevsky2012imagenet}\cite{bojarski2016end} for navigation, engine monitoring along with other system control.
+\fi
+
+Some might suggest the requirements of these applications would be satisified by employing multiple graphics processor units(GPU).
+In fact, Graphics processing Units (GPU) are used to implement large \ac{ann}s and in some \ac{ann} architectures, such as \acp{cnn}, they are quite effective. However, we should not forget they are not optimized purely for \ac{ann} processing and are restricted by available SRAM and they are power hungry. These limitations will limit the effectiveness of GPUs regardless of what we might hear from the GPU community.
+Even in the case of newer GPUs which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} tecnology.
+For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwith of the order of \SI[per-mode=symbol]{4}{\tera \bit \per \second}.
+Also, its has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
+Given these multiple GPU systems have high real-estate and power requirements and given each instance consumes of the order of \SI{100}{\watt} to \SI{200}{\watt}.
+Overall GPUs have limited suitability to meet edge application requirements.
+
+
+Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or \ac{sram}. 
+These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an edge application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
+
+\iffalse
+How this work addresses the problem are outlined in section \ref{chap-five}.
+\fi
+\fi
 
 %%---------------------------------------------------------------------------------------------------------
 %%---------------------------------------------------------------------------------------------------------
