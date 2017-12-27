@@ -32,11 +32,11 @@ The question becomes, can a useful system coexist within the same 3D footprint?
 
 This work targeted a baseline system with:
 \begin{outline}
-  \1 Computations requiring single precision floating point precision
+  \1 Computations requiring single precision floating point
   \1 Tezzaron \acf{diram4} \cite{tezzaron:diram4} for main memory
 \end{outline}
 The work includes customizing the interface to a 3D-\ac{dram}, researching data structures to describe storage of \ac{ann} parameters, designing a memory manager with unique micro-coded instructions and a \ac{pe} layer.  
-The targetted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs 64 disjoint memories arranged in a pjhysical array.
+The targeted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs 64 disjoint memories arranged in a pjhysical array.
 The system is designed such that a sub-system, known as a \ac{ssc} operates on one of the disjoint memories within the 3D-\ac{dram} (see figure \ref{fig:diram4Layout}).
 
 When the \acp{ssc} need to share data or \ac{an} activations, the data is passed between \acp{ssc} using a \ac{noc}.
@@ -45,7 +45,7 @@ An overview of the various blocks and interconnects are given below:
 
 % ----------------------------------------------------------------------------------------------------
 \section{3D-DRAM}
-The targetted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs multiple memory array layers in conjunction with a control and IO layer.
+The targeted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs multiple memory array layers in conjunction with a control and IO layer.
 The memory is formed from 64 disjoint sub-memories each providing upwards of \SI[per-mode=symbol]{1}{\giga\bit} with a total capacity of at least \SI[per-mode=symbol]{64}{\giga\bit}.
 Unlike traditional \ac{dram}, the \ac{diram4} has two independent channel which are accessed using \ac{ddr} signalling on the control signals.
 Each channel has 32 banks and 4096 pages per bank with \SI[per-mode=symbol]{4096}{\bit\per page}.
