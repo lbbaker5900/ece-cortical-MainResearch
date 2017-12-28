@@ -251,6 +251,7 @@ OptionType = namedtuple('OptionType',   \
                                       MEMORY         \
                                       NUM_OF_ARG0_OPERANDS \
                                       NUM_OF_ARG1_OPERANDS \
+                                      SYNC_GROUP     \
                                       CONFIG         \
                                       STATUS')
 optionType  = OptionType._make([int(math.ceil(math.log(len(OptionType._fields)-1,16)))] + range(len(OptionType._fields)-1))
@@ -296,12 +297,19 @@ OrderValues = namedtuple('OrderValues',              \
 orderValues  = OrderValues._make([int(math.ceil(math.log(len(OrderValues._fields)-1,16)))] + range(len(OrderValues._fields)-1))
 
 
-cfgValues = namedtuple('cfgValues',              \
-                                     'SYNC       \
-                                      SYNC_GROUP \
-                                      NOP        ')
-cfgValues  = cfgValues._make([int(math.ceil(math.log(len(cfgValues._fields)-1,16)))] + range(len(cfgValues._fields)-1))
+# There are eight 6-bit configuration registers providing 24 bits in total
+# MODEREG is 2-bits with
+cfgFields = namedtuple('cfgFields',                  \
+                                     'CFG_REG_ID     \
+                                      CFG_REG_VALUES \
+                                                 ')
+cfgFields  = cfgFields._make([int(math.ceil(math.log(len(cfgFields._fields)-1,16)))] + range(len(cfgFields._fields)-1))
 
+# CFG Reg :        0                 1-5
+#   0     : Return Data False        TBD
+#   1     :       TBD                TBD
+#   2     :       TBD                TBD
+#   3     :       TBD                TBD
 
 
 

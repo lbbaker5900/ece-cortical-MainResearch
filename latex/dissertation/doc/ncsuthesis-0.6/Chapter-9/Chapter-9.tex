@@ -7,9 +7,9 @@ In the context of this system and \ac{an} state calculation, the basic operation
 \begin{outline}
     \1 Synchronization to other managers
     \1 Inform the Manager and \ac{pe} which operations are to be performed
-    \1 Inform the manager to access the states of the pre-synaptic neurons
-    \1 Inform the manager to access the weights of the connections from the pre-synaptic ANs
-    \1 Provide the pre-synaptic neuron weights and states to the processing engine execution lanes
+    \1 Inform the manager where to access the states of the pre-synaptic neurons
+    \1 Inform the manager where to access the weights of the connections from the pre-synaptic ANs
+    \1 How to provide the pre-synaptic neuron weights and states to the processing engine execution lanes
     \1 Inform the manager where to store the resulting AN state back to memory
 \end{outline}
 
@@ -83,14 +83,14 @@ The instructions include information to control the operations below:
 Instructions contain sub-instructions called descriptors. These descriptors contain, amongst other things the information to control the various operations associated with the processing of a group of \acp{an}.
 The size of this group of \acp{an} is related to the number of execution lanes, which for this work is 32. A group can be anywhere from 1-32. It should be said that unless the group size consistently approaches 32 the system performance will be poor.
 
-An instruction will typically have four descriptors which will include:
+To perform \ac{an} activation calculations, an instruction will typically have four descriptors which will include:
 
 \begin{outline}
 \renewcommand{\outlinei}{enumerate}
-    \1 Operation
-    \1 Memory read for operand stream 0
-    \1 Memory read for operand stream 1
-    \1 Result write
+    \1 Operation descriptor 
+    \1 Memory read descriptor for operand stream 0
+    \1 Memory read descriptor for operand stream 1
+    \1 Result descriptor write
 \end{outline}
 
 The instruction is an n-tuple where the tuple elements are descriptors. The number of descriptors can vary based on the operation being performed. 

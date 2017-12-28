@@ -7,10 +7,15 @@
 \chapter{System Overview}
 \label{chap-five}
 \label{sec:System Overview}
-This work employs \ac{3dic} technology along with a customized 3D-DRAM. The objective was to demonstrate that a pure \ac{3dic} system can implement multiple disparate \acp{ann}. By physically staying within the \ac{3dic} footprint and taking advantage of high
-density \acp{tsv} this work is able to maintain a significantly higher bandwidth over 2D or 2.5D \ac{asic} or \ac{asip} solutions.
+As mentioned in chapter \ref{sec:Introduction} and chapter \ref{Motivation}, this works target application processes mulltiple \acp{ann} each of which have limited opportunities for both weight reuse and batch processing.
+These requirements require \ac{dram} to be employed for main storage of \ac{ann} parameters and local \ac{sram} is of limited use.
+Under these conditions, the \ac{dram} bandwidth is the system bottleneck.
 
-The \ac{3dic} system die stack (figure \ref{fig:3DICStack}) includes the 3D-\ac{dram} with a system manager below and one or more processing layers below the manager.
+To meet these requirements, this work proposed employing \acp{3dic} technology along with a customized \ac{3d} \ac{dram} and \ac{asic} technology. 
+By physically staying within the \ac{3dic} footprint and taking advantage of high density \acp{tsv} this work is able to maintain a significantly higher bandwidth over 2D or 2.5D \ac{asic} or \ac{asip} solutions.
+The objective was to demonstrate that a pure \ac{3dic} system can implement multiple disparate \acp{ann} within reasonable power and area constraints. 
+
+The \ac{3dic} system die stack (figure \ref{fig:3DICStack}) includes the \ac{3d}-\ac{dram} with a system manager below and one or more processing layers below the manager.
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
 \centering
@@ -26,7 +31,7 @@ The \ac{3dic} system die stack (figure \ref{fig:3DICStack}) includes the 3D-\ac{
 3D-DRAM has recently become available in standards such as \ac{hbm} and \ac{hmc} and proprietary devices such as the DiRAM4 available from Tezzaron. 
 These technologies provide high capacity within a small footprint.
 
-In the case of \ac{hbm} and DiRAM4, the technology can be combined with additional custom layers to provide a system solution.
+In the case of \ac{hbm} and \ac{diram4} \cite{tezzaron:diram4}, the technology can be combined with additional custom layers to provide a system solution.
 
 The question becomes, can a useful system coexist within the same 3D footprint?
 
@@ -36,16 +41,18 @@ This work targeted a baseline system with:
   \1 Tezzaron \acf{diram4} \cite{tezzaron:diram4} for main memory
 \end{outline}
 The work includes customizing the interface to a 3D-\ac{dram}, researching data structures to describe storage of \ac{ann} parameters, designing a memory manager with unique micro-coded instructions and a \ac{pe} layer.  
-The targeted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs 64 disjoint memories arranged in a pjhysical array.
-The system is designed such that a sub-system, known as a \ac{ssc} operates on one of the disjoint memories within the 3D-\ac{dram} (see figure \ref{fig:diram4Layout}).
+The targeted 3D-\ac{dram}, the Tezzaron DiRAM4 employs 64 disjoint memories arranged in a physical array.
+This works system is designed such that a sub-system, known as a \ac{ssc} operates on one of the disjoint memories within the 3D-\ac{dram} (see figure \ref{fig:diram4Layout}).
 
 When the \acp{ssc} need to share data or \ac{an} activations, the data is passed between \acp{ssc} using a \ac{noc}.
 
-An overview of the various blocks and interconnects are given below:
+An overview of the various blocks and interconnects are given in sections \ref{sec:3ddram} through  \ref{sec:Inter-Manager Communication}
+with additional detail provided in chapter \ref{sec:Detailed System Description}.
 
 % ----------------------------------------------------------------------------------------------------
-\section{3D-DRAM}
-The targeted 3D-\ac{dram}, the Tezzaron DiRAM4 is a 3D-\ac{dram} employs multiple memory array layers in conjunction with a control and IO layer.
+\section{Customized \ac{dram} : \acf{diram4}}
+\label{sec:3ddram}
+The \ac{diram4} \cite{tezzaron:diram4} employs multiple memory array layers in conjunction with a control and IO layer.
 The memory is formed from 64 disjoint sub-memories each providing upwards of \SI[per-mode=symbol]{1}{\giga\bit} with a total capacity of at least \SI[per-mode=symbol]{64}{\giga\bit}.
 Unlike traditional \ac{dram}, the \ac{diram4} has two independent channel which are accessed using \ac{ddr} signalling on the control signals.
 Each channel has 32 banks and 4096 pages per bank with \SI[per-mode=symbol]{4096}{\bit\per page}.
@@ -54,7 +61,7 @@ The standard \ac{diram4} has a 32-bit read databus and a 32-bit write databus en
 The read and write transactions are burst-of-two providing 64bits per read/write. When accessing a \ac{dram}, a read and write are often referred to as a cacheline.
 The device is designed to operate at \SI[per-mode=symbol]{1}{\giga\hertz} although this work targeted a \SI[per-mode=symbol]{500}{\mega\hertz} clock frequency.
 
-This work is proposing some changes to the \ac{diram4} which are outlined in chapter \ref{sec:DRAM Customizations}. One of these proposed changes is to widen the read and write databuses to 2048-bits.
+This work is proposing some customizations to the \ac{diram4} which are outlined in chapter \ref{sec:DRAM Customizations}. One of these proposed changes is to widen the read and write databuses to 2048-bits.
 Using the same burst-of-two means each read and write will access an entire page. A cacheline becomes 4096-bits.
 Another proposed change is the add mask bits to the write databuse to avoid having to perform read/modify/writes when writing back data much smaller than the new large cacheline.
 
@@ -106,7 +113,8 @@ By ensuring the system stays within the 3D footprint ensures we can take advanta
 \label{sec:Inter-Manager Communication}
 
 During configuration and/or computations, data must be transported between managers. This inter-manager communication is provided by an \ac{noc}.
-When computing an \ac{ann} across multiple processing sub-systems, often neuron activation data must be shared between these \ac{ssc}s. The \ac{ssc} includes the \ac{dram} port, the manager and the \ac{pe}. An \ac{noc} within each management block communicates with each adjacent manager using a mesh network. This \ac{noc} has a forwarding table that can be reconfigured to provide more efficient routing for a given processing step.
+When computing an \ac{ann} across multiple processing sub-systems, often neuron activation data must be shared between these \ac{ssc}s. The \ac{ssc} includes the \ac{dram} port, the manager and the \ac{pe}. 
+An \ac{noc} within each management block communicates with each adjacent manager using a mesh network. This \ac{noc} has a forwarding table that can be reconfigured to provide more efficient routing for a given processing step.
 
 % ----------------------------------------------------------------------------------------------------
 \section{Summary}
