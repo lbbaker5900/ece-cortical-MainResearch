@@ -5,7 +5,7 @@
 %    subsubsection* to subsection
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DRAM Customizable <<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
-\chapter{DRAM Customizations}
+\chapter{DRAM Overview and Customizations}
 \label{sec:DRAM Customizations}
 
 There are two types of memory employed in \acp{asic} and \acp{asip}, \acf{sram} and \acf{dram}.
@@ -47,17 +47,23 @@ A basic block diagram is shown in figure \ref{fig:MemoryBlockDiagram}.
 \label{fig:Memory Storage Cells}
 \end{figure}
 
+The major difference between the \ac{sram} cell and \ac{dram} cell is the number of elements it takes to implement. 
+The \ac{sram} cell takes six transistors and the \ac{dram} cell takes one transistor and one capacitor.
+The size of the \ac{dram} cell means \ac{dram} arrays provide five to six times more storage density when compared to a similar sized \ac{sram} array.
+
+The major disadvantage is the capacitor cannot hold a indefinitely because the leakage currents in \acp{ic} cause the charge to leak away. 
+If kept unchecked, the stored value will dissipate and it is this behavior that makes accessing a \ac{dram} array more complicated than a similar \ac{sram} array.
+
+\section{Accessing \ac{dram} and \ac{sram}}
+\label{Accessing DRAM and SRAM}
 
 Accessing a typical \ac{sram} involves providing an address and either reading or writing the contents of that location. 
 The read or write often completes in one or two clock cycles depending on whether the \ac{sram} employs internal registers which are used run the \ac{sram} with a faster clock.
 
 The storage cell inside the \ac{sram} is formed from cross-coupled transisters (see figure \ref{fig:SRAM Cell}) which latch the contents and hold the contents indefnitely or until power is removed from the device.
-The storage structure employs six transistors and allows the access logic to be relatively simple and fast but has a relatively low capacity because of the number of transistors employed.
+The storage structure employs six transistors and allows the access logic to be relatively simple and fast but has a relatively low density because of the number of transistors employed.
 
 Accessing a "typical" \ac{dram} is much more involved, it involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page. 
-
-The major difference between the \ac{sram} cell is the number of elements it takes to implement. The size of the \ac{dram} cell means \ac{dram} arrays provide five to six times more storage when compared to a similar sized \ac{sram} array.
-The major disadvantage is the capacitor cannot hold a indefnitely because the leakage currents in \acp{ic} cause the charge to leak away. If kept unchecked, the stored value will dissipate and it is this behavior that makes accessing a \ac{dram} array more complicated than a similar \ac{sram} array.
 
 When an \ac{sram} cell is read, the cross-coupled transistors retain the stored value. 
 The reasons behind this added complexity is the memory cell inside the \ac{dram} which is formed from a capacitor (see figure \ref{fig:DRAM Cell}) which holds a charge reflecting a logic zero or one. 
@@ -88,6 +94,10 @@ This access protocol is rather complicated and involves interleaving page comman
 The system memory controller logic must keep track of which pages are open inside the \ac{dram} and for each memory request must determine if a page needs to be closed and another opened before reading (or writing) the intermediate store.
 If consequtive accesses are not sequenced carefully, the performance of \ac{dram} can be poor.
 
+
+\subsection{Access Locality/Reuse and \ac{sram} as a Cache}
+\label{Access Locality/Reuse and Cache}
+
 In general purpose computing, the sequence of accesses cannot always be controlled, so \ac{sram} is typically used as the first level of memory with \ac{dram} used as the primary storage. 
 Using \ac{sram} as this first level memory is called a cache and acts like a mirror of the \ac{dram} contents.
 These caches have been used for decades to isolate the computing system from unpredictable access behavior of the \ac{dram}.
@@ -106,20 +116,34 @@ If the cache blocks are large enough and the programs access behavior exhibit lo
 As mentioned in section \ref{sec:overview} much of the \ac{asic} and \ac{asip} \ac{ann} research has focused on taking advantage of the performance and ease of use of \ac{sram}. 
 If the target application means the memory access behavior exhibits some locality and the \ac{sram} cache can be made large enough to avoid high levels of cache misses, then this use of \ac{sram} can be effective.
 
-But with this works target application is such that the access behavior exhibits no or little locality (reuse) and block transfers between the cache and main memory will be constantly occuring.
+But this works target application is such that the access behavior exhibits no or little locality (reuse) and block transfers between the cache and main memory will be constantly occuring.
 Under these circustances, \textbf{\textcolor{black}{\ac{dram} bandwidth will be the bottleneck}}.
 
 This work focuses on using \ac{dram} as the primary storage and managing the accesses to ensure the \ac{dram} is used effectively. 
-With the increased bandwidth acheieved from the additional \ac{dram} customizations discussed in section \ref{sec:Very-Wide Bus} and \ref{sec:Write Mask}, this work demonstrates \ac{dram} bandwidths 10X faster than what is available with 2 or 2.5D solutions.
+With the increased bandwidth achieved from the additional \ac{dram} customizations discussed in section \ref{sec:Very-Wide Bus} and \ref{sec:Write Mask}, this work demonstrates \ac{dram} bandwidths 10X faster than what is available with 2 or 2.5D solutions.
+
 This high level of \ac{dram} bandwidth provides this work the ability to process multiple disparate \acp{ann} at or near real-time whilst being \textbf{\textcolor{black}{10-100X faster than state-of-the-art solutions}}.
 
 
-\section{Customization One: Very-Wide Bus}
-\label{sec:Very-Wide Bus}
+\section{DRAM Customizations}
 
-Typically a bank may contain of the order of a few thousand pages and a page may contain of the order of a few thousand bits.
-
+In a typical \ac{dram}, a bank may contain of the order of a few thousand pages and a page may contain of the order of a few thousand bits.
 Once the page is open, the user accesses a portion of the requested page over a bus. With PCB based DRAMs the bus might vary from four to 16 bits wide, but with 3D DRAMs, such as HBM the bus might be up to 128 bits wide.
+An \ac{asic}, \ac{asip} or \ac{gpu} implementation may combine multiple devices to generate bus widths of the order of \SI[per-mode=symbol]{1}{\kilo \bit} wide. 
+When using 2.5D technology and \ac{hbm} with their Pascal\texttrademark \ac{gpu} accelerator device, NVidia\textregistered ~achieve a raw \ac{dram} bandwidth approaching \SI[per-mode=symbol]{6}{\tera \bit \per \second} \cite{Nvidia_p100_summary_datasheet}\footnote{datasheet also shows a \ac{tdp} of \SI[per-mode=symbol]{300}{\watt}}.
+However, experience has shown \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper} that usable bandwidth will likely be much lower.
+Regardless, this existing technology does not achieve the required bandwidth \eqref{eq:maximumBandwidth}.
+
+
+%Considering systems will want to perform multiple \ac{dnn}s simultaneously suggests that these edge systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second} \eqref{eq:maximumBandwidth}.
+
+To achieve increased \ac{dram} bandwidth this work is proposing two changes to the Tezzaron\textregistered \ac{diram4} \cite{tezzaron:diram4} \ac{3d} \ac{dram}. 
+The most significant customization is to widen the databuses to generate more raw bandwidth. This is discussed further in section \ref{sec:Very-Wide Bus}.
+
+With the customizations discussed in sections \ref{sec:Very-Wide Bus} and \ref{sec:Write Mask}, this work demonstrates \ac{dram} bandwidths >10X faster than what is available with 2 or 2.5D solutions.
+
+\subsection{Customization One: Very-Wide Bus}
+\label{sec:Very-Wide Bus}
 
 Figure \ref{fig:dramBlockDiagram} shows a block diagram of a typical DRAM.
 
@@ -153,7 +177,7 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 
 This work assumes the \ac{dram} interface protocol uses \ac{ddr} with a bus width of 2048. Given the \ac{diram4} employs a burst of two for read and write cycles, an entire \ac{diram4} page of 4096-bits is accessed during each read or write. 
 
-\section{Customization Two: Write Mask}
+\subsection{Customization Two: Write Mask}
 \label{sec:Write Mask}
 When processing an ANN, to compute the activation of an individual AN involves reading the pre-synaptic AN activations and the weights of the connections between the pre-synaptic ANs and the AN being processed. The activation of the processed AN is written back to memory. The ratio of reads to writes is high, 100s or 1000s to one. Therefore, the system often needs to write a portion of the page back to memory. To avoid a read/modify/write, a customization to the DRAM is the addition of a write data mask to the DRAM write path.
 

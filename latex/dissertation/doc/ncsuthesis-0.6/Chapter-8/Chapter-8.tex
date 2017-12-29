@@ -86,7 +86,7 @@ Some might suggest the requirements of these applications would be satisified by
 In practice, \acp{gpu} are used to implement large \ac{ann}s and in some \ac{ann} architectures, such as \acp{cnn}, they are quite effective. However, we should not forget they are a) not optimized purely for \ac{ann} processing, b) are restricted by available SRAM and c) they are power hungry. 
 These limitations will limit the effectiveness of \acp{gpu} regardless of what we might hear from the \ac{gpu} community.
 Even in the case of newer \acp{gpu} which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} technology.
-For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwith of the order of \SI[per-mode=symbol]{4}{\tera \bit \per \second}.
+For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwith of the order of \SI[per-mode=symbol]{6}{\tera \bit \per \second} \cite{Nvidia_p100_summary_datasheet}.
 Also, it has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
 
 A solution could employ multiple devices, but there would be significant power and real-estate issues. 
@@ -137,7 +137,7 @@ This work has designed a system that can stay within the physical footprint of t
 The benefits of \ac{3dic}, which are reviewed in chapter \ref{sec:3dic} include reduced energy, reduced area and increased connectivity and bandwidth.
 
 \iffalse
-Therefore, this work is able to propose a custom 3D-\ac{dram} that exposes more of the \ac{dram}s internal page and thus generates interface bandwidth that is of the order of 64 times that of the standard ac{3ddram}.
+Therefore, this work is able to propose a custom 3D-\ac{dram} that exposes more of the \ac{dram}s internal page and thus generates interface bandwidth that is of the order of 64 times that of the standard \ac{3ddram}.
 \fi
 
 % ----------------------------------------------------------------------------------------------------
@@ -190,6 +190,9 @@ area and power footprint of an application that needs to support the processing 
 This works system will provide at or near real-time performance required for systems employing multiple disparate \ac{ann}s whilst staying within acceptable area and power limits and will provide greater than an order of magnitude benefit over comparable solutions.
 
 An overview of \ac{3dic} technology is given in chapter \ref{sec:3dic}.
-The proposed \ac{dram} customizations are described in more detail in chapter \ref{sec:DRAM Customizations}.
-The proposed system is described in chapter \ref{sec:System Overview} with results shown in chapter \ref{sec:Results}.
+An overview on the pros and cons of \ac{dram} and \ac{sram} along with some proposed \ac{dram} customizations are given in chapter \ref{sec:DRAM Customizations}.
+Some state-of-the-art implementations are reviewed in chapter \ref{sec:State of the art}.
+An overview of the proposed system is described in chapter \ref{sec:System Overview} with more details in chapter \ref{sec:Detailed System Description}.
+An overview of the instruction architecture is given in chapter \ref{sec:System Operations}.
+Simulation results are shown in chapter \ref{sec:Results}.
 The conclusion and further work are discussed in chapter \ref{sec:Conclusions and Future Work}.
