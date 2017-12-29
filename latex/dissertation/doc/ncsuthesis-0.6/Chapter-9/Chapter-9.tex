@@ -14,7 +14,7 @@ In the context of this system and \ac{an} state calculation, the basic operation
 \end{outline}
 
 
-This work has researched an instruction architecture to describe the above operations.
+This work has developed an instruction architecture to describe the above operations.
 In the baseline system, the manager is not responsible for performing specific algorithm computational operations but is responsible for coordinating the various data flows and configuration of the modules that make up the system.
 
 The managers primary responsibility is:
@@ -129,9 +129,15 @@ In figure \ref{fig:descriptorTuple} we see the format of a 6-tuple descriptor.
 \subsection{Accessing of Pre-synaptic AN states and connection weights}
 \label{sec:AccessingANStates}
 
-As was discussed previously, the ANN input and configuration is stored in main \ac{dram} memory. A part of the research is determining how to store the ANN input and parameters in such a way to effectively make use of main \ac{dram} bandwidth. To provide parameters for the up to 32 execution lanes within the \ac{pe}, we store the AN parameters in consecutive address locations. With one read to the \ac{dram}, we access 128 words. This provides four weights for each of the 32 ANs being processed. These weights are sent to each lane of the \ac{pe} over four cycles. We will discuss memory efficiency later, but by taking advantage of the multiple \ac{dram} banks along with pre-fetching and buffering, we are able to achieve relatively high efficiency of the available maximum bandwidth.
+As was discussed previously, the ANN input and configuration is stored in main \ac{dram} memory. 
+A part of the research is determining how to store the ANN input and parameters in such a way to effectively make use of main \ac{dram} bandwidth. 
 
-Although AN parameters (weights) are stored in contiguous memory locations, providing the input state to a particular AN presents us with an interesting problem.
+To provide parameters for the up to 32 execution lanes within the \ac{pe}, the \ac{an} parameters were stored in consecutive address locations. 
+With one read to the \ac{dram}, we access 128 words. This provides four weights for each of the 32 ANs being processed. 
+These weights are sent to each lane of the \ac{pe} over four cycles. 
+We will discuss memory efficiency later, but by taking advantage of the multiple \ac{dram} banks along with pre-fetching and buffering, we are able to achieve relatively high efficiency of the available maximum bandwidth.
+
+Although \ac{an} parameters (weights) are stored in contiguous memory locations, providing the input state to a particular \ac{an} presents us with an interesting problem.
 
 Most often DNNs are represented by layers of ANs whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the ANN.
 

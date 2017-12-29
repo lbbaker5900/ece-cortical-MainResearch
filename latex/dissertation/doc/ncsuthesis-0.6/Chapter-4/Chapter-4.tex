@@ -8,7 +8,7 @@
 \chapter{DRAM Customizations}
 \label{sec:DRAM Customizations}
 
-There are two types of memory employed in \acp{asic} and \acp{asip}, \acl{sram} or \ac{sram} and \acl{dram}, or \ac{dram}.
+There are two types of memory employed in \acp{asic} and \acp{asip}, \acf{sram} and \acf{dram}.
 Both of these technologies have a similar top level block diagram which contains an array of storage elements, a means to address into a particular row of memory cells and a means to read and write a column of those cells.
 A basic block diagram is shown in figure \ref{fig:MemoryBlockDiagram}.
 \begin{figure}[!t]
@@ -52,29 +52,65 @@ Accessing a typical \ac{sram} involves providing an address and either reading o
 The read or write often completes in one or two clock cycles depending on whether the \ac{sram} employs internal registers which are used run the \ac{sram} with a faster clock.
 
 The storage cell inside the \ac{sram} is formed from cross-coupled transisters (see figure \ref{fig:SRAM Cell}) which latch the contents and hold the contents indefnitely or until power is removed from the device.
-The storage structure employs six transistors and allows the access logic to be relatively simple and fast but has a relatively low XXXXXXXXXXXX capacity.
+The storage structure employs six transistors and allows the access logic to be relatively simple and fast but has a relatively low capacity because of the number of transistors employed.
 
-Accessing a "typical" DRAM is much more involved, it involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page. 
+Accessing a "typical" \ac{dram} is much more involved, it involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page. 
 
-The reasons behind this added complexity is the memory cell inside the \ac{dram} which is formed from a capacitor (see figure \ref{fig:DRAM Cell}) which holds a charge reflecting a logic zero or one. 
 The major difference between the \ac{sram} cell is the number of elements it takes to implement. The size of the \ac{dram} cell means \ac{dram} arrays provide five to six times more storage when compared to a similar sized \ac{sram} array.
 The major disadvantage is the capacitor cannot hold a indefnitely because the leakage currents in \acp{ic} cause the charge to leak away. If kept unchecked, the stored value will dissipate and it is this behavior that makes accessing a \ac{dram} array more complicated than a similar \ac{sram} array.
 
-When an \ac{sram} cell is read, the cross-coupled transistors retain the stored value. The issue with \acp{dram} is when a storage cell is read, the capacitor is discharged. In addition, sensing this discharging capacitor takes long time to sense when compared to the \ac{sram} cell.
-To alleviate this problem, \ac{dram} arrays are formed from a column of storage elements known as a page. When the read occurs, the entire contents of the page are transferred to registers. Once this transfer is complete, portions of the page can be read similar to reading an \ac{sram}. 
-The problem is that if another read wants to access data that is not in the page, the page has to be closed and another page opened. This involves transferring the previously registered page back to the array to recharge the capacitors in the pages storage elements. The next page can then be read and transferred to the page registers.
-The process of opening and closing pages is a relatively long time, typically 10-20\SI[per-mode=symbol]{}{\nano\second}. So if the accesses are somewhat random, accesses are very slow when compared to \ac{sram}.
-To get around this issue, the \ac{dram} is formed from more than one array of storage elements, between 8 and 32, know as banks. The idea is that while a page from one bank is being accessed, another bank can be opened in preparation for a future read (or write).
-This access protocol is rather complicated and if consequtive accesses are not sequenced carefully, the performance of \ac{dram} can be poor.
+When an \ac{sram} cell is read, the cross-coupled transistors retain the stored value. 
+The reasons behind this added complexity is the memory cell inside the \ac{dram} which is formed from a capacitor (see figure \ref{fig:DRAM Cell}) which holds a charge reflecting a logic zero or one. 
+When a page(row) of a \ac{dram} memory array is read by the sense amps (see figure \ref{fig:dramBlockDiagram}), the process of sensing the charge on the capacitor causes the capacitor to discharge and lose its contents. 
+To alleviate this problem \iffalse \ac{dram} arrays are formed from a column of storage elements known as a page. \fi when the read occurs, the entire contents of the page are transferred to registers, refered to as "page intermediate store" in figure \ref{fig:dramBlockDiagram}. 
+The process of transferring a page to the intermediate store is known as a "page open".
+Once this transfer is complete, portions of the open page can be read similar to reading an \ac{sram}. 
 
-The sequence of accesses cannot always be controlled, especially in general purpose computers, so \ac{sram} is typically used as the first level of memory with \ac{dram} used as the primary storage. 
-using \ac{sram} as this first level memory is called a cache and these have been used for decades to isolate the computing system from unpredictable access behavior of the \ac{dram}.
+\iffalse
+The value charged on the capacitors are transferred to the page intermediate store and all further reads and writes are to this intermediate store. 
 
-As mentioned in section \ref{sec:overview} much of the \ac{asic} and \ac{asip} \ac{ann} research has focused on taking advantage of the performance and ease of use of \ac{sram}, but with this works target application an \ac{asic} or \ac{asip} employing \ac{sram} as its primary memory cannot be implemented with adequate storage capacity.
-Under these circustances, \ac{dram} bandwidth will be the bottleneck.
+When a different page is accessed, the contents of the page intermediate store has to be returned to the memory array and the capacitors recharged.
+The new page can then be transferred to the intermediate store for accessing.
+\fi
+
+\iffalse The issue with \acp{dram} is when a storage cell is read, the capacitor is discharged. In addition, sensing this discharging capacitor takes a long time when compared to the \ac{sram} cell.\fi
+
+The problem is that if another read wants to access data that is not in the page, the page has to be closed and another page opened. 
+This involves transferring the previously registered page back to the array to recharge the capacitors in the memory array storage elements. 
+The next page can then be opened and transferred to the page intermediate registers.
+
+In practice, the \ac{dram} protocol is separated into "page" commands and "cache" commands. The page commands open and close pages and the cache commands read and write to the page intermediate store.
+
+The process of opening and closing pages is a relatively long time, typically 10-20\SI[per-mode=symbol]{}{\nano\second}. Once a page is open, accessing the intermediate store is much faster.
+So if the accesses are somewhat random and different pages are constantly accessed and pages are constantly being opened and closed, the average time to complete reads and writes are very large when compared to \ac{sram}.
+To alleviate this issue, the \ac{dram} is formed from more than one array of storage elements, between 8 and 32, known as banks. The idea is that while a page from one bank is being accessed, another banks page can be opened in preparation for a future read (or write).
+This access protocol is rather complicated and involves interleaving page commands and cache commands to multiple banks. 
+The system memory controller logic must keep track of which pages are open inside the \ac{dram} and for each memory request must determine if a page needs to be closed and another opened before reading (or writing) the intermediate store.
+If consequtive accesses are not sequenced carefully, the performance of \ac{dram} can be poor.
+
+In general purpose computing, the sequence of accesses cannot always be controlled, so \ac{sram} is typically used as the first level of memory with \ac{dram} used as the primary storage. 
+Using \ac{sram} as this first level memory is called a cache and acts like a mirror of the \ac{dram} contents.
+These caches have been used for decades to isolate the computing system from unpredictable access behavior of the \ac{dram}.
+The general idea behind caches is that most data exhibits spatial and temporal locality. This "locality" means that when a computer program uses a piece of data in memory, it is very likely that soon after other data "close" to that data will used and/or the same data will be reused.
+So when a piece of data in memory is accessed, that data and a large block of data in close proximity to the requested data are transferred to the cache. 
+The cache is designed to hold multiple of these blocks of data often resulting in tens of \SI[per-mode=symbol]{}{\kilo \byte} of \ac{sram}.
+When other memory requests are made, the memory controller checks to see whether the block associated with the data is present in the cache.
+If the requested data is contained in a block present in the cache, this is considered a "hit" and the data in the cache is used. 
+If the requested data's block is not present, this is known as a "miss" and the slower main memory must be accessed. This access results in another "block" of data being transferred to the cache.
+If all the blocks in the cache are currently fully employed, one of the blocks must be freed up to make space in the cache for the new block. 
+A block is chosen and transferred back to the main memory and the new block is read and transferred to the cache.
+
+To make effective use of the cache, the access behavior of the computer program must exhibit this locality behavior. 
+If the cache blocks are large enough and the programs access behavior exhibit locality, then employing \ac{sram} is effective and the slower \ac{dram} access times can be somewhat hidden.
+
+As mentioned in section \ref{sec:overview} much of the \ac{asic} and \ac{asip} \ac{ann} research has focused on taking advantage of the performance and ease of use of \ac{sram}. 
+If the target application means the memory access behavior exhibits some locality and the \ac{sram} cache can be made large enough to avoid high levels of cache misses, then this use of \ac{sram} can be effective.
+
+But with this works target application is such that the access behavior exhibits no or little locality (reuse) and block transfers between the cache and main memory will be constantly occuring.
+Under these circustances, \textbf{\textcolor{black}{\ac{dram} bandwidth will be the bottleneck}}.
 
 This work focuses on using \ac{dram} as the primary storage and managing the accesses to ensure the \ac{dram} is used effectively. 
-With the additional \ac{dram} customizations discussed in section \ref{sec:Very-Wide Bus} and \ref{sec:Write Mask}, this work demonstrates \ac{dram} bandwidths 10X faster than what is available with 2 or 2.5D solutions.
+With the increased bandwidth acheieved from the additional \ac{dram} customizations discussed in section \ref{sec:Very-Wide Bus} and \ref{sec:Write Mask}, this work demonstrates \ac{dram} bandwidths 10X faster than what is available with 2 or 2.5D solutions.
 This high level of \ac{dram} bandwidth provides this work the ability to process multiple disparate \acp{ann} at or near real-time whilst being \textbf{\textcolor{black}{10-100X faster than state-of-the-art solutions}}.
 
 
@@ -92,7 +128,7 @@ Figure \ref{fig:dramBlockDiagram} shows a block diagram of a typical DRAM.
 \centering
 \captionsetup{justification=centering}
 \centerline{
-\mbox{\includegraphics[width=.75\linewidth]{DRAMBlockDiagram.jpg}}
+\mbox{\includegraphics[width=.75\linewidth]{DRAMBlockDiagram}}
 }
 \caption{Typical DRAM Block Diagram}
 \label{fig:dramBlockDiagram}
@@ -109,7 +145,7 @@ Without the limitations of having to transfer data beyond the chip stack, this w
 \captionsetup{justification=centering}
 \captionsetup{width=.75\linewidth}
 \centerline{
-\mbox{\includegraphics[width=.65\linewidth]{DRAMBusChange.jpg}}
+\mbox{\includegraphics[width=.65\linewidth]{DRAMBusChange}}
 }
 \caption{Exposing more of the DRAM page}
 \label{fig:dramBusChange}
