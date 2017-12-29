@@ -4,29 +4,40 @@
 %    subsection* to section
 %    subsubsection* to subsection
 
+% #######################################################################################################################################
+% >>>>>>>>>>>>>>>>>>>>>>>>>>> Results <<<<<<<<<<<<<<<<<<<<<<
 \chapter{Results}
-\label{chap-six}
 \label{sec:Results}
-The objectives of this work was to design a system able to accelerate ANNs in customer facing systems implemented at the edge. This means systems that are not designed
-to process multiple requests of essentially the same operation.
-One assumption is that these systems implement disparate ANNs performing various functions. These assumptions imply that the system is not able to take advantage of local SRAM when processing the ANN.
-Another assumption is that the target systems will be space and power constrained.
-Finally, this work assumes that implementing multiple disparate ANNs cannot be implemented purely with SRAM and that DRAM is required to store the ANN parameters.
+The objectives of this work was to design a system able to accelerate ANNs in customer facing systems implemented at the edge. 
+\iffalse
+This means systems that are not designed to process multiple requests of essentially the same operation.
+\fi
+Given that these systems cannot effectively utilize SRAM, the main objective was to demonstrate a system that can operate efficiently using 3D-DRAM.
 
-To demonstrate such a system, this work targeted 3DIC technology including 3D-DRAM. This work proposes that if a system can be purely 3DIC, the system can take advantage of the benefits
-of 3DIC which inlcudes reduced energy, area and additional bandwidth due to high levels of connectivity.
-In addition, this work proposes that if the system is purely 3DIC, then a customized DRAM would provide a significant bandwidth boost over typical implementations using standard DRAM.
-This work targeted the Tezzaron DiRAM4 3D-DRAM.
+The system decodes instructions, sends configuration to various functions, pre-fetchs and pipelines data.
+This parallelism allows the system to constantly stream data whilst results from previous operations are being operated on.
 
+To demonstrate such a system, this work targeted 3DIC technology including 3D-DRAM. This work proposes that if a system can be purely in 3DIC, the system can take advantage of the benefits
+of 3DIC which includes reduced energy, area and high bandwidth.
+In addition, this work proposes that given the system is 3DIC, then a customized DRAM would provide a significant bandwidth boost over typical implementations using standard DRAM.
+\iffalse
 To ensure the system was purely 3DIC, the area of the system Manager and Processing Engine has to stay within the physical footprint of the DRAM.
+\fi
 
-The target technology node was 28nm. This was chosen because its the technology node employed for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
-The design was synthesized using an available 65nm technology node and then scaled to 28nm to demonstrate fitting within the 3DIC footprint.
+The target technology node was 28nm because its the technology node employed for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
+As a 28nm was not available to this team, the design was synthesized using an available 65nm technology node and then scaled to 28nm.
 
-The primary control and datapaths of the system have been simulated in a system verilog environment. It has been synthesized using a 65nm technology node.
-The design has been coded targeting a frequency of $>$\SI{500}{\mega\hertz}. Timing closure and place and route is ongoing. The system has been designed throughout to meet the timing target so minimal changes are expected to meet timing.
+The primary control and datapaths of the system have been simulated in a system verilog environment. 
+\iffalse
+It has been synthesized using a 65nm technology node.
+\fi
+%The design has been coded . 
+Initial synthesis timing closure at a frequency of \SI{500}{\mega\hertz} is complete.
 
-As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of tens of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
+\iffalse
+As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
+\fi
+
 %%%%The approximate design targets are shown in Table \ref{tab:DesignTargets}.
 %%%%
 %%%%\begin{table}[h]
@@ -51,33 +62,109 @@ As mention previously \eqref{eq:averageBandwidth}, to process multiple useful si
 %%%%%  \end{center}
 %%%%\end{table}
 
-The Manager and PE have been place and routed as shown in figure \ref{fig:Manager and PE Die layouts}. 
-Although the design is yet to close timing, the parasitics were extracted from these layouts and simulated against a group of operations. The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. These were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} and represent a pre-synaptic fanin of 225 and 4000 respectively.
-The simulation generated an activity file which was then used by the Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates.
-The DRAM accesses were captured and energy used calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from data from \cite{Bamberg2017}.
-These estimates were used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz} which are shown in table \ref{tab:Simulation-based estimates}.
-
-\begin{table}
+Initial place and route for the Manager and PE are shown in figure \ref{fig:Manager and PE Die layouts}. 
+The area contribution of each block within the Manager and PE can be seen in table \ref{tab:Area contribution}.
+\begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
-  \captionsetup{justification=centering, skip=12pt}
-  \caption{Simulation-based estimates}
-  \vspace{12pt}
+  \captionsetup{justification=centering, skip=3pt}
+  \caption{Area Contribution}
+  \vspace{3pt}
+  \label{tab:Area contribution}
+  \centering
+    % [lr] ~ left align col 0 and right align col 1
+    % e.g. 4 columns could be lccr
+  \begin{subtable}{0.75\textwidth}
+    \centering
+    \begin{adjustbox}{width=0.75\textwidth}
+      \begin{tabular}{ccc}
+        \toprule
+                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                         &          &                                         \\  %\cline{1-1}
+            Block        &Instances &Percentage                               \\  %\cline{1-1}
+            Name         &          &Contribution                             \\  %\cline{1-1}
+        \hline  % instead of \midrule %midrule doesnt overlap with column lines
+  Memory Controller      & 1&\SI[per-mode=symbol]{15.0}{\percent}  \\ 
+        NoC              & 1&\SI[per-mode=symbol]{ 7.1}{\percent}  \\
+        Read Control     & 2&\SI[per-mode=symbol]{53.1}{\percent}  \\
+        Write Control    & 1&\SI[per-mode=symbol]{ 7.4}{\percent}  \\
+      Instruction Proc   & 1&\SI[per-mode=symbol]{ 1.6}{\percent}  \\
+      Return Data Proc   & 1&\SI[per-mode=symbol]{ 1.6}{\percent}  \\
+        Misc             & 1&\SI[per-mode=symbol]{14.2}{\percent}  \\
+        \bottomrule
+      \end{tabular}
+    \end{adjustbox}
+    \vspace{3pt}
+    \captionsetup{justification=centering, skip=10pt}
+    \caption{Manager}
+    \label{tab:Manager Area Contribution}
+  \end{subtable}
+  \bigskip
+  \begin{subtable}{0.75\textwidth}
+    \centering
+    \begin{adjustbox}{width=0.85\textwidth}
+      \begin{tabular}{ccc}
+        \toprule
+                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                         &          &                                          \\  %\cline{1-1}
+            Block        &Instances & Percentage                               \\  %\cline{1-1}
+            Name         &          & Contribution                             \\  %\cline{1-1}
+        \hline  % instead of \midrule %midrule doesnt overlap with column lines
+     Operation Decode    & 1&\SI[per-mode=symbol]{ 3.4}{\percent}  \\
+   Return Data Control   & 1&\SI[per-mode=symbol]{ 1.5}{\percent}  \\
+    SIMD Control         & 1&\SI[per-mode=symbol]{ 8.1}{\percent}  \\
+        SIMD             & 1&\SI[per-mode=symbol]{19.3}{\percent}  \\
+  Streaming Operations   &32&\SI[per-mode=symbol]{43.3}{\percent}  \\
+  Streaming Op Control   & 1&\SI[per-mode=symbol]{ 2.1}{\percent}  \\
+ Local Memory + Control\footnote{A small amount of scratchpad memory was provided between stOps and SIMD but in practice could be much smaller. It is not used in any of the fanin tests.}  & 1&\SI[per-mode=symbol]{17.7}{\percent}  \\ 
+        Misc             & 1&\SI[per-mode=symbol]{ 4.6}{\percent}  \\
+        \bottomrule
+      \end{tabular}
+    \end{adjustbox}
+    \vspace{3pt}
+    \captionsetup{justification=centering, skip=10pt}
+    \caption{PE}
+    \label{tab:PE Area Contribution}
+  \end{subtable}
+  \end{table}
+
+
+\iffalse
+Although the design is yet to close timing, the 
+\else
+The
+\fi
+parasitics were extracted from these layouts and simulated against a group of operations. 
+The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. 
+These testcases were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} and represent a pre-synaptic fanin of 225 and 4000 respectively.
+Additional testcases were employed representing pre-synaptic fanins of 294, 300, 500 and 1000. Both locally connected (CONV) and fully connected (FC) type fanins were tested.
+The results showing sustained average bandwidth can be seen in table \ref{tab:Bandwidth Estimates}.
+
+The simulation generated an activity file which was then used by the Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates.
+The DRAM accesses were captured and DRAM energy dissipation calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from \cite{liu2012compact}.
+These estimates were used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz}.
+The estimated overall power along with per block contribution are shown in table \ref{tab:Simulation-based estimates}.
+
+\begin{table}[h]
+%  \captionsetup{justification=centering, skip=-5pt}
+  \captionsetup{justification=centering, skip=3pt}
+  \caption{Power Estimates}
+  \vspace{3pt}
   \label{tab:Simulation-based estimates}
   \centering
     % [lr] ~ left align col 0 and right align col 1
     % e.g. 4 columns could be lccr
-  \begin{subtable}{0.55\linewidth}
+  \begin{subtable}{0.75\textwidth}
     \centering
-    \begin{adjustbox}{width=1\linewidth}
+    \begin{adjustbox}{width=0.85\textwidth}
       \begin{tabular}{cccc}
         \toprule
                             % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
-                         &                       &          &                                          \\  %\cline{1-1}
-            Technology   & Clock                 & Expected &  Bus                                     \\  %\cline{1-1}
-                Node     & Frequency             &  Power   &  Efficiency                              \\  %\cline{1-1}
+                         &                       & Total    &                                          \\  %\cline{1-1}
+            Technology   & Clock                 & Expected &                                          \\  %\cline{1-1}
+                Node     & Frequency             &  Power   &  Testcase                                \\  %\cline{1-1}
         \hline  % instead of \midrule %midrule doesnt overlap with column lines
-                   28nm  & \SI{500}{\mega\hertz} &   53W    &  \SI[per-mode=symbol]{\sim 70}{\percent} \\ %\cline{2-2}
-                   28nm  & \SI{700}{\mega\hertz} &   73W    &  \SI[per-mode=symbol]{\sim 70}{\percent} \\ %\cline{2-2}
+                   28nm  & \SI{500}{\mega\hertz} &   64W    &  CONV-294\iffalse \SI[per-mode=symbol]{\sim 70}{\percent} \fi \\ %\cline{2-2}
+                   28nm  & \SI{700}{\mega\hertz} &   88W    &  CONV-294\iffalse \SI[per-mode=symbol]{\sim 70}{\percent} \fi \\ %\cline{2-2}
         \bottomrule
       \end{tabular}
     \end{adjustbox}
@@ -86,38 +173,63 @@ These estimates were used to estimate power dissipation for operating frequencie
     \caption{Power Dissipation}
     \label{tab:Power Dissipation}
   \end{subtable}
-
   \bigskip
-
-  \begin{subtable}{0.65\linewidth}
+  \begin{subtable}{0.75\textwidth}
     \centering
-    \begin{adjustbox}{width=1\linewidth}
-      \begin{tabular}{cccc}
+    \begin{adjustbox}{width=0.55\textwidth}
+      \begin{tabular}{cc}
         \toprule
                             % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
-                                                       & Downstream                              &                                        \multicolumn{2}{c}{Average Downstream Bandwidth}                      \\  %\cline{1-1}
-                                                       & Stack                                   &                                        \multicolumn{2}{c}{At Frequency}                                      \\  %\cline{1-1}
-                   Test                                & Bus Efficiency                          &       \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\  %\cline{1-1}
-        \hline  % instead of \midrule %midrule doesnt overlap with column lines                                       
-                   CONV2 \cite{krizhevsky2012imagenet} &\SI[per-mode=symbol]{\sim 65}{\percent}  & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-294                            &\SI[per-mode=symbol]{\sim 67}{\percent}  & \SI[per-mode=symbol]{\sim 44}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 61}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-300                            &\SI[per-mode=symbol]{\sim 73}{\percent}  & \SI[per-mode=symbol]{\sim 48}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 67}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-500                            &\SI[per-mode=symbol]{\sim 82}{\percent}  & \SI[per-mode=symbol]{\sim 54}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 75}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-1000                           &\SI[per-mode=symbol]{\sim 89}{\percent}  & \SI[per-mode=symbol]{\sim 58}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 82}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-350                              &\SI[per-mode=symbol]{\sim 78}{\percent}  & \SI[per-mode=symbol]{\sim 51}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 72}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-500                              &\SI[per-mode=symbol]{\sim 84}{\percent}  & \SI[per-mode=symbol]{\sim 55}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 77}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-1000                             &\SI[per-mode=symbol]{\sim 91}{\percent}  & \SI[per-mode=symbol]{\sim 60}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 83}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-7 \cite{krizhevsky2012imagenet}  &\SI[per-mode=symbol]{\sim 94}{\percent}  & \SI[per-mode=symbol]{\sim 62}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 86}{\tera\bit\per\second} \\ %\cline{2-2}
+                         &                                          \\  %\cline{1-1}
+            Block        & Percentage                               \\  %\cline{1-1}
+            Name         & Contribution                             \\  %\cline{1-1}
+        \hline  % instead of \midrule %midrule doesnt overlap with column lines
+                Manager  & \SI[per-mode=symbol]{66.6}{\percent}  \\ 
+                     PE  & \SI[per-mode=symbol]{28.0}{\percent}  \\
+                   DRAM  & \SI[per-mode=symbol]{ 2.5}{\percent}  \\
+              DRAM TSVs  & \SI[per-mode=symbol]{ 1.8}{\percent}  \\
+         Stack Bus TSVs  & \SI[per-mode=symbol]{ 1.2}{\percent}  \\
         \bottomrule
       \end{tabular}
     \end{adjustbox}
     \vspace{3pt}
     \captionsetup{justification=centering, skip=10pt}
-    \caption{Bus Efficiency}
-    \label{tab:Bus Efficiency}
+    \caption{Power Contribution}
+    \label{tab:Power Dissipation}
   \end{subtable}
   \end{table}
 
+As bus efficiency is the main metric, table \ref{tab:Bandwidth Estimates} shows sustained average bandwidth over the fanin testcases.
+
+\begin{table}[h]
+%  \captionsetup{justification=centering, skip=-5pt}
+  \captionsetup{justification=centering, skip=3pt}
+  \caption{Fanin Bandwidth Tests}
+  \vspace{3pt}
+  \label{tab:Bandwidth Estimates}
+  \centering
+    \begin{adjustbox}{width=0.57\textwidth}
+      \begin{tabular}{ccc}
+        \toprule
+                            % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
+                                                       &                                         \multicolumn{2}{c}{Average Bandwidth}                      \\  %\cline{1-1}
+                                                       &                                         \multicolumn{2}{c}{At Frequency}                                      \\  %\cline{1-1}
+                   Test                                &        \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\  %\cline{1-1}
+        \hline  % instead of \midrule %midrule doesnt ove        
+                   CONV2 \cite{krizhevsky2012imagenet} &\ \SI[per-mode=symbol]{\sim 22}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-294                            &\ \SI[per-mode=symbol]{\sim 23}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-300                            &\ \SI[per-mode=symbol]{\sim 25}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 34}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-500                            &\ \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-1000                           &\ \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 41}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-350                              &\ \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 36}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-500                              &\ \SI[per-mode=symbol]{\sim 27}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-1000                             &\ \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 42}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-7 \cite{krizhevsky2012imagenet}  &\ \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second} \\ %\cline{2-2}
+        \bottomrule
+      \end{tabular}
+    \end{adjustbox}
+    \vspace{3pt}
+  \end{table}
 
 %%%%\begin{table}[h]
 %%%%%  \captionsetup{justification=centering, skip=-5pt}
@@ -142,7 +254,6 @@ These estimates were used to estimate power dissipation for operating frequencie
 %%%%    \end{tabular}
 %%%%%  \end{center}
 %%%%\end{table}
-
 
 
 \begin{figure}[h]
@@ -173,5 +284,6 @@ These estimates were used to estimate power dissipation for operating frequencie
 \caption{Manager and PE Die layouts}
 \label{fig:Manager and PE Die layouts}
 \end{figure}
+
 
 

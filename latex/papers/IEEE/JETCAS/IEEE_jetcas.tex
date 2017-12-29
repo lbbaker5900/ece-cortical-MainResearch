@@ -1465,19 +1465,19 @@ As bus efficiency is the main metric, table \ref{tab:Bandwidth Estimates} shows 
       \begin{tabular}{ccc}
         \toprule
                             % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
-                                                       & \iffalse Downstream                              &\fi                                        \multicolumn{2}{c}{Average Bandwidth}                      \\  %\cline{1-1}
-                                                       & \iffalse Stack                                   &\fi                                        \multicolumn{2}{c}{At Frequency}                                      \\  %\cline{1-1}
-                   Test                                & \iffalse Bus Efficiency                          &\fi       \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\  %\cline{1-1}
-        \hline  % instead of \midrule %midrule doesnt overlap with column lines                                       
-                   CONV2 \cite{krizhevsky2012imagenet} &\iffalse \SI[per-mode=symbol]{\sim 65}{\percent}  &\fi \SI[per-mode=symbol]{\sim 22}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-294                            &\iffalse \SI[per-mode=symbol]{\sim 67}{\percent}  &\fi \SI[per-mode=symbol]{\sim 23}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-300                            &\iffalse \SI[per-mode=symbol]{\sim 73}{\percent}  &\fi \SI[per-mode=symbol]{\sim 25}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 34}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-500                            &\iffalse \SI[per-mode=symbol]{\sim 82}{\percent}  &\fi \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-1000                           &\iffalse \SI[per-mode=symbol]{\sim 89}{\percent}  &\fi \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 41}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-350                              &\iffalse \SI[per-mode=symbol]{\sim 78}{\percent}  &\fi \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 36}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-500                              &\iffalse \SI[per-mode=symbol]{\sim 84}{\percent}  &\fi \SI[per-mode=symbol]{\sim 27}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-1000                             &\iffalse \SI[per-mode=symbol]{\sim 91}{\percent}  &\fi \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 42}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-7 \cite{krizhevsky2012imagenet}  &\iffalse \SI[per-mode=symbol]{\sim 94}{\percent}  &\fi \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second} \\ %\cline{2-2}
+                                                       &                                         \multicolumn{2}{c}{Average Bandwidth}                      \\  %\cline{1-1}
+                                                       &                                         \multicolumn{2}{c}{At Frequency}                                      \\  %\cline{1-1}
+                   Test                                &        \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\  %\cline{1-1}
+        \hline  % instead of \midrule %midrule doesnt ove        
+                   CONV2 \cite{krizhevsky2012imagenet} &\ \SI[per-mode=symbol]{\sim 22}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-294                            &\ \SI[per-mode=symbol]{\sim 23}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-300                            &\ \SI[per-mode=symbol]{\sim 25}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 34}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-500                            &\ \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-1000                           &\ \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 41}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-350                              &\ \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 36}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-500                              &\ \SI[per-mode=symbol]{\sim 27}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-1000                             &\ \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 42}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-7 \cite{krizhevsky2012imagenet}  &\ \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second} \\ %\cline{2-2}
         \bottomrule
       \end{tabular}
     \end{adjustbox}

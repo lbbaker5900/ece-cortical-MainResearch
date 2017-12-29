@@ -547,7 +547,7 @@ An example of a \ac{dnn} can be seen in figure \ref{fig:DNN showing layer order}
                                                      &Z&    na           & \num{      3}& \num{     1}      & \num{     96}       & \num{      1}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{       256}    & \num{        1}        & \num{       1} &                                    \\\cline{1-14}
             \multicolumn{2}{|r|}{Stride           }    &    na           & \num{      4}& \num{     2}      & \num{      2}       & \num{      2}       & \num{      1}       & \num{      1}       & \num{      1}       &              na     &             na         &            na  & \multicolumn{1}{c|}{Aggregate    } \\\cline{14-14}
             \multicolumn{2}{|r|}{Pre-synaptic Fanin}   &    na           & \num{    363}& \num{     4}      & \num{   2400}       & \num{      4}       & \num{   2304}       & \num{   3456}       & \num{   3456}       & \num{     43264}    & \num{     4096}        & \num{    4096} & \multicolumn{1}{c|}{$\Bar{\num{   1650}}$} \\
-            \multicolumn{2}{|r|}{Number of \ac{an}}    & \num{    196608}& \num{ 290400}& \num{ 69984}      & \num{ 186624}       & \num{  43264}       & \num{  64896}       & \num{  64896}       & \num{  43264}       & \num{      4096}    & \num{     4096}        & \num{    1024} & \multicolumn{1}{c|}{\num{ 969152}} \\
+            \multicolumn{2}{|r|}{Number of \ac{an}}    & \num{    196608}& \num{ 290400}& \num{ 69984}      & \num{ 186624}       & \num{  43264}       & \num{  64896}       & \num{  64896}       & \num{  43264}       & \num{      4096}    & \num{     4096}        & \num{    1024} & \multicolumn{1}{c|}{\num{ 772544}} \\
             \multicolumn{2}{|r|}{Number of Weights}    &    na           & \num{  34848}& na                & \num{ 614400}       & na                  & \num{ 884736}       & \num{ 1327104}      & \num{ 884736}       & \num{ 177209344}    & \num{ 16777216}        & \num{ 4194304} & \multicolumn{1}{c|}{\num{ 2.02e8}} \\\hline
         \end{tabular}
       \end{adjustbox}
@@ -680,15 +680,15 @@ There has been work on the impact of changing the precision of the number format
 However, for the baseline requirements this work assumes 32-bit single-precision floating point.
 
 
-Therefore, assuming an \ac{ann} similar to that shown in table \ref{tab:Layer Configuration} with \num{970e3}\acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{32}{\tera \bit \per \second} (see equation \ref{eq:maximumBandwidth}).
+Therefore, assuming an \ac{ann} similar to that shown in table \ref{tab:Layer Configuration} with \num{775e3}\acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{32}{\tera \bit \per \second} (see equation \ref{eq:maximumBandwidth}).
 
 % {2} means 2 columns
 \begin{alignat}{2} 
   \label{eq:maximumBandwidth}
   \text{Maximum }\text{Bandwidth} & = \sum_{\mathbf{n}=0}^{\mathbf{N_n}}\Big(\frac{\mathbf{\overline{N}_a}\cdot \mathbf{\overline{C}_p} \cdot \mathbf{b_w}}{\mathbf{\overline{T}_p}} \Big) \SI[per-mode=symbol]{}{\bit\per\second} \notag  \\
-  & = \sum_{\mathbf{n}=0}^{9}\Big(\frac{\num{970d3} \cdot \num{1.65d3} \cdot 32}{\num{16d-3}} \Big) \notag \\
-  & = \sum_{\mathbf{n}=0}^{9} \SI[per-mode=symbol]{3.201}{\tera \bit \per \second}  \notag \\
-  & \approx \SI[per-mode=symbol]{32}{\tera\bit\per\second} \\
+  & = \sum_{\mathbf{n}=0}^{9}\Big(\frac{\num{772e3} \cdot \num{1.65d3} \cdot (32+1)\footnote{assumes ROI streamed to all lanes}}{\num{16d-3}} \Big) \notag \\
+  & = \sum_{\mathbf{n}=0}^{9} \SI[per-mode=symbol]{2.63}{\tera \bit \per \second}  \notag \\
+  & \approx \SI[per-mode=symbol]{26}{\tera\bit\per\second} \\
   \text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
                 &\mathbf{N}_a \text{ is the average number of \ac{an}s} \notag\\
                 &\mathbf{C_p} \text{ is the average number of connections} \notag\\
@@ -697,13 +697,13 @@ Therefore, assuming an \ac{ann} similar to that shown in table \ref{tab:Layer Co
 \end{alignat}
 
 When implementing \ac{ann}s, the memory requirements are also significant. The storage is required for the input, the \ac{an} states and most significantly the parameters for each of the \acp{an} pre-synaptic connections. 
-For the case shown in table \ref{fig:Baseline DNN}, there are \num{202e6} parameters requiring \SI[per-mode=symbol]{0.81}{\giga\byte} and \num{970e3} \acp{an} requiring \SI[per-mode=symbol]{3.88}{\mega\byte} storage.
+For the case shown in table \ref{fig:Baseline DNN}, there are \num{202e6} parameters requiring \SI[per-mode=symbol]{0.81}{\giga\byte} and \num{772e3} \acp{an} requiring \SI[per-mode=symbol]{3.88}{\mega\byte} storage.
 The storage required for 10 \acp{ann} is of the order of \SI[per-mode=symbol]{8.0}{\giga\byte} \eqref{eq:memoryRequired}.
 
 \begin{alignat}{2} 
   \label{eq:memoryRequired}
   \text{\ac{ann} }\text{Memory} & = \sum_{\mathbf{n}=0}^{\mathbf{N_n}}\Big(\big({\mathbf{\overline{N}_p}} + \mathbf{\overline{N}_a} \big) \cdot \mathbf{b_w}\Big) \SI[per-mode=symbol]{}{\giga\bit} \notag  \\
-  & = \sum_{\mathbf{n}=0}^{9}\Big(\big(\num{202e6} + \num{970d3}\big) \cdot 32 \notag \\
+  & = \sum_{\mathbf{n}=0}^{9}\Big(\big(\num{202e6} + \num{772d3}\big) \cdot 32 \notag \\
   & = \sum_{\mathbf{n}=0}^{9} \SI[per-mode=symbol]{6.49}{\giga\bit}  \notag \\
   & = \SI[per-mode=symbol]{64.9}{\giga\bit} \, \equiv \, \SI[per-mode=symbol]{8.1}{\giga\byte}\\
   \text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
@@ -723,7 +723,7 @@ The approximate system bandwidth and storage requirements are shown in table \re
       \begin{tabular}{cccc}
         \toprule
                    Parameter             &        Value                                  \\\hline
-                   Bandwidth             &\SI[per-mode=symbol]{32}{\tera\bit\per\second} \\
+                   Bandwidth             &\SI[per-mode=symbol]{26}{\tera\bit\per\second} \\
                    Storage               &\SI[per-mode=symbol]{8.0}{\giga\byte}          \\
         \bottomrule
       \end{tabular}
