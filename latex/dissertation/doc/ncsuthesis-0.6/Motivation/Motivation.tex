@@ -1,0 +1,198 @@
+
+
+%% Lee
+%% In dissertation, change section* to chapter and subsection* to section
+
+
+\chapter{Motivation}
+\label{Motivation}
+
+
+\section[The Problem]{The Problem}
+\label{sec:The Problem}
+
+As mentioned in chapter \ref{sec:Introduction}, this work focuses on edge applications employing disparate \ac{ann}s and therefore assumes there are limited opportunities for both weight reuse and batch processing.
+
+Given the storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, it is generally accepted that \ac{dram} is required to store the \ac{ann} parameters.
+
+When considering systems that will employ multiple \ac{dnn}s simultaneously suggests that these edge systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second} \eqref{eq:maximumBandwidth}.
+
+In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
+
+\iffalse
+Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for edge systems employing inference on multiple disparate useful-sized neural networks.}}}
+%\hlc[gray]{hello}
+\fi
+
+
+\subsection{Why not \ac{sram}?}
+\label{sec:Why not SRAM}
+
+Why is it that much of the \ac{asic} and \ac{asip} \ac{ann} research employs \ac{sram} as an intermediate store? 
+
+In practice there are benefits if the processing elements can operate out of \ac{sram}.
+Certainly good performance and potentially low power.
+
+Perhaps also because its easy to use? 
+
+When compared to \ac{dram}, \ac{sram} has low latency. Also, the \ac{dram} access protocol is much more complicated to implement than \ac{sram}. 
+
+Given that \ac{dram} is used for the main memory storage, having the processing elements operate out of \ac{sram} requires that the high cost of transferring data from the \ac{dram} to the \ac{sram} be absorbed by using that data multiple times or "reused".
+
+But using \ac{sram} for intermediate storage makes assumptions on the type of \acp{ann} that can be supported and the application in which the \ac{ann} is being deployed.
+The primary requirement of the type of \ac{ann} and the deployed application to allow effective use of \ac{sram} is "reuse", so once parameters are transferred and stored in \ac{sram}, these parameters can be reused such that the \ac{sram} isn't simply an intermediate memory but something akin to a cache.
+
+In some \ac{ann}s there are reuse opportunities. 
+A prime example is \acp{cnn}, where the connection weights are reused. In \acp{cnn}, common feature filters are passed across an input to form the next layer. 
+These filter "kernels" can be held in memory and the input is read from \ac{dram} thus reducing the \ac{dram} bandwidth.
+Even with \ac{dnn}s where different filters may be used for different \acp{roi} some filter reuse may be available.
+Another form of reuse is in cloud applications or in training where there is opportunity to reuse inputs whilst performing batch processing.
+
+But \ac{sram} comes at a price, its big. Often when we see physical layouts of \ac{ann} processors, they are dominated by the silicon area of the \ac{sram}. 
+Because of the relatively large area required for \ac{sram}, companies attempt to create custom \acp{sram} to minimize the area impact.
+
+So \ac{asic} and \ac{asip} \ac{ann} implementations that target applications that have considerable weight reuse and/or batch processing opportunities can effectively use \ac{sram} as an intermediate store.
+
+But to reiterate, this work assumes the target application have limited or no opportunities for weight reuse or batch processing.
+
+\iffalse
+So the question becomes, can a system employ \ac{dram} with minimal \ac{sram} and still meet the system requirements?
+\fi
+
+\iffalse
+We believe a system can be designed with \ac{dram} as the primary processing store. This will require careful use of data structures to describe storage within \ac{dram} to ensure we make good use of the potential bandwidth. But there are other benefits we will take advantage of, but more about that later.
+\fi
+
+\iffalse
+There important application is disparate \ac{ann}s because specifically a form of \ac{dnn}, Convolutional Neural networks (\ac{cnn}) have gotten good press recently, but they are not the only \ac{dnn}.
+\fi
+
+
+
+\iffalse
+So considering the performance improvements observed in other applications, it is expected that many customer facing or edge applications will implement multiple instances of artificial neural networks to perform various functions.
+have very large memory and processing requirements.
+require multiple instances of \ac{ann}s of similar size to the \ac{ann} described in \cite{krizhevsky2012imagenet}.
+
+For example employing multiple cameras or monitoring and controlling different systems in a drone, a automobile each with an image recognition \ac{ann}\cite{krizhevsky2012imagenet}\cite{bojarski2016end} for navigation, engine monitoring along with other system control.
+\fi
+
+\section{Alternatives}
+\label{sec:Alternatives}
+
+\subsection{\Acfp{gpu}}
+\label{sec:gpu}
+Some might suggest the requirements of these applications would be satisified by employing multiple \acp{gpu}.
+In practice, \acp{gpu} are used to implement large \ac{ann}s and in some \ac{ann} architectures, such as \acp{cnn}, they are quite effective. However, we should not forget they are a) not optimized purely for \ac{ann} processing, b) are restricted by available SRAM and c) they are power hungry. 
+These limitations will limit the effectiveness of \acp{gpu} regardless of what we might hear from the \ac{gpu} community.
+Even in the case of newer \acp{gpu} which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} technology.
+For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwith of the order of \SI[per-mode=symbol]{6}{\tera \bit \per \second} \cite{Nvidia_p100_summary_datasheet}.
+Also, it has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
+
+A solution could employ multiple devices, but there would be significant power and real-estate issues. 
+The typical high performance \ac{gpu} consumes between the order of \SI{100}{\watt} and \SI{200}{\watt}.
+A multiple \ac{gpu} implementation would have a high real-estate impact and a system power approaching a \SI[per-mode=symbol]{1}{\kilo \watt}.
+
+Overall \acp{gpu} have limited suitability to meet this works target application requirements.
+
+
+\subsection{\Acp{asic}/\Acp{asip}}
+\label{sec:asicAndAsip}
+Much of the \ac{ann} application specific (\ac{asic}/\ac{asip}) research has focused on taking advantage of the performance and ease of use of \acf{sram}.
+These implementations can be shown to be effective with specific \ac{ann} architectures (e.g. \ \ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an edge application, \textbf{\textcolor{black}{existing implementations do not provide the required flexibility, storage capacity and deterministic performance}}.
+
+Even in cloud applications, there are limitations on reuse. We paraphrase a quote from a Google paper \cite{tensorflow2015-whitepaper} on their Tensor Processing Unit ASIC (TPU):
+
+\hyphenquote{american}{the architecture research community is paying attention to \acp{ann}, but of all the papers at ISCA 2016 on hardware accelerators for \acp{ann}, alas, all nine papers looked at \ac{cnn}s, and only two mentioned other \acp{ann}. 
+Unfortunately \ac{cnn}s represent only about 5\% of our datacenter NN workload}
+
+The applications targeted by the google TPU \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected \ac{dnn}s and in these cases weight reuse is not as benefitial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
+
+Therefore, implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally and fully connected \ac{dnn}s and LSTMs.
+
+Considering this work focuses on edge applications employing disparate \ac{ann}s and assumes both weight reuse and batch processing do not apply, regardless of how implementations employ \ac{sram} as an intermediate store, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
+
+
+
+\iffalse How this work addresses the problem are outlined in section \ref{chap-five}. \fi
+
+
+\section[The Solution]{The Solution}
+\label{sec:The Solution}
+
+It is generally accepted that realistically, \ac{dram} is required to meet the main storage requirements of useful sized \ac{ann}s.
+
+This work also believes that to support all types of disparate \ac{ann}s, the system needs to be able to operate directly from the \ac{dram}.
+\iffalse 
+This is because SRAM-based solutions assume memory reuse when processing a \ac{ann}.
+However, when \ac{ann}s do not provide sufficient reuse these solutions become \ac{dram} bandwidth bound. 
+\fi
+
+If an implementation can ensure the \ac{dram} bandwidth can meet the system requirements, why use \ac{sram} as an intermediate memory and waste the significant silicon area they consume.
+
+The question becomes, can an implementation employ \ac{dram} with minimal \ac{sram} and meet the system requirements?
+
+This works implementation operates directly out of \ac{dram}, but not just \ac{dram}, \ac{3ddram}.
+This work has designed a system that can stay within the physical footprint of the \ac{3ddram} and thus can leverage the benefits of 3DIC.
+The benefits of \ac{3dic}, which are reviewed in chapter \ref{sec:3dic} include reduced energy, reduced area and increased connectivity and bandwidth.
+
+\iffalse
+Therefore, this work is able to propose a custom 3D-\ac{dram} that exposes more of the \ac{dram}s internal page and thus generates interface bandwidth that is of the order of 64 times that of the standard \ac{3ddram}.
+\fi
+
+% ----------------------------------------------------------------------------------------------------
+% ----------------------------------------------------------------------------------------------------
+Given the problem description \iffalse outlined in section \ref{sec:The Problem},\fi the primary design considerations that drove the architecture of this work are :
+\begin{outline}
+  \1 \ac{dram} is required for storage of \ac{ann} parameters 
+  \1 Target applications are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using local \ac{sram} \iffalse to store \ac{ann} parameters or the \ac{ann} input \fi
+  \1 Target application will likely apply many disparate \acp{ann} to perform various system functions
+  \1 Target application will have space and power limitations
+\end{outline}
+
+When performing inference in \acp{ann}, the computational hotspot is the \ac{an} pre-synaptic summation shown in figure \ref{fig:Rate Based Model} and equation \eqref{eq:activation function}.
+This \ac{an} summation involves hundreds or thousands of multiply-accumulates of the pre-synaptic \ac{an} activations and corresponding connection weights. 
+In this work, the \ac{an} activations and weights are stored in \ac{dram} with minimal local \ac{sram}. 
+Therefore, because of the complex access protocol associated with \ac{dram}, one of the main objectives is to demonstrate the \ac{3ddram} can be accessed while maintaining the required average bandwidth to the processing elements.
+\iffalse with relatively high levels of bus efficiency. \fi
+
+The system has to process thousands of \acp{an} concurrently and do this with minimal unused bus cycles.
+Therefore, the system must decode instructions, configure the various functions, pre-fetch and pipeline \ac{dram} data and perform the actual activation calculation. 
+
+To maximize the processing bandwidth, these operations are all performed concurrently enabling this work to demonstrate the ability to meet and exceed the required \iffalse \SI[per-mode=symbol]{32}{\tera \bit \per \second} of\fi processing bandwidth as shown in equation \eqref{eq:maximumBandwidth}.
+
+\iffalse
+The problem associated with processing \acp{ann} are outlined in section \ref{sec:The Problem}. 
+\fi
+
+\subsection[Novelty]{Novelty}
+\label{sec:Novelty}
+
+The novelty of this work includes:
+\begin{outline}
+    \1 A system that can simultaneously process multiple disparate \ac{ann}s at or near real-time 
+      \2 with low power and real-estate demands
+    \1 A custom \ac{3ddram} providing a \textasciitilde 64X bandwidth benefit compared to standard \ac{3ddram}
+      \2 the \ac{3ddram} could be employed in other applications
+    \1 A system that employs pure \ac{3dic} technology
+      \2 providing power and performance benefits of remaining within a \ac{3dic} stack
+    \1 Custom instructions and data structures that facilitate operating directly out of \ac{3ddram} 
+      \2 maximizing processing bandwidth by ensuring effective use of the \ac{3ddram}
+      \2 instruction format allow system functions to operate concurrently 
+\end{outline}
+
+
+\subsection[Summary]{Summary}
+\label{sec:Summary}
+
+This research explores a \ac{3dic} solution using a custom organized \ac{3ddram} in conjunction with unique data structures and custom processing modules to significantly reduce the 
+area and power footprint of an application that needs to support the processing associated with multiple \ac{ann}s.
+This works system will provide at or near real-time performance required for systems employing multiple disparate \ac{ann}s whilst staying within acceptable area and power limits and will provide greater than an order of magnitude benefit over comparable solutions.
+
+An overview of \ac{3dic} technology is given in chapter \ref{sec:3dic}.
+An overview on the pros and cons of \ac{dram} and \ac{sram} along with some proposed \ac{dram} customizations are given in chapter \ref{sec:DRAM Customizations}.
+Some state-of-the-art implementations are reviewed in chapter \ref{sec:State of the art}.
+An overview of the proposed system is described in chapter \ref{sec:System Overview} with more details in chapter \ref{sec:Detailed System Description}.
+An overview of the instruction architecture is given in chapter \ref{sec:System Operations}.
+Simulation results are shown in chapter \ref{sec:Results}.
+The conclusion and further work are discussed in chapter \ref{sec:Conclusions and Future Work}.
