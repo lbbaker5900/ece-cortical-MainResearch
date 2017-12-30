@@ -142,7 +142,8 @@ This would suggest wafer-to-wafer bonding because of the existing \ac{esd} mitig
 \section{Design Guidelines}
 \label{sec:3dic Design Guidelines}
 
-The technology roadmap in \cite{itrs2015_interconn} and the information in \cite{patti2014} suggests \SI{5}{\micro\meter} pitch \acp{tsv} is a reasonable design goal. This work assumes a one-to-one ration of signal \acp{tsv} to power/grod \ac{tsv} so when accounting for area associated with \acp{tsv}, the number of signal \acp{tsv} are doubled.
+The technology roadmap in \cite{itrs2015_interconn} and the information in \cite{patti2014} suggests \SI{5}{\micro\meter} pitch \acp{tsv} is a reasonable design goal. 
+This work assumes a one-to-one ration of signal \acp{tsv} to power/ground \ac{tsv} so when accounting for area associated with \acp{tsv}, the number of signal \acp{tsv} are doubled.
 
 As a large amount of \acp{tsv} are employed, \ac{tsv} energy cannot be ignored.
 Most of the energy dissipated in the \ac{tsv} is associated with the charging and discharging of the \acp{tsv} capacitance. For a \SI{5}{\micro\meter} pitch and \SI{2}{\micro\meter} radius \acp{tsv}, \cite{Bamberg2017} table I suggests an average capacitance of \SI{4.2}{\femto\farad} \footnote{\cite{tezzaron:preso} suggests a lower capacitance}.
@@ -151,7 +152,7 @@ Based on \eqref{eq:Energy in a Capacitor} and assuming a supply voltage of \SI{1
 
 \begin{alignat}{2} 
 \label{eq:Energy in a Capacitor}
-\text{Energy to charge a \ac{tsv},\hspace{4mm}} E_{tsv} &= \frac{1}{2} \cdot C_{tsv} \cdot V^2  %\SI{}{\joule} \\
+\text{Energy to charge a \ac{tsv},\hspace{4mm}} E_{tsv} &= \frac{1}{2} \cdot C_{tsv} \cdot V^2  %\si{\joule} \\
 \end{alignat}
 
 \begin{alignat}{2} 
@@ -159,7 +160,7 @@ Based on \eqref{eq:Energy in a Capacitor} and assuming a supply voltage of \SI{1
 \text{Energy to charge a \ac{tsv},\hspace{4mm}} E_{tsv} &= \frac{1}{2} \cdot C_{tsv} \cdot V^2  = \frac{1}{2} \cdot \num{4.2e-15} \cdot 1.0 = \SI[per-mode=symbol]{2.1}{\femto \joule} \nonumber \\
 \text{Power per \ac{tsv},\hspace{4mm} } P_{tsv} &= E_{tsv} \cdot \text{bit rate} \nonumber \\
 \text{normalizing to a clock of \SI{1.0}{\giga\hertz}} & \nonumber \\
-\text{Power per \ac{tsv} per \SI{}{\hertz} } &= \SI[per-mode=symbol]{2.1}{\micro \watt \per \giga \bit\per\second \per \ac{tsv}}
+\text{Power per \ac{tsv} per \si{\hertz} } &= \SI[per-mode=symbol]{2.1}{\micro \watt \per \giga \bit\per\second \per \ac{tsv}}
 \end{alignat}
 
 The \ac{tsv} design guidelines used by this work are summarized in table \ref{tab:TSV Design Characteristics}.

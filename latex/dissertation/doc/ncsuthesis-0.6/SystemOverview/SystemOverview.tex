@@ -7,7 +7,7 @@
 \chapter{System Overview}
 \label{chap-five}
 \label{sec:System Overview}
-As mentioned in chapter \ref{sec:Introduction} and chapter \ref{Motivation}, this works target application processes mulltiple \acp{ann} each of which have limited opportunities for both weight reuse and batch processing.
+As mentioned in chapter \ref{sec:Introduction} and chapter \ref{Motivation}, this works target application implements mulltiple \acp{ann} each of which have limited opportunities for both weight reuse and batch processing.
 These requirements require \ac{dram} to be employed for main storage of \ac{ann} parameters and local \ac{sram} is of limited use.
 Under these conditions, the \ac{dram} bandwidth is the system bottleneck.
 
@@ -37,7 +37,7 @@ The question becomes, can a useful system coexist within the same 3D footprint?
 
 This work targeted a baseline system with:
 \begin{outline}
-  \1 Computations requiring single precision floating point
+  \1 Computations requiring \ac{binary32}
   \1 Tezzaron \acf{diram4} \cite{tezzaron:diram4} for main memory
   \1 28nm \ac{asic} technology
 \end{outline}
@@ -49,7 +49,7 @@ As shown in figure \ref{fig:SSC}, the \ac{ssc} includes the \ac{diram4} sub-memo
 The \ac{diram4} has 64 sub-memories so there are 64 \acp{ssc}. The \ac{ssc} has been designed as a standalone unit and does not have a knowledge of the other \acp{ssc} in the system.
 \begin{figure}
 \centering
-\begin{subfigure}{.4\textwidth}
+\begin{subfigure}{.44\textwidth}
   \centering
   \includegraphics[scale=0.75]{SSC_logical}
   \captionsetup{justification=centering, skip=10pt}
@@ -57,10 +57,10 @@ The \ac{diram4} has 64 sub-memories so there are 64 \acp{ssc}. The \ac{ssc} has 
   \caption{Sub-system column logical block diagram}
   \label{fig:Sub-system Column Logical Block Diagram}
 \end{subfigure}%
-\begin{subfigure}{.6\textwidth}
+\begin{subfigure}{.54\textwidth}
   \centering
-  \includegraphics[scale=1.1]{SSC_physical}
-  \captionsetup{justification=centering, skip=-27pt}
+  \includegraphics[scale=0.9]{SSC_physical}
+  \captionsetup{justification=centering, skip=10pt}
   %\vspace{36pt}
   \vspace{20pt}
   \caption{Sub-system column physical diagram}
@@ -104,6 +104,107 @@ Another proposed change is the add mask bits to the write databuse to avoid havi
 
 
 % ----------------------------------------------------------------------------------------------------
+\section{Layer Interconnect}
+\label{sec:Layer Interconnect}
+
+The layers are connected using through-silicon-vias (\ac{tsv}s) which provide high connection density, high bandwidth and low energy.
+By ensuring the system stays within the 3D footprint ensures we can take advantage of the area and bandwidth benefits provided by \acp{tsv}.
+The high density interconnect provided by \acp{tsv} allows the system to take advantage of the very wide \ac{dram} bus provided by the \ac{dram} customization described in section \ref{sec:Very-Wide Bus}.
+The wide interconnect between the manager and \ac{pe} are also implemented using \acp{tsv}.
+
+The interconnect between the manager and \ac{pe} is referred to as the stack bus. The interconnect between the manager and \ac{dram} is referred to as the \ac{dram} bus.
+
+\subsection{Stack Bus}
+\label{sec:Stack Bus}
+
+The stack bus is bidirectional with a 36-bit \ac{oob} configuration bus from the manager to the \ac{pe}, a 2048-bit "downstream" data bus from the manager to the \ac{pe} and a 512-bit "upstream" data bus from the \ac{pe} to the manager.
+
+The 36-bit \ac{oob} bus is designed to send configuration packets to configure the \ac{stop} and \ac{simd} blocks inside the \ac{pe}.
+The packet primarily contains the \ac{stop} function to be performed on the downstream data and the operation the \ac{simd} is to perform on the result from the \ac{stop}.
+It also includes the size of the downstream data stream and an operation idenfication tag.
+
+The 2048-bit downstream stack bus is designed to carry 32 lanes of data with each lane containing two operand buses. 
+In the baseline system, the two operand buses are designed to carry streams of \ac{binary32} numbers.
+This allows the downstream stack bus simultaneously stream 32 execution lanes each with two 32-bit argument streams. 
+Typically these streams are the weights and pre-synaptic \ac{an} states to calculate the states of up to 32 \acp{an}. 
+The streams can also be configured to calculate the state of a single \ac{an} where the weights and pre-synaptic \ac{an} states for the single \ac{an} are sent in parallel across the downstream stack bus and a reduction operation can be performed in the \ac{pe} by the \ac{stop} and \ac{simd}.
+
+The 512-bit upstream bus is primarily designed to send the results of a downstream operation. Typically this is the states of up to 32 \acp{an}.
+The upstream bus is packetized with the result data contained in the data portion of the upstream packet.
+Additional information includes the operation identification tag provided by the \ac{oob} command packet and the number of data words.
+The upstream bus is not as wide as the downstream bus because the ratio of downstream operands to result data is a function of the pre-synaptic fanin.
+Based on the average fanin from the baseline \ac{ann} shown in table \ref{tab:Layer Configuration}, a 512-bit bus exceeds the required average bandwidth.
+
+\subsection{\ac{dram} Bus}
+\label{sec:DRAM Bus}
+
+The interface to the \ac{diram4} is similar to classic \ac{dram} interfaces with control signals including bank address and multiplexed page/cache address bus.
+There are separate 2048-bit \ac{ddr} read and write databuses (see section \ref{sec:Very-Wide Bus}).
+In total there are 4180 signals in the \ac{dram} interface.
+Other than the wide databuses, the interface protocol is as described in \cite{tezzaron:diram4}.
+A timing diagram showing a read and write to the \ac{diram4} are shown in figure \ref{fig:diram4Timing}.
+\begin{figure}[!t]
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=.8\linewidth]{diram4TimingDiagram}}
+}
+\caption{Read and Write request to \ac{diram4} \cite{tezzaron:diram4}}
+\label{fig:diram4Timing}
+\end{figure}
+
+
+
+The bandwidth of the \ac{dram} bus is designed to ensure data can be constantly maintained to the stack downstream bus.
+Because an entire cacheline is accessed for each read request, there is an extreme case when back-to-back requests result in up to 32 \ac{dram} page opens commands.
+It is possible that this sequence page opens could be followed by page closes resulting in a period when no useful data is being read from the \ac{diram4}.
+This case is shown in figure \ref{fig:Worst case PO/PC sequence}.
+\begin{figure}[!t]
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=1\linewidth]{worstCaseDiram4Read}}
+}
+\caption{Worst case PO/PC sequence}
+\label{fig:Worst case PO/PC sequence}
+\end{figure}
+To accomodate this, the \ac{dram} bus has twice the raw bandwidth of the downstream stack bus. 
+Therefore under this worst case scenario the higher bandwidth data from the \ac{diram4} must be buffered, as shown in figure \ref{fig:Worst case read path FIFO depth}.
+In this case, per channel \SI[per-mode=symbol]{32}{\kilo\bit} \acp{fifo} must be placed in the read path as shown in figure \ref{fig:DRAM Read Path Buffering}.
+
+
+\begin{figure}
+\centering
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=0.7\textwidth]{readBufferDepth}
+  \captionsetup{justification=centering, skip=0pt}
+  \caption{Worst case read path FIFO depth}
+  \label{fig:Worst case read path FIFO depth}
+\end{subfigure}%
+
+\bigskip
+
+\vspace{-10pt}
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=0.75\textwidth]{readBufferBlockDiagram}
+  \captionsetup{justification=centering, skip=6pt}
+  \caption{Read path buffering diagram}
+  \label{fig:Read path buffering diagram}
+\end{subfigure}
+\captionsetup{justification=centering, skip=16pt}
+\caption{DRAM Read Path Buffering}
+\label{fig:DRAM Read Path Buffering}
+\end{figure}
+
+\iffalse 
+Each of the \ac{diram4} memories contain two channels with each channel containing 32 banks and each bank contains 4096 \SI[per-mode=symbol]{4}{\kilo\bit} pages.
+\fi
+
+% ----------------------------------------------------------------------------------------------------
 \section{Manager Layer}
 The Manager block is the main controller in the system. The operations required to process an \ac{ann} are formed from individual instructions which are decoded by the Manager. 
 These instructions include descriptors to describe memory read operations, processing engine operations, memory write operations and general system operations for synchronization. 
@@ -117,25 +218,23 @@ The configuration includes:
 \end{itemize}
 
 % ----------------------------------------------------------------------------------------------------
-\section{Processing Layer}
-\label{sec:Processing Layer}
-The \ac{pe} is able to operate on data streamed directly from the \ac{dram} via the Manager layer. 
-The \ac{pe} is configured by the manager to perform operations on the operand data streamed from the manager. 
+\section{Processing Engine Layer}
+\label{sec:Processing Engine Layer}
+The \ac{pe} contains two main processing modules, the \ac{stop} and the \ac{simd} block.
+Both the \ac{stop} block and the \ac{simd} have 32 execution lanes. The execution lanes inside the \ac{stop} contain functions required to perform \ac{an} related operations.
+The \ac{simd} will be based on the device described in \cite{schabel2014diss}.
+
+
+The \ac{pe} is configured by the manager to perform operations on two operand data streams from the manager. 
+The \ac{stop} is able to operate on this data directly from the manager at the full bandwidth rate of the stack bus and does not have to be stored in local \ac{sram} prior to processing. 
+There is a small \ac{fifo} to provide buffering to allow asynchronous configuration of the \ac{stop} block and the source of the streaming data in the manager. 
+The \ac{fifo} also allows the two argument streams in each of the execution lanes to wander with respect to each other and with respect to the other lanes.
+
+The architecture is expandable to allow various functions to be provided in the \ac{stop} but currently implemented is the operation to multiply and accumulation the weights and pre-synaptic \ac{an} states as a part of the \ac{an} state calculation.
 In the baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. 
 These operands typically are the pre-synaptic \ac{an} activations and the connection weights. 
 The \ac{pe} also performs the activation function on the result of the MAC to generate the \ac{an} activation value. 
 These 32 activation values are sent back to the Manager layer.
-
-% ----------------------------------------------------------------------------------------------------
-\section{Layer Interconnect}
-\label{sec:Layer Interconnect}
-
-The layers are connected using through-silicon-vias (\ac{tsv}s) which provide high connection density, high bandwidth and low energy.
-By ensuring the system stays within the 3D footprint ensures we can take advantage of the area and bandwidth benefits provided by \acp{tsv}.
-The high density interconnect provided by \acp{tsv} allows the system to take advantage of the very wide \ac{dram} bus provided by the \ac{dram} customization described in section \ref{sec:Customization One: Very-Wide Bus}.
-The wide interconnect between the manager and \ac{pe} are also implemented using \acp{tsv}.
-
-The interconnect between the manager and \ac{pe} is referred to as the stack bus. The interconnect between the manager and \ac{dram} is referred to as the \ac{dram} bus.
 
 % ----------------------------------------------------------------------------------------------------
 \section{Inter-Manager Communication}
@@ -144,9 +243,26 @@ The interconnect between the manager and \ac{pe} is referred to as the stack bus
 During configuration and/or computations, data must be transported between managers. 
 
 During \ac{an} computations, the \ac{an} weights and states are read from the \ac{dram} in the \ac{ssc}.
-This inter-manager communication is provided by an \ac{noc}.
+This inter-manager communication is provided by an \ac{noc} with all managers connected in a mesh as shown in figure \ref{fig:Mesh}.
+\begin{figure}[!t]
+% the [] contains position info e.g. [!t] means here
+\centering
+\captionsetup{justification=centering}
+\centerline{
+\mbox{\includegraphics[width=.5\linewidth]{Mesh}}
+}
+\caption{\ac{noc} manager connectivity}
+\label{fig:Mesh}
+\end{figure}
+
 When computing an \ac{ann} across multiple processing sub-systems, often \ac{an} activation data must be shared between these \ac{ssc}s. The \ac{ssc} includes the \ac{dram} port, the manager and the \ac{pe}. 
 An \ac{noc} within each management block communicates with each adjacent manager using a mesh network. This \ac{noc} has a forwarding table that can be reconfigured to provide more efficient routing for a given processing step.
+
+Each manager has an integrated \ac{noc} module that has four ports. 
+The managers in the middle of the array use all four ports to connect to adjacent managers.
+The managers in the corners of the array connect to two adjacent managers.
+The managers at the edges connect to three adjacent managers.
+The host is connected to one (or more) of the managers at one edge of the array. 
 
 % ----------------------------------------------------------------------------------------------------
 \section{Summary}
@@ -167,7 +283,18 @@ A control and data flow diagram of the stack showing the 64 sub-system columns c
 \subsection{Configuration, Command and Data Flow}
 \label{sec:Configuration, Command and Data Flow}
 
-All communication between \acp{ssc} is over an \ac{noc}. 
+The host is responsible for loading each managers instruction memory over the \ac{noc} and a main controller module in the manager.
+The host sends a command to start the manager decoding a defined number of instructions at a specific address in the instruction memory.
+
+The manager decodes instructions and sends control commands to various modules in the manager and the \ac{pe}.
+
+One module, the \ac{oob} downstream channel sends configuration packets to the \ac{pe} over an \ac{oob} channel embedded in the stack bus.
+This configuration packet includes a) a pointer to a pre-programmed operation to be performed by the streaming operation module on the data streams to the \ac{pe} and b) a pointer to a pre-programmed portion of the \ac{simd} instruction memory which defines the operations to be performed by the \ac{simd} on the result of the streaming operation block.
+ in the \ac{pe}commwhich is a part of the is instructed to send \ac{simd} and \ac{stop} commands over an out-of-band channel in the stack bus to the \ac{pe}.
+
+Th
+
+The managers at the edge of the array The host is connected to one (or more) of the managers at one edge of the array. EachAll communication between \acp{ssc} is over an \ac{noc}. 
 Some causes of communication between \acp{ssc} are host configuration, synchronization messages between \acp{ssc}, \ac{an} state replication etc..
 \iffalse
 Synchronization messages and \ac{an} state replication are a side effect of the instructions described in chapter \ref{sec:SystemOperations}.
