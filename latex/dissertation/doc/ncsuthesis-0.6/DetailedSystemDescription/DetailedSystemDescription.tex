@@ -67,6 +67,10 @@ As soon as read data is sent back to the MRC via the MMC, that data is aligned w
 \subsection{Memory Read Controller}
 \label{sec:Memory Read Controller}
 
+The \ac{an} states and connection weights can be interleaved or linearly.
+When the data is stored linearlya) stored for a group of \acp{an} in an interleaved manner such that when memory is read, weight data and/or \ac{an} states are spread across all the execution lanes for individual \ac{an} state caclutation or b) linearly in which case the.
+
+
 \subsection{Result Data Processor}
 \label{sec:Result Data Processor}
 The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.

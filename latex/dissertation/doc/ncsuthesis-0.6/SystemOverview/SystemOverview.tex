@@ -285,7 +285,11 @@ The operation descriptor describes the operations the \ac{pe} will perform, whic
 The manager extracts the operation information, embeds the information in an \ac{oob} packet and sends the packet to the \ac{pe} over the downstream \ac{oob} bus.
 The two memort read descriptors are used to define the memory locations of the downstream stack data buses. 
 There is one memory read descriptor for each of the two operand streams in the execution lanes, one typically defines where the pre-synaptic weights are stored and one for where the pre-synaptic \ac{an} states are stored.
-The weights are stored in an interleaved manner such that when memory is read, weight data is spread across all the execution lanes.
+The architecture is designed to for an instruction to compute the state of multiple \acp{an} or for an individual \acp{an} state to be computed.
+If a group of \acp{an} are computed, the pre-synaptic connection weights for the \acp{an} are stored interleaved and when read from \ac{dram} are directed to one of the streams of each of the execution lanes.
+If a single \ac{an} is computed, the pre-synaptic connection weights for the \acp{an} are stored linearly and when read from \ac{dram} are directed to one of the streams of each of the execution lanes.
+The pre-synaptic \ac{an} states are stored in row-major order and when read are broadcast to the other stream of each execution lane.
+
 
 
 % ----------------------------------------------------------------------------------------------------
@@ -301,19 +305,57 @@ The \ac{stop} is able to operate on this data directly from the manager at the f
 There is a small \ac{fifo} to provide buffering to allow asynchronous configuration of the \ac{stop} block and the source of the streaming data in the manager. 
 The \ac{fifo} also allows the two argument streams in each of the execution lanes to wander with respect to each other and with respect to the other lanes.
 
-The architecture is expandable to allow various functions to be provided in the \ac{stop} but currently implemented is the operation to multiply and accumulation the weights and pre-synaptic \ac{an} states as a part of the \ac{an} state calculation.
-In the baseline system, the main operation is to perform multiply-accumulates on 32 execution lanes of two operands. 
-These operands typically are the pre-synaptic \ac{an} activations and the connection weights. 
-The \ac{pe} also performs the activation function on the result of the MAC to generate the \ac{an} activation value. 
-These 32 activation values are sent back to the Manager layer.
+The architecture is expandable to allow various functions to be provided in the \ac{stop}.
+The current baseline implementation includes the \ac{mac} operation.
+There is a \acp{mac} per execution lane allowing up to 32 simultaneous pre-synaptic \ac{an} $weight \cdot state$ computations on the two operands from the two streams in each execution lane.
+These computations can be for a group of up to 32 \acp{an} or for a single \ac{an} as shown in figure \ref{fig:PE AN calculation}.
+
+\begin{figure}
+\centering
+  \begin{subfigure}{.49\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{singleANcalculation}
+    \captionsetup{justification=centering, skip=10pt}
+    \caption{Single AN calculation}
+    \label{fig:Single AN calculation}
+  \end{subfigure}%
+%\bigskip
+  \begin{subfigure}{.49\textwidth}
+    \centering
+    \vspace{40pt}
+    \includegraphics[width=0.9\textwidth]{groupANcalculation}
+    \captionsetup{justification=centering, skip=10pt}
+    \caption{Group AN calculation}
+    \label{fig:Group AN calculation}
+  \end{subfigure}%
+\vspace{-10pt}
+\captionsetup{justification=centering, skip=16pt}
+\caption{\ac{pe} \ac{an} calculation}
+\label{fig:PE AN calculation}
+\end{figure}
+
+If it is for a group of \acp{an}, the \ac{simd} only has to perform the activation function on the 32 results from the \ac{stop}. 
+If a single \ac{an} is being processed, the \ac{simd} must accumulate the result from each execution lanes \ac{stop} before applying the activation function.
+The activation function currently implemented is the \ac{relu}.
+The \ac{an} states can be sent back to the manager over the stack upstream bus or retained for further processing such as pooling or softmax calculations.
 
 % ----------------------------------------------------------------------------------------------------
 \section{Inter-Manager Communication}
 \label{sec:Inter-Manager Communication}
 
-During configuration and/or computations, data must be transported between managers. 
-
-During \ac{an} computations, the \ac{an} weights and states are read from the \ac{dram} in the \ac{ssc}.
+During configuration and/or computations, it may be required to replicate data to other \acp{ssc}.
+During \ac{an} computations, an \ac{ssc} only reads \ac{ann} weights and states from its local \ac{dram} and not \ac{dram} of other \acp{ssc}.
+In some cases, such as fully connected layers and locally-connected layers with \ac{roi} overlap, the \ac{an} computation in an \ac{ssc} for layer $n$ may include \ac{an} states from layer $n-1$ which were computed in another \ac{ssc}.
+In this case, when \acp{an} are being computed for layer $n-1$, the operation instruction contains information as to where the result should be written back for computing \acp{an} in layer $n$.
+If a particular layer $n-1$ \ac{an} is required by another \ac{ssc} when computing a layer $n$ \ac{an}, the result is sent to all dependent \ac{ssc} via the \ac{noc}.
+The instruction contains one or more storage descriptors (see section \ref{sec:Storage Descriptor}) that identify the destination of the operation result.
+If the result must be replicated, there are multiple storage descriptors. When the result is returned by the \ac{pe}, the manager examines the storage descriptors and determines which \ac{ssc} the result should be sent.
+The manager creates an \ac{noc} header which includes information on all the destination \acp{ssc}. 
+This is encoded as a 64-bit field although the \ac{noc} header supports a multicast group. 
+The multiple storage descriptors and the result data are placved in the data portion of the \ac{noc} packet.
+As the packet traverses the \ac{noc}, it is replicated to outgoing ports based on the destination bit field.
+When the destination \ac{ssc} receives the packet, it extracts the storage descriptor and writes the data to its local \ac{dram}.
+The \ac{noc} packet format can be seen in figure \ref{fig:NoC Packet}.
 This inter-manager communication is provided by an \ac{noc} with all managers connected in a mesh as shown in figure \ref{fig:Mesh}.
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
@@ -325,6 +367,19 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
 \caption{\ac{noc} manager connectivity}
 \label{fig:Mesh}
 \end{figure}
+
+\begin{figure}[!t]
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=.9\linewidth]{nocpacket}}
+}
+\vspace{-10pt}
+\caption{\ac{noc} packet format}
+\label{fig:NoC packet format}
+\end{figure}
+
 
 When computing an \ac{ann} across multiple processing sub-systems, often \ac{an} activation data must be shared between these \ac{ssc}s. The \ac{ssc} includes the \ac{dram} port, the manager and the \ac{pe}. 
 An \ac{noc} within each management block communicates with each adjacent manager using a mesh network. This \ac{noc} has a forwarding table that can be reconfigured to provide more efficient routing for a given processing step.
