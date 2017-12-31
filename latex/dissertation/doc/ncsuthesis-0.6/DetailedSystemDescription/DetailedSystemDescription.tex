@@ -58,21 +58,24 @@ Note that other types of stOp includes a NOP with a destination of local memory.
 
 
 \subsection{Argument Decode}
-\label{ssec:argumentDecode}
+\label{sec:argumentDecode}
 The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
 
 As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
 
 
-\subsection{Result data Processing}
-\label{ssec:resultDataprocessing}
+\subsection{Memory Read Controller}
+\label{sec:Memory Read Controller}
+
+\subsection{Result Data Processor}
+\label{sec:Result Data Processor}
 The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
 
 As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
 
 
 \subsection{Memory Write Controller}
-\label{ssec:memoryWriteController}
+\label{sec:memoryWriteController}
 
 The Memory Write Controller (MWC) receives data from to sources, the NoC via the MCNTL and the RDP.
 
@@ -89,7 +92,7 @@ The holding registers have the potential in future to allow aggregation of data 
 \label{sec:pe}
 
 \subsection{Configuration}
-\label{ssec:peConfiguration}
+\label{sec:peConfiguration}
 
 A configuration controller within the PE (PE\_CNTL) takes the OOB packet from the Manager and extracts the stOp and SIMD operation pointers.
 
