@@ -124,6 +124,34 @@ In figure \ref{fig:descriptorTuple} we see the format of a 6-tuple descriptor.
 \end{figure}
 
 
+\begin{figure}
+\centering
+  \begin{subfigure}{.95\textwidth}
+    \centering
+    \mbox{\includegraphics[width=.9\linewidth]{instructionAndDescriptors}}
+    \captionsetup{justification=centering, skip=10pt}
+    \caption{Instruction and Descriptors}
+    \label{fig:Instruction and Descriptors}
+  \end{subfigure}%
+
+\bigskip
+
+  \vspace{-45pt}
+  \begin{subfigure}{1\textwidth}
+    \centering
+    \vspace{40pt}
+    \includegraphics[width=0.9\textwidth]{instructionWaveform}
+    \captionsetup{justification=centering, skip=10pt}
+    \caption{Instruction memory waveform}
+    \label{fig:Instruction memory waveform}
+  \end{subfigure}%
+\vspace{-10pt}
+\captionsetup{justification=centering, skip=16pt}
+\caption{Instruction Details}
+\label{fig:Instruction Details}
+\end{figure}
+
+
 
 % ----------------------------------------------------------------------------------------------------
 \subsection{Accessing of Pre-synaptic AN states and connection weights}
@@ -167,6 +195,9 @@ The read efficiency problem is solved by again taking advantage of the \ac{dram}
 This work proposes a data structure to describe these ROI storage locations.
 
 Although disparate groups of ANs may have a different start addresses for their ROI, a commonality is observed in the ROI section lengths and gaps. So for each AN group, the groups ROI starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
+
+\subsubsection{Storage Descriptor}
+\label{sec:Storage Descriptor}
 
 This storage descriptor contains, amongst other things the start address of the ROI and a pointer to a section/gap descriptor. Many storage descriptors point to a common section/gap descriptor. This avoids having to have a unique section/gap descriptors for each AN group.
 
