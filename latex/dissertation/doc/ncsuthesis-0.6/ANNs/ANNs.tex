@@ -523,11 +523,65 @@ An example of a \ac{dnn} can be seen in figure \ref{fig:DNN showing layer order}
 \end{table}
 \fi
 
+
+%%%% \begin{sidewaysfigure}[h]
+%%%%   %\begin{adjustbox}{angle=0, width=1.0\textwidth}
+%%%%     \centering
+%%%%     \captionsetup{justification=centering}
+%%%%     \begin{subtable}{.9\textwidth}
+%%%%       %\captionsetup{justification=centering, skip=-5pt}
+%%%%       \centering
+%%%%       %\begin{center}
+%%%%        % [lr] ~ left align col 0 and right align col 1
+%%%%        % e.g. 4 columns could be lccr
+%%%%       \begin{adjustbox}{width=1\textwidth}
+%%%%         \begin{tabular}{|r|c|c|c|c|c|c|c|c|c|c|c|c|c}\cline{3-13}
+%%%%           %\toprule
+%%%%            \multicolumn{2}{c|}  {\multirow{2}{*}{}}    & \multicolumn{11}{c|}{Layers}    \\\cline{3-13}
+%%%%            \multicolumn{2}{c|}{}                       &  1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11  \\\cline{3-13} \cline{1-13}
+%%%%            \multicolumn{2}{|r|}{Type}                  &  Input          & Locally      & Pooling           & Locally             & Pooling             & Locally             & Locally             & Locally             &  Fully              &  Fully                 &  Fully         &                                    \\\cline{1-13}
+%%%%            \multirow{3}{*}{Dimensions}               &X& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{      4096}    & \num{     4096}        & \num{    1024} &                                    \\
+%%%%                                                      &Y& \num{       256}& \num{     55}& \num{    27}      & \num{     27}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{     13}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\
+%%%%                                                      &Z& \num{         3}& \num{     96}& \num{    96}      & \num{    256}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{    256}       & \num{         1}    & \num{        1}        & \num{       1} &                                    \\\cline{1-13}
+%%%%            \multirow{3}{*}{Filter Dimensions}        &X&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{     4096}        & \num{    4096} &                                    \\
+%%%%                                                      &Y&    na           & \num{     11}& \num{     2}      & \num{      5}       & \num{      2}       & \num{      3}       & \num{      3}       & \num{      3}       & \num{        13}    & \num{        1}        & \num{       1} &                                    \\
+%%%%                                                      &Z&    na           & \num{      3}& \num{     1}      & \num{     96}       & \num{      1}       & \num{    256}       & \num{    384}       & \num{    384}       & \num{       256}    & \num{        1}        & \num{       1} &                                    \\\cline{1-14}
+%%%%             \multicolumn{2}{|r|}{Stride           }    &    na           & \num{      4}& \num{     2}      & \num{      2}       & \num{      2}       & \num{      1}       & \num{      1}       & \num{      1}       &              na     &             na         &            na  & \multicolumn{1}{c|}{Aggregate    } \\\cline{14-14}
+%%%%             \multicolumn{2}{|r|}{Pre-synaptic Fanin}   &    na           & \num{    363}& \num{     4}      & \num{   2400}       & \num{      4}       & \num{   2304}       & \num{   3456}       & \num{   3456}       & \num{     43264}    & \num{     4096}        & \num{    4096} & \multicolumn{1}{c|}{$\Bar{\num{   1650}}$} \\
+%%%%             \multicolumn{2}{|r|}{Number of \ac{an}}    & \num{    196608}& \num{ 290400}& \num{ 69984}      & \num{ 186624}       & \num{  43264}       & \num{  64896}       & \num{  64896}       & \num{  43264}       & \num{      4096}    & \num{     4096}        & \num{    1024} & \multicolumn{1}{c|}{\num{ 772544}} \\
+%%%%             \multicolumn{2}{|r|}{Number of Weights}    &    na           & \num{  34848}& na                & \num{ 614400}       & na                  & \num{ 884736}       & \num{ 1327104}      & \num{ 884736}       & \num{ 177209344}    & \num{ 16777216}        & \num{ 4194304} & \multicolumn{1}{c|}{\num{ 2.02e8}} \\\hline
+%%%%         \end{tabular}
+%%%%       \end{adjustbox}
+%%%%       \captionsetup{justification=centering, skip=9pt}
+%%%%       \vspace{0.5cm}
+%%%%       \caption{Baseline \ac{ann} Layer Configuration \cite{krizhevsky2012imagenet}}
+%%%%       \label{tab:Layer Configuration}
+%%%%       %  \end{center}
+%%%%     \end{subtable}
+%%%%   
+%%%%     \bigskip
+%%%% 
+%%%%     %\begin{adjustbox}{width=1.0\textwidth}
+%%%%       \begin{subfigure}{1\textwidth}
+%%%%         \centering
+%%%%         \includegraphics[width=1.0\textwidth]{fullDNN}
+%%%%         \captionsetup{justification=centering, skip=15pt}
+%%%%         \caption{DNN showing layer order \cite{krizhevsky2012imagenet}}
+%%%%         \label{fig:DNN showing layer order}
+%%%%       \end{subfigure}
+%%%%     %\end{adjustbox}
+%%%%   
+%%%%   %\end{adjustbox}
+%%%%   \caption{Baseline DNN \cite{krizhevsky2012imagenet}}
+%%%%   \label{fig:Baseline DNN}
+%%%% \end{sidewaysfigure}
+
+
 \begin{sidewaysfigure}[h]
   %\begin{adjustbox}{angle=0, width=1.0\textwidth}
     \centering
     \captionsetup{justification=centering}
-    \begin{subtable}{.9\textwidth}
+    \begin{minipage}{.9\textwidth}
       %\captionsetup{justification=centering, skip=-5pt}
       \centering
       %\begin{center}
@@ -553,26 +607,26 @@ An example of a \ac{dnn} can be seen in figure \ref{fig:DNN showing layer order}
       \end{adjustbox}
       \captionsetup{justification=centering, skip=9pt}
       \vspace{0.5cm}
-      \caption{Baseline \ac{ann} Layer Configuration \cite{krizhevsky2012imagenet}}
-      \label{tab:Layer Configuration}
+      \captionof{table}{Baseline \ac{ann} Layer Configuration \cite{krizhevsky2012imagenet}}
+      \label{tab:Baseline Layer Configuration}
       %  \end{center}
-    \end{subtable}
+    \end{minipage}
   
     \bigskip
 
     %\begin{adjustbox}{width=1.0\textwidth}
-      \begin{subfigure}{1\textwidth}
+      \begin{minipage}{1\textwidth}
         \centering
         \includegraphics[width=1.0\textwidth]{fullDNN}
         \captionsetup{justification=centering, skip=15pt}
-        \caption{DNN showing layer order \cite{krizhevsky2012imagenet}}
-        \label{fig:DNN showing layer order}
-      \end{subfigure}
+        \captionof{figure}{Baseline DNN showing layer order \cite{krizhevsky2012imagenet}}
+        \label{fig:Baseline DNN showing layer order}
+      \end{minipage}
     %\end{adjustbox}
   
   %\end{adjustbox}
-  \caption{Baseline DNN \cite{krizhevsky2012imagenet}}
-  \label{fig:Baseline DNN}
+  %\caption{Baseline DNN \cite{krizhevsky2012imagenet}}
+  %\label{fig:Baseline DNN}
 \end{sidewaysfigure}
 
 
@@ -587,7 +641,7 @@ An example of a \ac{dnn} can be seen in figure \ref{fig:DNN showing layer order}
 \end{sidewaysfigure}
 \fi
 
-To approach the capabilities observed in human behavior, such as object recognition \ac{ann}s have become very large. The example shown in figure \ref{fig:Baseline DNN}, which is based on the work from \cite{krizhevsky2012imagenet}, has hundreds of thousands of \acp{an} and hundreds of millions of connection weights (see table \ref{tab:Layer Configuration}).
+To approach the capabilities observed in human behavior, such as object recognition \ac{ann}s have become very large. The example shown in figure \ref{fig:Baseline DNN showing layer order}, which is based on the work from \cite{krizhevsky2012imagenet}, has hundreds of thousands of \acp{an} and hundreds of millions of connection weights (see table \ref{tab:Layer Configuration}).
 These \acp{ann} utilize these hundreds of thousands of \acp{an} to implement what a human would consider a relatively straightforward task.
 For example, a "useful" \ac{ann} similar to that described in \cite{krizhevsky2012imagenet} which was used to recognize up to 1000 different object classes, has a network size of approximately 650,000 \acp{an} and 630 million synaptic connections \cite{krizhevsky2012imagenetPreso}. 
 
@@ -596,7 +650,7 @@ The increased performance of \ac{ann}s over classical methods in image recogniti
 
 If \ac{ann}s fulfill their potential, systems employing \ac{ann}s will utilize them for various functions, such as engine monitoring, anomaly detection, navigation etc. all within the same system.
 Considering the various functions a complex customer facing or edge application system performs, it is likely that many real-world applications will employ multiple disparate instances of these useful sized \ac{ann}s.
-Assuming these complex functions will require \ac{ann}s similar in size to figure \ref{fig:Baseline DNN} and \cite{krizhevsky2012imagenet}, these implementations will be processing multiple large \ac{ann}s at or near real-time.
+Assuming these complex functions will require \ac{ann}s similar in size to figure \ref{fig:Baseline DNN showing layer order} and \cite{krizhevsky2012imagenet}, these implementations will be processing multiple large \ac{ann}s at or near real-time.
 
 \section[ANN Processing]{ANN Processing}
 \label{sec:ANN Processing}
@@ -604,7 +658,7 @@ Assuming these complex functions will require \ac{ann}s similar in size to figur
 Considering the storage required for the input, the \ac{an} states and most significantly the weights for connections, the storage requirements results in gigabytes of memory.
 When these \ac{ann}s are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
 
-As a metric, this work assumes that any useful \ac{ann} will be similar to that shown in figure \ref{fig:Baseline DNN} which utilizes $>\num{900e3}$\acp{an} and $\approx\num{200e6}$ parameters. 
+As a metric, this work assumes that any useful \ac{ann} will be similar to that shown in table \ref{tab:Baseline Layer Configuration} which utilizes $>\num{900e3}$\acp{an} and $\approx\num{200e6}$ parameters. 
 \iffalse
 Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for edge systems employing inference on multiple disparate useful-sized neural networks.}}}
 \fi
@@ -716,7 +770,7 @@ The approximate system bandwidth and storage requirements are shown in table \re
 
 \begin{table}[h]
   \captionsetup{justification=centering, skip=3pt}
-  \caption{Estimated System Bandwidth and Storage Design Requirements}
+  \caption{Estimated system bandwidth and storage design requirements}
   \vspace{3pt}
   \label{tab:Bandwidth and Storage Design Requirements}
   \centering

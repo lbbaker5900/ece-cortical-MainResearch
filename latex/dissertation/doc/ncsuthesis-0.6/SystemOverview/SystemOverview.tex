@@ -267,8 +267,8 @@ The configuration includes:
       \item replicate the resulting \ac{an} activations to neighbor managers over the \ac{noc} for processing of other \ac{ann} layers
 \end{itemize}
 
-The most common instruction is to perform \ac{an} state calculation on a group of \acp{an}.
-This instruction contains four descriptors (see figure \ref{fig:Instruction 4-tuple}), an operation descriptor, two memory read descriptors and a memory write descriptor.
+The most common instruction is to perform state calculation on a group of \acp{an}.
+This instruction contains four descriptors (see figure \ref{fig:Instruction 4-tuple} and \ref{fig:Instruction Details}), an operation descriptor, two memory read descriptors and a memory write descriptor.
 \begin{figure}[!t]
 \centering
 \captionsetup{justification=centering}
@@ -351,8 +351,8 @@ If a particular layer $n-1$ \ac{an} is required by another \ac{ssc} when computi
 The instruction contains one or more storage descriptors (see section \ref{sec:Storage Descriptor}) that identify the destination of the operation result.
 If the result must be replicated, there are multiple storage descriptors. When the result is returned by the \ac{pe}, the manager examines the storage descriptors and determines which \ac{ssc} the result should be sent.
 The manager creates an \ac{noc} header which includes information on all the destination \acp{ssc}. 
-This is encoded as a 64-bit field although the \ac{noc} header supports a multicast group. 
-The multiple storage descriptors and the result data are placved in the data portion of the \ac{noc} packet.
+This is encoded as a 64-bit field although to provide extensibility the \ac{noc} header supports a multicast group. 
+The multiple storage descriptors and the result data are placed in the data portion of the \ac{noc} packet.
 As the packet traverses the \ac{noc}, it is replicated to outgoing ports based on the destination bit field.
 When the destination \ac{ssc} receives the packet, it extracts the storage descriptor and writes the data to its local \ac{dram}.
 The \ac{noc} packet format can be seen in figure \ref{fig:NoC packet format}.
@@ -371,7 +371,7 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
 \begin{figure}[!t]
 \centering
 \captionsetup{justification=centering}
-\captionsetup{width=.9\linewidth}
+\captionsetup{width=.75\linewidth}
 \centerline{
 \mbox{\includegraphics[width=.9\linewidth]{nocpacket}}
 }
@@ -406,24 +406,24 @@ A control and data flow diagram of the stack showing the 64 sub-system columns c
 \label{fig:FlowDiagram}
 \end{figure}
 
-\subsection{Configuration, Command and Data Flow}
 \label{sec:Configuration, Command and Data Flow}
 
+One of the primary objectives was to ensure the system can maintain the required average bandwidth (see table \ref{tab:Bandwidth and Storage Design Requirements}) whilst operating directly out of \ac{dram} over a range of pre-synaptic fanins.
+To achieve this the system decodes instructions and concurently sends configuration information to various system functions.
+It concurrently pre-fetchs and pipelines data to absorb the latencies associated with \ac{dram}.
+All system functions pipeline their configuration data to ensure the main processing pipeline is not starved of data and/or operations.
+This parallelism allows this system to constantly stream data whilst results from previous operations are being processed, broadcast to other \acp{ssc} and written back to \ac{ssc} memory.
+The instructions, the structures for describing the operations and the structures describing how data is retrieved and stored have been architected to provide extensibility.
+A detailed description of the instruction architecture and data structures is given in chapter \ref{sec:System Operations}.
+The baseline \ac{ann} described in table \ref{tab:Layer Configuration} was used to define a collection of presynaptic fanin tests and the average bandwidth achieved from those tests were used to ensure the average bandwidth is maintained.
+The results of those tests can be seen in chapter \ref{sec:Results}.
 
-**** WIP ****
 
-The host is responsible for loading each managers instruction memory over the \ac{noc} and a main controller module in the manager.
-The host sends a command to start the manager decoding a defined number of instructions at a specific address in the instruction memory.
+The second primary objective was to determine if a useful, extensible \ac{3dic} system could be designed employing a customized \ac{3ddram}.
+The \ac{3ddram} employed was the \ac{diram4} and estimated areas were extracted from data provided by Tezzaron\textregistered~\cite{patti2014}.
+The feasibility of the customizations were made with consultation with Tezzaron\textregistered.
+The physical details for the \ac{rtl} design of the primary modules are given in chapter \ref{sec:Detailed System Description}.
+The overall area details with respect to the \ac{3dic} stack are shown in chapter \ref{sec:Results}.
 
-The manager decodes instructions and sends control commands to various modules in the manager and the \ac{pe}.
-
-One module, the \ac{oob} downstream channel sends configuration packets to the \ac{pe} over an \ac{oob} channel embedded in the stack bus.
-This configuration packet includes a) a pointer to a pre-programmed operation to be performed by the streaming operation module on the data streams to the \ac{pe} and b) a pointer to a pre-programmed portion of the \ac{simd} instruction memory which defines the operations to be performed by the \ac{simd} on the result of the streaming operation block.
- in the \ac{pe}commwhich is a part of the is instructed to send \ac{simd} and \ac{stop} commands over an out-of-band channel in the stack bus to the \ac{pe}.
-The managers at the edge of the array The host is connected to one (or more) of the managers at one edge of the array. EachAll communication between \acp{ssc} is over an \ac{noc}. 
-Some causes of communication between \acp{ssc} are host configuration, synchronization messages between \acp{ssc}, \ac{an} state replication etc..
-\iffalse
-Synchronization messages and \ac{an} state replication are a side effect of the instructions described in chapter \ref{sec:SystemOperations}.
-\fi
 
 
