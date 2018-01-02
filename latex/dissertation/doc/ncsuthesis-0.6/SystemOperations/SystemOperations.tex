@@ -3,38 +3,42 @@
 \chapter{System Operations}
 \label{sec:System Operations}
 
-In the context of this system and \ac{an} state calculation, the basic operations to determine the state of a neuron is to :
+As mentioned in section \ref{sec:System Overview}, an \ac{ssc} has 32 execution lanes allowing the simultaneous processing of one to 32 \acp{an}.
+When processing a group of 
+The basic operations to determine the state of a group of \acp{an} are:
 \begin{outline}
-    \1 Synchronization to other managers
-    \1 Inform the Manager and \ac{pe} which operations are to be performed
-    \1 Inform the manager where to access the states of the pre-synaptic neurons
-    \1 Inform the manager where to access the weights of the connections from the pre-synaptic ANs
-    \1 How to provide the pre-synaptic neuron weights and states to the processing engine execution lanes
-    \1 Inform the manager where to store the resulting AN state back to memory
+  %\lbbcleanspace{20pt}
+  %\lbbcleanspace
+  \1 manager streams the states of the pre-synaptic \acp{an} to the \ac{pe}
+  \1 manager streams the weights of the pre-synaptic connections to the \ac{pe}
+  \1 each execution lane in the \ac{pe} operates directly on the two argument streams using the \ac{stop} block
+  \1 the \ac{pe} \ac{simd} block takes the 32 results from the \ac{stop} block and performs the activation function to generate the \ac{an} states
+  \1 the \ac{pe} \ac{simd} packetizes the \ac{an} states and sends the packet to the manager
+  \1 the manager replicates the \ac{an} state data over the \ac{noc} to any dependent \acp{ssc}
+  \1 if the local \ac{ssc} is dependent on the result, the manager saves the \ac{an} state data in local \ac{ssc} \ac{dram}
 \end{outline}
 
-
+The manager Typically an instruction contains information to process a group of \acp{an}. A group can be anywhere from one to 32 \acp{an} and is based on how the user partitions the \ac{ann} across the available \acp{ssc}.
 This work has developed an instruction architecture to describe the above operations.
-In the baseline system, the manager is not responsible for performing specific algorithm computational operations but is responsible for coordinating the various data flows and configuration of the modules that make up the system.
+In the baseline system, the manager is responsible for instruction decode and coordinating the various data flows and configuration of the modules throughout the \ac{ssc}.
+The \ac{pe} is responsible for the main algorithm operations using a combination of the \ac{stop} and \ac{simd}.
 
-The managers primary responsibility is:
+\iffalse
+
+The managers primary responsibility is to decode instructions and descriptors and :
 
 \begin{outline}
-    \1 System Control
     \1 Instruction decode
     \1 Internal Configuration messages
     \1 Operand read
     \1 Result write
-    \1 Inter-manager communication
+    \1 Host to \ac{ssc} and \ac{ssc} to \ac{ssc} communication
 \end{outline}
 
-In the baseline system, the \ac{pe} is responsible for the main algorithm operations.
 
 The \ac{pe} has three major blocks:
 
 \begin{outline}
-  %\setlength{\baselineskip}{10pt}
-  %\setlength{\itemsep}{6pt}
     \1 Streaming operation function (\ac{stop})
       \2 Processes data from the manager on-the-fly without storing in local \ac{sram}
     \1 \ac{simd}
@@ -42,6 +46,8 @@ The \ac{pe} has three major blocks:
     \1 DMA/local memory controller
       \2 transfer configuration data to \ac{pe} controller or to store \ac{stop} results to a small local \ac{sram} which can be used for access by \ac{simd} or by the \ac{stop} function
 \end{outline}
+
+\fi
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
 \section{Manager Operations}
@@ -50,20 +56,14 @@ The \ac{pe} has three major blocks:
 % ----------------------------------------------------------------------------------------------------
 \subsection{Instructions}
 \label{sec:Instructions}
+Typically an instruction contains information to process a group of \acp{an}. A group can be anywhere from one to 32 \acp{an} and is based on how the user partitions the \ac{ann} across the available \acp{ssc}.
+This includes defining where in memory \ac{an} states and weights are stored, what operations are to be performed and the destination of the resulting \ac{an} states.
+The instructions contain sub-instructions called descriptors. These descriptors contain, amongst other things the information to control the various operations associated with the processing of a group of \acp{an}.
+The size of this group of \acp{an} is related to the number of execution lanes, which for this work is 32. A group can be anywhere from 1-32. It should be said that unless the group size consistently approaches 32 the system performance will be poor.
+
 The instructions include information to control the operations below:
 
 \begin{outline}
-  %\setlength{\baselineskip}{10pt}
-  %\setlength{\itemsep}{6pt}
-  %\setlength{\baselineskip}{10pt}
-  %\setlength\itemsep{0pt}
-  %\setlength{\partopsep}{0pt}
-  %\setlength{\parskip}{0pt}
-  %\setlength{\parsep}{0pt}
-  %\setlength{\topsep}{0pt}
-  %\setlength{\itemsep}{3pt}
-  %\setlength{\itemindent}{\leftmargin}
-  %\setlength{\leftmargin}{0pt}
         \1 To the Manager
             \2 Operation descriptor
             \2 Parameter/Weight Storage Descriptor(s)
@@ -79,9 +79,6 @@ The instructions include information to control the operations below:
             \2 Operand Vector length
 \end{outline}
 
-
-Instructions contain sub-instructions called descriptors. These descriptors contain, amongst other things the information to control the various operations associated with the processing of a group of \acp{an}.
-The size of this group of \acp{an} is related to the number of execution lanes, which for this work is 32. A group can be anywhere from 1-32. It should be said that unless the group size consistently approaches 32 the system performance will be poor.
 
 To perform \ac{an} activation calculations, an instruction will typically have four descriptors which will include:
 

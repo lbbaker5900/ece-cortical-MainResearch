@@ -44,9 +44,21 @@ This work targeted a baseline system with:
 The work includes customizing the interface to a 3D-\ac{dram}, researching data structures to describe storage of \ac{ann} parameters, designing a memory manager with unique micro-coded instructions and a \ac{pe} layer.  
 The targeted 3D-\ac{dram}, the Tezzaron DiRAM4 employs 64 disjoint memories arranged in a physical array.
 
-This works system is designed such that a sub-system, known as a \acf{ssc} operates on one of the disjoint sub-memories within the \ac{diram4} (see figure \ref{fig:diram4Layout}).
+
+\section{Sub-System Column}
+\label{sec:Sub-System Column}
+
+The overall system is constructed from an array of sub-systems known as a \acf{ssc} which combines the manager logic, \ac{dram} and \ac{pe} logic.
+The various steps to process an \ac{ann} are provided in the form of instructions (see section \ref{sec:Instructions}. 
+The instructions are downloaded by a host system to instruction memory residing in the manager.
+The manager decodes these instructions and based on the instruction contents is responsible for coordinating \ac{ssc} operations and managing the reading and writing of \ac{dram}.
+With the processing of an \ac{an}, the manager reads pre-synaptic states and connection weights from the \ac{dram}, provides that data to the \ac{pe} which operates on data and returns any results back to the manager.
+There are other instructions that specifically deal with coordination between \ac{ssc} but the main workload is the processing of the \acp{an}.
+
+The \ac{ssc} has been designed for extensibility to allow future modifications to support different number formats, different \ac{pe} configurations and to allow additional features to be implemented without a significant increase in logic area.
+
+The \ac{ssc} is designed to operate on one of the disjoint sub-memories within the \ac{diram4} (see figure \ref{fig:diram4Layout}).
 As shown in figure \ref{fig:SSC}, the \ac{ssc} includes the \ac{diram4} sub-memory (referred to as the \ac{ssc} memory), a manager module and a \ac{pe} module.
-The \ac{diram4} has 64 sub-memories so there are 64 \acp{ssc}. The \ac{ssc} has been designed as a standalone unit and does not have a knowledge of the other \acp{ssc} in the system.
 \begin{figure}
 \centering
 \begin{subfigure}{.44\textwidth}
@@ -71,11 +83,79 @@ The \ac{diram4} has 64 sub-memories so there are 64 \acp{ssc}. The \ac{ssc} has 
 \label{fig:SSC}
 \end{figure}
 
-An overview of the various blocks and interconnects are given in sections \ref{sec:3ddram} through \ref{sec:Overview Summary}
-with additional detail provided in chapter \ref{sec:Detailed System Description}.
+The customizations described in section \ref{sec:Very-Wide Bus} means each \ac{ssc} memory provides the manager with a 2048-bit \ac{ddr} data bus.
+The \ac{diram4} has 64 sub-memories so there are 64 \acp{ssc}. The \ac{ssc} has been designed as a standalone unit and does not have a direct knowledge of the other \acp{ssc} in the system.
+
+To process an \ac{ann}, the user must allocate the individual \acp{an} to an \ac{ssc}. Once partitioned, a \acp{ann} pre-synaptic connection weights must be stored in the \ac{ssc} memory associated with the \ac{an}.
+The states of the pre-synaptic \acp{an} must also be stored in a dependent \acp{an} allocated \ac{ssc} memory.
+Details on where the parameters and \ac{an} states are stored are described in chapter \ref{sec:System Operations}.
+
+The baseline \ac{ssc} is designed with 32 execution lanes each of which can simultaneously process two streams of \ac{binary32} words.
+The customized \ac{diram4} provides a 2048-bit cacheline at the system clock rate to the manager. This 2048-bit bus is sub-divided into 64 \ac{binary32} words.
+The manager layer reads the 2048-bit cacheline from the \ac{dram}, multiplexes the 64 words onto 32 execution lanes with two words per execution lane and passes the execution lane data to the \ac{pe} layer.
+The primary function is to direct a pre-synaptic \ac{an} state and connection weight to the two words in an execution lane where they are multiplied and accumulated by the \ac{pe} layer.
+
+The manager layer has individual stream read memory controllers to allow the individual streams in the execution lanes to operate independently.
+In this way, the \ac{an} states and the connection weights can be stored in different configurations depending on the \ac{ann} type and \ac{ann} partitioning.
+The 32 execution lanes can be used for processing a group of one to 32 individual \acp{an} or for processing one \ac{an}.
+
+\section{Processing a group of \acp{an}}
+\label{sec:Processing a group of ANes}
+
+In the case of group of \acp{an}, all the \acp{an} must be associated with a \ac{roi} or a fully-connected layer.
+The pre-synaptic \ac{roi}, or all the \acp{an} in the case of a fully-connected layer, are broadcast to one of the streams of all execution lanes.
+The other stream is used for the individual \acp{an} connection weights. 
+The \ac{pe} \ac{stop} performs 32 simultaneous \acf{fp} \ac{mac} operations while the data is being streamed from the manager layer to the \ac{pe} layer.
+Once all the \ac{an} states and weights have been streamed to the \ac{pe}, the \ac{stop} passes the result of the \ac{mac} to the \ac{pe} \ac{simd} which then applies the activation function.
+Typically the \ac{simd} then sends states of the group of \acp{an} back to the manager.
+
+Considering the pre-synaptic \ac{an} states $A_p$ and weights $W_p$ as arrays $\left[A\right]$ and $\left[W\right]$, the state of the \ac{an} is the dot-product of the two arrays followed by the activation function \eqref{eq:AN dot-product function} and how the weights and states are directed to execution lanes are shown in figure \ref{fig:AN group multiplexing}.
+
+%\vspace{-1cm}
+\begin{alignat}{2} 
+  \label{eq:AN dot-product function}
+  \text{\ac{an} State }   &= f\big(\left[W\right] \mathbf{\cdot} \left[A\right]\big)  \\
+  \text{where } &\mathbf{W}=\left[w_0, w_1, \dots w_n \right], \quad \mathbf{A}=\left[a_0, a_1, \dots a_n \right] \notag \\
+  \text{and } &n \text{ is the pre-synaptic fanin              \notag }
+\end{alignat}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.44\textwidth}
+  \centering
+  \includegraphics[scale=0.75]{groupANmultiplexing}
+  \captionsetup{justification=centering, skip=10pt}
+  %\vspace{-6pt}
+  \caption{Multiplexing \ac{dram} data for a \ac{an} group} 
+  \label{fig:AN group multiplexing}
+\end{subfigure}%
+\begin{subfigure}{.54\textwidth}
+  \centering
+  \includegraphics[scale=0.75]{singleANmultiplexing}
+  \captionsetup{justification=centering, skip=10pt}
+  %\vspace{-6pt}
+  \caption{Multiplexing \ac{dram} data for a single \ac{an}} 
+  \label{fig:Single AN multiplexing}
+\end{subfigure}
+\captionsetup{justification=centering, skip=12pt}
+\caption{Multiplexing \ac{dram} data to execution lanes}
+\label{fig:DRAM data multiplexing}
+\end{figure}
+
+\section{Processing a single \ac{an}}
+\label{sec:Processing a single of ANes}
+
+In the case of a single \acp{an}, the pre-synaptic \ac{an} states are vectored across one of the streams of all execution lanes.
+The connection weights are vectored across the other stream of all the execution lanesall the \acp{an} must be associated with a \ac{roi} or a fully-connected layer.
+How the weights and states are directed to execution lanes are shown in figure \ref{fig:Single AN multiplexing}.
+
+An overview of the various blocks and interconnects in the \ac{ssc} are given in section \ref{sec:SSC Blocks} with additional detail provided in chapter \ref{sec:Detailed System Description}.
 
 % ----------------------------------------------------------------------------------------------------
-\section{Customized \ac{dram} : \acf{diram4}}
+\section{\acf{ssc} Blocks}
+\label{sec:SSC Blocks}
+
+\subsection{Customized \ac{dram} : \acf{diram4}}
 \label{sec:3ddram}
 The \ac{diram4} \cite{tezzaron:diram4} employs multiple memory array layers in conjunction with a control and IO layer.
 The memory is formed from 64 disjoint sub-memories each providing upwards of \SI[per-mode=symbol]{1}{\giga\bit} with a total capacity of at least \SI[per-mode=symbol]{64}{\giga\bit}.
@@ -104,7 +184,7 @@ Another proposed change is the add mask bits to the write databuse to avoid havi
 
 
 % ----------------------------------------------------------------------------------------------------
-\section{Layer Interconnect}
+\subsection{Layer Interconnect}
 \label{sec:Layer Interconnect}
 
 The layers are connected using through-silicon-vias (\ac{tsv}s) which provide high connection density, high bandwidth and low energy.
@@ -123,8 +203,8 @@ The 36-bit \ac{oob} bus is designed to send configuration packets to configure t
 The packet primarily contains the \ac{stop} function to be performed on the downstream data and the operation the \ac{simd} is to perform on the result from the \ac{stop}.
 It also includes the size of the downstream data stream and an operation idenfication tag.
 
-The 2048-bit downstream stack bus is designed to carry 32 lanes of data with each lane containing two operand buses. 
-In the baseline system, the two operand buses are designed to carry streams of \ac{binary32} numbers.
+In teh baselne system, the 2048-bit downstream stack bus is designed to carry 32 execution lanes of data with each execution lane containing two operand buses. 
+The two operand buses are designed to carry streams of \ac{binary32} numbers.
 This allows the downstream stack bus simultaneously stream 32 execution lanes each with two 32-bit argument streams. 
 Typically these streams are the weights and pre-synaptic \ac{an} states to calculate the states of up to 32 \acp{an}. 
 The streams can also be configured to calculate the state of a single \ac{an} where the weights and pre-synaptic \ac{an} states for the single \ac{an} are sent in parallel across the downstream stack bus and a reduction operation can be performed in the \ac{pe} by the \ac{stop} and \ac{simd}.
@@ -255,8 +335,10 @@ Each of the \ac{diram4} memories contain two channels with each channel containi
 \fi
 
 % ----------------------------------------------------------------------------------------------------
-\section{Manager Layer}
-The Manager block is the main controller in the system. The operations required to process an \ac{ann} are formed from individual instructions which are decoded by the Manager. 
+\subsection{Manager Layer}
+The Manager block is the main \ac{ssc} controller and the memory controller for the \ac{diram4} memory. 
+
+The operations required to process an \ac{ann} are formed from individual instructions which are decoded by the Manager. 
 These instructions (for more detail see section \ref{sec:Instructions}) are sub-divided into descriptors to describe memory read operations, processing engine operations, memory write operations and general system operations for synchronization. 
 The manager reads these system instructions from an instruction memory, decodes the descriptors and configures the various blocks in the system.
 The configuration includes:
@@ -293,7 +375,7 @@ The pre-synaptic \ac{an} states are stored in row-major order and when read are 
 
 
 % ----------------------------------------------------------------------------------------------------
-\section{Processing Engine Layer}
+\subsection{Processing Engine Layer}
 \label{sec:Processing Engine Layer}
 The \ac{pe} contains two main processing modules, the \ac{stop} and the \ac{simd} block.
 Both the \ac{stop} block and the \ac{simd} have 32 execution lanes. The execution lanes inside the \ac{stop} contain functions required to perform \ac{an} related operations.
@@ -340,7 +422,7 @@ The activation function currently implemented is the \ac{relu}.
 The \ac{an} states can be sent back to the manager over the stack upstream bus or retained for further processing such as pooling or softmax calculations.
 
 % ----------------------------------------------------------------------------------------------------
-\section{Inter-Manager Communication}
+\subsection{Inter-Manager Communication}
 \label{sec:Inter-Manager Communication}
 
 During configuration and/or computations, it may be required to replicate data to other \acp{ssc}.

@@ -256,10 +256,10 @@ The \ac{an} activation calculation for the rate-based \ac{an} in figure \ref{fig
 
 \begin{alignat}{2} 
 \label{eq:activation function}
-\text{\ac{an} Activation }\hspace{4mm} A & = f\bigg(\sum_{n=0}^{C_n}W_n \cdot A_n\bigg)  \\
+\text{\ac{an} Activation }\hspace{4mm} A & = f\bigg(\sum_{n=0}^{C_n}W_n \mathbf{\cdot} A_n\bigg)  \\
               &\mathbf{C_p} \text{ is the number of pre-synaptic connections} \notag\\
               &\mathbf{W_p} \text{ is the weight of a connection} \notag\\
-              &\mathbf{A_p} \text{ is the activation value of the pre-synaptic neuron} \notag \\
+              &\mathbf{A_p} \text{ is the state of the pre-synaptic \ac{an}} \notag \\
 \text{and }   &f(x) \text{ is the activation function such as ReLu } \notag 
 \end{alignat}
 

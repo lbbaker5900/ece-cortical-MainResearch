@@ -22,6 +22,13 @@
 \usepackage{lipsum}    % filler text
 % LEE \usepackage{subfig}    % composite figures
 \usepackage{outlines} % for bullets
+%\newcommand {\lbbcleanspace}[1]{\setlength{\baselineskip}{#1}}
+\newcommand {\lbbcleanspace}{\setlength{\baselineskip}{20pt}}
+%% causes a capacity issue???
+%%\renewenvironment{outline}
+%%  { \begin{outline} \setlength{\baselineskip}{18pt} }
+%%  {  \end{outline} }
+
 \usepackage{enumitem}
 \usepackage{adjustbox}
 
@@ -64,7 +71,6 @@
     \colorlet{foo}{#1}%
     \sethlcolor{foo}\hl{#2}}%
 }
-
 
 % help reduce whitespace
 %\usepackage{savetrees}
