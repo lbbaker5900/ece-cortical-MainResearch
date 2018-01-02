@@ -44,7 +44,7 @@ Eyeriss\cite{chen201614} focuses on \acp{cnn} and specifically on the convolutio
 be supported by a local CPU.  However, it does not support the memory intensive fully-connected classifier layers or non weight shared locally-connected layers.
 Eyeriss can not be effectively applied to locally-connected type \acp{ann} such as Deepface \cite{Taigman_2014_CVPR}.
 
-The DianNao family of \acp{asic} \cite{chen2014diannao} \cite{chen2016diannao} originally used external \ac{dram} to store \ac{ann} parameters but still \ac{dma} along with \ac{sram}.
+The DianNao family of \acp{asic} \cite{chen2014diannao} \cite{chen2016diannao} originally used external \ac{dram} to store \ac{ann} parameters but still uses \ac{dma} along with \ac{sram} as an intermediate store.
 However, the later versions of the \ac{asic} have moved from external \ac{dram} to internal \ac{edram} \cite{chen2016diannao} which is still limited to \SI[per-mode=symbol]{36}{\mega \byte} perhaps recognizing you need \ac{dram} for capacity but need high bandwidth for performance.
 
 

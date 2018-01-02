@@ -48,7 +48,7 @@ These filter "kernels" can be held in memory and the input is read from \ac{dram
 Even with \ac{dnn}s where different filters may be used for different \acp{roi} some filter reuse may be available.
 Another form of reuse is in cloud applications or in training where there is opportunity to reuse inputs whilst performing batch processing.
 
-But \ac{sram} comes at a price, its big. Often when we see physical layouts of \ac{ann} processors, they are dominated by the silicon area of the \ac{sram}. 
+But \ac{sram} comes at a price, often physical layouts of \ac{ann} processors are dominated by the silicon area of the \ac{sram} \cite{kim2016neurocube}\cite{chen2014diannao}\cite{tensorflow2015-whitepaper}. 
 Because of the relatively large area required for \ac{sram}, companies attempt to create custom \acp{sram} to minimize the area impact.
 
 So \ac{asic} and \ac{asip} \ac{ann} implementations that target applications that have considerable weight reuse and/or batch processing opportunities can effectively use \ac{sram} as an intermediate store.
@@ -82,9 +82,9 @@ For example employing multiple cameras or monitoring and controlling different s
 
 \subsection{\Acfp{gpu}}
 \label{sec:gpu}
-Some might suggest the requirements of these applications would be satisified by employing multiple \acp{gpu}.
+The requirements of these applications would be satisified by employing multiple \acp{gpu}.
 In practice, \acp{gpu} are used to implement large \ac{ann}s and in some \ac{ann} architectures, such as \acp{cnn}, they are quite effective. However, we should not forget they are a) not optimized purely for \ac{ann} processing, b) are restricted by available SRAM and c) they are power hungry. 
-These limitations will limit the effectiveness of \acp{gpu} regardless of what we might hear from the \ac{gpu} community.
+These limitations will limit the effectiveness of \acp{gpu}.
 Even in the case of newer \acp{gpu} which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} technology.
 For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwith of the order of \SI[per-mode=symbol]{6}{\tera \bit \per \second} \cite{Nvidia_p100_summary_datasheet}.
 Also, it has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
@@ -108,7 +108,7 @@ Unfortunately \ac{cnn}s represent only about 5\% of our datacenter NN workload}
 
 The applications targeted by the google TPU \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected \ac{dnn}s and in these cases weight reuse is not as benefitial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
 
-Therefore, implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally and fully connected \ac{dnn}s and LSTMs.
+Implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally and fully connected \ac{dnn}s and LSTMs.
 
 Considering this work focuses on edge applications employing disparate \ac{ann}s and assumes both weight reuse and batch processing do not apply, regardless of how implementations employ \ac{sram} as an intermediate store, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
 
@@ -120,15 +120,13 @@ Considering this work focuses on edge applications employing disparate \ac{ann}s
 \section[The Solution]{The Solution}
 \label{sec:The Solution}
 
-It is generally accepted that realistically, \ac{dram} is required to meet the main storage requirements of useful sized \ac{ann}s.
-
-This work also believes that to support all types of disparate \ac{ann}s, the system needs to be able to operate directly from the \ac{dram}.
+This work believes that to support all types of disparate \ac{ann}s, the system needs to be able to operate directly from the \ac{dram}.
 \iffalse 
 This is because SRAM-based solutions assume memory reuse when processing a \ac{ann}.
 However, when \ac{ann}s do not provide sufficient reuse these solutions become \ac{dram} bandwidth bound. 
 \fi
 
-If an implementation can ensure the \ac{dram} bandwidth can meet the system requirements, why use \ac{sram} as an intermediate memory and waste the significant silicon area they consume.
+Considering \ac{dram} is required to meet the main storage requirements of useful sized \ac{ann}s, if an implementation can ensure the \ac{dram} bandwidth can meet the system requirements, why use \ac{sram} as an intermediate memory and waste the significant silicon area they consume.
 
 The question becomes, can an implementation employ \ac{dram} with minimal \ac{sram} and meet the system requirements?
 
