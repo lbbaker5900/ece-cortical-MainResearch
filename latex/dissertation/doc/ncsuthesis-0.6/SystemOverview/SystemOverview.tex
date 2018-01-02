@@ -109,32 +109,34 @@ The \ac{pe} \ac{stop} performs 32 simultaneous \acf{fp} \ac{mac} operations whil
 Once all the \ac{an} states and weights have been streamed to the \ac{pe}, the \ac{stop} passes the result of the \ac{mac} to the \ac{pe} \ac{simd} which then applies the activation function.
 Typically the \ac{simd} then sends states of the group of \acp{an} back to the manager.
 
-Considering the pre-synaptic \ac{an} states $A_p$ and weights $W_p$ as arrays $\left[A\right]$ and $\left[W\right]$, the state of the \ac{an} is the dot-product of the two arrays followed by the activation function \eqref{eq:AN dot-product function} and how the weights and states are directed to execution lanes are shown in figure \ref{fig:AN group multiplexing}.
+Considering the \ac{roi} pre-synaptic \ac{an} states and weights for $k$th \ac{an} as arrays $\left[A\right]$ and $\left[W_k\right]$ with elements $A_p$ and $W_{k,p}$ respectively, the state of the \ac{an} is the dot-product of the two arrays followed by the activation function \eqref{eq:AN dot-product function}.
+
+Considering the array and how the weights and states are directed to execution lanes are shown in figure \ref{fig:AN group multiplexing}.
 
 %\vspace{-1cm}
 \begin{alignat}{2} 
   \label{eq:AN dot-product function}
-  \text{\ac{an} State }   &= f\big(\left[W\right] \mathbf{\cdot} \left[A\right]\big)  \\
-  \text{where } &\mathbf{W}=\left[w_0, w_1, \dots w_n \right], \quad \mathbf{A}=\left[a_0, a_1, \dots a_n \right] \notag \\
+  \text{State of $k$th \ac{an},} \quad S_k  &= f\big(\left[W\right] \mathbf{\cdot} \left[A\right]\big)  \\
+  \text{where } &\mathbf{W}=\left[w_{k,0}, w_{k,1}, \dots w_{k,n} \right], \quad \mathbf{A}=\left[a_0, a_1, \dots a_n \right] \notag \\
   \text{and } &n \text{ is the pre-synaptic fanin              \notag }
 \end{alignat}
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}{.44\textwidth}
+\begin{subfigure}{.49\textwidth}
   \centering
   \includegraphics[scale=0.75]{groupANmultiplexing}
-  \captionsetup{justification=centering, skip=10pt}
+  \captionsetup{justification=centering, skip=10pt, width =1\textwidth}
   %\vspace{-6pt}
-  \caption{Multiplexing \ac{dram} data for a \ac{an} group} 
+  \caption{Multiplexing \ac{dram} data for a \ac{an} group\\ $k \in 0 \dots 31 $} 
   \label{fig:AN group multiplexing}
 \end{subfigure}%
-\begin{subfigure}{.54\textwidth}
+\begin{subfigure}{.49\textwidth}
   \centering
   \includegraphics[scale=0.75]{singleANmultiplexing}
-  \captionsetup{justification=centering, skip=10pt}
+  \captionsetup{justification=centering, skip=10pt, width =1\textwidth}
   %\vspace{-6pt}
-  \caption{Multiplexing \ac{dram} data for a single \ac{an}} 
+  \caption{Multiplexing \ac{dram} data for a single \ac{an}\\ $k=0$} 
   \label{fig:Single AN multiplexing}
 \end{subfigure}
 \captionsetup{justification=centering, skip=12pt}
@@ -146,7 +148,7 @@ Considering the pre-synaptic \ac{an} states $A_p$ and weights $W_p$ as arrays $\
 \label{sec:Processing a single of ANes}
 
 In the case of a single \acp{an}, the pre-synaptic \ac{an} states are vectored across one of the streams of all execution lanes.
-The connection weights are vectored across the other stream of all the execution lanesall the \acp{an} must be associated with a \ac{roi} or a fully-connected layer.
+The connection weights are vectored across the other stream of all the execution lanes.
 How the weights and states are directed to execution lanes are shown in figure \ref{fig:Single AN multiplexing}.
 
 An overview of the various blocks and interconnects in the \ac{ssc} are given in section \ref{sec:SSC Blocks} with additional detail provided in chapter \ref{sec:Detailed System Description}.
@@ -404,13 +406,13 @@ These computations can be for a group of up to 32 \acp{an} or for a single \ac{a
 %\bigskip
   \begin{subfigure}{.49\textwidth}
     \centering
-    \vspace{40pt}
+    %\vspace{40pt}
     \includegraphics[width=0.9\textwidth]{groupANcalculation}
     \captionsetup{justification=centering, skip=10pt}
     \caption{Group ANe calculation}
     \label{fig:Group AN calculation}
   \end{subfigure}%
-\vspace{-10pt}
+%\vspace{-10pt}
 \captionsetup{justification=centering, skip=16pt}
 \caption{\ac{pe} \ac{an} calculation}
 \label{fig:PE AN calculation}
