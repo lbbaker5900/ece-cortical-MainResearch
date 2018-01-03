@@ -17,8 +17,7 @@ When processing a group of \acp{an} the basic operations to determine their stat
   \1 if the local \ac{ssc} is dependent on the result, the manager saves the \ac{an} state data in local \ac{ssc} \ac{dram}
 \end{outline}
 
-This work has developed an instruction architecture to describe the above operations.
-A group can be anywhere from one to 32 \acp{an} and is based on the number of execution lanes in the \ac{ssc} (see section \ref{sec:Processing a group of ANes}) and how the user partitions the \ac{ann} across the available \acp{ssc}.
+This work has developed an instruction architecture to describe the above operations along with other system management operations.
 The manager is responsible for instruction decode and coordinating the various data flows and configuration of the modules throughout the \ac{ssc}.
 The \ac{pe} is responsible for the main algorithm operations using a combination of its \ac{stop} and \ac{simd} blocks.
 
@@ -49,128 +48,152 @@ The \ac{pe} has three major blocks:
 \fi
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
-\section{Manager Operations}
-\label{sec:Manager Operations}
+\section{Instructions}
+\label{sec:Instructions}
 
 % ----------------------------------------------------------------------------------------------------
-\subsection{Instructions}
-\label{sec:Instructions}
-There Typically an instruction contains information to process a group of \acp{an} but there are other instruction types to .
-This includes defining where in memory \ac{an} states and weights are stored, what operations are to be performed and the destination of the resulting \ac{an} states.
-The instructions contain sub-instructions called descriptors. These descriptors contain, amongst other things the information to control the various operations associated with the processing of a group of \acp{an}.
-The size of this group of \acp{an} is related to the number of execution lanes, which for this work is 32. A group can be anywhere from 1-32. It should be said that unless the group size consistently approaches 32 the system performance will be poor.
-
-The instructions include information to control the operations below:
-
+%\subsection{Instructions}
+%\label{sec:Instructions}
+There are two instruction types currently defined, a configuration instruction and a compute instruction.
+The configuration instruction has been defined to deal with data downloads and uploads which includes \ac{ann} parameters and input, \ac{ssc} instructions, \ac{simd} and \ac{stop} operation pointers and \ac{simd} instructions.\\
+The compute instruction has been defined to deal with computing the states of a group of \acp{an}. \par
+\iffalse
 \begin{outline}
-        \1 To the Manager
-            \2 Operation descriptor
-            \2 Parameter/Weight Storage Descriptor(s)
-                \3 reads for the two argument streams to the \ac{pe}
-                \3 read data can be broadcast or vectored to the \ac{pe}
-            \2 Result write storage descriptor
-                \3 include descriptors for all destination managers
-            \2 Synchronization to other managers
-        \1 To the \ac{pe}
-            \2 \ac{stop} operation
-            \2 \ac{simd} operation
-            \2 Number of active lanes
-            \2 Operand Vector length
+  \lbbcleanspace
+   \1 \ac{ann} parameters and input
+   \1 \ac{ssc} instructions
+   \1 \ac{simd} and \ac{stop} operation pointers
+   \1 \ac{simd} instructions
 \end{outline}
+Typically an instruction contains information to process a group of \acp{an} but there are other instruction types to synchronize.
+A group can be anywhere from one to 32 \acp{an} and is based on the number of execution lanes in the \ac{ssc} (see section \ref{sec:Processing a group of ANes}) and how the user partitions the \ac{ann} across the available \acp{ssc}.
+\fi
 
+The instructions contain sub-instructions called descriptors. 
+The instruction is an n-tuple where the tuple elements are descriptors and the number of descriptors can vary based on the operation being performed. 
+The descriptors contain the details on how to complete the tasks associated with an instruction.
+These descriptors are decoded and used to configure the various functions in the \ac{ssc} that will take part in completing the instruction. 
+The contents of a single descriptor may be sent to multiple functions and in some cases the manager doesnt parse the contents of the descriptor but immediately passes it to a dependent function.
+This allows the system to concurrently prepare for the tasks involved with the instruction.
 
-To perform \ac{an} activation calculations, an instruction will typically have four descriptors which will include:
+This works focus has been on the compute instruction as it has the most influence on system performance.
+The other instructions have been defined to provide an extensible system for future work.
 
-\begin{outline}
-\renewcommand{\outlinei}{enumerate}
-    \1 Operation descriptor 
-    \1 Memory read descriptor for operand stream 0
-    \1 Memory read descriptor for operand stream 1
-    \1 Result descriptor write
-\end{outline}
+\subsection{Compute Instruction}
+\label{sec:Compute Instruction}
 
-The instruction is an n-tuple where the tuple elements are descriptors. The number of descriptors can vary based on the operation being performed. 
-In figure \ref{fig:Instruction (4-tuple example)} we see the format of a 4-tuple instruction which is used to perform an activation calculation for a group of \acp{an}.
+The compute instruction typically contains four descriptors for configuring the tasks associated with processing a group of \acp{an}.
+The instruction can be seen in figure \ref{fig:Instruction (4-tuple example)} and includes: 
+\begin{itemize}
+  %\lbbcleanspace
+  \item Operation descriptor containing:
+    \begin{itemize}
+      \item \ac{stop} operation
+      \item \ac{simd} operation
+      \item Number of active lanes
+      \item Operand Vector length
+    \end{itemize}
+  \item Two memory read descriptors containing:
+    \begin{itemize}
+        \item addresses for the pre-synaptic \ac{an} states and connection weights for the two argument streams to the \ac{pe}
+        \item how the read data is multiplexed to the execution lanes (broadcast/vectored)
+    \end{itemize}
+  \item Memory write descriptor containing:
+    \begin{itemize}
+      \item \ac{dram} address for \ac{an} states
+    \end{itemize}
+\end{itemize}
 
 \begin{figure}[!t]
 \centering
 \captionsetup{justification=centering}
 \captionsetup{width=.9\linewidth}
 \centerline{
-\mbox{\includegraphics[width=.9\linewidth]{instruction4Tuple.jpg}}
+\mbox{\includegraphics[width=.9\linewidth]{instruction4Tuple}}
 }
-\caption{Instruction (4-tuple example)}
+\caption{Typical compute instruction (4-tuple)}
 \label{fig:Instruction (4-tuple example)}
 \end{figure}
 
-Within a descriptor, various options are described, such as storage descriptor pointer, number of operands etc..
+
 The descriptor also employs an n-tuple format where the first tuple element always describes the descriptor operation followed by an m-tuple whose elements contain the options required by the operation.
 The option elements within a descriptor are a two-tuple with option and associated value.
-In figure \ref{fig:descriptorTuple} we see the format of a 6-tuple descriptor.
+These option elements and values describe contain information such as storage descriptor pointer (see section \ref{sec:Storage Descriptor}), \ac{pe} operations and the number of operands.
+In figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation descriptor.
 
 \begin{figure}[!t]
 \centering
 \captionsetup{justification=centering}
 \captionsetup{width=.9\linewidth}
 \centerline{
-\mbox{\includegraphics[width=.9\linewidth]{descriptorTuple.jpg}}
+\mbox{\includegraphics[width=.9\linewidth]{descriptorTuple}}
 }
-\caption{Descriptor 6-tuple}
+\caption{Operation descriptor (5-tuple example)}
 \label{fig:descriptorTuple}
 \end{figure}
 
+To pull it all together, in figure \ref{fig:Instruction Details} is shown a four-tuple compute instruction with details shown for each of the descriptors.
+In figure \ref{fig:Instruction and Descriptors} shows the compute instruction which contains three 4-tuple and one 5-tuple descriptors.
+The memory write descriptor shows two storage option elements which indicates the resulting \ac{an} states need to be saved in the memory of two \acp{ssc}.
+In figure \ref{fig:Instruction memory waveform} shows the instruction as it is read out of the managers instruction memory and an example of the common interface sugnalling described in section \label{sec:Common Bus Signalling}.
+The signals \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore icntl} and \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore dcntl} are used to delineate the instruction and descriptors respectively.
+The instruction memory transfers three descriptor elements per cycle which can be seen on the buses \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore option\textunderscore type} and \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore option\textunderscore value}.
+\\
+Note: The signal name convention used between blocks in the \ac{rtl} use <src>\textunderscore\textunderscore <dest>\textunderscore\textunderscore <signal\textunderscore\textunderscore  name>. In figure \ref{fig:Instruction memory waveform},~ \texttt{wum} and \texttt{wud} refer to "work unit memory" and "work unit decode"
+which correspond to the manager instruction memory and instruction decoder respectively.
 
 \begin{figure}
 \centering
   \begin{subfigure}{.95\textwidth}
     \centering
-    \mbox{\includegraphics[width=.9\linewidth]{instructionAndDescriptors}}
-    \captionsetup{justification=centering, skip=10pt}
-    \caption{Instruction and Descriptors}
+    \mbox{\includegraphics[width=1\linewidth]{instructionAndDescriptors}}
+    \captionsetup{justification=centering, skip=6pt}
+    \caption{Compute instruction and descriptors}
     \label{fig:Instruction and Descriptors}
   \end{subfigure}%
 
 \bigskip
 
-  \vspace{-45pt}
+  \vspace{-35pt}
   \begin{subfigure}{1\textwidth}
     \centering
     \vspace{40pt}
-    \includegraphics[width=0.9\textwidth]{instructionWaveform}
+    \includegraphics[width=1\textwidth]{instructionWaveform}
     \captionsetup{justification=centering, skip=10pt}
     \caption{Instruction memory waveform}
     \label{fig:Instruction memory waveform}
   \end{subfigure}%
-\vspace{-10pt}
+%\vspace{-10pt}
 \captionsetup{justification=centering, skip=16pt}
-\caption{Instruction Details}
+\caption{Compute Instruction details}
 \label{fig:Instruction Details}
 \end{figure}
 
 
 
 % ----------------------------------------------------------------------------------------------------
-\subsection{Accessing of Pre-synaptic AN states and connection weights}
+\subsubsection{Accessing of Pre-synaptic \ac{an} states and connection weights}
 \label{sec:AccessingANStates}
 
-As was discussed previously, the ANN input and configuration is stored in main \ac{dram} memory. 
-A part of the research is determining how to store the ANN input and parameters in such a way to effectively make use of main \ac{dram} bandwidth. 
+A part of the research is determining how to store the \ac{ann} input and parameters in such a way to effectively make use of main \ac{dram} bandwidth. 
 
 To provide parameters for the up to 32 execution lanes within the \ac{pe}, the \ac{an} parameters were stored in consecutive address locations. 
-With one read to the \ac{dram}, we access 128 words. This provides four weights for each of the 32 ANs being processed. 
+With one read to the \ac{dram}, we access 128 words. This provides four weights for each of the 32 \acp{an} being processed. 
 These weights are sent to each lane of the \ac{pe} over four cycles. 
 We will discuss memory efficiency later, but by taking advantage of the multiple \ac{dram} banks along with pre-fetching and buffering, we are able to achieve relatively high efficiency of the available maximum bandwidth.
 
 Although \ac{an} parameters (weights) are stored in contiguous memory locations, providing the input state to a particular \ac{an} presents us with an interesting problem.
 
-Most often DNNs are represented by layers of ANs whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the ANN.
+Most often DNNs are represented by layers of \acp{an} whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layers input is the actual input to the \ac{ann}.
 
+The input can be represented in the form of a 2-D array of \ac{an} states. For the sake of generality, the input array elements are considered as \ac{an} states.
 
-The input can be represented in the form of a 2-D array of AN states. For the sake of generality, the input array elements are considered as AN states.
+Any given \ac{an} operates on a \ac{roi} within the input array.
 
-Any given AN operates on a region of interest (ROI) within the input array.
+\subsubsection{Storage Descriptor}
+\label{sec:Storage Descriptor}
 
-In figure \ref{fig:roiStorage}, an input to a ANN layer in the form of a 2-D array along with the ROI of two ANs.
+In figure \ref{fig:roiStorage}, an input to a \ac{ann} layer in the form of a 2-D array along with the \ac{roi} of two \acp{an}.
 
 \begin{figure}[!t]
 \centering
@@ -183,21 +206,21 @@ In figure \ref{fig:roiStorage}, an input to a ANN layer in the form of a 2-D arr
 \label{fig:roiStorage}
 \end{figure}
 
-The various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each ANs ROI can be stored in contiguous memory locations. The figure above shows a typical ROI arrangement. Assuming the input array is stored in row-major order, an ROI is drawn from disjoint sections of memory. 
-These disjoint sections contain a number of AN states and the sections are separated by a gap of a number of memory addresses. When the parameters are accessed when performing a particular operation, the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. Now this looks problematic, and it is, but in practice groups of ANs share a common ROI. So once we solve the problem of efficiently reading an ROI from the \ac{dram}, that ROI can be shared across a group of ANs
+The various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each \acp{an} \ac{roi} can be stored in contiguous memory locations. 
+A typical \ac{roi} arrangement is shown in figure \ref{fig:roiStorage}. Assuming the input array is stored in row-major order, an \ac{roi} is drawn from disjoint sections of memory. 
+These disjoint sections contain a number of \ac{an} states, in this case 14 and the sections are separated by a gap of a number of memory addresses. 
+When the parameters are accessed when performing a particular operation, the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. 
+In practice groups of \acp{an} share a common \ac{roi} so often when reading an \ac{roi} from the \ac{dram} it is broadcast across a group of execution lanes.
 
 The read efficiency problem is solved by again taking advantage of the \ac{dram}s banks and pages.
 
-This work proposes a data structure to describe these ROI storage locations.
+This work proposes a data structure to describe these \ac{roi} storage locations.
 
-Although disparate groups of ANs may have a different start addresses for their ROI, a commonality is observed in the ROI section lengths and gaps. So for each AN group, the groups ROI starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
+Although disparate groups of \acp{an} may have a different start addresses for their \ac{roi}, a commonality is observed in the \ac{roi} section lengths and gaps. So for each \ac{an} group, the groups \ac{roi} starting address is stored along with a pointer to a common set of section length/gaps. This structure is termed a storage descriptor.
 
-\subsubsection{Storage Descriptor}
-\label{sec:Storage Descriptor}
+This storage descriptor contains, amongst other things the start address of the \ac{roi} and a pointer to a section/gap descriptor. Many storage descriptors point to a common section/gap descriptor. This avoids having to have a unique section/gap descriptors for each \ac{an} group.
 
-This storage descriptor contains, amongst other things the start address of the ROI and a pointer to a section/gap descriptor. Many storage descriptors point to a common section/gap descriptor. This avoids having to have a unique section/gap descriptors for each AN group.
-
-Figure \ref{fig:storageDescriptor} shows the structure of the storage descriptor. The SOD, MOD and EOD are used to delineate each descriptor in memory and stand for start-of-descriptor, middle-of-descriptor and end-of-descriptor.
+Figure \ref{fig:storageDescriptor} shows the structure of the storage descriptor. The \ac{sod}, \ac{mod} and \ac{eod} are used to delineate each storage descriptor in memory.
 
 \begin{figure}[!t]
 \centering
@@ -211,23 +234,25 @@ Figure \ref{fig:storageDescriptor} shows the structure of the storage descriptor
 \end{figure}
 
 % ----------------------------------------------------------------------------------------------------
-\subsection{Writing AN state results to memory}
+\subsubsection{Writing \ac{an} state results to memory}
 \label{sec:writingANStates}
 
-When the \ac{pe} has processed the group of ANs, the new AN states are sent back to the manager. The manager will store these back to \ac{dram} most likely in the array format as described earlier.
-
-A significant difference taken advantage of is that for any given operation, the system is writing far less than is being read. For example, the ROI and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
+When the \ac{pe} has processed the group of \acp{an}, the new \ac{an} states are sent back to the manager and stored to \ac{dram} in the row-major array format described earlier.
+\iffalse
+A significant difference taken advantage of is that for any given operation, the system is writing far less than is being read. For example, the \ac{roi} and parameters are usually vectors that will typically exceed 100 elements and in many cases much higher. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
 Now that sounds like writing back has a very small impact on performance but with \ac{dram}s thats not always true.
+\fi
+When an operation is complete, in almost all cases one word per lane is writen back to \ac{dram}.
+Considering a \ac{dram} page contains 128 words, the system typically writes a $4$th of a page and this is a relatively inefficient use of \ac{dram} bandwidth. 
+However, the pre-synaptic fanin typically far exceeds 100 elements and in the baseline \ac{an} shown in table \ref{tab:Baseline Layer Configuration} the average fanin is \num 1650.
+So the write to read ratio is very high and the inefficient write has little impact on the overall performance.
 
-When the system writes the result of an operation back to memory, it is often writing a small portion of a \ac{dram} page and the nature of the \ac{dram} protocol means this is a very inefficient use of \ac{dram} bandwidth. So although the amount of data written is small the performance impact cannot be ignored.
-
-In addition, in many cases the results from a particular \ac{pe} has to be provided not only to the \ac{pe}s local manager but also to other managers. This is handled with a network-on-chip (NoC).
-
-The result storage directives are communicated by using the same storage descriptor mechanism. However, the added complication is because the result will likely have to be replicated to other managers, the storage descriptors must be sent to all destination managers.
-
+As discussed in section \ref{sec:Inter-Manager Communication} in many cases the results have to be provided not only to the local \ac{ssc} \ac{dram} but also to other \acp{ssc} memory. 
+This is handled by examining the write storage descriptors and if at least one storage descriptor address references another \acp{ssc} memory, all the write storage descriptors in the instruction are included in the \ac{noc} packet (see figure \ref{fig:NoC packet format}).
 
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
+\iffalse
 \section{PE Operations}
 \label{sec:PE Operations}
 
@@ -236,9 +261,9 @@ The result storage directives are communicated by using the same storage descrip
 \label{sec:streamingOps}
 The operations performed by the \ac{stop} are primarily multiple-accumulate with a transfer to the \ac{simd} or to local memory.
 
-Even though the baseline system focuses on the AN multiply-accumulate followed by a ReLu activation function, the system has built in flexibility into the \ac{stop} function to allow other functions to be added
+Even though the baseline system focuses on the \ac{an} multiply-accumulate followed by a ReLu activation function, the system has built in flexibility into the \ac{stop} function to allow other functions to be added
 
-In most cases, the \ac{stop} module will operate on the AN state and weights provided by the manager and provide the result to the \ac{simd}.
+In most cases, the \ac{stop} module will operate on the \ac{an} state and weights provided by the manager and provide the result to the \ac{simd}.
 % ----------------------------------------------------------------------------------------------------
 \subsection{SIMD}
 \label{sec:SIMD}
@@ -253,7 +278,88 @@ The \ac{simd} will take the result provided by the \ac{stop} and perform a ReLu.
 
 To configure these operations, two pointers are sent to the \ac{pe}. These pointers index into a small local memory which provides a program counter (\ac{pc}) to the function to be performed by the \ac{simd} and a configuration entry for the operation to be performed by the \ac{stop}.
 
-The \ac{pe} is able to perform its operation concurrently on 32-lanes. However, there are cases when less than 32-lanes will be employed. This may occur if the number of ANs being processed is not modulo-32. In this case, the manager provides the number of lanes being processed for any given operation. In addition, the length of the vector of operands is also sent by the manager to the \ac{pe}.
+The \ac{pe} is able to perform its operation concurrently on 32-lanes. However, there are cases when less than 32-lanes will be employed. This may occur if the number of \acp{an} being processed is not modulo-32. In this case, the manager provides the number of lanes being processed for any given operation. In addition, the length of the vector of operands is also sent by the manager to the \ac{pe}.
+\fi
+
+\subsection{Configuration Instruction}
+\label{sec:Configuration Instruction}
+
+The configuration instruction is used to :
+\begin{itemize}
+  \lbbcleanspace
+    \item Data transfer
+    \begin{itemize}
+      \item Download Instructions from host to \ac{ssc} manager instruction memory
+      \item Download Sync group data from host to \ac{ssc} manager 
+      \item Download \ac{ann} parameters and input from host to \ac{ssc} memory
+      \item Upload \ac{ann} output to host from \ac{ssc} memory
+    \end{itemize}
+  \item System synchronization
+    \begin{itemize}
+      \item Send a sync message to a group of \acp{ssc}
+      \item Wait for sync message from a group of \acp{ssc} or host
+      \item Pause instruction fetch
+      \item Flush \ac{pe} operations
+    \end{itemize}
+\end{itemize}
+
+The configuration instruction contains one descriptor and there are two configuration types which are characterized by the descriptor contents.
+
+The data transfer configuration instruction is shown in figure \ref{sec:Data transfer instruction} and the descriptor is a 2-tuple with a data option type and a storage option type.
+The sync configuration instruction is shown in figure \ref{sec:Sync instruction} and the descriptor is a 1-tuple with a sync option type.
+
+\begin{figure}
+\centering
+  \begin{subfigure}{.85\textwidth}
+    \centering
+    \mbox{\includegraphics[width=1\linewidth]{dataTransferInstruction}}
+    \captionsetup{justification=centering, skip=6pt}
+    \caption{Data transfer instruction }
+    \label{sec:Data transfer instruction}
+  \end{subfigure}%
+
+\bigskip
+
+  \vspace{-35pt}
+  \begin{subfigure}{0.85\textwidth}
+    \centering
+    \vspace{40pt}
+    \includegraphics[width=1\textwidth]{syncInstruction}
+    \captionsetup{justification=centering, skip=10pt}
+    \caption{Sync instruction }
+    \label{sec:Sync instruction}
+  \end{subfigure}%
+%\vspace{-10pt}
+\captionsetup{justification=centering, skip=16pt}
+\caption{Configuration Instruction types}
+\label{sec:Configuration Instruction types}
+\end{figure}
+
+The data option value contains a mode register which defines the type of data transfer along with information to aid the transfer. The storage option type contains a storage descriptor pointer which specifies the address of the 
+The data transfer instruction ty is broken into a data instruction and a sync instruction.
+
+\subsubsection{Data Transfer Instruction}
+\label{sec:Data Transfer Instruction}
+
+The first of the option elements is a data option whose value contains a mode register.
+There are currently four mode registers defined, an instruction download register, a sync group downlaod register, a memory downlaod register and a memory upload register.
+The contents of the mode register specify the type of transfer, the size of the transfer and some additional flags.
+When transferring to or from memory, an additional descriptor element contains a storage descriptor defining where the data should read or written.
+
+\subsubsection{Sync Instruction}
+\label{sec:Data Transfer Instruction}
+
+The option element is a sync option whose value contains a mode register.
+There are currently four mode registers defined, a send, wait, pause and a flush register.
+The contents of the send and wait mode register specify the group of \acp{ssc} to be synchronized. 
+The send causes a sync \ac{noc} packet to be sent to all \acp{ssc} in the group.
+The wait causes the manager to wait for a \ac{noc} sync packet to be received from all \acp{ssc} in the group.
+The pause mode register cause the instruction fetch logic to pause the specified number of clock cycles.
+The flush mode register cause the instruction fetch logic to wait for all outstanding \ac{pe} operations to be returned before continuing.
+
+\subsection{Multiple Instruction Functions}
+\label{sec:Multiple Instruction Functions}
+
 
 
 
