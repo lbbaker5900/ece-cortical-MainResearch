@@ -6,6 +6,7 @@
 
 \chapter{Artificial Neural Networks}
 %\section{Artificial Neural Networks}
+\label{sec:Artificial Neural Networks}
 \label{sec:chap-two}
 
 Recently, there has been much interest in the use of artificial neural networks in systems that employ tasks such as image recognition\cite{krizhevsky2012imagenet}, text recognition\cite{qiu2013parallel} and game playing\cite{maddison2014move}.
@@ -208,9 +209,9 @@ The Rate-based neuron model is characterized by \cite{NNintro_Bullinaria}:
 To emulate complex behavior, the artifical neurons are connected in networks, typically with layers of sub-networks which are in affect separated by the non-linear activation function.
 Examples of both rate-based and spiking artificial neural networks can be seen in \fref{fig:Rate-based Model Network} and \fref{fig:Spiking Model Network} respectively.
 Typically neural networks process in a feed-forward fashion. Considering \fref{fig:Artificial Neural Network}, this means the input arrives on the left, the inputs propagate to neurons N0 through N3. WHen N0 through N3 are processed, their values propagate forward to neurons N4 and N5 etc.. Sometime \ac{ann}s also include recursion where for example neurons N0 through N4 are not only influenced
-by the input, but also by themselves. Many \ac{ann}s operate only in feed-forward fashion but some popular \ac{ann}s, such as Long short-term memory (LSTM), employ recursion.
+by the input, but also by themselves. Many \ac{ann}s operate only in feed-forward fashion but some popular \ac{ann}s, such as \ac{lstm} \cite{hochreiter1997long}, employ recursion.
 
-Another popular \ac{ann} known as Deep Neural Networks (\ac{dnn}) have proved very popular over the last few years. They get good press in applications such as image recognition and speech recognition. 
+Another popular \ac{ann} known as Deep Neural Networks (\ac{dnn}) \cite{aizenberg2013multi}\cite{doi:10.1162/neco.2006.18.7.1527} have gained traction over the last few years. They get good press in applications such as image recognition and speech recognition. 
 Deep Neural Networks are often formed from tens of layers of \ac{an}s with each layer containing many \ac{an}s. \ac{dnn}s are also processed in a feed-forward manner with one layer being the inputs to the next layer. 
 As mentioned \cite{krizhevsky2012imagenet}, these useful \ac{dnn}s often require hundreds of thousands of \ac{an}s and within the network, each \ac{an} can have hundreds, even thousands of feeder or pre-synaptic \ac{an}s.
 There have been implementations that use different number formats from double precision floating point to eight bit integers, but in all cases these useful \ac{ann}s require a significant amount of memory to store the connection weights (parameters).
@@ -251,7 +252,7 @@ Our research will focus on these rate-based models which we will now refer to as
 
 This work does not address the training of these rate-based \acp{ann}, the training is mostly performed offline. This work is addressing the inference of \acp{ann}.
 During inference, the most computationally intensive operation is the multiply accumulate associated with the \ac{an} activation, which can involve hundreds or thousands of multiply-accumulates.
-The \ac{an} activation calculation for the rate-based \ac{an} in figure \ref{fig:Rate Based Model} is shown in equation \eqref{eq:activation function}.
+The \ac{an} activation calculation for the rate-based \ac{an} in figure \ref{fig:Rate Based Model} is shown in \eqref{eq:activation function}.
 
 \begin{alignat}{2} 
 \label{eq:activation function}
@@ -331,7 +332,7 @@ For the most part, different \acp{ann} are characterized by how the \acp{an} are
 
 The typical \ac{dnn} layers are processed in a feed-forward fashion where the pre-synaptic \acp{an} are formed from \acp{an} in the previous layer.
 There are some types of \ac{dnn} which also include recursive connections where the the pre-synaptic \acp{an} include \acp{an} from the current layer.
-A popular recursive \ac{dnn} is \acf{lstm}. Although this work does not preclude supporting \ac{lstm} in the future, the focus of this work is on the feed-forward type \ac{dnn}.
+A popular recursive \ac{dnn} is \acf{lstm} \cite{hochreiter1997long}. Although this work does not preclude supporting \ac{lstm} in the future, the focus of this work is on the feed-forward type \ac{dnn}.
 
 As described in \ref{sec:Deep Neural Networks}, a \ac{dnn} layer transforms the previous layer with each higher layer providing a coarser grained transformation. 
 This is best seen in image recognition application were the early layers identify low level shapes or features, such as angled lines. 

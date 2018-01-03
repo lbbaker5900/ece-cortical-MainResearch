@@ -3,12 +3,11 @@
 \chapter{System Operations}
 \label{sec:System Operations}
 
-As mentioned in section \ref{sec:System Overview}, an \ac{ssc} has 32 execution lanes allowing the simultaneous processing of one to 32 \acp{an}.
-When processing a group of 
-The basic operations to determine the state of a group of \acp{an} are:
+As mentioned in section \ref{sec:System Overview}, an \ac{ssc} has 32 execution lanes allowing the simultaneous processing of up to 32 \acp{an}.
+When processing a group of \acp{an} the basic operations to determine their states are:
 \begin{outline}
   %\lbbcleanspace{20pt}
-  %\lbbcleanspace
+  \lbbcleanspace
   \1 manager streams the states of the pre-synaptic \acp{an} to the \ac{pe}
   \1 manager streams the weights of the pre-synaptic connections to the \ac{pe}
   \1 each execution lane in the \ac{pe} operates directly on the two argument streams using the \ac{stop} block
@@ -18,10 +17,10 @@ The basic operations to determine the state of a group of \acp{an} are:
   \1 if the local \ac{ssc} is dependent on the result, the manager saves the \ac{an} state data in local \ac{ssc} \ac{dram}
 \end{outline}
 
-The manager Typically an instruction contains information to process a group of \acp{an}. A group can be anywhere from one to 32 \acp{an} and is based on how the user partitions the \ac{ann} across the available \acp{ssc}.
 This work has developed an instruction architecture to describe the above operations.
-In the baseline system, the manager is responsible for instruction decode and coordinating the various data flows and configuration of the modules throughout the \ac{ssc}.
-The \ac{pe} is responsible for the main algorithm operations using a combination of the \ac{stop} and \ac{simd}.
+A group can be anywhere from one to 32 \acp{an} and is based on the number of execution lanes in the \ac{ssc} (see section \ref{sec:Processing a group of ANes}) and how the user partitions the \ac{ann} across the available \acp{ssc}.
+The manager is responsible for instruction decode and coordinating the various data flows and configuration of the modules throughout the \ac{ssc}.
+The \ac{pe} is responsible for the main algorithm operations using a combination of its \ac{stop} and \ac{simd} blocks.
 
 \iffalse
 
@@ -56,7 +55,7 @@ The \ac{pe} has three major blocks:
 % ----------------------------------------------------------------------------------------------------
 \subsection{Instructions}
 \label{sec:Instructions}
-Typically an instruction contains information to process a group of \acp{an}. A group can be anywhere from one to 32 \acp{an} and is based on how the user partitions the \ac{ann} across the available \acp{ssc}.
+There Typically an instruction contains information to process a group of \acp{an} but there are other instruction types to .
 This includes defining where in memory \ac{an} states and weights are stored, what operations are to be performed and the destination of the resulting \ac{an} states.
 The instructions contain sub-instructions called descriptors. These descriptors contain, amongst other things the information to control the various operations associated with the processing of a group of \acp{an}.
 The size of this group of \acp{an} is related to the number of execution lanes, which for this work is 32. A group can be anywhere from 1-32. It should be said that unless the group size consistently approaches 32 the system performance will be poor.
