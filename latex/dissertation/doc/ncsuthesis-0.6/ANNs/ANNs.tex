@@ -33,7 +33,7 @@ The connection from one cell to another has both an associated delay and a stren
 \centerline{
 \mbox{\includegraphics[width=4.0in]{Neuron.pdf}}
 }
-\caption{Artists impression of a Mammalian Neuron}
+\caption{Artists impression of a Mammalian Neuron \cite{wikipedia_neuron}}
 \label{fig:neuron}
 \end{figure}
 
@@ -61,12 +61,12 @@ The various chemical and electrical processes that result in the generation and 
 
 When modeling these neurons in artificial neural networks, the neuron models either generate actual spikes similar to actual neurons or
 produce a value which is proportional to the rate at which spikes occur.
-These artificial neural networks can be categorized as rate-based coded or spike time coded neurons.
+These \acp{ann}can be categorized as rate-based coded or spike time coded neurons \cite{NNintro_Bullinaria}\cite{10.3389/fnsys.2015.00151}.
 
 
 When used in networks of neurons, both model types employ a connection weight between the pre and post-synaptic neuron, however, the spiking neuron network also introduces a time delay associated with the connection.
 
-The spiking neuron model is characterized by:
+The spiking neuron model is characterized by \cite{paugam2012computing}:
 
 \begin{outline}
   %\setlength{\baselineskip}{10pt}
@@ -78,18 +78,17 @@ The spiking neuron model is characterized by:
   %\setlength{\itemindent}{\leftmargin}
   %\setlength{\leftmargin}{0pt}
         \1 Connections between neurons have both a strength and a delay
-          \2 The pre-synaptic neuron output is multiplied by the connection weight and delayed
+          \2 The pre-synaptic neuron output is multiplied by the connection weight and delayed 
         \1 The weighted inputs from all pre-synaptic neurons are accumulated
         \1 The accumulated inputs drives an activation function
           \2 the activation function $f(x)$ is a spiking model is based on differential equations
           \2 many models have been proposed with varying levels of complexity
-            \3 examples are:
-              \4 Leaky integrate and fire
-              \4 Izhikevich \cite{Iz2005} (see \fref{fig:Izhikevich Model})
+              \3 Leaky integrate and fire \cite{Brunel2007} to Izhikevich \cite{Iz2005} (see \fref{fig:Izhikevich Model})
+              \3 complexity based on the number of differential equations and/or computations
          
 \end{outline}
 
-The Rate-based neuron model is characterized by:
+The Rate-based neuron model is characterized by \cite{NNintro_Bullinaria}:
 \begin{outline}
         \1 Connections between neurons have only a strength
           \2 The pre-synaptic neuron output is multiplied by the connection weight
@@ -98,8 +97,8 @@ The Rate-based neuron model is characterized by:
           \2 the activation function $f(x)$ is a non-linear function
           \2 early models used binary functions although in practice the function needs to be differentiable
             \3 examples are (see \fref{fig:Example Rated-Based Model Activation functions}):
-              \4 sigmoid
-              \4 rectified linear unit
+              \4 sigmoid \cite{paugam2012computing}
+              \4 \ac{relu} \cite{maas2013rectifier}
 \end{outline}
 
 \begin{figure}
@@ -126,7 +125,7 @@ The Rate-based neuron model is characterized by:
   \label{fig:Network of ANs}
 \end{subfigure}
 \captionsetup{justification=centering, skip=6pt}
-\caption[Artificial Neural Network]{Artificial Neurons and Network}
+\caption[Artificial Neural Network]{Artificial Neurons and Network \cite{NNintro_Bullinaria}\cite{NNintro_Nielsen}}
 \label{fig:Artificial Neural Network}
 \end{figure}
 
@@ -148,7 +147,7 @@ The Rate-based neuron model is characterized by:
     \end{axis}
   \end{tikzpicture}
   \captionsetup{justification=centering, skip=5pt}
-  \caption{Sigmoid}
+  \caption{Sigmoid \cite{paugam2012computing}}
   \label{fig:Sigmoid}
 \end{subfigure}%
 \begin{subfigure}{.3\textwidth}
@@ -167,7 +166,7 @@ The Rate-based neuron model is characterized by:
     \end{axis}
   \end{tikzpicture}
   \captionsetup{justification=centering, skip=5pt}
-  \caption{Relu}
+  \caption{\ac{relu} \cite{maas2013rectifier} }
   \label{fig:Relu}
 \end{subfigure}
 \captionsetup{justification=centering, skip=5pt}
@@ -260,13 +259,13 @@ The \ac{an} activation calculation for the rate-based \ac{an} in figure \ref{fig
               &\mathbf{C_p} \text{ is the number of pre-synaptic connections} \notag\\
               &\mathbf{W_p} \text{ is the weight of a connection} \notag\\
               &\mathbf{A_p} \text{ is the state of the pre-synaptic \ac{an}} \notag \\
-\text{and }   &f(x) \text{ is the activation function such as ReLu } \notag 
+\text{and }   &f(x) \text{ is the activation function such as \ac{relu} \cite{maas2013rectifier}}  \notag 
 \end{alignat}
 
 \section[ANN Layers]{ANN Layers}
 \label{sec:ANN Layers}
 
-In figure \ref{fig:Network of ANs} and \ref{fig:Rate-based Model Network}, the \ac{ann} is shown to be constructed using layers of \acp{an}. It has long been known that a single layer of \acp{an} can be used linearly partition an n-dimensional input, as shown in figure \ref{fig:linear discrimination}.
+In figure \ref{fig:Network of ANs} and \ref{fig:Rate-based Model Network}, the \ac{ann} is shown to be constructed using layers of \acp{an}. It has long been known that a single layer of \acp{an} can be used linearly partition an n-dimensional input \cite{NNintro_Bullinaria}, as shown in figure \ref{fig:linear discrimination}.
 However, if a more complex partition is required, this cannot be achieved using a single layer of \acp{an}. A higher order classification, as shown in figure \ref{fig:linear discrimination} can only be achieved using multiple layers of \acp{an}. 
 In addition, to ensure the multiple layers cannot be mathematically collapsed into a single layer, the activation function $f(x)$, as shown in figure \ref{fig:Rate Based Model} must be a non-linear function.
 
@@ -289,7 +288,7 @@ In addition, to ensure the multiple layers cannot be mathematically collapsed in
     \label{fig:complex discrimination}
   \end{subfigure}
 \captionsetup{justification=centering, skip=10pt}
-\caption{Classification using \acp{ann} layers}
+\caption{Classification using \acp{ann} layers \cite{NNintro_Bullinaria}}
 \label{fig:Discrimination}
 \end{figure}
 
@@ -298,14 +297,14 @@ In addition, to ensure the multiple layers cannot be mathematically collapsed in
 \label{sec:Deep Neural Networks}
 
 As mentioned, a single layer of neurons can be used as a linear classifier as long as the classes can be separated using a linear function.
-Even some simple cases cannot be linearly separated, an example often used is an exclusive-OR gate.
+Even some simple cases cannot be linearly separated, an example often used is an exclusive-OR gate \cite{NNintro_Bullinaria}.
 
 Even with a layered \ac{ann}, the final output comes from a single layer. To allow this final layer to linearly separate classes, the original input needs to be transformed into a space where the classes can be linearly separated.
 \acf{dnn} are \acp{ann} that incorporate many layers of \acp{an}, often which are often up to tens of layers deep.
 The additional layers are incorporated to translate the space of the input so the various classes being identified can be separated using linear classifiers in the later layers.
 
 Recently, an example of a \ac{dnn} known as a \acf{cnn} demonstrated high levels of efficacy when used to classify objects in images \cite{krizhevsky2012imagenet}.
-These \acp{cnn} use the early layers to identify low-level features and later layers are used combine these features into yet more higher-level features.
+These \acp{cnn} use the early layers to identify low-level features and later layers are used combine these features into yet more higher-level features \cite{Kwolek2005}\cite{wikipedia_deep_learning}\cite{deeplearning4j}.
 Finally, the combination of high-level features are used to identify the required classes.
 This layering is shown in \fref{fig:Deep network showing feature layers}.
 \begin{figure}[h]
@@ -334,14 +333,15 @@ The typical \ac{dnn} layers are processed in a feed-forward fashion where the pr
 There are some types of \ac{dnn} which also include recursive connections where the the pre-synaptic \acp{an} include \acp{an} from the current layer.
 A popular recursive \ac{dnn} is \acf{lstm}. Although this work does not preclude supporting \ac{lstm} in the future, the focus of this work is on the feed-forward type \ac{dnn}.
 
-As described in \ref{sec:Deep Neural Networks}, a \ac{dnn} layer transforms the previous layer with each higher layer providing a coarser grained transformation. This is best seen in image recognition application were the early layers identify low level shapes or features, such as angled lines. 
+As described in \ref{sec:Deep Neural Networks}, a \ac{dnn} layer transforms the previous layer with each higher layer providing a coarser grained transformation. 
+This is best seen in image recognition application were the early layers identify low level shapes or features, such as angled lines. 
 The following layers are used to identify higher order shapes such as circles, blocks etc. 
 Although the features detected during the image recognition application are somewhat intuitive, it is believed that in less intuitive applications the \ac{dnn} performs a similar fine to coarse feature extraction.
 
 The connections between layers can be locally-connected or fully-connected. 
 With locally-connected layers as shown in figure \ref{fig:Locally Connected Layer to Layer Connection Types}, a layers pre-synaptic \acp{an} are formed from regions of the previous layer.
 With fully-connected layers as shown in figure \ref{fig:Fully Connected Layer to Layer Connection Types}, a layers pre-synaptic \acp{an} are formed from all \acp{an} in the previous layer.
-In many cases, a \ac{dnn} is constructed with lower layers being locally-connected and higher layers being fully connected.
+In many cases, a \ac{dnn} is constructed with lower layers being locally-connected and higher layers being fully connected \cite{krizhevsky2012imagenet}.
 
 \begin{figure}[h]
   \centering
@@ -435,7 +435,7 @@ In many cases, a \ac{dnn} is constructed with lower layers being locally-connect
 \end{figure}
 
 \iffalse With locally-connected layers, the connection weights of the pre-synaptic \acp{an} are often formed from wanting to identify particular features. \fi
-In early uses of locally-connected \acp{ann}, the first layers weights were often hand-generated, an example being Gabor filters. 
+In early uses of locally-connected \acp{ann}, the first layers weights were often hand-generated, an example being Gabor filters \cite{Kwolek2005}. 
 With automatically trained \acp{ann}, the feature detectors at each layer are often created during training.
 Some contrived examples of locally-connected feature detectors are shown in figure \ref{fig:Features and locally-connected filters (kernels)}.
 \begin{figure}[h]

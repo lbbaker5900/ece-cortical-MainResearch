@@ -365,7 +365,7 @@ This instruction contains four descriptors (see figure \ref{fig:Instruction 4-tu
 \end{figure}
 
 
-The operation descriptor describes the operations the \ac{pe} will perform, which typically includes a \ac{mac} to be performed by the \ac{stop} followed by a \ac{relu} function to be performed by the \ac{simd}.
+The operation descriptor describes the operations the \ac{pe} will perform, which typically includes a \ac{mac} to be performed by the \ac{stop} followed by a \ac{relu} \cite{maas2013rectifier} function to be performed by the \ac{simd}.
 The manager extracts the operation information, embeds the information in an \ac{oob} packet and sends the packet to the \ac{pe} over the downstream \ac{oob} bus.
 The two memort read descriptors are used to define the memory locations of the downstream stack data buses. 
 There is one memory read descriptor for each of the two operand streams in the execution lanes, one typically defines where the pre-synaptic weights are stored and one for where the pre-synaptic \ac{an} states are stored.
