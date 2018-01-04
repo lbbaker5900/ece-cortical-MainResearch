@@ -442,24 +442,6 @@ When the destination \ac{ssc} receives the packet, it extracts the storage descr
 The \ac{noc} packet format can be seen in figure \ref{fig:NoC packet format}.
 This inter-manager communication is provided by an \ac{noc} with all managers connected in a mesh as shown in figure \ref{fig:Mesh}.
 
-% \begin{bytefield}[bitwidth=1.1em]{32}
-%   \bitheader{0-31} \\
-%   \begin{rightwordgroup}{RTP \\ Header}
-%     \bitbox{2}{V=2} & \bitbox{1}{P} & \bitbox{1}{X}
-%     & \bitbox{4}{CC} & \bitbox{1}{M} & \bitbox{7}{PT}
-%     & \bitbox{16}{sequence number} \\
-%     \bitbox{32}{timestamp}
-%   \end{rightwordgroup} \\
-%   \bitbox{32}{synchronization source (SSRC) identifier} \\
-%   \wordbox[tlr]{1}{contributing source (CSRC) identifiers} \\
-%   \wordbox[blr]{1}{$\cdots$} \\
-%   \begin{rightwordgroup}{RTP \\ Payload}
-%     \wordbox[tlr]{3}{MPEG-4 Visual stream (byte aligned)} \\
-%     \bitbox[blr]{16}{}
-%     & \bitbox{16}{\dots\emph{optional} RTP padding}
-%   \end{rightwordgroup}
-% \end{bytefield}
-% 
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
 \centering
@@ -471,6 +453,231 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
 \label{fig:Mesh}
 \end{figure}
 
+%\tiny 	
+%\scriptsize 	
+%\footnotesize
+%\small 	
+%\normalsize 	
+%\large 	
+%\Large 	
+%\LARGE 	
+\begin{figure}[!t]
+  % the [] contains position info e.g. [!t] means here
+  \centering
+  \captionsetup{justification=centering}
+
+  %\begin{minipage}{1\textwidth}
+  %\begin{subfigure}{1\textwidth}
+    \centering
+    \captionsetup{justification=centering, skip=10pt}
+    \begin{bytefield}[bitwidth=0.49em, endianness=big]{76}
+      \bitheader{0,8,16,24,32,40,48,56,64,72,74} \\
+      \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
+        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{6}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
+      \end{rightwordgroup}  \\
+      \begin{rightwordgroup}{\scriptsize MCast Group header}
+        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{6}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}}  & \bitbox{58}{\tiny padding} & \bitbox{6}{\tiny gid} 
+      \end{rightwordgroup}  \\
+      \begin{rightwordgroup}{\scriptsize Unicast header}
+        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{6}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}}  & \bitbox{58}{\tiny padding} & \bitbox{6}{\tiny dest} 
+      \end{rightwordgroup}  \\
+      \begin{rightwordgroup}{\scriptsize Option Cycle}
+        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \colorbitbox{optiontype!40}{8}{\tiny option\\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer} & \colorbitbox{optiontype!40}{8}{\tiny option\\ type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer}
+      \end{rightwordgroup}  \\
+      \begin{rightwordgroup}{\scriptsize Data Cycle}
+        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{4}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+      \end{rightwordgroup}  \\
+      \bitbox[]{76}{$\vdots$} \\[1ex]
+      \begin{rightwordgroup}{\scriptsize Data Cycle}
+        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{4}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+      \end{rightwordgroup}  \\
+    \end{bytefield}
+  %\end{subfigure}%
+  %\end{minipage}
+
+  \caption{\ac{noc} packet format}
+  \label{fig:NoC packet format}
+\end{figure}
+% 
+%\setlength{\arrayrulewidth}{1mm}
+%\setlength{\tabcolsep}{18pt}
+%\renewcommand{\arraystretch}{2.5}
+ 
+  %\begin{minipage}{1\textwidth}
+    %\begin{adjustbox}{width=1\textwidth}
+    \begin{table}[h]
+      \footnotesize
+      \captionsetup{justification=centering, skip=3pt}
+      \caption{Header fields}
+      \vspace{3pt}
+      \label{tab:Header fields}
+      \centering
+      \begin{subtable}{0.25\textwidth}
+        \centering
+        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
+          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
+          \begin{tabular}{ |c|c|  }
+            \hline
+            \rowcolor{gray!50}
+            \multicolumn{2}{|c|}{Source} \\
+            \hline
+            \rowcolor{gray!25}
+            src[5:0] & Description  \\
+            \hline
+            $0\cdots 63$     & Source SSC \\
+            \hline
+          \end{tabular}
+        %}
+      \end{subtable}
+      \begin{subtable}{0.25\textwidth}
+        \centering
+        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
+          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
+          \begin{tabular}{ |c|c|  }
+            \hline
+            \rowcolor{gray!50}
+            \multicolumn{2}{|c|}{Destination Type} \\
+            \hline
+            \rowcolor{gray!25}
+            M[1:0] & Description  \\
+            \hline
+            00 & Multicast bit-field \\
+            01 & Multicast group \\
+            10 & Unicast \\
+            \hline
+          \end{tabular}
+        %}
+      \end{subtable}
+      \begin{subtable}{0.25\textwidth}
+        \centering
+        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
+          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
+          \begin{tabular}{ |c|c|  }
+            \hline
+            \rowcolor{gray!50}
+            \multicolumn{2}{|c|}{Priority} \\
+            \hline
+            \rowcolor{gray!25}
+            prio & Description  \\
+            \hline
+            0     & Low priority \\
+            1     & High priority \\
+            \hline
+          \end{tabular}
+        %}
+      \end{subtable}
+    
+    \bigskip
+    
+      \begin{subtable}{0.4\textwidth}
+        \centering
+        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
+          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
+          \begin{tabular}{ |c|c|  }
+            \hline
+            \rowcolor{gray!50}
+            \multicolumn{2}{|c|}{Group ID} \\
+            \hline
+            \rowcolor{gray!25}
+            gid[5:0] & Description  \\
+            \hline
+            $0\cdots 63$     & Group table pointer\\
+            \hline
+          \end{tabular}
+        %}
+      \end{subtable}
+      \begin{subtable}{0.4\textwidth}
+        \centering
+        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
+          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
+          \begin{tabular}{ |c|c|  }
+            \hline
+            \rowcolor{gray!50}
+            \multicolumn{2}{|c|}{Unicast Destination} \\
+            \hline
+            \rowcolor{gray!25}
+            dest[5:0] & Description  \\
+            \hline
+            $0\cdots 63$     & Destination SSC \\
+            \hline
+          \end{tabular}
+        %}
+      \end{subtable}
+    
+    \end{table}
+    
+    %\vspace{-2cm}
+    
+    \begin{table}[h]
+      \footnotesize
+      \captionsetup{justification=centering, skip=3pt}
+      \caption{Option and Data Cycle fields}
+      \vspace{3pt}
+      \label{tab:Option and Data Cycle fields}
+      \centering
+      \begin{subtable}{0.25\textwidth}
+        \centering
+        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
+          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
+          \begin{tabular}{ |c|c|  }
+            \hline
+            \rowcolor{gray!50}
+            \multicolumn{2}{|c|}{Transaction Type} \\
+            \hline
+            \rowcolor{gray!25}
+            type[3:0] & Description  \\
+            \hline
+            0   & NOP  \\
+            8   & Data \\
+            \hline
+          \end{tabular}
+        %}
+      \end{subtable}
+      \begin{subtable}{0.4\textwidth}
+        \centering
+        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
+          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
+          \begin{tabular}{ |c|c|  }
+            \hline
+            \rowcolor{gray!50}
+            \multicolumn{2}{|c|}{Payload Type} \\
+            \hline
+            \rowcolor{gray!25}
+            pyld type[2:0] & Description  \\
+            \hline
+            0   &  NOP \\
+            1   &  Option tuples \\
+            2   &  Data \\
+            \hline
+          \end{tabular}
+        %}
+      \end{subtable}
+      \begin{subtable}{0.3\textwidth}
+        \centering
+        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
+          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
+          \begin{tabular}{ |c|c|  }
+            \hline
+            \rowcolor{gray!50}
+            \multicolumn{2}{|c|}{Payload Valid} \\
+            \hline
+            \rowcolor{gray!25}
+            PV  & Description  \\
+            \hline
+            0   &  One data word \\
+            1   &  Two data words \\
+            \hline
+          \end{tabular}
+        %}
+      \end{subtable}
+    %\end{adjustbox}
+    
+    
+    \end{table}
+  %\end{minipage}
+
+
+\iffalse
 \begin{figure}[!t]
 \centering
 \captionsetup{justification=centering}
@@ -482,6 +689,7 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
 \caption{\ac{noc} packet format}
 \label{fig:NoC packet format}
 \end{figure}
+\fi
 
 
 When computing an \ac{ann} across multiple processing sub-systems, often \ac{an} activation data must be shared between these \ac{ssc}s. The \ac{ssc} includes the \ac{dram} port, the manager and the \ac{pe}. 
