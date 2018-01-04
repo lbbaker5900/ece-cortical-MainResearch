@@ -43,23 +43,26 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 \section{Manager}
 \label{sec:manager}
 
-\subsection{Operation Decode}
+\subsection{Instruction Decoder}
+\label{sec:Instruction Decoder}
+
+\subsubsection{Operation Decode}
 \label{ssec:operationDecode}
 
 In figure \ref{fig:DetailedBlockDiagram}, instructions are read from instruction memory and passed to the instruction decoder.
+The operation tuple is decoded and a \ac{stop} pointer and a \ac{simd} \ac{pc} pointer are sent to the \ac{pe} inside an \ac{oob} control packet.
+The \ac{stop} pointer specifies what streaming operation is to take place on the data directly streamed to the \ac{pe}. 
+In the baseline system, typically this would be a \ac{fp} \ac{mac} on the pre-synaptic \ac{an} states and connection weights provided on the two streams in each execution lane.
 
-The operation tuple is decoded and a streaming operation (stOp) pointer and a SIMD operation pointer are sent to the PE inside an OOB control packet.
-
-The stOp pointer specifies what streaming operation is to take place on the data directly streamed to the PE. In the baseline system, typically this would be a floating-point multiply accumulate on two arguments, the pre-synaptic neuron states and the pre-synaptic weights.
-
-The SIMD pointer is essentially a program counter that will be invoked when the stOp result is passed to the SIMD.
+The SIMD pointer is essentially a \ac{pc} counter that the \ac{simd} will jump to to process the result from the \ac{stop}.
 
 Note that other types of stOp includes a NOP with a destination of local memory. This allows us to transfer block of instruction or data from the manager to the PE.
 
 
-\subsection{Argument Decode}
+\subsubsection{Argument Decode}
 \label{sec:argumentDecode}
-The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
+The instruction also includes memory read descriptors. These descriptors include storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the two operand streamss in each execution lane.
+As soon as the memory read descriptor target option is decoded, the read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
 
 As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
 

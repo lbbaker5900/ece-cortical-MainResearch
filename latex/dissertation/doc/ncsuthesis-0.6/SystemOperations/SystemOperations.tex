@@ -379,7 +379,9 @@ For example, to load the \ac{simd} instruction memory requires the procedure des
     \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{send:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{host }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
     \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{wait:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{host }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
     \State{// Host sends release}
-    \State{// start simd instruction download}
+\\
+    \State{// Host starts simd instruction download to \ac{ssc} memory}
+    \State{// Next \ac{ssc} instruction prepares wr_cntl for data from Host}
     \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{data:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{mem\textunderscore dn:}\makebox[1.00cm][l]{<m>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]}
     \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{pause:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{ind }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
     \State{// fetch paused waiting for release, wr\textunderscore cntl ready for Host data}

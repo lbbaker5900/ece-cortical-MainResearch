@@ -490,7 +490,6 @@ A control and data flow diagram of the stack showing the 64 sub-system columns c
 \label{fig:FlowDiagram}
 \end{figure}
 
-\label{sec:Configuration, Command and Data Flow}
 
 One of the primary objectives was to ensure the system can maintain the required average bandwidth (see table \ref{tab:Bandwidth and Storage Design Requirements}) whilst operating directly out of \ac{dram} over a range of pre-synaptic fanins.
 To achieve this the system decodes instructions and concurently sends configuration information to various system functions.
@@ -499,11 +498,11 @@ All system functions pipeline their configuration data to ensure the main proces
 This parallelism allows this system to constantly stream data whilst results from previous operations are being processed, broadcast to other \acp{ssc} and written back to \ac{ssc} memory.
 The instructions, the structures for describing the operations and the structures describing how data is retrieved and stored have been architected to provide extensibility.
 A detailed description of the instruction architecture and data structures is given in chapter \ref{sec:System Operations}.
-The baseline \ac{ann} described in table \ref{tab:Baseline Layer Configuration} was used to define a collection of presynaptic fanin tests and the average bandwidth achieved from those tests were used to ensure the average bandwidth is maintained.
+The baseline \ac{ann} described in table \ref{tab:Baseline Layer Configuration} was used to define a collection of presynaptic fanin tests and those tests were used to ensure the average bandwidth can be maintained.
 The results of those tests can be seen in chapter \ref{sec:Results}.
 
 
-The second primary objective was to determine if a useful, extensible \ac{3dic} system could be designed employing a customized \ac{3ddram}.
+The second objective was to determine if an extensible \ac{3dic} system could be designed employing a customized \ac{3ddram}.
 The \ac{3ddram} employed was the \ac{diram4} and estimated areas were extracted from data provided by Tezzaron\textregistered~\cite{patti2014}.
 The feasibility of the customizations were made with consultation with Tezzaron\textregistered.
 The physical details for the \ac{rtl} design of the primary modules are given in chapter \ref{sec:Detailed System Description}.
