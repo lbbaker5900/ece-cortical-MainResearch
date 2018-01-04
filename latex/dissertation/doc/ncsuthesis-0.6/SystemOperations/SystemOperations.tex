@@ -360,6 +360,46 @@ The flush mode register cause the instruction fetch logic to wait for all outsta
 \subsection{Multiple Instruction Functions}
 \label{sec:Multiple Instruction Functions}
 
+There are tasks in the system that must be performed by chaining instructions together.
+For example, to load the \ac{simd} instruction memory requires the procedure described in algorithm \ref{alg:Load SIMD Instruction memory}.
+
+\begin{algorithm}
+\caption{Load SIMD Instruction memory}
+\label{alg:Load SIMD Instruction memory}
+\begin{algorithmic}[1]
+    %      inst       desc
+    \State{// last compute instruction}
+    \State \makebox[1.05cm][r]{COM:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  op}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{stOp:}\makebox[1.25cm][l]{fpmac}\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{simd:}\makebox[0.80cm][l]{relu }\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{numop0:}\makebox[0.75cm][l]{<n>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{numop1:}\makebox[1.00cm][l]{<n>  }\makebox[0.25cm][r]{]} \\
+           \makebox[1.05cm][r]{     }\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  mr}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{ tgt:}\makebox[1.25cm][l]{std0 }\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{txfr:}\makebox[0.80cm][l]{bcast}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{ lanes:}\makebox[0.75cm][l]{<l>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]} \\
+           \makebox[1.05cm][r]{     }\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  mr}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{ tgt:}\makebox[1.25cm][l]{std1 }\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{txfr:}\makebox[0.80cm][l]{vec  }\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{ lanes:}\makebox[0.75cm][l]{<l>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]} \\
+           \makebox[1.05cm][r]{     }\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  mw}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{ src:}\makebox[1.25cm][l]{stu  }\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{txfr:}\makebox[0.80cm][l]{vec  }\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{ lanes:}\makebox[0.75cm][l]{<l>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]} 
+\\
+    \State{// make sure all compute instruction are complete}
+    \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{flush}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
+    \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{send:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{host }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
+    \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{wait:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{host }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
+    \State{// Host sends release}
+    \State{// start simd instruction download}
+    \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{data:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{mem\textunderscore dn:}\makebox[1.00cm][l]{<m>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]}
+    \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{pause:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{ind }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
+    \State{// fetch paused waiting for release, wr\textunderscore cntl ready for Host data}
+    \State{// wr\textunderscore cntl releases fetch when data transfer complete}
+    \State \makebox[1.05cm][r]{COM:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  op}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{stOp:}\makebox[1.25cm][l]{ld\textunderscore simd}\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{simd:}\makebox[0.80cm][l]{nop  }\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{numop0:}\makebox[0.75cm][l]{<m>}\makebox[0.25cm][r]{]} \\
+           \makebox[1.05cm][r]{     }\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  mr}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{ tgt:}\makebox[1.25cm][l]{std0}\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{txfr:}\makebox[0.80cm][l]{bcast}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{ lanes:}\makebox[0.75cm][l]{1}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]}
+    \State{// manager sending instruction data to PE using compute operation with NOPs}
+    \State{// flush PE to ensure instruction data complete}
+    \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{flush}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
+    %\State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{send:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{host }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
+    %\State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{wait:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{host }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
+\\
+    \State{// continue with compute instructions}
+    \State \makebox[1.05cm][r]{COM:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  op}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{stOp:}\makebox[1.25cm][l]{fpmac}\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{simd:}\makebox[0.80cm][l]{relu }\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{numop0:}\makebox[0.75cm][l]{<n>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{numop1:}\makebox[1.00cm][l]{<n>  }\makebox[0.25cm][r]{]} \\
+           \makebox[1.05cm][r]{     }\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  mr}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{ tgt:}\makebox[1.25cm][l]{std0 }\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{txfr:}\makebox[0.80cm][l]{bcast}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{ lanes:}\makebox[0.75cm][l]{<l>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]} \\
+           \makebox[1.05cm][r]{     }\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  mr}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{ tgt:}\makebox[1.25cm][l]{std1 }\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{txfr:}\makebox[0.80cm][l]{vec  }\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{ lanes:}\makebox[0.75cm][l]{<l>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]} \\
+           \makebox[1.05cm][r]{     }\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  mw}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{ src:}\makebox[1.25cm][l]{stu  }\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{txfr:}\makebox[0.80cm][l]{vec  }\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{ lanes:}\makebox[0.75cm][l]{<l>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]} 
+\end{algorithmic}
+\end{algorithm}
+
 
 
 

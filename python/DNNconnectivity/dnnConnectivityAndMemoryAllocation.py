@@ -251,8 +251,8 @@ OptionType = namedtuple('OptionType',   \
                                       MEMORY         \
                                       NUM_OF_ARG0_OPERANDS \
                                       NUM_OF_ARG1_OPERANDS \
-                                      SYNC_GROUP     \
-                                      CONFIG         \
+                                      CFG_SYNC       \
+                                      CFG_DATA       \
                                       STATUS')
 optionType  = OptionType._make([int(math.ceil(math.log(len(OptionType._fields)-1,16)))] + range(len(OptionType._fields)-1))
 
