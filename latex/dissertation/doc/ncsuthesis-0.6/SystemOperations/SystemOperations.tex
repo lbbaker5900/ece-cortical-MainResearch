@@ -315,7 +315,7 @@ The sync configuration instruction is shown in figure \ref{sec:Sync instruction}
     \mbox{\includegraphics[width=1\linewidth]{dataTransferInstruction}}
     \captionsetup{justification=centering, skip=6pt}
     \caption{Data transfer instruction }
-    \label{sec:Data transfer instruction}
+    \label{fig:Data transfer instruction}
   \end{subfigure}%
 
 \bigskip
@@ -327,12 +327,12 @@ The sync configuration instruction is shown in figure \ref{sec:Sync instruction}
     \includegraphics[width=1\textwidth]{syncInstruction}
     \captionsetup{justification=centering, skip=10pt}
     \caption{Sync instruction }
-    \label{sec:Sync instruction}
+    \label{fig:Sync instruction}
   \end{subfigure}%
 %\vspace{-10pt}
 \captionsetup{justification=centering, skip=16pt}
 \caption{Configuration Instruction types}
-\label{sec:Configuration Instruction types}
+\label{fig:Configuration Instruction types}
 \end{figure}
 
 The data option value contains a mode register which defines the type of data transfer along with information to aid the transfer. The storage option type contains a storage descriptor pointer which specifies the address of the 
@@ -380,8 +380,8 @@ For example, to load the \ac{simd} instruction memory requires the procedure des
     \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{wait:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{host }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
     \State{// Host sends release}
 \\
-    \State{// Host starts simd instruction download to \ac{ssc} memory}
-    \State{// Next \ac{ssc} instruction prepares wr_cntl for data from Host}
+    \State{// Host starts simd instruction download to SSC memory}
+    \State{// Next SSC instruction prepares wr\textunderscore cntl for data from Host}
     \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{data:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{mem\textunderscore dn:}\makebox[1.00cm][l]{<m>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]}
     \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{pause:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{ind }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
     \State{// fetch paused waiting for release, wr\textunderscore cntl ready for Host data}

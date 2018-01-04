@@ -7,7 +7,7 @@
 \chapter{System Overview}
 \label{chap-five}
 \label{sec:System Overview}
-As mentioned in chapter \ref{sec:Introduction} and chapter \ref{Motivation}, this works target application implements mulltiple \acp{ann} each of which have limited opportunities for both weight reuse and batch processing.
+As mentioned in chapter \ref{sec:Introduction} and chapter \ref{sec:Motivation}, this works target application implements mulltiple \acp{ann} each of which have limited opportunities for both weight reuse and batch processing.
 These requirements require \ac{dram} to be employed for main storage of \ac{ann} parameters and local \ac{sram} is of limited use.
 Under these conditions, the \ac{dram} bandwidth is the system bottleneck.
 
@@ -441,6 +441,25 @@ As the packet traverses the \ac{noc}, it is replicated to outgoing ports based o
 When the destination \ac{ssc} receives the packet, it extracts the storage descriptor and writes the data to its local \ac{dram}.
 The \ac{noc} packet format can be seen in figure \ref{fig:NoC packet format}.
 This inter-manager communication is provided by an \ac{noc} with all managers connected in a mesh as shown in figure \ref{fig:Mesh}.
+
+% \begin{bytefield}[bitwidth=1.1em]{32}
+%   \bitheader{0-31} \\
+%   \begin{rightwordgroup}{RTP \\ Header}
+%     \bitbox{2}{V=2} & \bitbox{1}{P} & \bitbox{1}{X}
+%     & \bitbox{4}{CC} & \bitbox{1}{M} & \bitbox{7}{PT}
+%     & \bitbox{16}{sequence number} \\
+%     \bitbox{32}{timestamp}
+%   \end{rightwordgroup} \\
+%   \bitbox{32}{synchronization source (SSRC) identifier} \\
+%   \wordbox[tlr]{1}{contributing source (CSRC) identifiers} \\
+%   \wordbox[blr]{1}{$\cdots$} \\
+%   \begin{rightwordgroup}{RTP \\ Payload}
+%     \wordbox[tlr]{3}{MPEG-4 Visual stream (byte aligned)} \\
+%     \bitbox[blr]{16}{}
+%     & \bitbox{16}{\dots\emph{optional} RTP padding}
+%   \end{rightwordgroup}
+% \end{bytefield}
+% 
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
 \centering
