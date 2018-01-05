@@ -269,7 +269,7 @@ The common signalling protocol will be seen in all waveform diagrams as seen in 
 \subsection{\ac{dram} Bus}
 \label{sec:DRAM Bus}
 
-The interface to the \ac{diram4} is similar to classic \ac{dram} interfaces with control signals including bank address and multiplexed page/cache address bus.
+The interface to the \ac{diram4} is similar to traditional \ac{dram} interfaces with control signals including bank address and multiplexed page/cache address bus.
 There are separate 2048-bit \ac{ddr} read and write databuses (see section \ref{sec:Very-Wide Bus}).
 In total there are 4180 signals in the \ac{dram} interface.
 Other than the wide databuses, the interface protocol is as described in \cite{tezzaron:diram4}.
@@ -304,7 +304,7 @@ This case is shown in figure \ref{fig:Worst case PO/PC sequence}.
 To accomodate this, the \ac{dram} bus has twice the raw bandwidth of the downstream stack bus. 
 Therefore under this worst case scenario the higher bandwidth data from the \ac{diram4} must be buffered, as shown in figure \ref{fig:Worst case read path FIFO depth}.
 In this case, per channel \SI[per-mode=symbol]{32}{\kilo\bit} \acp{fifo} must be placed in the read path as shown in figure \ref{fig:DRAM Read Path Buffering}.
-These \acp{fifo} are instantiated in the managers memory read controller(s) as described in section \ref{sec:Memory Read Controller}.
+These \acp{fifo} are instantiated in the manager \acp{mrc} as described in section \ref{sec:MRC}.
 
 
 \begin{figure}

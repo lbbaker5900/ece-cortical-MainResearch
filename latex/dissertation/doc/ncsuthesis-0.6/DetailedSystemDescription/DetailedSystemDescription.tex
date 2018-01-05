@@ -189,38 +189,101 @@ When the return data processor receives all outstanding tags, it asserts a relea
 \subsubsection{Argument Decode}
 \label{sec:argumentDecode}
 The instruction also includes memory read descriptors. These descriptors include storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the two operand streamss in each execution lane.
-As soon as the memory read descriptor target option is decoded, the read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
+As soon as the memory read descriptor target option is decoded, the read storage descriptor pointers are passed to the \acp{mrc}.
+The \acp{mrc} read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a \ac{mmc}. 
+The \ac{mmc} is not shown in the diagram but essentially takes the memory read requests and converts them into the \ac{dram} read protocol.
 
-As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
+As soon as read data is sent back to the \ac{mrc} via the \ac{mmc}, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
 \fi
 
 
-\subsection{Memory Read Controller}
-\label{sec:Memory Read Controller}
+\subsection{\Acf{mmc}}
+\label{sec:MMC}
 
-The \ac{an} states and connection weights can be interleaved or linearly.
-When the data is stored linearlya) stored for a group of \acp{an} in an interleaved manner such that when memory is read, weight data and/or \ac{an} states are spread across all the execution lanes for individual \ac{an} state caclutation or b) linearly in which case the.
+The \ac{mmc} is responsible for taking read requests from the two \acp{mrc} and write requests from the \ac{mwc}.
+
+The read requests the \ac{mmc} receives from the \acp{mrc} includes channel, bank, page and cacheline addresses. 
+The request also contains an operation identifier.
+The write requests from the \ac{mwc} includes channel, bank, page and cacheline addresses. 
+
+The \ac{mmc} processes the three requestors providing a small priority to write requests.
+In addition, the \ac{mmc} processes all read erquests associated with an operation before processing requests from the next operation.
+This is because memory requests are pre-fetched and memory requests for the next operation will be received before the \ac{mrc} has streamed data for the previous operation.
+This avoids the case where a request from the next operation could block a request from the rpevious operation causing a deadlock.
+
+The \ac{mmc} does not reorder requests to improve \ac{dram} efficiency. 
+the \ac{mmc} does keep track of open pages within banks to avoid unnecessary page open and page close commands.
+It should be noted that refresh has yet to be implemented but this is not anticipated to be a significant impact and will eb done in future work.
+
+The \ac{mmc} ensures the \ac{dram} protocol is observed and this was verified using the Tezzaron \ac{diram4} verilog models during simulation.
 
 
-\subsection{Result Data Processor}
-\label{sec:Result Data Processor}
-The instruction also includes argument descriptors. These descriptors include a storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the one or two arguments that will be streamed from DRAM to the stOp within the PE. In the case of a AN activation calculation, there are two arguments, the pre-synaptic neuron states and the pre-synaptic weights. The read storage descriptor pointers are passed to the Memory Read Controllers (MRC). The MRCs read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a Main Memory Controller (MMC). The MMC is not shown in the diagram but essentially takes the memory read requests and converts them into the DRAM read protocol.
+\subsection{\Acf{mrc}}
+\label{sec:MRC}
 
-As soon as read data is sent back to the MRC via the MMC, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
+The \ac{mrc} is provided with multiple option tuples by the decoder block, a storage descriptor pointer, the number of execution lanes, the target for read data and the transfer type.
+The \ac{mrc} contains the \ac{dram} read \acp{fifo} described in section \ref{sec:DRAM Bus} and shown in figure \ref{fig:Worst case PO/PC sequence}.
+A block diagram of the \ac{mrc} can be seen in figure \ref{fig:MRC block diagram}.
+\begin{figure}[h]
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=1\linewidth]{mrcBlockDiagram}}
+}
+\center\caption{MRC block diagram}
+\label{fig:MRC block diagram}
+\end{figure}
+
+The \ac{mrc} is one of the most complicated blocks in the system, it is also the largest but mainly because of the size of the data path \acp{fifo}.
+There are two \ac{mrc} blocks instantiated in the manager, one for stream 0 and one for stream 1 in the execution lanes.
+
+The \ac{mrc} uses the storage descriptor to identify the start address of the data and how the address should be incremented.
+The \ac{sdp} block contains a request block and a stream block.
+The request block uses the storage descriptor pointer to index into a small memory containing the actual storage descriptor. 
+As described in section \ref{sec:Storage Descriptor}, the storage descriptor itself contains a start address and a pointer to a table containing consequtive and jump fields.
+The starting address and consequtive/jump fields allow the request generator to make disjoint memory requests based on the \ac{roi} of the data. 
+If the \ac{roi} is contiguous in memory, then there is one consequitive field and no jump field.
+
+The request block generates memory requests based on the storage descriptor contents and number of lanes and sends the requests to the \ac{mmc}.
+The request information is also sent to the stream block.
+As the request block processes the storage descriptor start address and consequtive/jump fields it also send the information to the stream block.
+
+The stream block is responsible for taking the 2048-bit memory data from the \ac{mmc} and directing words to each execution lane.
+As the data is returned from the \ac{mmc}, it is placed in a channel 0 \ac{fifo} and a channel 1 \ac{fifo}. 
+The stream block has a per execution lane index module each of which generates an index to the channel and word.
+The index is used to multiplex the data to the execution lane stream.
+The per execution lane index module is required to account for bank and page boundaries in the \ac{roi} as described in sections \ref{sec:AccessingANStates} and \ref{sec:Storage Descriptor}.
+The lane index module uses the storage descritpor information to generate a memory location address which includes channel, bank, page and word addresses.
+The location address is them matched to the request at the head of the two request \acp{fifo}, and it a match occurs, the data is passed to the execution lane bus.
+If there is no match, the index module requests the request and data \acp{fifo} are read. The request control \ac{fsm} will ony read the \ac{fifo} if all lane index modules make a read request.
+This is done because as data is stored in memory, if the data crosses a bank, page or cacheline boundary the execution lanes must be allowed to get out of sync.
 
 
-\subsection{Memory Write Controller}
-\label{sec:memoryWriteController}
+\subsection{\Acf{rdp}}
+\label{sec:RDP}
+The \ac{rdp} is responsible for taking the result data from the \ac{pe} and determining which \ac{ssc} it should be stored.
 
-The Memory Write Controller (MWC) receives data from to sources, the NoC via the MCNTL and the RDP.
+The \ac{rdp} receives a descriptor from the decoder which includes storage descriptor information and the tag associated with an operation sent to the \ac{pe}.
+The information is stored in a \ac{fifo} and as data is returned to the manager over the upstream stack bus, the \ac{rdp} matches the return data tag with the head of the \ac{fifo}.
+Currently the return data is in order but to support an expansive architecture the tag is passed and checked by the \ac{rdp}.
 
-In both cases, the MWC read the actual storage descriptor from their local memory and immediately start forming data that will be written back to main memory.
+When the data is matched to the tag, the \ac{rdp} examines all the storage descriptor pointers. The pointers include \ac{ssc} index in the \acp{msb} and the \ac{rdp} constructs an \ac{ssc} bit-field.
+Once the descriptors have been parsed, if one of the destinations is the local \ac{ssc} \ac{dram}, the \ac{rdp} passed the descriptor and data to the main controller which in turn passes it to the \ac{mwc}.
+If the destination(s) include other \acp{ssc}, the \ac{rdp} provides the \ac{ssc} bitfield along with the data to the \ac{noc}.
 
-When the data is formed, a write command is sent to the memory via the MMC. Again, the MMC is not shown in the diagram but takes the memory write requests along with the data and converts them into the DRAM write protocol.
 
-The MWC can only operate on one of the two sources at any one time. However, there are four 4096-bit holding registers where data is formed prior to the write request.
+\subsection{\Acf{mwc}}
+\label{sec:MWC}
 
-The holding registers have the potential in future to allow aggregation of data from one or more operations to allow a coalesced write back to main memory.
+The \acf{mwc} receives data from two sources, the \ac{noc} via the main controller and the \ac{rdp}.
+The \ac{mwc} uses the storage descriptor provided with the data to identify the write address.
+The \ac{mwc} does not store the data immediately, it places the data in a small crude cache which has enough storage for two pages per channel.
+As data is received from the \ac{rdp} or \ac{noc}, the addresses are compared to the cache entry and if page address match occurs and the corresponding word is invalid, the data is stored in the cache.
+If a page miss occurs, the contents of one of the entries is written to memory and the new data stored in the cache.
+
+This crude cache was provided for two reasons, first even though write efficiency was not anticipated to be an issue, as described in section \ref{sec:writingANStates}, it was anticipated that the addresses from multiple operations may occur in consequive address and by coalescing data would make writes more efficient.
+The more important reason was to provide expansibility and by accounting for a small cache future work, such as host data downloads would have less of an impact on logic area.
 
 
 \section{Processing Engine}
@@ -241,47 +304,39 @@ A block diagram of the \ac{pe} can be seen in figure \ref{fig:PE block diagram}.
 \subsection{Configuration}
 \label{sec:peConfiguration}
 
-A configuration controller within the PE (PE\_CNTL) takes the OOB packet from the Manager and extracts the stOp and SIMD operation pointers.
-
-The stOp pointer is used to point to a local stOp configuration memory. The memory contains the various configuration data required by the streaming operation controller (stOp\_CNTL). The stOp\_CNTL is not shown.
-
-The stOp\_CNTL configures the:
-
+A controller within the \ac{pe} takes the \ac{oob} packet from the manager and extracts the \ac{stop} and \ac{simd} operation pointers.
+The \ac{stop} pointer is used to point to a local \ac{stop} configuration which contains the various configuration data required by the \ac{stop} function.
+The configuration data includes:
 \begin{outline}
-    \1 Operation type
+    \1 \ac{stop} operation type
     \1 Number of active execution lanes
-    \1 Source of the argument data, which can be downstream data from the manager or from the small local SRAM
-    \1 Destination of the result data, which can be the SIMD or the small local SRAM
+    \1 Source of the argument data, which can be downstream data from the manager or from the small local \ac{sram}
+    \1 Destination of the result data, which can be the \ac{simd} and/or the small local \ac{sram}
 \end{outline}
-
-The SIMD operation pointer is sent to the SIMD.
+Once the information is provided to the \ac{stop} block and the pointer provided to the \ac{simd}, the operation is immediately started.
 
 \subsection{Streaming Operations}
-\label{ssec:stOps}
+\label{sec:stOps}
 
-The streaming Operations (stOp) are designed to operate on data passed from the Manager at or near line-rate. If line-rate cannot be maintained, a flow-control mechanism is employed to slow the data from the Manager.
+The streaming Operations are designed to operate on data passed from the manager at or near line-rate. 
+If line-rate cannot be maintained, a flow-control mechanism is employed to slow the data from the manager.
+Once the \ac{stop} has processed the data, it passes the result to the \ac{simd}. Note in some cases the result can be placed in local \ac{sram} or sent to both \ac{sram} and \ac{sram}.
 
-Once the stOp has processed the data, it passes the result to the SIMD. Note in some cases the result can be placed in local SRAM or sent to both SIMD and SRAM.
-
-It should also be stated that while the stOp is processing the current data, the SIMD may be operating on the result of the previous operation. It is expected the SIMD will have completed the previous operation before the stOp completes the current operation, but again, if necessary a flow control mechanism between SIMD and stOP will be engaged if the SIMD is not ready.
+It should also be stated that while the \ac{stop} is processing the current data, the \ac{simd} may be operating on the result of the previous operation. 
+It is expected the \ac{simd} will have completed the previous operation before the \ac{stop} completes the current operation, but again, if necessary a flow control mechanism between \ac{simd} and \ac{stop} will be engaged if the \ac{simd} is not ready.
 
 \subsection{SIMD}
-\label{ssec:simd}
+\label{sec:simd}
 
-The SIMD takes the result data and performs the operation starting at the program counter (PC) indicated by the SIMD operation pointer provided by the PE\_CNTL.
+The \ac{simd} takes the result data and performs the operation starting at the \ac{pc} indicated by the \ac{simd} operation pointer provided by the \ac{pe} controller.
+The \ac{simd} performs the specified operation on the data provided by the \ac{stop} which can be passed directly to the \ac{simd} or provided indirectly in \ac{simd} local memory.
+In most cases, the \ac{simd} operation \ac{an} activation function which in the baseline system is the \ac{relu} function.
+When the \ac{simd} has completed its operation, it passes the result to the Upstream controller to be returned to the manager.
 
-The stOp provides the result to the SIMD via a local register. The result is also written, in most cases to the small local SRAM.
+\subsection{Upstream controller}
+\label{sec:Upstream controller}}
 
-The SIMD performs the specified operation on the data provided by the stOp.
-
-In most cases this will be the AN activation function and in the baseline system is the Rectified Linear function (ReLu).
-
-When the SIMD has completed its operation, it passes the result to the SIMD Upstream controller to be returned to the Manager.
-
-\subsection{Result Data}
-\label{ssec:result}
-
-The SIMD Upstream Controller (SUI) takes the data and encapsulates it in an Upstream packet. Included in the packet is the tag required by the Return Data processor within the Manager.
+The upstream controller takes the data from the \ac{simd} and a tag from the \ac{pe} controller and encapsulates both in an upstream packet. 
 
 
 

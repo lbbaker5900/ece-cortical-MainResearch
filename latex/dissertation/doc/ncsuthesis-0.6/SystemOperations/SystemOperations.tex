@@ -117,10 +117,13 @@ The instruction can be seen in figure \ref{fig:Instruction (4-tuple example)} an
 
 
 The descriptor also employs an n-tuple format where the first tuple element always describes the descriptor operation followed by an m-tuple whose elements contain the options required by the operation.
-The option elements within a descriptor are a two-tuple with option and associated value.
-These option elements and values describe contain information such as storage descriptor pointer (see section \ref{sec:Storage Descriptor}), \ac{pe} operations and the number of operands.
-In figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation descriptor.
+The option elements within a descriptor are a two-tuple with option and associated value and are referred to as option tuples.
+These option tuples include a type and value which contain information such as storage descriptor pointer (see section \ref{sec:Storage Descriptor}), \ac{pe} operations and the number of operands.
+The length of the value field is currently eight bits or 24-bits. The 24-bit value field is freferred to as an extended tuple and is currently used for memory address and number of operands.
+In figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation descriptor and a list of option types are shown in table \ref{tab:Option tuple functions}.
+It should be noted that not all option tuple type are currently used in the system but were provided for expansibility.
 
+\iffalse
 \begin{figure}[!t]
 \centering
 \captionsetup{justification=centering}
@@ -131,6 +134,60 @@ In figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation des
 \caption{Operation descriptor (5-tuple example)}
 \label{fig:descriptorTuple}
 \end{figure}
+\fi
+
+
+\begin{figure}[!t]
+  % the [] contains position info e.g. [!t] means here
+  \centering
+  \captionsetup{justification=centering}
+
+  \begin{minipage}{1\textwidth}
+    \centering
+    \begin{minipage}{0.85\textwidth}
+      \centering
+      \captionsetup{justification=centering}
+      \captionsetup{width=.9\linewidth}
+      \centerline{
+      \mbox{\includegraphics[width=.9\linewidth]{descriptorTuple}}
+      }
+      \vspace{-2mm}
+      \caption{Operation descriptor (5-tuple example)}
+      \label{fig:descriptorTuple}
+    \end{minipage}
+    \begin{minipage}{0.85\textwidth}
+        \vspace{5mm}
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{ |c|c|c|c|  }
+              \hline
+              \rowcolor{gray!50}
+              \multicolumn{4}{|c|}{Source} \\
+              \hline
+              \rowcolor{gray!25}
+              Type & Type Code & extd &  Value Description  \\
+              \hline
+              NOP                              &    0   &  N&  \acl{nop} \\
+              source                           &    1   &  N&  Used to define the source of any data, such as memory or \ac{pe}  \\
+              target                           &    2   &  N&  Used to define the target for any data, such as memory or \ac{pe}  \\
+              transfer type                    &    3   &  N&  How data will be directed, vector or braodcast                    \\
+              number of lanes                  &    4   &  N&  number of active execution lanes used in opration \\
+              \ac{stop} pointer                &    5   &  N&  pointer to \ac{pe} \ac{stop} operation table in \ac{pe} controller \\
+              \ac{simd} pointer                &    6   &  N&  pointer to \ac{pe} \ac{simd} instruction memory  \\
+              Memory storage descriptor        &    7   &  Y&  pointer to storage descriptor used in memory read or write \\
+              num of arg0 operands             &    8   &  Y&  number of operands sent to execution lane stream 0\\
+              num of arg1 operands             &    9   &  Y&  number of operands sent to execution lane stream 1\\
+              config                           &   10   &  N&  configuration data \\
+              status                           &   11   &  N&  status information \\
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+        \caption{Option tuple functions}
+        \label{tab:Option tuple functions}
+    \end{minipage}
+  \end{minipage}
+\end{figure}
+
 
 To pull it all together, in figure \ref{fig:Instruction Details} is shown a four-tuple compute instruction with details shown for each of the descriptors.
 In figure \ref{fig:Instruction and Descriptors} shows the compute instruction which contains three 4-tuple and one 5-tuple descriptors.
@@ -360,8 +417,12 @@ The flush mode register cause the instruction fetch logic to wait for all outsta
 \subsection{Multiple Instruction Functions}
 \label{sec:Multiple Instruction Functions}
 
-There are tasks in the system that must be performed by chaining instructions together.
-For example, to load the \ac{simd} instruction memory requires the procedure described in algorithm \ref{alg:Load SIMD Instruction memory}.
+When instructions or data is downloaded, in some cases there are tasks in the system that must be performed by chaining instructions together.
+This is the case when downloading the \ac{pe} operation pointers and the \ac{simd} instructions.
+In these cases, the host will have to first download the data to the \ac{ssc} local \ac{dram} in conjunction with a \ac{ssc} configuration download instruction.
+The data is then transferred to the \ac{pe} using an operation instruction with the \ac{stop} configured as a \ac{nop} so the data will pass through the \ac{stop} with the small local \ac{sram} as the target. 
+The \ac{pe} controller will then transfer the contents of the \ac{sram} to \ac{simd} instruction memory or the operation pointer memory.
+As an example, loading the \ac{simd} instruction memory requires the procedure described in algorithm \ref{alg:Load SIMD Instruction memory}.
 
 \begin{algorithm}
 \caption{Load SIMD Instruction memory}
@@ -374,6 +435,7 @@ For example, to load the \ac{simd} instruction memory requires the procedure des
            \makebox[1.05cm][r]{     }\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  mr}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{ tgt:}\makebox[1.25cm][l]{std1 }\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{txfr:}\makebox[0.80cm][l]{vec  }\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{ lanes:}\makebox[0.75cm][l]{<l>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]} \\
            \makebox[1.05cm][r]{     }\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  mw}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{ src:}\makebox[1.25cm][l]{stu  }\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{txfr:}\makebox[0.80cm][l]{vec  }\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{ lanes:}\makebox[0.75cm][l]{<l>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{  StoD:}\makebox[1.00cm][l]{<ptr>}\makebox[0.25cm][r]{]} 
 \\
+    \State{//---------------------------------------- Start download ---------------------------------------- }
     \State{// make sure all compute instruction are complete}
     \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{flush}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
     \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{send:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{host }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
@@ -393,6 +455,7 @@ For example, to load the \ac{simd} instruction memory requires the procedure des
     \State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{flush}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
     %\State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{send:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{host }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
     %\State \makebox[1.05cm][r]{CFG:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{ cfg}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{sync:}\makebox[0.25cm][r]{[}\makebox[1.75cm][r]{wait:}\makebox[0.25cm][r]{[}\makebox[1.00cm][l]{host }\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}\makebox[0.25cm][r]{]}
+    \State{//---------------------------------------- end of download ---------------------------------------- }
 \\
     \State{// continue with compute instructions}
     \State \makebox[1.05cm][r]{COM:[}\makebox[0.25cm][r]{[}\makebox[0.85cm][r]{  op}\makebox[0.15cm][l]{:}\makebox[0.15cm][r]{[}\makebox[1.00cm][r]{stOp:}\makebox[1.25cm][l]{fpmac}\makebox[0.25cm][r]{,}\makebox[1.00cm][r]{simd:}\makebox[0.80cm][l]{relu }\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{numop0:}\makebox[0.75cm][l]{<n>}\makebox[0.25cm][r]{,}\makebox[1.65cm][r]{numop1:}\makebox[1.00cm][l]{<n>  }\makebox[0.25cm][r]{]} \\
