@@ -447,7 +447,7 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
 \centering
 \captionsetup{justification=centering}
 \centerline{
-\mbox{\includegraphics[width=.5\linewidth]{Mesh}}
+\mbox{\includegraphics[width=.45\linewidth]{Mesh}}
 }
 \caption{\ac{noc} manager connectivity}
 \label{fig:Mesh}
@@ -466,7 +466,7 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
   \centering
   \captionsetup{justification=centering}
 
-  %\begin{minipage}{1\textwidth}
+  \begin{minipage}{1\textwidth}
   %\begin{subfigure}{1\textwidth}
     \centering
     \captionsetup{justification=centering, skip=10pt}
@@ -492,189 +492,170 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
         \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{4}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
       \end{rightwordgroup}  \\
     \end{bytefield}
-  %\end{subfigure}%
-  %\end{minipage}
+    \captionsetup{justification=centering, skip=9pt}
+    \vspace{-1.0cm}
+    \captionof{table}{NoC packet layout}
+    \label{tab:NoC packet layout}
+  \end{minipage}
 
-  \caption{\ac{noc} packet format}
-  \label{fig:NoC packet format}
-\end{figure}
-% 
-%\setlength{\arrayrulewidth}{1mm}
-%\setlength{\tabcolsep}{18pt}
-%\renewcommand{\arraystretch}{2.5}
- 
-  %\begin{minipage}{1\textwidth}
-    %\begin{adjustbox}{width=1\textwidth}
-    \begin{table}[h]
-      \footnotesize
-      \captionsetup{justification=centering, skip=3pt}
-      \caption{Header fields}
-      \vspace{3pt}
-      \label{tab:Header fields}
-      \centering
-      \begin{subtable}{0.25\textwidth}
-        \centering
-        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
-          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
-          \begin{tabular}{ |c|c|  }
-            \hline
-            \rowcolor{gray!50}
-            \multicolumn{2}{|c|}{Source} \\
-            \hline
-            \rowcolor{gray!25}
-            src[5:0] & Description  \\
-            \hline
-            $0\cdots 63$     & Source SSC \\
-            \hline
-          \end{tabular}
-        %}
-      \end{subtable}
-      \begin{subtable}{0.25\textwidth}
-        \centering
-        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
-          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
-          \begin{tabular}{ |c|c|  }
-            \hline
-            \rowcolor{gray!50}
-            \multicolumn{2}{|c|}{Destination Type} \\
-            \hline
-            \rowcolor{gray!25}
-            M[1:0] & Description  \\
-            \hline
-            00 & Multicast bit-field \\
-            01 & Multicast group \\
-            10 & Unicast \\
-            \hline
-          \end{tabular}
-        %}
-      \end{subtable}
-      \begin{subtable}{0.25\textwidth}
-        \centering
-        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
-          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
-          \begin{tabular}{ |c|c|  }
-            \hline
-            \rowcolor{gray!50}
-            \multicolumn{2}{|c|}{Priority} \\
-            \hline
-            \rowcolor{gray!25}
-            prio & Description  \\
-            \hline
-            0     & Low priority \\
-            1     & High priority \\
-            \hline
-          \end{tabular}
-        %}
-      \end{subtable}
+  \vspace{0.5cm}
+  \begin{minipage}{1\textwidth}
+    \centering
+    \begin{minipage}{0.20\textwidth}
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{ |c|c|  }
+              \hline
+              \rowcolor{gray!50}
+              \multicolumn{2}{|c|}{Source} \\
+              \hline
+              \rowcolor{gray!25}
+              src[5:0] & Description  \\
+              \hline
+              $0\cdots 63$     & Source SSC \\
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+    \end{minipage}
+    \begin{minipage}{0.25\textwidth}
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{ |c|c|  }
+              \hline
+              \rowcolor{gray!50}
+              \multicolumn{2}{|c|}{Destination Type} \\
+              \hline
+              \rowcolor{gray!25}
+              M[1:0] & Description  \\
+              \hline
+              00 & Multicast bit-field \\
+              01 & Multicast group \\
+              10 & Unicast \\
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{ |c|c|  }
+              \hline
+              \rowcolor{gray!50}
+              \multicolumn{2}{|c|}{Priority} \\
+              \hline
+              \rowcolor{gray!25}
+              prio & Description  \\
+              \hline
+              0     & Low priority \\
+              1     & High priority \\
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+    \end{minipage}
     
     \bigskip
     
-      \begin{subtable}{0.4\textwidth}
-        \centering
-        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
-          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
-          \begin{tabular}{ |c|c|  }
-            \hline
-            \rowcolor{gray!50}
-            \multicolumn{2}{|c|}{Group ID} \\
-            \hline
-            \rowcolor{gray!25}
-            gid[5:0] & Description  \\
-            \hline
-            $0\cdots 63$     & Group table pointer\\
-            \hline
-          \end{tabular}
-        %}
-      \end{subtable}
-      \begin{subtable}{0.4\textwidth}
-        \centering
-        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
-          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
-          \begin{tabular}{ |c|c|  }
-            \hline
-            \rowcolor{gray!50}
-            \multicolumn{2}{|c|}{Unicast Destination} \\
-            \hline
-            \rowcolor{gray!25}
-            dest[5:0] & Description  \\
-            \hline
-            $0\cdots 63$     & Destination SSC \\
-            \hline
-          \end{tabular}
-        %}
-      \end{subtable}
+    \centering
+    \begin{minipage}{0.25\textwidth}
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{ |c|c|  }
+              \hline
+              \rowcolor{gray!50}
+              \multicolumn{2}{|c|}{Group ID} \\
+              \hline
+              \rowcolor{gray!25}
+              gid[5:0] & Description  \\
+              \hline
+              $0\cdots 63$     & Group table pointer\\
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+    \end{minipage}
+    \begin{minipage}{0.25\textwidth}
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{ |c|c|  }
+              \hline
+              \rowcolor{gray!50}
+              \multicolumn{2}{|c|}{Unicast Destination} \\
+              \hline
+              \rowcolor{gray!25}
+              dest[5:0] & Description  \\
+              \hline
+              $0\cdots 63$     & Destination SSC \\
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+    \end{minipage}
+    \captionsetup{justification=centering, skip=9pt}
+    \vspace{0.0cm}
+    \captionof{table}{NoC header cycle fields}
+    \label{tab:NoC header fields}
+  \end{minipage}
     
-    \end{table}
-    
-    %\vspace{-2cm}
-    
-    \begin{table}[h]
-      \footnotesize
-      \captionsetup{justification=centering, skip=3pt}
-      \caption{Option and Data Cycle fields}
-      \vspace{3pt}
-      \label{tab:Option and Data Cycle fields}
-      \centering
-      \begin{subtable}{0.25\textwidth}
-        \centering
-        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
-          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
-          \begin{tabular}{ |c|c|  }
-            \hline
-            \rowcolor{gray!50}
-            \multicolumn{2}{|c|}{Transaction Type} \\
-            \hline
-            \rowcolor{gray!25}
-            type[3:0] & Description  \\
-            \hline
-            0   & NOP  \\
-            8   & Data \\
-            \hline
-          \end{tabular}
-        %}
-      \end{subtable}
-      \begin{subtable}{0.4\textwidth}
-        \centering
-        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
-          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
-          \begin{tabular}{ |c|c|  }
-            \hline
-            \rowcolor{gray!50}
-            \multicolumn{2}{|c|}{Payload Type} \\
-            \hline
-            \rowcolor{gray!25}
-            pyld type[2:0] & Description  \\
-            \hline
-            0   &  NOP \\
-            1   &  Option tuples \\
-            2   &  Data \\
-            \hline
-          \end{tabular}
-        %}
-      \end{subtable}
-      \begin{subtable}{0.3\textwidth}
-        \centering
-        %{\rowcolors{2}{green!80!yellow!50}{green!70!yellow!40}
-          %\begin{tabular}{ |p{1cm}|p{3cm}|  }
-          \begin{tabular}{ |c|c|  }
-            \hline
-            \rowcolor{gray!50}
-            \multicolumn{2}{|c|}{Payload Valid} \\
-            \hline
-            \rowcolor{gray!25}
-            PV  & Description  \\
-            \hline
-            0   &  One data word \\
-            1   &  Two data words \\
-            \hline
-          \end{tabular}
-        %}
-      \end{subtable}
-    %\end{adjustbox}
-    
-    
-    \end{table}
-  %\end{minipage}
+  \bigskip
+
+  \begin{minipage}{1\textwidth}
+    \centering
+    \begin{minipage}{0.20\textwidth}
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{ |c|c|  }
+              \hline
+              \rowcolor{gray!50}
+              \multicolumn{2}{|c|}{Transaction Type} \\
+              \hline
+              \rowcolor{gray!25}
+              type[3:0] & Description  \\
+              \hline
+              0   & NOP  \\
+              8   & Data \\
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+    \end{minipage}
+    \begin{minipage}{0.25\textwidth}
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{ |c|c|  }
+              \hline
+              \rowcolor{gray!50}
+              \multicolumn{2}{|c|}{Payload Type} \\
+              \hline
+              \rowcolor{gray!25}
+              pyld type[2:0] & Description  \\
+              \hline
+              0   &  NOP \\
+              1   &  Option tuples \\
+              2   &  Data \\
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+    \end{minipage}
+    \begin{minipage}{0.20\textwidth}
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{ |c|c|  }
+              \hline
+              \rowcolor{gray!50}
+              \multicolumn{2}{|c|}{Payload Valid} \\
+              \hline
+              \rowcolor{gray!25}
+              PV  & Description  \\
+              \hline
+              0   &  One data word \\
+              1   &  Two data words \\
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+    \end{minipage}
+    \captionsetup{justification=centering, skip=9pt}
+    \vspace{0.0cm}
+    \captionof{table}{NoC option/data cycle fields}
+    \label{tab:NoC option/data cycle fields}
+  \end{minipage}
+\end{figure}
 
 
 \iffalse
