@@ -266,7 +266,7 @@ The \ac{rdp} is responsible for taking the result data from the \ac{pe} and dete
 
 The \ac{rdp} receives a descriptor from the decoder which includes storage descriptor information and the tag associated with an operation sent to the \ac{pe}.
 The information is stored in a \ac{fifo} and as data is returned to the manager over the upstream stack bus, the \ac{rdp} matches the return data tag with the head of the \ac{fifo}.
-Currently the return data is in order but to support an expansive architecture the tag is passed and checked by the \ac{rdp}.
+Currently the return data is in order but to support an expansive architecture the tag is provided to and checked by the \ac{rdp}.
 
 When the data is matched to the tag, the \ac{rdp} examines all the storage descriptor pointers. The pointers include \ac{ssc} index in the \acp{msb} and the \ac{rdp} constructs an \ac{ssc} bit-field.
 Once the descriptors have been parsed, if one of the destinations is the local \ac{ssc} \ac{dram}, the \ac{rdp} passed the descriptor and data to the main controller which in turn passes it to the \ac{mwc}.
@@ -304,7 +304,9 @@ A block diagram of the \ac{pe} can be seen in figure \ref{fig:PE block diagram}.
 \subsection{Configuration}
 \label{sec:peConfiguration}
 
-A controller within the \ac{pe} takes the \ac{oob} packet from the manager and extracts the \ac{stop} and \ac{simd} operation pointers.
+The manager sends configuration information to the \ac{pe} over the downstream \ac{oob} bus.
+The \ac{oob} packet contains option tuples used by the \ac{pe} controller to configure functions within the \ac{pe}.
+The controller extracts the \ac{stop} and \ac{simd} operation pointers from the appropriate option tuple value.
 The \ac{stop} pointer is used to point to a local \ac{stop} configuration which contains the various configuration data required by the \ac{stop} function.
 The configuration data includes:
 \begin{outline}
@@ -314,6 +316,69 @@ The configuration data includes:
     \1 Destination of the result data, which can be the \ac{simd} and/or the small local \ac{sram}
 \end{outline}
 Once the information is provided to the \ac{stop} block and the pointer provided to the \ac{simd}, the operation is immediately started.
+Currently only \ac{stop} and \ac{simd} pointer option tuples are used.
+An example of the downstream OOB transactions can be seen in figure \ref{fig:OOB transactions}. This example shows both normal and extended option tuples.
+
+\begin{figure}[h]
+  % the [] contains position info e.g. [!t] means here
+  \centering
+  \captionsetup{justification=centering}
+
+  \begin{minipage}{1\textwidth}
+    \centering
+    \captionsetup{justification=centering, skip=10pt}
+    \begin{minipage}[t]{1\textwidth}
+      \begin{minipage}[t]{1\textwidth}
+        \begin{center}
+          \begin{bytefield}[bitwidth=0.49em, endianness=big]{38}
+            \bitheader{0, 31, 37} \\
+            \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{4}{\tiny type} & \colorbitbox{optiontype!40}{8}{\tiny option \\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{8}{\tiny option \\ \vspace{-0em}value} & \colorbitbox{optiontype!40}{8}{\tiny option \\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{8}{\tiny option \\ \vspace{-0em}value}   \\
+            \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{4}{\tiny type} & \colorbitbox{optiontype!40}{8}{\tiny extd option \\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{24}{\tiny option \\ \vspace{-0em}value} \\
+            \bitbox[]{38}{$\vdots$} \\[1ex]                                                                                                                                                                          
+            \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{4}{\tiny type} & \colorbitbox{optiontype!40}{8}{\tiny option \\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{8}{\tiny option \\ \vspace{-0em}value} & \colorbitbox{optiontype!40}{8}{\tiny option \\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{8}{\tiny option \\ \vspace{-0em}value}   \\
+          \end{bytefield}
+        \end{center}
+      \end{minipage}
+  \end{minipage}
+  \begin{minipage}{1\textwidth}
+      \centering
+      \begin{minipage}[t]{0.28\textwidth}
+        \vspace{1mm}
+        \centering
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{ |c|c|  }
+              \hline
+              \rowcolor{gray!50}
+              \multicolumn{2}{|c|}{Type} \\
+              \hline
+              \rowcolor{gray!25}
+              type[3:0] & Description  \\
+              \hline
+              2     & Operation configuration \\
+              other & NA \\
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+      \end{minipage}
+      \vspace{-2mm}
+      \center\caption{Downstream OOB data transactions}
+      \label{fig:Downstream OOB transactions}
+    \end{minipage}
+    \begin{minipage}[t]{1\textwidth}
+      \vspace{7mm}
+      \centering
+      %\begin{adjustbox}{width=1\textwidth}
+        \centering
+        \includegraphics[scale=0.35]{stack_down_oob_waveform}
+      %\end{adjustbox}
+      \captionsetup{justification=centering, skip=10pt}
+      \captionof{figure}{Downstream OOB simulation waveform}
+      \label{fig:Downstream OOB simulation waveform}
+    \end{minipage}
+  \end{minipage}
+\end{figure}
+
 
 \subsection{Streaming Operations}
 \label{sec:stOps}
@@ -328,15 +393,114 @@ It is expected the \ac{simd} will have completed the previous operation before t
 \subsection{SIMD}
 \label{sec:simd}
 
-The \ac{simd} takes the result data and performs the operation starting at the \ac{pc} indicated by the \ac{simd} operation pointer provided by the \ac{pe} controller.
+This work does not put a high level of importance on the \ac{simd} as the functionality provided by the \ac{simd} is relatively straightforward.
+However, it was important to include the \ac{simd} in the area portion of the study.
+Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed by logic in a \ac{simd} wrapper block that incorporated a dummy \ac{simd} instance.
+To account for the dummy \ac{simd} instance, in the area layout study a placement blockage was used based 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
+In practice, the \ac{simd} will take the result data from the \ac{stop} and perform the operation starting at the \ac{pc} indicated by the \ac{simd} operation pointer provided by the \ac{pe} controller.
 The \ac{simd} performs the specified operation on the data provided by the \ac{stop} which can be passed directly to the \ac{simd} or provided indirectly in \ac{simd} local memory.
 In most cases, the \ac{simd} operation \ac{an} activation function which in the baseline system is the \ac{relu} function.
-When the \ac{simd} has completed its operation, it passes the result to the Upstream controller to be returned to the manager.
+When the \ac{simd} has completed its operation, it passes the result to the upstream controller to be returned to the manager.
 
 \subsection{Upstream controller}
 \label{sec:Upstream controller}}
 
-The upstream controller takes the data from the \ac{simd} and a tag from the \ac{pe} controller and encapsulates both in an upstream packet. 
+The upstream controller takes the data from the \ac{simd} and a tag from the \ac{pe} controller and sends it to the manager.
+The format of the upstream transactions can be seen in figure \ref{fig:Upstream data transactions}.
+The upstream packet format accomodates both data and tag to be transmitted or just the tag.
+The upstream format allows sending tag only is to accomodate a sync flush operation without data being returned to the manager.
+Currently only the tag and data mode has been implemented.
+
+\begin{figure}[h]
+  % the [] contains position info e.g. [!t] means here
+  \centering
+  \captionsetup{justification=centering}
+
+  \begin{minipage}{1\textwidth}
+    \centering
+    \captionsetup{justification=centering, skip=10pt}
+    \begin{minipage}[t]{0.45\textwidth}
+      \begin{flushright}
+        \begin{bytefield}[bitwidth=0.49em, endianness=big]{22}
+          \bitheader{0, 16, 21} \\
+          \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{2}{\rotatebox{90}{\tiny type}} & \bitbox{2}{\tiny PV} & \bitbox{16}{\tiny OOB Data} \\
+          \bitbox[]{22}{$\vdots$} \\[1ex]                                      
+          \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{2}{\rotatebox{90}{\tiny type}} & \bitbox{2}{\tiny PV} & \bitbox{16}{\tiny OOB Data} 
+        \end{bytefield}
+      \end{flushright}
+    \end{minipage}
+    \begin{minipage}[t]{0.45\textwidth}
+      \begin{flushleft}
+        \hspace{1mm}
+        \begin{bytefield}[bitwidth=0.1em, endianness=big]{128}
+          \bitheader{0,127} \\
+          \begin{rightwordgroup}{\scriptsize $1$st Cycle}
+            \bitbox{32}{\tiny Data} 
+            \bitbox{32}{\tiny Data} 
+            \bitbox{32}{\tiny Data} 
+            \bitbox{32}{\tiny Data} 
+          \end{rightwordgroup}  \\
+          \bitbox[]{128}{$\vdots$} \\[1ex]
+          \begin{rightwordgroup}{\scriptsize $n$th Cycle}
+            \bitbox{32}{\tiny Data} 
+            \bitbox{32}{\tiny Data} 
+            \bitbox{32}{\tiny Data} 
+            \bitbox{32}{\tiny Data}
+          \end{rightwordgroup} 
+        \end{bytefield}
+      \end{flushleft}
+    \end{minipage}
+  \end{minipage}
+  \begin{minipage}{1\textwidth}
+    \centering
+    \begin{minipage}[t]{0.25\textwidth}
+      \vspace{3mm}
+      \centering
+      \begin{adjustbox}{width=1\textwidth}
+          \footnotesize
+          \begin{tabular}{ |c|c|  }
+            \hline
+            \rowcolor{gray!50}
+            \multicolumn{2}{|c|}{Type} \\
+            \hline
+            \rowcolor{gray!25}
+            type[1:0] & Description  \\
+            \hline
+            0     & OOB=Tag, Data valid \\
+            1     & OOB=NA, Data valid \\
+            2     & OOB=Tag, Data invalid \\
+            3     & NA \\
+            \hline
+          \end{tabular}
+      \end{adjustbox}
+    \end{minipage}
+    \begin{minipage}[t]{0.2\textwidth}
+      \vspace{3mm}
+      \centering
+      \begin{adjustbox}{width=1\textwidth}
+          \footnotesize
+          \begin{tabular}{ |c|c|  }
+            \hline
+            \rowcolor{gray!50}
+            \multicolumn{2}{|c|}{ Number of valid words} \\
+            \hline
+            \rowcolor{gray!25}
+            PV[1:0] & Description  \\
+            \hline
+            0     & One word valid \\
+            1     & Two words valid \\
+            2     & Three words valid \\
+            3     & Four words valid \\
+            \hline
+          \end{tabular}
+      \end{adjustbox}
+    \end{minipage}
+  \end{minipage}
+  \vspace{-3mm}
+  \center\caption{Upstream data transactions}
+  \label{fig:Upstream data transactions}
+\end{figure}
+
 
 
 
