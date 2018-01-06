@@ -503,8 +503,8 @@ In the case of employing the same filters across the entire input layer the \ac{
 These \acp{cnn} can store the filter parameters in local \ac{sram} and construct an entire feature plane. These \acp{cnn} are considered a subset of the generic case of \ac{dnn}.
 This work considers the more general \ac{dnn} case and supports acceleration of generic \acp{dnn} which includes \acp{cnn}.
 
-An example of a \ac{dnn} can be seen in figure \ref{fig:DNN showing layer order} with the layer configurations shown in table \ref{tab:Layer Configuration}. A \ac{cnn} similar to this has demonstrated high levels of efficacy in image recognition applications.
-{\textbf{\textcolor{black}{Therefore, this work will use the parameters from the table shown in figure \ref{tab:Layer Configuration} as a template for a baseline \ac{ann} for estimating the storage and processing requirements and the range of pre-synaptic fanins.}}}
+An example of a \ac{dnn} can be seen in figure \ref{fig:Baseline DNN showing layer order} with the layer configurations shown in table \ref{tab:Baseline Layer Configuration}. A \ac{cnn} similar to this has demonstrated high levels of efficacy in image recognition applications.
+{\textbf{\textcolor{black}{Therefore, this work will use the parameters from the table shown in figure \ref{tab:Baseline Layer Configuration} as a template for a baseline \ac{ann} for estimating the storage and processing requirements and the range of pre-synaptic fanins.}}}
 
 %%
 \iffalse
@@ -608,7 +608,7 @@ An example of a \ac{dnn} can be seen in figure \ref{fig:DNN showing layer order}
       \end{adjustbox}
       \captionsetup{justification=centering, skip=9pt}
       \vspace{0.5cm}
-      \captionof{table}{Baseline \ac{ann} Layer Configuration \cite{krizhevsky2012imagenet}}
+      \captionof{table}{Baseline \ac{ann} layer configuration \cite{krizhevsky2012imagenet}}
       \label{tab:Baseline Layer Configuration}
       %  \end{center}
     \end{minipage}
@@ -642,7 +642,7 @@ An example of a \ac{dnn} can be seen in figure \ref{fig:DNN showing layer order}
 \end{sidewaysfigure}
 \fi
 
-To approach the capabilities observed in human behavior, such as object recognition \ac{ann}s have become very large. The example shown in figure \ref{fig:Baseline DNN showing layer order}, which is based on the work from \cite{krizhevsky2012imagenet}, has hundreds of thousands of \acp{an} and hundreds of millions of connection weights (see table \ref{tab:Layer Configuration}).
+To approach the capabilities observed in human behavior, such as object recognition \ac{ann}s have become very large. The example shown in figure \ref{fig:Baseline DNN showing layer order}, which is based on the work from \cite{krizhevsky2012imagenet}, has hundreds of thousands of \acp{an} and hundreds of millions of connection weights (see table \ref{tab:Baseline Layer Configuration}).
 These \acp{ann} utilize these hundreds of thousands of \acp{an} to implement what a human would consider a relatively straightforward task.
 For example, a "useful" \ac{ann} similar to that described in \cite{krizhevsky2012imagenet} which was used to recognize up to 1000 different object classes, has a network size of approximately 650,000 \acp{an} and 630 million synaptic connections \cite{krizhevsky2012imagenetPreso}. 
 
@@ -735,7 +735,7 @@ There has been work on the impact of changing the precision of the number format
 For the baseline requirements this work assumes 32-bit single-precision \ac{fp}.
 
 
-Assuming an \ac{ann} similar to that shown in table \ref{tab:Layer Configuration} with \num{775e3}\acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{32}{\tera \bit \per \second} (see equation \ref{eq:maximumBandwidth}).
+Assuming an \ac{ann} similar to that shown in table \ref{tab:Baseline Layer Configuration} with \num{775e3}\acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{32}{\tera \bit \per \second} (see equation \ref{eq:maximumBandwidth}).
 
 % {2} means 2 columns
 \begin{alignat}{2} 
@@ -753,7 +753,7 @@ Assuming an \ac{ann} similar to that shown in table \ref{tab:Layer Configuration
 \end{alignat}
 
 When implementing \ac{ann}s, the memory requirements are also significant. The storage is required for the input, the \ac{an} states and most significantly the parameters for each of the \acp{an} pre-synaptic connections. 
-For the case shown in table \ref{fig:Baseline Layer Configuration}, there are \num{202e6} parameters requiring \SI[per-mode=symbol]{0.81}{\giga\byte} and \num{772e3} \acp{an} requiring \SI[per-mode=symbol]{3.88}{\mega\byte} storage.
+For the case shown in table \ref{tab:Baseline Layer Configuration}, there are \num{202e6} parameters requiring \SI[per-mode=symbol]{0.81}{\giga\byte} and \num{772e3} \acp{an} requiring \SI[per-mode=symbol]{3.88}{\mega\byte} storage.
 The storage required for 10 \acp{ann} is of the order of \SI[per-mode=symbol]{8.0}{\giga\byte} \eqref{eq:memoryRequired}.
 
 \begin{alignat}{2} 
