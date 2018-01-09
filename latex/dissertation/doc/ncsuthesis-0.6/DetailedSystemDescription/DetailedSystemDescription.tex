@@ -333,7 +333,7 @@ An example of the downstream \ac{oob} transactions can be seen in figure \ref{fi
           \begin{bytefield}[bitwidth=0.49em, endianness=big]{38}
             \bitheader{0, 31, 37} \\
             \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{4}{\tiny type} & \colorbitbox{optiontype!40}{8}{\tiny option \\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{8}{\tiny option \\ \vspace{-0em}value} & \colorbitbox{optiontype!40}{8}{\tiny option \\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{8}{\tiny option \\ \vspace{-0em}value}   \\
-            \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{4}{\tiny type} & \colorbitbox{optiontype!40}{8}{\tiny extd option \\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{24}{\tiny option \\ \vspace{-0em}value} \\
+            \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{4}{\tiny type} & \colorbitbox{optiontype!40}{8}{\tiny extd option \\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{24}{\tiny option \\ \vspace{-0em}value} \\
             \bitbox[]{38}{$\vdots$} \\[1ex]                                                                                                                                                                          
             \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{4}{\tiny type} & \colorbitbox{optiontype!40}{8}{\tiny option \\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{8}{\tiny option \\ \vspace{-0em}value} & \colorbitbox{optiontype!40}{8}{\tiny option \\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{8}{\tiny option \\ \vspace{-0em}value}   \\
           \end{bytefield}
