@@ -13,11 +13,11 @@
 
 As mentioned in chapter \ref{sec:Introduction}, this work focuses on edge applications employing disparate \ac{ann}s and therefore assumes there are limited opportunities for both weight reuse and batch processing.
 
-Given the storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, it is generally accepted that \ac{dram} is required to store the \ac{ann} parameters.
+Given the storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, it is generally accepted that \ac{dram} is required to store the \ac{ann} parameters \cite{dadiannao2014}\cite{dadiannao2017}\cite{azarkhish2017neurostream}.
 
 When considering systems that will employ multiple \ac{dnn}s simultaneously suggests that these edge systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second} \eqref{eq:maximumBandwidth}.
 
-In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
+In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck} \cite{dadiannao2017}}.
 
 \iffalse
 Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for edge systems employing inference on multiple disparate useful-sized neural networks.}}}
@@ -92,7 +92,7 @@ A solution could employ multiple devices, but there would be significant power a
 The typical high performance \ac{gpu} consumes between the order of \SI{100}{\watt} and \SI{200}{\watt}.
 A multiple \ac{gpu} implementation would have a high real-estate impact and a system power approaching a \SI[per-mode=symbol]{1}{\kilo \watt}.
 
-Overall \acp{gpu} have limited suitability to meet this works target application requirements.
+Overall \acp{gpu} have limited suitability to meet this works target application requirements \cite{dadiannao2017}.
 
 
 \subsection{\Acp{asic}/\Acp{asip}}
@@ -108,6 +108,8 @@ Unfortunately \ac{cnn}s represent only about 5\% of our datacenter NN workload}
 The applications targeted by the google TPU \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected \ac{dnn}s and in these cases weight reuse is not as benefitial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
 
 Implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally and fully connected \ac{dnn}s and LSTMs.
+Implementations that try to provide adequate on-chip storage, sometimes in the form of \ac{edram} have to have many instances of the \ac{asip} to provide the required total storage \cite{dadiannao2017}. 
+In these cases, the large number of instances results in huge performance capabilities which far exceed the requirements of this works application. The total power also becomes prohibitive.
 
 Considering this work focuses on edge applications employing disparate \ac{ann}s and assumes both weight reuse and batch processing do not apply, regardless of how implementations employ \ac{sram} as an intermediate store, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
 

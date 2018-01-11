@@ -305,6 +305,8 @@ To accomodate this, the \ac{dram} bus has twice the raw bandwidth of the downstr
 Therefore under this worst case scenario the higher bandwidth data from the \ac{diram4} must be buffered, as shown in figure \ref{fig:Worst case read path FIFO depth}.
 In this case, per channel \SI[per-mode=symbol]{32}{\kilo\bit} \acp{fifo} must be placed in the read path as shown in figure \ref{fig:DRAM Read Path Buffering}.
 These \acp{fifo} are instantiated in the manager \acp{mrc} as described in section \ref{sec:MRC}.
+A question arises that if the \ac{dram} interface has to employ large local storage in the form of \acp{fifo}, why is this different to other implementations that employ large amounts of \ac{sram}.
+The difference is this \ac{fifo} storage is to accomodate the \ac{dram} interface protocol and  pipelining to allow concurrent processing and does not impose a \ac{ann} size limitation unlike systems that employ the storage in a cache like structure.
 
 
 \begin{figure}
