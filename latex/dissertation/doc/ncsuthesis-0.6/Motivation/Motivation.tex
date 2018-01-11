@@ -31,15 +31,14 @@ Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth a
 Why is it that much of the \ac{asic} and \ac{asip} \ac{ann} research employs \ac{sram} as an intermediate store? 
 
 In practice there are benefits if the processing elements can operate out of \ac{sram}.
-Certainly good performance and potentially low power.
-
-Perhaps also because its easy to use? 
+Certainly good performance and potentially low power. 
 
 When compared to \ac{dram}, \ac{sram} has low latency. Also, the \ac{dram} access protocol is much more complicated to implement than \ac{sram}. 
+The high latency and \ac{dram} protocol forces the system to interleave accesses. Overall, when compared to \ac{dram}, \ac{sram} is relatively easy to use.
 
 Given that \ac{dram} is used for the main memory storage, having the processing elements operate out of \ac{sram} requires that the high cost of transferring data from the \ac{dram} to the \ac{sram} be absorbed by using that data multiple times or "reused".
 
-But using \ac{sram} for intermediate storage makes assumptions on the type of \acp{ann} that can be supported and the application in which the \ac{ann} is being deployed.
+So using \ac{sram} for intermediate storage makes assumptions on the type of \acp{ann} that can be supported and the application in which the \ac{ann} is being deployed.
 The primary requirement of the type of \ac{ann} and the deployed application to allow effective use of \ac{sram} is "reuse", so once parameters are transferred and stored in \ac{sram}, these parameters can be reused such that the \ac{sram} isn't simply an intermediate memory but something akin to a cache.
 
 In some \ac{ann}s there are reuse opportunities. 
