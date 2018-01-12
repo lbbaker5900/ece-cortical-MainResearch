@@ -57,6 +57,7 @@ module mwc_cntl (
             // Requests are sent out ahead of data
             output  reg                                                                           mwc__mmc__valid         ,
             output  reg   [`COMMON_STD_INTF_CNTL_RANGE          ]                                 mwc__mmc__cntl          ,
+            output  reg   [`MGR_STD_OOB_TAG_RANGE               ]                                 mwc__mmc__tag           ,  // tie to zero as write interface isnt conditioned on operation tag
             input   wire                                                                          mmc__mwc__ready         ,
                                                                                                                           
             output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE      ]                                 mwc__mmc__channel       ,
@@ -115,6 +116,7 @@ module mwc_cntl (
   
   reg                                           mwc__mmc__valid_e1      ;
   reg   [`COMMON_STD_INTF_CNTL_RANGE     ]      mwc__mmc__cntl_e1       ;
+  reg   [`MGR_STD_OOB_TAG_RANGE          ]      mwc__mmc__tag_e1        ;
   reg                                           mmc__mwc__ready_d1      ;
   reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      mwc__mmc__channel_e1    ;
   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE    ]      mwc__mmc__bank_e1       ;
@@ -171,6 +173,7 @@ module mwc_cntl (
     begin
       mwc__mmc__valid           <=   ( reset_poweron   ) ? 'd0  :  mwc__mmc__valid_e1        ;
       mwc__mmc__cntl            <=   ( reset_poweron   ) ? 'd0  :  mwc__mmc__cntl_e1         ;
+      mwc__mmc__tag             <=   ( reset_poweron   ) ? 'd0  :  mwc__mmc__tag_e1          ;
       mmc__mwc__ready_d1        <=   ( reset_poweron   ) ? 'd0  :  mmc__mwc__ready           ;
       mwc__mmc__channel         <=   ( reset_poweron   ) ? 'd0  :  mwc__mmc__channel_e1      ;
       mwc__mmc__bank            <=   ( reset_poweron   ) ? 'd0  :  mwc__mmc__bank_e1         ;
@@ -407,12 +410,13 @@ module mwc_cntl (
   //
 
   reg   [`MGR_STORAGE_DESC_ADDRESS_RANGE        ]      storage_desc_ptr                 ;  // pointer to local storage descriptor although msb's contain manager ID, so remove
+  reg                                                  storage_desc_address_valid       ;
+  reg                                                  storage_desc_address_latched     ;  // let inc_address_e1 hold it once we see a valid address
 
   reg   [`MWC_CNTL_CACHE_ENTRIES_PER_CHAN_VEC_RANGE ]  held_addr_hit           [`MWC_CNTL_CACHE_ENTRIES_PER_CHAN ]  ;  // word address in holding register
   reg                                                  held_available          [`MGR_DRAM_NUM_CHANNELS ]            ;
   reg                                                  held_accept             [`MGR_DRAM_NUM_CHANNELS ]            ;  // empty location or hit
 
-  reg                                                  storage_desc_address_valid       ;
 
   generate
     for (intf=0; intf<`MWC_CNTL_NUM_OF_INPUT_INTF ; intf=intf+1) 
@@ -448,8 +452,7 @@ module mwc_cntl (
         reg                                                   contains_data                   ;
         reg   [`MGR_STORAGE_DESC_ADDRESS_RANGE          ]     storage_desc_ptr                ;  // pointer to local storage descriptor although msb's contain manager ID, so remove
         reg   [`MGR_STORAGE_DESC_ADDRESS_RANGE          ]     storage_desc_ptr_wire           ;  
-        reg                                                   storage_desc_address_valid      ;
-        //reg [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE    ]     local_storage_desc_ptr          ;  // remove manager ID msb's
+        reg                                                   storage_desc_address_valid      ;  // only should see one storage descriptor for this SSC
         reg   [`MGR_MGR_ID_RANGE                        ]     storage_desc_ptr_mgr_id         ;  // extract manager ID from descriptor
 
         reg                                                   holding_reg_clear               ;  
@@ -573,6 +576,10 @@ module mwc_cntl (
         always @(posedge clk)
           begin
             case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
+              `MWC_CNTL_PTR_DATA_RCV_WAIT :
+                begin
+                  storage_desc_address_valid <= 1'b0 ;
+                end
               `MWC_CNTL_PTR_DATA_RCV_PROCESS_1ST_DESC_FROM_INTF : 
                 begin
                   storage_desc_address_valid <= 1'b1 ;
@@ -583,7 +590,7 @@ module mwc_cntl (
                 end
               default:
                 begin
-                  storage_desc_address_valid <= 1'b0 ;
+                  storage_desc_address_valid <= storage_desc_address_valid ;
                 end
             endcase
           end
@@ -597,6 +604,7 @@ module mwc_cntl (
               end
 
             contains_data                   = 'd0  ;
+            storage_desc_ptr_wire           = 'd0  ;
             storage_desc_ptr_mgr_id         = 'd0  ;
             pipe_read                       = 'd0  ;
             complete                        = 'd0  ;  
@@ -781,11 +789,13 @@ module mwc_cntl (
       case ({enable_rdp_fsm, enable_mcntl_fsm}) // synopsys parallel_case
         2'b10:
           begin
-            storage_desc_ptr  =  intf_fsm[0].storage_desc_ptr ;
+            storage_desc_ptr            =  intf_fsm[0].storage_desc_ptr           ;
+            //storage_desc_address_valid  =  intf_fsm[0].storage_desc_address_valid ;
           end
         2'b01:
           begin
-            storage_desc_ptr  =  intf_fsm[1].storage_desc_ptr ;
+            storage_desc_ptr            =  intf_fsm[1].storage_desc_ptr ;
+            //storage_desc_address_valid  =  intf_fsm[1].storage_desc_address_valid ;
           end
         default
           begin
@@ -813,8 +823,9 @@ module mwc_cntl (
   // the storage pointers are array wide and include manager ID in MSB's, so remove for address to local storage pointer memory
   wire  [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE ]      local_storage_desc_ptr =  storage_desc_ptr [`MGR_LOCAL_STORAGE_DESC_ADDRESS_RANGE] ;  // remove manager ID msb's
 
-  wire   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address       ;
-  wire   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder   ;
+  wire   [`MGR_DRAM_ADDRESS_RANGE                        ]  sdmem_Address               ;
+  wire   [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder           ; // FIXME : change instruction gen
+  reg    [`MGR_INST_OPTION_ORDER_RANGE                   ]  sdmem_AccessOrder_latched   ; // FIXME : change instruction gen
   wire   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  sdmem_consJumpPtr   ;
 
   genvar gvi ;
@@ -1001,37 +1012,89 @@ module mwc_cntl (
   // An overall address is formed based on the chan/bank/page/line fields and the access order.
   // As we grab each word, we will use this address to index into the holding register.
   // The address will be incremented for each word
-  always @(*)
+  
+  always @(posedge clk)
     begin
+      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
+        `MWC_CNTL_PTR_DATA_RCV_WAIT :
+          begin
+            storage_desc_address_latched <= 1'b0 ;
+          end
+        `MWC_CNTL_PTR_DATA_RCV_NEXT_INTF_CYCLE :
+          begin
+            storage_desc_address_latched <= storage_desc_address_valid;
+          end
+        default:
+          begin
+            storage_desc_address_latched <= storage_desc_address_latched ;
+          end
+      endcase
+    end
+
+  always @(posedge clk)
+    begin
+
+      sdmem_AccessOrder_latched <= sdmem_AccessOrder_latched ;
 
       case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
 
         `MWC_CNTL_PTR_DATA_RCV_NEXT_INTF_CYCLE :
           begin
             // reorder fields for incrementing
-            if (sdmem_AccessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
+            if (~storage_desc_address_latched)  // if the current storage desc is to local SSC. We will only se one to this SSC
               begin
-                inc_address_e1 =  {sdmem_Address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
-                                   sdmem_Address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
-                                   sdmem_Address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ] , 
-                                   sdmem_Address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ] , 
-                                   2'b00                                              };
+                sdmem_AccessOrder_latched <= sdmem_AccessOrder ;
               end
-            else if (sdmem_AccessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
+            else
               begin
-                inc_address_e1 =  {sdmem_Address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
-                                   sdmem_Address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
-                                   sdmem_Address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ] , 
-                                   sdmem_Address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ] , 
-                                   2'b00                                              };
+                sdmem_AccessOrder_latched <= sdmem_AccessOrder_latched ;
               end
-            else 
+          end
+
+        default:
+          begin
+            sdmem_AccessOrder_latched <= sdmem_AccessOrder_latched ;
+          end
+
+      endcase
+    end
+
+  always @(*)
+    begin
+
+      inc_address_e1 =  inc_address ;
+
+      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
+
+        `MWC_CNTL_PTR_DATA_RCV_NEXT_INTF_CYCLE :
+          begin
+            // reorder fields for incrementing
+            if (~storage_desc_address_latched)  // if the current storage desc is to local SSC. We will only se one to this SSC
               begin
-                inc_address_e1 =  {sdmem_Address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
-                                   sdmem_Address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
-                                   sdmem_Address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ] , 
-                                   sdmem_Address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ] , 
-                                   2'b00                                              };
+                if (sdmem_AccessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
+                  begin
+                    inc_address_e1 =  {sdmem_Address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
+                                       sdmem_Address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
+                                       sdmem_Address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ] , 
+                                       sdmem_Address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ] , 
+                                       2'b00                                              };
+                  end
+                else if (sdmem_AccessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
+                  begin
+                    inc_address_e1 =  {sdmem_Address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
+                                       sdmem_Address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
+                                       sdmem_Address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ] , 
+                                       sdmem_Address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ] , 
+                                       2'b00                                              };
+                  end
+                else 
+                  begin
+                    inc_address_e1 =  {sdmem_Address[`MGR_DRAM_ADDRESS_PAGE_FIELD_RANGE ] , 
+                                       sdmem_Address[`MGR_DRAM_ADDRESS_BANK_FIELD_RANGE ] , 
+                                       sdmem_Address[`MGR_DRAM_ADDRESS_WORD_FIELD_RANGE ] , 
+                                       sdmem_Address[`MGR_DRAM_ADDRESS_CHAN_FIELD_RANGE ] , 
+                                       2'b00                                              };
+                  end
               end
           end
 
@@ -1061,36 +1124,77 @@ module mwc_cntl (
   // Extract chan/bank/page/line
   always @(*)
     begin
-      if (sdmem_AccessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
-        begin
-          inc_channel_e1 =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
-          inc_bank_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
-          inc_page_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
-          inc_word_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
-          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-            inc_line_e1  =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
-          `endif
-        end
-      else if (sdmem_AccessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
-        begin
-          inc_channel_e1 =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
-          inc_bank_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
-          inc_page_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
-          inc_word_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
-          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-            inc_line_e1  =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
-          `endif
-        end
-      else 
-        begin
-          inc_channel_e1 =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
-          inc_bank_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
-          inc_page_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
-          inc_word_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
-          `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
-            inc_line_e1  =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
-          `endif
-        end
+      case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
+
+        // first load of INC the sdmem_AccessOrder hasnt been latched, so use value directly from memory
+        `MWC_CNTL_PTR_DATA_RCV_NEXT_INTF_CYCLE :
+          begin
+            if (sdmem_AccessOrder == PY_WU_INST_ORDER_TYPE_WCBP) 
+              begin
+                inc_channel_e1 =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
+                inc_bank_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
+                inc_page_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                inc_word_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
+                  inc_line_e1  =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
+                `endif
+              end
+            else if (sdmem_AccessOrder == PY_WU_INST_ORDER_TYPE_CWBP) 
+              begin
+                inc_channel_e1 =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+                inc_bank_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
+                inc_page_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                inc_word_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
+                  inc_line_e1  =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+                `endif
+              end
+            else 
+              begin
+                inc_channel_e1 =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+                inc_bank_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
+                inc_page_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                inc_word_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
+                  inc_line_e1  =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+                `endif
+              end
+          end
+        // AFter first load of INC, use latched sdmem_AccessOrder because memory output not stable
+        default:
+          begin
+            if (sdmem_AccessOrder_latched == PY_WU_INST_ORDER_TYPE_WCBP) 
+              begin
+                inc_channel_e1 =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_CHAN_FIELD_RANGE ]  ;
+                inc_bank_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_BANK_FIELD_RANGE ]  ;
+                inc_page_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                inc_word_e1    =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_WORD_FIELD_RANGE ]  ;
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
+                  inc_line_e1  =  inc_address_e1[`MGR_DRAM_WCBP_ORDER_LINE_FIELD_RANGE ]  ;
+                `endif
+              end
+            else if (sdmem_AccessOrder_latched == PY_WU_INST_ORDER_TYPE_CWBP) 
+              begin
+                inc_channel_e1 =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+                inc_bank_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
+                inc_page_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                inc_word_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
+                  inc_line_e1  =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+                `endif
+              end
+            else 
+              begin
+                inc_channel_e1 =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_CHAN_FIELD_RANGE ]  ;
+                inc_bank_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_BANK_FIELD_RANGE ]  ;
+                inc_page_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_PAGE_FIELD_RANGE ]  ;
+                inc_word_e1    =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_WORD_FIELD_RANGE ]  ;
+                `ifdef  MGR_DRAM_REQUEST_LINE_LT_CACHELINE
+                  inc_line_e1  =  inc_address_e1[`MGR_DRAM_CWBP_ORDER_LINE_FIELD_RANGE ]  ;
+                `endif
+              end
+          end
+      endcase
     end // always @ (*)
 
   // Register the stream address and individual fields
@@ -1181,6 +1285,7 @@ module mwc_cntl (
             mwc__mmc__valid_e1         = held_valid [ holding_reg_chan_ptr  ] [holding_reg_chan_cline_ptr  ] &  (holding_reg_chan_cline_line_ptr   == 'd0) & mmc_ready;
             //mwc__mmc__valid_e1         = 'd0 ;
             mwc__mmc__cntl_e1          = `COMMON_STD_INTF_CNTL_SOM_EOM  ;
+            mwc__mmc__tag_e1           =   'd0  ;
             mwc__mmc__channel_e1       = holding_reg_chan_ptr      ;
             mwc__mmc__bank_e1          = held_bank [ holding_reg_chan_ptr  ] [holding_reg_chan_cline_ptr  ] ;
             mwc__mmc__page_e1          = held_page [ holding_reg_chan_ptr  ] [holding_reg_chan_cline_ptr  ] ;
@@ -1191,6 +1296,7 @@ module mwc_cntl (
           begin
             mwc__mmc__valid_e1     =  1'b0  ;
             mwc__mmc__cntl_e1      =   'd0  ;
+            mwc__mmc__tag_e1       =   'd0  ;
             mwc__mmc__channel_e1   =   'd0  ;
             mwc__mmc__bank_e1      =   'd0  ;
             mwc__mmc__page_e1      =   'd0  ;

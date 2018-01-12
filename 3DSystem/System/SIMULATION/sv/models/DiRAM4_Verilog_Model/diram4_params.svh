@@ -30,8 +30,8 @@ typedef enum {diram4_cs_n = 0,
               diram4_cmd[0:1],
               diram4_addr[0:11],
               diram4_baddr[0:4],
-              diram4_d[0:31],
-              diram4_dm} INP_NET;
+              diram4_d[0:2047],
+              diram4_dm[0:63]} INP_NET;
 
 //==============================================================================
 //                                  THE END

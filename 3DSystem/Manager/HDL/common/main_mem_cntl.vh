@@ -12,6 +12,8 @@
 *****************************************************************/
 
 
+`define MMC_CNTL_INITIAL_TAG          `MGR_INITIAL_TAG 
+
   
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
@@ -65,6 +67,32 @@
 //--------------------------------------------------------
 
 //--------------------------------------------------------
+// Operation Tag FSM
+//  - 
+// 
+
+`define MMC_CNTL_OP_TAG_WAIT                 4'b0001
+`define MMC_CNTL_OP_TAG_PAUSE                4'b0010
+`define MMC_CNTL_OP_TAG_INC                  4'b0100
+`define MMC_CNTL_OP_TAG_ERR                  4'b1000
+                                                           
+
+`define MMC_CNTL_OP_TAG_STATE_WIDTH         4
+`define MMC_CNTL_OP_TAG_STATE_MSB           `MMC_CNTL_OP_TAG_STATE_WIDTH-1
+`define MMC_CNTL_OP_TAG_STATE_LSB           0
+`define MMC_CNTL_OP_TAG_STATE_SIZE          (`MMC_CNTL_OP_TAG_STATE_MSB - `MMC_CNTL_OP_TAG_STATE_LSB +1)
+`define MMC_CNTL_OP_TAG_STATE_RANGE          `MMC_CNTL_OP_TAG_STATE_MSB : `MMC_CNTL_OP_TAG_STATE_LSB
+
+// pause before changing tag
+`define MMC_CNTL_OP_TAG_PAUSE_WIDTH         6
+`define MMC_CNTL_OP_TAG_PAUSE_MSB           `MMC_CNTL_OP_TAG_PAUSE_WIDTH-1
+`define MMC_CNTL_OP_TAG_PAUSE_LSB           0
+`define MMC_CNTL_OP_TAG_PAUSE_SIZE          (`MMC_CNTL_OP_TAG_PAUSE_MSB - `MMC_CNTL_OP_TAG_PAUSE_LSB +1)
+`define MMC_CNTL_OP_TAG_PAUSE_RANGE          `MMC_CNTL_OP_TAG_PAUSE_MSB : `MMC_CNTL_OP_TAG_PAUSE_LSB
+
+`define MMC_CNTL_OP_TAG_PAUSE_VALUE        32
+
+//--------------------------------------------------------
 // DRAM Command generation FSM
 //  - take memory requests and determine how many commands associated with each request
 //  - If read with nothing open, generate PO-CR
@@ -72,6 +100,18 @@
 //  - read to open page, generate CR
 //  etc.
 // 
+
+`define MMC_CNTL_CMD_GEN_STATE_WIDTH         11
+`define MMC_CNTL_CMD_GEN_STATE_MSB           `MMC_CNTL_CMD_GEN_STATE_WIDTH-1
+`define MMC_CNTL_CMD_GEN_STATE_LSB           0
+`define MMC_CNTL_CMD_GEN_STATE_SIZE          (`MMC_CNTL_CMD_GEN_STATE_MSB - `MMC_CNTL_CMD_GEN_STATE_LSB +1)
+`define MMC_CNTL_CMD_GEN_STATE_RANGE          `MMC_CNTL_CMD_GEN_STATE_MSB : `MMC_CNTL_CMD_GEN_STATE_LSB
+
+`define MMC_CNTL_CMD_GEN_TAG_WIDTH         6  // FIXME  - can be shorter  ??
+`define MMC_CNTL_CMD_GEN_TAG_MSB           `MMC_CNTL_CMD_GEN_TAG_WIDTH-1
+`define MMC_CNTL_CMD_GEN_TAG_LSB           0
+`define MMC_CNTL_CMD_GEN_TAG_SIZE          (`MMC_CNTL_CMD_GEN_TAG_MSB - `MMC_CNTL_CMD_GEN_TAG_LSB +1)
+`define MMC_CNTL_CMD_GEN_TAG_RANGE          `MMC_CNTL_CMD_GEN_TAG_MSB : `MMC_CNTL_CMD_GEN_TAG_LSB
 
 `define MMC_CNTL_CMD_GEN_WAIT                        11'b000_0000_0001
 `define MMC_CNTL_CMD_GEN_DECODE_SEQUENCE             11'b000_0000_0010
@@ -85,18 +125,6 @@
 `define MMC_CNTL_CMD_GEN_PR                          11'b010_0000_0000
 
 `define MMC_CNTL_CMD_GEN_ERR                         11'b100_0000_0000
-
-`define MMC_CNTL_CMD_GEN_STATE_WIDTH         11
-`define MMC_CNTL_CMD_GEN_STATE_MSB           `MMC_CNTL_CMD_GEN_STATE_WIDTH-1
-`define MMC_CNTL_CMD_GEN_STATE_LSB           0
-`define MMC_CNTL_CMD_GEN_STATE_SIZE          (`MMC_CNTL_CMD_GEN_STATE_MSB - `MMC_CNTL_CMD_GEN_STATE_LSB +1)
-`define MMC_CNTL_CMD_GEN_STATE_RANGE          `MMC_CNTL_CMD_GEN_STATE_MSB : `MMC_CNTL_CMD_GEN_STATE_LSB
-
-`define MMC_CNTL_CMD_GEN_TAG_WIDTH         6  // FIXME  - can be shorter  ??
-`define MMC_CNTL_CMD_GEN_TAG_MSB           `MMC_CNTL_CMD_GEN_TAG_WIDTH-1
-`define MMC_CNTL_CMD_GEN_TAG_LSB           0
-`define MMC_CNTL_CMD_GEN_TAG_SIZE          (`MMC_CNTL_CMD_GEN_TAG_MSB - `MMC_CNTL_CMD_GEN_TAG_LSB +1)
-`define MMC_CNTL_CMD_GEN_TAG_RANGE          `MMC_CNTL_CMD_GEN_TAG_MSB : `MMC_CNTL_CMD_GEN_TAG_LSB
 
 typedef enum reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] {
            MMC_CNTL_CMD_GEN_WAIT                  =  11'b000_0000_0001,
@@ -145,6 +173,12 @@ typedef enum reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] {
 //  - read page and rw commands from command fifo's and make sure we follow the DDR protocol for DiRAM4
 // 
 
+`define MMC_CNTL_DFI_SEQ_STATE_WIDTH         12
+`define MMC_CNTL_DFI_SEQ_STATE_MSB           `MMC_CNTL_DFI_SEQ_STATE_WIDTH-1
+`define MMC_CNTL_DFI_SEQ_STATE_LSB           0
+`define MMC_CNTL_DFI_SEQ_STATE_SIZE          (`MMC_CNTL_DFI_SEQ_STATE_MSB - `MMC_CNTL_DFI_SEQ_STATE_LSB +1)
+`define MMC_CNTL_DFI_SEQ_STATE_RANGE          `MMC_CNTL_DFI_SEQ_STATE_MSB : `MMC_CNTL_DFI_SEQ_STATE_LSB
+
 `define MMC_CNTL_DFI_SEQ_WAIT                                  12'b0000_0000_0001
 `define MMC_CNTL_DFI_SEQ_PAGE_CMD                              12'b0000_0000_0010
 `define MMC_CNTL_DFI_SEQ_PAGE_CMD_WITH_WR_DATA                 12'b0000_0000_0100
@@ -159,11 +193,19 @@ typedef enum reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] {
                                                               
 `define MMC_CNTL_DFI_SEQ_ERR                                   12'b1000_0000_0000
 
-`define MMC_CNTL_DFI_SEQ_STATE_WIDTH         12
-`define MMC_CNTL_DFI_SEQ_STATE_MSB           `MMC_CNTL_DFI_SEQ_STATE_WIDTH-1
-`define MMC_CNTL_DFI_SEQ_STATE_LSB           0
-`define MMC_CNTL_DFI_SEQ_STATE_SIZE          (`MMC_CNTL_DFI_SEQ_STATE_MSB - `MMC_CNTL_DFI_SEQ_STATE_LSB +1)
-`define MMC_CNTL_DFI_SEQ_STATE_RANGE          `MMC_CNTL_DFI_SEQ_STATE_MSB : `MMC_CNTL_DFI_SEQ_STATE_LSB
+typedef enum reg [`MMC_CNTL_DFI_SEQ_STATE_RANGE ] {
+         MMC_CNTL_DFI_SEQ_WAIT                                  = 12'b0000_0000_0001,
+         MMC_CNTL_DFI_SEQ_PAGE_CMD                              = 12'b0000_0000_0010,
+         MMC_CNTL_DFI_SEQ_PAGE_CMD_WITH_WR_DATA                 = 12'b0000_0000_0100,
+         MMC_CNTL_DFI_SEQ_NOP_PAGE_CMD                          = 12'b0000_0000_1000,
+         MMC_CNTL_DFI_SEQ_NOP_PAGE_CMD_WITH_WR_DATA             = 12'b0000_0001_0000,
+         MMC_CNTL_DFI_SEQ_NOHEAD_NOP_PAGE_CMD                   = 12'b0000_0010_0000,
+         MMC_CNTL_DFI_SEQ_NOHEAD_NOP_PAGE_CMD_WITH_WR_DATA      = 12'b0000_0100_0000,
+         MMC_CNTL_DFI_SEQ_RD_CMD                                = 12'b0000_1000_0000,
+         MMC_CNTL_DFI_SEQ_WR_CMD                                = 12'b0001_0000_0000,
+         MMC_CNTL_DFI_SEQ_NOP_RW_CMD                            = 12'b0010_0000_0000,
+         MMC_CNTL_DFI_SEQ_NOHEAD_NOP_RW_CMD                     = 12'b0100_0000_0000,
+         MMC_CNTL_DFI_SEQ_ERR                                   = 12'b1000_0000_0000}  mmc_cntl_dfi_seq_fsm_enum;
 
 //--------------------------------------------------------
 // Stream select FSM
@@ -265,18 +307,25 @@ typedef enum reg [`MMC_CNTL_CMD_GEN_STATE_RANGE ] {
 `define MMC_CNTL_REQUEST_AGGREGATE_IS_WRITE_SIZE                        (`MMC_CNTL_REQUEST_AGGREGATE_IS_WRITE_MSB - `MMC_CNTL_REQUEST_AGGREGATE_IS_WRITE_LSB +1)
 `define MMC_CNTL_REQUEST_AGGREGATE_IS_WRITE_RANGE                        `MMC_CNTL_REQUEST_AGGREGATE_IS_WRITE_MSB : `MMC_CNTL_REQUEST_AGGREGATE_IS_WRITE_LSB
 
+`define MMC_CNTL_REQUEST_AGGREGATE_TAG_WIDTH                       `MGR_STD_OOB_TAG_WIDTH     
+`define MMC_CNTL_REQUEST_AGGREGATE_TAG_LSB                         `MMC_CNTL_REQUEST_AGGREGATE_IS_WRITE_MSB+1
+`define MMC_CNTL_REQUEST_AGGREGATE_TAG_MSB                         `MMC_CNTL_REQUEST_AGGREGATE_TAG_LSB+`MMC_CNTL_REQUEST_AGGREGATE_TAG_WIDTH-1
+`define MMC_CNTL_REQUEST_AGGREGATE_TAG_SIZE                        (`MMC_CNTL_REQUEST_AGGREGATE_TAG_MSB - `MMC_CNTL_REQUEST_AGGREGATE_TAG_LSB +1)
+`define MMC_CNTL_REQUEST_AGGREGATE_TAG_RANGE                        `MMC_CNTL_REQUEST_AGGREGATE_TAG_MSB : `MMC_CNTL_REQUEST_AGGREGATE_TAG_LSB
+
 `define MMC_CNTL_REQUEST_AGGREGATE_CNTL_WIDTH                       `COMMON_STD_INTF_CNTL_WIDTH 
-`define MMC_CNTL_REQUEST_AGGREGATE_CNTL_LSB                         `MMC_CNTL_REQUEST_AGGREGATE_IS_WRITE_MSB+1
+`define MMC_CNTL_REQUEST_AGGREGATE_CNTL_LSB                         `MMC_CNTL_REQUEST_AGGREGATE_TAG_MSB+1
 `define MMC_CNTL_REQUEST_AGGREGATE_CNTL_MSB                         `MMC_CNTL_REQUEST_AGGREGATE_CNTL_LSB+`MMC_CNTL_REQUEST_AGGREGATE_CNTL_WIDTH-1
 `define MMC_CNTL_REQUEST_AGGREGATE_CNTL_SIZE                        (`MMC_CNTL_REQUEST_AGGREGATE_CNTL_MSB - `MMC_CNTL_REQUEST_AGGREGATE_CNTL_LSB +1)
 `define MMC_CNTL_REQUEST_AGGREGATE_CNTL_RANGE                        `MMC_CNTL_REQUEST_AGGREGATE_CNTL_MSB : `MMC_CNTL_REQUEST_AGGREGATE_CNTL_LSB
 
-`define MMC_CNTL_REQUEST_AGGREGATE_FIFO_WIDTH    +`MMC_CNTL_REQUEST_AGGREGATE_WORD_WIDTH      \
+`define MMC_CNTL_REQUEST_AGGREGATE_FIFO_WIDTH     `MMC_CNTL_REQUEST_AGGREGATE_WORD_WIDTH      \
                                                  +`MMC_CNTL_REQUEST_AGGREGATE_PAGE_WIDTH      \
                                                  +`MMC_CNTL_REQUEST_AGGREGATE_BANK_WIDTH      \
                                                  +`MMC_CNTL_REQUEST_AGGREGATE_CHAN_WIDTH      \
                                                  +`MMC_CNTL_REQUEST_AGGREGATE_IS_READ_WIDTH   \
                                                  +`MMC_CNTL_REQUEST_AGGREGATE_IS_WRITE_WIDTH  \
+                                                 +`MMC_CNTL_REQUEST_AGGREGATE_TAG_WIDTH       \
                                                  +`COMMON_STD_INTF_CNTL_WIDTH                  
                                                  
 `define MMC_CNTL_REQUEST_AGGREGATE_FIFO_MSB            `MMC_CNTL_REQUEST_AGGREGATE_FIFO_WIDTH -1

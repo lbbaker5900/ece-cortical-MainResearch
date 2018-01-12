@@ -65,6 +65,7 @@
 module sdp_request_cntl (  
 
             input   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE     ]      xxx__sdp__lane_enable                        , 
+            input   wire  [`MGR_STD_OOB_TAG_RANGE           ]      xxx__sdp__tag                                ,  // mmc needs to service tag requests before tag+1
             input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes                          ,
             input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes_m1                       ,
             input   wire  [`MGR_INST_OPTION_TRANSFER_RANGE  ]      xxx__sdp__txfer_type                         ,
@@ -79,6 +80,7 @@ module sdp_request_cntl (
             //
             output  reg                                            sdp__xxx__mem_request_valid              ,
             output  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      sdp__xxx__mem_request_cntl               ,
+            output  reg   [`MGR_STD_OOB_TAG_RANGE           ]      sdp__xxx__mem_request_tag                ,  // mmc needs to service tag requests before tag+1
             input   wire                                           xxx__sdp__mem_request_ready              ,
             output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      sdp__xxx__mem_request_channel            ,
             output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      sdp__xxx__mem_request_bank               ,
@@ -105,6 +107,7 @@ module sdp_request_cntl (
             output reg                                             sdpr__sdps__cfg_valid       ,
             output reg    [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]   sdpr__sdps__cfg_addr        ,
             output reg    [`MGR_INST_OPTION_ORDER_RANGE        ]   sdpr__sdps__cfg_accessOrder ,
+            output reg    [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdpr__sdps__cfg_lane_enable , 
             input  wire                                            sdps__sdpr__cfg_ready       ,
             input  wire                                            sdps__sdpr__complete        ,
             output reg                                             sdpr__sdps__complete        ,
@@ -135,6 +138,7 @@ module sdp_request_cntl (
   
   reg                                            sdp__xxx__mem_request_valid_e1      ;
   reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      sdp__xxx__mem_request_cntl_e1       ;
+  reg   [`MGR_STD_OOB_TAG_RANGE           ]      sdp__xxx__mem_request_tag_e1        ;  // mmc needs to service tag requests before tag+1
   reg                                            xxx__sdp__mem_request_ready_d1      ;
   reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      sdp__xxx__mem_request_channel_e1    ;
   reg   [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      sdp__xxx__mem_request_bank_e1       ;
@@ -162,6 +166,7 @@ module sdp_request_cntl (
     begin
       sdp__xxx__mem_request_valid      <=   ( reset_poweron   ) ? 'd0  :  sdp__xxx__mem_request_valid_e1   ;
       sdp__xxx__mem_request_cntl       <=   ( reset_poweron   ) ? 'd0  :  sdp__xxx__mem_request_cntl_e1    ;
+      sdp__xxx__mem_request_tag        <=   ( reset_poweron   ) ? 'd0  :  sdp__xxx__mem_request_tag_e1     ;
       xxx__sdp__mem_request_ready_d1   <=   ( reset_poweron   ) ? 'd0  :  xxx__sdp__mem_request_ready      ;
       sdp__xxx__mem_request_channel    <=   ( reset_poweron   ) ? 'd0  :  sdp__xxx__mem_request_channel_e1 ;
       sdp__xxx__mem_request_bank       <=   ( reset_poweron   ) ? 'd0  :  sdp__xxx__mem_request_bank_e1    ;
@@ -256,7 +261,7 @@ module sdp_request_cntl (
 
   reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]  storage_desc_consJumpPtr   ;
 
-  reg                                                      to_strm_fsm_fifo_ready    ;
+  reg                                                      stream_proc_ready         ;
 
   reg                                                      requests_complete         ;
   reg                                                      generate_requests         ;
@@ -276,7 +281,8 @@ module sdp_request_cntl (
     begin
       completed_streaming    = sdps__sdpr__complete     ;
       sdpr__sdps__complete   = desc_processor_strm_ack  ;
-      to_strm_fsm_fifo_ready = sdps__sdpr__consJump_ready & sdps__sdpr__consJump_ready ;
+      stream_proc_ready      = sdps__sdpr__consJump_ready & sdps__sdpr__consJump_ready ;
+      //stream_proc_ready      = sdps__sdpr__consJump_ready & sdps__sdpr__response_id_ready & sdps__sdpr__cfg_ready ;
     end
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -314,8 +320,8 @@ module sdp_request_cntl (
         // Memory requests will occur if the consequtive increment moves to another page
         // Make sure we transition right thru this state
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST : 
-          sdp_cntl_proc_storage_desc_state_next =     (xxx__sdp__mem_request_ready_d1) ? `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID          :  // do not generate request if not ready
-                                                                                         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST ;
+          sdp_cntl_proc_storage_desc_state_next =     (xxx__sdp__mem_request_ready_d1 && sdps__sdpr__response_id_ready_d1) ? `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID :  // do not generate request if MMC not ready or SDPS not ready
+                                                                                                                             `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST           ;
 
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID : 
           sdp_cntl_proc_storage_desc_state_next =     `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC   ;
@@ -326,8 +332,8 @@ module sdp_request_cntl (
         // Make sure strm fifo can take cons/jump before reading
         // - cj currently points to beginning of next consequtive phase
         `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO : 
-          sdp_cntl_proc_storage_desc_state_next =  ( to_strm_fsm_fifo_ready) ? `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD           :
-                                                                               `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO      ;
+          sdp_cntl_proc_storage_desc_state_next =  ( sdps__sdpr__consJump_ready ) ? `SDP_CNTL_PROC_STORAGE_DESC_CONS_FIELD           :
+                                                                                    `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO      ;
 
 
         // Cycle thru all cons/jump fields
@@ -376,8 +382,14 @@ module sdp_request_cntl (
 
         // Cycle thru all cons/jump fields
         `SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE: 
-          sdp_cntl_proc_storage_desc_state_next =  (completed_streaming)  ? `SDP_CNTL_PROC_STORAGE_DESC_COMPLETE             :
-                                                                            `SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE ;
+// LEE
+
+//          sdp_cntl_proc_storage_desc_state_next =  (completed_streaming)  ? `SDP_CNTL_PROC_STORAGE_DESC_COMPLETE             :
+//                                                                            `SDP_CNTL_PROC_STORAGE_DESC_WAIT_STREAM_COMPLETE ;
+
+
+          sdp_cntl_proc_storage_desc_state_next =  `SDP_CNTL_PROC_STORAGE_DESC_COMPLETE    ;
+                                                   
 
         `SDP_CNTL_PROC_STORAGE_DESC_COMPLETE: 
           sdp_cntl_proc_storage_desc_state_next =   (~xxx__sdp__storage_desc_processing_enable ) ? `SDP_CNTL_PROC_STORAGE_DESC_WAIT     : 
@@ -877,11 +889,11 @@ module sdp_request_cntl (
       case (storage_desc_accessOrder)  // synopsys parallel_case full_case
         PY_WU_INST_ORDER_TYPE_WCBP :
           begin
-            create_mem_request  = ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST ) & xxx__sdp__mem_request_ready_d1) ; //                &
+            create_mem_request  = ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST ) & xxx__sdp__mem_request_ready_d1 & sdps__sdpr__response_id_ready_d1) ; //                &
           end
         PY_WU_INST_ORDER_TYPE_CWBP :
           begin
-            create_mem_request  = ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST ) & xxx__sdp__mem_request_ready_d1)  ; //              &
+            create_mem_request  = ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST ) & xxx__sdp__mem_request_ready_d1 & sdps__sdpr__response_id_ready_d1)  ; //              &
           end
         default:
           begin
@@ -891,7 +903,7 @@ module sdp_request_cntl (
 
       // We need to feed the mmc line address back to the steram controller
       create_response_id      =  ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_READ                       )                                  ) |
-                                 ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST           ) & xxx__sdp__mem_request_ready_d1 ) |
+                                 ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST           ) & xxx__sdp__mem_request_ready_d1 & sdps__sdpr__response_id_ready_d1 ) |
                                  ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_EXTRA_RESPONSE_ID )                                  ) |
                                  ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_REQUESTS_COMPLETE          )                                  ) ;
 
@@ -987,7 +999,7 @@ module sdp_request_cntl (
   always @(*)
     begin
       inc_consJumpPtr     =  ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_INC_PBC          ) &  ~force_cons_request & ~force_jump_request & requests_complete & ~generate_requests & ~consJumpMemory_som & ~consJumpMemory_eom ) |  // transition to JUMP state
-                             ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO  ) &  to_strm_fsm_fifo_ready                                       & ~consJumpMemory_eom ) ;  // transition to CONS state
+                             ((sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_CHECK_STRM_FIFO  ) &  sdps__sdpr__consJump_ready & ~consJumpMemory_eom ) ;  // transition to CONS state
     end
 
   //----------------------------------------------------------------------------------------------------
@@ -1183,7 +1195,7 @@ module sdp_request_cntl (
 
         `SDP_CNTL_PROC_STORAGE_DESC_GENERATE_REQUEST:
            begin
-             casex ({xxx__sdp__mem_request_ready_d1, force_cons_request, requests_complete}) 
+             casex ({(xxx__sdp__mem_request_ready_d1 & sdps__sdpr__response_id_ready_d1), force_cons_request, requests_complete}) 
                3'b0xx:
                  begin
                    pbc_inc_addr    <=  pbc_inc_addr  ;
@@ -1506,6 +1518,7 @@ module sdp_request_cntl (
     begin
       sdp__xxx__mem_request_valid_e1   =  create_mem_request                            ;
       sdp__xxx__mem_request_cntl_e1    = `COMMON_STD_INTF_CNTL_SOM_EOM                  ;  // memory request is single cycle
+      sdp__xxx__mem_request_tag_e1     = xxx__sdp__tag                                  ;
       case (storage_desc_accessOrder)  // synopsys parallel_case full_case
         PY_WU_INST_ORDER_TYPE_WCBP :
           begin
@@ -1629,6 +1642,7 @@ module sdp_request_cntl (
      sdpr__sdps__cfg_valid        = (sdp_cntl_proc_storage_desc_state == `SDP_CNTL_PROC_STORAGE_DESC_MEM_OUT_VALID) ;
      sdpr__sdps__cfg_addr         = storage_desc_local_address ;
      sdpr__sdps__cfg_accessOrder  = storage_desc_accessOrder   ;
+     sdpr__sdps__cfg_lane_enable  = xxx__sdp__lane_enable      ;
     end
   //---------------------------------------------------------------------------------
   //

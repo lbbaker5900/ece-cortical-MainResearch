@@ -78,6 +78,7 @@ module sdp_stream_cntl (
             input  wire                                            sdpr__sdps__cfg_valid       ,
             input  wire   [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]   sdpr__sdps__cfg_addr        ,
             input  wire   [`MGR_INST_OPTION_ORDER_RANGE        ]   sdpr__sdps__cfg_accessOrder ,
+            input  wire   [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdpr__sdps__cfg_lane_enable , 
             output wire                                            sdps__sdpr__cfg_ready       ,
             output reg                                             sdps__sdpr__complete        ,
             input  wire                                            sdpr__sdps__complete        ,
@@ -102,11 +103,14 @@ module sdp_stream_cntl (
   //----------------------------------------------------------------------------------------------------
   // Register
   //
+  //
   reg  [`MGR_NUM_OF_EXEC_LANES_RANGE     ]      exec_lane_enable    ;
+/*
   always @(posedge clk)
     begin
       exec_lane_enable  <= xxx__sdp__lane_enable  ;
     end
+*/
 
   //---------------------------------------------------------------------------------
   //---------------------------------------------------------------------------------
@@ -203,7 +207,7 @@ module sdp_stream_cntl (
         assign  clear = 1'b0 ;    
 
         assign  write       = sdpr__sdps__cfg_valid        ;
-        assign  write_data  = {xxx__sdp__num_lanes_m1, xxx__sdp__num_lanes, xxx__sdp__txfer_type, xxx__sdp__target, sdpr__sdps__cfg_accessOrder, sdpr__sdps__cfg_addr} ;
+        assign  write_data  = {sdpr__sdps__cfg_lane_enable, xxx__sdp__num_lanes_m1, xxx__sdp__num_lanes, xxx__sdp__txfer_type, xxx__sdp__target, sdpr__sdps__cfg_accessOrder, sdpr__sdps__cfg_addr} ;
 
         wire   [`MGR_DRAM_LOCAL_ADDRESS_RANGE    ]  pipe_addr           ;
         wire   [`MGR_INST_OPTION_ORDER_RANGE     ]  pipe_order          ;
@@ -211,7 +215,8 @@ module sdp_stream_cntl (
         wire   [`MGR_INST_OPTION_TRANSFER_RANGE  ]  pipe_transfer_type  ;
         wire   [`MGR_NUM_LANES_RANGE             ]  pipe_num_lanes      ;  // 0-32 so need 6 bits
         wire   [`MGR_NUM_LANES_RANGE             ]  pipe_num_lanes_m1   ; 
-        assign  {pipe_num_lanes_m1, pipe_num_lanes, pipe_transfer_type, pipe_tgt, pipe_order, pipe_addr}        = pipe_data   ;
+        wire   [`MGR_NUM_OF_EXEC_LANES_RANGE     ]  pipe_lane_enable    ;
+        assign  {pipe_lane_enable, pipe_num_lanes_m1, pipe_num_lanes, pipe_transfer_type, pipe_tgt, pipe_order, pipe_addr}        = pipe_data   ;
 
         // Flow control DESC fsm if either fifo becomes almost full
         assign  sdps__sdpr__cfg_ready       = ~almost_full ;
@@ -220,11 +225,16 @@ module sdp_stream_cntl (
   endgenerate
 
 
+
   wire   [`MGR_NUM_LANES_RANGE             ]  num_lanes      ;  // 0-32 so need 6 bits
   wire   [`MGR_NUM_LANES_RANGE             ]  num_lanes_m1   ; 
   
-  assign     num_lanes      =   addr_to_strm_fsm_fifo[0].pipe_num_lanes   ;
-  assign     num_lanes_m1   =   addr_to_strm_fsm_fifo[0].pipe_num_lanes_m1;
+  assign     num_lanes        =   addr_to_strm_fsm_fifo[0].pipe_num_lanes     ;
+  assign     num_lanes_m1     =   addr_to_strm_fsm_fifo[0].pipe_num_lanes_m1  ;
+  always @(*)
+    begin
+      exec_lane_enable = addr_to_strm_fsm_fifo[0].pipe_lane_enable     ;
+    end
 
 
   //----------------------------------------------------------------------------------------------------
@@ -429,30 +439,31 @@ module sdp_stream_cntl (
   //----------------------------------------------------------------------------------------------------
   // FSM Registers
   //
-  reg   [`SDP_CNTL_REQUEST_COUNTER_RANGE     ]   request_read_diff          [`MGR_DRAM_NUM_CHANNELS ]  ; // keep track of the difference between response_id_fifo and mmc_fifo reads
-  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   request_read_diff_lt0                                 ; // use this to make sure we flush the mmc fifo
-  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   request_read_diff_gt0                                 ; // response ID reads > mmc_fifo reads
-  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   request_read_diff_eq0                                 ; 
+  reg   [`SDP_CNTL_REQUEST_COUNTER_RANGE     ]   request_read_diff                [`MGR_DRAM_NUM_CHANNELS ]  ; // keep track of the difference between response_id_fifo and mmc_fifo reads
+  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   request_read_diff_lt0                                       ; // use this to make sure we flush the mmc fifo
+  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   request_read_diff_gt0                                       ; // response ID reads > mmc_fifo reads
+  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   request_read_diff_eq0                                       ; 
+                                                                                                             
+  reg                                            running                                                     ;  // starting flushing the mmc_fifos and response_id fifos
+  reg                                            force_flush                                                 ;  // starting flushing the mmc_fifos and response_id fifos
+  reg                                            flush_complete                                              ;  // starting flushing the mmc_fifos and response_id fifos
+  reg                                            streaming_complete                                          ;  // starting flushing the mmc_fifos and response_id fifos
+                                                                                                                // output to mmc fifo
+  reg  [`MGR_NUM_OF_EXEC_LANES_RANGE        ]    lanes_req_next_line              [`MGR_DRAM_NUM_CHANNELS ]  ;  // global lanes_req_next_line vector
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    lanes_sending                    [`MGR_DRAM_NUM_CHANNELS ]  ; 
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    lanes_address_match              [`MGR_DRAM_NUM_CHANNELS ]  ;  // lanes current pointer matches with a channel data
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    all_lanes_req_next_line                                     ; 
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    at_least_one_force_req_next_line                            ; 
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    at_least_one_req_next_line                                  ; 
+  reg  [`MGR_NUM_OF_EXEC_LANES_RANGE        ]    lanes_force_req_next_line        [`MGR_DRAM_NUM_CHANNELS ]  ;  // conditions where we need to read but not all lanes want to get
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    get_next_line                                               ;  // output to mmc fifo
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    lanes_running                                               ;  // vector of running flags
+  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    block_request                                               ;  // if a lane matches channel data but isnt sending
                                                                                                        
-  reg                                            running                                               ;  // starting flushing the mmc_fifos and response_id fifos
-  reg                                            force_flush                                           ;  // starting flushing the mmc_fifos and response_id fifos
-  reg                                            flush_complete                                        ;  // starting flushing the mmc_fifos and response_id fifos
-  reg                                            streaming_complete                                    ;  // starting flushing the mmc_fifos and response_id fifos
-                                                                                                       ;  // output to mmc fifo
-  reg  [`MGR_NUM_OF_EXEC_LANES_RANGE        ]    lanes_req_next_line        [`MGR_DRAM_NUM_CHANNELS ]  ;  // global lanes_req_next_line vector
-  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    lanes_sending              [`MGR_DRAM_NUM_CHANNELS ]  ; 
-  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    lanes_address_match        [`MGR_DRAM_NUM_CHANNELS ]  ;  // lanes current pointer matches with a channel data
-  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    all_lanes_req_next_line                               ; 
-  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    at_least_one_force_req_next_line                      ; 
-  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    at_least_one_req_next_line                            ; 
-  reg  [`MGR_NUM_OF_EXEC_LANES_RANGE        ]    lanes_force_req_next_line  [`MGR_DRAM_NUM_CHANNELS ]  ;  // conditions where we need to read but not all lanes want to get
-  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    get_next_line                                         ;  // output to mmc fifo
-  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    lanes_running                                         ;  // vector of running flags
-  reg  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]    block_request                                         ;  // if a lane matches channel data but isnt sending
-                                                                                                       
-  reg                                            all_lanes_loaded_jump                                 ;  // lanes can proceed
-  reg                                            all_lanes_loaded_consequtive                          ;  // ifolanes can proceed
-  reg                                            all_lanes_complete                                    ;  // flag to tell all lanes to transition to wait. Also used to read addr fifo
+  reg                                            at_least_one_lane_is_running                                ;  
+  reg                                            all_lanes_loaded_jump                                       ;  // lanes can proceed
+  reg                                            all_lanes_loaded_consequtive                                ;  // ifolanes can proceed
+  reg                                            all_lanes_complete                                          ;  // flag to tell all lanes to transition to wait. Also used to read addr fifo
   //--------------------------------------------------
   // State Transitions
   // synopsys one_hot sdp_cntl_stream_cntl_state
@@ -462,12 +473,12 @@ module sdp_stream_cntl (
       case (sdp_cntl_stream_cntl_state)  // synopsys parallel_case full_case
         
         `SDP_CNTL_STRM_CNTL_WAIT: 
-          sdp_cntl_stream_cntl_state_next =  ( |exec_lane_enable ) ? `SDP_CNTL_STRM_CNTL_RUNNING : // start when at least one lane is emabled
-                                                                     `SDP_CNTL_STRM_CNTL_WAIT ;
+          sdp_cntl_stream_cntl_state_next =  ( addr_to_strm_fsm_fifo[0].pipe_valid ) ? `SDP_CNTL_STRM_CNTL_RUNNING : // start when at least one lane is emabled
+                                                                                       `SDP_CNTL_STRM_CNTL_WAIT    ;
   
         `SDP_CNTL_STRM_CNTL_RUNNING: 
           sdp_cntl_stream_cntl_state_next =  ( all_lanes_complete ) ? `SDP_CNTL_STRM_CNTL_FLUSH_REQUESTS:  
-                                                                      `SDP_CNTL_STRM_CNTL_RUNNING          ;
+                                                                      `SDP_CNTL_STRM_CNTL_RUNNING       ;
   
   
         `SDP_CNTL_STRM_CNTL_FLUSH_REQUESTS: 
@@ -475,12 +486,18 @@ module sdp_stream_cntl (
                                                                                                                                                                        `SDP_CNTL_STRM_CNTL_FLUSH_REQUESTS ;  
   
         `SDP_CNTL_STRM_CNTL_COMPLETE: 
+/*
           sdp_cntl_stream_cntl_state_next =  (sdpr__sdps__complete ) ? `SDP_CNTL_STRM_CNTL_WAIT_DISABLE :
                                                                        `SDP_CNTL_STRM_CNTL_COMPLETE     ;
+*/
+          sdp_cntl_stream_cntl_state_next =  `SDP_CNTL_STRM_CNTL_WAIT_DISABLE ;
                                       
         `SDP_CNTL_STRM_CNTL_WAIT_DISABLE: 
+/*
           sdp_cntl_stream_cntl_state_next =  (~|exec_lane_enable ) ? `SDP_CNTL_STRM_CNTL_WAIT     :
                                                                      `SDP_CNTL_STRM_CNTL_WAIT_DISABLE ;
+*/
+          sdp_cntl_stream_cntl_state_next =  `SDP_CNTL_STRM_CNTL_WAIT;
                                              
   
         // May not need all these states, but it will help with debug
@@ -634,8 +651,8 @@ module sdp_stream_cntl (
             case (sdp_cntl_stream_data_state)  // synopsys parallel_case full_case
               
               `SDP_CNTL_STRM_DATA_WAIT: 
-                sdp_cntl_stream_data_state_next =  ( exec_lane_enable [lane]  ) ? `SDP_CNTL_STRM_DATA_PTR_INIT : 
-                                                                                  `SDP_CNTL_STRM_DATA_WAIT ;
+                sdp_cntl_stream_data_state_next =  ( addr_to_strm_fsm_fifo[0].pipe_valid && exec_lane_enable[lane] ) ? `SDP_CNTL_STRM_DATA_PTR_INIT :   // a new config arrived
+                                                                                                                       `SDP_CNTL_STRM_DATA_WAIT ;
         
               `SDP_CNTL_STRM_DATA_PTR_INIT: 
                 sdp_cntl_stream_data_state_next =  ( consJump_to_strm_fsm_fifo[0].pipe_valid && addr_to_strm_fsm_fifo[0].pipe_valid ) ? `SDP_CNTL_STRM_DATA_PTR_INC_INIT :  // load consequtive words counter
@@ -679,8 +696,11 @@ module sdp_stream_cntl (
                                                                          `SDP_CNTL_STRM_DATA_COMPLETE     ;
                                             
               `SDP_CNTL_STRM_DATA_WAIT_DISABLE: 
+/*
                 sdp_cntl_stream_data_state_next =  (~exec_lane_enable[lane] ) ? `SDP_CNTL_STRM_DATA_WAIT         :
                                                                                 `SDP_CNTL_STRM_DATA_WAIT_DISABLE ;
+*/
+                sdp_cntl_stream_data_state_next =  `SDP_CNTL_STRM_DATA_WAIT ;
                                             
         
               // May not need all these states, but it will help with debug
@@ -1257,7 +1277,9 @@ module sdp_stream_cntl (
        all_lanes_loaded_jump        = &(lanes_loading_jump        | lanes_loaded_jump        | ~exec_lane_enable) & running ;  // need at least one lane enabled
        all_lanes_loaded_consequtive = &(lanes_loading_consequtive | lanes_loaded_consequtive | ~exec_lane_enable) & running ;
 
-       all_lanes_complete         = (&(lane_complete | ~exec_lane_enable)) ;
+       all_lanes_complete           = (&(lane_complete | ~exec_lane_enable)) ;
+
+       at_least_one_lane_is_running = |lanes_running             ;
      end
    
    generate
@@ -1311,9 +1333,9 @@ module sdp_stream_cntl (
        begin
          always @(*)
            begin
-             get_next_line[chan] = ((all_lanes_req_next_line[chan] | at_least_one_force_req_next_line[chan]) & from_mmc_data_valid [chan] & running & ~block_request [chan] ) | //& ~|(lane_match_but_not_destination_ready [chan] ) & ~|(lane_next_match[chan] )) |   // Dont read if a lanes next address matches the contents of the mmc/response fifo or
-                                   (total_mismatch  [chan]                                                                                          & ~block_request [chan] ) |
-                                   (force_flush & request_read_diff_gt0 [chan]                                                                      & ~block_request [chan] ) ;   // a lane matches the contents but cant yet use it
+             get_next_line[chan] = ((all_lanes_req_next_line[chan] | at_least_one_force_req_next_line[chan]) & from_mmc_data_valid [chan] & at_least_one_lane_is_running & ~block_request [chan] ) | //& ~|(lane_match_but_not_destination_ready [chan] ) & ~|(lane_next_match[chan] )) |   // Dont read if a lanes next address matches the contents of the mmc/response fifo or
+                                   (total_mismatch  [chan]                                                                                                               & ~block_request [chan] ) |
+                                   (force_flush & request_read_diff_gt0 [chan]                                                                                           & ~block_request [chan] ) ;   // a lane matches the contents but cant yet use it
            end
        end
    endgenerate
@@ -1329,7 +1351,7 @@ module sdp_stream_cntl (
    endgenerate
      
    // Dont read address until we are done. That way the pipe_addr is the valid start address
-   assign  addr_to_strm_fsm_fifo[0].pipe_read           =  sdpr__sdps__complete  & streaming_complete ;
+   assign  addr_to_strm_fsm_fifo[0].pipe_read           =  streaming_complete ;
    
    assign  consJump_to_strm_fsm_fifo[0].pipe_read       =  (all_lanes_loaded_jump        ) | 
                                                            (all_lanes_loaded_consequtive ) ;

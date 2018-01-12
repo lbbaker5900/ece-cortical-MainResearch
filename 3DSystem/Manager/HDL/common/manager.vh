@@ -30,6 +30,8 @@
 // Stack Bus stream
 //------------------------------------------------
 
+`define MGR_INITIAL_TAG          'h81
+
 // we will carry a tag to track result (to possibly support multiple operations before first result is returned)
 `define MGR_STD_OOB_TAG_WIDTH          `PE_STD_OOB_TAG_WIDTH
 `define MGR_STD_OOB_TAG_MSB            `MGR_STD_OOB_TAG_WIDTH-1

@@ -596,7 +596,8 @@ timeprecision 1ps;
   //     d : 32 =
   // TOTAL : 52
   localparam TRAINING_PATTERN = 16'hE89A;
-  localparam NUM_OF_NETS = 53; // Max number of nets to inspect to detect training pattern
+  //localparam NUM_OF_NETS = 53; // Max number of nets to inspect to detect training pattern
+  localparam NUM_OF_NETS = 2133; // Max number of nets to inspect to detect training pattern
   localparam NUM_OF_TRANS_2_REC = 48; // Number of clock transitions to record
 
 //---------------------------------------------------------------------------
@@ -707,8 +708,8 @@ assign diram_net[diram4_cmd0] = cmd0;
 assign diram_net[diram4_cmd1] = cmd1;
 assign diram_net[diram4_addr11:diram4_addr0] = addr;
 assign diram_net[diram4_baddr4:diram4_baddr0] = baddr;
-assign diram_net[diram4_d31:diram4_d0] = d;
-assign diram_net[diram4_dm] = dm;
+assign diram_net[diram4_d2047:diram4_d0] = d;
+assign diram_net[diram4_dm63:diram4_dm0] = dm;
 
 
 
@@ -740,14 +741,18 @@ generate
 endgenerate
 
 generate
-   for (genvar ii=0; ii<32; ii++) begin
+   for (genvar ii=0; ii<2048; ii++) begin
       always @ (d[ii])
          delayed_diram_net[diram4_d0+ii] <= #(added_data_delay[diram4_d0+ii]) d[ii];
    end
 endgenerate
 
-always @ (dm)
-   delayed_diram_net[diram4_dm] <= #(added_data_delay[diram4_dm]) dm;
+generate
+   for (genvar ii=0; ii<64; ii++) begin
+      always @ (dm[ii])
+         delayed_diram_net[diram4_dm0+ii] <= #(added_data_delay[diram4_dm0+ii]) dm[ii];
+   end
+endgenerate
 
 
 
@@ -760,8 +765,8 @@ assign delayed_cmd0  = delayed_diram_net[diram4_cmd0];
 assign delayed_cmd1  = delayed_diram_net[diram4_cmd1];
 assign delayed_addr  = delayed_diram_net[diram4_addr11:diram4_addr0];
 assign delayed_baddr = delayed_diram_net[diram4_baddr4:diram4_baddr0];
-assign delayed_d     = delayed_diram_net[diram4_d31:diram4_d0];
-assign delayed_dm    = delayed_diram_net[diram4_dm];
+assign delayed_d     = delayed_diram_net[diram4_d2047:diram4_d0] ;
+assign delayed_dm    = delayed_diram_net[diram4_dm63:diram4_dm0] ;
 
 
 
@@ -890,16 +895,16 @@ assign diram_net_r[diram4_cmd0] = cmd0_r;
 assign diram_net_r[diram4_cmd1] = cmd1_r;
 assign diram_net_r[diram4_addr11:diram4_addr0] = addr_r;
 assign diram_net_r[diram4_baddr4:diram4_baddr0] = baddr_r;
-assign diram_net_r[diram4_d31:diram4_d0] = din_r;
-assign diram_net_r[diram4_dm] = dinm_r;
+assign diram_net_r[diram4_d2047:diram4_d0] = din_r;
+assign diram_net_r[diram4_dm63:diram4_dm0] = dinm_r;
 
 assign diram_net_f[diram4_cs_n] = cs_n_f;
 assign diram_net_f[diram4_cmd0] = cmd0_f;
 assign diram_net_f[diram4_cmd1] = cmd1_f;
 assign diram_net_f[diram4_addr11:diram4_addr0] = addr_f;
 assign diram_net_f[diram4_baddr4:diram4_baddr0] = baddr_f;
-assign diram_net_f[diram4_d31:diram4_d0] = din_f;
-assign diram_net_f[diram4_dm] = dinm_f;
+assign diram_net_f[diram4_d2047:diram4_d0] = din_f;
+assign diram_net_f[diram4_dm63:diram4_dm0] = dinm_f;
 
 
 
@@ -1586,8 +1591,8 @@ bit [(IDX_BITS-1):0] rd_idx;
 bit [DQ_WIDTH-1:0] dout_r,dout_f;
 
 bit [(IDX_BITS-1):0] wr_idx;
-wire [63:0] wr_data      [DQ_WIDTH/32];
-wire [1:0 ] wr_data_mask [DQ_WIDTH/32];
+wire [63:0]            wr_data      [DQ_WIDTH/32];
+wire [DQ_WIDTH/32-1:0] wr_data_mask [1:0];
 bit [DQ_WIDTH-1:0   ] wr_data_r     ,wr_data_f;
 bit [DQ_WIDTH/32-1:0] wr_data_mask_r,wr_data_mask_f;
 bit wrclk_dly;
@@ -1697,8 +1702,10 @@ generate
       assign wr_data[gvi] = {wr_data_f[gvi*32+31:gvi*32],wr_data_r[gvi*32+31:gvi*32]};
     end
 endgenerate
-assign wr_data      = {wr_data_f     ,wr_data_r     };
-assign wr_data_mask = {wr_data_mask_f,wr_data_mask_r};
+//assign wr_data      = {wr_data_f     ,wr_data_r     };
+//assign wr_data_mask = {wr_data_mask_f,wr_data_mask_r};
+assign wr_data_mask[0] = wr_data_mask_r;
+assign wr_data_mask[1] = wr_data_mask_f;
 
 //---------------------------------------------------------------------------
 // Command decode and capture of row, column and bank addresses
@@ -2878,7 +2885,8 @@ module diram4_ram_sparse #(
   input wr_en,
   input [IDX_BITS-1:0] wr_idx,
   input [63:0] wr_data      [DQ_WIDTH/32],
-  input [1:0 ] wr_data_mask [DQ_WIDTH/32],
+  input [DQ_WIDTH/32-1:0] wr_data_mask [1:0],
+  //input [1:0 ] wr_data_mask [DQ_WIDTH/32],
   input [2:0] wr_cnt,
   input rd_en,
   input [IDX_BITS-1:0] rd_idx,
@@ -2911,6 +2919,7 @@ initial
 bit sparse_mem_debug = 0; // Default value 0
                           // 0: No Debug
                           // 1: Normal Debug
+bit sparse_mem_wr_debug = 1; // Default value 0
 
 //---------------------------------------------------------------------------
 // Write the memory
@@ -2922,10 +2931,20 @@ always@(posedge clk) begin
         begin
           for (int m = 0; m < DQ_WIDTH/32; m++)
             begin
-              if (wr_data_mask[m][0] == 1)
-                mem[m][0][wr_idx]  = wr_data[m][31: 0];
-              if (wr_data_mask[m][1] == 1)
-                mem[m][1][wr_idx]  = wr_data[m][63:32];
+              if (wr_data_mask[0][m] == 1)
+                begin
+                  mem[m][0][wr_idx]  = wr_data[m][31: 0];
+                  if (sparse_mem_wr_debug)
+                    $display("DEBUG:@%0t %m:\tWrite: burst=0, wr_en=%0d, wr_cnt=%0d, wr_idx=0x%6x, wr_bank=%0d, wr_page=%0d, wr_word=%0d, wr_data=0x%16x, wr_data_mask=0x%2b",
+                      $time, wr_en, wr_cnt, wr_idx, wr_idx[16:12], wr_idx[11:0], m, wr_data[m], {wr_data_mask[1][m],wr_data_mask[0][m]});
+                end
+              if (wr_data_mask[1][m] == 1)
+                begin
+                  if (sparse_mem_wr_debug)
+                    $display("DEBUG:@%0t %m:\tWrite: burst=1, wr_en=%0d, wr_cnt=%0d, wr_idx=0x%6x, wr_bank=%0d, wr_page=%0d, wr_word=%0d, wr_data=0x%16x, wr_data_mask=0x%2b",
+                      $time, wr_en, wr_cnt, wr_idx, wr_idx[16:12], wr_idx[11:0], m+64, wr_data[m], {wr_data_mask[1][m],wr_data_mask[0][m]});
+                  mem[m][1][wr_idx]  = wr_data[m][63:32];
+                end
             end
         end
     endcase
@@ -2933,8 +2952,8 @@ always@(posedge clk) begin
     if (sparse_mem_debug)
       for (int m = 0; m < DQ_WIDTH/32; m++)
         begin
-          $display("DEBUG:@%0t %m:\tWrite: wr_en=%0d, wr_cnt=%0d, wr_idx=0x%6x, wr_data=0x%16x",
-                $time, wr_en, wr_cnt, wr_idx, wr_data[m]);
+          $display("DEBUG:@%0t %m:\tWrite: wr_en=%0d, wr_cnt=%0d, wr_idx=0x%6x, wr_data=0x%16x, wr_data_mask=0x%2b",
+                $time, wr_en, wr_cnt, wr_idx, wr_data[m], {wr_data_mask[0][m],wr_data_mask[1][m]});
         end
   end // if(wr_en)...
 end // always

@@ -20,6 +20,7 @@ typedef enum logic [`STACK_DOWN_OOB_INTF_TYPE_RANGE ] {
                                             STD_PACKET_OOB_TYPE_SCALAR        = 0,  // Operation may be uniquee per execution lane. Requires a larger WU packet - WIP
                                             STD_PACKET_OOB_TYPE_VECTOR        = 1,  // Operation is the same for all lanes. Data type, operation, number of operands etc.
                                             STD_PACKET_OOB_TYPE_PE_OP_CMD     = 2,  // Operation is the same for all lanes. Data type, operation, number of operands etc.
+                                            STD_PACKET_OOB_TYPE_PE_CFG_CMD    = 3,  // Download SIMD instructions and pointers
                                             STD_PACKET_OOB_TYPE_NA            = {`STACK_DOWN_OOB_INTF_TYPE_WIDTH{1'b1}}
                                           } stack_down_oob_type ;
 

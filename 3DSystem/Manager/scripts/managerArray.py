@@ -1642,6 +1642,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n      // Stream {0}                 '.format(strm)
     pLine = pLine + '\n      assign  mrc_cntl_strm_inst[{0}].wud__mrc__valid        =  wud__mrc{0}__valid                      ; '.format(strm)
     pLine = pLine + '\n      assign  mrc_cntl_strm_inst[{0}].wud__mrc__cntl         =  wud__mrc{0}__cntl                       ; '.format(strm)
+    pLine = pLine + '\n      assign  mrc_cntl_strm_inst[{0}].wud__mrc__tag          =  wud__mrc{0}__tag                        ; '.format(strm)
     pLine = pLine + '\n      assign  mrc{0}__wud__ready                             =  mrc_cntl_strm_inst[{0}].mrc__wud__ready ; '.format(strm)
     pLine = pLine + '\n      assign  mrc_cntl_strm_inst[{0}].wud__mrc__option_type  =  wud__mrc{0}__option_type                ; '.format(strm)
     pLine = pLine + '\n      assign  mrc_cntl_strm_inst[{0}].wud__mrc__option_value =  wud__mrc{0}__option_value               ; '.format(strm)
