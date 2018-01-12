@@ -46,6 +46,7 @@ module sdp_cntl (
             input   wire                                           xxx__sdp__storage_desc_processing_enable     ,
             output  reg                                            sdp__xxx__storage_desc_processing_complete   ,
             input   wire  [`MGR_STORAGE_DESC_ADDRESS_RANGE  ]      xxx__sdp__storage_desc_ptr                   ,  // pointer to local storage descriptor although msb's contain manager ID, so remove
+            input   wire  [`MGR_STD_OOB_TAG_RANGE         ]        xxx__sdp__tag                                ,  // mmc needs to service tag requests before tag+1
             input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes                          ,
             input   wire  [`MGR_NUM_LANES_RANGE             ]      xxx__sdp__num_lanes_m1                       ,
             input   wire  [`MGR_INST_OPTION_TRANSFER_RANGE  ]      xxx__sdp__txfer_type                         ,
@@ -57,6 +58,7 @@ module sdp_cntl (
             //
             output  reg                                            sdp__xxx__mem_request_valid              ,
             output  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      sdp__xxx__mem_request_cntl               ,
+            output  reg   [`MGR_STD_OOB_TAG_RANGE           ]      sdp__xxx__mem_request_tag                ,  // mmc needs to service tag requests before tag+1
             input   wire                                           xxx__sdp__mem_request_ready              ,
             output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      sdp__xxx__mem_request_channel            ,
             output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      sdp__xxx__mem_request_bank               ,
@@ -95,6 +97,7 @@ module sdp_cntl (
   wire                                            sdpr__sdps__cfg_valid       ;
   wire   [`MGR_DRAM_LOCAL_ADDRESS_RANGE       ]   sdpr__sdps__cfg_addr        ;
   wire   [`MGR_INST_OPTION_ORDER_RANGE        ]   sdpr__sdps__cfg_accessOrder ;
+  wire   [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdpr__sdps__cfg_lane_enable ;
   wire                                            sdps__sdpr__cfg_ready       ;
   wire                                            sdps__sdpr__complete        ;
   wire                                            sdpr__sdps__complete        ;
@@ -137,6 +140,7 @@ module sdp_cntl (
             // Configuration
             //
             .xxx__sdp__lane_enable                        ( xxx__sdp__lane_enable                      ),
+            .xxx__sdp__tag                                ( xxx__sdp__tag                              ),
             .xxx__sdp__num_lanes                          ( xxx__sdp__num_lanes                        ),
             .xxx__sdp__num_lanes_m1                       ( xxx__sdp__num_lanes_m1                     ),
             .xxx__sdp__txfer_type                         ( xxx__sdp__txfer_type                       ),
@@ -150,6 +154,7 @@ module sdp_cntl (
 
             .sdp__xxx__mem_request_valid                  ( sdp__xxx__mem_request_valid                ),
             .sdp__xxx__mem_request_cntl                   ( sdp__xxx__mem_request_cntl                 ),
+            .sdp__xxx__mem_request_tag                    ( sdp__xxx__mem_request_tag                  ),
 
             .xxx__sdp__mem_request_ready                  ( xxx__sdp__mem_request_ready                ),
 
@@ -169,6 +174,7 @@ module sdp_cntl (
             .sdpr__sdps__cfg_valid                        ( sdpr__sdps__cfg_valid                      ),
             .sdpr__sdps__cfg_addr                         ( sdpr__sdps__cfg_addr                       ),
             .sdpr__sdps__cfg_accessOrder                  ( sdpr__sdps__cfg_accessOrder                ),
+            .sdpr__sdps__cfg_lane_enable                  ( sdpr__sdps__cfg_lane_enable                ),
             .sdps__sdpr__cfg_ready                        ( sdps__sdpr__cfg_ready                      ),
             .sdps__sdpr__complete                         ( sdps__sdpr__complete                       ),
             .sdpr__sdps__complete                         ( sdpr__sdps__complete                       ),
@@ -238,6 +244,7 @@ module sdp_cntl (
             .sdpr__sdps__cfg_valid                        ( sdpr__sdps__cfg_valid                      ),
             .sdpr__sdps__cfg_addr                         ( sdpr__sdps__cfg_addr                       ),
             .sdpr__sdps__cfg_accessOrder                  ( sdpr__sdps__cfg_accessOrder                ),
+            .sdpr__sdps__cfg_lane_enable                  ( sdpr__sdps__cfg_lane_enable                ),
             .sdps__sdpr__cfg_ready                        ( sdps__sdpr__cfg_ready                      ),
             .sdps__sdpr__complete                         ( sdps__sdpr__complete                       ),
             .sdpr__sdps__complete                         ( sdpr__sdps__complete                       ),

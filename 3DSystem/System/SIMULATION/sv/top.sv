@@ -605,6 +605,19 @@ module top;
            end
     endgenerate
 
+    `ifdef TB_DISABLE_MWC_WRITES
+      generate
+         for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+             begin
+               initial
+                 begin
+                   force system_inst.manager_array_inst.mgr_inst[mgr].manager.xxx__mmc__valid[2] = 0;
+                   force system_inst.manager_array_inst.mgr_inst[mgr].manager.xxx__mmc__data_valid[0] = 0;
+                 end
+             end
+      endgenerate
+    `endif
+
 
   //******************************
   //******************************

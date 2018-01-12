@@ -241,12 +241,14 @@ module manager (
   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__mrc0__cntl          ; 
   wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__mrc0__option_type    [`MGR_WU_OPT_PER_INST ] ;
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__mrc0__option_value   [`MGR_WU_OPT_PER_INST ] ;
+  wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__mrc0__tag           ;
 
   wire                                          wud__mrc1__valid         ;
   wire                                          mrc1__wud__ready         ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__mrc1__cntl          ; 
   wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__mrc1__option_type    [`MGR_WU_OPT_PER_INST ] ;
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__mrc1__option_value   [`MGR_WU_OPT_PER_INST ] ;
+  wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__mrc1__tag           ;
 
   wire                                          wud__rdp__valid         ;
   wire                                          rdp__wud__ready         ;
@@ -297,12 +299,14 @@ module manager (
             .mrc0__wud__ready         ( mrc0__wud__ready         ),
             .wud__mrc0__option_type   ( wud__mrc0__option_type   ),  // Only send tuples
             .wud__mrc0__option_value  ( wud__mrc0__option_value  ),
+            .wud__mrc0__tag           ( wud__mrc0__tag           ), 
          
             .wud__mrc1__valid         ( wud__mrc1__valid         ),
             .wud__mrc1__cntl          ( wud__mrc1__cntl          ),  // used to delineate descriptor
             .mrc1__wud__ready         ( mrc1__wud__ready         ),
             .wud__mrc1__option_type   ( wud__mrc1__option_type   ),  // Only send tuples
             .wud__mrc1__option_value  ( wud__mrc1__option_value  ),
+            .wud__mrc1__tag           ( wud__mrc1__tag           ), 
          
          
             //-------------------------------
@@ -374,6 +378,7 @@ module manager (
         // WU Decoder
         wire                                        wud__mrc__valid                                      ;  // send MR descriptors
         wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   wud__mrc__cntl                                       ;  // descriptor delineator
+        wire  [`MGR_STD_OOB_TAG_RANGE           ]   wud__mrc__tag                                        ;  // mmc needs to service tag requests before tag+1
         wire                                        mrc__wud__ready                                      ;
         wire  [`MGR_WU_OPT_TYPE_RANGE           ]   wud__mrc__option_type   [`MGR_WU_OPT_PER_INST ]      ;  // WU Instruction option fields
         wire  [`MGR_WU_OPT_VALUE_RANGE          ]   wud__mrc__option_value  [`MGR_WU_OPT_PER_INST ]      ;  
@@ -382,6 +387,7 @@ module manager (
         // Main memory Controller
         wire                                           mrc__mmc__valid      ;
         wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl       ;
+        wire  [`MGR_STD_OOB_TAG_RANGE           ]      mrc__mmc__tag        ;  // mmc needs to service tag requests before tag+1
         wire                                           mmc__mrc__ready      ;
         wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      mrc__mmc__channel    ;
         wire  [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      mrc__mmc__bank       ;
@@ -400,6 +406,7 @@ module manager (
                 //
                 .wud__mrc__valid         ( wud__mrc__valid         ),
                 .wud__mrc__cntl          ( wud__mrc__cntl          ),  // used to delineate descriptor
+                .wud__mrc__tag           ( wud__mrc__tag           ), 
                 .mrc__wud__ready         ( mrc__wud__ready         ),
                 .wud__mrc__option_type   ( wud__mrc__option_type   ),  // Only send tuples
                 .wud__mrc__option_value  ( wud__mrc__option_value  ),
@@ -417,6 +424,7 @@ module manager (
                 //
                 .mrc__mmc__valid         ( mrc__mmc__valid         ),                         
                 .mrc__mmc__cntl          ( mrc__mmc__cntl          ),                         
+                .mrc__mmc__tag           ( mrc__mmc__tag           ),                         
                 .mmc__mrc__ready         ( mmc__mrc__ready         ),                         
                 .mrc__mmc__channel       ( mrc__mmc__channel       ),                         
                 .mrc__mmc__bank          ( mrc__mmc__bank          ),                         
@@ -446,6 +454,7 @@ module manager (
   // Request
   wire  [`MMC_CNTL_NUM_OF_INTF_VEC_RANGE  ]      xxx__mmc__valid                                ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE      ]      xxx__mmc__cntl    [`MMC_CNTL_NUM_OF_INTF ]     ;
+  wire  [`MGR_STD_OOB_TAG_RANGE           ]      xxx__mmc__tag     [`MMC_CNTL_NUM_OF_INTF ]     ; // mmc needs to service tag requests before tag+1
 //  wire  [`MMC_CNTL_NUM_OF_INTF_VEC_RANGE  ]      xxx__mmc__read                                 ;
   wire  [`MMC_CNTL_NUM_OF_INTF_VEC_RANGE  ]      mmc__xxx__ready                                ;
   wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      xxx__mmc__channel [`MMC_CNTL_NUM_OF_INTF ]     ;
@@ -498,6 +507,7 @@ module manager (
             .xxx__mmc__valid         ( xxx__mmc__valid        ),
             .xxx__mmc__read          ( {1'b0, 1'b1, 1'b1}     ),  // mwc, mrc1, mrc0
             .xxx__mmc__cntl          ( xxx__mmc__cntl         ),
+            .xxx__mmc__tag           ( xxx__mmc__tag          ),
             .mmc__xxx__ready         ( mmc__xxx__ready        ),
             .xxx__mmc__channel       ( xxx__mmc__channel      ),
             .xxx__mmc__bank          ( xxx__mmc__bank         ),
@@ -550,6 +560,7 @@ module manager (
       begin: mrc_mmc_connect
         assign    xxx__mmc__valid   [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__valid   ;
         assign    xxx__mmc__cntl    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__cntl    ;
+        assign    xxx__mmc__tag     [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__tag     ;
         assign    xxx__mmc__channel [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__channel ;
         assign    xxx__mmc__bank    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__bank    ;
         assign    xxx__mmc__page    [strm]                 =   mrc_cntl_strm_inst[strm].mrc__mmc__page    ;
@@ -875,6 +886,7 @@ module manager (
             // Request                                             
             .mwc__mmc__valid         ( xxx__mmc__valid        [2]  ),  // [2] because interfaces [0:1] go to MRC
             .mwc__mmc__cntl          ( xxx__mmc__cntl         [2]  ),                         
+            .mwc__mmc__tag           ( xxx__mmc__tag          [2]  ),                         
             .mmc__mwc__ready         ( mmc__xxx__ready        [2]  ),                         
             .mwc__mmc__channel       ( xxx__mmc__channel      [2]  ),                         
             .mwc__mmc__bank          ( xxx__mmc__bank         [2]  ),                         

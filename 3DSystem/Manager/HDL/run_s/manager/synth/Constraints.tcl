@@ -226,7 +226,8 @@ if {$tech == "65nm"} {
 
 } elseif {($tech == "28nm")} {
 
-  set PORT_LOAD_CELL sc12mc_cmos28hpp_base_rvt_c30_ss_nominal_max_0p765v_110c/DFFQ_X1M_A12TR_C30/D
+  #set PORT_LOAD_CELL sc12mc_cmos28hpp_base_rvt_c30_ss_nominal_max_0p765v_110c/DFFQA_X1M_A12TR_C30/D
+  set PORT_LOAD_CELL sc12mc_cmos28hpp_base_rvt_c30_tt_nominal_max_0p90v_25c/DFFNQ_X1M_A12TR_C30/D
   set WIRE_LOAD_EST   0.013
   set FANOUT          4
   set PORT_LOAD [expr $WIRE_LOAD_EST + $FANOUT * [load_of $PORT_LOAD_CELL]]

@@ -78,21 +78,24 @@ module wu_decode (
             output  reg [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc0__cntl                 ,  // descriptor delineator
             output  reg [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc0__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
             output  reg [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc0__option_value   [`MGR_WU_OPT_PER_INST ] ,  
+            output  reg [`MGR_STD_OOB_TAG_RANGE         ]    wud__mrc0__tag                  ,  // mmc needs to service tag requests before tag+1
             
             output  reg                                      wud__mrc1__valid                ,
             output  reg [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc1__cntl                 ,  // descriptor delineator
             input   wire                                     mrc1__wud__ready                ,
             output  reg [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc1__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
             output  reg [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc1__option_value   [`MGR_WU_OPT_PER_INST ] ,  
+            output  reg [`MGR_STD_OOB_TAG_RANGE         ]    wud__mrc1__tag                  ,  // mmc needs to service tag requests before tag+1
 
             
             //-------------------------------
             // General
             //
-            input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
+            input  wire  [`MGR_MGR_ID_RANGE             ]    sys__mgr__mgrId ,
+            //output reg   [`MGR_STD_OOB_TAG_RANGE        ]    wud__sys__tag   ,  // provide the  initial tag value to other modules
 
-            input  wire                           clk             ,
-            input  wire                           reset_poweron  
+            input  wire                                      clk             ,
+            input  wire                                      reset_poweron  
                         );
 
 
@@ -148,6 +151,8 @@ module wu_decode (
     reg                                         rdp__wud__ready_d1             ;
     reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl_e1             ;  
     reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag_e1               ;
+    reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__mrc0__tag_e1              ;
+    reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__mrc1__tag_e1              ;
     reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;
     reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;
 
@@ -243,6 +248,8 @@ module wu_decode (
         wud__rdp__valid        <=   ( reset_poweron   ) ? 'd0  :  wud__rdp__valid_e1        ;
         wud__rdp__dcntl        <=   ( reset_poweron   ) ? 'd0  :  wud__rdp__dcntl_e1        ;
         wud__rdp__tag          <=   ( reset_poweron   ) ? 'd0  :  wud__rdp__tag_e1          ;
+        wud__mrc0__tag         <=   ( reset_poweron   ) ? 'd0  :  wud__mrc0__tag_e1         ;
+        wud__mrc1__tag         <=   ( reset_poweron   ) ? 'd0  :  wud__mrc1__tag_e1         ;
         for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
           begin: option_in
             wud__rdp__option_type  [opt]  <=  ( reset_poweron   ) ? 'd0  :    wud__rdp__option_type_e1  [opt]  ;
@@ -596,7 +603,7 @@ module wu_decode (
   always @(posedge clk)
     begin
       // If a packet is sent to oob driver, increment tag
-      tag                     <=  ( reset_poweron                                                                                                         ) ? 'h81     :  // start with a number that is easy to see in simulation
+      tag                     <=  ( reset_poweron                                                                                                         ) ? `WU_DEC_INITIAL_TAG  :  // start with a number that is easy to see in simulation
                                   ((instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[0].contained_simd_cmd ) ? tag+1    :
                                   ((instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[1].contained_simd_cmd ) ? tag+1    :
                                   ((instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[2].contained_simd_cmd ) ? tag+1    :
@@ -699,6 +706,8 @@ module wu_decode (
     begin
         wud__rdp__dcntl_e1        =   from_WuMemory_Fifo[0].pipe_dcntl  ;
         wud__rdp__tag_e1          =   tag ;
+        wud__mrc0__tag_e1         =   tag ;
+        wud__mrc1__tag_e1         =   tag ;
         for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
           begin: rdc_option_out
             wud__rdp__option_type_e1  [opt]  =  from_WuMemory_Fifo[0].pipe_option_type  [opt]  ;

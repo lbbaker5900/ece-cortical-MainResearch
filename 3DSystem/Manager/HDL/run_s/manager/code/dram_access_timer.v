@@ -81,6 +81,19 @@ module dram_access_timer(
             );   
  
 
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  // Register inputs and outputs
+  reg  reset_poweron_d1  ;
+  reg  reset_poweron_d2  ;
+  reg  reset_poweron_d3  ;
+  always @(posedge clk)
+    begin
+      reset_poweron_d1 <= reset_poweron    ;
+      reset_poweron_d2 <= reset_poweron_d1 ;
+      reset_poweron_d3 <= reset_poweron_d2 ;
+    end
+
   reg [`DRAM_ACC_TIMER_RANGE        ]  page_open    [`DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_RANGE  ] ;        //column for page open, first row - page open, second row - page close, third - cr, 4 - cw
   reg [`DRAM_ACC_TIMER_RANGE        ]  page_close   [`DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES_RANGE  ] ;        // for pc
   reg [`DRAM_ACC_TIMER_RANGE        ]  cache_read   [`DRAM_ACC_NUM_OF_CACHE_DEPENDENCIES_RANGE ] ;        // for cr      //each row is 5 bit number to hold the timings
@@ -106,7 +119,7 @@ module dram_access_timer(
   // State register 
   always @(posedge clk)
     begin
-      dram_acc_sample_state <= ( reset_poweron ) ? `DRAM_ACC_SAMPLE_WAIT       :
+      dram_acc_sample_state <= ( reset_poweron_d1 ) ? `DRAM_ACC_SAMPLE_WAIT       :
                                                    dram_acc_sample_state_next  ;
     end
   
@@ -173,7 +186,7 @@ module dram_access_timer(
   
   always @(posedge clk)
   begin
-    if(reset_poweron)
+    if(reset_poweron_d1)
       begin
         for (int i=0; i<`DRAM_ACC_NUM_OF_PAGE_DEPENDENCIES ; i++)
           begin

@@ -34,6 +34,12 @@ TB_CAN_MANAGER_PAUSE_WUD=TB_MGR_CANNOT_PAUSE_WUD
 TB_NUMBER_OF_OPERATIONS = 8
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Feature disabling (debug)
+
+TB_DISABLE_MEMORY_WRITES = TB_DO_NOT_DISABLE_MWC_WRITES
+#TB_DISABLE_MEMORY_WRITES = TB_DISABLE_MWC_WRITES
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Gate netlist control
 
 # Manager
@@ -65,7 +71,7 @@ TB_VERB=TB_VERBOSITY_LOW
 
 all : .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .armMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .generic_pipelined_w_peek_fifo .diram4 .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .sdp_cntl .sdp_request_cntl .sdp_stream_cntl .mwc_cntl .mgr_cntl .dram_access_timer .main_mem_cntl .mmc_final_queue .dfi .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .dram_utilities .mem_checker .upstream_checker .regFile_driver .dram_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .interface .environment .testbench .top 
 
-clean : 
+clean : Makefile
 	/bin/rm .Py .peTbPy .pePy .mgrPy .sysTbPy .sysPy .dwMgr .armMgr .dwPe .generic_1port_memory .generic_2port_memory .generic_fifo .generic_pipelined_fifo .generic_pipelined_w_peek_fifo .diram4 .mem_acc_cont .dma_cont .streamingOps .streamingOps_datapath .noc_cntl .stack_interface .pe_cntl .simd_wrapper .simd_core .simd_upstream_intf .streamingOps_cntl .pe .pe_array .wu_fetch .wu_decode .wu_memory .oob_downstream_cntl .stu_cntl .rdp_cntl .mrc_cntl .sdp_cntl .sdp_request_cntl .sdp_stream_cntl .mwc_cntl .mgr_cntl .dram_access_timer .main_mem_cntl .mmc_final_queue .dfi .mgr_noc_cntl .manager .manager_array .stack_bus .system .definition .base_operation .driver .oob_driver .generator .tb_manager .dram_utilities .mem_checker .upstream_checker .regFile_driver .dram_driver .loadStore_driver .noc_checker .memory_read_proc .system_interfaces .interface .environment .testbench .top .pe_gates_synth .pe_gates_pr .pe_gates_estimate_pr .manager_gates_synth .manager_gates_track_pr .manager_gates_detail_pr .manager_gates_estimate_pr  
 	/bin/rm -rf mti_lib
 	vlib mti_lib
@@ -469,12 +475,12 @@ cleanPy :
 #  - make sure any required defines are added to the testbench compile
 #
 .testbench : .environment ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh     ../../../PEArray/SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../PEArray/SIMULATION/sv      testbench.sv
-	vlog -sv  +define+${TB_VERB}+TB_NUM_OPS=${TB_NUMBER_OF_OPERATIONS}+define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}+${TB_PE_RTL_OR_GATES}+${TB_CREATE_MANAGER_ACTIVITY_FILE}+${TB_CREATE_PE_ACTIVITY_FILE}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      testbench.sv
+	vlog -sv  +define+${TB_DISABLE_MEMORY_WRITES}+${TB_VERB}+TB_NUM_OPS=${TB_NUMBER_OF_OPERATIONS}+define+${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}+${TB_PE_RTL_OR_GATES}+${TB_CREATE_MANAGER_ACTIVITY_FILE}+${TB_CREATE_PE_ACTIVITY_FILE}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common     +incdir+../../../PEArray/SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../PEArray/SIMULATION/sv      testbench.sv
 	echo "testbench"
 	touch .testbench
 
 .top : .environment .diram4 ../../HDL/common/*.vh ../../SIMULATION/common/*.vh ../../../PEArray/HDL/common/*.vh ../../../Manager/HDL/common/*.vh   ../../../PEArray/SIMULATION/common/*.vh      top.sv 
-	vlog -sv  +define++${TB_VERB}${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}+${TB_PE_RTL_OR_GATES}+${TB_CREATE_MANAGER_ACTIVITY_FILE}+${TB_CREATE_PE_ACTIVITY_FILE}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
+	vlog -sv  +define+${TB_DISABLE_MEMORY_WRITES}+${TB_VERB}${TB_WHO_DRIVES_SIMD_REGFILE_INPUTS}+${TB_LIMIT_MAX_PROGRAM_COUNT}+${TB_LIMIT_MAX_INSTRUCTIONS}+${TB_WHO_DRIVES_STACK_DOWN_DATA}+${TB_WHO_DRIVES_OOB}+${TB_WHO_INITIATES_OP}+${TB_COMMON_ARG0}+${TB_CAN_MANAGER_PAUSE_WUD}+${TB_MANAGER_RTL_OR_GATES}+${TB_PE_RTL_OR_GATES}+${TB_CREATE_MANAGER_ACTIVITY_FILE}+${TB_CREATE_PE_ACTIVITY_FILE}  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	#vlog -sv  +incdir+../../HDL/common +incdir+../../SIMULATION/common +incdir+../../../PEArray/HDL/common +incdir+../../../Manager/HDL/common        top.sv 
 	echo "top"
 	touch .top

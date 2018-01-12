@@ -42,6 +42,7 @@ module mrc_cntl (
             input   wire  [`COMMON_STD_INTF_CNTL_RANGE    ]        wud__mrc__cntl                                  ,  // descriptor delineator
             input   wire  [`MGR_WU_OPT_TYPE_RANGE         ]        wud__mrc__option_type   [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
             input   wire  [`MGR_WU_OPT_VALUE_RANGE        ]        wud__mrc__option_value  [`MGR_WU_OPT_PER_INST ] ,  
+            input   wire  [`MGR_STD_OOB_TAG_RANGE         ]        wud__mrc__tag                                   ,  // mmc needs to service tag requests before tag+1
             
             //-------------------------------
             // Stack Bus - Downstream arguments
@@ -57,6 +58,7 @@ module mrc_cntl (
             //
             output  reg                                            mrc__mmc__valid                                   ,
             output  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl                                    ,
+            output  reg   [`MGR_STD_OOB_TAG_RANGE           ]      mrc__mmc__tag                                     ,  // mmc needs to service tag requests before tag+1
             input   wire                                           mmc__mrc__ready                                   ,
             output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE  ]      mrc__mmc__channel                                 ,
             output  reg   [`MGR_DRAM_BANK_ADDRESS_RANGE     ]      mrc__mmc__bank                                    ,
@@ -96,6 +98,7 @@ module mrc_cntl (
   reg                                         wud__mrc__valid_d1             ;
   reg                                         mrc__wud__ready_e1             ;
   reg    [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mrc__cntl_d1              ;  
+  reg    [`MGR_STD_OOB_TAG_RANGE         ]    wud__mrc__tag_d1               ;  // mmc needs to service tag requests before tag+1
   reg    [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mrc__option_type_d1    [`MGR_WU_OPT_PER_INST ] ;
   reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mrc__option_value_d1   [`MGR_WU_OPT_PER_INST ] ;
 
@@ -113,6 +116,7 @@ module mrc_cntl (
 
   reg                                            mrc__mmc__valid_e1      ;
   reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mmc__cntl_e1       ;
+  reg   [`MGR_STD_OOB_TAG_RANGE           ]      mrc__mmc__tag_e1        ;  // mmc needs to service tag requests before tag+1
   reg                                            mmc__mrc__ready_d1      ;
   reg   [ `MGR_DRAM_CHANNEL_ADDRESS_RANGE ]      mrc__mmc__channel_e1    ;
   reg   [ `MGR_DRAM_BANK_ADDRESS_RANGE    ]      mrc__mmc__bank_e1       ;
@@ -144,8 +148,9 @@ module mrc_cntl (
   
   always @(posedge clk) 
     begin
-      wud__mrc__valid_d1        <=   ( reset_poweron   ) ? 'd0  :  wud__mrc__valid        ;
+      wud__mrc__valid_d1        <=   ( reset_poweron   ) ? 'd0  :  wud__mrc__valid       ;
       wud__mrc__cntl_d1         <=   ( reset_poweron   ) ? 'd0  :  wud__mrc__cntl        ;
+      wud__mrc__tag_d1          <=   ( reset_poweron   ) ? 'd0  :  wud__mrc__tag         ;
 
       for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
         begin: option_in
@@ -183,6 +188,7 @@ module mrc_cntl (
       begin
         mrc__mmc__valid      <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__valid_e1   ;
         mrc__mmc__cntl       <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__cntl_e1    ;
+        mrc__mmc__tag        <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__tag_e1     ;
         mmc__mrc__ready_d1   <=   ( reset_poweron   ) ? 'd0  :  mmc__mrc__ready      ;
         mrc__mmc__channel    <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__channel_e1 ;
         mrc__mmc__bank       <=   ( reset_poweron   ) ? 'd0  :  mrc__mmc__bank_e1    ;
@@ -203,11 +209,13 @@ module mrc_cntl (
 
         // Write data
         reg    [`COMMON_STD_INTF_CNTL_RANGE     ]         write_cntl          ;
+        reg    [`MGR_STD_OOB_TAG_RANGE          ]         write_tag           ;  // mmc needs to service tag requests before tag+1
         reg    [`MGR_WU_OPT_TYPE_RANGE          ]         write_option_type    [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
         reg    [`MGR_WU_OPT_VALUE_RANGE         ]         write_option_value   [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
                                                                            
         // Read data                                                       
         wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         read_cntl           ;
+        wire   [`MGR_STD_OOB_TAG_RANGE          ]         read_tag            ;  // mmc needs to service tag requests before tag+1
         wire   [`MGR_WU_OPT_TYPE_RANGE          ]         read_option_type     [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
         wire   [`MGR_WU_OPT_VALUE_RANGE         ]         read_option_value    [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
 
@@ -222,7 +230,7 @@ module mrc_cntl (
         // Combine FIFO's for synthesis
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`MRC_CNTL_DESC_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`MRC_CNTL_DESC_FIFO_THRESHOLD ),
-                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_WU_OPT_PER_INST*`MGR_WU_OPT_TYPE_WIDTH+`MGR_WU_OPT_PER_INST*`MGR_WU_OPT_VALUE_WIDTH )
+                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_STD_OOB_TAG_WIDTH+`MGR_WU_OPT_PER_INST*`MGR_WU_OPT_TYPE_WIDTH+`MGR_WU_OPT_PER_INST*`MGR_WU_OPT_VALUE_WIDTH )
                         ) gfifo (
                                           // Status
                                          .empty            ( empty                                                     ),
@@ -232,14 +240,16 @@ module mrc_cntl (
 
                                           // Write                                                                    
                                          .write            ( write                                                     ),
-                                         .write_data       ( {write_cntl,  write_option_type[0], write_option_value[0],
-                                                                           write_option_type[1], write_option_value[1],
-                                                                           write_option_type[2], write_option_value[2]}),
+                                         .write_data       ( {write_cntl, write_tag, 
+                                                              write_option_type[0], write_option_value[0],
+                                                              write_option_type[1], write_option_value[1],
+                                                              write_option_type[2], write_option_value[2]             }),
                                           // Read                          
                                          .read             ( read                                                      ),
-                                         .read_data        ( { read_cntl,   read_option_type[0],  read_option_value[0],
-                                                                            read_option_type[1],  read_option_value[1],
-                                                                            read_option_type[2],  read_option_value[2]}),
+                                         .read_data        ( { read_cntl, read_tag,
+                                                               read_option_type[0],  read_option_value[0],
+                                                               read_option_type[1],  read_option_value[1],
+                                                               read_option_type[2],  read_option_value[2]             }),
 
                                          // General
                                          .clear            ( clear                                                     ),
@@ -262,6 +272,7 @@ module mrc_cntl (
           end
         reg                                                  pipe_valid        ;
         reg    [`COMMON_STD_INTF_CNTL_RANGE     ]            pipe_cntl         ;
+        reg    [`MGR_STD_OOB_TAG_RANGE          ]            pipe_tag          ;
         reg    [`MGR_WU_OPT_TYPE_RANGE          ]            pipe_option_type  [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
         reg    [`MGR_WU_OPT_VALUE_RANGE         ]            pipe_option_value [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
         wire                                                 pipe_read         ;
@@ -284,6 +295,8 @@ module mrc_cntl (
             // if we are reading, transfer from previous pipe stage. 
             pipe_cntl           <= ( fifo_pipe_read     ) ? read_cntl            :
                                                             pipe_cntl            ;
+            pipe_tag            <= ( fifo_pipe_read     ) ? read_tag             :
+                                                            pipe_tag             ;
             pipe_option_type[0] <= ( fifo_pipe_read     ) ? read_option_type[0]  :
                                                             pipe_option_type[0]  ;
             pipe_option_type[1] <= ( fifo_pipe_read     ) ? read_option_type[1]  :
@@ -313,6 +326,7 @@ module mrc_cntl (
   always @(*)
     begin
       from_Wud_Fifo[0].write_cntl    =   wud__mrc__cntl_d1   ;
+      from_Wud_Fifo[0].write_tag     =   wud__mrc__tag_d1    ;
       for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
         begin: option_in
           from_Wud_Fifo[0].write_option_type  [opt]   =   wud__mrc__option_type_d1  [opt]  ;
@@ -333,6 +347,7 @@ module mrc_cntl (
   //   - the target (arg0 or arg1 downstream)
   //
 
+  reg  [`MGR_STD_OOB_TAG_RANGE          ]      tag               ;  // mmc needs to service tag requests before tag+1
   reg  [`MGR_NUM_LANES_RANGE            ]      num_lanes         ;  // 0-32 so need 6 bits
   reg  [`MGR_NUM_LANES_RANGE            ]      num_lanes_m1      ;  // num_lanes-1 is useful
   // for memory reads, we assume one storage descriptor pointer
@@ -367,36 +382,31 @@ module mrc_cntl (
   // Extract option values
   always @(posedge clk)
     begin
-      num_lanes        <=  ( reset_poweron                                                ) ?  'd0                                  :
-                           ( option[0].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[0] :
+      num_lanes        <=  ( option[0].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[0] :
                            ( option[1].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[1] :
                            ( option[2].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[2] :
                            ( descriptor_fsm_complete                                      ) ? 'd0                                   :
                                                                                               num_lanes                             ;
 
-      num_lanes_m1     <=  ( reset_poweron                                                ) ?  'd0                                      :
-                           ( option[0].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[0]-'d1 :
+      num_lanes_m1     <=  ( option[0].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[0]-'d1 :
                            ( option[1].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[1]-'d1 :
                            ( option[2].contains_num_lanes && extracting_descriptor_state  ) ? from_Wud_Fifo[0].pipe_option_value[2]-'d1 :
                            ( descriptor_fsm_complete                                      ) ? 'd0                                       :
                                                                                               num_lanes_m1                              ;
 
       // storage descriptor option type will always be in tuple 0 or tuple 1 because its an extended tuple
-      storage_desc_ptr <=  ( reset_poweron                                                ) ?  'd0                                                                                                                :
-                           ( option[0].contains_storage_ptr && extracting_descriptor_state) ? {from_Wud_Fifo[0].pipe_option_value[0], from_Wud_Fifo[0].pipe_option_type[1],from_Wud_Fifo[0].pipe_option_value[1]} :
+      storage_desc_ptr <=  ( option[0].contains_storage_ptr && extracting_descriptor_state) ? {from_Wud_Fifo[0].pipe_option_value[0], from_Wud_Fifo[0].pipe_option_type[1],from_Wud_Fifo[0].pipe_option_value[1]} :
                            ( option[1].contains_storage_ptr && extracting_descriptor_state) ? {from_Wud_Fifo[0].pipe_option_value[1], from_Wud_Fifo[0].pipe_option_type[2],from_Wud_Fifo[0].pipe_option_value[2]} :
                            ( descriptor_fsm_complete                                      ) ? 'd0                                                                                                                 :
                                                                                               storage_desc_ptr                                                                                                    ;
 
-      txfer_type       <=  ( reset_poweron                                                ) ?  'd0                                  :
-                           ( option[0].contains_txfer_type && extracting_descriptor_state ) ? from_Wud_Fifo[0].pipe_option_value[0] :
+      txfer_type       <=  ( option[0].contains_txfer_type && extracting_descriptor_state ) ? from_Wud_Fifo[0].pipe_option_value[0] :
                            ( option[1].contains_txfer_type && extracting_descriptor_state ) ? from_Wud_Fifo[0].pipe_option_value[1] :
                            ( option[2].contains_txfer_type && extracting_descriptor_state ) ? from_Wud_Fifo[0].pipe_option_value[2] :
                            ( descriptor_fsm_complete                                      ) ? 'd0                                   :
                                                                                               txfer_type                            ;
 
-      target           <=  ( reset_poweron                                                ) ?  'd0                                  :
-                           ( option[0].contains_target && extracting_descriptor_state     ) ? from_Wud_Fifo[0].pipe_option_value[0] :
+      target           <=  ( option[0].contains_target && extracting_descriptor_state     ) ? from_Wud_Fifo[0].pipe_option_value[0] :
                            ( option[1].contains_target && extracting_descriptor_state     ) ? from_Wud_Fifo[0].pipe_option_value[1] :
                            ( option[2].contains_target && extracting_descriptor_state     ) ? from_Wud_Fifo[0].pipe_option_value[2] :
                            ( descriptor_fsm_complete                                      ) ? 'd0                                   :
@@ -465,6 +475,12 @@ module mrc_cntl (
     end // always @ (*)
 
 
+  always @(posedge clk)
+    begin
+      tag              <=  (from_Wud_Fifo[0].pipe_valid && (mrc_cntl_extract_desc_state == `MRC_CNTL_EXTRACT_DESC_WAIT )) ? from_Wud_Fifo[0].pipe_tag :
+                                                                                                                            tag                       ;
+    end
+
   assign from_Wud_Fifo[0].pipe_read = (from_Wud_Fifo[0].pipe_valid && (mrc_cntl_extract_desc_state == `MRC_CNTL_EXTRACT_DESC_WAIT   ) && ~from_Wud_Fifo[0].pipe_som ) |
                                       (from_Wud_Fifo[0].pipe_valid && (mrc_cntl_extract_desc_state == `MRC_CNTL_EXTRACT_DESC_EXTRACT)                               ) ;
 
@@ -510,6 +526,7 @@ module mrc_cntl (
            .xxx__sdp__storage_desc_processing_enable     ( storage_desc_processing_enable    ),
            .sdp__xxx__storage_desc_processing_complete   ( storage_desc_processing_complete  ),
            .xxx__sdp__storage_desc_ptr                   ( storage_desc_ptr                  ),  // pointer to local storage descriptor although msb's contain manager ID, so remove
+           .xxx__sdp__tag                                ( tag                               ),
            .xxx__sdp__num_lanes                          ( num_lanes                         ),
            .xxx__sdp__num_lanes_m1                       ( num_lanes_m1                      ),
            .xxx__sdp__txfer_type                         ( txfer_type                        ),
@@ -521,6 +538,7 @@ module mrc_cntl (
            //
            .sdp__xxx__mem_request_valid                  ( mrc__mmc__valid_e1                ),
            .sdp__xxx__mem_request_cntl                   ( mrc__mmc__cntl_e1                 ),
+           .sdp__xxx__mem_request_tag                    ( mrc__mmc__tag_e1                  ),
            .xxx__sdp__mem_request_ready                  ( mmc__mrc__ready_d1                ),
            .sdp__xxx__mem_request_channel                ( mrc__mmc__channel_e1              ),
            .sdp__xxx__mem_request_bank                   ( mrc__mmc__bank_e1                 ),

@@ -145,20 +145,45 @@ module dfi(
       begin: write_data
         always @(posedge clk_diram2x)
           begin
-            // FIXME : 32
-            dfi__phy__data_e1 [(word+1)*32-1 : word*32]  <= ( ~clk ) ? mmc__dfi__data [0][word] :
-                                                                       mmc__dfi__data [1][word] ;
-
-            dfi__phy__data    [(word+1)*32-1 : word*32]  <= dfi__phy__data_e1 [(word+1)*32-1 : word*32];
+            case (dram_chan_mode)  // synopsys parallel_case
+              1'b1 :
+                begin
+                  dfi__phy__data_e1 [(word+1)*32-1 : word*32]  <= mmc__dfi__data [0][word] ;
+                end
+              1'b0 :
+                begin
+                  dfi__phy__data_e1 [(word+1)*32-1 : word*32]  <= mmc__dfi__data [1][word] ;
+                end
+            endcase
           end
       end
   endgenerate
+/*
+          begin
+            dfi__phy__data_e1 [(word+1)*32-1 : word*32]  <= ( dram_chan_mode ) ? mmc__dfi__data [0][word] :
+                                                                                 mmc__dfi__data [1][word] ;
+
+            dfi__phy__data    [(word+1)*32-1 : word*32]  <= dfi__phy__data_e1 [(word+1)*32-1 : word*32];
+          end
+*/
 
   always @(posedge clk_diram2x)
     begin
+      case (dram_chan_mode)  // synopsys parallel_case
+        1'b1 :
+          begin
+            dfi__phy__data_mask_e1  <= mmc__dfi__data_mask [0] ;
+          end
+        1'b0 :
+          begin
+            dfi__phy__data_mask_e1  <= mmc__dfi__data_mask [1] ;
+          end
+      endcase
+/*
       dfi__phy__data_mask_e1 <= ( ~clk ) ? mmc__dfi__data_mask [0] :
                                            mmc__dfi__data_mask [1] ;
       dfi__phy__data_mask    <= dfi__phy__data_mask_e1 ;
+*/
     end
 
   always @(posedge clk_diram2x)
@@ -166,20 +191,22 @@ module dfi(
       case (dram_chan_mode)  // synopsys parallel_case
         1'b1 :
           begin
-            dfi__phy__cs_e1       <=   mmc__dfi__cs   [0] ;
-            dfi__phy__cmd1_e1     <=   mmc__dfi__cmd1 [0] ;
-            dfi__phy__cmd0_e1     <=   mmc__dfi__cmd0 [0] ;
-            dfi__phy__bank_e1     <=   mmc__dfi__bank [0] ;
-            dfi__phy__addr_e1     <=   mmc__dfi__addr [0] ;
+            dfi__phy__cs_e1         <=   mmc__dfi__cs        [0] ;
+            dfi__phy__cmd1_e1       <=   mmc__dfi__cmd1      [0] ;
+            dfi__phy__cmd0_e1       <=   mmc__dfi__cmd0      [0] ;
+            dfi__phy__bank_e1       <=   mmc__dfi__bank      [0] ;
+            dfi__phy__addr_e1       <=   mmc__dfi__addr      [0] ;
+            dfi__phy__data_mask_e1  <=   mmc__dfi__data_mask [0] ;
           end
          
         1'b0 :
           begin
-            dfi__phy__cs_e1       <=   mmc__dfi__cs   [1] ;
-            dfi__phy__cmd1_e1     <=   mmc__dfi__cmd1 [1] ;
-            dfi__phy__cmd0_e1     <=   mmc__dfi__cmd0 [1] ;
-            dfi__phy__bank_e1     <=   mmc__dfi__bank [1] ;
-            dfi__phy__addr_e1     <=   mmc__dfi__addr [1] ;
+            dfi__phy__cs_e1         <=   mmc__dfi__cs        [1] ;
+            dfi__phy__cmd1_e1       <=   mmc__dfi__cmd1      [1] ;
+            dfi__phy__cmd0_e1       <=   mmc__dfi__cmd0      [1] ;
+            dfi__phy__bank_e1       <=   mmc__dfi__bank      [1] ;
+            dfi__phy__addr_e1       <=   mmc__dfi__addr      [1] ;
+            dfi__phy__data_mask_e1  <=   mmc__dfi__data_mask [1] ;
           end
 
       endcase
@@ -187,11 +214,13 @@ module dfi(
     end
   always @(posedge clk_diram2x)
     begin
-      dfi__phy__cs      <=  dfi__phy__cs_e1   ;
-      dfi__phy__cmd1    <=  dfi__phy__cmd1_e1 ;
-      dfi__phy__cmd0    <=  dfi__phy__cmd0_e1 ;
-      dfi__phy__bank    <=  dfi__phy__bank_e1 ;
-      dfi__phy__addr    <=  dfi__phy__addr_e1 ;
+      dfi__phy__cs           <=  dfi__phy__cs_e1        ;
+      dfi__phy__cmd1         <=  dfi__phy__cmd1_e1      ;
+      dfi__phy__cmd0         <=  dfi__phy__cmd0_e1      ;
+      dfi__phy__bank         <=  dfi__phy__bank_e1      ;
+      dfi__phy__addr         <=  dfi__phy__addr_e1      ;
+      dfi__phy__data         <=  dfi__phy__data_e1      ;
+      dfi__phy__data_mask    <=  dfi__phy__data_mask_e1 ;
     end
 
   wire #0.05 clk_diram2x_dly = clk_diram2x;
