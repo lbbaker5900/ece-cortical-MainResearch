@@ -119,7 +119,7 @@ The instruction can be seen in figure \ref{fig:Instruction (4-tuple example)} an
 The descriptor also employs an n-tuple format where the first tuple element always describes the descriptor operation followed by an m-tuple whose elements contain the options required by the operation.
 The option elements within a descriptor are a two-tuple with option and associated value and are referred to as option tuples.
 These option tuples include a type and value which contain information such as storage descriptor pointer (see section \ref{sec:Storage Descriptor}), \ac{pe} operations and the number of operands.
-The length of the value field is currently eight bits or 24-bits. The 24-bit value field is freferred to as an extended tuple and is currently used for memory address and number of operands.
+The length of the value field is currently eight bits or 24-bits. The 24-bit value field is referred to as an extended tuple and is currently used for memory address and number of operands.
 In figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation descriptor and a list of option types are shown in table \ref{tab:Option tuple functions}.
 It should be noted that not all option tuple type are currently used in the system but were provided for expansibility.
 
@@ -177,8 +177,9 @@ It should be noted that not all option tuple type are currently used in the syst
               Memory storage descriptor        &    7   &  Y&  pointer to storage descriptor used in memory read or write \\
               num of arg0 operands             &    8   &  Y&  number of operands sent to execution lane stream 0\\
               num of arg1 operands             &    9   &  Y&  number of operands sent to execution lane stream 1\\
-              config                           &   10   &  N&  configuration \\
-              status                           &   11   &  N&  status information \\
+              config data                      &   10   &  N&  Data transfers\\
+              config sync                      &   11   &  N&  Synchronization \\
+              status                           &   12   &  N&  status information \\
               \hline
             \end{tabular}
         \end{adjustbox}
@@ -468,4 +469,78 @@ As an example, loading the \ac{simd} instruction memory requires the procedure d
 
 
 
+% ----------------------------------------------------------------------------------------------------
+% ----------------------------------------------------------------------------------------------------
+\section{Host Instructions}
+\label{sec:Host Instructions}
+
+The host is responsible for transferring \ac{ann} parameters and input data to the \ac{ssc} and for transferring \ac{ann} output data back to the host.
+The host will use the \ac{noc} to carry the commands and data to accomplish the transfers.
+The commands will employ the same option tyuple method as described in section \ref{sec:Configuration Instruction}.
+
+To initiate a transfer of data to or from the \ac{ssc} the host will initially send an \ac{noc} packet with two option tuples.
+The first contains a configuration data option tuple as shown in figure \ref{fig:Data transfer instruction} which defines a memory download or upload.
+The second tuple has a storage descriptor defining where in memory to write or read the data.
+An example memory download configuration packet is shown in figure \ref{fig:Host transfer configuration packet}.
+The data to be transferred is included in further \ac{noc} packets and in the case of larger transfers will be fragmented into individual packets to match the \ac{mtu} of the \ac{noc}.
+
+The main controller decodes the first packet as a memory transfer from the host. 
+In the case of a data download, the main controller sends the storage tuple to the memory write controller and indicates its a \ac{dma}.
+This will inform the memory write controller to expect further data packets and associate those with the current storage desciptor.
+In the case of a data upload, the main controller will check the status of the instruction decode and if it has not been haled by a sync instruction, will halt the the instruction decoder.
+The main controller then sends the storage tuple to the lane 0 memory read controller.
+The read data is streamed back to the memory write controller and packetized and sent back to the host over the \ac{noc}.
+
+
+\begin{figure}[!t]
+  % the [] contains position info e.g. [!t] means here
+  \centering
+  \captionsetup{justification=centering}
+
+  \begin{minipage}{1\textwidth}
+  %\begin{subfigure}{1\textwidth}
+    \centering
+    \captionsetup{justification=centering, skip=10pt}
+    \begin{bytefield}[bitwidth=0.49em, endianness=big]{76}
+      \bitheader{0,8,16,24,32,40,48,56,64,72,74} \\
+      \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
+        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{6}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
+      \end{rightwordgroup}  \\
+      \begin{rightwordgroup}{\scriptsize Option Cycle}
+        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \colorbitbox{optiontype!40}{8}{\tiny config\\ \vspace{-0em}data} & \colorbitbox{optionvalue!40}{3}{\tiny mem\\ dnld} & \colorbitbox{optionvalue!40}{21}{\tiny number of \\ bytes} & \colorbitbox{optiontype!40}{8}{\tiny storage\\ desc} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer}
+      \end{rightwordgroup}  \\
+    \end{bytefield}
+    \captionsetup{justification=centering, skip=9pt}
+    \vspace{-0.5cm}
+    \captionof{figure}{Host transfer \ac{noc} memory download configuration packet}
+    \label{fig:Host transfer configuration packet}
+  \end{minipage}
+
+  \bigskip
+
+  \begin{minipage}{1\textwidth}
+  %\begin{subfigure}{1\textwidth}
+    \centering
+    \captionsetup{justification=centering, skip=10pt}
+    \begin{bytefield}[bitwidth=0.49em, endianness=big]{76}
+      \bitheader{0,8,16,24,32,40,48,56,64,72,74} \\
+      \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
+        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{6}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
+      \end{rightwordgroup}  \\
+      \begin{rightwordgroup}{\scriptsize Data Cycle}
+        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{4}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+      \end{rightwordgroup}  \\
+      \bitbox[]{76}{$\vdots$} \\[1ex]
+      \begin{rightwordgroup}{\scriptsize Data Cycle}
+        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{4}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+      \end{rightwordgroup}  \\
+    \end{bytefield}
+    \captionsetup{justification=centering, skip=9pt}
+    \vspace{-0.5cm}
+    \captionof{figure}{Host transfer \ac{noc} data packet}
+    \label{fig:Host transfer data packet}
+  \end{minipage}
+\end{figure}
+
+The host transfer logic has not been implemented and will be covered in future work.
 
