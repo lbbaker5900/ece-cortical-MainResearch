@@ -650,7 +650,7 @@ The increased performance of \ac{ann}s over classical methods in image recogniti
 \iffalse There is reason to believe that \acp{ann} will replace various functions in existing systems. \fi
 
 If \ac{ann}s fulfill their potential, systems employing \ac{ann}s will utilize them for various functions, such as engine monitoring, anomaly detection, navigation etc. all within the same system.
-Considering the various functions a complex customer facing or edge application system performs, it is likely that many real-world applications will employ multiple disparate instances of these useful sized \ac{ann}s.
+Considering the various functions a complex customer facing or embedded application system performs, it is likely that many real-world applications will employ multiple disparate instances of these useful sized \ac{ann}s.
 Assuming these complex functions will require \ac{ann}s similar in size to figure \ref{fig:Baseline DNN showing layer order} and \cite{krizhevsky2012imagenet}, these implementations will be processing multiple large \ac{ann}s at or near real-time.
 
 \section[ANN Processing]{ANN Processing}
@@ -661,7 +661,7 @@ When these \ac{ann}s are required to be solved in fractions of a second, the pro
 
 As a metric, this work assumes that any useful \ac{ann} will be similar to that shown in table \ref{tab:Baseline Layer Configuration} which utilizes $>\num{900e3}$\acp{an} and $\approx\num{200e6}$ parameters. 
 \iffalse
-Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for edge systems employing inference on multiple disparate useful-sized neural networks.}}}
+Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for embedded systems employing inference on multiple disparate useful-sized neural networks.}}}
 \fi
 %\hlc[gray]{hello}
 \iffalse
@@ -694,8 +694,8 @@ The applications targeted by the google TPU \cite{tensorflow2015-whitepaper} ass
 
 Therefore, implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally and fully connected \ac{dnn}s and LSTMs.
 
-This work focuses on edge applications employing disparate \ac{ann}s and assumes there are limited opportunities for both weight reuse and batch processing.
-Considering systems will want to perform multiple \ac{dnn}s simultaneously suggests that these edge systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second} \eqref{eq:maximumBandwidth}.
+This work focuses on embedded applications employing disparate \ac{ann}s and assumes there are limited opportunities for both weight reuse and batch processing.
+Considering systems will want to perform multiple \ac{dnn}s simultaneously suggests that these embedded systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second} \eqref{eq:maximumBandwidth}.
 
 In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
 \fi
@@ -703,7 +703,7 @@ In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}
 
 
 \iffalse
-So considering the performance improvements observed in other applications, it is expected that many customer facing or edge applications will implement multiple instances of artificial neural networks to perform various functions.
+So considering the performance improvements observed in other applications, it is expected that many customer facing or embedded applications will implement multiple instances of artificial neural networks to perform various functions.
 have very large memory and processing requirements.
 require multiple instances of \ac{ann}s of similar size to the \ac{ann} described in \cite{krizhevsky2012imagenet}.
 
@@ -717,11 +717,11 @@ Even in the case of newer GPUs which are employing 2.5DIC technology, the memory
 For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwith of the order of \SI[per-mode=symbol]{4}{\tera \bit \per \second}.
 Also, its has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
 Given these multiple GPU systems have high real-estate and power requirements and given each instance consumes of the order of \SI{100}{\watt} to \SI{200}{\watt}.
-Overall GPUs have limited suitability to meet edge application requirements.
+Overall GPUs have limited suitability to meet embedded application requirements.
 
 
 Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or \ac{sram}. 
-These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an edge application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
+These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an embedded application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
 
 \fi
 
@@ -790,7 +790,7 @@ The approximate system bandwidth and storage requirements are shown in table \re
 
 
 Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, 
-the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for edge systems employing inference on multiple disparate useful-sized neural networks.}}}
+the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for embedded systems employing inference on multiple disparate useful-sized neural networks.}}}
 %\hlc[gray]{hello}
 
 \iffalse
@@ -823,8 +823,8 @@ The applications targeted by the google TPU \cite{tensorflow2015-whitepaper} ass
 
 Therefore, implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally and fully connected \ac{dnn}s and LSTMs.
 
-This work focuses on edge applications employing disparate \ac{ann}s and assumes both weight reuse and batch processing do not apply.
-Considering systems will want to perform multiple \ac{dnn}s simultaneously suggests that these edge systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
+This work focuses on embedded applications employing disparate \ac{ann}s and assumes both weight reuse and batch processing do not apply.
+Considering systems will want to perform multiple \ac{dnn}s simultaneously suggests that these embedded systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
 
 In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
 \fi
@@ -833,7 +833,7 @@ In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}
 \iffalse
 
 \iffalse
-So considering the performance improvements observed in other applications, it is expected that many customer facing or edge applications will implement multiple instances of artificial neural networks to perform various functions.
+So considering the performance improvements observed in other applications, it is expected that many customer facing or embedded applications will implement multiple instances of artificial neural networks to perform various functions.
 have very large memory and processing requirements.
 require multiple instances of \ac{ann}s of similar size to the \ac{ann} described in \cite{krizhevsky2012imagenet}.
 
@@ -846,11 +846,11 @@ Even in the case of newer GPUs which are employing 2.5DIC technology, the memory
 For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwith of the order of \SI[per-mode=symbol]{4}{\tera \bit \per \second}.
 Also, its has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
 Given these multiple GPU systems have high real-estate and power requirements and given each instance consumes of the order of \SI{100}{\watt} to \SI{200}{\watt}.
-Overall GPUs have limited suitability to meet edge application requirements.
+Overall GPUs have limited suitability to meet embedded application requirements.
 
 
 Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or \ac{sram}. 
-These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an edge application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
+These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an embedded application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
 
 \iffalse
 How this work addresses the problem are outlined in section \ref{chap-five}.

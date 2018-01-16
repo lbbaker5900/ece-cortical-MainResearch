@@ -278,6 +278,7 @@ TGTValues = namedtuple('TGTValues',   \
                                       STACK_DN_ARG0  \
                                       STACK_DN_ARG1  \
                                       STACK_UP       \
+                                      NOC            \
                                       NOP            ')
 tgtValues  = TGTValues._make([int(math.ceil(math.log(len(TGTValues._fields)-1,16)))] + range(len(TGTValues._fields)-1))
 srcValues  = tgtValues

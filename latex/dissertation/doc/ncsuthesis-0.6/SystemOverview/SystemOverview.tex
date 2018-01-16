@@ -473,25 +473,25 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
     \centering
     \captionsetup{justification=centering, skip=10pt}
     \begin{bytefield}[bitwidth=0.49em, endianness=big]{76}
-      \bitheader{0,8,16,24,32,40,48,56,64,72,74} \\
+      \bitheader{0,8,16,24,32,40,48,56,64,67,73,75} \\
       \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
-        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{6}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
+        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
       \end{rightwordgroup}  \\
       \begin{rightwordgroup}{\scriptsize MCast Group header}
-        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{6}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}}  & \bitbox{58}{\tiny padding} & \bitbox{6}{\tiny gid} 
+        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}}  & \bitbox{58}{\tiny padding} & \bitbox{6}{\tiny gid} 
       \end{rightwordgroup}  \\
       \begin{rightwordgroup}{\scriptsize Unicast header}
-        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{6}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}}  & \bitbox{58}{\tiny padding} & \bitbox{6}{\tiny dest} 
+        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}}  & \bitbox{57}{\tiny padding} & \bitbox{7}{\tiny dest} 
       \end{rightwordgroup}  \\
       \begin{rightwordgroup}{\scriptsize Option Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \colorbitbox{optiontype!40}{8}{\tiny option\\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer} & \colorbitbox{optiontype!40}{8}{\tiny option\\ type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer}
+        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \colorbitbox{optiontype!40}{8}{\tiny option\\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer} & \colorbitbox{optiontype!40}{8}{\tiny option\\ type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer}
       \end{rightwordgroup}  \\
       \begin{rightwordgroup}{\scriptsize Data Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{4}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{5}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
       \end{rightwordgroup}  \\
       \bitbox[]{76}{$\vdots$} \\[1ex]
       \begin{rightwordgroup}{\scriptsize Data Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{4}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{5}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
       \end{rightwordgroup}  \\
     \end{bytefield}
     \captionsetup{justification=centering, skip=9pt}
@@ -503,7 +503,7 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
   \vspace{0.5cm}
   \begin{minipage}{1\textwidth}
     \centering
-    \begin{minipage}{0.20\textwidth}
+    \begin{minipage}{0.25\textwidth}
         \begin{adjustbox}{width=1\textwidth}
             \footnotesize
             \begin{tabular}{ |c|c|  }
@@ -512,9 +512,11 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
               \multicolumn{2}{|c|}{Source} \\
               \hline
               \rowcolor{gray!25}
-              src[5:0] & Description  \\
+              src[6:0] & Description  \\
               \hline
-              $0\cdots 63$     & Source SSC \\
+              $0\cdots 63 $  & Destination SSC \\
+              $64$           & Host            \\
+              $65\cdots 127$ & Unused          \\
               \hline
             \end{tabular}
         \end{adjustbox}
@@ -583,9 +585,11 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
               \multicolumn{2}{|c|}{Unicast Destination} \\
               \hline
               \rowcolor{gray!25}
-              dest[5:0] & Description  \\
+              dest[6:0] & Description  \\
               \hline
-              $0\cdots 63$     & Destination SSC \\
+              $0\cdots 63 $  & Destination SSC \\
+              $64$          & Host            \\
+              $65\cdots 127$ & Unused          \\
               \hline
             \end{tabular}
         \end{adjustbox}
