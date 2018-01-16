@@ -73,6 +73,12 @@ module top;
 
     //
     //----------------------------------------------------------------------------------------------------
+    // Host NoC interfaces
+    // - only connect along top of array
+    ext_to_noc_ifc   ExtToNocIfc        [`MGR_ARRAY_NUM_OF_MGR] (.clk(clk), .reset_poweron (reset_poweron)); 
+    ext_from_noc_ifc ExtFromNocIfc      [`MGR_ARRAY_NUM_OF_MGR] (.clk(clk), .reset_poweron (reset_poweron));
+
+    //----------------------------------------------------------------------------------------------------
     // local NoC interfaces
     locl_to_noc_ifc   LocalToNocIfc        [`MGR_ARRAY_NUM_OF_MGR] (clk); 
     locl_from_noc_ifc LocalFromNocIfc      [`MGR_ARRAY_NUM_OF_MGR] (clk); 
@@ -185,6 +191,10 @@ module top;
 
                    //
                    .Dma2Mem                    ( Dma2Mem                   ) ,  // array of monitor probes for the DMA to Memory interface for each PE/Lane
+
+                   // Host NoC Interfaces
+                   .ExtToNocIfc                ( ExtToNocIfc               ) ,  // array of probes to monitor Manager NoC packets sent to NoC and received from NoC
+                   .ExtFromNocIfc              ( ExtFromNocIfc             ) ,  // 
 
                    // Local NoC Interfaces
                    .LocalToNocIfc              ( LocalToNocIfc             ) ,  // array of probes to monitor Manager NoC packets sent to NoC and received from NoC
@@ -326,6 +336,39 @@ module top;
     `else
       `include "TB_system_gate_sim_connect_to_dma.vh"
     `endif
+
+    //------------------------------------------------------------
+    // Host NoC Interfaces
+ 
+    generate
+       for (mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+           begin
+             if(mgr == 0)
+               begin
+                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port2_valid = ExtFromNocIfc[mgr].noc__mgr__port_valid    ;
+                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port2_cntl  = ExtFromNocIfc[mgr].noc__mgr__port_cntl     ;
+                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port2_data  = ExtFromNocIfc[mgr].noc__mgr__port_data     ;
+                 assign ExtFromNocIfc[mgr].mgr__noc__port_fc                             = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port2_fc ;
+                                                                                                                             
+                 assign ExtToNocIfc[mgr].mgr__noc__port_valid                            = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port2_valid ;
+                 assign ExtToNocIfc[mgr].mgr__noc__port_cntl                             = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port2_cntl  ;
+                 assign ExtToNocIfc[mgr].mgr__noc__port_data                             = system_inst.manager_array_inst.mgr_inst[0].mgr__noc__port2_data  ;
+                 assign system_inst.manager_array_inst.mgr_inst[0].noc__mgr__port2_fc    = ExtToNocIfc[mgr].noc__mgr__port_fc         ;
+/*
+                 assign system_inst.manager_array_inst.mgr__noc__port0_valid = ExtToNocIfc[mgr].cb_p.noc__mgr__port_valid    ;
+                 assign system_inst.manager_array_inst.mgr__noc__port0_cntl  = ExtToNocIfc[mgr].cb_p.noc__mgr__port_cntl     ;
+                 assign system_inst.manager_array_inst.mgr__noc__port0_data  = ExtToNocIfc[mgr].cb_p.noc__mgr__port_data     ;
+                 assign system_inst.manager_array_inst.noc__mgr__port0_fc    = ExtToNocIfc[mgr].cb_p.mgr__noc__port_fc       ;
+                                                                                                                             
+                 assign system_inst.manager_array_inst.mgr__noc__port0_valid = ExtFromNocIfc[mgr].cb_p.mgr__noc__port_valid  ;
+                 assign system_inst.manager_array_inst.mgr__noc__port0_cntl  = ExtFromNocIfc[mgr].cb_p.mgr__noc__port_cntl   ;
+                 assign system_inst.manager_array_inst.mgr__noc__port0_data  = ExtFromNocIfc[mgr].cb_p.mgr__noc__port_data   ;
+                 assign system_inst.manager_array_inst.noc__mgr__port0_fc    = ExtFromNocIfc[mgr].cb_p.noc__mgr__port_fc     ;
+*/
+               end
+           end
+    endgenerate
+ 
 
     //------------------------------------------------------------
     // Local NoC Interfaces

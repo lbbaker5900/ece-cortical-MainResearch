@@ -10,6 +10,8 @@ package virtual_interface;
 
     typedef virtual locl_from_noc_ifc                       vLocalFromNoC_T               ;
     typedef virtual locl_to_noc_ifc                         vLocalToNoC_T                 ;
+    typedef virtual ext_from_noc_ifc                        vExtFromNoC_T                 ;
+    typedef virtual ext_to_noc_ifc                          vExtToNoC_T                   ;
 
     typedef virtual wud_to_oob_ifc                          vWudToOob_T                   ;
     typedef virtual wud_to_mrc_ifc                          vWudToMrc_T                   ;

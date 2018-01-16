@@ -21,6 +21,11 @@ program automatic test (
         std_lane_ifc                             DownstreamStackBusLane   [`PE_ARRAY_NUM_OF_PE][`PE_NUM_OF_EXEC_LANES] [`MGR_NUM_OF_STREAMS] ,
         stu_ifc                                  UpstreamStackBus         [`PE_ARRAY_NUM_OF_PE]                         ,
                                                                                                                         
+        // Host NoC interfaces
+        // - only connect to manager 0
+        ext_to_noc_ifc                           ExtToNocIfc              [`MGR_ARRAY_NUM_OF_MGR]                       ,
+        ext_from_noc_ifc                         ExtFromNocIfc            [`MGR_ARRAY_NUM_OF_MGR]                       ,
+
         // probe interfaces                                                                                             
         locl_to_noc_ifc                          LocalToNocIfc            [`MGR_ARRAY_NUM_OF_MGR]                       ,
         locl_from_noc_ifc                        LocalFromNocIfc          [`MGR_ARRAY_NUM_OF_MGR]                       ,
@@ -50,6 +55,8 @@ program automatic test (
                     .vDownstreamStackBusOOB      ( DownstreamStackBusOOB  ), 
                     .vDownstreamStackBusLane     ( DownstreamStackBusLane ), 
                     .vUpstreamStackBus           ( UpstreamStackBus       ), 
+                    .vExtToNoC                   ( ExtToNocIfc            ), 
+                    .vExtFromNoC                 ( ExtFromNocIfc          ), 
                     .vLocalToNoC                 ( LocalToNocIfc          ), 
                     .vLocalFromNoC               ( LocalFromNocIfc        ), 
                     .vWudToOobIfc                ( WudToOobIfc            ),

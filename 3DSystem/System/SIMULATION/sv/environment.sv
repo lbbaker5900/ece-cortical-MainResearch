@@ -38,6 +38,7 @@
 `include "regFile_driver.sv"
 `include "loadStore_driver.sv"
 `include "dram_driver.sv"
+`include "host.sv"
 `include "manager.vh"
 `include "manager_array.vh"
 /*
@@ -57,17 +58,18 @@ import virtual_interface::*;
 
 class Environment;
     // each generator/driver pair handles the two streams in each pe/lane
-    manager            mgr               [`PE_ARRAY_NUM_OF_PE  ]                                               ;
-    generator          gen               [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ; 
-    driver             drv               [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ;
-    oob_driver         oob_drv           [`PE_ARRAY_NUM_OF_PE  ]                                               ;
-    upstream_checker   up_check          [`PE_ARRAY_NUM_OF_PE  ]                                               ;
-    noc_checker        noc_check                                                                               ;
-    memory_read_proc   mr_proc           [`MGR_ARRAY_NUM_OF_MGR]                         [`MGR_NUM_OF_STREAMS] ;
-    mem_checker        mem_check         [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ;
-    regFile_driver     rf_driver         [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ;
-    loadStore_driver   ldst_driver       [`PE_ARRAY_NUM_OF_PE  ]                                               ;
-    dram_driver        main_mem_driver   [`MGR_ARRAY_NUM_OF_MGR]                                               ;
+    manager              mgr               [`PE_ARRAY_NUM_OF_PE  ]                                               ;
+    generator            gen               [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ; 
+    driver               drv               [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ;
+    oob_driver           oob_drv           [`PE_ARRAY_NUM_OF_PE  ]                                               ;
+    upstream_checker     up_check          [`PE_ARRAY_NUM_OF_PE  ]                                               ;
+    noc_checker          noc_check                                                                               ;
+    memory_read_proc     mr_proc           [`MGR_ARRAY_NUM_OF_MGR]                         [`MGR_NUM_OF_STREAMS] ;
+    mem_checker          mem_check         [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ;
+    regFile_driver       rf_driver         [`PE_ARRAY_NUM_OF_PE  ] [`PE_NUM_OF_EXEC_LANES]                       ;
+    loadStore_driver     ldst_driver       [`PE_ARRAY_NUM_OF_PE  ]                                               ;
+    dram_driver          main_mem_driver   [`MGR_ARRAY_NUM_OF_MGR]                                               ;
+    host_driver_checker  host_driver                                                                             ;
 
 
     mailbox       mgr2oob          [`PE_ARRAY_NUM_OF_PE ]                                               ;
@@ -123,6 +125,11 @@ class Environment;
     vLoadStoreDrv2memCntl_T      vLoadStoreDrv2memCntl           [`PE_ARRAY_NUM_OF_PE]                         ;
 
     //----------------------------------------------------------------------------------------------------
+    // Host connection to spare port
+    vExtToNoC_T     vExtToNoC          [`MGR_ARRAY_NUM_OF_MGR]      ;
+    vExtFromNoC_T   vExtFromNoC        [`MGR_ARRAY_NUM_OF_MGR]      ;
+
+    //----------------------------------------------------------------------------------------------------
     // NoC packets sent and received from each manager
     //mailbox           mgr2noc_p            [`MGR_ARRAY_NUM_OF_MGR]      ;  // capture packets sent by manager to NoC
     //mailbox           noc2mgr_p            [`MGR_ARRAY_NUM_OF_MGR]      ;  // capture packets received by manager from NoC
@@ -152,6 +159,8 @@ class Environment;
                     input vDownstreamStackBusOOB_T     vDownstreamStackBusOOB          [`PE_ARRAY_NUM_OF_PE   ]                                                ,
                     input vDownstreamStackBusLane_T    vDownstreamStackBusLane         [`PE_ARRAY_NUM_OF_PE   ] [`PE_NUM_OF_EXEC_LANES] [`MGR_NUM_OF_STREAMS]  ,
                     input vUpstreamStackBus_T          vUpstreamStackBus               [`PE_ARRAY_NUM_OF_PE   ]                                                ,
+                    input vExtToNoC_T                  vExtToNoC                       [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
+                    input vExtFromNoC_T                vExtFromNoC                     [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
                     input vLocalToNoC_T                vLocalToNoC                     [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
                     input vLocalFromNoC_T              vLocalFromNoC                   [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
                     input vWudToOob_T                  vWudToOobIfc                    [`MGR_ARRAY_NUM_OF_MGR ]                                                ,
@@ -168,6 +177,9 @@ class Environment;
         this.vDownstreamStackBusOOB      =   vDownstreamStackBusOOB      ;
         this.vDownstreamStackBusLane     =   vDownstreamStackBusLane     ;
         this.vUpstreamStackBus           =   vUpstreamStackBus           ;
+
+        this.vExtToNoC                   =   vExtToNoC                   ;
+        this.vExtFromNoC                 =   vExtFromNoC                 ;
 
         this.vLocalToNoC                 =   vLocalToNoC                 ;
         this.vLocalFromNoC               =   vLocalFromNoC               ;
@@ -188,6 +200,7 @@ class Environment;
 
     task build();                                 //This task passes the required interfaces, mailboxes, events to the objects of driver, generator and respective scoreboards.
         int Id [2];
+
         for (int pe=0; pe<`PE_ARRAY_NUM_OF_PE; pe++)
             begin
                 //gen2ldstP   = new () ;
@@ -200,6 +213,7 @@ class Environment;
                 ldst_driver [pe]  = new ( Id,            vLoadStoreDrv2memCntl [pe] ); // ,                                      gen2ldstP, gen2ldstP_ack [pe]        );  // load/store driver for mem controller inputs
 
                 main_mem_driver  [pe]  = new ( pe, vDramIfc [pe] );  // DRAM
+
 
                 // Create memory read processors (two for each manager)
                 for (int strm=0; strm<`MGR_NUM_OF_STREAMS; strm++)
@@ -257,6 +271,7 @@ class Environment;
                 up_check    [pe]  = new ( pe, vUpstreamStackBus [pe],  mgr2up [pe], gen2up [pe] ) ;
             end
           noc_check    = new ( vLocalToNoC,  vLocalFromNoC, noc2env_mbxEmpty );
+          host_driver  = new ( vExtToNoC,  vExtFromNoC);
 
 
     endtask
@@ -273,6 +288,9 @@ class Environment;
             begin
               main_mem_driver [mgr].reset();
             end
+
+        host_driver.init();
+        //host_driver.run();
 
         $display("@%0t:%s:%0d: : INFO:ENV: Run generators and drivers \n", $time, `__FILE__, `__LINE__,);
         // e.g. <obj>.run();

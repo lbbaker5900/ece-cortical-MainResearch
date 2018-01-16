@@ -26,9 +26,47 @@
 `include "manager.vh"
 `include "manager_array.vh"
 
-///////////////////////////////////////////////////////////////////////////////
-// Downstream
-///////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------
+// NoC block local interface to local
+interface ext_from_noc_ifc(
+                           input bit reset_poweron,
+                           input bit clk   );
+
+  logic                                         noc__mgr__port_valid ;
+  logic  [`COMMON_STD_INTF_CNTL_RANGE       ]   noc__mgr__port_cntl  ;
+  logic  [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]   noc__mgr__port_data  ;
+  logic                                         mgr__noc__port_fc    ;
+
+    clocking cb_p @(posedge clk);
+      output  noc__mgr__port_valid ;
+      output  noc__mgr__port_cntl  ;
+      output  noc__mgr__port_data  ;
+      input   mgr__noc__port_fc    ;
+    endclocking : cb_p
+
+endinterface : ext_from_noc_ifc
+
+typedef virtual ext_from_noc_ifc vExtFromNoC_T  ;
+
+interface ext_to_noc_ifc(
+                           input bit reset_poweron,
+                           input bit clk   );
+
+  logic                                         mgr__noc__port_valid ;
+  logic  [`COMMON_STD_INTF_CNTL_RANGE       ]   mgr__noc__port_cntl  ;
+  logic  [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]   mgr__noc__port_data  ;
+  logic                                         noc__mgr__port_fc    ;
+
+    clocking cb_p @(posedge clk);
+      input   mgr__noc__port_valid ;
+      input   mgr__noc__port_cntl  ;
+      input   mgr__noc__port_data  ;
+      output  noc__mgr__port_fc    ;
+    endclocking : cb_p
+
+endinterface : ext_to_noc_ifc
+
+typedef virtual ext_to_noc_ifc vExtToNoC_T  ;
 
 //--------------------------------------------------------------------------------
 // NoC block local interface to local
@@ -42,7 +80,7 @@ interface locl_from_noc_ifc(
     logic [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ] noc__locl__dp_ptype      ; 
     logic [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] noc__locl__dp_data       ; 
     logic                                            noc__locl__dp_pvalid     ; 
-    logic [`MGR_MGR_ID_RANGE                       ] noc__locl__dp_mgrId      ; 
+    logic [`MGR_ARRAY_HOST_ID_RANGE                ] noc__locl__dp_mgrId      ; 
 
     clocking cb_p @(posedge clk);
       input  noc__locl__dp_valid      ; 

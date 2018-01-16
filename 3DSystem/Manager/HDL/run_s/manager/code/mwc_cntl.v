@@ -941,7 +941,7 @@ module mwc_cntl (
   //output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mwc__mmc__data          ,
   //output  reg   [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ]                                 mwc__mmc__data_mask     ,
                                                                                                           
-  reg   [`MGR_INST_OPTION_ORDER_RANGE               ]                                held_accessOrder    [`MGR_DRAM_NUM_CHANNELS ] [`MWC_CNTL_CACHE_ENTRIES_PER_CHAN ] ;
+  //reg   [`MGR_INST_OPTION_ORDER_RANGE               ]                                held_accessOrder    [`MGR_DRAM_NUM_CHANNELS ] [`MWC_CNTL_CACHE_ENTRIES_PER_CHAN ] ;
 
 
   //----------------------------------------------------------------------------------------------------
@@ -1327,8 +1327,8 @@ module mwc_cntl (
 */
   always @(*)
     begin
-      held_available      [0]   = ~|held_valid [0]  ;
-      held_available      [1]   = ~|held_valid [1]  ;
+      held_available      [0]   = ~&held_valid [0]  ;
+      held_available      [1]   = ~&held_valid [1]  ;
 
       held_next_available [0]   = (~held_valid[0][0]) ? 'd0:
                                                         'd1;

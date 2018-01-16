@@ -26,19 +26,21 @@
 //--------------------------------------------------------
 // WU Instruction Decode
 
-`define WU_DEC_INSTR_DECODE_WAIT                8'b0000_0001
+`define WU_DEC_INSTR_DECODE_WAIT                10'b00_0000_0001
 
-`define WU_DEC_INSTR_DECODE_OP                  8'b0000_0010
-`define WU_DEC_INSTR_DECODE_MR                  8'b0000_0100
-`define WU_DEC_INSTR_DECODE_MW                  8'b0000_1000
-`define WU_DEC_INSTR_DECODE_INSTR_RUNNING       8'b0001_0000
+`define WU_DEC_INSTR_DECODE_OP                  10'b00_0000_0010
+`define WU_DEC_INSTR_DECODE_MR                  10'b00_0000_0100
+`define WU_DEC_INSTR_DECODE_MW                  10'b00_0000_1000
+`define WU_DEC_INSTR_DECODE_CFG                 10'b00_0001_0000
+`define WU_DEC_INSTR_DECODE_STAT                10'b00_0010_0000
+`define WU_DEC_INSTR_DECODE_INSTR_RUNNING       10'b00_0100_0000
 
-`define WU_DEC_INSTR_DECODE_INSTR_COMPLETE      8'b0010_0000
-`define WU_DEC_INSTR_DECODE_INITIATED_INSTR      8'b0100_0000
+`define WU_DEC_INSTR_DECODE_INSTR_COMPLETE      10'b00_1000_0000
+`define WU_DEC_INSTR_DECODE_INITIATED_INSTR     10'b01_0000_0000
 
-`define WU_DEC_INSTR_DECODE_ERR                 8'b1000_0000
+`define WU_DEC_INSTR_DECODE_ERR                 10'b10_0000_0000
 
-`define WU_DEC_INSTR_DECODE_STATE_WIDTH         8
+`define WU_DEC_INSTR_DECODE_STATE_WIDTH         10
 `define WU_DEC_INSTR_DECODE_STATE_MSB           `WU_DEC_INSTR_DECODE_STATE_WIDTH-1
 `define WU_DEC_INSTR_DECODE_STATE_LSB           0
 `define WU_DEC_INSTR_DECODE_STATE_SIZE          (`WU_DEC_INSTR_DECODE_STATE_MSB - `WU_DEC_INSTR_DECODE_STATE_LSB +1)
