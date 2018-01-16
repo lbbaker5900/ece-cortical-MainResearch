@@ -177,8 +177,8 @@ It should be noted that not all option tuple type are currently used in the syst
               Memory storage descriptor        &    7   &  Y&  pointer to storage descriptor used in memory read or write \\
               num of arg0 operands             &    8   &  Y&  number of operands sent to execution lane stream 0\\
               num of arg1 operands             &    9   &  Y&  number of operands sent to execution lane stream 1\\
-              config data                      &   10   &  N&  Data transfers\\
-              config sync                      &   11   &  N&  Synchronization \\
+              config sync                      &   10   &  N&  Synchronization \\
+              config data                      &   11   &  N&  Data transfers\\
               status                           &   12   &  N&  status information \\
               \hline
             \end{tabular}
@@ -475,8 +475,11 @@ As an example, loading the \ac{simd} instruction memory requires the procedure d
 \label{sec:Host Instructions}
 
 The host is responsible for transferring \ac{ann} parameters and input data to the \ac{ssc} and for transferring \ac{ann} output data back to the host.
+It is also responsible for downloading configuration data including \ac{ssc} instruction, \ac{pe} \ac{simd} instructions and configuration tables such as storage pointer tables and \ac{pe} \ac{stop} and \ac{simd} operation tables.
+The host transfer logic has not been implemented and will be covered in future work but the anicipated process is described below.
+
 The host will use the \ac{noc} to carry the commands and data to accomplish the transfers.
-The commands will employ the same option tyuple method as described in section \ref{sec:Configuration Instruction}.
+The commands will employ the same option tuple method as described in section \ref{sec:Configuration Instruction}.
 
 To initiate a transfer of data to or from the \ac{ssc} the host will initially send an \ac{noc} packet with two option tuples.
 The first contains a configuration data option tuple as shown in figure \ref{fig:Data transfer instruction} which defines a memory download or upload.
@@ -542,5 +545,4 @@ The read data is streamed back to the memory write controller, packetized and se
   \end{minipage}
 \end{figure}
 
-The host transfer logic has not been implemented and will be covered in future work.
 
