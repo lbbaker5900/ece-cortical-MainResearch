@@ -492,7 +492,7 @@ In the case of a data download, the main controller sends the storage tuple to t
 This will inform the memory write controller to expect further data packets and associate those with the current storage desciptor.
 In the case of a data upload, the main controller will check the status of the instruction decode and if it has not been haled by a sync instruction, will halt the the instruction decoder.
 The main controller then sends the storage tuple to the lane 0 memory read controller.
-The read data is streamed back to the memory write controller and packetized and sent back to the host over the \ac{noc}.
+The read data is streamed back to the memory write controller, packetized and sent back to the host over the \ac{noc}.
 
 
 \begin{figure}[!t]

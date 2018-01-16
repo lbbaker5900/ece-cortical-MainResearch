@@ -2948,7 +2948,7 @@ class Manager():
               dRowStr =   dRowStr + '{0:^{1}}, '.format(toHexPad(descType.MW             , descType  .WIDTH ), descType  .WIDTH )         
               # option tuples
               dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.SRC          , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(srcValues.STACK_UP       , srcValues  .WIDTH), srcValues  .WIDTH )
-              dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TXFER        , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(txferValues.VECTOR       , txferValues.WIDTH), txferValues.WIDTH )
+              dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.TXFER        , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(txferValues.BCAST        , txferValues.WIDTH), txferValues.WIDTH )
               dRowStr =   dRowStr + '{0:^{1}}: '.format(toHexPad(optionType.NUM_OF_LANES , optionType.WIDTH ), optionType.WIDTH )   + '{0:^{1}}, '.format(toHexPad(dest[0]['NumberOfCells'] , 2                ), txferValues.WIDTH )
             except:
               pass
@@ -3719,7 +3719,7 @@ def main():
     # Create main system memory
     # In practice, this holds the input image. Portions of the input image are transferred to each Manager/PE based on aggregating
     # the ROI of each cell processed by the manager/PE 
-    mainMemoryConfig = dc.MemoryConfiguration(numOfChannels=2,numOfBanksPerChannel=32,numOfPagesPerBank=128,sizeOfPage=4096)
+    mainMemoryConfig = dc.MemoryConfiguration(numOfChannels=2,numOfBanksPerChannel=32,numOfPagesPerBank=1024,sizeOfPage=4096)
     mainMemory = dc.Memory(mainMemoryConfig)
     
     #------------------------------------------------------------------------------------------------------------------------
@@ -3772,28 +3772,30 @@ def main():
     # Make sure
     # a) # of features in layer 2 >32
     # b) stride matches XxY
-    
-    # CONV2 (CONV-225)
-    network.addLayer('Input',           55,  55,    9,                      ) #   96,
-    network.addLayer('Convolutional',   27,  27,   64,    5,   5,   9,   2 ) #  256,
-    network.addLayer('Convolutional',   13,  13,   64,    3,   3,  64,   2 ) #  384,
 
-    # CONV-300
+    # Test Layers
+    
+    #*CONV2 (CONV-225)
+    #network.addLayer('Input',           55,  55,    9,                      ) #   96,
+    #network.addLayer('Convolutional',   27,  27,   64,    5,   5,   9,   2 ) #  256,
+    #network.addLayer('Convolutional',   13,  13,   64,    3,   3,  64,   2 ) #  384,
+
+    #*CONV-300
     #network.addLayer('Input',           55,  55,  12,                     ) #   96,
     #network.addLayer('Convolutional',   27,  27,  64,    5,   5,  12,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
    
-    # CONV-294 (CONV-300-2)
+    #*CONV-294 (CONV-300-2)
     #network.addLayer('Input',           57,  57,   6,                      ) #   96,
     #network.addLayer('Convolutional',   27,  27,  64,     7,   7,   6,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,  16,     3,   3,  64,   2 ) #  384,
    
-    # CONV-500
+    #*CONV-500
     #network.addLayer('Input',           55,  55,  20,                     ) #   96,
     #network.addLayer('Convolutional',   27,  27,  64,    5,   5,  20,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
 
-    # CONV-1000
+    #*CONV-1000
     #network.addLayer('Input',           55,  55,  40,                     ) #   96,
     #network.addLayer('Convolutional',   27,  27,  64,    5,   5,  40,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
@@ -3803,17 +3805,12 @@ def main():
     #network.addLayer('Convolutional',   27,  27,  64,    5,   5, 160,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
 
-    # FC-7
-    #network.addLayer('Input',         4096,    1,    1,                      ) #   96,
-    #network.addLayer('Convolutional', 4096,    1,    1, 4096,   1,    1,   0 ) #  256,
-    #network.addLayer('Convolutional', 1024,    1,    1, 4096,   1,    1,   0 ) #  384,
-    
-    # FC-300
+    #*FC-300
     #network.addLayer('Input',          300,    1,    1,                      ) #   96,
     #network.addLayer('Convolutional', 2048,    1,    1,  300,   1,    1,   0 ) #  256,
     #network.addLayer('Convolutional', 1024,    1,    1, 2048,   1,    1,   0 ) #  384,
     
-    # FC-350
+    #*FC-350
     #network.addLayer('Input',          350,    1,    1,                      ) #   96,
     #network.addLayer('Convolutional', 2048,    1,    1,  350,   1,    1,   0 ) #  256,
     #network.addLayer('Convolutional', 1024,    1,    1, 2048,   1,    1,   0 ) #  384,
@@ -3823,10 +3820,15 @@ def main():
     #network.addLayer('Convolutional', 2048,    1,    1,  500,   1,    1,   0 ) #  256,
     #network.addLayer('Convolutional', 1024,    1,    1, 2048,   1,    1,   0 ) #  384,
     
-    # FC-1000
+    #*FC-1000
     #network.addLayer('Input',         1000,    1,    1,                      ) #   96,
     #network.addLayer('Convolutional', 2048,    1,    1, 1000,   1,    1,   0 ) #  256,
     #network.addLayer('Convolutional', 1024,    1,    1, 2048,   1,    1,   0 ) #  384,
+    
+    #* FC-7
+    network.addLayer('Input',         4096,    1,    1,                      ) #   96,
+    network.addLayer('Convolutional', 4096,    1,    1, 4096,   1,    1,   0 ) #  256,
+    network.addLayer('Convolutional', 1024,    1,    1, 4096,   1,    1,   0 ) #  384,
     
     # Test
     #network.addLayer('Input',           27,  27,    3,                      ) #   96,
@@ -3855,7 +3857,7 @@ def main():
 
     print '{0}:{1}:Assign Managers:'.format(__FILE__(), __LINE__())
     #mgrMemoryConfig = dc.MemoryConfiguration(numOfChannels=2,numOfBanksPerChannel=32,numOfPagesPerBank=4096,sizeOfPage=4096)
-    mgrMemoryConfig = dc.MemoryConfiguration(numOfChannels=2,numOfBanksPerChannel=32,numOfPagesPerBank=128,sizeOfPage=4096)
+    mgrMemoryConfig = dc.MemoryConfiguration(numOfChannels=2,numOfBanksPerChannel=32,numOfPagesPerBank=1024,sizeOfPage=4096)
     network.assignManagers(mgrMemoryConfig)
     
     
