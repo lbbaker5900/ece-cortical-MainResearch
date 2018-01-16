@@ -183,6 +183,18 @@ module manager (
   //-------------------------------------------------------------------------------------------------
   // WU Memory
   // 
+  // Instruction download from mcntl
+  wire                                       mcntl__wum__enable_inst_dnld                             ;
+  wire                                       mcntl__wum__valid                                        ;
+  wire  [`MGR_WU_ADDRESS_RANGE          ]    mcntl__wum__address                                      ;
+  wire                                       wum__mcntl__ready                                        ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__icntl                                        ;
+  wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__dcntl                                        ;
+  wire  [`MGR_INST_TYPE_RANGE           ]    mcntl__wum__op                                           ;
+  wire  [`MGR_WU_OPT_TYPE_RANGE         ]    mcntl__wum__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ;
+  wire  [`MGR_WU_OPT_VALUE_RANGE        ]    mcntl__wum__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ;
+
+  // to WUD
   wire                                       wum__wud__valid       ; 
   wire                                       wud__wum__ready       ; 
   wire  [`COMMON_STD_INTF_CNTL_RANGE    ]    wum__wud__icntl       ;  // instruction delineator
@@ -196,37 +208,57 @@ module manager (
 
   wu_memory wu_memory (
   
-            //-------------------------------
-            // From WU fetch 
-            .wuf__wum__read          ( wuf__wum__read           ),
-            .wuf__wum__addr          ( wuf__wum__addr           ),
-            .wum__wuf__stall         ( wum__wuf__stall          ),
-        
-            //-------------------------------
-            // To WU decode
-            .wum__wud__valid         ( wum__wud__valid          ),
-            .wud__wum__ready         ( wud__wum__ready          ),
-            .wum__wud__icntl         ( wum__wud__icntl          ),
-            .wum__wud__dcntl         ( wum__wud__dcntl          ),
-            .wum__wud__op            ( wum__wud__op             ),
-            .wum__wud__option_type   ( wum__wud__option_type    ),
-            .wum__wud__option_value  ( wum__wud__option_value   ),
-        
-            //-------------------------------
-            // Config/Status
-            .wum__mcntl__inst_count  ( wum__mcntl__inst_count   ),
-
-            //-------------------------------
-            // General
-            .sys__mgr__mgrId         ( sys__mgr__mgrId          ),
-        
-            .clk                     ( clk                      ),
-            .reset_poweron           ( reset_poweron            )
+            //-------------------------
+            // Configuration
+            // - instruction download
+            .mcntl__wum__enable_inst_dnld  ( mcntl__wum__enable_inst_dnld  ),
+            .mcntl__wum__valid             ( mcntl__wum__valid             ),
+            .mcntl__wum__address           ( mcntl__wum__address           ),
+            .wum__mcntl__ready             ( wum__mcntl__ready             ),
+            .mcntl__wum__icntl             ( mcntl__wum__icntl             ),
+            .mcntl__wum__dcntl             ( mcntl__wum__dcntl             ),
+            .mcntl__wum__op                ( mcntl__wum__op                ),
+            .mcntl__wum__option_type       ( mcntl__wum__option_type       ),
+            .mcntl__wum__option_value      ( mcntl__wum__option_value      ),
+                                                                           
+            //-------------------------
+            // From WU fetch                                               
+            .wuf__wum__read                ( wuf__wum__read                ),
+            .wuf__wum__addr                ( wuf__wum__addr                ),
+            .wum__wuf__stall               ( wum__wuf__stall               ),
+                                                                           
+            //-------------------------
+            // To WU decode                                                
+            .wum__wud__valid               ( wum__wud__valid               ),
+            .wud__wum__ready               ( wud__wum__ready               ),
+            .wum__wud__icntl               ( wum__wud__icntl               ),
+            .wum__wud__dcntl               ( wum__wud__dcntl               ),
+            .wum__wud__op                  ( wum__wud__op                  ),
+            .wum__wud__option_type         ( wum__wud__option_type         ),
+            .wum__wud__option_value        ( wum__wud__option_value        ),
+                                                                           
+            //-------------------------
+            // Config/Status                                               
+            .wum__mcntl__inst_count        ( wum__mcntl__inst_count        ),
+                                                                           
+            //-------------------------
+            // General                                                     
+            .sys__mgr__mgrId               ( sys__mgr__mgrId               ),
+                                                                           
+            .clk                           ( clk                           ),
+            .reset_poweron                 ( reset_poweron                 )
         );
 
   //-------------------------------------------------------------------------------------------------
   // WU decode
   // 
+
+  wire                                          wud__mcntl__valid         ;
+  wire                                          mcntl__wud__ready         ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__mcntl__dcntl         ; 
+  wire   [`MGR_STD_OOB_TAG_RANGE         ]      wud__mcntl__tag           ;
+  wire   [`MGR_WU_OPT_TYPE_RANGE         ]      wud__mcntl__option_type    [`MGR_WU_OPT_PER_INST ] ;
+  wire   [`MGR_WU_OPT_VALUE_RANGE        ]      wud__mcntl__option_value   [`MGR_WU_OPT_PER_INST ] ;
 
   wire                                          wud__odc__valid         ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      wud__odc__cntl          ;
@@ -262,51 +294,61 @@ module manager (
   
             //-------------------------------
             // from WU Memory
-            .wum__wud__valid         ( wum__wud__valid          ),
-            .wud__wum__ready         ( wud__wum__ready          ),
-            .wum__wud__icntl         ( wum__wud__icntl          ),
-            .wum__wud__dcntl         ( wum__wud__dcntl          ),
-            .wum__wud__op            ( wum__wud__op             ),
-            .wum__wud__option_type   ( wum__wud__option_type    ),
-            .wum__wud__option_value  ( wum__wud__option_value   ),
+            .wum__wud__valid           ( wum__wud__valid           ),
+            .wud__wum__ready           ( wud__wum__ready           ),
+            .wum__wud__icntl           ( wum__wud__icntl           ),
+            .wum__wud__dcntl           ( wum__wud__dcntl           ),
+            .wum__wud__op              ( wum__wud__op              ),
+            .wum__wud__option_type     ( wum__wud__option_type     ),
+            .wum__wud__option_value    ( wum__wud__option_value    ),
          
             //-------------------------------
             // Stack Down OOB driver
             //
-            .wud__odc__valid         ( wud__odc__valid     ),
-            .wud__odc__cntl          ( wud__odc__cntl      ),  // used to delineate upstream packet data
-            .odc__wud__ready         ( odc__wud__ready     ),
-            .wud__odc__tag           ( wud__odc__tag       ),  // Use this to match with WU and take all the data 
-            .wud__odc__num_lanes     ( wud__odc__num_lanes ),  // The data may vary so check for cntl=EOD when reading this interface
-            .wud__odc__stOp_cmd      ( wud__odc__stOp_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
-            .wud__odc__simd_cmd      ( wud__odc__simd_cmd  ),  // The data may vary so check for cntl=EOD when reading this interface
+            .wud__odc__valid           ( wud__odc__valid           ),
+            .wud__odc__cntl            ( wud__odc__cntl            ),  // used to delineate upstream packet data
+            .odc__wud__ready           ( odc__wud__ready           ),
+            .wud__odc__tag             ( wud__odc__tag             ),  // Use this to match with WU and take all the data 
+            .wud__odc__num_lanes       ( wud__odc__num_lanes       ),  // The data may vary so check for cntl=EOD when reading this interface
+            .wud__odc__stOp_cmd        ( wud__odc__stOp_cmd        ),  // The data may vary so check for cntl=EOD when reading this interface
+            .wud__odc__simd_cmd        ( wud__odc__simd_cmd        ),  // The data may vary so check for cntl=EOD when reading this interface
          
+            //-------------------------------
+            // Main Manager Controller
+            //
+            .wud__mcntl__valid         ( wud__mcntl__valid         ),
+            .wud__mcntl__dcntl         ( wud__mcntl__dcntl         ),  // used to delineate descriptor
+            .mcntl__wud__ready         ( mcntl__wud__ready         ),
+            .wud__mcntl__tag           ( wud__mcntl__tag           ),  // Use this to match with WU and take all the data 
+            .wud__mcntl__option_type   ( wud__mcntl__option_type   ),  // Only send tuples
+            .wud__mcntl__option_value  ( wud__mcntl__option_value  ),
+
             //-------------------------------
             // Return Data Processor
             //
-            .wud__rdp__valid         ( wud__rdp__valid         ),
-            .wud__rdp__dcntl         ( wud__rdp__dcntl         ),  // used to delineate descriptor
-            .rdp__wud__ready         ( rdp__wud__ready         ),
-            .wud__rdp__tag           ( wud__rdp__tag           ),  // Use this to match with WU and take all the data 
-            .wud__rdp__option_type   ( wud__rdp__option_type   ),  // Only send tuples
-            .wud__rdp__option_value  ( wud__rdp__option_value  ),
-         
+            .wud__rdp__valid           ( wud__rdp__valid           ),
+            .wud__rdp__dcntl           ( wud__rdp__dcntl           ),  // used to delineate descriptor
+            .rdp__wud__ready           ( rdp__wud__ready           ),
+            .wud__rdp__tag             ( wud__rdp__tag             ),  // Use this to match with WU and take all the data 
+            .wud__rdp__option_type     ( wud__rdp__option_type     ),  // Only send tuples
+            .wud__rdp__option_value    ( wud__rdp__option_value    ),
+                                                                   
             //-------------------------------
             // Memory Read Controller
             //
-            .wud__mrc0__valid         ( wud__mrc0__valid         ),
-            .wud__mrc0__cntl          ( wud__mrc0__cntl          ),  // used to delineate descriptor
-            .mrc0__wud__ready         ( mrc0__wud__ready         ),
-            .wud__mrc0__option_type   ( wud__mrc0__option_type   ),  // Only send tuples
-            .wud__mrc0__option_value  ( wud__mrc0__option_value  ),
-            .wud__mrc0__tag           ( wud__mrc0__tag           ), 
-         
-            .wud__mrc1__valid         ( wud__mrc1__valid         ),
-            .wud__mrc1__cntl          ( wud__mrc1__cntl          ),  // used to delineate descriptor
-            .mrc1__wud__ready         ( mrc1__wud__ready         ),
-            .wud__mrc1__option_type   ( wud__mrc1__option_type   ),  // Only send tuples
-            .wud__mrc1__option_value  ( wud__mrc1__option_value  ),
-            .wud__mrc1__tag           ( wud__mrc1__tag           ), 
+            .wud__mrc0__valid          ( wud__mrc0__valid          ),
+            .wud__mrc0__cntl           ( wud__mrc0__cntl           ),  // used to delineate descriptor
+            .mrc0__wud__ready          ( mrc0__wud__ready          ),
+            .wud__mrc0__option_type    ( wud__mrc0__option_type    ),  // Only send tuples
+            .wud__mrc0__option_value   ( wud__mrc0__option_value   ),
+            .wud__mrc0__tag            ( wud__mrc0__tag            ), 
+                                                                   
+            .wud__mrc1__valid          ( wud__mrc1__valid          ),
+            .wud__mrc1__cntl           ( wud__mrc1__cntl           ),  // used to delineate descriptor
+            .mrc1__wud__ready          ( mrc1__wud__ready          ),
+            .wud__mrc1__option_type    ( wud__mrc1__option_type    ),  // Only send tuples
+            .wud__mrc1__option_value   ( wud__mrc1__option_value   ),
+            .wud__mrc1__tag            ( wud__mrc1__tag            ), 
          
          
             //-------------------------------
@@ -830,7 +872,7 @@ module manager (
              // Connections to external NoC
              `include "manager_noc_cntl_noc_ports_instance_ports.vh"
 
-            .sys__mgr__mgrId              ( sys__mgr__mgrId          ), // FIXME: make localId
+            .sys__mgr__mgrId              ( {1'b0, sys__mgr__mgrId}  ), 
             .clk                          ( clk                      ),
             .reset_poweron                ( reset_poweron            )
                           
@@ -921,58 +963,81 @@ module manager (
             //-------------------------------------------------------------------------------------------------
             // Configuration
             //
-            .mcntl__wuf__start_addr    ( mcntl__wuf__start_addr    ),  // first WU address
-            .mcntl__wuf__enable        ( mcntl__wuf__enable        ),
-            .xxx__wuf__stall           ( xxx__wuf__stall           ),
+            //-------------------------------
+            // - instruction download
+            .mcntl__wum__enable_inst_dnld   ( mcntl__wum__enable_inst_dnld  ),
+            .mcntl__wum__valid              ( mcntl__wum__valid             ),
+            .mcntl__wum__address            ( mcntl__wum__address           ),
+            .wum__mcntl__ready              ( wum__mcntl__ready             ),
+            .mcntl__wum__icntl              ( mcntl__wum__icntl             ),
+            .mcntl__wum__dcntl              ( mcntl__wum__dcntl             ),
+            .mcntl__wum__op                 ( mcntl__wum__op                ),
+            .mcntl__wum__option_type        ( mcntl__wum__option_type       ),
+            .mcntl__wum__option_value       ( mcntl__wum__option_value      ),
+
+            //-------------------------------
+            .mcntl__wuf__start_addr         ( mcntl__wuf__start_addr        ),  // first WU address
+            .mcntl__wuf__enable             ( mcntl__wuf__enable            ),
+            .xxx__wuf__stall                ( xxx__wuf__stall               ),
 
             //-------------------------------
             // Status
-            .wum__mcntl__inst_count    ( wum__mcntl__inst_count    ),
+            .wum__mcntl__inst_count         ( wum__mcntl__inst_count        ),
+
+            //-------------------------------
+            // from WU Decoder
+            //
+            .wud__mcntl__valid              ( wud__mcntl__valid             ),
+            .wud__mcntl__dcntl              ( wud__mcntl__dcntl             ),  // used to delineate descriptor
+            .mcntl__wud__ready              ( mcntl__wud__ready             ),
+            .wud__mcntl__tag                ( wud__mcntl__tag               ),  // Use this to match with WU and take all the data 
+            .wud__mcntl__option_type        ( wud__mcntl__option_type       ),  // Only send tuples
+            .wud__mcntl__option_value       ( wud__mcntl__option_value      ),
 
             //-------------------------------
             // Control-Path (cp) from NoC                                
-            .noc__mcntl__cp_valid      ( noc__mcntl__cp_valid      ), 
-            .mcntl__noc__cp_ready      ( mcntl__noc__cp_ready      ), 
-            .noc__mcntl__cp_cntl       ( noc__mcntl__cp_cntl       ), 
-            .noc__mcntl__cp_type       ( noc__mcntl__cp_type       ), 
-            .noc__mcntl__cp_ptype      ( noc__mcntl__cp_ptype      ), 
-            .noc__mcntl__cp_data       ( noc__mcntl__cp_data       ), 
-            .noc__mcntl__cp_pvalid     ( noc__mcntl__cp_pvalid     ), 
-            .noc__mcntl__cp_mgrId      ( noc__mcntl__cp_mgrId      ), 
+            .noc__mcntl__cp_valid           ( noc__mcntl__cp_valid          ), 
+            .mcntl__noc__cp_ready           ( mcntl__noc__cp_ready          ), 
+            .noc__mcntl__cp_cntl            ( noc__mcntl__cp_cntl           ), 
+            .noc__mcntl__cp_type            ( noc__mcntl__cp_type           ), 
+            .noc__mcntl__cp_ptype           ( noc__mcntl__cp_ptype          ), 
+            .noc__mcntl__cp_data            ( noc__mcntl__cp_data           ), 
+            .noc__mcntl__cp_pvalid          ( noc__mcntl__cp_pvalid         ), 
+            .noc__mcntl__cp_mgrId           ( noc__mcntl__cp_mgrId          ), 
             
             //-------------------------------
             // Data-Path (dp) from NoC                                
-            .noc__mcntl__dp_valid      ( noc__mcntl__dp_valid      ), 
-            .mcntl__noc__dp_ready      ( mcntl__noc__dp_ready      ), 
-            .noc__mcntl__dp_cntl       ( noc__mcntl__dp_cntl       ), 
-            .noc__mcntl__dp_type       ( noc__mcntl__dp_type       ), 
-            .noc__mcntl__dp_ptype      ( noc__mcntl__dp_ptype      ), 
-            .noc__mcntl__dp_data       ( noc__mcntl__dp_data       ), 
-            .noc__mcntl__dp_pvalid     ( noc__mcntl__dp_pvalid     ), 
-            .noc__mcntl__dp_mgrId      ( noc__mcntl__dp_mgrId      ), 
+            .noc__mcntl__dp_valid           ( noc__mcntl__dp_valid          ), 
+            .mcntl__noc__dp_ready           ( mcntl__noc__dp_ready          ), 
+            .noc__mcntl__dp_cntl            ( noc__mcntl__dp_cntl           ), 
+            .noc__mcntl__dp_type            ( noc__mcntl__dp_type           ), 
+            .noc__mcntl__dp_ptype           ( noc__mcntl__dp_ptype          ), 
+            .noc__mcntl__dp_data            ( noc__mcntl__dp_data           ), 
+            .noc__mcntl__dp_pvalid          ( noc__mcntl__dp_pvalid         ), 
+            .noc__mcntl__dp_mgrId           ( noc__mcntl__dp_mgrId          ), 
             
             
             //-------------------------------
             // Data-Path to Memory Write Controller
             // - likely data from another Manager via NoC                                
 
-            .mcntl__mwc__valid       ( mcntl__mwc__valid       ), 
-            .mwc__mcntl__ready       ( mwc__mcntl__ready       ), 
-            .mcntl__mwc__cntl        ( mcntl__mwc__cntl        ), 
-            .mcntl__mwc__type        ( mcntl__mwc__type        ), 
-            .mcntl__mwc__ptype       ( mcntl__mwc__ptype       ), 
-            .mcntl__mwc__data        ( mcntl__mwc__data        ), 
-            .mcntl__mwc__pvalid      ( mcntl__mwc__pvalid      ), 
-            .mcntl__mwc__mgrId       ( mcntl__mwc__mgrId       ), 
+            .mcntl__mwc__valid              ( mcntl__mwc__valid             ), 
+            .mwc__mcntl__ready              ( mwc__mcntl__ready             ), 
+            .mcntl__mwc__cntl               ( mcntl__mwc__cntl              ), 
+            .mcntl__mwc__type               ( mcntl__mwc__type              ), 
+            .mcntl__mwc__ptype              ( mcntl__mwc__ptype             ), 
+            .mcntl__mwc__data               ( mcntl__mwc__data              ), 
+            .mcntl__mwc__pvalid             ( mcntl__mwc__pvalid            ), 
+            .mcntl__mwc__mgrId              ( mcntl__mwc__mgrId             ), 
             
             //-------------------------------
             // General
             //
-            .mcntl__mwc__flush       ( mcntl__mwc__flush       ),
-
-            .sys__mgr__mgrId         ( sys__mgr__mgrId         ),
-            .clk                     ( clk                     ),
-            .reset_poweron           ( reset_poweron           ) 
+            .mcntl__mwc__flush              ( mcntl__mwc__flush             ),
+                                                                           
+            .sys__mgr__mgrId                ( sys__mgr__mgrId               ),
+            .clk                            ( clk                           ),
+            .reset_poweron                  ( reset_poweron                 ) 
         );
 
 

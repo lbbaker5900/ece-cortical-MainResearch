@@ -27,7 +27,7 @@
    wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  noc__mcntl__cp_ptype    ; 
    wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  noc__mcntl__cp_data     ; 
    wire                                             noc__mcntl__cp_pvalid   ; 
-   wire [`MGR_MGR_ID_RANGE                       ]  noc__mcntl__cp_mgrId    ; 
+   wire [`MGR_ARRAY_HOST_ID_RANGE                ]  noc__mcntl__cp_mgrId    ; 
 
    // Data-Path (dp) from NoC 
    wire                                             noc__mcntl__dp_valid      ; 
@@ -37,4 +37,4 @@
    wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  noc__mcntl__dp_ptype      ; 
    wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  noc__mcntl__dp_data       ; 
    wire                                             noc__mcntl__dp_pvalid     ; 
-   wire [`MGR_MGR_ID_RANGE                       ]  noc__mcntl__dp_mgrId      ; 
+   wire [`MGR_ARRAY_HOST_ID_RANGE                ]  noc__mcntl__dp_mgrId      ; 

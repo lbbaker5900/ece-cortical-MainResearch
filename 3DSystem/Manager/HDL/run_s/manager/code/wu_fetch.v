@@ -94,6 +94,7 @@ module wu_fetch (
   reg  [`MGR_WU_ADDRESS_RANGE    ]          pc                             ;
   wire                                      increment_pc                   ;
   wire                                      stall                          ;
+  wire                                      enable                         ;
 
   //----------------------------------------------------------------------------------------------------
   // Registered Inputs and Outputs
@@ -132,20 +133,25 @@ module wu_fetch (
       case (wuf_cntl_state)
         
         `WUF_CNTL_WAIT: 
-          wuf_cntl_state_next =  (~stall ) ? `WUF_CNTL_START        :  // start WU read
-                                             `WUF_CNTL_WAIT         ;
+          wuf_cntl_state_next =  (~stall && enable ) ? `WUF_CNTL_START        :  // start WU read
+                                                       `WUF_CNTL_WAIT         ;
 
         `WUF_CNTL_START: 
-          wuf_cntl_state_next =  (~stall ) ? `WUF_CNTL_INC_PC       :  
-                                             `WUF_CNTL_START        ;
+          wuf_cntl_state_next =  (~stall && enable ) ? `WUF_CNTL_INC_PC       :  
+                                                       `WUF_CNTL_START        ;
 
         `WUF_CNTL_INC_PC: 
-          wuf_cntl_state_next =  ( stall ) ? `WUF_CNTL_STALL        :  
-                                             `WUF_CNTL_INC_PC       ;
+          wuf_cntl_state_next =  ( stall  ) ? `WUF_CNTL_STALL        :  
+                                 (~enable ) ? `WUF_CNTL_SYS_STALL    :  
+                                              `WUF_CNTL_INC_PC       ;
 
         `WUF_CNTL_STALL: 
           wuf_cntl_state_next =  (~stall ) ? `WUF_CNTL_INC_PC       :  
                                              `WUF_CNTL_STALL        ;
+
+        `WUF_CNTL_SYS_STALL: 
+          wuf_cntl_state_next =  (~stall && enable ) ? `WUF_CNTL_START       :  
+                                                       `WUF_CNTL_SYS_STALL   ;
 
         // Latch state on error
         `WUF_CNTL_ERR:
@@ -163,6 +169,7 @@ module wu_fetch (
   //
 
   assign stall                     = xxx__wuf__stall_d1 | wum__wuf__stall_d1 ;
+  assign enable                    = mcntl__wuf__enable_d1;
   assign wuf__wum__addr_e1         = pc                   ;
   assign wuf__wum__read_e1         = increment_pc         ;
   `ifdef TB_LIMIT_MAX_PC

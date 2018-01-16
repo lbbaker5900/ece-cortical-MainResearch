@@ -1,9 +1,12 @@
 
   // Terminate Mgr0's 2 unused Ports
+  /*
   assign mgr_inst[0].noc__mgr__port2_valid = 'd0 ;
   assign mgr_inst[0].noc__mgr__port2_cntl  = 'd0 ;
   assign mgr_inst[0].noc__mgr__port2_data  = 'd0 ;
   assign mgr_inst[0].noc__mgr__port2_fc    = 'd0 ;
+  */
+
   assign mgr_inst[0].noc__mgr__port3_valid = 'd0 ;
   assign mgr_inst[0].noc__mgr__port3_cntl  = 'd0 ;
   assign mgr_inst[0].noc__mgr__port3_data  = 'd0 ;

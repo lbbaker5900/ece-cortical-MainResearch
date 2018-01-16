@@ -64,10 +64,13 @@
                       // Check if this is the end of the packet
                       if ((vLocalFromNoC[0].noc__locl__dp_valid == 1'b1) && (vLocalFromNoC[0].noc__locl__dp_cntl == 2'b10)) // end of packet
                         begin
-                          // packet complete, now place in manager received mailbox so it can be matched with a sent packet
+                          // packet complete, if source is another SSC, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 0, local_noc_pkt_rcvd [0].header_source);
-                          noc2mgr_p [0].put(local_noc_pkt_rcvd [0]);
-                          local_noc_pkt_rcvd [0].displayPacket;
+                          if (local_noc_pkt_rcvd [0].header_source != `MGR_ARRAY_HOST_ID)
+                            begin
+                              noc2mgr_p [0].put(local_noc_pkt_rcvd [0]);
+                              local_noc_pkt_rcvd [0].displayPacket;
+                            end
                           noc_rcvd_packet_complete[0] = 1;    
                         end
                       @(vLocalFromNoC[0].cb_p);
@@ -141,10 +144,13 @@
                       // Check if this is the end of the packet
                       if ((vLocalFromNoC[1].noc__locl__dp_valid == 1'b1) && (vLocalFromNoC[1].noc__locl__dp_cntl == 2'b10)) // end of packet
                         begin
-                          // packet complete, now place in manager received mailbox so it can be matched with a sent packet
+                          // packet complete, if source is another SSC, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 1, local_noc_pkt_rcvd [1].header_source);
-                          noc2mgr_p [1].put(local_noc_pkt_rcvd [1]);
-                          local_noc_pkt_rcvd [1].displayPacket;
+                          if (local_noc_pkt_rcvd [1].header_source != `MGR_ARRAY_HOST_ID)
+                            begin
+                              noc2mgr_p [1].put(local_noc_pkt_rcvd [1]);
+                              local_noc_pkt_rcvd [1].displayPacket;
+                            end
                           noc_rcvd_packet_complete[1] = 1;    
                         end
                       @(vLocalFromNoC[1].cb_p);
@@ -218,10 +224,13 @@
                       // Check if this is the end of the packet
                       if ((vLocalFromNoC[2].noc__locl__dp_valid == 1'b1) && (vLocalFromNoC[2].noc__locl__dp_cntl == 2'b10)) // end of packet
                         begin
-                          // packet complete, now place in manager received mailbox so it can be matched with a sent packet
+                          // packet complete, if source is another SSC, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 2, local_noc_pkt_rcvd [2].header_source);
-                          noc2mgr_p [2].put(local_noc_pkt_rcvd [2]);
-                          local_noc_pkt_rcvd [2].displayPacket;
+                          if (local_noc_pkt_rcvd [2].header_source != `MGR_ARRAY_HOST_ID)
+                            begin
+                              noc2mgr_p [2].put(local_noc_pkt_rcvd [2]);
+                              local_noc_pkt_rcvd [2].displayPacket;
+                            end
                           noc_rcvd_packet_complete[2] = 1;    
                         end
                       @(vLocalFromNoC[2].cb_p);
@@ -295,10 +304,13 @@
                       // Check if this is the end of the packet
                       if ((vLocalFromNoC[3].noc__locl__dp_valid == 1'b1) && (vLocalFromNoC[3].noc__locl__dp_cntl == 2'b10)) // end of packet
                         begin
-                          // packet complete, now place in manager received mailbox so it can be matched with a sent packet
+                          // packet complete, if source is another SSC, now place in manager received mailbox so it can be matched with a sent packet
                           $display ("@%0t::%s:%0d:: INFO: NoC Packet rcvd to {%0d} from {%0d}", $time, `__FILE__, `__LINE__, 3, local_noc_pkt_rcvd [3].header_source);
-                          noc2mgr_p [3].put(local_noc_pkt_rcvd [3]);
-                          local_noc_pkt_rcvd [3].displayPacket;
+                          if (local_noc_pkt_rcvd [3].header_source != `MGR_ARRAY_HOST_ID)
+                            begin
+                              noc2mgr_p [3].put(local_noc_pkt_rcvd [3]);
+                              local_noc_pkt_rcvd [3].displayPacket;
+                            end
                           noc_rcvd_packet_complete[3] = 1;    
                         end
                       @(vLocalFromNoC[3].cb_p);

@@ -399,7 +399,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  noc__mcntl__cp_ptype    ; '
   pLine = pLine + '\n   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  noc__mcntl__cp_data     ; '
   pLine = pLine + '\n   wire                                             noc__mcntl__cp_pvalid   ; '
-  pLine = pLine + '\n   wire [`MGR_MGR_ID_RANGE                       ]  noc__mcntl__cp_mgrId    ; '
+  pLine = pLine + '\n   wire [`MGR_ARRAY_HOST_ID_RANGE                ]  noc__mcntl__cp_mgrId    ; '
   pLine = pLine + '\n'                                                                           
   pLine = pLine + '\n   // Data-Path (dp) from NoC '                                             
   pLine = pLine + '\n   wire                                             noc__mcntl__dp_valid      ; '
@@ -409,7 +409,7 @@ if __name__ == "__main__":
   pLine = pLine + '\n   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  noc__mcntl__dp_ptype      ; '
   pLine = pLine + '\n   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  noc__mcntl__dp_data       ; '
   pLine = pLine + '\n   wire                                             noc__mcntl__dp_pvalid     ; '
-  pLine = pLine + '\n   wire [`MGR_MGR_ID_RANGE                       ]  noc__mcntl__dp_mgrId      ; '
+  pLine = pLine + '\n   wire [`MGR_ARRAY_HOST_ID_RANGE                ]  noc__mcntl__dp_mgrId      ; '
   pLine = pLine + '\n'
 
   f.write(pLine)

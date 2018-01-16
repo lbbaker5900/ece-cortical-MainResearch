@@ -110,10 +110,10 @@ module mgr_noc_cntl (
                   reset_poweron     
 
     );
-
-  input                       clk             ;
-  input                       reset_poweron   ;
-  input [`MGR_MGR_ID_RANGE ]  sys__mgr__mgrId ; 
+ 
+  input                              clk             ;
+  input                              reset_poweron   ;
+  input [`MGR_ARRAY_HOST_ID_RANGE ]  sys__mgr__mgrId ; 
 
   // Information between CNTL and NOC is a packet interface not a stream interface.
   // This means that every packet is delineated with SOP and EOP.
@@ -151,7 +151,7 @@ module mgr_noc_cntl (
   output [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ] noc__locl__cp_ptype      ; 
   output [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] noc__locl__cp_data       ; 
   output                                            noc__locl__cp_pvalid     ; 
-  output [`MGR_MGR_ID_RANGE                       ] noc__locl__cp_mgrId      ; 
+  output [`MGR_ARRAY_HOST_ID_RANGE                ] noc__locl__cp_mgrId      ; 
 
   // Aggregate Data-path (dp) from NoC 
   output                                            noc__locl__dp_valid      ; 
@@ -161,7 +161,7 @@ module mgr_noc_cntl (
   output [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ] noc__locl__dp_ptype      ; 
   output [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ] noc__locl__dp_data       ; 
   output                                            noc__locl__dp_pvalid     ; 
-  output [`MGR_MGR_ID_RANGE                       ] noc__locl__dp_mgrId      ; 
+  output [`MGR_ARRAY_HOST_ID_RANGE                ] noc__locl__dp_mgrId      ; 
 
 
   `include "mgr_noc_cntl_noc_ports_declaration.vh"
@@ -185,7 +185,7 @@ module mgr_noc_cntl (
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__cp_ptype      ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__cp_data       ; 
   reg                                             noc__locl__cp_pvalid     ; 
-  reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__cp_mgrId      ; 
+  reg  [`MGR_ARRAY_HOST_ID_RANGE              ]   noc__locl__cp_mgrId      ; 
                                                  
   reg                                             noc__locl__cp_valid_p1   ; 
   reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__cp_cntl_p1    ; 
@@ -195,7 +195,7 @@ module mgr_noc_cntl (
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__cp_ptype_p1   ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__cp_data_p1    ; 
   reg                                             noc__locl__cp_pvalid_p1  ; 
-  reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__cp_mgrId_p1   ; 
+  reg  [`MGR_ARRAY_HOST_ID_RANGE              ]   noc__locl__cp_mgrId_p1   ; 
   reg                                             locl__noc__cp_ready_d1   ; 
                                                  
                                                  
@@ -206,7 +206,7 @@ module mgr_noc_cntl (
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__dp_ptype      ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__dp_data       ; 
   reg                                             noc__locl__dp_pvalid     ; 
-  reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__dp_mgrId      ; 
+  reg  [`MGR_ARRAY_HOST_ID_RANGE              ]   noc__locl__dp_mgrId      ; 
                                                  
   reg                                             noc__locl__dp_valid_p1   ; 
   reg  [`COMMON_STD_INTF_CNTL_RANGE           ]   noc__locl__dp_cntl_p1    ; 
@@ -216,7 +216,7 @@ module mgr_noc_cntl (
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]   noc__locl__dp_ptype_p1   ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]   noc__locl__dp_data_p1    ; 
   reg                                             noc__locl__dp_pvalid_p1  ; 
-  reg  [`MGR_MGR_ID_RANGE                     ]   noc__locl__dp_mgrId_p1   ; 
+  reg  [`MGR_ARRAY_HOST_ID_RANGE              ]   noc__locl__dp_mgrId_p1   ; 
   reg                                             locl__noc__dp_ready_d1   ; 
   
   reg                                               locl__noc__cp_valid_d1      ; 
@@ -1042,7 +1042,7 @@ module mgr_noc_cntl (
   // The source port will send the entire NoC packet data and its up to the local port to decode fields
   // Latch stuff that is only valid during certain cycles of the NoC packet
   reg                                             local_inq_priority_fromNoc     ; 
-  reg  [`MGR_MGR_ID_RANGE                      ]  local_inq_mgr_fromNoc          ;  
+  reg  [`MGR_ARRAY_HOST_ID_RANGE               ]  local_inq_mgr_fromNoc          ;  
   reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE    ]  local_inq_type_fromNoc         ;  // latch as we need type to know whether to add EOD at end of current apcket transfer
 
 

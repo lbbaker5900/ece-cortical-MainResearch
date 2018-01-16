@@ -96,3 +96,6 @@ do mmc_cmd_seq_pass_fsm.do
 do mmc_cmd_seq_fifos.do
 do mmc_channel_bank_status.do
 
+a = '00000000_00000000_00000001_00000110_00000001_00000101_00001_01_01'
+hex(int(a.replace('_',''),2))
+
