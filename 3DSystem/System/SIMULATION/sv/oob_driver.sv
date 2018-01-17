@@ -196,6 +196,7 @@ class oob_driver;
         //  - observe and grab transactions between WU Decoder and OOB Downstream controller and send stOp_optionPtr to manager
         //    Note: The manager will add the stOp and simd option ptrs to the operation and return to oob_driver
         //
+        $display("@%0t%s:%0d:DEBUG:{%0d}: Fork OOB driver processes", $time, `__FILE__, `__LINE__, Id);
         fork
 
           //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -221,7 +222,7 @@ class oob_driver;
               begin
                 if (( gen2oob.num() == `PE_NUM_OF_EXEC_LANES ) && (receivedGeneratorOobPackets == 0) )
                   begin
-                      //$display("@%0t%s:%0d:DEBUG: {%0d} received all OOB packets from generators", $time, `__FILE__, `__LINE__, Id);
+                      $display("@%0t%s:%0d:DEBUG: {%0d} received all OOB packets from generators", $time, `__FILE__, `__LINE__, Id);
                       receivedGeneratorOobPackets   = 1                     ;
                   end
                 // watch out for infinite loop if commenting out this section of code
@@ -463,6 +464,7 @@ class oob_driver;
               begin
                 // Observe descriptor interface
                 @(vWudToOobIfc.cb_p);
+                //$display ("@%0t::%s:%0d:: INFO: Manager {%0d} waiting for WU decoder to OOB Controller valid", $time, `__FILE__, `__LINE__, this.Id);
                 if ((vWudToOobIfc.valid == 1'b1))
                   begin
                     // Start of descriptor observed, create new descriptor and start to fill the fields

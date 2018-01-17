@@ -280,7 +280,11 @@ class Environment;
         /* */
         // Remove when driving via OOB packet
         $display("@%0t:%s:%0d: : INFO:ENV: Reset generators and drivers \n", $time, `__FILE__, `__LINE__,);
+
         fork                                                          
+            begin
+              host_driver.init();
+            end
             // We have a generator, driver and checker for every pe/lane
             `include "TB_reset_generators_and_drivers.vh"
         join
@@ -288,9 +292,6 @@ class Environment;
             begin
               main_mem_driver [mgr].reset();
             end
-
-        host_driver.init();
-        //host_driver.run();
 
         $display("@%0t:%s:%0d: : INFO:ENV: Run generators and drivers \n", $time, `__FILE__, `__LINE__,);
         // e.g. <obj>.run();
@@ -303,11 +304,16 @@ class Environment;
               noc_check.run();
             end
             begin
+              host_driver.run();
+            end
+/*
+            begin
               for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr++)
                   begin
                     main_mem_driver [mgr].reset();
                   end
             end
+*/
             begin
               for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr++)
                 begin

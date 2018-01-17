@@ -137,7 +137,7 @@ module mgr_cntl (
   reg                                        mcntl__wum__enable_inst_dnld_e1 ;
   reg                                        mcntl__wum__valid_e1            ;
   reg                                        wum__mcntl__ready_d1            ;
-  reg                                        mcntl__wum__address_e1          ;
+  reg   [`MGR_WU_ADDRESS_RANGE          ]    mcntl__wum__address_e1          ;
   // WU Instruction delineators
   reg   [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__icntl_e1            ;  // instruction delineator
   reg   [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__dcntl_e1            ;  // descriptor delineator
@@ -299,8 +299,8 @@ module mgr_cntl (
         
         // first we need to download instructions
         `MGR_CNTL_MAIN_INIT: 
-          mgr_cntl_main_state_next =   `MGR_CNTL_MAIN_RUN ;
-          //mgr_cntl_main_state_next =   (sys__mgr__mgrId == 0) ? `MGR_CNTL_MAIN_DNLD_INST : `MGR_CNTL_MAIN_RUN ; // FIXME
+          //mgr_cntl_main_state_next =   `MGR_CNTL_MAIN_RUN ;
+          mgr_cntl_main_state_next =   (sys__mgr__mgrId == `MGR_WU_MEMORY_INIT_ID ) ? `MGR_CNTL_MAIN_DNLD_INST : `MGR_CNTL_MAIN_RUN ; // FIXME
 
         `MGR_CNTL_MAIN_DNLD_INST: 
           mgr_cntl_main_state_next =  ( wum_address == `MGR_WU_MEMORY_INIT_ENTRIES       ) ? `MGR_CNTL_MAIN_DNLD_INST_COMPLETE :
@@ -370,6 +370,8 @@ module mgr_cntl (
         `MGR_CNTL_MAIN_INIT :
           begin
             mcntl__wum__enable_inst_dnld_e1    = 'd1 ;
+
+            mcntl__wum__address_e1             = 'd0 ;
             mcntl__wum__valid_e1               = 'd0 ;
             mcntl__wum__icntl_e1               = 'd0 ;   
             mcntl__wum__dcntl_e1               = 'd0 ;   
@@ -385,21 +387,23 @@ module mgr_cntl (
             mcntl__wum__enable_inst_dnld_e1    = 'd1 ;
 
             mcntl__wum__address_e1             = wum_address ;
-            mcntl__wum__valid_e1               = from_noc_read && (from_noc_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_DATA) ;
-            mcntl__wum__icntl_e1               = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_ICNTL_RANGE        ];   
-            mcntl__wum__dcntl_e1               = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_DCNTL_RANGE        ];   
-            mcntl__wum__op_e1                  = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPER_RANGE         ];  
-            mcntl__wum__option_type_e1  [0]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_TYPE0_RANGE    ];     
-            mcntl__wum__option_value_e1 [0]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_VAL0_RANGE     ];     
-            mcntl__wum__option_type_e1  [1]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_TYPE1_RANGE    ];     
-            mcntl__wum__option_value_e1 [1]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_VAL1_RANGE     ];     
-            mcntl__wum__option_type_e1  [2]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_TYPE2_RANGE    ];     
-            mcntl__wum__option_value_e1 [2]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_VAL2_RANGE     ];     
+            mcntl__wum__valid_e1               = from_noc_read & (from_noc_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_DATA) ;
+            mcntl__wum__icntl_e1               = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_ICNTL_RANGE       ];   
+            mcntl__wum__dcntl_e1               = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_DCNTL_RANGE       ];   
+            mcntl__wum__op_e1                  = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPER_RANGE        ];  
+            mcntl__wum__option_type_e1  [0]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_TYPE0_RANGE   ];     
+            mcntl__wum__option_value_e1 [0]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_VAL0_RANGE    ];     
+            mcntl__wum__option_type_e1  [1]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_TYPE1_RANGE   ];     
+            mcntl__wum__option_value_e1 [1]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_VAL1_RANGE    ];     
+            mcntl__wum__option_type_e1  [2]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_TYPE2_RANGE   ];     
+            mcntl__wum__option_value_e1 [2]    = from_noc_data [`MGR_INSTRUCTION_MEMORY_AGGREGATE_OPT_VAL2_RANGE    ];     
           end
 
         default:
           begin
             mcntl__wum__enable_inst_dnld_e1    = 'd0 ;
+
+            mcntl__wum__address_e1             = 'd0 ;
             mcntl__wum__valid_e1               = 'd0 ;
             mcntl__wum__icntl_e1               = 'd0 ;   
             mcntl__wum__dcntl_e1               = 'd0 ;   

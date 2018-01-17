@@ -244,10 +244,17 @@ if __name__ == "__main__":
       if numOfUtilizedPorts != 0 :
         pLine = pLine + '\n  // Terminate Mgr{0}\'s {1} unused Ports'.format(srcPe,numOfUtilizedPorts )
         for uP in range (int(data[4]), portsPerPe):
-          pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_valid = \'d0 ;'.format(srcPe,uP)
-          pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_cntl  = \'d0 ;'.format(srcPe,uP)
-          pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_data  = \'d0 ;'.format(srcPe,uP)
-          pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_fc    = \'d0 ;'.format(srcPe,uP)
+          # Host is connected to mgr 0, port 2
+          if srcPe is 0 and uP is 2 :
+            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port{1}_valid = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port{1}_cntl  = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port{1}_data  = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  //assign mgr_inst[{0}].noc__mgr__port{1}_fc    = \'d0 ;'.format(srcPe,uP)
+          else :
+            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_valid = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_cntl  = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_data  = \'d0 ;'.format(srcPe,uP)
+            pLine = pLine + '\n  assign mgr_inst[{0}].noc__mgr__port{1}_fc    = \'d0 ;'.format(srcPe,uP)
         pLine = pLine + '\n'        
     if re.search(r"Port . Connected to Node", line) :
       #print line

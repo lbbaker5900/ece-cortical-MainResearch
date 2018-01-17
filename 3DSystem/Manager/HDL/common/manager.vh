@@ -110,6 +110,7 @@
 `define MGR_WU_ADDRESS_RANGE                        `MGR_WU_ADDRESS_MSB : `MGR_WU_ADDRESS_LSB
 
 `define MGR_WU_MEMORY_INIT_ENTRIES               16  // DEBUG: numner of initial instruction memory loads
+`define MGR_WU_MEMORY_INIT_ID                     0  // DEBUG: which manager to init IM
 
 
 //---------------------------------------------------------------------------------------------------------------------

@@ -2032,6 +2032,7 @@ if __name__ == "__main__":
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/extended_tuple}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mode_reg_id}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mode_reg_value}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/wum_address}}'.format(mgr)
     #
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group FROM_NOC -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/noc__mcntl__cp_valid}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group FROM_NOC -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/noc__mcntl__cp_cntl}}'.format(mgr)
@@ -2096,6 +2097,15 @@ if __name__ == "__main__":
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mcntl__noc__cp_ready_e1}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mcntl__noc__dp_ready_e1}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mcntl__wud__ready_e1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mcntl__wum__option_value_e1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mcntl__wum__option_type_e1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mcntl__wum__op_e1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mcntl__wum__dcntl_e1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mcntl__wum__icntl_e1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mcntl__wum__address_e1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/wum__mcntl__ready_d1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mcntl__wum__valid_e1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group INTF_REGS -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mcntl__wum__enable_inst_dnld_e1}}'.format(mgr)
     #
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group FSM -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mgr_cntl_main_state}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MGR_CNTL -group FSM -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mgr_cntl/mgr_cntl_main_state_next}}'.format(mgr)

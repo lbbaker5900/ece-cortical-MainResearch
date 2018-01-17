@@ -179,7 +179,7 @@ module wu_memory (
     reg                                        mcntl__wum__enable_inst_dnld_d1 ;
     reg                                        mcntl__wum__valid_d1            ;
     wire                                       wum__mcntl__ready_e1            ;
-    reg                                        mcntl__wum__address_d1          ;
+    reg   [`MGR_WU_ADDRESS_RANGE          ]    mcntl__wum__address_d1          ;
     // WU Instruction delineators
     reg   [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__icntl_d1            ;  // instruction delineator
     reg   [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__dcntl_d1            ;  // descriptor delineator

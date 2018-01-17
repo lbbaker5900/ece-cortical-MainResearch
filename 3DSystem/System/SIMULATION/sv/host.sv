@@ -67,10 +67,10 @@ class host_driver_checker;
       this.vExtToNoC      = vExtToNoC      ;
       this.vExtFromNoC    = vExtFromNoC    ;
 
-      i = 0;
-      fileName  =  $sformatf("./inputFiles/manager_%0d_layer1_instruction_readmem.dat", i);
+      i = `MGR_WU_MEMORY_INIT_ID  ;
       fileName  =  $sformatf("foo.dat");
       fileName  =  $sformatf("foo2.dat");
+      fileName  =  $sformatf("./inputFiles/manager_%0d_layer1_instruction_readmem.dat", i);
       fileDesc  =  $fopen (fileName, "r");
       if (fileDesc == 0) 
         begin
@@ -100,11 +100,13 @@ class host_driver_checker;
 
       int lineNum ;
       int count   ;
+      int sent_instructions   ;
       string entry  ;
 
       found = 0;
       lineNum = 0;
       count   = 0;
+      sent_instructions = 0  ;
       noc_bitMask  = {63'd0, 1'b1}    ;
 
       while(vExtFromNoC[0].reset_poweron)
@@ -113,8 +115,6 @@ class host_driver_checker;
         end
       repeat (20) @(vExtFromNoC[0].cb_p);
 
-      void'($fgets(entry, fileDesc)); 
-      void'($sscanf(entry, "@%x %x", memory_address, memory_data));
       while (!$feof(fileDesc)) 
         begin
           noc_cntl       = 2'b10 ; 
@@ -123,6 +123,7 @@ class host_driver_checker;
           noc_desttype   = `MGR_NOC_CONT_DESTINATION_ADDR_TYPE_BITMASK ; 
           noc_pvalid     = 1'b1 ; 
 
+          // Create header
           noc_data [`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE       ] = noc_bitMask  ; 
           noc_data [`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE               ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_DP  ; 
           noc_data [`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_MCAST_BITFIELD ; 
@@ -137,27 +138,55 @@ class host_driver_checker;
           vExtFromNoC[0].noc__mgr__port_cntl  = 2'b01;
           vExtFromNoC[0].noc__mgr__port_data  = noc_data ;
 
-          for (int cyc=0; cyc<7; cyc++)
+          // Data cycles
+          for (int cyc=0; cyc<8; cyc++)
             begin
               @(vExtFromNoC[0].cb_p);
+              void'($fgets(entry, fileDesc)); 
+              void'($sscanf(entry, "@%x %x", memory_address, memory_data));
               vExtFromNoC[0].noc__mgr__port_valid = 1;
-              vExtFromNoC[0].noc__mgr__port_cntl  = 2'b00;
+              if ((count+1) == `MGR_WU_MEMORY_INIT_ENTRIES)
+                begin
+                  sent_instructions = 1;
+                  vExtFromNoC[0].noc__mgr__port_cntl  = 2'b10;
+                end
+              else if (cyc == 7)
+                begin
+                  vExtFromNoC[0].noc__mgr__port_cntl  = 2'b10;
+                end
+              else
+                begin
+                  vExtFromNoC[0].noc__mgr__port_cntl  = 2'b00;
+                end
               noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_RANGE  ] = 'd`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_BOTH  ;
               noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_TYPE_RANGE   ] = 'd`MGR_NOC_CONT_PAYLOAD_TYPE_DATA             ; 
               noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORDS_RANGE           ] = memory_data ; 
               vExtFromNoC[0].noc__mgr__port_data  = noc_data ;
-              void'($fgets(entry, fileDesc)); 
-              void'($sscanf(entry, "@%x %x", memory_address, memory_data));
+              //void'($fgets(entry, fileDesc)); 
+              //void'($sscanf(entry, "@%x %x", memory_address, memory_data));
+              count++;
+              if ((count) == `MGR_WU_MEMORY_INIT_ENTRIES)
+                begin
+                  break;
+                end
             end
+          if (sent_instructions == 1)
+            begin
+              @(vExtFromNoC[0].cb_p);
+              vExtFromNoC[0].noc__mgr__port_valid = 0;
+              break;
+            end
+          /*
           @(vExtFromNoC[0].cb_p);
           vExtFromNoC[0].noc__mgr__port_valid = 1;
           vExtFromNoC[0].noc__mgr__port_cntl  = 2'b10;
           noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORDS_RANGE           ] = memory_data ; 
           vExtFromNoC[0].noc__mgr__port_data  = noc_data ;
+          */
           @(vExtFromNoC[0].cb_p);
           vExtFromNoC[0].noc__mgr__port_valid = 0;
-          void'($fgets(entry, fileDesc)); 
-          void'($sscanf(entry, "@%x %x", memory_address, memory_data));
+          //void'($fgets(entry, fileDesc)); 
+          //void'($sscanf(entry, "@%x %x", memory_address, memory_data));
           
 
           //void'($fgets(entry, fileDesc)); 
@@ -166,6 +195,7 @@ class host_driver_checker;
           //
           //mem[memory_address] = memory_data ;
         end
+      $fclose(fileDesc);
    
 
     endtask
