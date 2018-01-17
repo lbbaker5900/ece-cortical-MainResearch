@@ -11,8 +11,8 @@ Another method of employing local memory is often due to pooling of batch reques
 This local storage allows the system to take advantage of the low latency and random access benefits of \ac{sram} whilst performing multiple operations on that data.
 When considering applications where this local storage cannot be used effectively, all these implementations suffer a degradation in performance.
 
-This work considers edge applications where a system is processing requests with a disparate set of \acp{ann}. 
-A further assumption is that in edge applications there a restrictions on power consumption and area.
+This work considers embedded applications where a system is processing requests with a disparate set of \acp{ann}. 
+A further assumption is that in embedded applications there a restrictions on power consumption and area.
 This target application means that local \ac{sram} would not effective and performance is based on \ac{dram} bandwidth.
 This work considers \acf{3dic} technology and a customized \acf{3ddram} is proposed. 
 The customized \ac{3ddram} combined with a design based on custom instructions and operation descriptors allows the this works system to achieve high levels of usable memory bandwidth.
@@ -41,6 +41,8 @@ However, there is opportunity to research different \ac{pe} architectures such a
 This work focused on providing an array of \acp{ssc} to match the array of \acp{dram} interfaces provided by the \ac{diram4}, but further research should include ganging \ac{dram} interfaces to a coarser array of \acp{ssc}.
 In practice, this may also be synergistic with alternative \ac{pe} architectures, such as employing a \ac{pe} with a large systolic array \cite{tensorflow2015-whitepaper}.
 
+The instruction decode logic is currently coded using an \ac{fsm}, in accordance with creating an expansive architecture it might be a better to use a small processor to decode and control system functions.
+
 \iffalse
   \item Half-Precision PE
 %    \2 modifying the PE to support 16-bit FP would be relatively trivial
@@ -50,7 +52,7 @@ In practice, this may also be synergistic with alternative \ac{pe} architectures
 %     \3 using a reduction array would effectively double the FLOPs
 %     \3 looking at storing weights and inputs for a pipelined PE would be required and the manager would likely be customized to the PE, but the belief is the Manager design and complexity should be similar
   \item Systolic PE
-%    \2 systolic arrays have shown efficacy when used in server applications such as TPU, but its not clear how effective they would be in an edge application
+%    \2 systolic arrays have shown efficacy when used in server applications such as TPU, but its not clear how effective they would be in an embedded application
 %      \3 consider how to effectively feed a systolic array PE
 %      \3 consider types of systolic array
 %      \3 consider situations such as multiple Managers feeding a single PE. For example, a systolic PE might use two managers to feed X and Y inputs of the array

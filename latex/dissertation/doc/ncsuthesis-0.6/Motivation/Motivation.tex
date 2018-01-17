@@ -11,16 +11,16 @@
 \section[The Problem]{The Problem}
 \label{sec:The Problem}
 
-As mentioned in chapter \ref{sec:Introduction}, this work focuses on edge applications employing disparate \ac{ann}s and therefore assumes there are limited opportunities for both weight reuse and batch processing.
+As mentioned in chapter \ref{sec:Introduction}, this work focuses on embedded applications employing disparate \ac{ann}s and therefore assumes there are limited opportunities for both weight reuse and batch processing.
 
 Given the storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, it is generally accepted that \ac{dram} is required to store the \ac{ann} parameters \cite{dadiannao2014}\cite{dadiannao2017}\cite{azarkhish2017neurostream}.
 
-When considering systems that will employ multiple \ac{dnn}s simultaneously suggests that these edge systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second} \eqref{eq:maximumBandwidth}.
+When considering systems that will employ multiple \ac{dnn}s simultaneously suggests that these embedded systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second} \eqref{eq:maximumBandwidth}.
 
 In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck} \cite{dadiannao2017}}.
 
 \iffalse
-Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for edge systems employing inference on multiple disparate useful-sized neural networks.}}}
+Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for embedded systems employing inference on multiple disparate useful-sized neural networks.}}}
 %\hlc[gray]{hello}
 \fi
 
@@ -69,7 +69,7 @@ There important application is disparate \ac{ann}s because specifically a form o
 
 
 \iffalse
-So considering the performance improvements observed in other applications, it is expected that many customer facing or edge applications will implement multiple instances of artificial neural networks to perform various functions.
+So considering the performance improvements observed in other applications, it is expected that many customer facing or embedded applications will implement multiple instances of artificial neural networks to perform various functions.
 have very large memory and processing requirements.
 require multiple instances of \ac{ann}s of similar size to the \ac{ann} described in \cite{krizhevsky2012imagenet}.
 
@@ -98,7 +98,7 @@ Overall \acp{gpu} have limited suitability to meet this works target application
 \subsection{\Acp{asic}/\Acp{asip}}
 \label{sec:asicAndAsip}
 Much of the \ac{ann} application specific (\ac{asic}/\ac{asip}) research has focused on taking advantage of the performance and ease of use of \acf{sram}.
-These implementations can be shown to be effective with specific \ac{ann} architectures (e.g. \ \ac{cnn}), server applications or the small point problems but when a system requires multiple disparate \ac{ann}s in an edge application, \textbf{\textcolor{black}{existing implementations do not provide the required flexibility, storage capacity and deterministic performance}}.
+These implementations can be shown to be effective with specific \ac{ann} architectures (e.g. \ \ac{cnn}), server applications or the small point problems but when a system requires multiple disparate \ac{ann}s in an embedded application, \textbf{\textcolor{black}{existing implementations do not provide the required flexibility, storage capacity and deterministic performance}}.
 
 Even in cloud applications, there are limitations on reuse. We paraphrase a quote from a Google paper \cite{tensorflow2015-whitepaper} on their Tensor Processing Unit ASIC (TPU):
 
@@ -111,7 +111,7 @@ Implementations that focus on \ac{cnn}s can suffer from severe degradation in pe
 Implementations that try to provide adequate on-chip storage, sometimes in the form of \ac{edram} have to have many instances of the \ac{asip} to provide the required total storage \cite{dadiannao2017}. 
 In these cases, the large number of instances results in huge performance capabilities which far exceed the requirements of this works application. The total power also becomes prohibitive.
 
-Considering this work focuses on edge applications employing disparate \ac{ann}s and assumes both weight reuse and batch processing do not apply, regardless of how implementations employ \ac{sram} as an intermediate store, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
+Considering this work focuses on embedded applications employing disparate \ac{ann}s and assumes both weight reuse and batch processing do not apply, regardless of how implementations employ \ac{sram} as an intermediate store, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
 
 
 

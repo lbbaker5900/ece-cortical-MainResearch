@@ -16,29 +16,11 @@ A detailed flow diagram and block diagram of the sub-system column can be seen i
 \captionsetup{justification=centering}
 \captionsetup{width=.9\linewidth}
 \centerline{
-\mbox{\includegraphics[scale=0.07]{DetailedFlowDiagram}}
+\mbox{\includegraphics[scale=0.5]{DetailedFlowDiagram}}
 }
 \center\caption{Sub-System Column (SSC) Flow Diagram}
 \label{fig:DetailedFlowDiagram}
 \end{figure}
-
-\begin{sidewaysfigure}[h]
-% the [] contains position info e.g. [!H] means here
-% H 	Place exactly at spot in source text
-% h 	Place approximately at spot in source test
-% t 	Place at top of page
-% b 	Place at bottom of page
-% p 	Place on page for floats only
-% ! 	Override internal LaTeX parameters for determining float position
-\centering
-\captionsetup{justification=centering}
-\captionsetup{width=0.9\textwidth}
-\centerline{
-\mbox{\includegraphics[angle=0, width=1.0\textwidth]{DetailedBlockDiagram}}
-}
-\center\caption{Sub-System Column (SSC) Block Diagram}
-\label{fig:DetailedBlockDiagram}
-\end{sidewaysfigure}
 
 \section{Manager}
 \label{sec:manager}
@@ -55,15 +37,68 @@ A block diagram of the manager can be seen in figure \ref{fig:Manager block diag
 \label{fig:Manager block diagram}
 \end{figure}
 
+\subsection{System controller}
+\label{sec:System controller}
+
+The system controller is responsible for initialization and general system configuration.
+A block diagram can be seen in figure \ref{fig:System controller}.
+
+\begin{figure}[h]
+% the [] contains position info e.g. [!t] means here
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[scale=1.5]{managerCntlBlockDiagram}}
+}
+\center\caption{System controller}
+\label{fig:System controller}
+\end{figure}
+
+\subsubsection{Initial Boot}
+\label{sec:Initial Boot}
+
+The system controller is responsible for performing the initial \ac{bootp} process.
+This involves quiecsing the system after reset and downloading the initial boot instructions from the host.
+After reset, the controller keeps the instruction fetch logic disabled and expects unsolicited \ac{noc} packets from the host which contain the initial boot code.
+The controller decodes the \ac{noc} packets and writes the data directly into instruction memory.
+Currently each \ac{noc} packet contains eight instruction memory entries (see figure \ref{fig:Host transfer data packet}).
+The number of initial instruction entries is hard-coded but it is anticipated a standard on-chip protocol such as \ac{jtag} will be used to set initial \ac{bootp} configuration.
+Once \ac{bootp} is complete, the controller releases the system.
+It is anticipated that the initial code will contain configuration instructions to download configuration tables and the \ac{pe} \ac{simd} instruction memory.
+Once this configuration process is complete, the last \ac{bootp} instruction will perform a operational instruction download.
+
+\begin{figure}[!t]
+  \begin{minipage}{1\textwidth}
+  %\begin{subfigure}{1\textwidth}
+    \centering
+    \captionsetup{justification=centering, skip=10pt}
+    \begin{bytefield}[bitwidth=0.49em, endianness=big]{76}
+      \bitheader{0,8,16,24,32,40,48,56,64,72,74} \\
+      \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
+        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{6}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
+      \end{rightwordgroup}  \\
+      \begin{rightwordgroup}{\scriptsize Data Cycle}
+        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{4}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{7}{\tiny NA} & \bitbox{57}{\tiny Instruction memory entry}
+      \end{rightwordgroup}  \\
+      \bitbox[]{76}{$\vdots$} \\[1ex]
+      \begin{rightwordgroup}{\scriptsize Data Cycle}
+        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{4}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{7}{\tiny NA} & \bitbox{57}{\tiny Instruction memory entry}
+      \end{rightwordgroup}  \\
+    \end{bytefield}
+    \captionsetup{justification=centering, skip=9pt}
+    \vspace{-0.5cm}
+    \captionof{figure}{Host Boot code download \ac{noc} packet}
+    \label{fig:Host transfer data packet}
+  \end{minipage}
+\end{figure}
+
 \subsection{Instruction Decoder}
 \label{sec:Instruction Decoder}
 
-\subsubsection{Operation Decode}
-\label{ssec:operationDecode}
-
 In figure \ref{fig:Manager block diagram}, instructions are read from WU memory by the WU fetch block and the output of the memory is passed to the WU decoder block.
 
-\subsubsection{Decoding Compute Instructions}
+\subsubsection{Compute Instructions}
 \label{sec:Decoding Compute Instructions}
 
 The operation descriptor is decoded and a \ac{stop} pointer and a \ac{simd} \ac{pc} pointer are extracted. 
@@ -87,14 +122,29 @@ This allows blocks to pipeline tasks to absorb any latencies, they also allow bl
 The \ac{fifo} will assert a flow control signal until the block is ready to receive.
 In practice, the instruction decode logic batch decodes up to eight instructions and sends descriptor contents to dependent blocks where they are also pipelined.
 
-\subsubsection{Decoding Configuration Instructions}
+\subsubsection{Configuration Instructions}
 \label{sec:Decoding Configuration Instructions}
 
+The configuration instructions are responsible for :
+\begin{outline}
+ \1 performing synchronization between the \ac{ssc} and other \acp{ssc} or the host system.
+ \1 performing data download and upload operations
+\end{outline}
+
+The configuration packets are broken into two types, configuration data and configuration sync.
+\iffalse
 Currently the sync instruction has been implemented.
 It is assumed at this point that adequate infrastructure and extensibility has been built into the system to allow implementation without adding significant amouts of logic.
+\fi
 
-The configuration descriptor contains a single configuration sync option tuple. The 24-bit option value contains a 3-bit mode register identifier and a 21-bit register.
-There are currently four mode registers defined, "Send", "Wait", "Pause" and "Flush". Each register has fields specific to the mode (see figure \ref{fig:Sync instruction}).
+The configuration instruction contains a single descriptor with one, two or three option tuples.
+
+The sync instruction descriptor contains a single configuration sync option tuple. The 24-bit option value contains a 3-bit mode register identifier and a 21-bit mode register.
+There are currently four mode registers defined, "Send", "Wait", "Pause" and "Flush". Each register has fields specific to the mode as seen in figure \ref{fig:Sync instruction}.
+
+The data configuration instruction descriptor contains a configuration data option tuple and a storage descriptor tuple and optionally a target tuple. 
+The configuration data option value is 24-bits with a 3-bit mode register identifier and a 21-bit mode register.
+There are currently four mode registers defined, "instruction download", "sync group download", "memory download" and "memory upload". Each register has fields specific to the mode as seen in figure \ref{fig:Data transfer instruction}.
 
 \paragraph{Sync Send}
 
@@ -184,6 +234,110 @@ When the return data processor receives all outstanding tags, it asserts a relea
 %  %\reglabel{Reset}\regnewline%
 %\end{register}
 
+\paragraph{Instruction download}
+
+The register fields can be seen in register \ref{reg:Inst dnld mode register}.
+The decoder sends the data option tuple to the system controller.
+The system controller will ensure the fetch and decode blocks are disabled and then expects to receive the number of instruction entries from the host over the \ac{noc}.
+Once the instruction memory is loaded, the system controller will enable the fetch and decode loagic.
+\begin{register}{H}{Instruction download mode register}{}%{0x250} name=example
+  \label{reg:Inst dnld mode register}
+  % sizes 
+  %\tiny 	
+  %\scriptsize 	
+  %\footnotesize
+  %\small 	
+  %\normalsize 	
+  %\large 	
+  %\Large 	
+  %\LARGE 	
+  \vspace{-10pt}
+  \regfield{{\scriptsize Mode Reg ID         }}{ 3}{21}{000}%
+  \regfield{{\scriptsize Number of entries  }}{13}{ 8}{{number}}%
+  \regfield{{\scriptsize Not used            }}{ 7}{ 1}{{NA}}%
+  \regfield{{\scriptsize continue            }}{ 1}{ 0}{{en}}%
+  %\center\caption{Sub-System Column (SSC) Block Diagram}
+  %\reglabel{Reset}\regnewline%
+\end{register}
+
+\paragraph{Sync group table download}
+
+The register fields can be seen in register \ref{reg:Sync grp dnld mode register}.
+The decoder sends the data option tuple to the system controller.
+The system controller will ensure the fetch and decode blocks are disabled and then expects to receive the number of sync groups from the host over the \ac{noc}.
+The group table entry is 64-bits and eight are contained in an \ac{noc} packet.
+Once the sync group table is loaded, the system controller will enable the fetch and decode loagic.
+\begin{register}{H}{Sync group table download mode register}{}%{0x250} name=example
+  \label{reg:Sync grp dnld mode register}
+  % sizes 
+  %\tiny 	
+  %\scriptsize 	
+  %\footnotesize
+  %\small 	
+  %\normalsize 	
+  %\large 	
+  %\Large 	
+  %\LARGE 	
+  \vspace{-10pt}
+  \regfield{{\scriptsize Mode Reg ID         }}{ 3}{21}{001}%
+  \regfield{{\scriptsize Not used            }}{ 5}{16}{{NA}}%
+  \regfield{{\scriptsize Number of groups    }}{ 8}{ 8}{{number}}%
+  \regfield{{\scriptsize Not used            }}{ 7}{ 1}{{NA}}%
+  \regfield{{\scriptsize continue            }}{ 1}{ 0}{{en}}%
+  %\center\caption{Sub-System Column (SSC) Block Diagram}
+  %\reglabel{Reset}\regnewline%
+\end{register}
+
+\paragraph{Memory download}
+
+The register fields can be seen in register \ref{reg:Mem dnld mode register}.
+The decoder sends the data option tuple to the system controller.
+The system controller will ensure the fetch and decode blocks are disabled and then expects to receive the number of bytes from the host over the \ac{noc}.
+As each data packet is received, it is passed to the memory write controller along with the storage descriptor for writing to \ac{dram}.
+\begin{register}{H}{Memory download mode register}{}%{0x250} name=example
+  \label{reg:Mem dnld mode register}
+  % sizes 
+  %\tiny 	
+  %\scriptsize 	
+  %\footnotesize
+  %\small 	
+  %\normalsize 	
+  %\large 	
+  %\Large 	
+  %\LARGE 	
+  \vspace{-10pt}
+  \regfield{{\scriptsize Mode Reg ID         }}{ 3}{21}{010}%
+  \regfield{{\scriptsize Number of bytes     }}{21}{ 0}{{number}}
+  %\center\caption{Sub-System Column (SSC) Block Diagram}
+  %\reglabel{Reset}\regnewline%
+\end{register}
+
+\paragraph{Memory upload}
+
+The register fields can be seen in register \ref{reg:Mem upld mode register}.
+The decoder sends the data option tuple to the system controller.
+The system controller will ensure the fetch and decode blocks are disabled.
+The controller sends the storage descriptor and target option tuples to the the stream 0 memory read controller. 
+The read controller generates read requests to the \ac{dram} and sends the corresponding read data to the system controller.
+The system controller the data and embeds the data in an \ac{noc} packet and send it to the host.
+The data is fragmented and sent using multiple data \ac{noc} packets.
+\begin{register}{H}{Memory upload mode register}{}%{0x250} name=example
+  \label{reg:Mem upld mode register}
+  % sizes 
+  %\tiny 	
+  %\scriptsize 	
+  %\footnotesize
+  %\small 	
+  %\normalsize 	
+  %\large 	
+  %\Large 	
+  %\LARGE 	
+  \vspace{-10pt}
+  \regfield{{\scriptsize Mode Reg ID         }}{ 3}{21}{011}%
+  \regfield{{\scriptsize Number of bytes     }}{21}{ 0}{{number}}
+  %\center\caption{Sub-System Column (SSC) Block Diagram}
+  %\reglabel{Reset}\regnewline%
+\end{register}
 
 \iffalse
 \subsubsection{Argument Decode}
@@ -502,5 +656,23 @@ Currently only the tag and data mode has been implemented.
 \end{figure}
 
 
+
+\begin{sidewaysfigure}[h]
+% the [] contains position info e.g. [!H] means here
+% H 	Place exactly at spot in source text
+% h 	Place approximately at spot in source test
+% t 	Place at top of page
+% b 	Place at bottom of page
+% p 	Place on page for floats only
+% ! 	Override internal LaTeX parameters for determining float position
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=0.9\textwidth}
+\centerline{
+\mbox{\includegraphics[angle=0, width=1.0\textwidth]{DetailedBlockDiagram}}
+}
+\center\caption{Sub-System Column (SSC) Block Diagram}
+\label{fig:DetailedBlockDiagram}
+\end{sidewaysfigure}
 
 
