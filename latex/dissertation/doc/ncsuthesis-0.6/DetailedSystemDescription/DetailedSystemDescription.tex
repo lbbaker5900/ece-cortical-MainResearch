@@ -59,14 +59,23 @@ A block diagram can be seen in figure \ref{fig:System controller}.
 \label{sec:Initial Boot}
 
 The system controller is responsible for performing the initial \ac{bootp} process.
-This involves quiecsing the system after reset and downloading the initial boot instructions from the host.
+This involves quiescing the system after reset and downloading the initial boot instructions from the host.
+
 After reset, the controller keeps the instruction fetch logic disabled and expects unsolicited \ac{noc} packets from the host which contain the initial boot code.
-The controller decodes the \ac{noc} packets and writes the data directly into instruction memory.
-Currently each \ac{noc} packet contains eight instruction memory entries (see figure \ref{fig:Host transfer data packet}).
+The host will unsolicitedly send the \ac{bootp} code over the \ac{noc} to each \ac{ssc}.
+The controller in each \ac{ssc} decodes the \ac{noc} packets and writes the data directly into instruction memory.
+Currently each \ac{noc} \ac{mtu} packet contains 16 instruction memory entries (see figure \ref{fig:Host transfer data packet}).
 The number of initial instruction entries is hard-coded but it is anticipated a standard on-chip protocol such as \ac{jtag} will be used to set initial \ac{bootp} configuration.
-Once \ac{bootp} is complete, the controller releases the system.
-It is anticipated that the initial code will contain configuration instructions to download configuration tables and the \ac{pe} \ac{simd} instruction memory.
-Once this configuration process is complete, the last \ac{bootp} instruction will perform a operational instruction download.
+Once the host has sent the \ac{bootp} code, each \ac{ssc} controller releases its instruction fetch block.
+
+It is anticipated that the initial \ac{bootp} code will not contain operational instructions but only configuration instructions to download configuration tables, the \ac{pe} \ac{simd} instruction memory and the \ac{ann} parameters.
+For example, to download the \ac{ann} parameters, the \ac{bootp} instructions will include a configuration sync and a configuration data download.
+
+The first \ac{bootp} instruction will be a configuration sync sent to the host to indicate the initial \ac{bootp} is complete and \ac{ann} parameters are ready to be received.
+After the configuration sync is sent to the host, the configuration data instruction will prepare the \ac{ssc} to receive data from the host and the host will then start sending configuration data. 
+The size of the data is known by both the \ac{ssc} via the instruction and the host.
+The \ac{ann} parameters can be downloaded using multiple downloads.
+Once \ac{ann} parameters and system tables are downloaded, the last instruction can be another configuration data instruction download to load operational code.
 
 \begin{figure}[!t]
   \begin{minipage}{1\textwidth}
@@ -88,7 +97,7 @@ Once this configuration process is complete, the last \ac{bootp} instruction wil
     \end{bytefield}
     \captionsetup{justification=centering, skip=9pt}
     \vspace{-0.5cm}
-    \captionof{figure}{Host Boot code download \ac{noc} packet}
+    \captionof{figure}{Host boot code download \ac{noc} packet}
     \label{fig:Host transfer data packet}
   \end{minipage}
 \end{figure}
