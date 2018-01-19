@@ -378,11 +378,11 @@ The configuration option tuple can be seen in figure \ref{fig:Configuration tupl
 The data transfer configuration instruction is shown in figure \ref{fig:Data transfer instruction}. The descriptor is a 2-tuple with a configuration data option type and a storage option type.
 The sync configuration instruction is shown in figure \ref{fig:Sync instruction} and the descriptor is a 1-tuple with a sync configuration option type.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 
   %\begin{minipage}{1\textwidth}
-  \begin{subfigure}{1\textwidth}
+  %\begin{subfigure}{1\textwidth}
     \centering
     \captionsetup{justification=centering, skip=10pt}
     \begin{bytefield}[bitwidth=1.49em, endianness=big]{32}
@@ -395,10 +395,12 @@ The sync configuration instruction is shown in figure \ref{fig:Sync instruction}
     \vspace{-2mm}
     \captionof{figure}{Configuration tuple}
     \label{fig:Configuration tuple}
-  \end{subfigure}%
+  %\end{subfigure}%
   %\end{minipage}
+\end{figure}
 
-  \bigskip
+\begin{figure}[h]
+\centering
 
   \begin{subfigure}{.85\textwidth}
     \centering
@@ -412,17 +414,17 @@ The sync configuration instruction is shown in figure \ref{fig:Sync instruction}
 
   \vspace{-35pt}
   \begin{subfigure}{0.85\textwidth}
-    \centering
-    \vspace{40pt}
-    \includegraphics[width=1\textwidth]{syncInstruction}
-    \captionsetup{justification=centering, skip=10pt}
-    \caption{Sync instruction }
-    \label{fig:Sync instruction}
+     \centering
+     \vspace{40pt}
+     \includegraphics[width=1\textwidth]{syncInstruction}
+     \captionsetup{justification=centering, skip=10pt}
+     \caption{Sync instruction }
+     \label{fig:Sync instruction}
   \end{subfigure}%
-%\vspace{-10pt}
-\captionsetup{justification=centering, skip=16pt}
-\caption{Configuration Instruction types}
-\label{fig:Configuration Instruction types}
+  %\vspace{-10pt}
+  \captionsetup{justification=centering, skip=16pt}
+  \caption{Configuration Instruction types}
+  \label{fig:Configuration Instruction types}
 \end{figure}
 
 The data option value mode register \cite{standard2007jedec} defines the type of data transfer along with information to aid the transfer. 
@@ -512,18 +514,25 @@ It is also responsible for downloading configuration data including \ac{ssc} ins
 The host will use the \ac{noc} to carry the commands and data to accomplish the transfers.
 The commands will employ the same option tuple method as described in section \ref{sec:Configuration Instruction}.
 
-To initiate a transfer of data to or from the \ac{ssc} the host will initially send an \ac{noc} packet with two option tuples.
-The first contains a configuration data option tuple as shown in figure \ref{fig:Data transfer instruction} which defines a memory download or upload.
-The second tuple has a storage descriptor defining where in memory to write or read the data.
-An example memory download configuration packet is shown in figure \ref{fig:Host transfer configuration packet}.
-The data to be transferred is included in further \ac{noc} packets and in the case of larger transfers will be fragmented into individual packets to match the 32 data word \ac{mtu} of the \ac{noc}.
+A transfer of data can be solicited or unsolicited.
+In the solicited case, the host initiates the tranfer by sending to the \ac{ssc} an \ac{noc} packet with two option tuples as shown in figure \ref{fig:Host transfer configuration packet}.
+The first contains a configuration data option tuple (see figure \ref{fig:Configuration tuple}) which contains a mode register used to define the type of transfer.
+The second tuple has a storage descriptor pointer defining where in memory to write or read the data.
+In the solicited case, the transfer is initiated from a configuration data transfer instruction in which case the main controller receives the mode register and storage descriptor from the instruction decoder.
+An example instruction can be seen in figure \ref{fig:Data transfer instruction}.
+Additional information on the configuration data option tuple mode registers can be found in sections \ref{sec:Memory download reg} and \ref{sec:Memory upload reg}.
 
-The main controller decodes the first packet as a memory transfer from the host. 
 In the case of a data download, the main controller sends the storage tuple to the memory write controller and indicates its a \ac{dma}.
-This will inform the memory write controller to expect further data packets and associate those with the current storage desciptor.
-In the case of a data upload, the main controller will check the status of the instruction decode and if it has not been halted by a sync instruction, will halt the the instruction decoder.
+This will inform the memory write controller to expect further data packets and associate those with the current storage descriptor.
+In the case of a data upload, the main controller will check the status of the instruction decode and if it has not been halted by a sync instruction, will halt the instruction decoder.
 The main controller then sends the storage tuple to the lane 0 memory read controller.
-The read data is streamed back to the memory write controller, packetized and sent back to the host over the \ac{noc}.
+
+The data to be transferred is included in separate packets as shown in figure \ref{fig:Host transfer data packet}.
+For downloads, the host sends the data and the main controller passes the packets to the memory write controller.
+In the case of reads, the main controller receives data from the memory read controller, packetizes the data and sends to the host.
+If the amount of data exceeds the 32 data word \ac{mtu} of the \ac{noc}, the data will be fragmented.
+
+
 
 
 \begin{figure}[!t]
@@ -546,11 +555,12 @@ The read data is streamed back to the memory write controller, packetized and se
     \end{bytefield}
     \captionsetup{justification=centering, skip=9pt}
     \vspace{-0.5cm}
-    \captionof{figure}{Host transfer \ac{noc} memory download configuration packet}
+    \captionof{figure}{Host unsolicited transfer \ac{noc} memory download configuration packet}
     \label{fig:Host transfer configuration packet}
   \end{minipage}
 
   \bigskip
+  \vspace{0.5cm}
 
   \begin{minipage}{1\textwidth}
   %\begin{subfigure}{1\textwidth}
