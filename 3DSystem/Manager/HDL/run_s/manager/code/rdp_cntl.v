@@ -40,47 +40,71 @@ import rdp_cntl_types::*;
 
 module rdp_cntl (
 
-            //-------------------------------
-            // Input from Work Unit Decoder
+            //-------------------------------------------------------------------------------------------------
+            // Work Unit Decoder interface
             //
+            input   wire                                        wud__rdp__valid                                  ,
+            output  reg                                         rdp__wud__ready                                  ,
+            input   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl                                  ,  // descriptor delineator
+            input   wire   [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag                                    ,  // decoder generates tag for Return data proc and Downstream OOB
+            input   wire   [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
+            input   wire   [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ,  
+/*
             wud__rdp__valid             ,  // receive tag and MR tuples
             rdp__wud__ready             ,
             wud__rdp__dcntl             ,
             wud__rdp__tag               ,
             wud__rdp__option_type       ,
             wud__rdp__option_value      ,
-
-            //-------------------------------
-            // Input from Upstream Stack Bus 
+*/
+            //-------------------------------------------------------------------------------------------------
+            // Stack Bus - Upstream
             //
+            input   wire                                          stuc__rdp__valid       ,
+            input   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]      stuc__rdp__cntl        ,
+            output  reg                                           rdp__stuc__ready       ,
+            input   wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      stuc__rdp__tag         ,  // Match Tag with tag from wu_decoder
+            input   wire   [`STACK_UP_INTF_DATA_RANGE      ]      stuc__rdp__data        ,
+ 
+/*
             stuc__rdp__valid         ,
             stuc__rdp__cntl          ,  // used to delineate upstream packet data
             rdp__stuc__ready         ,
             stuc__rdp__tag           ,  // Use this to match with WU and take all the data 
             stuc__rdp__data          ,  // The data may vary so check for cntl=EOD when reading this interface
-
-            //-------------------------------
+*/
+            
+            //-------------------------------------------------------------------------------------------------
             // Memory Write Combine/Cache Interface
             //
+            // - Data and memory write descriptors
+            output  reg                                                rdp__mwc__valid      , 
+            output  reg    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl       , 
+            input   wire                                               mwc__rdp__ready      , 
+            output  reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype      , 
+            output  reg                                                rdp__mwc__pvalid     , 
+            output  reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data       , 
+/*
             rdp__mwc__valid          , 
             rdp__mwc__cntl           , 
             mwc__rdp__ready          , 
             rdp__mwc__ptype          , 
             rdp__mwc__pvalid         , 
             rdp__mwc__data           , 
-
-            //-------------------------------
+*/
+            //-------------------------------------------------------------------------------------------------
             // NoC interface
             //
-            // Control-Path (cp) to NoC 
-            rdp__noc__cp_valid       , 
-            rdp__noc__cp_cntl        , 
-            noc__rdp__cp_ready       , 
-            rdp__noc__cp_type        , 
-            rdp__noc__cp_ptype       , 
-            rdp__noc__cp_desttype    , 
-            rdp__noc__cp_pvalid      , 
-            rdp__noc__cp_data        , 
+            // Data-Path (dp) to NoC
+            output  reg                                                rdp__mcntl__noc_valid      , 
+            output  reg    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mcntl__noc_cntl       , 
+            input   wire                                               mcntl__rdp__noc_ready      , 
+            output  reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__mcntl__noc_type       , 
+            output  reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mcntl__noc_ptype      , 
+            output  reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  rdp__mcntl__noc_desttype   , 
+            output  reg                                                rdp__mcntl__noc_pvalid     , 
+            output  reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mcntl__noc_data       , 
+/*
 
             // Data-Path (dp) to NoC 
             rdp__noc__dp_valid       , 
@@ -91,21 +115,29 @@ module rdp_cntl (
             rdp__noc__dp_desttype    , 
             rdp__noc__dp_pvalid      , 
             rdp__noc__dp_data        , 
-
+*/
             //-------------------------------
             // Config
             //
-            cfg__rdp__check_tag      ,
+            input   wire  cfg__rdp__check_tag      ,
 
             //-------------------------------
             // General
             //
+            /*
             sys__mgr__mgrId          ,
             clk                      ,
             reset_poweron    
- 
+ */
+            //-------------------------------------------------------------------------------------------------
+            // General
+            //
+            input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId   ,
+                                                                    
+            input  wire                           clk               ,
+            input  wire                           reset_poweron  
     );
-
+/*
   //----------------------------------------------------------------------------------------------------
   // General
 
@@ -127,17 +159,19 @@ module rdp_cntl (
   output                                         rdp__stuc__ready       ;
   input   [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      stuc__rdp__tag         ;  // Match Tag with tag from wu_decoder
   input   [`STACK_UP_INTF_DATA_RANGE      ]      stuc__rdp__data        ;
- 
+ */
 
   //-------------------------------------------------------------------------------------------------
   // Work Unit Decoder interface
   //
+  /*
   input                                       wud__rdp__valid                ;
   output                                      rdp__wud__ready                ;
   input  [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl                ;  // descriptor delineator
   input  [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag                  ;  // decoder generates tag for Return data proc and Downstream OOB
   input  [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type    [`MGR_WU_OPT_PER_INST ] ;  // WU Instruction option fields
   input  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ;  
+  */
   //input     d_wud__rdp__option_type_t  wud__rdp__option_type     ;  // WU Instruction option fields
   //input     d_wud__rdp__option_value_t wud__rdp__option_value    ;  
 
@@ -149,25 +183,19 @@ module rdp_cntl (
   // Memory Write Combine/Cache Interface
   //
   // - Data and memory write descriptors
+  /*
   output                                              rdp__mwc__valid      ; 
   output  [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl       ; 
   input                                               mwc__rdp__ready      ; 
   output  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype      ; 
   output                                              rdp__mwc__pvalid     ; 
   output  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data       ; 
+*/
   
   //-------------------------------------------------------------------------------------------------
   // NoC interface
   //
-  // Control-Path (cp) to NoC '
-  output                                              rdp__noc__cp_valid      ; 
-  output  [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__noc__cp_cntl       ; 
-  input                                               noc__rdp__cp_ready      ; 
-  output  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__noc__cp_type       ; 
-  output  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__noc__cp_ptype      ; 
-  output  [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  rdp__noc__cp_desttype   ; 
-  output                                              rdp__noc__cp_pvalid     ; 
-  output  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__noc__cp_data       ; 
+  /*
   
   // Data-Path (dp) to NoC '
   output                                              rdp__noc__dp_valid      ; 
@@ -178,7 +206,7 @@ module rdp_cntl (
   output  [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  rdp__noc__dp_desttype   ; 
   output                                              rdp__noc__dp_pvalid     ; 
   output  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__noc__dp_data       ; 
-
+*/
 
   //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
@@ -187,13 +215,13 @@ module rdp_cntl (
   //-------------------------------------------------------------------------------------------------
   // Stack Bus - Upstream
   //
-
+/*
   wire                                           stuc__rdp__valid       ;
   wire    [`COMMON_STD_INTF_CNTL_RANGE    ]      stuc__rdp__cntl        ;
   reg                                            rdp__stuc__ready       ;
   wire    [`STACK_DOWN_OOB_INTF_TAG_RANGE ]      stuc__rdp__tag         ;  // tag size is the same as sent to PE
   wire    [`STACK_UP_INTF_DATA_RANGE      ]      stuc__rdp__data        ;
- 
+ */
   reg                                            stuc__rdp__valid_d1    ;
   reg     [`COMMON_STD_INTF_CNTL_RANGE    ]      stuc__rdp__cntl_d1     ;
   wire                                           rdp__stuc__ready_e1    ;
@@ -203,12 +231,14 @@ module rdp_cntl (
   //-------------------------------------------------------------------------------------------------
   // Work Unit Decoder interface
   //
+/*
   wire                                        wud__rdp__valid                ;
   reg                                         rdp__wud__ready                ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__rdp__dcntl                ;  // descriptor delineator
   wire   [`MGR_STD_OOB_TAG_RANGE         ]    wud__rdp__tag                  ;  // decoder generates tag for Return data proc and Downstream OOB
   wire   [`MGR_WU_OPT_TYPE_RANGE         ]    wud__rdp__option_type    [`MGR_WU_OPT_PER_INST ] ;
   wire   [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value   [`MGR_WU_OPT_PER_INST ] ; 
+ */
 
   reg                                         wud__rdp__valid_d1             ;
   wire                                        rdp__wud__ready_e1             ;
@@ -218,6 +248,51 @@ module rdp_cntl (
   reg    [`MGR_WU_OPT_VALUE_RANGE        ]    wud__rdp__option_value_d1   [`MGR_WU_OPT_PER_INST ] ;
 
  
+  //-------------------------------------------------------------------------------------------------
+  // Memory Write Combine/Cache Interface
+  //
+  // - Data and memory write descriptors
+/*
+  reg                                                 rdp__mwc__valid      ; 
+  reg     [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl       ; 
+  wire                                                mwc__rdp__ready      ; 
+  reg     [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype      ; 
+  reg                                                 rdp__mwc__pvalid     ; 
+  reg     [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data       ; 
+*/
+  wire                                                rdp__mwc__valid_e1   ; 
+  wire    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl_e1    ; 
+  reg                                                 mwc__rdp__ready_d1   ; 
+  wire    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype_e1   ; 
+  wire                                                rdp__mwc__pvalid_e1  ; 
+  wire    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data_e1    ; 
+  
+
+  //-------------------------------------------------------------------------------------------------
+  // NoC interface
+  //
+/*
+  // Data-Path (dp) to NoC '
+  reg                                                 rdp__noc__dp_valid      ; 
+  reg     [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__noc__dp_cntl       ; 
+  wire                                                noc__rdp__dp_ready      ; 
+  reg     [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__noc__dp_type       ; 
+  reg     [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__noc__dp_ptype      ; 
+  reg     [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  rdp__noc__dp_desttype   ; 
+  reg                                                 rdp__noc__dp_pvalid     ; 
+  reg     [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__noc__dp_data       ; 
+*/
+
+  wire                                                rdp__mcntl__noc_valid_e1    ; 
+  wire    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mcntl__noc_cntl_e1     ; 
+  reg                                                 mcntl__rdp__noc_ready_d1    ; 
+  wire    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__mcntl__noc_type_e1     ; 
+  wire    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mcntl__noc_ptype_e1    ; 
+  wire    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  rdp__mcntl__noc_desttype_e1 ; 
+  wire                                                rdp__mcntl__noc_pvalid_e1   ; 
+  wire    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mcntl__noc_data_e1     ; 
+  
+
   //-------------------------------------------------------------------------------------------------
   // WU Decode and Stuc combine
   //
@@ -241,67 +316,6 @@ module rdp_cntl (
   wire                                     end_of_wu_descriptor        ;  // dcntl == EOM
   reg  [`MGR_STD_OOB_TAG_RANGE          ]  current_tag                 ;  // waiting for this tag's return data
 
-
-  //-------------------------------------------------------------------------------------------------
-  // Memory Write Combine/Cache Interface
-  //
-  // - Data and memory write descriptors
-  reg                                                 rdp__mwc__valid      ; 
-  reg     [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl       ; 
-  wire                                                mwc__rdp__ready      ; 
-  reg     [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype      ; 
-  reg                                                 rdp__mwc__pvalid     ; 
-  reg     [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data       ; 
-  
-  wire                                                rdp__mwc__valid_e1   ; 
-  wire    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl_e1    ; 
-  reg                                                 mwc__rdp__ready_d1   ; 
-  wire    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype_e1   ; 
-  wire                                                rdp__mwc__pvalid_e1  ; 
-  wire    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data_e1    ; 
-  
-
-  //-------------------------------------------------------------------------------------------------
-  // NoC interface
-  //
-  // Control-Path (cp) to NoC '
-  reg                                                 rdp__noc__cp_valid      ; 
-  reg     [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__noc__cp_cntl       ; 
-  wire                                                noc__rdp__cp_ready      ; 
-  reg     [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__noc__cp_type       ; 
-  reg     [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__noc__cp_ptype      ; 
-  reg     [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  rdp__noc__cp_desttype   ; 
-  reg                                                 rdp__noc__cp_pvalid     ; 
-  reg     [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__noc__cp_data       ; 
-  
-  // Data-Path (dp) to NoC '
-  reg                                                 rdp__noc__dp_valid      ; 
-  reg     [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__noc__dp_cntl       ; 
-  wire                                                noc__rdp__dp_ready      ; 
-  reg     [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__noc__dp_type       ; 
-  reg     [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__noc__dp_ptype      ; 
-  reg     [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  rdp__noc__dp_desttype   ; 
-  reg                                                 rdp__noc__dp_pvalid     ; 
-  reg     [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__noc__dp_data       ; 
-
-  wire                                                rdp__noc__cp_valid_e1    ; 
-  wire    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__noc__cp_cntl_e1     ; 
-  reg                                                 noc__rdp__cp_ready_d1    ; 
-  wire    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__noc__cp_type_e1     ; 
-  wire    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__noc__cp_ptype_e1    ; 
-  wire    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  rdp__noc__cp_desttype_e1 ; 
-  wire                                                rdp__noc__cp_pvalid_e1   ; 
-  wire    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__noc__cp_data_e1     ; 
-  
-  wire                                                rdp__noc__dp_valid_e1    ; 
-  wire    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__noc__dp_cntl_e1     ; 
-  reg                                                 noc__rdp__dp_ready_d1    ; 
-  wire    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__noc__dp_type_e1     ; 
-  wire    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__noc__dp_ptype_e1    ; 
-  wire    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  rdp__noc__dp_desttype_e1 ; 
-  wire                                                rdp__noc__dp_pvalid_e1   ; 
-  wire    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__noc__dp_data_e1     ; 
-  
 
   //-------------------------------------------------------------------------------------------------
   // Memory Write Descriptor Packet Output
@@ -343,23 +357,14 @@ module rdp_cntl (
 
   always @(posedge clk)
     begin
-      rdp__noc__cp_valid         <= ( reset_poweron   ) ? 'd0  :  rdp__noc__cp_valid_e1     ;
-      rdp__noc__cp_cntl          <= ( reset_poweron   ) ? 'd0  :  rdp__noc__cp_cntl_e1      ;
-      noc__rdp__cp_ready_d1      <= ( reset_poweron   ) ? 'd0  :  noc__rdp__cp_ready        ;
-      rdp__noc__cp_type          <= ( reset_poweron   ) ? 'd0  :  rdp__noc__cp_type_e1      ;
-      rdp__noc__cp_ptype         <= ( reset_poweron   ) ? 'd0  :  rdp__noc__cp_ptype_e1     ;
-      rdp__noc__cp_desttype      <= ( reset_poweron   ) ? 'd0  :  rdp__noc__cp_desttype_e1  ;
-      rdp__noc__cp_pvalid        <= ( reset_poweron   ) ? 'd0  :  rdp__noc__cp_pvalid_e1    ;
-      rdp__noc__cp_data          <= ( reset_poweron   ) ? 'd0  :  rdp__noc__cp_data_e1      ;
-
-      rdp__noc__dp_valid         <= ( reset_poweron   ) ? 'd0  :  rdp__noc__dp_valid_e1     ;
-      rdp__noc__dp_cntl          <= ( reset_poweron   ) ? 'd0  :  rdp__noc__dp_cntl_e1      ;
-      noc__rdp__dp_ready_d1      <= ( reset_poweron   ) ? 'd0  :  noc__rdp__dp_ready        ;
-      rdp__noc__dp_type          <= ( reset_poweron   ) ? 'd0  :  rdp__noc__dp_type_e1      ;
-      rdp__noc__dp_ptype         <= ( reset_poweron   ) ? 'd0  :  rdp__noc__dp_ptype_e1     ;
-      rdp__noc__dp_desttype      <= ( reset_poweron   ) ? 'd0  :  rdp__noc__dp_desttype_e1  ;
-      rdp__noc__dp_pvalid        <= ( reset_poweron   ) ? 'd0  :  rdp__noc__dp_pvalid_e1    ;
-      rdp__noc__dp_data          <= ( reset_poweron   ) ? 'd0  :  rdp__noc__dp_data_e1      ;
+      rdp__mcntl__noc_valid         <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_valid_e1     ;
+      rdp__mcntl__noc_cntl          <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_cntl_e1      ;
+      mcntl__rdp__noc_ready_d1      <= ( reset_poweron   ) ? 'd0  :  mcntl__rdp__noc_ready        ;
+      rdp__mcntl__noc_type          <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_type_e1      ;
+      rdp__mcntl__noc_ptype         <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_ptype_e1     ;
+      rdp__mcntl__noc_desttype      <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_desttype_e1  ;
+      rdp__mcntl__noc_pvalid        <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_pvalid_e1    ;
+      rdp__mcntl__noc_data          <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_data_e1      ;
     end
 
   always @(posedge clk)
@@ -705,7 +710,7 @@ module rdp_cntl (
           rdp_cntl_tag_data_combine_state_next =   `RDP_CNTL_TAG_DATA_COMBINE_START_BUILD_NOC_PKT ;
         
         `RDP_CNTL_TAG_DATA_COMBINE_START_BUILD_NOC_PKT: 
-          rdp_cntl_tag_data_combine_state_next =  ( noc__rdp__dp_ready_d1 ) ? `RDP_CNTL_TAG_DATA_COMBINE_SEND_BITFIELD  :
+          rdp_cntl_tag_data_combine_state_next =  ( mcntl__rdp__noc_ready_d1 ) ? `RDP_CNTL_TAG_DATA_COMBINE_SEND_BITFIELD  :
                                                                               `RDP_CNTL_TAG_DATA_COMBINE_START_BUILD_NOC_PKT  ;
         
         `RDP_CNTL_TAG_DATA_COMBINE_SEND_BITFIELD: 
@@ -1109,7 +1114,7 @@ module rdp_cntl (
   wire   [`MGR_MGR_ID_BITMASK_RANGE       ]         from_NocInfoFifo_destAddr             =  storageDestAddr_LocalFifo[0].pipe_destAddr        ;
 
   // check if the pointer include a local pointer and/or a pointer destined for another manager and test the local ready flag and/or NoC ready flag
-  wire                                              wr_destinations_ready                 = (~from_NocInfoFifo_oneIsLocal | mwc__rdp__ready_d1) & (~from_NocInfoFifo_oneIsNotLocal | noc__rdp__dp_ready_d1) ;
+  wire                                              wr_destinations_ready                 = (~from_NocInfoFifo_oneIsLocal | mwc__rdp__ready_d1) & (~from_NocInfoFifo_oneIsNotLocal | mcntl__rdp__noc_ready_d1) ;
 
   // we need to transfer the required number of words to satisfy the write descriptor. We transfer two words, so set our counter to numLanes[.:1] and use numLanes[0] to set payLoad valid to show
   // whether both words are valid in the transfer (the mem wr descriptor will know but lets capture pValid for completeness.
@@ -1320,28 +1325,16 @@ module rdp_cntl (
   assign      rdp__mwc__pvalid_e1        =  wrDescOutputPkt_pvalid_e1 ; 
   assign      rdp__mwc__data_e1          =  wrDescOutputPkt_data_e1   ; 
                                          
-  assign      rdp__noc__dp_valid_e1      =  wrDescOutputPkt_valid_e1 & from_NocInfoFifo_oneIsNotLocal   ; 
-  assign      rdp__noc__dp_cntl_e1       =  wrDescOutputPkt_cntl_e1   ; 
-  assign      rdp__noc__dp_type_e1       =  wrDescOutputPkt_type_e1   ; 
-  assign      rdp__noc__dp_desttype_e1   =  wrDescOutputPkt_desttype_e1  ; 
-  assign      rdp__noc__dp_ptype_e1      =  wrDescOutputPkt_ptype_e1  ; 
-  assign      rdp__noc__dp_pvalid_e1     =  wrDescOutputPkt_pvalid_e1 ; 
-  assign      rdp__noc__dp_data_e1       =  (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR ) ? (wrDescOutputPkt_data_e1  & ~thisMgrBitMask) :  // mask out this Manager bit in the address
+  assign      rdp__mcntl__noc_valid_e1      =  wrDescOutputPkt_valid_e1 & from_NocInfoFifo_oneIsNotLocal   ; 
+  assign      rdp__mcntl__noc_cntl_e1       =  wrDescOutputPkt_cntl_e1   ; 
+  assign      rdp__mcntl__noc_type_e1       =  wrDescOutputPkt_type_e1   ; 
+  assign      rdp__mcntl__noc_desttype_e1   =  wrDescOutputPkt_desttype_e1  ; 
+  assign      rdp__mcntl__noc_ptype_e1      =  wrDescOutputPkt_ptype_e1  ; 
+  assign      rdp__mcntl__noc_pvalid_e1     =  wrDescOutputPkt_pvalid_e1 ; 
+  assign      rdp__mcntl__noc_data_e1       =  (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR ) ? (wrDescOutputPkt_data_e1  & ~thisMgrBitMask) :  // mask out this Manager bit in the address
                                                                                                                         wrDescOutputPkt_data_e1                     ;
 
 
-
-
-  //------------------------------------------------------------------------------------------------------------------------
-  // Temporary - FIXME
-  //
-  assign      rdp__noc__cp_valid_e1      = 'd0     ; 
-  assign      rdp__noc__cp_cntl_e1       = 'd0     ;   
-  assign      rdp__noc__cp_type_e1       = 'd0     ;   
-  assign      rdp__noc__cp_desttype_e1   = 'd0     ;   
-  assign      rdp__noc__cp_ptype_e1      = 'd0     ;   
-  assign      rdp__noc__cp_pvalid_e1     = 'd0     ;   
-  assign      rdp__noc__cp_data_e1       = 'd0     ;   
 
 
 

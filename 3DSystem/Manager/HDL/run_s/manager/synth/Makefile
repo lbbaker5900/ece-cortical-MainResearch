@@ -1,10 +1,11 @@
 
-MODNAME = mwc_cntl
+MODNAME = mgr_cntl
 INST    = 2
 TECH    = 65nm
 # F65/F28 = 2.6
 # 500MHz = 5.2
 PERIOD  = 5.2
+FULLRUN = False
 
 RTL_DIR = ../code
 GATE_DIR = ../synth
@@ -13,6 +14,7 @@ $(GATE_DIR)/$(MODNAME)_final.v: $(RTL_DIR)/$(MODNAME).v
 	tcsh -c "add synopsys2015 ; \
 	sed -i -e 's/^ *set CLK_PER .*/set CLK_PER $(PERIOD)/' setup.tcl ;\
 	sed -i -e 's/^ *set modname .*/set modname $(MODNAME)/' setup.tcl ;\
+	sed -i -e 's/set fullrun .*/set fullrun \"$(FULLRUN)\"/' .synopsys_dc.setup ;\
 	sed -i -e 's/set tech \"28nm\"/set tech \"$(TECH)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set tech \"65nm\"/set tech \"$(TECH)\"/g' .synopsys_dc.setup ;\
 	sed -i -e 's/set tech \"28nm\"/set tech \"$(TECH)\"/g' .synopsys_pt.setup ;\

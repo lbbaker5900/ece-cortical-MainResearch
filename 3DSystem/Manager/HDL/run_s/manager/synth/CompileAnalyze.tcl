@@ -46,10 +46,12 @@ report_cell > ${modname}_${type}_cell_report_initial.rpt
 report_power > ${modname}_${type}_power_netlist_tt_initial.rpt
 
 
-if ($fullrun == True) {
+if ($fullrun == "True") {
 
   compile -incremental      \
           -area_effort none
+  }
+
   #
   # 	Now resynthesize the design for the fastest corner   
   # 	making sure that hold time conditions are met        
@@ -193,7 +195,6 @@ if ($fullrun == True) {
   
   report_power > ${modname}_${type}_power_netlist.rpt
   
-  }
   
 
 

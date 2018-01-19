@@ -140,8 +140,58 @@ module manager (
 
   //`include "noc_to_mgrArray_connection_wires.vh"
 
-  `include "manager_noc_connection_wires.vh"
+  //`include "manager_noc_connection_wires.vh"
 
+
+   // Data-Path (dp) to NoC 
+   wire                                             rdp__mcntl__noc_valid      ; 
+   wire [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mcntl__noc_cntl       ; 
+   wire                                             mcntl__rdp__noc_ready      ; 
+   wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__mcntl__noc_type       ; 
+   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mcntl__noc_ptype      ; 
+   wire [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  rdp__mcntl__noc_desttype   ; 
+   wire                                             rdp__mcntl__noc_pvalid     ; 
+   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mcntl__noc_data       ; 
+
+   // Control-Path (cp) to NoC 
+   wire                                             mcntl__noc__cp_valid    ; 
+   wire [`COMMON_STD_INTF_CNTL_RANGE             ]  mcntl__noc__cp_cntl     ; 
+   wire                                             noc__mcntl__cp_ready    ; 
+   wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  mcntl__noc__cp_type     ; 
+   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  mcntl__noc__cp_ptype    ; 
+   wire [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  mcntl__noc__cp_desttype ; 
+   wire                                             mcntl__noc__cp_pvalid   ; 
+   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  mcntl__noc__cp_data     ; 
+
+   // Data-Path (dp) to NoC 
+   wire                                             mcntl__noc__dp_valid    ; 
+   wire [`COMMON_STD_INTF_CNTL_RANGE             ]  mcntl__noc__dp_cntl     ; 
+   wire                                             noc__mcntl__dp_ready    ; 
+   wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  mcntl__noc__dp_type     ; 
+   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  mcntl__noc__dp_ptype    ; 
+   wire [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  mcntl__noc__dp_desttype ; 
+   wire                                             mcntl__noc__dp_pvalid   ; 
+   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  mcntl__noc__dp_data     ; 
+
+   // Data-Path (cp) from NoC 
+   wire                                             noc__mcntl__cp_valid    ; 
+   wire [`COMMON_STD_INTF_CNTL_RANGE             ]  noc__mcntl__cp_cntl     ; 
+   wire                                             mcntl__noc__cp_ready    ; 
+   wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  noc__mcntl__cp_type     ; 
+   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  noc__mcntl__cp_ptype    ; 
+   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  noc__mcntl__cp_data     ; 
+   wire                                             noc__mcntl__cp_pvalid   ; 
+   wire [`MGR_ARRAY_HOST_ID_RANGE                ]  noc__mcntl__cp_mgrId    ; 
+
+   // Data-Path (dp) from NoC 
+   wire                                             noc__mcntl__dp_valid    ; 
+   wire [`COMMON_STD_INTF_CNTL_RANGE             ]  noc__mcntl__dp_cntl     ; 
+   wire                                             mcntl__noc__dp_ready    ; 
+   wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  noc__mcntl__dp_type     ; 
+   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  noc__mcntl__dp_ptype    ; 
+   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  noc__mcntl__dp_data     ; 
+   wire                                             noc__mcntl__dp_pvalid   ; 
+   wire [`MGR_ARRAY_HOST_ID_RANGE                ]  noc__mcntl__dp_mgrId    ; 
 
   //-------------------------------------------------------------------------------------------------
   //-------------------------------------------------------------------------------------------------
@@ -785,27 +835,17 @@ module manager (
             .rdp__mwc__data          ( rdp__mwc__data          ), 
 
             //-------------------------------
-            // to NoC
+            // to NoC (via mcntl)
             //
-            // Control-Path (cp) to NoC 
-            .rdp__noc__cp_valid      ( rdp__noc__cp_valid      ), 
-            .noc__rdp__cp_ready      ( 1'b1      ), // FIXME
-            .rdp__noc__cp_cntl       ( rdp__noc__cp_cntl       ), 
-            .rdp__noc__cp_type       ( rdp__noc__cp_type       ), 
-            .rdp__noc__cp_ptype      ( rdp__noc__cp_ptype      ), 
-            .rdp__noc__cp_desttype   ( rdp__noc__cp_desttype   ), 
-            .rdp__noc__cp_pvalid     ( rdp__noc__cp_pvalid     ), 
-            .rdp__noc__cp_data       ( rdp__noc__cp_data       ), 
-                                                                          
-             // Data-Path (dp) to NoC                                     
-            .rdp__noc__dp_valid      ( rdp__noc__dp_valid      ), 
-            .noc__rdp__dp_ready      ( 1'b1      ), // FIXME
-            .rdp__noc__dp_cntl       ( rdp__noc__dp_cntl       ), 
-            .rdp__noc__dp_type       ( rdp__noc__dp_type       ), 
-            .rdp__noc__dp_ptype      ( rdp__noc__dp_ptype      ), 
-            .rdp__noc__dp_desttype   ( rdp__noc__dp_desttype   ), 
-            .rdp__noc__dp_pvalid     ( rdp__noc__dp_pvalid     ), 
-            .rdp__noc__dp_data       ( rdp__noc__dp_data       ), 
+            // Data-Path (dp) to NoC                                     
+            .rdp__mcntl__noc_valid      ( rdp__mcntl__noc_valid      ), 
+            .mcntl__rdp__noc_ready      ( mcntl__rdp__noc_ready      ),
+            .rdp__mcntl__noc_cntl       ( rdp__mcntl__noc_cntl       ), 
+            .rdp__mcntl__noc_type       ( rdp__mcntl__noc_type       ), 
+            .rdp__mcntl__noc_ptype      ( rdp__mcntl__noc_ptype      ), 
+            .rdp__mcntl__noc_desttype   ( rdp__mcntl__noc_desttype   ), 
+            .rdp__mcntl__noc_pvalid     ( rdp__mcntl__noc_pvalid     ), 
+            .rdp__mcntl__noc_data       ( rdp__mcntl__noc_data       ), 
 
             //-------------------------------
             // Config
@@ -830,24 +870,24 @@ module manager (
   mgr_noc_cntl mgr_noc_cntl (
 
              // Control-Path (cp) to NoC 
-            .locl__noc__cp_valid          ( rdp__noc__cp_valid       ), 
-            .noc__locl__cp_ready          ( noc__rdp__cp_ready       ), 
-            .locl__noc__cp_cntl           ( rdp__noc__cp_cntl        ), 
-            .locl__noc__cp_type           ( rdp__noc__cp_type        ), 
-            .locl__noc__cp_ptype          ( rdp__noc__cp_ptype       ), 
-            .locl__noc__cp_desttype       ( rdp__noc__cp_desttype    ), 
-            .locl__noc__cp_pvalid         ( rdp__noc__cp_pvalid      ), 
-            .locl__noc__cp_data           ( rdp__noc__cp_data        ), 
+            .locl__noc__cp_valid          ( mcntl__noc__cp_valid       ), 
+            .noc__locl__cp_ready          ( noc__mcntl__cp_ready       ), 
+            .locl__noc__cp_cntl           ( mcntl__noc__cp_cntl        ), 
+            .locl__noc__cp_type           ( mcntl__noc__cp_type        ), 
+            .locl__noc__cp_ptype          ( mcntl__noc__cp_ptype       ), 
+            .locl__noc__cp_desttype       ( mcntl__noc__cp_desttype    ), 
+            .locl__noc__cp_pvalid         ( mcntl__noc__cp_pvalid      ), 
+            .locl__noc__cp_data           ( mcntl__noc__cp_data        ), 
                                                                       
              // Data-Path (dp) to NoC                                 
-            .locl__noc__dp_valid          ( rdp__noc__dp_valid       ), 
-            .noc__locl__dp_ready          ( noc__rdp__dp_ready       ), 
-            .locl__noc__dp_cntl           ( rdp__noc__dp_cntl        ), 
-            .locl__noc__dp_type           ( rdp__noc__dp_type        ), 
-            .locl__noc__dp_ptype          ( rdp__noc__dp_ptype       ), 
-            .locl__noc__dp_desttype       ( rdp__noc__dp_desttype    ), 
-            .locl__noc__dp_pvalid         ( rdp__noc__dp_pvalid      ), 
-            .locl__noc__dp_data           ( rdp__noc__dp_data        ), 
+            .locl__noc__dp_valid          ( mcntl__noc__dp_valid       ), 
+            .noc__locl__dp_ready          ( noc__mcntl__dp_ready       ), 
+            .locl__noc__dp_cntl           ( mcntl__noc__dp_cntl        ), 
+            .locl__noc__dp_type           ( mcntl__noc__dp_type        ), 
+            .locl__noc__dp_ptype          ( mcntl__noc__dp_ptype       ), 
+            .locl__noc__dp_desttype       ( mcntl__noc__dp_desttype    ), 
+            .locl__noc__dp_pvalid         ( mcntl__noc__dp_pvalid      ), 
+            .locl__noc__dp_data           ( mcntl__noc__dp_data        ), 
 
              // Data-Path (cp) from NoC 
             .noc__locl__cp_valid          ( noc__mcntl__cp_valid     ), 
@@ -995,6 +1035,8 @@ module manager (
             .wud__mcntl__option_value       ( wud__mcntl__option_value      ),
 
             //-------------------------------
+            // from NoC
+            //
             // Control-Path (cp) from NoC                                
             .noc__mcntl__cp_valid           ( noc__mcntl__cp_valid          ), 
             .mcntl__noc__cp_ready           ( mcntl__noc__cp_ready          ), 
@@ -1005,7 +1047,6 @@ module manager (
             .noc__mcntl__cp_pvalid          ( noc__mcntl__cp_pvalid         ), 
             .noc__mcntl__cp_mgrId           ( noc__mcntl__cp_mgrId          ), 
             
-            //-------------------------------
             // Data-Path (dp) from NoC                                
             .noc__mcntl__dp_valid           ( noc__mcntl__dp_valid          ), 
             .mcntl__noc__dp_ready           ( mcntl__noc__dp_ready          ), 
@@ -1016,7 +1057,41 @@ module manager (
             .noc__mcntl__dp_pvalid          ( noc__mcntl__dp_pvalid         ), 
             .noc__mcntl__dp_mgrId           ( noc__mcntl__dp_mgrId          ), 
             
+            //-------------------------------
+            // to NoC
+            //
+            // Control-Path (cp) to NoC 
+            .mcntl__noc__cp_valid           ( mcntl__noc__cp_valid          ), 
+            .noc__mcntl__cp_ready           ( 1'b1                          ), // FIXME         
+            .mcntl__noc__cp_cntl            ( mcntl__noc__cp_cntl           ), 
+            .mcntl__noc__cp_type            ( mcntl__noc__cp_type           ), 
+            .mcntl__noc__cp_ptype           ( mcntl__noc__cp_ptype          ), 
+            .mcntl__noc__cp_desttype        ( mcntl__noc__cp_desttype       ), 
+            .mcntl__noc__cp_pvalid          ( mcntl__noc__cp_pvalid         ), 
+            .mcntl__noc__cp_data            ( mcntl__noc__cp_data           ), 
+                                                                        
+             // Data-Path (dp) to NoC                                   
+            .mcntl__noc__dp_valid           ( mcntl__noc__dp_valid          ), 
+            .noc__mcntl__dp_ready           ( noc__mcntl__dp_ready          ),
+            .mcntl__noc__dp_cntl            ( mcntl__noc__dp_cntl           ), 
+            .mcntl__noc__dp_type            ( mcntl__noc__dp_type           ), 
+            .mcntl__noc__dp_ptype           ( mcntl__noc__dp_ptype          ), 
+            .mcntl__noc__dp_desttype        ( mcntl__noc__dp_desttype       ), 
+            .mcntl__noc__dp_pvalid          ( mcntl__noc__dp_pvalid         ), 
+            .mcntl__noc__dp_data            ( mcntl__noc__dp_data           ), 
             
+            //-------------------------------
+            // to NoC (via mcntl)
+            //
+            .rdp__mcntl__noc_valid           ( rdp__mcntl__noc_valid      ), 
+            .mcntl__rdp__noc_ready           ( mcntl__rdp__noc_ready      ),
+            .rdp__mcntl__noc_cntl            ( rdp__mcntl__noc_cntl       ), 
+            .rdp__mcntl__noc_type            ( rdp__mcntl__noc_type       ), 
+            .rdp__mcntl__noc_ptype           ( rdp__mcntl__noc_ptype      ), 
+            .rdp__mcntl__noc_desttype        ( rdp__mcntl__noc_desttype   ), 
+            .rdp__mcntl__noc_pvalid          ( rdp__mcntl__noc_pvalid     ), 
+            .rdp__mcntl__noc_data            ( rdp__mcntl__noc_data       ), 
+
             //-------------------------------
             // Data-Path to Memory Write Controller
             // - likely data from another Manager via NoC                                

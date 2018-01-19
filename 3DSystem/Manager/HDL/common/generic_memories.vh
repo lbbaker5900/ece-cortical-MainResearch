@@ -452,6 +452,60 @@ else if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 7) && (GENERIC_M
 
 //------------------------------------------------------------------------------------------------------------------------
 //
+else if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 58) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+  begin : dw_mem
+
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     reg8x58    [GENERIC_MEM_DEPTH-1 :0 ] ;
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg58                                 ;
+    wire [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg58_e1                              ;
+
+    always @(posedge clk)
+      begin
+        if (portA_enable_dly && portA_write_dly)
+          reg8x58 [portA_address_dly] <= portA_write_data_dly ;
+      end
+
+    assign   oreg58_e1  =  reg8x58 [portB_address_dly] ;
+
+    always @(posedge clk)
+      begin
+        oreg58   <= ( portB_enable_dly ) ? oreg58_e1 :
+                                           oreg58    ;  // dw memory datasheet specifies previous data is maintained with ME=0
+      end
+    assign int_portB_read_data_dly  = oreg58  ;
+    
+    
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
+else if ((GENERIC_MEM_DEPTH == 8) && (GENERIC_MEM_DATA_WIDTH == 77) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
+  begin : dw_mem
+
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     reg8x77    [GENERIC_MEM_DEPTH-1 :0 ] ;
+    reg  [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg77                                 ;
+    wire [GENERIC_MEM_DATA_WIDTH-1 :0  ]     oreg77_e1                              ;
+
+    always @(posedge clk)
+      begin
+        if (portA_enable_dly && portA_write_dly)
+          reg8x77 [portA_address_dly] <= portA_write_data_dly ;
+      end
+
+    assign   oreg77_e1  =  reg8x77 [portB_address_dly] ;
+
+    always @(posedge clk)
+      begin
+        oreg77   <= ( portB_enable_dly ) ? oreg77_e1 :
+                                           oreg77    ;  // dw memory datasheet specifies previous data is maintained with ME=0
+      end
+    assign int_portB_read_data_dly  = oreg77  ;
+    
+    
+  end
+
+//------------------------------------------------------------------------------------------------------------------------
+//
 else if ((GENERIC_MEM_DEPTH == 32) && (GENERIC_MEM_DATA_WIDTH == 7) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
   begin : dw_mem
 

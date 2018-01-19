@@ -410,9 +410,15 @@ package operation;
             // choose reasonable floating point fields
             foreach (operandsExp         [i,j]) {
                     operandsExp[i][j] inside {[128:129]} ;
+                    //operandsExp[i][j] inside {128} ;
+            }
+            foreach (operandsSign       [i,j]) {
+                    operandsSign[i][j] inside {[0:1]};
+                    //operandsSign[i][j] inside {0};
             }
             foreach (operandsSignificand         [i,j]) {
                     operandsSignificand[i][j] inside {[23'b010_0000_0000_0000_0000_0000:23'b110_0000_0000_0000_0000_0000]} ;
+                    //operandsSignificand[i][j] inside {23'b010_0000_0000_0000_0000_0000};
             }
         }
 

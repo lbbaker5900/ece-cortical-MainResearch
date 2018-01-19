@@ -530,7 +530,8 @@ module mwc_cntl (
               // Flush data in holding register(s)
               //
               `MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REGS : 
-                mwc_cntl_extract_desc_state_next =   (holding_reg_line_count == `MWC_CNTL_CACHE_ENTRY_LINES-1)  ?  `MWC_CNTL_PTR_DATA_RCV_COMPLETE           :
+                mwc_cntl_extract_desc_state_next =   (~mmc_ready                                             )  ?  `MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REGS :  // stall immediately as MMC has small fifo
+                                                     (holding_reg_line_count == `MWC_CNTL_CACHE_ENTRY_LINES-1)  ?  `MWC_CNTL_PTR_DATA_RCV_COMPLETE           :
                                                                                                                    `MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REGS ;
               
               
@@ -715,8 +716,8 @@ module mwc_cntl (
           end // always @ (posedge clk
         always @(*)
           begin
-            holding_reg_chan_cline_ptr    =  holding_reg_line_count[`MWC_CNTL_CACHE_LINE_PTR_RANGE ];
-            holding_reg_chan_ptr     =  holding_reg_line_count[`MWC_CNTL_CHAN_CLINE_PTR_RANGE ];
+            holding_reg_chan_cline_ptr          =  holding_reg_line_count[`MWC_CNTL_CACHE_LINE_PTR_RANGE ];
+            holding_reg_chan_ptr                =  holding_reg_line_count[`MWC_CNTL_CHAN_CLINE_PTR_RANGE ];
             holding_reg_chan_cline_line_ptr     =  holding_reg_line_count[`MWC_CNTL_CLINE_LINE_PTR_RANGE ];
           end
 
@@ -1226,24 +1227,24 @@ module mwc_cntl (
       case ({enable_rdp_fsm, enable_mcntl_fsm}) // synopsys parallel_case
         2'b10:
           begin
-            holding_reg_line_count    = intf_fsm[0].holding_reg_line_count ;
-            holding_reg_chan_ptr      = intf_fsm[0].holding_reg_chan_ptr   ; 
-            holding_reg_chan_cline_ptr     = intf_fsm[0].holding_reg_chan_cline_ptr  ;
-            holding_reg_chan_cline_line_ptr      = intf_fsm[0].holding_reg_chan_cline_line_ptr   ;
+            holding_reg_line_count            = intf_fsm[0].holding_reg_line_count ;
+            holding_reg_chan_ptr              = intf_fsm[0].holding_reg_chan_ptr   ; 
+            holding_reg_chan_cline_ptr        = intf_fsm[0].holding_reg_chan_cline_ptr  ;
+            holding_reg_chan_cline_line_ptr   = intf_fsm[0].holding_reg_chan_cline_line_ptr   ;
           end
         2'b01:
           begin
-            holding_reg_line_count    = intf_fsm[1].holding_reg_line_count ;
-            holding_reg_chan_ptr      = intf_fsm[1].holding_reg_chan_ptr   ; 
-            holding_reg_chan_cline_ptr     = intf_fsm[1].holding_reg_chan_cline_ptr  ;
-            holding_reg_chan_cline_line_ptr      = intf_fsm[1].holding_reg_chan_cline_line_ptr   ;
+            holding_reg_line_count            = intf_fsm[1].holding_reg_line_count ;
+            holding_reg_chan_ptr              = intf_fsm[1].holding_reg_chan_ptr   ; 
+            holding_reg_chan_cline_ptr        = intf_fsm[1].holding_reg_chan_cline_ptr  ;
+            holding_reg_chan_cline_line_ptr   = intf_fsm[1].holding_reg_chan_cline_line_ptr   ;
           end
         default:
           begin
-            holding_reg_line_count    = 'd0 ;
-            holding_reg_chan_ptr      = 'd0 ;
-            holding_reg_chan_cline_ptr     = 'd0 ;
-            holding_reg_chan_cline_line_ptr      = 'd0 ;
+            holding_reg_line_count            = 'd0 ;
+            holding_reg_chan_ptr              = 'd0 ;
+            holding_reg_chan_cline_ptr        = 'd0 ;
+            holding_reg_chan_cline_line_ptr   = 'd0 ;
           end
       endcase
     end

@@ -30,9 +30,9 @@ module mgr_cntl (
             //-------------------------------------------------------------------------------------------------
             // Configuration
             //
-            output  reg  [`MGR_WU_ADDRESS_RANGE    ]     mcntl__wuf__start_addr  ,  // first WU address
-            output  reg                                  mcntl__wuf__enable      ,
-            output  reg                                  xxx__wuf__stall         ,
+            output  reg  [`MGR_WU_ADDRESS_RANGE           ]    mcntl__wuf__start_addr           ,  // first WU address
+            output  reg                                        mcntl__wuf__enable               ,
+            output  reg                                        xxx__wuf__stall                  ,
 
             // Instruction download
             output  reg                                        mcntl__wum__enable_inst_dnld     ,
@@ -65,6 +65,9 @@ module mgr_cntl (
             input   reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mcntl__option_value   [`MGR_WU_OPT_PER_INST ] ,  
 
             //-------------------------------------------------------------------------------------------------
+            // NoC interface
+            //
+            //---------------------------------------------------------------------------
             // from NoC 
             // - control
             input  wire                                              noc__mcntl__cp_valid      , 
@@ -85,7 +88,41 @@ module mgr_cntl (
             input  wire [`MGR_ARRAY_HOST_ID_RANGE              ]     noc__mcntl__dp_mgrId      , 
             output reg                                               mcntl__noc__dp_ready      , 
 
+            //---------------------------------------------------------------------------
+            // to NoC 
+            // - control
+            output  reg                                                mcntl__noc__cp_valid      , 
+            output  reg    [`COMMON_STD_INTF_CNTL_RANGE             ]  mcntl__noc__cp_cntl       , 
+            input   wire                                               noc__mcntl__cp_ready      , 
+            output  reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  mcntl__noc__cp_type       , 
+            output  reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  mcntl__noc__cp_ptype      , 
+            output  reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  mcntl__noc__cp_desttype   , 
+            output  reg                                                mcntl__noc__cp_pvalid     , 
+            output  reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  mcntl__noc__cp_data       , 
+                    
+            // - data
+            output  reg                                                mcntl__noc__dp_valid      , 
+            output  reg    [`COMMON_STD_INTF_CNTL_RANGE             ]  mcntl__noc__dp_cntl       , 
+            input   wire                                               noc__mcntl__dp_ready      , 
+            output  reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  mcntl__noc__dp_type       , 
+            output  reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  mcntl__noc__dp_ptype      , 
+            output  reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE       ]  mcntl__noc__dp_desttype   , 
+            output  reg                                                mcntl__noc__dp_pvalid     , 
+            output  reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  mcntl__noc__dp_data       , 
   
+            //-------------------------------------------------------------------------------------------------
+            // from RDP (to NoC)
+            // 
+            input   wire                                               rdp__mcntl__noc_valid      , 
+            input   wire  [`COMMON_STD_INTF_CNTL_RANGE              ]  rdp__mcntl__noc_cntl       , 
+            output  reg                                                mcntl__rdp__noc_ready      , 
+            input   wire  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE      ]  rdp__mcntl__noc_type       , 
+            input   wire  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE     ]  rdp__mcntl__noc_ptype      , 
+            input   wire  [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE        ]  rdp__mcntl__noc_desttype   , 
+            input   wire                                               rdp__mcntl__noc_pvalid     , 
+            input   wire  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE        ]  rdp__mcntl__noc_data       , 
+ 
+            
             //-------------------------------------------------------------------------------------------------
             // to MWC
             output reg                                               mcntl__mwc__valid      , 
@@ -167,7 +204,38 @@ module mgr_cntl (
   reg  [`MGR_ARRAY_HOST_ID_RANGE              ]     noc__mcntl__dp_mgrId_d1      ; 
   reg                                               mcntl__noc__dp_ready_e1      ; 
 
+  // tp NoC 
+  wire                                              mcntl__noc__cp_valid_e1      ; 
+  wire [`COMMON_STD_INTF_CNTL_RANGE           ]     mcntl__noc__cp_cntl_e1       ; 
+  reg                                               noc__mcntl__cp_ready_d1      ; 
+  wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     mcntl__noc__cp_type_e1       ; 
+  wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     mcntl__noc__cp_ptype_e1      ; 
+  wire [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE     ]     mcntl__noc__cp_desttype_e1   ; 
+  wire                                              mcntl__noc__cp_pvalid_e1     ; 
+  wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     mcntl__noc__cp_data_e1       ; 
+                                                                                 
+  reg                                               mcntl__noc__dp_valid_e1      ; 
+  reg  [`COMMON_STD_INTF_CNTL_RANGE           ]     mcntl__noc__dp_cntl_e1       ; 
+  reg                                               noc__mcntl__dp_ready_d1      ; 
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     mcntl__noc__dp_type_e1       ; 
+  reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     mcntl__noc__dp_ptype_e1      ; 
+  reg  [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE     ]     mcntl__noc__dp_desttype_e1   ; 
+  reg                                               mcntl__noc__dp_pvalid_e1     ; 
+  reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     mcntl__noc__dp_data_e1       ; 
   
+  
+  //-------------------------------------------------------------------------------------------------
+  // from RDP
+  // Aggregate Data-path (dp) to NoC               
+  reg                                               rdp__mcntl__noc_valid_d1      ; 
+  reg    [`COMMON_STD_INTF_CNTL_RANGE          ]    rdp__mcntl__noc_cntl_d1       ; 
+  wire                                              mcntl__rdp__noc_ready_p1      ; 
+  reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    rdp__mcntl__noc_type_d1       ; 
+  reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    rdp__mcntl__noc_ptype_d1      ; 
+  reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    rdp__mcntl__noc_desttype_d1   ; 
+  reg                                               rdp__mcntl__noc_pvalid_d1     ; 
+  reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    rdp__mcntl__noc_data_d1       ; 
+
   //-------------------------------------------------------------------------------------------------
   // to MWC
   reg                                               mcntl__mwc__valid_e1      ; 
@@ -180,6 +248,10 @@ module mgr_cntl (
   reg                                               mwc__mcntl__ready_d1      ; 
 
   
+
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  // Registered Inputs and Outputs
 
   //-------------------------------------------------------------------------------------------------
   // to WUM
@@ -237,9 +309,41 @@ module mgr_cntl (
       mcntl__noc__dp_ready       <=   ( reset_poweron   ) ? 'd0  : mcntl__noc__dp_ready_e1   ;
     end
 
-  //----------------------------------------------------------------------------------------------------
-  //----------------------------------------------------------------------------------------------------
-  // Registered Inputs and Outputs
+  //--------------------------------------------------
+  // to NoC
+  
+  always @(posedge clk)
+    begin
+      mcntl__noc__cp_valid       <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__cp_valid_e1    ;
+      mcntl__noc__cp_cntl        <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__cp_cntl_e1     ;
+      noc__mcntl__cp_ready_d1    <= ( reset_poweron   ) ? 'd0  :  noc__mcntl__cp_ready       ;
+      mcntl__noc__cp_type        <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__cp_type_e1     ;
+      mcntl__noc__cp_ptype       <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__cp_ptype_e1    ;
+      mcntl__noc__cp_desttype    <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__cp_desttype_e1 ;
+      mcntl__noc__cp_pvalid      <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__cp_pvalid_e1   ;
+      mcntl__noc__cp_data        <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__cp_data_e1     ;
+
+      mcntl__noc__dp_valid       <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__dp_valid_e1    ;
+      mcntl__noc__dp_cntl        <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__dp_cntl_e1     ;
+      noc__mcntl__dp_ready_d1    <= ( reset_poweron   ) ? 'd0  :  noc__mcntl__dp_ready       ;
+      mcntl__noc__dp_type        <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__dp_type_e1     ;
+      mcntl__noc__dp_ptype       <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__dp_ptype_e1    ;
+      mcntl__noc__dp_desttype    <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__dp_desttype_e1 ;
+      mcntl__noc__dp_pvalid      <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__dp_pvalid_e1   ;
+      mcntl__noc__dp_data        <= ( reset_poweron   ) ? 'd0  :  mcntl__noc__dp_data_e1     ;
+    end
+
+    always @(posedge clk) 
+      begin
+        rdp__mcntl__noc_valid_d1       <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_valid       ;
+        rdp__mcntl__noc_cntl_d1        <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_cntl        ;
+        mcntl__rdp__noc_ready          <= ( reset_poweron   ) ? 'd0  :  mcntl__rdp__noc_ready_p1    ;
+        rdp__mcntl__noc_type_d1        <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_type        ;
+        rdp__mcntl__noc_ptype_d1       <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_ptype       ;
+        rdp__mcntl__noc_desttype_d1    <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_desttype    ;
+        rdp__mcntl__noc_pvalid_d1      <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_pvalid      ;
+        rdp__mcntl__noc_data_d1        <= ( reset_poweron   ) ? 'd0  :  rdp__mcntl__noc_data        ;
+      end
 
     always @(posedge clk) 
       begin
@@ -381,6 +485,7 @@ module mgr_cntl (
             mcntl__wum__option_type_e1  [1]    = 'd0 ;     
             mcntl__wum__option_value_e1 [1]    = 'd0 ;     
             mcntl__wum__option_type_e1  [2]    = 'd0 ;     
+            mcntl__wum__option_value_e1 [2]    = 'd0 ;     
           end
         `MGR_CNTL_MAIN_DNLD_INST :
           begin
@@ -413,6 +518,7 @@ module mgr_cntl (
             mcntl__wum__option_type_e1  [1]    = 'd0 ;     
             mcntl__wum__option_value_e1 [1]    = 'd0 ;     
             mcntl__wum__option_type_e1  [2]    = 'd0 ;     
+            mcntl__wum__option_value_e1 [2]    = 'd0 ;     
           end
 
       endcase
@@ -708,9 +814,19 @@ module mgr_cntl (
       mcntl__mwc__pvalid_e1    =   from_noc_pvalid                                              ;
       mcntl__mwc__mgrId_e1     =   from_noc_srcId  [`MGR_MGR_ID_RANGE ]                         ;
 
-      mcntl__noc__dp_ready_e1  =   mwc__mcntl__ready_d1       ;
     end
 
+
+  //------------------------------------------------------------------------------------------------------------------------
+  // Temporary - FIXME
+  // control path not currently used
+  assign      mcntl__noc__cp_valid_e1      = 'd0     ; 
+  assign      mcntl__noc__cp_cntl_e1       = 'd0     ;   
+  assign      mcntl__noc__cp_type_e1       = 'd0     ;   
+  assign      mcntl__noc__cp_desttype_e1   = 'd0     ;   
+  assign      mcntl__noc__cp_ptype_e1      = 'd0     ;   
+  assign      mcntl__noc__cp_pvalid_e1     = 'd0     ;   
+  assign      mcntl__noc__cp_data_e1       = 'd0     ;   
 
   //--------------------------------------------------
   // 
@@ -729,5 +845,172 @@ module mgr_cntl (
       mcntl__noc__dp_ready_e1  =   mwc__mcntl__ready_d1       ;
     end
   */
+
+  //------------------------------------------------------------
+  // RDP to NoC FIFO
+  //
+
+  generate
+    for (gvi=0; gvi<1; gvi=gvi+1) 
+      begin: from_rdp_fifo
+
+        // Write data
+        reg    [`COMMON_STD_INTF_CNTL_RANGE          ]    write_cntl       ;
+        reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    write_type       ; 
+        reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    write_ptype      ; 
+        reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    write_desttype   ; 
+        reg                                               write_pvalid     ; 
+        reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    write_data       ; 
+
+        // Read data                                                       
+        wire   [`COMMON_STD_INTF_CNTL_RANGE          ]    pipe_cntl        ;
+        wire   [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    pipe_type        ; 
+        wire   [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    pipe_ptype       ; 
+        wire   [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    pipe_desttype    ; 
+        wire                                              pipe_pvalid      ; 
+        wire   [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    pipe_data        ; 
+
+        // Control
+        wire                                              clear            ; 
+        wire                                              almost_full      ; 
+        wire                                              pipe_read        ; 
+        wire                                              write            ; 
+ 
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_DEPTH                 ), 
+                                 .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_ALMOST_FULL_THRESHOLD ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_NOC_CONT_NOC_PACKET_TYPE_WIDTH+`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_WIDTH+`MGR_NOC_CONT_NOC_DEST_TYPE_WIDTH+1+`MGR_NOC_CONT_INTERNAL_DATA_WIDTH)
+                        ) gpfifo (
+                                 // Status
+                                .almost_full      ( almost_full           ),
+                                 // Write                                 
+                                .write            ( write                 ),
+                                .write_data       ( {write_cntl, write_type, write_ptype, write_desttype, write_pvalid, write_data}),
+                                 // Read                                  
+                                .pipe_valid       ( pipe_valid                 ),
+                                .pipe_data        ( { pipe_cntl,  pipe_type,  pipe_ptype,  pipe_desttype,  pipe_pvalid,  pipe_data}),
+                                .pipe_read        ( pipe_read                  ),
+
+                                // General
+                                .clear            ( clear                 ),
+                                .reset_poweron    ( reset_poweron         ),
+                                .clk              ( clk                   )
+                                );
+
+        assign clear   =   1'b0                ;
+
+      end
+  endgenerate
+
+  //--------------------------------------------------
+  // Connect RDP fifo to ports
+
+  assign from_rdp_fifo[0].write         =   rdp__mcntl__noc_valid_d1  ;
+  assign from_rdp_fifo[0].pipe_read     =   from_rdp_fifo[0].pipe_valid & noc__mcntl__dp_ready_d1 ;
+  always @(*)
+    begin
+      from_rdp_fifo[0].write_cntl       =   rdp__mcntl__noc_cntl_d1     ;
+      from_rdp_fifo[0].write_type       =   rdp__mcntl__noc_type_d1     ;
+      from_rdp_fifo[0].write_ptype      =   rdp__mcntl__noc_ptype_d1    ;
+      from_rdp_fifo[0].write_desttype   =   rdp__mcntl__noc_desttype_d1 ;
+      from_rdp_fifo[0].write_pvalid     =   rdp__mcntl__noc_pvalid_d1   ;
+      from_rdp_fifo[0].write_data       =   rdp__mcntl__noc_data_d1     ;
+    end
+         
+  assign mcntl__rdp__noc_ready_p1              = ~from_rdp_fifo[0].almost_full  ;
+
+  /*
+  always @(*)
+    begin
+      mcntl__noc__dp_valid_e1      =   from_rdp_fifo[0].pipe_read      ;
+      mcntl__noc__dp_cntl_e1       =   from_rdp_fifo[0].pipe_cntl      ;
+      mcntl__noc__dp_type_e1       =   from_rdp_fifo[0].pipe_type      ;
+      mcntl__noc__dp_ptype_e1      =   from_rdp_fifo[0].pipe_ptype     ;
+      mcntl__noc__dp_desttype_e1   =   from_rdp_fifo[0].pipe_desttype  ;
+      mcntl__noc__dp_pvalid_e1     =   from_rdp_fifo[0].pipe_pvalid    ;
+      mcntl__noc__dp_data_e1       =   from_rdp_fifo[0].pipe_data      ;
+    end
+  */
+
+  //------------------------------------------------------------
+  // Aggregate to NoC FIFO
+  //
+
+  generate
+    for (gvi=0; gvi<1; gvi=gvi+1) 
+      begin: to_noc_fifo
+
+        // Write data
+        reg    [`COMMON_STD_INTF_CNTL_RANGE          ]    write_cntl       ;
+        reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    write_type       ; 
+        reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    write_ptype      ; 
+        reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    write_desttype   ; 
+        reg                                               write_pvalid     ; 
+        reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    write_data       ; 
+
+        // Read data                                                       
+        wire   [`COMMON_STD_INTF_CNTL_RANGE          ]    pipe_cntl        ;
+        wire   [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    pipe_type        ; 
+        wire   [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    pipe_ptype       ; 
+        wire   [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    pipe_desttype    ; 
+        wire                                              pipe_pvalid      ; 
+        wire   [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    pipe_data        ; 
+
+        // Control
+        wire                                              clear            ; 
+        wire                                              almost_full      ; 
+        wire                                              pipe_read        ; 
+        wire                                              write            ; 
+ 
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_DEPTH                 ), 
+                                 .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_ALMOST_FULL_THRESHOLD ),
+                                 .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_NOC_CONT_NOC_PACKET_TYPE_WIDTH+`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_WIDTH+`MGR_NOC_CONT_NOC_DEST_TYPE_WIDTH+1+`MGR_NOC_CONT_INTERNAL_DATA_WIDTH)
+                        ) gpfifo (
+                                 // Status
+                                .almost_full      ( almost_full           ),
+                                 // Write                                 
+                                .write            ( write                 ),
+                                .write_data       ( {write_cntl, write_type, write_ptype, write_desttype, write_pvalid, write_data}),
+                                 // Read                                  
+                                .pipe_valid       ( pipe_valid                 ),
+                                .pipe_data        ( { pipe_cntl,  pipe_type,  pipe_ptype,  pipe_desttype,  pipe_pvalid,  pipe_data}),
+                                .pipe_read        ( pipe_read                  ),
+
+                                // General
+                                .clear            ( clear                 ),
+                                .reset_poweron    ( reset_poweron         ),
+                                .clk              ( clk                   )
+                                );
+
+        assign clear   =   1'b0                ;
+
+      end
+  endgenerate
+
+  //--------------------------------------------------
+  // Connect to NoC fifo to ports
+
+  assign to_noc_fifo[0].write         =   from_rdp_fifo[0].pipe_valid & ~to_noc_fifo[0].almost_full  ;
+  assign to_noc_fifo[0].pipe_read     =   to_noc_fifo[0].pipe_valid & noc__mcntl__dp_ready_d1 ;
+  always @(*)
+    begin
+      to_noc_fifo[0].write_cntl       =   from_rdp_fifo[0].pipe_cntl      ;
+      to_noc_fifo[0].write_type       =   from_rdp_fifo[0].pipe_type      ;
+      to_noc_fifo[0].write_ptype      =   from_rdp_fifo[0].pipe_ptype     ;
+      to_noc_fifo[0].write_desttype   =   from_rdp_fifo[0].pipe_desttype  ;
+      to_noc_fifo[0].write_pvalid     =   from_rdp_fifo[0].pipe_pvalid    ;
+      to_noc_fifo[0].write_data       =   from_rdp_fifo[0].pipe_data      ;
+    end
+         
+  always @(*)
+    begin
+      mcntl__noc__dp_valid_e1      =   to_noc_fifo[0].pipe_read      ;
+      mcntl__noc__dp_cntl_e1       =   to_noc_fifo[0].pipe_cntl      ;
+      mcntl__noc__dp_type_e1       =   to_noc_fifo[0].pipe_type      ;
+      mcntl__noc__dp_ptype_e1      =   to_noc_fifo[0].pipe_ptype     ;
+      mcntl__noc__dp_desttype_e1   =   to_noc_fifo[0].pipe_desttype  ;
+      mcntl__noc__dp_pvalid_e1     =   to_noc_fifo[0].pipe_pvalid    ;
+      mcntl__noc__dp_data_e1       =   to_noc_fifo[0].pipe_data      ;
+    end
+
 
 endmodule

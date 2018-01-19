@@ -660,7 +660,12 @@ module top;
              end
       endgenerate
     `endif
-
+/*
+initial
+  begin
+                   force system_inst.manager_array_inst.mgr_inst[0].manager.mgr_cntl.mcntl__noc__dp_valid = 0;
+  end
+*/
 
   //******************************
   //******************************
