@@ -49,7 +49,7 @@ A block diagram can be seen in figure \ref{fig:System controller}.
 \captionsetup{justification=centering}
 \captionsetup{width=.9\linewidth}
 \centerline{
-\mbox{\includegraphics[scale=1.5]{managerCntlBlockDiagram}}
+\mbox{\includegraphics[scale=1.5]{systemControllerBlockDiagram}}
 }
 \center\caption{System controller}
 \label{fig:System controller}
@@ -77,7 +77,8 @@ The size of the data is known by both the \ac{ssc} via the instruction and the h
 The \ac{ann} parameters can be downloaded using multiple downloads.
 Once \ac{ann} parameters and system tables are downloaded, the last instruction can be another configuration data instruction download to load operational code.
 
-\begin{figure}[!t]
+\begin{figure}[h]
+  \vspace{5mm}
   \begin{minipage}{1\textwidth}
   %\begin{subfigure}{1\textwidth}
     \centering
@@ -158,9 +159,9 @@ There are currently four mode registers defined, "instruction download", "sync g
 \paragraph{Sync Send}
 
 The register fields can be seen in register \ref{reg:Sync Send mode register}.
-The decoder sends the sync option tuple to the main controller.
+The decoder sends the sync option tuple to the system controller.
 A sync \ac{noc} packet is constructed based on the register contents sent over the \ac{noc}.
-If the group pointer enable bit is set, the main controller uses the pointer to index into a 64 table. 
+If the group pointer enable bit is set, the system conntroller uses the pointer to index into a 64 table. 
 Each table entry is a 64-bit bitfield indicating which \acp{ssc} are a part of the group.
 If the all flag is set, the sync packet will be sent to all \acp{ssc}.
 if the host flag is also set, the host bit in the \ac{noc} packet will be set.
@@ -189,11 +190,11 @@ if the host flag is also set, the host bit in the \ac{noc} packet will be set.
 \paragraph{Sync Wait}
 
 The register fields can be seen in register \ref{reg:Sync Send mode register}.
-The decoder sends the sync option tuple to the main controller.
-The instruction decoder will stop processing any more instructions until the release signal is asserted from the main controller.
-The wait option informs the main controller to start expecting sync send packets from other \acp{ssc} and/or the host.
-Based on the register values, the main controller will assert the release signal to the instruction decoder only once sync send packets have been received from all specified sources.
-If the group pointer enable bit is set, the main controller uses the pointer to index into a 64 table. 
+The decoder sends the sync option tuple to the system conntroller.
+The instruction decoder will stop processing any more instructions until the release signal is asserted from the system conntroller.
+The wait option informs the system conntroller to start expecting sync send packets from other \acp{ssc} and/or the host.
+Based on the register values, the system conntroller will assert the release signal to the instruction decoder only once sync send packets have been received from all specified sources.
+If the group pointer enable bit is set, the system conntroller uses the pointer to index into a 64 table. 
 Each table entry is a 64-bit bitfield indicating from which \acp{ssc} a sync send packet should be received.
 If the all flag is set, all sync send packets are expected from all \acp{ssc}.
 if the host flag is also set, a sync send packet is expected from the host.
@@ -214,8 +215,8 @@ if the host flag is also set, a sync send packet is expected from the host.
 \paragraph{Sync Pause}
 
 The register fields can be seen in register \ref{reg:Sync Pause mode register}.
-The decoder sends the sync option tuple to the main controller and ceases decoding instructions.
-If the indefinitely flag is set, instruction decode will not restart until the release signal is asserted from the main controller, otherwise the decoder will wait a number of clock cycles specified by the count field and then restart decoding instructions.
+The decoder sends the sync option tuple to the system conntroller and ceases decoding instructions.
+If the indefinitely flag is set, instruction decode will not restart until the release signal is asserted from the system conntroller, otherwise the decoder will wait a number of clock cycles specified by the count field and then restart decoding instructions.
 \begin{register}{H}{Sync Pause mode register}{}%{0x250} name=example
   \label{reg:Sync Pause mode register}
   \vspace{-10pt}
@@ -427,21 +428,32 @@ This is done because as data is stored in memory, if the data crosses a bank, pa
 
 \subsection{\Acf{rdp}}
 \label{sec:RDP}
-The \ac{rdp} is responsible for taking the result data from the \ac{pe} and determining which \ac{ssc} it should be stored.
+The \ac{rdp} is responsible for taking the result data from the \ac{pe} and determining which \ac{ssc} it should be stored (see figure \ref{fig:RDP block diagram}).
+
+\begin{figure}[h]
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=0.85\linewidth]{rdpBlockDiagram}}
+}
+\center\caption{Result data processor}
+\label{fig:RDP block diagram}
+\end{figure}
 
 The \ac{rdp} receives a descriptor from the decoder which includes storage descriptor information and the tag associated with an operation sent to the \ac{pe}.
 The information is stored in a \ac{fifo} and as data is returned to the manager over the upstream stack bus, the \ac{rdp} matches the return data tag with the head of the \ac{fifo}.
 Currently the return data is in order but to support an expansive architecture the tag is provided to and checked by the \ac{rdp}.
 
 When the data is matched to the tag, the \ac{rdp} examines all the storage descriptor pointers. The pointers include \ac{ssc} index in the \acp{msb} and the \ac{rdp} constructs an \ac{ssc} bit-field.
-Once the descriptors have been parsed, if one of the destinations is the local \ac{ssc} \ac{dram}, the \ac{rdp} passed the descriptor and data to the main controller which in turn passes it to the \ac{mwc}.
+Once the descriptors have been parsed, if one of the destinations is the local \ac{ssc} \ac{dram}, the \ac{rdp} passed the descriptor and data to the system conntroller which in turn passes it to the \ac{mwc}.
 If the destination(s) include other \acp{ssc}, the \ac{rdp} provides the \ac{ssc} bitfield along with the data to the \ac{noc}.
 
 
 \subsection{\Acf{mwc}}
 \label{sec:MWC}
 
-The \acf{mwc} receives data from two sources, the \ac{noc} via the main controller and the \ac{rdp}.
+The \acf{mwc} receives data from two sources, the \ac{noc} via the system conntroller and the \ac{rdp}.
 The \ac{mwc} uses the storage descriptor provided with the data to identify the write address.
 The \ac{mwc} does not store the data immediately, it places the data in a small crude cache which has enough storage for two pages per channel.
 As data is received from the \ac{rdp} or \ac{noc}, the addresses are compared to the cache entry and if page address match occurs and the corresponding word is invalid, the data is stored in the cache.
