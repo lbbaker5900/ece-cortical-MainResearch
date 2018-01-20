@@ -8,23 +8,23 @@
 % >>>>>>>>>>>>>>>>>>>>>>>>>>> Results <<<<<<<<<<<<<<<<<<<<<<
 \chapter{Results}
 \label{sec:Results}
-The objectives of this work was to design a system able to accelerate ANNs in embedded systems.
+The objectives of this work was to design a system able to accelerate multiple disparate \acp{ann} in embedded systems.
 \iffalse
 This means systems that are not designed to process multiple requests of essentially the same operation.
 \fi
-Given that these systems cannot effectively utilize SRAM, the main objective was to demonstrate a system that can operate efficiently using 3D-DRAM.
+Given that these systems cannot effectively utilize \ac{sram}, the main objective was to demonstrate a system that can operate efficiently using \ac{3ddram}.
 
 The system decodes instructions, sends configuration to various functions, pre-fetchs and pipelines data.
 This parallelism allows the system to constantly stream data whilst results from previous operations are being operated on.
 
-To demonstrate such a system, this work targeted 3DIC technology including 3D-DRAM. This work proposes that if a system can be purely in 3DIC, the system can take advantage of the benefits
-of 3DIC which includes reduced energy, area and high bandwidth.
-In addition, this work proposes that given the system is 3DIC, then a customized DRAM would provide a significant bandwidth boost over typical implementations using standard DRAM.
+To demonstrate such a system, this work targeted \ac{3dic} technology including \ac{3ddram}. This work proposes that if a system can be purely in \ac{3dic}, the system can take advantage of the benefits
+of \ac{3dic} which includes reduced energy, area and high bandwidth.
+In addition, this work proposes that given the system is \ac{3dic}, then a customized \ac{dram} would provide a significant bandwidth boost over typical implementations using standard DRAM.
 \iffalse
-To ensure the system was purely 3DIC, the area of the system Manager and Processing Engine has to stay within the physical footprint of the DRAM.
+To ensure the system was purely \ac{3dic}, the area of the system Manager and Processing Engine has to stay within the physical footprint of the \ac{3ddram}.
 \fi
 
-The target technology node was 28nm because its the technology node employed for some recent GPUs and other ASICs such as \cite{jouppi2017datacenter}.
+The target technology node was 28nm because its the technology node employed for some recent \acp{gpu} and other \acp{asic} such as \cite{jouppi2017datacenter}.
 As a 28nm was not available to this team, the design was synthesized using an available 65nm technology node and then scaled to 28nm.
 
 The primary control and datapaths of the system have been simulated in a system verilog environment. 
@@ -35,7 +35,7 @@ It has been synthesized using a 65nm technology node.
 Initial synthesis timing closure at a frequency of \SI{500}{\mega\hertz} is complete.
 
 \iffalse
-As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized ANNs requires a sustained bandwidth to the PE of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
+As mention previously \eqref{eq:averageBandwidth}, to process multiple useful sized \acp{ann} requires a sustained bandwidth to the \ac{pe} of the order of ten's of \SI[per-mode=symbol]{}{\tera\bit\per\second}.
 \fi
 
 %%%%The approximate design targets are shown in Table \ref{tab:DesignTargets}.
@@ -62,8 +62,8 @@ As mention previously \eqref{eq:averageBandwidth}, to process multiple useful si
 %%%%%  \end{center}
 %%%%\end{table}
 
-Initial place and route for the Manager and PE are shown in figure \ref{fig:Manager and PE Die layouts}. 
-The area contribution of each block within the Manager and PE can be seen in table \ref{tab:Area contribution}.
+Initial place and route for the Manager and \ac{pe} are shown in figure \ref{fig:Manager and PE Die layouts}. 
+The area contribution of each block within the Manager and \ac{pe} can be seen in table \ref{tab:Area contribution}.
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
   \captionsetup{justification=centering, skip=3pt}
@@ -115,7 +115,7 @@ The area contribution of each block within the Manager and PE can be seen in tab
         SIMD             & 1&\SI[per-mode=symbol]{19.3}{\percent}  \\
   Streaming Operations   &32&\SI[per-mode=symbol]{43.3}{\percent}  \\
   Streaming Op Control   & 1&\SI[per-mode=symbol]{ 2.1}{\percent}  \\
- Local Memory + Control\footnote{A small amount of scratchpad memory was provided between stOps and SIMD but in practice could be much smaller. It is not used in any of the fanin tests.}  & 1&\SI[per-mode=symbol]{17.7}{\percent}  \\ 
+ Local Memory + Control\footnote{A small amount of scratchpad memory was provided between \acp{stop} and \ac{simd} but in practice could be much smaller. It is not used in any of the fanin tests.}  & 1&\SI[per-mode=symbol]{17.7}{\percent}  \\ 
         Misc             & 1&\SI[per-mode=symbol]{ 4.6}{\percent}  \\
         \bottomrule
       \end{tabular}

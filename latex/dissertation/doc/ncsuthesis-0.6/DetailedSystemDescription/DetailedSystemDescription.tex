@@ -456,6 +456,17 @@ If the destination(s) include other \acp{ssc}, the \ac{rdp} provides the \ac{ssc
 The \acf{mwc} receives data from two sources, the \ac{noc} via the system conntroller and the \ac{rdp}.
 The \ac{mwc} uses the storage descriptor provided with the data to identify the write address.
 The \ac{mwc} does not store the data immediately, it places the data in a small crude cache which has enough storage for two pages per channel.
+A block diagram of the \ac{mwc} can be seen in figure \ref{fig:MWC block diagram}.
+\begin{figure}[h]
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=.9\linewidth}
+\centerline{
+\mbox{\includegraphics[width=0.85\linewidth]{mwcBlockDiagram}}
+}
+\center\caption{MWC block diagram}
+\label{fig:MWC block diagram}
+\end{figure}
 As data is received from the \ac{rdp} or \ac{noc}, the addresses are compared to the cache entry and if page address match occurs and the corresponding word is invalid, the data is stored in the cache.
 If a page miss occurs, the contents of one of the entries is written to memory and the new data stored in the cache.
 
@@ -557,6 +568,9 @@ An example of the downstream \ac{oob} transactions can be seen in figure \ref{fi
 \end{figure}
 
 
+\subsection{PE Controller}
+\label{sec:PE Cntl}
+
 \subsection{Streaming Operations}
 \label{sec:stOps}
 
@@ -566,6 +580,12 @@ Once the \ac{stop} has processed the data, it passes the result to the \ac{simd}
 
 It should also be stated that while the \ac{stop} is processing the current data, the \ac{simd} may be operating on the result of the previous operation. 
 It is expected the \ac{simd} will have completed the previous operation before the \ac{stop} completes the current operation, but again, if necessary a flow control mechanism between \ac{simd} and \ac{stop} will be engaged if the \ac{simd} is not ready.
+
+\subsection{DMA Controller}
+\label{sec:Dma Cntl}
+
+\subsection{Local Memory}
+\label{sec:Local Memory}
 
 \subsection{SIMD}
 \label{sec:simd}
