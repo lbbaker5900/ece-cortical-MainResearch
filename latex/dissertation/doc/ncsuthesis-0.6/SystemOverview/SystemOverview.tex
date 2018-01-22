@@ -487,11 +487,11 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
         \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \colorbitbox{optiontype!40}{8}{\tiny option\\ \vspace{-0em}type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer} & \colorbitbox{optiontype!40}{8}{\tiny option\\ type} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer}
       \end{rightwordgroup}  \\
       \begin{rightwordgroup}{\scriptsize Data Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{5}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
       \end{rightwordgroup}  \\
       \bitbox[]{76}{$\vdots$} \\[1ex]
       \begin{rightwordgroup}{\scriptsize Data Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{5}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
       \end{rightwordgroup}  \\
     \end{bytefield}
     \captionsetup{justification=centering, skip=9pt}
@@ -604,7 +604,7 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
 
   \begin{minipage}{1\textwidth}
     \centering
-    \begin{minipage}{0.20\textwidth}
+    \begin{minipage}{0.35\textwidth}
         \begin{adjustbox}{width=1\textwidth}
             \footnotesize
             \begin{tabular}{ |c|c|  }
@@ -616,7 +616,16 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
               type[3:0] & Description  \\
               \hline
               0   & NOP  \\
-              8   & Data \\
+             1-4  & NA  \\
+              5   & Storage Desc Write Data \\
+              8   & Configuration DMA start \\
+              9   & Configuration DMA       \\
+             10   & Configuration DMA end   \\
+             11   & Configuration Instruction start \\
+             12   & Configuration Instruction       \\
+             13   & Configuration Instruction end   \\
+             14   & Configuration \\
+             15   & Status \\
               \hline
             \end{tabular}
         \end{adjustbox}
