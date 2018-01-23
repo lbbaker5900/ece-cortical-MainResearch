@@ -57,19 +57,21 @@ typedef enum logic [0 :0] {
                            } python_simd_type ; 
 
 
-typedef enum logic [1 :0] { 
+typedef enum logic [2 :0] { 
                    PY_WU_INST_TGT_TYPE_STACK_DN_ARG0                               =  0, 
                    PY_WU_INST_TGT_TYPE_STACK_DN_ARG1                               =  1, 
                    PY_WU_INST_TGT_TYPE_STACK_UP                               =  2, 
-                   PY_WU_INST_TGT_TYPE_NOP                                    =  3 
+                   PY_WU_INST_TGT_TYPE_NOC                                    =  3, 
+                   PY_WU_INST_TGT_TYPE_NOP                                    =  4 
                            } python_target_type ; 
 
 
-typedef enum logic [1 :0] { 
+typedef enum logic [2 :0] { 
                    PY_WU_INST_SRC_TYPE_STACK_DN_ARG0                               =  0, 
                    PY_WU_INST_SRC_TYPE_STACK_DN_ARG1                               =  1, 
                    PY_WU_INST_SRC_TYPE_STACK_UP                               =  2, 
-                   PY_WU_INST_SRC_TYPE_NOP                                    =  3 
+                   PY_WU_INST_SRC_TYPE_NOC                                    =  3, 
+                   PY_WU_INST_SRC_TYPE_NOP                                    =  4 
                            } python_source_type ; 
 
 

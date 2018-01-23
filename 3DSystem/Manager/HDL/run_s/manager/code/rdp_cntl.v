@@ -15,6 +15,7 @@
 `timescale 1ns/10ps
 
 `include "common.vh"
+`include "python_typedef.vh"
 `include "pe_array.vh"
 `include "pe.vh"
 `include "manager_array.vh"
@@ -25,7 +26,6 @@
 `include "streamingOps_cntl.vh"
 `include "wu_fetch.vh"
 `include "wu_decode.vh"
-`include "python_typedef.vh"
 `include "rdp_cntl.vh"
 
 

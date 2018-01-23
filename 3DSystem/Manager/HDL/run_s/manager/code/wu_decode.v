@@ -26,8 +26,8 @@
 `include "streamingOps.vh"
 `include "dma_cont.vh"
 `include "wu_memory.vh"
-`include "wu_decode.vh"
 `include "python_typedef.vh"
+`include "wu_decode.vh"
 
 
 module wu_decode (  
@@ -185,15 +185,21 @@ module wu_decode (
     reg                                         send_info_to_return_proc       ;
     reg                                         send_info_to_main_cntl         ;
     //reg                                       send_info_to_mem_write         ;
+    reg                                         send_info_to_noc_mem_cntl      ;
     reg                                         send_info_to_arg0_mem_cntl     ;
     reg                                         send_info_to_arg1_mem_cntl     ;
     reg                                         sending_to_oob_downstream      ;  // latched flag held until EOD
     reg                                         sending_to_return_proc         ;
     reg                                         sending_to_main_cntl           ;
     //reg                                       sending_to_mem_write           ;
+    reg                                         sending_to_noc_mem_cntl        ;
     reg                                         sending_to_arg0_mem_cntl       ;
     reg                                         sending_to_arg1_mem_cntl       ;
 
+
+    reg      [`MGR_WU_OPT_PER_INST_RANGE        ]    mode_reg_valid                           ;
+    reg      [`MGR_WU_CONFIG_MODE_REG_ID_RANGE  ]    mode_reg_id          [`MGR_WU_OPT_PER_INST] ;
+    reg      [`MGR_WU_CONFIG_MODE_REG_VAL_RANGE ]    mode_reg_value       [`MGR_WU_OPT_PER_INST] ;
 
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
@@ -310,6 +316,10 @@ module wu_decode (
   // WU Instruction FIFO
   //
 
+  reg    [`MGR_WU_OPT_PER_INST_RANGE      ]            pipe_option_extd_valid                               ;
+  reg    [`MGR_WU_OPT_TYPE_RANGE          ]            pipe_option_extd_type         [`MGR_WU_OPT_PER_INST] ;
+  reg    [`MGR_WU_EXTD_OPT_VALUE_RANGE    ]            pipe_option_extd_value        [`MGR_WU_OPT_PER_INST] ;
+
   // Put in a generate in case we decide to extend to multiple upstream lanes
 
   genvar gvi;
@@ -379,13 +389,12 @@ module wu_decode (
         reg    [`MGR_WU_OPT_VALUE_RANGE         ]            pipe_option_value [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
         wire                                                 pipe_read         ;
 
-        reg                                                  pipe_option_type_extd  ;
-        reg                                                  pipe_inst_som          ;
-        reg                                                  pipe_inst_mom          ;
-        reg                                                  pipe_inst_eom          ;
-        reg                                                  pipe_desc_som          ;
-        reg                                                  pipe_desc_mom          ;
-        reg                                                  pipe_desc_eom          ;
+        reg                                                  pipe_inst_som                ;
+        reg                                                  pipe_inst_mom                ;
+        reg                                                  pipe_inst_eom                ;
+        reg                                                  pipe_desc_som                ;
+        reg                                                  pipe_desc_mom                ;
+        reg                                                  pipe_desc_eom                ;
 
 
         assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
@@ -438,12 +447,64 @@ module wu_decode (
             pipe_desc_eom        <=  ( fifo_pipe_read    ) ? ((read_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (read_dcntl == `COMMON_STD_INTF_CNTL_EOM)) : pipe_desc_eom ;
             pipe_desc_mom        <=  ( fifo_pipe_read    ) ? (                                                (read_dcntl == `COMMON_STD_INTF_CNTL_MOM)) : pipe_desc_mom ; 
 
-            // extended tuples always occur in option_type[0]
-            pipe_option_type_extd <=  ( fifo_pipe_read   ) ? ((read_option_type[0] == PY_WU_INST_OPT_TYPE_CFG_SYNC) | (read_option_type[0] == PY_WU_INST_OPT_TYPE_CFG_DATA) | (read_option_type[0] == PY_WU_INST_OPT_TYPE_MEMORY)) : pipe_option_type_extd ;
+
           end
 
       end
   endgenerate
+
+  genvar opt;
+  generate
+    for (opt=0; opt<`MGR_WU_OPT_PER_INST; opt=opt+1) 
+      begin: extd_tuple_decode
+        if (opt == 0)
+         begin
+           always @(posedge clk)
+             begin
+               pipe_option_extd_type        [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read &&  isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt] )) ? {from_WuMemory_Fifo[0].read_option_type [opt]} :
+                                                                                                                                                               pipe_option_extd_type        [opt] ;
+               
+               pipe_option_extd_value       [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read &&  isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt] )) ? {from_WuMemory_Fifo[0].read_option_type [opt], from_WuMemory_Fifo[0].read_option_value [opt], from_WuMemory_Fifo[0].read_option_type [opt+1], from_WuMemory_Fifo[0].read_option_value [opt+1]}  : 
+                                                                                                                                                               pipe_option_extd_value       [opt] ;
+               
+               pipe_option_extd_valid       [opt]  <=  ( reset_poweron ) ? 1'b0 :
+                                                       ( from_WuMemory_Fifo[0].fifo_pipe_read && isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt])) ? 1'b1                               :
+                                                                                                                                                             pipe_option_extd_valid             [opt] ;
+             end
+         end
+        else if (opt == 1)
+         begin
+           always @(posedge clk)
+             begin
+               pipe_option_extd_type        [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read && ~isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt-1]) && isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt])) ? {from_WuMemory_Fifo[0].read_option_type [opt]} :
+                                                                                                                                                                                                                            pipe_option_extd_type        [opt]  ;
+               
+               pipe_option_extd_value       [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read && ~isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt-1]) && isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt])) ? {from_WuMemory_Fifo[0].read_option_type [opt], from_WuMemory_Fifo[0].read_option_value [opt], from_WuMemory_Fifo[0].read_option_type [opt+1], from_WuMemory_Fifo[0].read_option_value [opt+1]}  : 
+                                                                                                                                                                                                                            pipe_option_extd_value       [opt]  ;
+               
+               pipe_option_extd_valid       [opt]  <=  ( reset_poweron ) ? 1'b0 :
+                                                       ( from_WuMemory_Fifo[0].fifo_pipe_read && ~isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt-1]) && isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt])) ? 1'b1                               :
+                                                                                                                                                                                                                            pipe_option_extd_valid             [opt] ;
+             end
+         end
+        else 
+         begin
+           always @(posedge clk)
+             begin
+               pipe_option_extd_valid       [opt]  <=   'd0  ;
+               pipe_option_extd_type        [opt]  <=  1'b0  ;
+               pipe_option_extd_value       [opt]  <=  1'b0  ;
+             end
+         end
+      always @(*)
+        begin
+           mode_reg_valid    [opt]  =  pipe_option_extd_valid       [opt]                                         ;
+           mode_reg_id       [opt]  =  pipe_option_extd_value       [opt][`MGR_WU_EXTD_TUPLE_MODE_REG_ID_RANGE  ] ;
+           mode_reg_value    [opt]  =  pipe_option_extd_value       [opt][`MGR_WU_EXTD_TUPLE_MODE_REG_VAL_RANGE ] ;
+        end
+      end
+  endgenerate
+
 
 
   assign from_WuMemory_Fifo[0].clear   =   1'b0                ;
@@ -486,6 +547,7 @@ module wu_decode (
         reg                                             send_info_to_return_proc       ;
         reg                                             send_info_to_main_cntl         ;
         //reg                                           send_info_to_mem_write         ;
+        reg                                             send_info_to_noc_mem_cntl      ;
         reg                                             send_info_to_arg0_mem_cntl     ;
         reg                                             send_info_to_arg1_mem_cntl     ;
 
@@ -748,7 +810,7 @@ module wu_decode (
               `WU_DEC_INSTR_DECODE_INSTR_COMPLETE: 
                 wu_dec_instr_dec_state_next =  ( initiate_instruction ) ? `WU_DEC_INSTR_DECODE_INITIATED_INSTR :  
                                                                           `WU_DEC_INSTR_DECODE_INSTR_COMPLETE  ;
-        
+              // a one cycle state
               `WU_DEC_INSTR_DECODE_INITIATED_INSTR: 
                 wu_dec_instr_dec_state_next =    `WU_DEC_INSTR_DECODE_WAIT           ;
         
@@ -780,35 +842,35 @@ module wu_decode (
           begin
             contained_stOp_cmd       <=  ( reset_poweron                                                                                                     ) ? 1'b0               :
                                          ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR                                                    ) ? 1'b0               :  // clear when packet and operation complete
-                                         ( (decNum != 0) && (from_WuMemory_Fifo[0].pipe_option_type_extd                                                    )) ? contained_stOp_cmd :  // option type not valid if option[0] is an extended tuple
-                                         ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_STOP )) ? 1'b1               :
+                                         ( (decNum != 0) && (pipe_option_extd_valid      [decNum]                                              )) ? contained_stOp_cmd :  // option type not valid if option[0] is an extended tuple
+                                         ( from_WuMemory_Fifo[0].pipe_read   && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_STOP )) ? 1'b1               :
                                                                                                                                                                  contained_stOp_cmd ;
             // pointer to stOp operation control memory
             stOp_cmd                 <=  ( reset_poweron                                                                                                     ) ?  'd0                                            :
-                                         ( (decNum != 0) && (from_WuMemory_Fifo[0].pipe_option_type_extd                                                    )) ? stOp_cmd                                        :  // option type not valid if option[0] is an extended tuple
+                                         ( (decNum != 0) && (pipe_option_extd_valid      [decNum]                                              )) ? stOp_cmd                                        :  // option type not valid if option[0] is an extended tuple
                                          ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_STOP )) ? from_WuMemory_Fifo[0].pipe_option_value[decNum] :
                                                                                                                                                                  stOp_cmd                                        ;
         
             contained_simd_cmd       <=  ( reset_poweron                                                                                                       ) ? 1'b0               :
                                          ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR                                                      ) ? 1'b0               :  // clear when packet and operation complete
-                                         ( (decNum != 0) && (from_WuMemory_Fifo[0].pipe_option_type_extd                                                       )) ? contained_simd_cmd :  // option type not valid if option[0] is an extended tuple
-                                         ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_SIMDOP )) ? 1'b1               :
+                                         ( (decNum != 0) && (pipe_option_extd_valid      [decNum]                                                 )) ? contained_simd_cmd :  // option type not valid if option[0] is an extended tuple
+                                         ( from_WuMemory_Fifo[0].pipe_read   && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_SIMDOP )) ? 1'b1               :
                                                                                                                                                                    contained_simd_cmd ;
             // pointer to simd operation control memory
             simd_cmd                 <=  ( reset_poweron                                                                                                       ) ?  'd0                                            :
-                                         ( (decNum != 0) && (from_WuMemory_Fifo[0].pipe_option_type_extd                                                      )) ? simd_cmd                                        :  // option type not valid if option[0] is an extended tuple
-                                         ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_SIMDOP )) ? from_WuMemory_Fifo[0].pipe_option_value[decNum] :
+                                         ( (decNum != 0) && (pipe_option_extd_valid      [decNum]                                                )) ? simd_cmd                                        :  // option type not valid if option[0] is an extended tuple
+                                         ( from_WuMemory_Fifo[0].pipe_read   && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_SIMDOP )) ? from_WuMemory_Fifo[0].pipe_option_value[decNum] :
                                                                                                                                                                    simd_cmd                                        ;
         
             contained_num_lanes      <=  ( reset_poweron                                                                                                             ) ? 1'b0                :
                                          ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR                                                            ) ? 1'b0                :  // clear when packet and operation complete
-                                         ( (decNum != 0) && (from_WuMemory_Fifo[0].pipe_option_type_extd                                                            )) ? contained_num_lanes :  // option type not valid if option[0] is an extended tuple
-                                         ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES )) ? 1'b1                :
+                                         ( (decNum != 0) && (pipe_option_extd_valid      [decNum]                                                      )) ? contained_num_lanes :  // option type not valid if option[0] is an extended tuple
+                                         ( from_WuMemory_Fifo[0].pipe_read   && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES )) ? 1'b1                :
                                                                                                                                                                          contained_num_lanes ;
             // pointer to simd operation control memory
             num_lanes                <=  ( reset_poweron                                                                                                             ) ?  'd0                                            :
-                                         ( (decNum != 0) && (from_WuMemory_Fifo[0].pipe_option_type_extd                                                            )) ? num_lanes                                       :  // option type not valid if option[0] is an extended tuple
-                                         ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES )) ? from_WuMemory_Fifo[0].pipe_option_value[decNum] :
+                                         ( (decNum != 0) && (pipe_option_extd_valid      [decNum]                                                      )) ? num_lanes                                       :  // option type not valid if option[0] is an extended tuple
+                                         ( from_WuMemory_Fifo[0].pipe_read   && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES )) ? from_WuMemory_Fifo[0].pipe_option_value[decNum] :
                                                                                                                                                                          num_lanes                                       ;
         
           end
@@ -819,21 +881,29 @@ module wu_decode (
           begin
             // Determine which modules the instruction impacts
             // Assumption is everything we need to determine affected modules is in 1st cycle of descriptor
-            send_info_to_main_cntl         =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                   == `MGR_INST_DESC_TYPE_CFG          )) ;
-
-            send_info_to_oob_downstream    =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                   == `MGR_INST_DESC_TYPE_OP           )) ;
-                                                                                                                                                                        
-            send_info_to_return_proc       =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                   == `MGR_INST_DESC_TYPE_MW           ) &
-                                                                                   (from_WuMemory_Fifo[0].pipe_option_type [decNum] == PY_WU_INST_OPT_TYPE_SRC          ) &
-                                                                                   (from_WuMemory_Fifo[0].pipe_option_value[decNum] == PY_WU_INST_SRC_TYPE_STACK_UP     )) ;
-           
-            send_info_to_arg0_mem_cntl     =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                   == `MGR_INST_DESC_TYPE_MR           ) &
-                                                                                   (from_WuMemory_Fifo[0].pipe_option_type [decNum] == PY_WU_INST_OPT_TYPE_TGT          ) &
-                                                                                   (from_WuMemory_Fifo[0].pipe_option_value[decNum] == PY_WU_INST_TGT_TYPE_STACK_DN_ARG0)) ;
-           
-            send_info_to_arg1_mem_cntl     =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                   == `MGR_INST_DESC_TYPE_MR           ) &
-                                                                                   (from_WuMemory_Fifo[0].pipe_option_type [decNum] == PY_WU_INST_OPT_TYPE_TGT          ) &
-                                                                                   (from_WuMemory_Fifo[0].pipe_option_value[decNum] == PY_WU_INST_TGT_TYPE_STACK_DN_ARG1)) ;
+            send_info_to_main_cntl         =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                          == `MGR_INST_DESC_TYPE_CFG          )) ;
+                                                                                                                                           
+            send_info_to_oob_downstream    =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                          == `MGR_INST_DESC_TYPE_OP           )) ;
+                                                                                                                                                                               
+            send_info_to_return_proc       =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                          == `MGR_INST_DESC_TYPE_MW           ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_type [decNum]        == PY_WU_INST_OPT_TYPE_SRC          ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_value[decNum]        == PY_WU_INST_SRC_TYPE_STACK_UP     )) ;
+                                                                                                                                           
+            send_info_to_noc_mem_cntl      =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                          == `MGR_INST_DESC_TYPE_CFG          ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_type [decNum]        == PY_WU_INST_OPT_TYPE_TGT          ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_value[decNum]        == PY_WU_INST_TGT_TYPE_NOC         )) ;
+                                                                                                                                           
+            send_info_to_arg0_mem_cntl     = (from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                          == `MGR_INST_DESC_TYPE_MR           ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_type [decNum]        == PY_WU_INST_OPT_TYPE_TGT          ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_value[decNum]        == PY_WU_INST_TGT_TYPE_STACK_DN_ARG0))) |
+                                             (from_WuMemory_Fifo[0].pipe_valid  & ((decNum == 0                                                                                          ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_op                          == `MGR_INST_DESC_TYPE_CFG                    ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_type [decNum]        == PY_WU_INST_OPT_TYPE_CFG_DATA               ) &
+                                                                                   ( mode_reg_valid [decNum] && (mode_reg_id [decNum]      == `MGR_WU_EXTD_TUPLE_MODE_REG_TXFER_MEM_UPLD )))) ;
+                                                                                                               
+            send_info_to_arg1_mem_cntl     =  from_WuMemory_Fifo[0].pipe_valid  & ((from_WuMemory_Fifo[0].pipe_op                          == `MGR_INST_DESC_TYPE_MR           ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_type [decNum]        == PY_WU_INST_OPT_TYPE_TGT          ) &
+                                                                                   (from_WuMemory_Fifo[0].pipe_option_value[decNum]        == PY_WU_INST_TGT_TYPE_STACK_DN_ARG1)) ;
           end
 
       end
@@ -854,6 +924,7 @@ module wu_decode (
                                               send_info_to_main_cntl        & ~mcntl__wud__ready_d1                            |   
                                               send_info_to_oob_downstream   & ~odc__wud__ready_d1                              |   
                                               send_info_to_return_proc      & ~rdp__wud__ready_d1                              |   
+                                              send_info_to_noc_mem_cntl     & ~mrc0__wud__ready_d1                             |   // DMA to NoC source is mrc0
                                               send_info_to_arg0_mem_cntl    & ~mrc0__wud__ready_d1                             |   
                                               send_info_to_arg1_mem_cntl    & ~mrc1__wud__ready_d1                             |   
                                               ~from_WuMemory_Fifo[0].pipe_valid                                                 )
@@ -867,9 +938,10 @@ module wu_decode (
     begin
       // If a packet is sent to oob driver, increment tag
       tag                     <=  ( reset_poweron                                                                                                         ) ? `WU_DEC_INITIAL_TAG  :  // start with a number that is easy to see in simulation
-                                  ((instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[0].contained_simd_cmd ) ? tag+1    :
-                                  ((instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[1].contained_simd_cmd ) ? tag+1    :
-                                  ((instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[2].contained_simd_cmd ) ? tag+1    :
+//                                  ((instr_decode[0].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[0].contained_simd_cmd ) ? tag+1    :
+//                                  ((instr_decode[1].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[1].contained_simd_cmd ) ? tag+1    :
+//                                  ((instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR ) & instr_decode[2].contained_simd_cmd ) ? tag+1    :
+                                  ((instr_decode[2].wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR )                                      ) ? tag+1    :
                                                                                                                                                               tag      ;
         
     end
@@ -918,6 +990,10 @@ module wu_decode (
                                       ( instr_decode[1].send_info_to_return_proc     ) | 
                                       ( instr_decode[2].send_info_to_return_proc     ) ; 
                                                                                          
+      send_info_to_noc_mem_cntl    =  ( instr_decode[0].send_info_to_noc_mem_cntl    ) | 
+                                      ( instr_decode[1].send_info_to_noc_mem_cntl    ) | 
+                                      ( instr_decode[2].send_info_to_noc_mem_cntl    ) ; 
+                                                                                     
       send_info_to_arg0_mem_cntl   =  ( instr_decode[0].send_info_to_arg0_mem_cntl   ) | 
                                       ( instr_decode[1].send_info_to_arg0_mem_cntl   ) | 
                                       ( instr_decode[2].send_info_to_arg0_mem_cntl   ) ; 
@@ -949,6 +1025,12 @@ module wu_decode (
                                      ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
                                      ( send_info_to_return_proc                                           && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b1                      :
                                                                                                                                                    sending_to_return_proc    ;
+                                      
+      sending_to_noc_mem_cntl    <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
+                                     ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_EOM    ) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
+                                     ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
+                                     ( send_info_to_noc_mem_cntl                                         && from_WuMemory_Fifo[0].pipe_read    ) ? 1'b1                      :
+                                                                                                                                                   sending_to_noc_mem_cntl   ;
                                       
       sending_to_arg0_mem_cntl   <=  ( reset_poweron                                                                                           ) ? 1'b0                      :
                                      ((from_WuMemory_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_EOM    ) && from_WuMemory_Fifo[0].pipe_read   ) ? 1'b0                      :                                  
@@ -1008,7 +1090,8 @@ module wu_decode (
   //----------------------------------------------------------------------------------------------------
   // To MRCs
  
-  assign wud__mrc0__valid_e1      =  (send_info_to_arg0_mem_cntl | sending_to_arg0_mem_cntl) & from_WuMemory_Fifo[0].pipe_read ;
+  assign wud__mrc0__valid_e1      =  ((send_info_to_arg0_mem_cntl | sending_to_arg0_mem_cntl) | (send_info_to_noc_mem_cntl | sending_to_noc_mem_cntl))
+                                     & from_WuMemory_Fifo[0].pipe_read ;
   assign wud__mrc1__valid_e1      =  (send_info_to_arg1_mem_cntl | sending_to_arg1_mem_cntl) & from_WuMemory_Fifo[0].pipe_read ;
   always @(*)
     begin

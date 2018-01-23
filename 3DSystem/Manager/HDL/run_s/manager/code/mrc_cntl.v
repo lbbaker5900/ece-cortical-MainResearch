@@ -13,6 +13,7 @@
 `timescale 1ns/10ps
 
 `include "common.vh"
+`include "python_typedef.vh"
 `include "pe_array.vh"
 `include "pe.vh"
 `include "manager_array.vh"
@@ -28,7 +29,7 @@
 `include "wu_memory.vh"
 `include "wu_decode.vh"
 `include "mrc_cntl.vh"
-`include "python_typedef.vh"
+`include "mgr_cntl.vh"
 
 
 module mrc_cntl (  
@@ -44,6 +45,14 @@ module mrc_cntl (
             input   wire  [`MGR_WU_OPT_VALUE_RANGE        ]        wud__mrc__option_value  [`MGR_WU_OPT_PER_INST ] ,  
             input   wire  [`MGR_STD_OOB_TAG_RANGE         ]        wud__mrc__tag                                   ,  // mmc needs to service tag requests before tag+1
             
+            //-------------------------------
+            // to NoC (via mcntl)
+            //
+            output  reg   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]      mrc__mcntl__lane_valid                                       ,
+            output  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mcntl__lane_cntl     [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ],
+            input   wire  [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]      mcntl__mrc__lane_ready                                       ,
+            output  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]      mrc__mcntl__lane_data     [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ],
+
             //-------------------------------
             // Stack Bus - Downstream arguments
             //
@@ -84,6 +93,15 @@ module mrc_cntl (
   //----------------------------------------------------------------------------------------------------
   // Registers and Wires
  
+  
+  //-------------------------------
+  // DMA to mcntl
+  //
+  reg   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]   mcntl__mrc__lane_ready_d1                                    ;
+  reg   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]   mrc__mcntl__lane_valid_e1                                    ;
+  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__mcntl__lane_cntl_e1  [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ];
+  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]   mrc__mcntl__lane_data_e1  [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ];
+
   //-------------------------------
   // Stack Bus - Downstream arguments
   //
@@ -127,6 +145,21 @@ module mrc_cntl (
   //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
   // Register inputs and outputs
+
+  //--------------------------------------------------
+  // DMA to mcntl
+  //  
+  
+  always @(posedge clk) 
+    begin
+      for (int lane=0; lane<`MGR_CNTL_NUM_OF_DMA_LANES; lane++)
+        begin: lane_drive
+          mrc__mcntl__lane_valid    [lane]  <=   ( reset_poweron   ) ? 'd0  :  mrc__mcntl__lane_valid_e1 [lane]  ; 
+          mrc__mcntl__lane_cntl     [lane]  <=   ( reset_poweron   ) ? 'd0  :  mrc__mcntl__lane_cntl_e1  [lane]  ;
+          mrc__mcntl__lane_data     [lane]  <=   ( reset_poweron   ) ? 'd0  :  mrc__mcntl__lane_data_e1  [lane]  ;
+          mcntl__mrc__lane_ready_d1 [lane]  <=   ( reset_poweron   ) ? 'd0  :  mcntl__mrc__lane_ready    [lane]  ;
+        end
+    end
 
   //--------------------------------------------------
   // Stack Bus - Downstream arguments
@@ -508,9 +541,14 @@ module mrc_cntl (
   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdp__xxx__lane_enable                                                    ;
   wire  [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]   sdp__xxx__lane_channel_ptr               [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
   wire  [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE  ]   sdp__xxx__lane_word_ptr                  [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; 
+  wire  [`MGR_INST_OPTION_TGT_RANGE          ]   sdp__xxx__lane_target                    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
 
   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   mem_request_channel_data_valid                                           ;  // valid data from channel data fifo
   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__get_next_line                                                  ;
+
+  // create ready for each lane based on target
+  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   xxx__sdp__lane_ready                                                     ;
+
 /*
   // Associate this address with the response from the MMC
   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   xxx__sdp__mem_request_valid                                              ;
@@ -556,7 +594,9 @@ module mrc_cntl (
             .sdp__xxx__lane_cntl                         ( sdp__xxx__lane_cntl               ),
             .sdp__xxx__lane_channel_ptr                  ( sdp__xxx__lane_channel_ptr        ),
             .sdp__xxx__lane_word_ptr                     ( sdp__xxx__lane_word_ptr           ),
-            .xxx__sdp__lane_ready                        ( std__mrc__lane_ready_d1           ),
+            .sdp__xxx__lane_target                       ( sdp__xxx__lane_target             ),
+            //.xxx__sdp__lane_ready                      ( std__mrc__lane_ready_d1           ),
+            .xxx__sdp__lane_ready                        ( xxx__sdp__lane_ready              ),
                                                                                                                     
             //-------------------------------
             // General
@@ -678,22 +718,44 @@ module mrc_cntl (
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------------------------------------------------------------
-  // Lane selection for downstream data
+  // Lane selection for downstream/dma data
 
   reg  [`MGR_NUM_OF_EXEC_LANES_RANGE       ]      lane_valid                                       ;
   reg  [`MGR_NUM_OF_EXEC_LANES_RANGE       ]      lane_enable                                      ;
   reg  [`STACK_DOWN_INTF_STRM_DATA_RANGE   ]      lane_word        [`MGR_NUM_OF_EXEC_LANES_RANGE ] ; // value driven to downstream stack bus
   reg  [`COMMON_STD_INTF_CNTL_RANGE        ]      lane_cntl        [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
-  // Mux per lane
+  reg  [`MGR_INST_OPTION_TGT_RANGE         ]      lane_target      [`MGR_NUM_OF_EXEC_LANES_RANGE ] ;
 
   genvar lane ;
+  generate
+    for (lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
+      begin: lane_ready
+        always @(*)
+          begin
+            if (lane >= `MGR_CNTL_NUM_OF_DMA_LANES)
+              begin
+                xxx__sdp__lane_ready [lane]   =  (lane_target [lane] != PY_WU_INST_TGT_TYPE_NOC) ? std__mrc__lane_ready_d1 [lane] :
+                                                                                                   1'b0                           ;
+              end
+            else
+              begin
+                xxx__sdp__lane_ready [lane]   =  (lane_target [lane] != PY_WU_INST_TGT_TYPE_NOC) ? std__mrc__lane_ready_d1 [lane]   :
+                                                 (lane_target [lane] == PY_WU_INST_TGT_TYPE_NOC) ? mcntl__mrc__lane_ready_d1 [lane] :
+                                                                                                   1'b0                             ;
+              end
+          end
+      end
+  endgenerate
+                                                                                                    
+
   generate
     for (lane=0; lane<`MGR_NUM_OF_EXEC_LANES; lane++)
       begin: select_data
         always @(*)
          begin
-           lane_valid[lane]  =  sdp__xxx__lane_valid[lane] & sdp__xxx__lane_enable[lane] ;
-           lane_cntl [lane]  =  sdp__xxx__lane_cntl [lane]                               ;
+           lane_valid  [lane]  =  sdp__xxx__lane_valid  [lane] & sdp__xxx__lane_enable[lane] ;
+           lane_cntl   [lane]  =  sdp__xxx__lane_cntl   [lane]                               ;
+           lane_target [lane]  =  sdp__xxx__lane_target [lane]                               ;
 
            // Use selecteWord task to direct from_mmc_fifo data to the downstream lane
            selectLineWord (sdp__xxx__lane_channel_ptr [lane] ,   // chan_select
@@ -712,13 +774,24 @@ module mrc_cntl (
         begin: drive_std
           always @(*)
            begin
-             mrc__std__lane_valid_e1 [lane]  = lane_valid [lane] ; 
+             mrc__std__lane_valid_e1 [lane]  = lane_valid [lane] & (lane_target [lane] != PY_WU_INST_TGT_TYPE_NOC) ; 
              mrc__std__lane_cntl_e1  [lane]  = lane_cntl  [lane] ;
              mrc__std__lane_data_e1  [lane]  = lane_word  [lane] ;
            end
         end
     endgenerate
   `endif
+  generate
+    for (lane=0; lane<`MGR_CNTL_NUM_OF_DMA_LANES; lane++)
+      begin: drive_mcntl
+        always @(*)
+         begin
+           mrc__mcntl__lane_valid_e1 [lane]  = lane_valid [lane] & (sdp__xxx__lane_target [lane] == PY_WU_INST_TGT_TYPE_NOC) ; 
+           mrc__mcntl__lane_cntl_e1  [lane]  = lane_cntl  [lane] ;
+           mrc__mcntl__lane_data_e1  [lane]  = lane_word  [lane] ;
+         end
+      end
+  endgenerate
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------------------------------------------------------------

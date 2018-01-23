@@ -307,21 +307,22 @@ module mgr_noc_cntl (
       begin: from_local_fifo
 
         // Write data
-        reg    [`COMMON_STD_INTF_CNTL_RANGE          ]    write_cntl       ;
-        reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    write_type       ; 
-        reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    write_ptype      ; 
-        reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    write_desttype   ; 
-        reg                                               write_pvalid     ; 
-        reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    write_data       ; 
-
-        // Read data                                                       
-        wire   [`COMMON_STD_INTF_CNTL_RANGE          ]    pipe_cntl        ;
-        wire   [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    pipe_type        ; 
-        wire   [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    pipe_ptype       ; 
-        wire   [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    pipe_desttype    ; 
-        wire                                              pipe_pvalid      ; 
-        wire   [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    pipe_data        ; 
-
+        reg    [`COMMON_STD_INTF_CNTL_RANGE          ]                   write_cntl        ;
+        reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]                   write_type        ; 
+        reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]                   write_ptype       ; 
+        reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]                   write_desttype    ; 
+        reg                                                              write_pvalid      ; 
+        reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]                   write_data        ; 
+                                                                                           
+        // Read data                                                                       
+        wire   [`COMMON_STD_INTF_CNTL_RANGE          ]                   pipe_cntl         ;
+        wire   [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]                   pipe_type         ; 
+        wire   [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]                   pipe_ptype        ; 
+        wire   [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]                   pipe_desttype     ; 
+        wire                                                             pipe_pvalid       ; 
+        wire                                                             pipe_to_host      ; 
+        wire   [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]                   pipe_data         ; 
+        wire   [`MGR_NOC_CONT_EXTERNAL_HEADER_UNICAST_DEST_ADDR_RANGE ]  pipe_unicast_addr ;
         // Control
         wire                                              clear            ; 
         wire                                              empty            ; 
@@ -441,7 +442,8 @@ module mgr_noc_cntl (
           end
 
         assign clear   =   1'b0                ;
-
+        assign pipe_unicast_addr = pipe_data[`MGR_NOC_CONT_EXTERNAL_HEADER_UNICAST_DEST_ADDR_RANGE ] ;                 
+        assign pipe_to_host     = (pipe_desttype == `MGR_NOC_CONT_DESTINATION_ADDR_TYPE_UNICAST) & (pipe_unicast_addr == `MGR_ARRAY_HOST_ID);
       end
   endgenerate
 
@@ -503,10 +505,10 @@ module mgr_noc_cntl (
   reg  [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  local_data_toNoc            ;  // local output data to destination port to be sent directly to network
                                                                          
   wire                                       local_destinationReq        ; // Destination accepts the request and this fsm doesnt know who
-  wire [`MGR_MGR_ID_BITMASK_RANGE         ]  local_destinationCpReqAddr  ; // bitmask address from header of packet
-  wire [`MGR_MGR_ID_BITMASK_RANGE         ]  local_destinationDpReqAddr  ; // bitmask address from header of packet
-  wire [`MGR_MGR_ID_BITMASK_RANGE         ]  local_destinationReqAddr    ; // destination address of selected either Control or Data packet
-  reg  [`MGR_MGR_ID_BITMASK_RANGE         ]  local_destinationReqAddr_d1 ; // Keep a registered version for transfer
+  wire [`MGR_HOST_MGR_ID_BITMASK_RANGE    ]  local_destinationCpReqAddr  ; // bitmask address from header of packet
+  wire [`MGR_HOST_MGR_ID_BITMASK_RANGE    ]  local_destinationDpReqAddr  ; // bitmask address from header of packet
+  wire [`MGR_HOST_MGR_ID_BITMASK_RANGE    ]  local_destinationReqAddr    ; // destination address of selected either Control or Data packet
+  reg  [`MGR_HOST_MGR_ID_BITMASK_RANGE    ]  local_destinationReqAddr_d1 ; // Keep a registered version for transfer
 
   // all destinations 'AND' with their bitmask and 'ack' if it matches
   // Input controller waits until all ACK vector matches READY vector (e.g. all destinations are ready)
@@ -634,9 +636,9 @@ module mgr_noc_cntl (
   // Internal signals
   
   //`include "noc_cntl_noc_local_outq_control_assignments.vh"
-
-  assign  local_destinationCpReqAddr  = from_local_fifo[0].pipe_data[`MGR_NOC_CONT_INTERNAL_HEADER_DESTINATION_ADDR_RANGE ];
-  assign  local_destinationDpReqAddr  = from_local_fifo[1].pipe_data[`MGR_NOC_CONT_INTERNAL_HEADER_DESTINATION_ADDR_RANGE ];
+  //MGR_NOC_CONT_DESTINATION_ADDR_TYPE_UNICAST           
+  assign  local_destinationCpReqAddr  = {from_local_fifo[0].pipe_to_host, from_local_fifo[0].pipe_data[`MGR_NOC_CONT_INTERNAL_HEADER_DESTINATION_ADDR_RANGE ]};
+  assign  local_destinationDpReqAddr  = {from_local_fifo[1].pipe_to_host, from_local_fifo[1].pipe_data[`MGR_NOC_CONT_INTERNAL_HEADER_DESTINATION_ADDR_RANGE ]};
 
   // send the address mask from the local packet to NoC output ports during state==PORT_REQ
   assign local_destinationReqAddr      = ( from_local_cp_fifo_pkt_available && (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_WAIT )) ? local_destinationCpReqAddr :  // we are going to service a control packet
@@ -696,7 +698,7 @@ module mgr_noc_cntl (
             local_cntl_toNoc                                                              = from_local_fifo[0].pipe_cntl                 ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE       ] = from_local_fifo[0].pipe_data                 ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE               ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_CP  ; 
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = from_local_fifo[0].pipe_type                 ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = from_local_fifo[0].pipe_desttype             ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE              ] = sys__mgr__mgrId                              ;
           end
 /*
@@ -705,7 +707,7 @@ module mgr_noc_cntl (
             local_cntl_toNoc                                                              = from_local_fifo[0].pipe_cntl                 ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE       ] = from_local_fifo[0].pipe_data                 ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE               ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_CP  ; 
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = from_local_fifo[0].pipe_type                 ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = from_local_fifo[0].pipe_desttype             ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE              ] = sys__mgr__mgrId                              ;
           end
 */
@@ -720,7 +722,8 @@ module mgr_noc_cntl (
                 local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_RANGE      ] = from_local_fifo[0].pipe_pvalid                                                     ;
                 local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD0_RANGE               ] = 'd0                                                                                ;
                 local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_TYPE_RANGE       ] = from_local_fifo[0].pipe_ptype                                                      ;
-                local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD1_RANGE               ] = 'd0                                                                                ;
+                local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE        ] = from_local_fifo[0].pipe_type                                                       ;
+                //local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD1_RANGE             ] = 'd0                                                                                ;
               end
             else
               begin
@@ -744,14 +747,15 @@ module mgr_noc_cntl (
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_RANGE      ] = from_local_fifo[0].pipe_pvalid                                                     ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD0_RANGE               ] = 'd0                                                                                ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_TYPE_RANGE       ] = from_local_fifo[0].pipe_ptype                                                      ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD1_RANGE               ] = 'd0                                                                                ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE        ] = from_local_fifo[0].pipe_type                                                       ;
+            //local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD1_RANGE             ] = 'd0                                                                                ;
           end
         `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_DP_PORT_REQ:
           begin
             local_cntl_toNoc                                                              = from_local_fifo[1].pipe_cntl                 ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE       ] = from_local_fifo[1].pipe_data                 ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE               ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_DP  ; 
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = from_local_fifo[1].pipe_type                 ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = from_local_fifo[1].pipe_desttype             ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE              ] = sys__mgr__mgrId                              ;
           end
 /*
@@ -760,7 +764,7 @@ module mgr_noc_cntl (
             local_cntl_toNoc                                                              = from_local_fifo[1].pipe_cntl                 ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE       ] = from_local_fifo[1].pipe_data                 ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE               ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_DP  ; 
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = from_local_fifo[1].pipe_type                 ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = from_local_fifo[1].pipe_desttype             ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE              ] = sys__mgr__mgrId                              ;
           end
 */
@@ -776,7 +780,8 @@ module mgr_noc_cntl (
                 local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_RANGE      ] = from_local_fifo[1].pipe_pvalid                                                     ;
                 local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD0_RANGE               ] = 'd0                                                                                ;
                 local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_TYPE_RANGE       ] = from_local_fifo[1].pipe_ptype                                                      ;
-                local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD1_RANGE               ] = 'd0                                                                                ;
+                local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE        ] = from_local_fifo[1].pipe_type                                                       ;
+                //local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD1_RANGE             ] = 'd0                                                                                ;
               end
             else
               begin
@@ -799,7 +804,8 @@ module mgr_noc_cntl (
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_RANGE      ] = from_local_fifo[1].pipe_pvalid                                                     ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD0_RANGE               ] = 'd0                                                                                ;
             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_TYPE_RANGE       ] = from_local_fifo[1].pipe_ptype                                                      ;
-            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD1_RANGE               ] = 'd0                                                                                ;
+            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE        ] = from_local_fifo[1].pipe_type                                                       ;
+            //local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAD1_RANGE             ] = 'd0                                                                                ;
           end
 
 
@@ -1225,11 +1231,11 @@ module mgr_noc_cntl (
         // Port Control from NoC FIFO
 
         //--------------------------------------------------------------------------------------------
-        wire                              destinationReq       ; // request to all destinations, one (or more) will accept.
-                                                                 // Output Ports: rename to src<n>_OutqReq after and'ing with destinationReqAddr and the ports destination mask
-                                                                 // Local input : rename to port<n>_localInqReq after and'ing with destinationReqAddr and the local manager mask/ID
-        wire [`MGR_MGR_ID_BITMASK_RANGE ] destinationReqAddr   ; // bitmask address from header of packet
-        wire                              destinationPriority  ; // local input queue needs this to direct packet
+        wire                                   destinationReq       ; // request to all destinations, one (or more) will accept.
+                                                                      // Output Ports: rename to src<n>_OutqReq after and'ing with destinationReqAddr and the ports destination mask
+                                                                      // Local input : rename to port<n>_localInqReq after and'ing with destinationReqAddr and the local manager mask/ID
+        wire [`MGR_HOST_MGR_ID_BITMASK_RANGE ] destinationReqAddr   ; // bitmask address from header of packet or bitfield generated from unicast or group address
+        wire                                   destinationPriority  ; // local input queue needs this to direct packet
 
         // all destinations 'AND' with their bitmask and 'ack' if it matches
         // Input controller waits until all acked bits have been enabled (e.g. all destinations are ready)

@@ -20,21 +20,54 @@
 // Simple FSM simply to check MgrID from NoC
 // - avoids having manager ID removed for SV
 
-`define MGR_CNTL_MAIN_INIT                 10'b00_0000_0001
-`define MGR_CNTL_MAIN_DNLD_INST            10'b00_0000_0010
-`define MGR_CNTL_MAIN_DNLD_INST_COMPLETE   10'b00_0000_0100
+`define MGR_CNTL_MAIN_WAIT                   10'b00_0000_0001
+`define MGR_CNTL_MAIN_START_WUD              10'b00_0000_0010
+`define MGR_CNTL_MAIN_PROCESS_WUD            10'b00_0000_0100
+`define MGR_CNTL_MAIN_COMPLETE_WUD           10'b00_0000_1000
+`define MGR_CNTL_MAIN_MEM_UPLD_HEADER        10'b00_0001_0000
+`define MGR_CNTL_MAIN_MEM_UPLD_DATA          10'b00_0010_0000
+`define MGR_CNTL_MAIN_MEM_UPLD_DATA_END_PKT  10'b00_0100_0000
+`define MGR_CNTL_MAIN_MEM_UPLD_COMPLETE      10'b00_1000_0000
+`define MGR_CNTL_MAIN_MEM_DNLD               10'b01_0000_0000
 
-`define MGR_CNTL_MAIN_RUN                  10'b00_0100_0000
-`define MGR_CNTL_MAIN_RCV                  10'b00_1000_0000
-`define MGR_CNTL_MAIN_COMPLETE             10'b01_0000_0000
-                                                       
-`define MGR_CNTL_MAIN_ERR                  10'b10_0000_0000
+`define MGR_CNTL_MAIN_ERR                    10'b10_0000_0000
 
 `define MGR_CNTL_MAIN_STATE_WIDTH         10
 `define MGR_CNTL_MAIN_STATE_MSB           `MGR_CNTL_MAIN_STATE_WIDTH-1
 `define MGR_CNTL_MAIN_STATE_LSB           0
 `define MGR_CNTL_MAIN_STATE_SIZE          (`MGR_CNTL_MAIN_STATE_MSB - `MGR_CNTL_MAIN_STATE_LSB +1)
 `define MGR_CNTL_MAIN_STATE_RANGE          `MGR_CNTL_MAIN_STATE_MSB : `MGR_CNTL_MAIN_STATE_LSB
+
+//------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------
+// Simple FSM simply to check MgrID from NoC
+// - avoids having manager ID removed for SV
+
+`define MGR_CNTL_NOC_CNTL_INST_DNLD_INIT       10'b00_0000_0001
+`define MGR_CNTL_NOC_CNTL_DNLD_INST            10'b00_0000_0010
+`define MGR_CNTL_NOC_CNTL_DNLD_INST_COMPLETE   10'b00_0000_0100
+
+`define MGR_CNTL_NOC_CNTL_WAIT                 10'b00_0100_0000
+`define MGR_CNTL_NOC_CNTL_MWC_RCV              10'b00_1000_0000
+`define MGR_CNTL_NOC_CNTL_COMPLETE             10'b01_0000_0000
+                                                       
+`define MGR_CNTL_NOC_CNTL_ERR                  10'b10_0000_0000
+
+`define MGR_CNTL_NOC_CNTL_STATE_WIDTH         10
+`define MGR_CNTL_NOC_CNTL_STATE_MSB           `MGR_CNTL_NOC_CNTL_STATE_WIDTH-1
+`define MGR_CNTL_NOC_CNTL_STATE_LSB           0
+`define MGR_CNTL_NOC_CNTL_STATE_SIZE          (`MGR_CNTL_NOC_CNTL_STATE_MSB - `MGR_CNTL_NOC_CNTL_STATE_LSB +1)
+`define MGR_CNTL_NOC_CNTL_STATE_RANGE          `MGR_CNTL_NOC_CNTL_STATE_MSB : `MGR_CNTL_NOC_CNTL_STATE_LSB
+
+//--------------------------------------------------------
+//--------------------------------------------------------
+// DMA lanes from memory read
+
+`define MGR_CNTL_NUM_OF_DMA_LANES               2
+`define MGR_CNTL_NUM_OF_DMA_LANES_MSB           (`MGR_CNTL_NUM_OF_DMA_LANES -1)
+`define MGR_CNTL_NUM_OF_DMA_LANES_LSB            0
+`define MGR_CNTL_NUM_OF_DMA_LANES_SIZE           (`MGR_CNTL_NUM_OF_DMA_LANES_MSB - `MGR_CNTL_NUM_OF_DMA_LANES_LSB +1)
+`define MGR_CNTL_NUM_OF_DMA_LANES_RANGE           `MGR_CNTL_NUM_OF_DMA_LANES_MSB : `MGR_CNTL_NUM_OF_DMA_LANES_LSB
 
 //------------------------------------------------
 // FIFO's

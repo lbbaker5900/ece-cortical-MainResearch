@@ -966,6 +966,9 @@ if __name__ == "__main__":
       pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (local_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :'
       pLine = pLine + '\n                                                                                                                            local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;'
       pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'
+      pLine = pLine + '\n            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE                 ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE ];'
+      pLine = pLine + '\n            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ];'
+      pLine = pLine + '\n            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE                ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE ];'
       pLine = pLine + '\n          end'
     else:
       pLine = pLine + '\n        `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_WAIT_START_PORT{0}:'.format(port-1)
@@ -976,6 +979,9 @@ if __name__ == "__main__":
       pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (src{0}_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :'.format(port-1)
       pLine = pLine + '\n                                                                                                                             src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;'.format(port-1)
       pLine = pLine + '\n            write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];'.format(port-1)
+      pLine = pLine + '\n            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE                 ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE ];'
+      pLine = pLine + '\n            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ];'
+      pLine = pLine + '\n            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE                ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE ];'
       pLine = pLine + '\n          end'
     # READ
     if port == 0:
@@ -1199,8 +1205,10 @@ if __name__ == "__main__":
     pLine = pLine + '\n            // Fields previously latched'
     pLine = pLine + '\n            noc__locl__cp_mgrId         <= (reset_poweron ) ? \'d0 :   local_inq_mgr_fromNoc      ; '.format(port)
     pLine = pLine + '\n            noc__locl__dp_mgrId         <= (reset_poweron ) ? \'d0 :   local_inq_mgr_fromNoc      ; '.format(port)
-    pLine = pLine + '\n            noc__locl__cp_type          <= (reset_poweron ) ? \'d0 :   local_inq_type_fromNoc     ; '.format(port)
-    pLine = pLine + '\n            noc__locl__dp_type          <= (reset_poweron ) ? \'d0 :   local_inq_type_fromNoc     ; '.format(port)
+    pLine = pLine + '\n            noc__locl__cp_type          <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE   ]; '.format(port)
+    pLine = pLine + '\n            noc__locl__dp_type          <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE   ]; '.format(port)
+    pLine = pLine + '\n            //noc__locl__cp_type          <= (reset_poweron ) ? \'d0 :   local_inq_type_fromNoc     ; '.format(port)
+    pLine = pLine + '\n            //noc__locl__dp_type          <= (reset_poweron ) ? \'d0 :   local_inq_type_fromNoc     ; '.format(port)
     pLine = pLine + '\n'                                                                    
     pLine = pLine + '\n            // Fields valid during this cycle'
     pLine = pLine + '\n            noc__locl__cp_ptype         <= (reset_poweron ) ? \'d0 :   Port_from_NoC_Control[{0}].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; '.format(port)

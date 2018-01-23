@@ -23,6 +23,7 @@
 `timescale 1ns/10ps
 
 `include "common.vh"
+`include "python_typedef.vh"
 `include "pe_array.vh"
 `include "pe.vh"
 `include "manager_array.vh"
@@ -38,7 +39,6 @@
 `include "wu_memory.vh"
 `include "wu_decode.vh"
 `include "sdp_cntl.vh"
-`include "python_typedef.vh"
 
 
 module sdp_cntl (  
@@ -75,6 +75,7 @@ module sdp_cntl (
             output  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdp__xxx__lane_enable                                      ,
             output  reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE     ]   sdp__xxx__lane_channel_ptr [`MGR_NUM_OF_EXEC_LANES_RANGE ] ,
             output  reg   [`MGR_MMC_TO_MRC_WORD_ADDRESS_RANGE  ]   sdp__xxx__lane_word_ptr    [`MGR_NUM_OF_EXEC_LANES_RANGE ] ,
+            output  reg   [`MGR_INST_OPTION_TGT_RANGE       ]      sdp__xxx__lane_target      [`MGR_NUM_OF_EXEC_LANES_RANGE ] ,
             input   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   xxx__sdp__lane_ready                                       ,
            
 
@@ -231,6 +232,7 @@ module sdp_cntl (
             .sdp__xxx__lane_enable                        ( sdp__xxx__lane_enable                      ),
             .sdp__xxx__lane_channel_ptr                   ( sdp__xxx__lane_channel_ptr                 ),
             .sdp__xxx__lane_word_ptr                      ( sdp__xxx__lane_word_ptr                    ),
+            .sdp__xxx__lane_target                        ( sdp__xxx__lane_target                      ),
 
             .xxx__sdp__lane_ready                         ( xxx__sdp__lane_ready                       ),
            

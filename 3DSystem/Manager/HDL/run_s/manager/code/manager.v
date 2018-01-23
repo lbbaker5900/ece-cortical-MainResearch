@@ -31,6 +31,7 @@
 `include "streamingOps_cntl.vh"
 `include "streamingOps.vh"
 `include "dma_cont.vh"
+`include "mgr_cntl.vh"
 
 module manager (
 
@@ -460,6 +461,13 @@ module manager (
       begin: mrc_cntl_strm_inst
 
         //----------------------------------------------------------------------------------------------------
+        // DMA to NoC (via mcntl)
+        wire [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]      mrc__mcntl__lane_valid                                       ;
+        wire [`COMMON_STD_INTF_CNTL_RANGE      ]      mrc__mcntl__lane_cntl     [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ];
+        wire [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]      mcntl__mrc__lane_ready                                       ;
+        wire [`MGR_STD_LANE_DATA_RANGE         ]      mrc__mcntl__lane_data     [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ];
+
+        //----------------------------------------------------------------------------------------------------
         // Stack Downstream
         wire  [`MGR_NUM_OF_EXEC_LANES_RANGE     ]   std__mrc__lane_ready                                 ;
         wire  [`COMMON_STD_INTF_CNTL_RANGE      ]   mrc__std__lane_cntl   [`MGR_NUM_OF_EXEC_LANES_RANGE ];
@@ -502,6 +510,14 @@ module manager (
                 .mrc__wud__ready         ( mrc__wud__ready         ),
                 .wud__mrc__option_type   ( wud__mrc__option_type   ),  // Only send tuples
                 .wud__mrc__option_value  ( wud__mrc__option_value  ),
+      
+                //-------------------------------
+                // to NoC (via mcntl)
+                //
+                .mcntl__mrc__lane_ready  ( mcntl__mrc__lane_ready  ),
+                .mrc__mcntl__lane_cntl   ( mrc__mcntl__lane_cntl   ),
+                .mrc__mcntl__lane_data   ( mrc__mcntl__lane_data   ),
+                .mrc__mcntl__lane_valid  ( mrc__mcntl__lane_valid  ),
       
                 //-------------------------------
                 // to Stack Downstream lanes
@@ -1024,6 +1040,14 @@ module manager (
             // Status
             .wum__mcntl__inst_count         ( wum__mcntl__inst_count        ),
 
+            //-------------------------------
+            // to NoC (via mcntl)
+            //
+            .mcntl__mrc__lane_ready         ( mrc_cntl_strm_inst[0].mcntl__mrc__lane_ready  ),
+            .mrc__mcntl__lane_cntl          ( mrc_cntl_strm_inst[0].mrc__mcntl__lane_cntl   ),
+            .mrc__mcntl__lane_data          ( mrc_cntl_strm_inst[0].mrc__mcntl__lane_data   ),
+            .mrc__mcntl__lane_valid         ( mrc_cntl_strm_inst[0].mrc__mcntl__lane_valid  ),
+      
             //-------------------------------
             // from WU Decoder
             //

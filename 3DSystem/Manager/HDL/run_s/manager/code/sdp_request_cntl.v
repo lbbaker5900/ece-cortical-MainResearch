@@ -44,6 +44,7 @@
 `timescale 1ns/10ps
 
 `include "common.vh"
+`include "python_typedef.vh"
 `include "pe_array.vh"
 `include "pe.vh"
 `include "manager_array.vh"
@@ -59,7 +60,6 @@
 `include "wu_memory.vh"
 `include "wu_decode.vh"
 `include "sdp_cntl.vh"
-`include "python_typedef.vh"
 
 
 module sdp_request_cntl (  

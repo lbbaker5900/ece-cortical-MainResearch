@@ -179,6 +179,9 @@
             write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (local_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :
                                                                                                                             local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;
             write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE                 ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE ];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE                ] = local_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE ];
           end
         `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_LOCAL:
           begin
@@ -205,6 +208,9 @@
             write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (src0_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (src0_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :
                                                                                                                              src0_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;
             write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = src0_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE                 ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE ];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE                ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE ];
           end
         `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT0:
           begin
@@ -231,6 +237,9 @@
             write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (src1_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (src1_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :
                                                                                                                              src1_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;
             write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = src1_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE                 ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE ];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE                ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE ];
           end
         `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT1:
           begin
@@ -257,6 +266,9 @@
             write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (src2_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (src2_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :
                                                                                                                              src2_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;
             write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = src2_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE                 ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE ];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE                ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE ];
           end
         `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT2:
           begin
@@ -283,6 +295,9 @@
             write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] = (src3_cntl_toNoc == `COMMON_STD_INTF_CNTL_SOM) ? (src3_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE] & thisPort_destinationMask) :
                                                                                                                              src3_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE]                             ;
             write_data[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE            ] = src3_data_toNoc[`MGR_NOC_CONT_EXTERNAL_NON_ADDRESS_RANGE];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE                 ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE ];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDRESS_TYPE_RANGE ];
+            //write_data[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE                ] = src{0}_data_toNoc[`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE ];
           end
         `MGR_NOC_CONT_NOC_PORT_OUTPUT_CNTL_TRANSFER_PORT3:
           begin

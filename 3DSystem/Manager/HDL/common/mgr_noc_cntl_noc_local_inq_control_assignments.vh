@@ -81,8 +81,10 @@
             // Fields previously latched
             noc__locl__cp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
             noc__locl__dp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
-            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
-            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
+            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE   ]; 
+            //noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
+            //noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
 
             // Fields valid during this cycle
             noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[0].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
@@ -173,8 +175,10 @@
             // Fields previously latched
             noc__locl__cp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
             noc__locl__dp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
-            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
-            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
+            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE   ]; 
+            //noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
+            //noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
 
             // Fields valid during this cycle
             noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[1].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
@@ -265,8 +269,10 @@
             // Fields previously latched
             noc__locl__cp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
             noc__locl__dp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
-            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
-            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
+            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE   ]; 
+            //noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
+            //noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
 
             // Fields valid during this cycle
             noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[2].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
@@ -357,8 +363,10 @@
             // Fields previously latched
             noc__locl__cp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
             noc__locl__dp_mgrId         <= (reset_poweron ) ? 'd0 :   local_inq_mgr_fromNoc      ; 
-            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
-            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
+            noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE   ]; 
+            noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE   ]; 
+            //noc__locl__cp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
+            //noc__locl__dp_type          <= (reset_poweron ) ? 'd0 :   local_inq_type_fromNoc     ; 
 
             // Fields valid during this cycle
             noc__locl__cp_ptype         <= (reset_poweron ) ? 'd0 :   Port_from_NoC_Control[3].data_fromNoc[`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE]; 
