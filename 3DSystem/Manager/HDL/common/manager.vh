@@ -33,6 +33,13 @@
 `define MGR_HOST_MGR_ID_BITMASK_LSB               0
 `define MGR_HOST_MGR_ID_BITMASK_SIZE              (`MGR_HOST_MGR_ID_BITMASK_MSB - `MGR_HOST_MGR_ID_BITMASK_LSB +1)
 `define MGR_HOST_MGR_ID_BITMASK_RANGE              `MGR_HOST_MGR_ID_BITMASK_MSB : `MGR_HOST_MGR_ID_BITMASK_LSB
+
+`define MGR_HOST_MGR_ID_WIDTH             (`CLOG2(`MGR_ARRAY_NUM_OF_MGR)+1)
+`define MGR_HOST_MGR_ID_MSB               (`MGR_HOST_MGR_ID_WIDTH-1)
+`define MGR_HOST_MGR_ID_LSB               0
+`define MGR_HOST_MGR_ID_SIZE              (`MGR_HOST_MGR_ID_MSB - `MGR_HOST_MGR_ID_LSB +1)
+`define MGR_HOST_MGR_ID_RANGE              `MGR_HOST_MGR_ID_MSB : `MGR_HOST_MGR_ID_LSB
+
 //------------------------------------------------
 // Stack Bus stream
 //------------------------------------------------

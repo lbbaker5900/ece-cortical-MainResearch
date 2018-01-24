@@ -8,7 +8,7 @@
             input    wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port0_cntl             ,
             input    wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port0_data             ,
             output   wire                                         mgr__noc__port0_fc               ,
-            input    wire   [`MGR_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port0_destinationMask  ,
+            input    wire   [`MGR_HOST_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port0_destinationMask  ,
 
             // NoC port 1
             output   wire                                         mgr__noc__port1_valid            ,
@@ -19,7 +19,7 @@
             input    wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port1_cntl             ,
             input    wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port1_data             ,
             output   wire                                         mgr__noc__port1_fc               ,
-            input    wire   [`MGR_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port1_destinationMask  ,
+            input    wire   [`MGR_HOST_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port1_destinationMask  ,
 
             // NoC port 2
             output   wire                                         mgr__noc__port2_valid            ,
@@ -30,7 +30,7 @@
             input    wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port2_cntl             ,
             input    wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port2_data             ,
             output   wire                                         mgr__noc__port2_fc               ,
-            input    wire   [`MGR_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port2_destinationMask  ,
+            input    wire   [`MGR_HOST_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port2_destinationMask  ,
 
             // NoC port 3
             output   wire                                         mgr__noc__port3_valid            ,
@@ -41,5 +41,5 @@
             input    wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port3_cntl             ,
             input    wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port3_data             ,
             output   wire                                         mgr__noc__port3_fc               ,
-            input    wire   [`MGR_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port3_destinationMask  ,
+            input    wire   [`MGR_HOST_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port3_destinationMask  ,
 

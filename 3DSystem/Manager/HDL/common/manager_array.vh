@@ -19,7 +19,7 @@
 `define MGR_ARRAY_NUM_OF_MGR                 `PE_ARRAY_NUM_OF_PE 
 
 
-`define MGR_ARRAY_HOST_ID_WIDTH             (`CLOG2(`MGR_ARRAY_NUM_OF_MGR))+1  // extra bit to address host
+`define MGR_ARRAY_HOST_ID_WIDTH             ((`CLOG2(`MGR_ARRAY_NUM_OF_MGR))+1)  // extra bit to address host
 `define MGR_ARRAY_HOST_ID_MSB               (`MGR_ARRAY_HOST_ID_WIDTH-1)
 `define MGR_ARRAY_HOST_ID_LSB               0
 `define MGR_ARRAY_HOST_ID_SIZE              (`MGR_ARRAY_HOST_ID_MSB - `MGR_ARRAY_HOST_ID_LSB +1)

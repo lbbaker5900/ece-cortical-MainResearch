@@ -130,8 +130,14 @@ module manager (
   //
   wire  [`MGR_WU_ADDRESS_RANGE    ]     mcntl__wuf__start_addr  ;  // first WU address
   wire                                  mcntl__wuf__enable      ;
-  wire                                  xxx__wuf__stall         ;
 
+  wire                                  mcntl__wuf__stall       ;
+  wire                                  mcntl__wuf__release     ;
+  wire                                  wuf__mcntl__stalled     ;
+
+  wire                                  mcntl__wud__stall       ;
+  wire                                  mcntl__wud__release     ;
+  wire                                  wud__mcntl__stalled     ;
 
 
   //-------------------------------------------------------------------------------------------------
@@ -213,8 +219,7 @@ module manager (
             // To WU memory
             .wuf__wum__read          ( wuf__wum__read           ),
             .wuf__wum__addr          ( wuf__wum__addr           ),
-            .wum__wuf__stall         ( wum__wuf__stall          ),
-        
+
             //-------------------------------
             // Control
             .mcntl__wuf__enable      ( mcntl__wuf__enable       ),
@@ -222,7 +227,11 @@ module manager (
         
             //-------------------------------
             // 
-            .xxx__wuf__stall         ( xxx__wuf__stall          ),
+            .mcntl__wuf__stall       ( mcntl__wuf__stall        ),
+            .mcntl__wuf__release     ( mcntl__wuf__release      ),
+            .wuf__mcntl__stalled     ( wuf__mcntl__stalled      ),
+        
+            .wum__wuf__stall         ( wum__wuf__stall          ),
         
             //-------------------------------
             // General
@@ -344,6 +353,21 @@ module manager (
   wu_decode wu_decode (
   
             //-------------------------------
+            // System Controller
+            // - control
+            .mcntl__wud__stall         ( mcntl__wud__stall         ),
+            .mcntl__wud__release       ( mcntl__wud__release       ),
+            .wud__mcntl__stalled       ( wud__mcntl__stalled       ),
+
+            // - descriptors
+            .wud__mcntl__valid         ( wud__mcntl__valid         ),
+            .wud__mcntl__dcntl         ( wud__mcntl__dcntl         ),  // used to delineate descriptor
+            .mcntl__wud__ready         ( mcntl__wud__ready         ),
+            .wud__mcntl__tag           ( wud__mcntl__tag           ),  // Use this to match with WU and take all the data 
+            .wud__mcntl__option_type   ( wud__mcntl__option_type   ),  // Only send tuples
+            .wud__mcntl__option_value  ( wud__mcntl__option_value  ),
+        
+            //-------------------------------
             // from WU Memory
             .wum__wud__valid           ( wum__wud__valid           ),
             .wud__wum__ready           ( wud__wum__ready           ),
@@ -367,12 +391,6 @@ module manager (
             //-------------------------------
             // Main Manager Controller
             //
-            .wud__mcntl__valid         ( wud__mcntl__valid         ),
-            .wud__mcntl__dcntl         ( wud__mcntl__dcntl         ),  // used to delineate descriptor
-            .mcntl__wud__ready         ( mcntl__wud__ready         ),
-            .wud__mcntl__tag           ( wud__mcntl__tag           ),  // Use this to match with WU and take all the data 
-            .wud__mcntl__option_type   ( wud__mcntl__option_type   ),  // Only send tuples
-            .wud__mcntl__option_value  ( wud__mcntl__option_value  ),
 
             //-------------------------------
             // Return Data Processor
@@ -928,7 +946,7 @@ module manager (
              // Connections to external NoC
              `include "manager_noc_cntl_noc_ports_instance_ports.vh"
 
-            .sys__mgr__mgrId              ( {1'b0, sys__mgr__mgrId}  ), 
+            .sys__mgr__mgrId              ( sys__mgr__mgrId          ), 
             .clk                          ( clk                      ),
             .reset_poweron                ( reset_poweron            )
                           
@@ -1034,7 +1052,14 @@ module manager (
             //-------------------------------
             .mcntl__wuf__start_addr         ( mcntl__wuf__start_addr        ),  // first WU address
             .mcntl__wuf__enable             ( mcntl__wuf__enable            ),
-            .xxx__wuf__stall                ( xxx__wuf__stall               ),
+
+            .mcntl__wuf__stall              ( mcntl__wuf__stall             ),
+            .mcntl__wuf__release            ( mcntl__wuf__release           ),
+            .wuf__mcntl__stalled            ( wuf__mcntl__stalled           ),
+
+            .mcntl__wud__stall              ( mcntl__wud__stall             ),
+            .mcntl__wud__release            ( mcntl__wud__release           ),
+            .wud__mcntl__stalled            ( wud__mcntl__stalled           ),
 
             //-------------------------------
             // Status

@@ -191,7 +191,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire  [`COMMON_STD_INTF_CNTL_RANGE ]   noc__mgr__port{0}_cntl  ;'.format(port)
     pLine = pLine + '\n  wire  [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]   noc__mgr__port{0}_data  ;'.format(port)
     pLine = pLine + '\n  wire                                     mgr__noc__port{0}_fc    ;'.format(port)
-    pLine = pLine + '\n  wire  [`MGR_MGR_ID_BITMASK_RANGE     ]   sys__mgr__port{0}_destinationMask ;'.format(port)
+    pLine = pLine + '\n  wire  [`MGR_HOST_MGR_ID_BITMASK_RANGE     ]   sys__mgr__port{0}_destinationMask ;'.format(port)
     pLine = pLine + '\n'        
   pLine = pLine + '\n'
 
@@ -288,7 +288,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n            input    wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port{0}_cntl             ,'.format(port)
     pLine = pLine + '\n            input    wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port{0}_data             ,'.format(port)
     pLine = pLine + '\n            output   wire                                         mgr__noc__port{0}_fc               ,'.format(port)
-    pLine = pLine + '\n            input    wire   [`MGR_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port{0}_destinationMask  ,'.format(port)
+    pLine = pLine + '\n            input    wire   [`MGR_HOST_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port{0}_destinationMask  ,'.format(port)
     pLine = pLine + '\n'        
   pLine = pLine + '\n'
 
@@ -329,7 +329,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  input    [`COMMON_STD_INTF_CNTL_RANGE       ]  noc__mgr__port{0}_cntl            ;'.format(port)
     pLine = pLine + '\n  input    [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port{0}_data            ;'.format(port)
     pLine = pLine + '\n  output                                         mgr__noc__port{0}_fc              ;'.format(port)
-    pLine = pLine + '\n  input    [`MGR_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port{0}_destinationMask ;'.format(port)
+    pLine = pLine + '\n  input    [`MGR_HOST_MGR_ID_BITMASK_RANGE         ]  sys__mgr__port{0}_destinationMask ;'.format(port)
     pLine = pLine + '\n'        
   pLine = pLine + '\n'
 
@@ -438,7 +438,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  input  [`COMMON_STD_INTF_CNTL_RANGE ]  noc__mgr__port{0}_cntl            ;'.format(port)
     pLine = pLine + '\n  input  [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port{0}_data            ;'.format(port)
     pLine = pLine + '\n  output                                   mgr__noc__port{0}_fc              ;'.format(port)
-    pLine = pLine + '\n  input  [`PE_PE_ID_BITMASK_RANGE       ]  sys__mgr__port{0}_destinationMask ;'.format(port)
+    pLine = pLine + '\n  input  [`MGR_HOST_MGR_ID_BITMASK_RANGE       ]  sys__mgr__port{0}_destinationMask ;'.format(port)
     pLine = pLine + '\n'        
   pLine = pLine + '\n'
 
@@ -458,7 +458,7 @@ if __name__ == "__main__":
     pLine = pLine + '\n  wire   [`COMMON_STD_INTF_CNTL_RANGE ]  noc__mgr__port{0}_cntl            ;'.format(port)
     pLine = pLine + '\n  wire   [`MGR_NOC_CONT_NOC_PORT_DATA_RANGE ]  noc__mgr__port{0}_data            ;'.format(port)
     pLine = pLine + '\n  wire                                     mgr__noc__port{0}_fc              ;'.format(port)
-    pLine = pLine + '\n  wire   [`PE_PE_ID_BITMASK_RANGE       ]  sys__mgr__port{0}_destinationMask ;'.format(port)
+    pLine = pLine + '\n  wire   [`MGR_HOST_MGR_ID_BITMASK_RANGE       ]  sys__mgr__port{0}_destinationMask ;'.format(port)
     pLine = pLine + '\n'        
   pLine = pLine + '\n'
 
@@ -713,17 +713,17 @@ if __name__ == "__main__":
   f = open('../HDL/common/mgr_noc_cntl_noc_port_output_control_wires.vh', 'w')
   pLine = ""
 
-  pLine = pLine + '\n  wire [`MGR_MGR_ID_BITMASK_RANGE ] thisPort_destinationMask  ; // bitmask indicating which nodes accessed out of this port'
+  pLine = pLine + '\n  wire [`MGR_HOST_MGR_ID_BITMASK_RANGE ] thisPort_destinationMask  ; // bitmask indicating which nodes accessed out of this port'
   pLine = pLine + '\n'
   pLine = pLine + '\n  wire                            local_OutqReq             ;  // request from local putput queue controller'
-  #pLine = pLine + '\n  //wire [`MGR_MGR_ID_BITMASK_RANGE ] local_OutqReqAddr         ;  // bitmask address of requestor'
+  #pLine = pLine + '\n  //wire [`MGR_HOST_MGR_ID_BITMASK_RANGE ] local_OutqReqAddr         ;  // bitmask address of requestor'
   pLine = pLine + '\n  reg                             local_OutqAck             ;'
   pLine = pLine + '\n  reg                             local_OutqReady           ;'
   for port in range (0, numOfPorts):
     pLine = pLine + '\n  // These 3 sources are the 3 sources not the 3 actual ports'
     pLine = pLine + '\n  // e.g. if this instance is port 2, 1=port0, 2=port1, 3=port3 etc.'
     pLine = pLine + '\n  wire                            src{0}_OutqReq             ;  // request from source (port) {0}'.format(port)
-    #pLine = pLine + '\n  //wire [`MGR_MGR_ID_BITMASK_RANGE ] src{0}_OutqReqAddr         ;  // bitmask address of requestor'.format(port)
+    #pLine = pLine + '\n  //wire [`MGR_HOST_MGR_ID_BITMASK_RANGE ] src{0}_OutqReqAddr         ;  // bitmask address of requestor'.format(port)
     pLine = pLine + '\n  reg                             src{0}_OutqAck             ;  // ack back to source (port) input controller'.format(port)
     pLine = pLine + '\n  reg                             src{0}_OutqReady           ;'.format(port)
     pLine = pLine + '\n  // This is the packet bus from the 3 possible sources that will be muxed into the output fifo when the source has been acknowledged'

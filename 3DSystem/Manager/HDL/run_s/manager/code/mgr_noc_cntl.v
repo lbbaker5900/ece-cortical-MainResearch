@@ -113,7 +113,7 @@ module mgr_noc_cntl (
  
   input                              clk             ;
   input                              reset_poweron   ;
-  input [`MGR_ARRAY_HOST_ID_RANGE ]  sys__mgr__mgrId ; 
+  input [`MGR_MGR_ID_RANGE        ]  sys__mgr__mgrId ; 
 
   // Information between CNTL and NOC is a packet interface not a stream interface.
   // This means that every packet is delineated with SOP and EOP.
@@ -325,9 +325,7 @@ module mgr_noc_cntl (
         wire   [`MGR_NOC_CONT_EXTERNAL_HEADER_UNICAST_DEST_ADDR_RANGE ]  pipe_unicast_addr ;
         // Control
         wire                                              clear            ; 
-        wire                                              empty            ; 
         wire                                              almost_full      ; 
-        wire                                              read             ; 
         wire                                              write            ; 
  
 
@@ -350,82 +348,6 @@ module mgr_noc_cntl (
                                 .reset_poweron    ( reset_poweron         ),
                                 .clk              ( clk                   )
                                 );
-/*
-        // Combine FIFO bits
-        generic_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_DEPTH                 ), 
-                       .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_TO_INTF_DATA_FIFO_ALMOST_FULL_THRESHOLD ),
-                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_NOC_CONT_NOC_PACKET_TYPE_WIDTH+`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_WIDTH+`MGR_NOC_CONT_NOC_DEST_TYPE_WIDTH+1+`MGR_NOC_CONT_INTERNAL_DATA_WIDTH)
-                        ) gfifo (
-                                          // Status
-                                         .empty            ( empty                                     ),
-                                         .almost_full      ( almost_full                               ),
-                                         .almost_empty     (                                           ),
-                                         .depth            (                                           ),
-                                          // Write                                                     
-                                         .write            ( write                                     ),
-                                         .write_data       ( {write_cntl, write_type, write_ptype, write_desttype, write_pvalid, write_data}),
-                                          // Read                                                
-                                         .read             ( read                                      ),
-                                         .read_data        ( { read_cntl,  read_type,  read_ptype,  read_desttype,  read_pvalid,  read_data}),
-
-                                         // General
-                                         .clear            ( clear                                     ),
-                                         .reset_poweron    ( reset_poweron                             ),
-                                         .clk              ( clk                                       )
-                                         );
-        // Note: First stage of pipeline is inside FIFO
-        // fifo output stage
-        reg                                                  fifo_pipe_valid   ;
-        wire                                                 fifo_pipe_read    ;
-        // pipe stage
-        reg                                                  pipe_valid        ;
-        reg    [`COMMON_STD_INTF_CNTL_RANGE          ]       pipe_cntl         ;
-        reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]       pipe_type         ; 
-        reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]       pipe_ptype        ; 
-        reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]       pipe_desttype     ; 
-        reg                                                  pipe_pvalid       ; 
-        reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]       pipe_data         ; 
-
-        wire                                                 pipe_read         ;
-
-
-        assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
-        assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
-
-        // If we are reading the fifo, then this stage will be valid
-        // If we are not reading the fifo but the next stage is reading this stage, then this stage will not be valid
-        always @(posedge clk)
-          begin
-            fifo_pipe_valid <= ( reset_poweron      ) ? 'b0               :
-                               ( read               ) ? 'b1               :
-                               ( fifo_pipe_read     ) ? 'b0               :
-                                                         fifo_pipe_valid  ;
-          end
-
-        always @(posedge clk)
-          begin
-            // If we are reading the previous stage, then this stage will be valid
-            // otherwise if we are reading this stage this stage will not be valid
-            pipe_valid      <= ( reset_poweron      ) ? 'b0              :
-                               ( fifo_pipe_read     ) ? 'b1              :
-                               ( pipe_read          ) ? 'b0              :
-                                                         pipe_valid      ;
-        
-            // if we are reading, transfer from previous pipe stage. 
-            pipe_cntl           <= ( fifo_pipe_read     ) ? read_cntl            :
-                                                            pipe_cntl            ;
-            pipe_type           <= ( fifo_pipe_read     ) ? read_type            :
-                                                            pipe_type            ;
-            pipe_ptype          <= ( fifo_pipe_read     ) ? read_ptype           :
-                                                            pipe_ptype           ;
-            pipe_desttype       <= ( fifo_pipe_read     ) ? read_desttype        :
-                                                            pipe_desttype        ;
-            pipe_pvalid         <= ( fifo_pipe_read     ) ? read_pvalid          :
-                                                            pipe_pvalid          ;
-            pipe_data           <= ( fifo_pipe_read     ) ? read_data            :
-                                                            pipe_data            ;
-          end
-*/
         reg    [`MGR_NOC_CONT_TO_INTF_DATA_FIFO_PKT_CNT_RANGE ]    pkt_count       ;
         always @(posedge clk)
           begin
@@ -637,8 +559,15 @@ module mgr_noc_cntl (
   
   //`include "noc_cntl_noc_local_outq_control_assignments.vh"
   //MGR_NOC_CONT_DESTINATION_ADDR_TYPE_UNICAST           
-  assign  local_destinationCpReqAddr  = {from_local_fifo[0].pipe_to_host, from_local_fifo[0].pipe_data[`MGR_NOC_CONT_INTERNAL_HEADER_DESTINATION_ADDR_RANGE ]};
-  assign  local_destinationDpReqAddr  = {from_local_fifo[1].pipe_to_host, from_local_fifo[1].pipe_data[`MGR_NOC_CONT_INTERNAL_HEADER_DESTINATION_ADDR_RANGE ]};
+  assign  local_destinationCpReqAddr  = ((from_local_fifo[0].pipe_desttype == `MGR_NOC_CONT_DESTINATION_ADDR_TYPE_UNICAST) && (from_local_fifo[0].pipe_unicast_addr == `MGR_ARRAY_HOST_ID))  ?  {1'b1, {`MGR_MGR_ID_BITMASK_WIDTH {1'b0}}}  : // FIXME : here add group stuff
+                                                                                                                                                                                                {from_local_fifo[0].pipe_to_host, from_local_fifo[0].pipe_data[`MGR_MGR_ID_BITMASK_RANGE ]};
+
+  assign  local_destinationDpReqAddr  = ((from_local_fifo[1].pipe_desttype == `MGR_NOC_CONT_DESTINATION_ADDR_TYPE_UNICAST) && (from_local_fifo[1].pipe_unicast_addr == `MGR_ARRAY_HOST_ID))  ?  {1'b1, {`MGR_MGR_ID_BITMASK_WIDTH {1'b0}}}  :
+                                                                                                                                                                                                {from_local_fifo[1].pipe_to_host, from_local_fifo[1].pipe_data[`MGR_MGR_ID_BITMASK_RANGE ]};
+
+  //assign  local_destinationCpReqAddr  = {from_local_fifo[0].pipe_to_host, from_local_fifo[0].pipe_data[`MGR_NOC_CONT_INTERNAL_HEADER_DESTINATION_ADDR_RANGE ]};
+  //assign  local_destinationDpReqAddr  = {from_local_fifo[1].pipe_to_host, from_local_fifo[1].pipe_data[`MGR_NOC_CONT_INTERNAL_HEADER_DESTINATION_ADDR_RANGE ]};
+
 
   // send the address mask from the local packet to NoC output ports during state==PORT_REQ
   assign local_destinationReqAddr      = ( from_local_cp_fifo_pkt_available && (nc_local_outq_cntl_state == `MGR_NOC_CONT_LOCAL_OUTQ_CNTL_WAIT )) ? local_destinationCpReqAddr :  // we are going to service a control packet
@@ -915,7 +844,7 @@ module mgr_noc_cntl (
         // Port Control to NoC FSM
         //
         // Each source (local, port0..3) provide an OutqReq and receive an OutqAck and OutqReady
-        `include "noc_cntl_noc_port_output_control_wires.vh"
+        `include "mgr_noc_cntl_noc_port_output_control_wires.vh"
 
         //----------------------------------------------------------------------------------------------------
         // We need to keep track of the port who has been waiting the longest
@@ -1167,35 +1096,11 @@ module mgr_noc_cntl (
                                 .clk              ( clk                   )
                                 );
 
-/*
-        // Combine FIFO bits
-        generic_fifo #(.GENERIC_FIFO_DEPTH      (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_DEPTH), 
-                       .GENERIC_FIFO_THRESHOLD  (`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_ALMOST_FULL_THRESHOLD),
-                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_NOC_CONT_NOC_PORT_DATA_WIDTH)
-                        ) gfifo (
-                                          // Status
-                                         .empty            ( empty                      ),
-                                         .almost_full      ( almost_full                ),
-                                         .almost_empty     (                            ),
-                                         .depth            (                            ),
-                                          // Write                                      
-                                         .write            ( write                      ),
-                                         .write_data       ( {write_cntl,    write_data}),
-                                          // Read                                                
-                                         .read             ( read                       ),
-                                         .read_data        ( { read_cntl,     read_data}),
-
-                                         // General
-                                         .clear            ( clear                      ),
-                                         .reset_poweron    ( reset_poweron              ),
-                                         .clk              ( clk                        )
-                                         );
-*/
 
         assign clear   =   1'b0                ;
 
         reg  [`MGR_NOC_CONT_FROM_EXT_NOC_CNTL_FIFO_EOP_COUNT_RANGE] eop_count       ;
-//        reg       valid ;
+
         always @(posedge clk)
           begin
             eop_count          <=      ( reset_poweron                                                                                                            )  ? 'd0             :
@@ -1205,12 +1110,10 @@ module mgr_noc_cntl (
                                        ((( read_cntl  ==  'd`COMMON_STD_INTF_CNTL_EOM) | (read_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) && valid && read        )  ? eop_count - 'd1 :
                                        ((( write_cntl ==  'd`COMMON_STD_INTF_CNTL_EOM) | (write_cntl ==  'd`COMMON_STD_INTF_CNTL_SOM_EOM)) & write                )  ? eop_count + 'd1 :
                                                                                                                                                                        eop_count       ;
-/*
-            valid    <= ( reset_poweron                   ) ? 'd0        :
-                                       ( clear                           ) ? 'd0        :
-                                                                              read ;
-*/
           end
+
+        wire   [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]  desttype ;
+        assign desttype   = read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE ] ;
 
       end
   endgenerate
@@ -1345,7 +1248,9 @@ module mgr_noc_cntl (
                                  (                       (nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_DESTINATION_REQ)) ; // destination bitmask set, now request outport
 
         // valid only during destinationReq	
-        assign destinationReqAddr   = Port_from_NoC_fifo[gvi].read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE ] ;
+        assign destinationReqAddr   = (Port_from_NoC_fifo[gvi].desttype == `MGR_NOC_CONT_DESTINATION_ADDR_TYPE_BITMASK)  ?   Port_from_NoC_fifo[gvi].read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE ] :
+                                                                                                                              {1'b1, {`MGR_ARRAY_NUM_OF_MGR {1'b0}}};                 // FIXME: hard code unicast address to host (for now)
+
         assign destinationPriority  = Port_from_NoC_fifo[gvi].read_data[`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE         ] ;
    
         assign valid_fromNoc    = ( nc_port_fromNoc_state == `MGR_NOC_CONT_NOC_PORT_INPUT_CNTL_TRANSFER_HEADER) |

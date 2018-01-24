@@ -45,7 +45,9 @@ module wu_fetch (
             //-------------------------------
             //
             wum__wuf__stall                   ,
-            xxx__wuf__stall                   ,
+            mcntl__wuf__stall                 ,
+            mcntl__wuf__release               ,
+            wuf__mcntl__stalled               ,
 
             //-------------------------------
             // General
@@ -66,7 +68,9 @@ module wu_fetch (
 
   input                                     mcntl__wuf__enable             ;  // start fetching
   input  [`MGR_WU_ADDRESS_RANGE    ]        mcntl__wuf__start_addr         ;  // first WU address
-  input                                     xxx__wuf__stall                ;
+  input                                     mcntl__wuf__stall              ;
+  input                                     mcntl__wuf__release            ;
+  output                                    wuf__mcntl__stalled            ;
 
   //----------------------------------------------------------------------------------------------------
   // WU Memory
@@ -79,6 +83,14 @@ module wu_fetch (
   //----------------------------------------------------------------------------------------------------
   // Registers/Wires
 
+  wire                                      mcntl__wuf__stall              ;
+  wire                                      mcntl__wuf__release            ;
+  reg                                       wuf__mcntl__stalled            ;
+
+  reg                                       mcntl__wuf__stall_d1           ;
+  reg                                       mcntl__wuf__release_d1         ;
+  wire                                      wuf__mcntl__stalled_e1         ;
+
   reg                                       mcntl__wuf__enable_d1          ;  // first WU address
   reg  [`MGR_WU_ADDRESS_RANGE    ]          mcntl__wuf__start_addr_d1      ;  // first WU address
 
@@ -88,7 +100,6 @@ module wu_fetch (
   wire [`MGR_WU_ADDRESS_RANGE    ]          wuf__wum__addr_e1              ;
   wire                                      wuf__wum__read_e1              ;
 
-  reg                                       xxx__wuf__stall_d1             ;
   reg                                       wum__wuf__stall_d1             ;
 
   reg  [`MGR_WU_ADDRESS_RANGE    ]          pc                             ;
@@ -101,7 +112,13 @@ module wu_fetch (
 
   always @(posedge clk)
     begin
-      xxx__wuf__stall_d1        <= ( reset_poweron   ) ? 'd0  :  xxx__wuf__stall         ;
+      mcntl__wuf__stall_d1           <=  mcntl__wuf__stall      ;
+      mcntl__wuf__release_d1         <=  mcntl__wuf__release    ;
+      wuf__mcntl__stalled            <=  wuf__mcntl__stalled_e1 ;
+    end
+
+  always @(posedge clk)
+    begin
       wum__wuf__stall_d1        <= ( reset_poweron   ) ? 'd0  :  wum__wuf__stall         ;
       mcntl__wuf__enable_d1     <= ( reset_poweron   ) ? 'd0  :  mcntl__wuf__enable      ;
       mcntl__wuf__start_addr_d1 <= ( reset_poweron   ) ? 'd0  :  mcntl__wuf__start_addr  ;
@@ -168,7 +185,7 @@ module wu_fetch (
   // Assignments
   //
 
-  assign stall                     = xxx__wuf__stall_d1 | wum__wuf__stall_d1 ;
+  assign stall                     = mcntl__wuf__stall_d1 | wum__wuf__stall_d1 ;
   assign enable                    = mcntl__wuf__enable_d1;
   assign wuf__wum__addr_e1         = pc                   ;
   assign wuf__wum__read_e1         = increment_pc         ;

@@ -33,6 +33,23 @@
 module wu_decode (  
 
             //-------------------------------
+            // Main control
+            // - stall/halt etc.
+            input   wire                                      mcntl__wud__stall                 ,
+            input   wire                                      mcntl__wud__release               ,
+            output  reg                                       wud__mcntl__stalled               ,
+
+            //-------------------------------
+            // Main control
+            // - send sync and data descriptors
+            output  reg                                       wud__mcntl__valid                ,
+            input   wire                                      mcntl__wud__ready                ,
+            output  reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mcntl__dcntl                ,  // descriptor delineator
+            output  reg  [`MGR_STD_OOB_TAG_RANGE         ]    wud__mcntl__tag                  ,  // decoder generates tag for Return data proc and Downstream OOB
+            output  reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mcntl__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
+            output  reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mcntl__option_value   [`MGR_WU_OPT_PER_INST ] ,  
+
+            //-------------------------------
             // from WU Memory
             input   wire                                      wum__wud__valid               ,
             output  reg                                       wud__wum__ready               ,
@@ -56,16 +73,6 @@ module wu_decode (
             output  reg  [`WU_DEC_NUM_LANES_RANGE        ]      wud__odc__num_lanes     ,  // 0-32 so need 6 bits
             output  reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__stOp_cmd      ,
             output  reg  [`MGR_WU_OPT_VALUE_RANGE        ]      wud__odc__simd_cmd      ,
-
-            //-------------------------------
-            // Main control
-            // - send sync and data descriptors
-            output  reg                                       wud__mcntl__valid                ,
-            input   wire                                      mcntl__wud__ready                ,
-            output  reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mcntl__dcntl                ,  // descriptor delineator
-            output  reg  [`MGR_STD_OOB_TAG_RANGE         ]    wud__mcntl__tag                  ,  // decoder generates tag for Return data proc and Downstream OOB
-            output  reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mcntl__option_type    [`MGR_WU_OPT_PER_INST ] ,  // WU Instruction option fields
-            output  reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mcntl__option_value   [`MGR_WU_OPT_PER_INST ] ,  
 
 
             //-------------------------------
@@ -114,6 +121,23 @@ module wu_decode (
     //----------------------------------------------------------------------------------------------------
     // Registers and Wires
 
+    //--------------------------------------------------
+    // Control
+    reg                                       mcntl__wud__stall_d1           ;
+    reg                                       mcntl__wud__release_d1         ;
+    reg                                       wud__mcntl__stalled_e1         ;
+
+    reg                                       stalled                        ;
+
+    //--------------------------------------------------
+    // Descriptors to Main Controller
+    wire                                      wud__mcntl__valid_e1                                  ;
+    reg                                       mcntl__wud__ready_d1                                  ;
+    reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mcntl__dcntl_e1                                  ;  // descriptor delineator
+    reg  [`MGR_STD_OOB_TAG_RANGE         ]    wud__mcntl__tag_e1                                    ;  // decoder generates tag for Return data proc and Downstream OOB
+    reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mcntl__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;  // WU Instruction option fields
+    reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mcntl__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;  
+
  
     //--------------------------------------------------
     // from WUM
@@ -128,15 +152,6 @@ module wu_decode (
     reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wum__wud__option_type_d1    [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
     reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wum__wud__option_value_d1   [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
 
-
-    //--------------------------------------------------
-    // WUD to Main Controller
-    wire                                      wud__mcntl__valid_e1                                  ;
-    reg                                       mcntl__wud__ready_d1                                  ;
-    reg  [`COMMON_STD_INTF_CNTL_RANGE    ]    wud__mcntl__dcntl_e1                                  ;  // descriptor delineator
-    reg  [`MGR_STD_OOB_TAG_RANGE         ]    wud__mcntl__tag_e1                                    ;  // decoder generates tag for Return data proc and Downstream OOB
-    reg  [`MGR_WU_OPT_TYPE_RANGE         ]    wud__mcntl__option_type_e1    [`MGR_WU_OPT_PER_INST ] ;  // WU Instruction option fields
-    reg  [`MGR_WU_OPT_VALUE_RANGE        ]    wud__mcntl__option_value_e1   [`MGR_WU_OPT_PER_INST ] ;  
 
     //--------------------------------------------------
     // WUD to OOB downstream control
@@ -204,6 +219,19 @@ module wu_decode (
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
     // Register inputs and outputs
+
+
+    always @(posedge clk)
+      begin
+        mcntl__wud__stall_d1           <=  mcntl__wud__stall      ;
+        mcntl__wud__release_d1         <=  mcntl__wud__release    ;
+        wud__mcntl__stalled            <=  wud__mcntl__stalled_e1 ;
+      end
+
+    always @(*)
+      begin
+        wud__mcntl__stalled_e1         = stalled   ;
+      end
 
 
     //--------------------------------------------------
@@ -319,6 +347,9 @@ module wu_decode (
   reg    [`MGR_WU_OPT_PER_INST_RANGE      ]            pipe_option_extd_valid                               ;
   reg    [`MGR_WU_OPT_TYPE_RANGE          ]            pipe_option_extd_type         [`MGR_WU_OPT_PER_INST] ;
   reg    [`MGR_WU_EXTD_OPT_VALUE_RANGE    ]            pipe_option_extd_value        [`MGR_WU_OPT_PER_INST] ;
+  reg                                                  pipe_option_is_extd_type      [`MGR_WU_OPT_PER_INST] ;
+  reg                                                  pipe_option_is_cfg_sync       [`MGR_WU_OPT_PER_INST] ;
+  reg                                                  pipe_option_is_cfg_data       [`MGR_WU_OPT_PER_INST] ;
 
   // Put in a generate in case we decide to extend to multiple upstream lanes
 
@@ -453,38 +484,46 @@ module wu_decode (
       end
   endgenerate
 
+  //reg                                                  pipe_option_is_extd_type      [`MGR_WU_OPT_PER_INST] ;
+  //reg                                                  pipe_option_is_cfg_sync       [`MGR_WU_OPT_PER_INST] ;
+  //reg                                                  pipe_option_is_cfg_data       [`MGR_WU_OPT_PER_INST] ;
   genvar opt;
   generate
     for (opt=0; opt<`MGR_WU_OPT_PER_INST; opt=opt+1) 
       begin: extd_tuple_decode
+        always @(*)
+          begin
+            isExtdTuple(pipe_option_is_extd_type[opt], from_WuMemory_Fifo[0].read_option_type[opt]);
+          end
+
         if (opt == 0)
          begin
            always @(posedge clk)
              begin
-               pipe_option_extd_type        [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read &&  isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt] )) ? {from_WuMemory_Fifo[0].read_option_type [opt]} :
-                                                                                                                                                               pipe_option_extd_type        [opt] ;
+               pipe_option_extd_type        [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? {from_WuMemory_Fifo[0].read_option_type [opt]} :
+                                                                                                                                    pipe_option_extd_type        [opt] ;
                
-               pipe_option_extd_value       [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read &&  isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt] )) ? {from_WuMemory_Fifo[0].read_option_type [opt], from_WuMemory_Fifo[0].read_option_value [opt], from_WuMemory_Fifo[0].read_option_type [opt+1], from_WuMemory_Fifo[0].read_option_value [opt+1]}  : 
-                                                                                                                                                               pipe_option_extd_value       [opt] ;
+               pipe_option_extd_value       [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? {from_WuMemory_Fifo[0].read_option_type [opt], from_WuMemory_Fifo[0].read_option_value [opt], from_WuMemory_Fifo[0].read_option_type [opt+1], from_WuMemory_Fifo[0].read_option_value [opt+1]}  : 
+                                                                                                                                    pipe_option_extd_value       [opt] ;
                
                pipe_option_extd_valid       [opt]  <=  ( reset_poweron ) ? 1'b0 :
-                                                       ( from_WuMemory_Fifo[0].fifo_pipe_read && isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt])) ? 1'b1                               :
-                                                                                                                                                             pipe_option_extd_valid             [opt] ;
+                                                       ( from_WuMemory_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? 1'b1                               :
+                                                                                                                                    pipe_option_extd_valid             [opt] ;
              end
          end
         else if (opt == 1)
          begin
            always @(posedge clk)
              begin
-               pipe_option_extd_type        [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read && ~isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt-1]) && isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt])) ? {from_WuMemory_Fifo[0].read_option_type [opt]} :
-                                                                                                                                                                                                                            pipe_option_extd_type        [opt]  ;
+               pipe_option_extd_type        [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? {from_WuMemory_Fifo[0].read_option_type [opt]} :
+                                                                                                                                                                        pipe_option_extd_type        [opt]  ;
                
-               pipe_option_extd_value       [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read && ~isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt-1]) && isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt])) ? {from_WuMemory_Fifo[0].read_option_type [opt], from_WuMemory_Fifo[0].read_option_value [opt], from_WuMemory_Fifo[0].read_option_type [opt+1], from_WuMemory_Fifo[0].read_option_value [opt+1]}  : 
-                                                                                                                                                                                                                            pipe_option_extd_value       [opt]  ;
+               pipe_option_extd_value       [opt]  <=  ( from_WuMemory_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? {from_WuMemory_Fifo[0].read_option_type [opt], from_WuMemory_Fifo[0].read_option_value [opt], from_WuMemory_Fifo[0].read_option_type [opt+1], from_WuMemory_Fifo[0].read_option_value [opt+1]}  : 
+                                                                                                                                                                        pipe_option_extd_value       [opt]  ;
                
                pipe_option_extd_valid       [opt]  <=  ( reset_poweron ) ? 1'b0 :
-                                                       ( from_WuMemory_Fifo[0].fifo_pipe_read && ~isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt-1]) && isExtdTuple(from_WuMemory_Fifo[0].read_option_type[opt])) ? 1'b1                               :
-                                                                                                                                                                                                                            pipe_option_extd_valid             [opt] ;
+                                                       ( from_WuMemory_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? 1'b1                               :
+                                                                                                                                                                      pipe_option_extd_valid             [opt] ;
              end
          end
         else 
@@ -579,6 +618,8 @@ module wu_decode (
 //                    ({1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0, {`MGR_INST_TYPE_WIDTH {`MGR_INST_DESC_TYPE_ }}}) :
 //                      begin
 //                      end
+                  wu_dec_instr_dec_state_next =  `WU_DEC_INSTR_DECODE_WAIT;
+
                   case ({{from_WuMemory_Fifo[0].pipe_read}, {from_WuMemory_Fifo[0].pipe_inst_som, from_WuMemory_Fifo[0].pipe_inst_mom, from_WuMemory_Fifo[0].pipe_inst_eom}, {from_WuMemory_Fifo[0].pipe_desc_som, from_WuMemory_Fifo[0].pipe_desc_mom, from_WuMemory_Fifo[0].pipe_desc_eom}, {from_WuMemory_Fifo[0].pipe_op}})  // synopsys parallel_case full_case
                     //---------------------------------------------------------------------------
                     // OP
@@ -592,7 +633,7 @@ module wu_decode (
                       end
                     ({{1'b1}, {3'b101}, {3'b101}, {`MGR_INST_TYPE_WIDTH 'd`MGR_INST_DESC_TYPE_OP }}) :
                       begin
-                        wu_dec_instr_dec_state_next =  `WU_DEC_INSTR_DECODE_WAIT ;
+                        wu_dec_instr_dec_state_next =  `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ;
                       end
                     //---------------------------------------------------------------------------
                     // MR
@@ -626,10 +667,13 @@ module wu_decode (
                       end
                     ({{1'b1}, {3'b101}, {3'b101}, {`MGR_INST_TYPE_WIDTH 'd`MGR_INST_DESC_TYPE_CFG }}) :
                       begin
-                        wu_dec_instr_dec_state_next =  `WU_DEC_INSTR_DECODE_WAIT ;
+                        wu_dec_instr_dec_state_next =  `WU_DEC_INSTR_DECODE_INSTR_COMPLETE ;
                       end
-                    default:
-                      wu_dec_instr_dec_state_next =  wu_dec_instr_dec_state ;
+                    //default:
+                    //  begin
+                    //    wu_dec_instr_dec_state_next <=  wu_dec_instr_dec_state ;
+                    //    //wu_dec_instr_dec_state_next <=  `WU_DEC_INSTR_DECODE_ERR ;
+                    //  end
                   endcase
                 end
 /*
@@ -808,8 +852,8 @@ module wu_decode (
 
               // when instruction complete and all decoder are in their COMPLETE state, initiate all affected modules
               `WU_DEC_INSTR_DECODE_INSTR_COMPLETE: 
-                wu_dec_instr_dec_state_next =  ( initiate_instruction ) ? `WU_DEC_INSTR_DECODE_INITIATED_INSTR :  
-                                                                          `WU_DEC_INSTR_DECODE_INSTR_COMPLETE  ;
+                wu_dec_instr_dec_state_next =  ( ~stalled && initiate_instruction ) ? `WU_DEC_INSTR_DECODE_INITIATED_INSTR :  
+                                                                                      `WU_DEC_INSTR_DECODE_INSTR_COMPLETE  ;
               // a one cycle state
               `WU_DEC_INSTR_DECODE_INITIATED_INSTR: 
                 wu_dec_instr_dec_state_next =    `WU_DEC_INSTR_DECODE_WAIT           ;
@@ -840,6 +884,14 @@ module wu_decode (
 
         always @(posedge clk)
           begin
+            stalled                 <=  ( reset_poweron                 )  ? 1'b0    :
+                                        ( mcntl__wud__release_d1        )  ? 1'b0    :
+                                        ( send_info_to_main_cntl        )  ? 1'b1    :
+                                                                             stalled ;
+          end
+
+        always @(posedge clk)
+          begin
             contained_stOp_cmd       <=  ( reset_poweron                                                                                                     ) ? 1'b0               :
                                          ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR                                                    ) ? 1'b0               :  // clear when packet and operation complete
                                          ( (decNum != 0) && (pipe_option_extd_valid      [decNum]                                              )) ? contained_stOp_cmd :  // option type not valid if option[0] is an extended tuple
@@ -858,7 +910,7 @@ module wu_decode (
                                                                                                                                                                    contained_simd_cmd ;
             // pointer to simd operation control memory
             simd_cmd                 <=  ( reset_poweron                                                                                                       ) ?  'd0                                            :
-                                         ( (decNum != 0) && (pipe_option_extd_valid      [decNum]                                                )) ? simd_cmd                                        :  // option type not valid if option[0] is an extended tuple
+                                         ( (decNum != 0) && (pipe_option_extd_valid      [decNum]                                                             )) ? simd_cmd                                        :  // option type not valid if option[0] is an extended tuple
                                          ( from_WuMemory_Fifo[0].pipe_read   && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_SIMDOP )) ? from_WuMemory_Fifo[0].pipe_option_value[decNum] :
                                                                                                                                                                    simd_cmd                                        ;
         

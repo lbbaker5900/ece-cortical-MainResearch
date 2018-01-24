@@ -62,27 +62,40 @@
 // Functions
 //------------------------------------------------------------------------------------------------------------
 
-function isExtdTuple (input [`MGR_WU_OPT_VALUE_RANGE] option_type);
+function automatic void isExtdTuple (
+                           output output_f,
+                           input logic [`MGR_WU_OPT_VALUE_RANGE] option_type
+                          );
   
-            isExtdTuple = ((option_type == PY_WU_INST_OPT_TYPE_CFG_SYNC) | (option_type == PY_WU_INST_OPT_TYPE_CFG_DATA) | (option_type == PY_WU_INST_OPT_TYPE_MEMORY)) ;
+            output_f = ((option_type == PY_WU_INST_OPT_TYPE_CFG_SYNC) | (option_type == PY_WU_INST_OPT_TYPE_CFG_DATA) | (option_type == PY_WU_INST_OPT_TYPE_MEMORY)) ;
 
 endfunction                  
 
-function isCfgSync (input [`MGR_WU_OPT_VALUE_RANGE] option_type);
+function automatic void isCfgSync (
+                           output output_f,
+                           input [`MGR_WU_OPT_VALUE_RANGE] option_type
+                        );
   
-            isCfgSync = (option_type == PY_WU_INST_OPT_TYPE_CFG_SYNC);
+            output_f = (option_type == PY_WU_INST_OPT_TYPE_CFG_SYNC);
 
 endfunction                  
 
-function isCfgData (input [`MGR_WU_OPT_VALUE_RANGE] option_type);
+function automatic void isCfgData (
+
+                           output output_f,
+                           input [`MGR_WU_OPT_VALUE_RANGE] option_type
+                        );
   
-            isCfgData = (option_type == PY_WU_INST_OPT_TYPE_CFG_DATA);
+            output_f = (option_type == PY_WU_INST_OPT_TYPE_CFG_DATA);
 
 endfunction                  
 
-function isMemDescPtr (input [`MGR_WU_OPT_VALUE_RANGE] option_type);
+function automatic void isMemDescPtr (
+                           output output_f,
+                           input [`MGR_WU_OPT_VALUE_RANGE] option_type
+                        );
   
-            isMemDescPtr = (option_type == PY_WU_INST_OPT_TYPE_MEMORY);
+            output_f = (option_type == PY_WU_INST_OPT_TYPE_MEMORY);
 
 endfunction                  
 

@@ -1,5 +1,5 @@
 
-  wire [`MGR_MGR_ID_BITMASK_RANGE ] thisPort_destinationMask  ; // bitmask indicating which nodes accessed out of this port
+  wire [`MGR_HOST_MGR_ID_BITMASK_RANGE ] thisPort_destinationMask  ; // bitmask indicating which nodes accessed out of this port
 
   wire                            local_OutqReq             ;  // request from local putput queue controller
   reg                             local_OutqAck             ;
