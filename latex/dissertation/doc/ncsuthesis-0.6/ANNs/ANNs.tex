@@ -4,8 +4,8 @@
 %    subsection* to section
 %    subsubsection* to subsection
 
-\chapter{Artificial Neural Networks}
-%\section{Artificial Neural Networks}
+%\chapter{Artificial Neural Networks}
+\section{Artificial Neural Networks}
 \label{sec:Artificial Neural Networks}
 \label{sec:chap-two}
 
@@ -57,7 +57,7 @@ The various chemical and electrical processes that result in the generation and 
 
 
 %\section[NnSP]{NnSP{\cite{esmaeilzadeh2005nnsp}}}
-\section[ANN Overview]{ANN Overview}
+\subsection[ANN Overview]{ANN Overview}
 \label{sec:ANN Overview}
 
 When modeling these neurons in artificial neural networks, the neuron models either generate actual spikes similar to actual neurons or
@@ -263,7 +263,7 @@ The \ac{an} activation calculation for the rate-based \ac{an} in figure \ref{fig
 \text{and }   &f(x) \text{ is the activation function such as \ac{relu} \cite{maas2013rectifier}}  \notag 
 \end{alignat}
 
-\section[ANN Layers]{ANN Layers}
+\subsection[ANN Layers]{ANN Layers}
 \label{sec:ANN Layers}
 
 In figure \ref{fig:Network of ANs} and \ref{fig:Rate-based Model Network}, the \ac{ann} is shown to be constructed using layers of \acp{an}. It has long been known that a single layer of \acp{an} can be used linearly partition an n-dimensional input \cite{NNintro_Bullinaria}, as shown in figure \ref{fig:linear discrimination}.
@@ -294,7 +294,7 @@ In addition, to ensure the multiple layers cannot be mathematically collapsed in
 \end{figure}
 
 
-\subsection{Deep Neural Networks}
+\subsubsection{Deep Neural Networks}
 \label{sec:Deep Neural Networks}
 
 As mentioned, a single layer of neurons can be used as a linear classifier as long as the classes can be separated using a linear function.
@@ -325,7 +325,7 @@ real-time acceleration and storage of of these systems.
 \fi
 
 
-\subsection{Feature Layers}
+\subsubsection{Feature Layers}
 \label{sec:Feature Layers}
 
 For the most part, different \acp{ann} are characterized by how the \acp{an} are interconnected and the activation function employed.
@@ -653,7 +653,7 @@ If \ac{ann}s fulfill their potential, systems employing \ac{ann}s will utilize t
 Considering the various functions a complex customer facing or embedded application system performs, it is likely that many real-world applications will employ multiple disparate instances of these useful sized \ac{ann}s.
 Assuming these complex functions will require \ac{ann}s similar in size to figure \ref{fig:Baseline DNN showing layer order} and \cite{krizhevsky2012imagenet}, these implementations will be processing multiple large \ac{ann}s at or near real-time.
 
-\section[ANN Processing]{ANN Processing}
+\subsection[ANN Processing]{ANN Processing}
 \label{sec:ANN Processing}
 
 Considering the storage required for the input, the \ac{an} states and most significantly the weights for connections, the storage requirements results in gigabytes of memory.

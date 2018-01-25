@@ -2,7 +2,8 @@
 %% In dissertation, change section* to chapter and subsection* to section
 
 
-\chapter{Three-Dimensional Integrated Circuits (3DIC)}
+%\chapter{Three-Dimensional Integrated Circuits (3DIC)}
+\section{Three-Dimensional Integrated Circuits (3DIC)}
 \label{sec:3dic}
 
 Over the last couple of decades, the ever shrinking world of \acp{ic} has enabled the introduction of devices for various uses such as personal computing and cell phones.
@@ -41,7 +42,7 @@ high capacitance inputs and outputs.
 \label{fig:3DIC Die}
 \end{figure}
 
-\section{Pros and Cons}
+\subsection{Pros and Cons}
 \label{sec:3dic benefits}
 
 Taking advantage of \ac{3dic} means stacking die on top of one another and making connections directly between the die. These connections can be in the form of wire made at the edges of the die or using vias buried in the die itself.
@@ -118,7 +119,7 @@ A die stack with \acp{tsv} can be seen in \fref{fig:tsv}.
 \label{fig:tsv}
 \end{figure}
 
-\section{Construction}
+\subsection{Construction}
 \label{sec:3dic construction}
 
 There are other definitions on how the dies are bonded together:
@@ -138,7 +139,7 @@ This work is targeting \ac{3dic} technology that supports 3D-Stacked \ac{soc} or
 To avoid using large IO buffers for the \ac{tsv} interconenct, this work assumes that the \ac{3dic} technology supports unbuffered interconnects. 
 This would suggest wafer-to-wafer bonding because of the existing \ac{esd} mitigation during wafer handling although it is anticipated that improved \ac{esd} mitigation will be introduced in future manufacturing steps.
 
-\section{Design Guidelines}
+\subsection{Design Guidelines}
 \label{sec:3dic Design Guidelines}
 
 The technology roadmap in \cite{itrs2015_interconn} and the information in \cite{patti2014} suggests \SI{5}{\micro\meter} pitch \acp{tsv} is a reasonable design goal. 

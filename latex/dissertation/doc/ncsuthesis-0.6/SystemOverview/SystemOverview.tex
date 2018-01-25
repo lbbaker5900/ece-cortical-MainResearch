@@ -180,7 +180,7 @@ Another proposed change is the add mask bits to the write databuse to avoid havi
 \centerline{
 \mbox{\includegraphics[width=.4\linewidth]{DiRAM4Layout}}
 }
-\caption{\ac{dram} Physical Interface Layout showing area for \ac{ssc}}
+\caption{\ac{dram} Physical interface layout showing area for \ac{ssc}}
 \label{fig:diram4Layout}
 \end{figure}
 
@@ -472,8 +472,8 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
   %\begin{subfigure}{1\textwidth}
     \centering
     \captionsetup{justification=centering, skip=10pt}
-    \begin{bytefield}[bitwidth=0.49em, endianness=big]{76}
-      \bitheader{0,8,16,24,32,40,48,56,64,67,73,75} \\
+    \begin{bytefield}[bitwidth=0.49em, endianness=big]{77}
+      \bitheader{0,8,16,24,32,40,48,56,64,68,74,76} \\
       \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
         \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
       \end{rightwordgroup}  \\

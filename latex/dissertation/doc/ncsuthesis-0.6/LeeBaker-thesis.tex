@@ -4,6 +4,32 @@
                ]{ncsuthesis}
 
 %%----------------------------------------------------------------------------%%
+%%------------------------------ Useful commands -----------------------------%%
+
+% from http://kb.mit.edu/confluence/pages/viewpage.action?pageId=3907522
+
+% If you have a section that you don't want placed in your table of contents AND you don't want that section actually numbered in your document, you can simply use an asterik in your section heading. Here is an example:
+% \section*{Title here}
+% This will produce a section heading called "Title here", except that it won't be numbered, and it will not appear in the table of contents. The next use of \section will produce the following number correctly, i.e. it will not "skip over" whatever this section would have been numbered. The same thing can be done for any sectioning command, such as \chapter, \subsection, or \paragraph.
+%
+%If you wish to add a line to your table of contents (for example, your References section, if you've written one manually), you can use the \addcontentsline command described on page 159 of the LaTeX manual. In short, its syntax is as follows:
+%
+%    \addcontentsline{file}{section_unit}{entry}
+%
+%This command can be used to edit files for table of contents, list of figures, or list of tables. To add a line to the table of contents, use "toc" for file, and "chapter" for section_unit, and place the command in your document immediately after the section heading. For example:
+%
+%    \chapter*{References}
+%    \addcontentsline{toc}{chapter}{References}
+%
+%adds a line at the current position of your .toc file labelled "References", with the current page number. If you want the section to be numbered, you would do:
+%
+%    \addcontentsline{toc}{chapter}{\protect\numberline{8}{References}}
+%
+%This would label it as "Chapter 8", so the line in the contents would read like any other normal entry.
+%For more information on \addcontentsline and other means of modifying your contents, consult page 159 of the LaTeX manual.
+%If you want to simply have a section that is not numbered, but still appears in your table of contents, just combine the use of the asterik in the sectioning command and the \addcontentsline command. 
+%
+%%%----------------------------------------------------------------------------%%
 %%------------------------------ Useful words --------------------------------%%
 
 % expansive
@@ -142,7 +168,7 @@
 %%%%%%%%%%% Hack for alphanumeric bibliography
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 \RequirePackage[
-			style=alphabetic,%numeric-comp,%authoryear-comp,%
+			style=numeric-comp,%alphabetic,%numeric-comp,%authoryear-comp,%
 			sorting=nyt,%ynt					
 			hyperref=true, %	
 			firstinits=true,%
@@ -253,7 +279,7 @@
 %%%Fancy tables
 %http://tex.stackexchange.com/questions/94032/fancy-tables-in-latex
 % Lee \usepackage[table]{xcolor}
-% Lee \usepackage{array,booktabs}
+\usepackage{array,booktabs}
 % Lee \usepackage{colortbl}
 % Lee \newcolumntype{L}{@{}>{\kern\tabcolsep}l<{\kern\tabcolsep}}
 
@@ -507,6 +533,7 @@
 \include{Motivation/Motivation}
 \include{3DIC/3DIC}
 \include{DRAM/DRAM}
+\include{Solution/Solution}
 \include{StateOfTheArt/StateOfTheArt}
 \include{SystemOverview/SystemOverview}
 \include{SystemOperations/SystemOperations}
