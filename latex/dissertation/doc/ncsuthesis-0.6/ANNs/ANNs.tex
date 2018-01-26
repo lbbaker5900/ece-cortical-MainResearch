@@ -256,7 +256,7 @@ The \ac{an} activation calculation for the rate-based \ac{an} in figure \ref{fig
 
 \begin{alignat}{2} 
 \label{eq:activation function}
-\text{\ac{an} Activation }\hspace{4mm} A & = f\bigg(\sum_{n=0}^{C_n}W_n \mathbf{\cdot} A_n\bigg)  \\
+\text{\ac{an} activation }\hspace{4mm} A & = f\bigg(\sum_{n=0}^{C_n}W_n \mathbf{\cdot} A_n\bigg)  \\
               &\mathbf{C_p} \text{ is the number of pre-synaptic connections} \notag\\
               &\mathbf{W_p} \text{ is the weight of a connection} \notag\\
               &\mathbf{A_p} \text{ is the state of the pre-synaptic \ac{an}} \notag \\
@@ -507,22 +507,6 @@ An example of a \ac{dnn} can be seen in figure \ref{fig:Baseline DNN showing lay
 {\textbf{\textcolor{black}{Therefore, this work will use the parameters from the table shown in figure \ref{tab:Baseline Layer Configuration} as a template for a baseline \ac{ann} for estimating the storage and processing requirements and the range of pre-synaptic fanins.}}}
 
 %%
-\iffalse
-\begin{table}[ht]
-\centering
-\begin{tabular}{|c|c|c|c|c|c|c|c|}\cline{3-8}
-\multicolumn{2}{c|}{\multirow{2}{*}{}}&\multicolumn{3}{c|}{Singular}&\multicolumn{3}{c|}{Plural}\\\cline{3-8}
-\multicolumn{2}{c|}{}&Neuter&Masculine&Feminine&Masculine&Feminine&Neuter\\\hline
-\multicolumn{1}{|c|}{\multirow{2}{*}{I}}&Inclusive&\multicolumn{3}{|c|}{\multirow{2}{*}{O}}&\multicolumn{3}{c|}{X}\\\cline{2-2}\cline{6-8}
-&Exclusive&\multicolumn{3}{c|}{}&\multicolumn{3}{c|}{X}\\\hline
-\multirow{2}{*}{II}&Informal&\multicolumn{3}{|c|}{X}&\multicolumn{3}{c|}{X}\\\cline{2-8}
-&Formal&\multicolumn{6}{|c|}{X}\\\hline
-\multirow{2}{*}{III}&Informal&\multicolumn{1}{c|}{\multirow{2}{*}{O}}&X&X&\multicolumn{2}{|c|}{X}&\multicolumn{1}{c|}{\multirow{2}{*}{O}}\\\cline{2-2}\cline{4-7}
-&Formal&&\multicolumn{4}{|c|}{X}&\\\hline
-
-\end{tabular}
-\end{table}
-\fi
 
 
 %%%% \begin{sidewaysfigure}[h]
@@ -776,12 +760,11 @@ The approximate system bandwidth and storage requirements are shown in table \re
   \label{tab:Bandwidth and Storage Design Requirements}
   \centering
     \begin{adjustbox}{width=0.25\textwidth}
-      \begin{tabular}{cccc}
-        \toprule
+      \begin{tabular}{|c|c|c|c|}\hline
                    Parameter             &        Value                                  \\\hline
                    Bandwidth             &\SI[per-mode=symbol]{26}{\tera\bit\per\second} \\
                    Storage               &\SI[per-mode=symbol]{8.0}{\giga\byte}          \\
-        \bottomrule
+        \hline
       \end{tabular}
     \end{adjustbox}
     \vspace{3pt}

@@ -168,18 +168,15 @@ The \ac{tsv} design guidelines used by this work are summarized in table \ref{ta
 
 \begin{table}[h]
   \captionsetup{justification=centering, skip=3pt}
-  \caption{TSV Design Characteristics}
+  \caption{TSV design characteristics}
   \vspace{3pt}
   \label{tab:TSV Design Characteristics}
   \centering
     \begin{adjustbox}{width=0.6\textwidth}
-      \begin{tabular}{cccc}
-        \toprule
-                                         &      \multicolumn{2}{c}{Dimensions}       &                                                                                  \\  %\cline{1-1}
-                   Parameter             &        Pitch        &    Radius           &  Power                                                                          \\
-        \hline  % instead of \midrule %midrule doesnt ove        
-                   Value                 &\SI{5}{\micro\meter} &\SI{2}{\micro\meter} &\SI[per-mode=symbol]{2.1}{\micro \watt \per \giga \bit\per\second \per \ac{tsv}} \cite{Bamberg2017}  \\
-        \bottomrule
+      \begin{tabular}{|c|c|c|c|}\hline
+              \multicolumn{2}{|c|}{Dimensions}      &  \multirow{2}{*}{Capacitance}     &  \multirow{2}{*}{Power}                                                                            \\\cline{1-2}
+                Pitch        &    Radius           &                                   &                                                                                                    \\\hline
+        \SI{5}{\micro\meter} &\SI{2}{\micro\meter} &\SI{4.2}{\femto\farad}             &\SI[per-mode=symbol]{2.1}{\micro \watt \per \giga \bit\per\second \per \ac{tsv}} \cite{Bamberg2017} \\\hline
       \end{tabular}
     \end{adjustbox}
     \vspace{3pt}
