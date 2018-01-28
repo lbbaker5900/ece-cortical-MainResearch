@@ -34,7 +34,7 @@ module mwc_cntl (
             input  wire                                              mcntl__mwc__valid      , 
             input  wire [`COMMON_STD_INTF_CNTL_RANGE           ]     mcntl__mwc__cntl       , 
             output reg                                               mwc__mcntl__ready      , 
-            input  wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     mcntl__mwc__type       ,   // dont need this
+            input  wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     mcntl__mwc__type       ,   
             input  wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     mcntl__mwc__ptype      , 
             input  wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     mcntl__mwc__data       , 
             input  wire                                              mcntl__mwc__pvalid     , 
@@ -93,7 +93,7 @@ module mwc_cntl (
   // from MCNTL (NoC)
   reg                                               mcntl__mwc__valid_d1      ; 
   reg  [`COMMON_STD_INTF_CNTL_RANGE           ]     mcntl__mwc__cntl_d1       ; 
-  //reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE ]     mcntl__mwc__type_d1       ; 
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     mcntl__mwc__type_d1       ; 
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     mcntl__mwc__ptype_d1      ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     mcntl__mwc__data_d1       ; 
   reg                                               mcntl__mwc__pvalid_d1     ; 
@@ -144,7 +144,7 @@ module mwc_cntl (
     begin
       mcntl__mwc__valid_d1    <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__valid      ;
       mcntl__mwc__cntl_d1     <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__cntl       ;
-      //mcntl__mwc__type_d1   <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__type       ;
+      mcntl__mwc__type_d1     <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__type       ;
       mcntl__mwc__ptype_d1    <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__ptype      ;
       mcntl__mwc__data_d1     <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__data       ;
       mcntl__mwc__pvalid_d1   <=   ( reset_poweron   ) ? 'd0  : mcntl__mwc__pvalid     ;
@@ -341,14 +341,15 @@ module mwc_cntl (
         //----------------------------------------------------------------------------------------------------
         // Extract read data
         wire [`COMMON_STD_INTF_CNTL_RANGE           ]     pipe_cntl        ; 
+        wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     pipe_type        ; 
         wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     pipe_ptype       ; 
         wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     pipe_mem_data    ; 
         wire                                              pipe_pvalid      ; 
 
-        assign {pipe_cntl, pipe_ptype, pipe_pvalid, pipe_mem_data} = pipe_data ;
+        assign {pipe_cntl, pipe_type, pipe_ptype, pipe_pvalid, pipe_mem_data} = pipe_data ;
         //----------------------------------------------------------------------------------------------------
 
-        wire   pipe_som     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ); 
+        wire   pipe_som     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM); 
         wire   pipe_eom     =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (pipe_cntl == `COMMON_STD_INTF_CNTL_EOM);
 
       end
@@ -360,14 +361,15 @@ module mwc_cntl (
   //----------------------------------------------------------------------------------------------------
   // Write data fields
   assign input_intf_fifo[0].write       =  rdp__mwc__valid_d1 ;
-  assign input_intf_fifo[0].write_data  = {rdp__mwc__cntl_d1, rdp__mwc__ptype_d1, rdp__mwc__pvalid_d1, rdp__mwc__data_d1};
+  // force type to DESC_WRITE_DATA for everything from RDP - FIXME ????
+  assign input_intf_fifo[0].write_data  = {rdp__mwc__cntl_d1, {`MGR_NOC_CONT_NOC_PACKET_TYPE_WIDTH 'd `MGR_NOC_CONT_TYPE_DESC_WRITE_DATA }, rdp__mwc__ptype_d1, rdp__mwc__pvalid_d1, rdp__mwc__data_d1};
   always @(*)
     begin
       mwc__rdp__ready_e1    = ~input_intf_fifo[0].almost_full ;
     end
 
   assign input_intf_fifo[1].write       =  mcntl__mwc__valid_d1 ;
-  assign input_intf_fifo[1].write_data  = {mcntl__mwc__cntl_d1, mcntl__mwc__ptype_d1, mcntl__mwc__pvalid_d1, mcntl__mwc__data_d1};
+  assign input_intf_fifo[1].write_data  = {mcntl__mwc__cntl_d1, mcntl__mwc__type_d1, mcntl__mwc__ptype_d1, mcntl__mwc__pvalid_d1, mcntl__mwc__data_d1};
   always @(*)
     begin
       mwc__mcntl__ready_e1  = ~input_intf_fifo[1].almost_full ;
@@ -443,9 +445,11 @@ module mwc_cntl (
         wire                                                  pipe_valid                      ;
         reg                                                   pipe_read                       ;
         wire [`MWC_CNTL_FROM_MCNTL_AGGREGATE_FIFO_RANGE ]     pipe_data                       ;
+        wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE       ]     pipe_type                      ; 
         wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE      ]     pipe_ptype                      ; 
         wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE         ]     pipe_mem_data                   ; 
         wire                                                  pipe_pvalid                     ; 
+        wire                                                  pipe_som                        ;
         wire                                                  pipe_eom                        ;
 
         reg   [`MGR_NOC_INTERNAL_INTF_NUM_WORDS_RANGE   ]     contains_storage_ptr            ;  // Each transaction may have a storage descriptor per word
@@ -455,11 +459,18 @@ module mwc_cntl (
         reg                                                   storage_desc_address_valid      ;  // only should see one storage descriptor for this SSC
         reg   [`MGR_MGR_ID_RANGE                        ]     storage_desc_ptr_mgr_id         ;  // extract manager ID from descriptor
 
+        reg                                                   performing_dma                  ;  // latch dma so we can process multiple packets
+        reg                                                   is_cfg_dma_start                ;  
+        reg                                                   is_cfg_dma                      ;  
+        reg                                                   is_cfg_dma_end                  ;  
+        reg                                                   is_desc_wr_type                 ;  
+        reg                                                   is_desc_wr_data                 ;  
+
         reg                                                   holding_reg_clear               ;  
         reg   [`MWC_CNTL_CACHE_ENTRY_LINES_RANGE        ]     holding_reg_line_count          ;  // cycle thru cache entries (actually cycle thru each line)
         reg   [`MGR_DRAM_CHANNEL_ADDRESS_RANGE          ]     holding_reg_chan_ptr            ; 
-        reg   [`MWC_CNTL_CACHE_ENTRIES_PER_CHAN_RANGE   ]     holding_reg_chan_cline_ptr           ;
-        reg   [`MGR_DRAM_LINE_ADDRESS_RANGE             ]     holding_reg_chan_cline_line_ptr            ;                             
+        reg   [`MWC_CNTL_CACHE_ENTRIES_PER_CHAN_RANGE   ]     holding_reg_chan_cline_ptr      ;
+        reg   [`MGR_DRAM_LINE_ADDRESS_RANGE             ]     holding_reg_chan_cline_line_ptr ;                             
         //------------------------------------------------------------------------------------------------------------------------
         // State Transitions
         //
@@ -477,9 +488,11 @@ module mwc_cntl (
               // Keep reading until we see descriptor cycle
               // We wont read if there is data or a desc ptr
               `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_INTF: 
-                mwc_cntl_extract_desc_state_next =   (|contains_storage_ptr ) ? `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_INTF :  // transition if either word is a storage ptr
-                                                     ( contains_data        ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_DATA             :  
-                                                                                `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_INTF ;
+                mwc_cntl_extract_desc_state_next =   ( pipe_som                                      ) ? `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_INTF :  // remove header
+                                                     (|contains_storage_ptr                          ) ? `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_INTF :  // transition if either word is a storage ptr
+                                                     ( contains_data && is_cfg_dma                   ) ? `MWC_CNTL_PTR_DATA_RCV_DMA                      :  
+                                                     ( contains_data                                 ) ? `MWC_CNTL_PTR_DATA_RCV_PROCESS_DATA             :  
+                                                                                                         `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_INTF ;
         
         
               `MWC_CNTL_PTR_DATA_RCV_CHECK_1ST_DESC_FROM_INTF : 
@@ -500,6 +513,11 @@ module mwc_cntl (
               // read fifo as we have grabed pointer
               `MWC_CNTL_PTR_DATA_RCV_NEXT_INTF_CYCLE : 
                 mwc_cntl_extract_desc_state_next =    `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_INTF;
+      
+      
+              // Latch the fact that we are starting a Host download and stop processing once we get DMA_END
+              `MWC_CNTL_PTR_DATA_RCV_DMA : 
+                mwc_cntl_extract_desc_state_next =    `MWC_CNTL_PTR_DATA_RCV_PROCESS_DATA;
       
       
       
@@ -530,9 +548,10 @@ module mwc_cntl (
               // Flush data in holding register(s)
               //
               `MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REGS : 
-                mwc_cntl_extract_desc_state_next =   (~mmc_ready                                             )  ?  `MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REGS :  // stall immediately as MMC has small fifo
-                                                     (holding_reg_line_count == `MWC_CNTL_CACHE_ENTRY_LINES-1)  ?  `MWC_CNTL_PTR_DATA_RCV_COMPLETE           :
-                                                                                                                   `MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REGS ;
+                mwc_cntl_extract_desc_state_next =   (~mmc_ready                                                                  )  ?  `MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REGS :  // stall immediately as MMC has small fifo
+                                                     ((holding_reg_line_count == `MWC_CNTL_CACHE_ENTRY_LINES-1) && performing_dma )  ?  `MWC_CNTL_PTR_DATA_RCV_NEXT_INTF_CYCLE    :  // holding_reg_line_count is a counter going thru the holding regs flushing each
+                                                     ((holding_reg_line_count == `MWC_CNTL_CACHE_ENTRY_LINES-1)                   )  ?  `MWC_CNTL_PTR_DATA_RCV_COMPLETE           :
+                                                                                                                                        `MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REGS ;
               
               
               //----------------------------------------------------------------------------------------------------
@@ -612,6 +631,7 @@ module mwc_cntl (
 
             case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
               
+              // Remove header
               `MWC_CNTL_PTR_DATA_RCV_GET_DESC_CYCLE_FROM_INTF: 
                 begin
                   contains_storage_ptr [0] = pipe_valid & ((pipe_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) & (pipe_data[`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION0_RANGE ] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
@@ -745,6 +765,30 @@ module mwc_cntl (
             endcase // case (mrc_cntl_extract_desc_state)
           end // always @ (posedge clk
       
+        always @(posedge clk)
+          begin
+            case (mwc_cntl_extract_desc_state)  // synopsys parallel_case
+              `MWC_CNTL_PTR_DATA_RCV_WAIT : 
+                begin
+                  performing_dma     <= 'd0 ;
+                end
+              `MWC_CNTL_PTR_DATA_RCV_DMA : 
+                begin
+                  performing_dma     <= (is_cfg_dma_start             ) ? 'd1              :
+                                        (is_cfg_dma_end               ) ? 'd0              :
+                                                                           performing_dma  ;
+                end
+            endcase // case (mrc_cntl_extract_desc_state)
+          end // always @ (posedge clk
+
+        always @(*)
+          begin
+            isCfgDma     (is_cfg_dma      , pipe_type);  
+            isCfgDmaStart(is_cfg_dma_start, pipe_type);  
+            isCfgDmaEnd  (is_cfg_dma_end  , pipe_type);  
+            isWrDescType (is_desc_wr_type , pipe_type);                 
+            isNocData    (is_desc_wr_data , pipe_type);                 
+          end
         //
         // end of State Decodes
         //------------------------------------------------------------------------------------------------------------------------
@@ -759,7 +803,9 @@ module mwc_cntl (
     for (intf=0; intf<`MWC_CNTL_NUM_OF_INPUT_INTF ; intf=intf+1) 
       begin
         assign  intf_fsm[intf].pipe_valid    =  input_intf_fifo[intf].pipe_valid    ;
+        assign  intf_fsm[intf].pipe_som      =  input_intf_fifo[intf].pipe_som      ;
         assign  intf_fsm[intf].pipe_eom      =  input_intf_fifo[intf].pipe_eom      ;
+        assign  intf_fsm[intf].pipe_type     =  input_intf_fifo[intf].pipe_type     ;
         assign  intf_fsm[intf].pipe_ptype    =  input_intf_fifo[intf].pipe_ptype    ;
         assign  intf_fsm[intf].pipe_data     =  input_intf_fifo[intf].pipe_data     ;
         assign  intf_fsm[intf].pipe_mem_data =  input_intf_fifo[intf].pipe_mem_data ;
@@ -862,63 +908,6 @@ module mwc_cntl (
       end
   endgenerate
   
-/*
-  sdp_request_cntl sdp_request_cntl (  
-
-            //------------------------------
-            // Configuration
-            //
-            .xxx__sdp__lane_enable                        ( {`MGR_NUM_OF_EXEC_LANES {1'b1}}            ),  // FIXME
-            .xxx__sdp__num_lanes                          ( 6'd32                                      ),  // FIXME
-            .xxx__sdp__num_lanes_m1                       ( 6'd31                                      ),
-            .xxx__sdp__txfer_type                         ( 2'd1                                       ),  // FIXME
-            //.xxx__sdp__num_lanes                        ( {`MGR_NUM_LANES_WIDTH 'd `MGR_NUM_OF_EXEC_LANES  } ),
-            //.xxx__sdp__num_lanes_m1                     ( {`MGR_NUM_LANES_WIDTH 'd `MGR_NUM_OF_EXEC_LANES-1} ),
-
-            .xxx__sdp__storage_desc_processing_enable     ( storage_desc_processing_enable             ),
-            .sdp__xxx__storage_desc_processing_complete   ( storage_desc_processing_complete           ),
-            .xxx__sdp__storage_desc_ptr                   ( storage_desc_ptr                           ),  // pointer to local storage descriptor although msb's contain manager ID, so remove
-
-            .sdp__xxx__mem_request_valid                  ( sdp_requesting_valid                       ),
-            .sdp__xxx__mem_request_cntl                   ( sdp_requesting_cntl                        ),
-                                                                                                 
-            .xxx__sdp__mem_request_ready                  ( 1'b1                                       ),  // FIXME
-                                                                                                 
-            .sdp__xxx__mem_request_channel                ( sdp_requesting_channel                     ),
-            .sdp__xxx__mem_request_bank                   ( sdp_requesting_bank                        ),
-            .sdp__xxx__mem_request_page                   ( sdp_requesting_page                        ),
-            .sdp__xxx__mem_request_word                   ( sdp_requesting_word                        ),
-
-            .sdpr__sdps__response_id_valid                (                                            ),  // not used
-            .sdpr__sdps__response_id_cntl                 (                                            ),
-            .sdps__sdpr__response_id_ready                ( 1'b1                                       ),
-            .sdpr__sdps__response_id_channel              (                                            ),
-            .sdpr__sdps__response_id_bank                 (                                            ),
-            .sdpr__sdps__response_id_page                 (                                            ),
-            .sdpr__sdps__response_id_line                 (                                            ),
-
-
-            .sdpr__sdps__cfg_valid                        ( sdpr_cfg_valid                             ),
-            .sdpr__sdps__cfg_addr                         ( sdpr_cfg_addr                              ),
-            .sdpr__sdps__cfg_accessOrder                  ( sdpr_cfg_accessOrder                       ),
-            .sdps__sdpr__cfg_ready                        ( 1'b1                                       ),
-            .sdps__sdpr__complete                         ( 1'b1                                       ),
-            .sdpr__sdps__complete                         (                                            ),
-
-            .sdpr__sdps__consJump_valid                   (                                            ),
-            .sdpr__sdps__consJump_cntl                    (                                            ),
-            .sdpr__sdps__consJump_value                   (                                            ),
-            .sdps__sdpr__consJump_ready                   ( 1'b1                                       ),
-
-            //------------------------------
-            // General
-            //
-            .sys__mgr__mgrId                              ( sys__mgr__mgrId ),
-            .clk                                          ( clk             ),
-            .reset_poweron                                ( reset_poweron   )
-                        );
- 
-*/
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // Hold the data in a holding register and fill entries and word mask as data arrives
   // - pass to MMC once a new channel/bank/page/line is seen from the sdp_request control

@@ -140,6 +140,7 @@ class host_driver_checker;
               while(vExtFromNoC[0].mgr__noc__port_fc)
                 begin
                   @(vExtFromNoC[0].cb_p);
+                  vExtFromNoC[0].noc__mgr__port_valid = 0;
                 end
               @(vExtFromNoC[0].cb_p);
               vExtFromNoC[0].noc__mgr__port_valid = 1;
@@ -153,7 +154,7 @@ class host_driver_checker;
                   void'($fgets(entry, fileDesc)); 
                   void'($sscanf(entry, "@%x %x", memory_address, memory_data));
                   vExtFromNoC[0].noc__mgr__port_valid = 1;
-                  if ((count+1) == `MGR_WU_MEMORY_INIT_ENTRIES)
+                  if ((count+1) == `MGR_WU_MEMORY_INIT_ENTRIES)  // partial packet??
                     begin
                       sent_instructions = 1;
                       vExtFromNoC[0].noc__mgr__port_cntl  = 2'b10;
@@ -216,6 +217,279 @@ class host_driver_checker;
               //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);
               //
               //mem[memory_address] = memory_data ;
+            end
+          $fclose(fileDesc);
+        end
+    endtask
+
+    task unsolicited_dnld (); 
+
+      `define HOST_DNLD_PKT_COUNT 4
+      `define HOST_DNLD_DWORDS  `HOST_DNLD_PKT_COUNT*16
+
+      bit  [`MGR_WU_OPT_TYPE_RANGE                      ]   payload_tuple_type       [`MGR_ARRAY_NUM_OF_MGR]    ;
+      bit  [`MGR_WU_EXTD_OPT_VALUE_RANGE                ]   payload_tuple_extd_value [`MGR_ARRAY_NUM_OF_MGR]    ;
+      bit [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD_RANGE ]   payload_data             [`MGR_ARRAY_NUM_OF_MGR]    ;
+      bit matched ;  // found matching sent packet
+
+      int lineNum ;
+      int count   ;
+      int pkt_count   ;
+      int sent_dnld_data   ;
+      string entry  ;
+
+      found = 0;
+      lineNum = 0;
+      count   = 0;
+      pkt_count   = 0;
+      sent_dnld_data = 0  ;
+      noc_bitMask  = {63'd0, 1'b1}    ;
+
+      repeat(100) @(vExtFromNoC[0].cb_p);
+
+      for (int mgr=0; mgr<1; mgr=mgr+1)
+      //for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+        begin
+          fileName  =  $sformatf("./inputFiles/manager_%0d_dnld_data.dat", mgr);
+          fileDesc  =  $fopen (fileName, "r");
+          if (fileDesc == 0) 
+            begin
+              $display("@%0t :%s:%0d:ERROR: file open error opening : %s", $time, `__FILE__, `__LINE__, fileName);
+              $finish;
+          end
+          noc_bitMask  = 64'd0;
+          noc_bitMask[mgr]  = 1'b1 ;
+          while (!$feof(fileDesc)) 
+            begin
+              noc_cntl       = 2'b10 ; 
+              noc_type       = `MGR_NOC_CONT_TYPE_INSTRUCTION      ; 
+              noc_ptype      = `MGR_NOC_CONT_PAYLOAD_TYPE_NOP             ; 
+              noc_desttype   = `MGR_NOC_CONT_DESTINATION_ADDR_TYPE_BITMASK ; 
+              noc_pvalid     = 1'b1 ; 
+          
+              // Create header
+              noc_data [`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE       ] = noc_bitMask  ; 
+              noc_data [`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE               ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_DP  ; 
+              noc_data [`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_MCAST_BITFIELD ; 
+              // Remember to account for 2x2 or 8x8
+              noc_data [`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE              ] = 'd`MGR_ARRAY_HOST_ID ;
+              vExtFromNoC[0].noc__mgr__port_valid = 0;
+              while(vExtFromNoC[0].mgr__noc__port_fc)
+                begin
+                  @(vExtFromNoC[0].cb_p);
+                end
+              vExtFromNoC[0].noc__mgr__port_valid = 1;
+              vExtFromNoC[0].noc__mgr__port_cntl  = 2'b`COMMON_STD_INTF_CNTL_SOM ;
+              vExtFromNoC[0].noc__mgr__port_data  = noc_data ;
+              @(vExtFromNoC[0].cb_p);
+          
+              // Create Tuple cycle
+              noc_data [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE         ] = 'd0  ; 
+              noc_data [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION0_RANGE      ] = PY_WU_INST_OPT_TYPE_MEMORY ;
+
+              noc_data [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE         ] = 'd0  ; 
+              noc_data [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE      ] = PY_WU_INST_OPT_TYPE_NOP    ;
+
+              noc_data [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_RANGE      ] = 'd`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_ONE ;
+              noc_data [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAD0_RANGE               ] = 'd0;
+              noc_data [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_RANGE       ] = 'd`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_TUPLES       ;
+              if (pkt_count == 0)
+                begin
+                  noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE    ] = 'd`MGR_NOC_CONT_TYPE_CFG_DMA_DATA_SOD ; 
+                end
+              else if (count < `HOST_DNLD_DWORDS -16)
+                begin
+                  noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE    ] = 'd`MGR_NOC_CONT_TYPE_CFG_DMA_DATA; 
+                end
+              else 
+                begin
+                  noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE    ] = 'd`MGR_NOC_CONT_TYPE_CFG_DMA_DATA_EOD ; 
+                end
+              //noc_data [`] = 'd`;
+
+              vExtFromNoC[0].noc__mgr__port_valid = 0;
+              vExtFromNoC[0].noc__mgr__port_cntl  = 2'b`COMMON_STD_INTF_CNTL_MOM ;
+              vExtFromNoC[0].noc__mgr__port_data  = noc_data ;
+              while(vExtFromNoC[0].mgr__noc__port_fc)
+                begin
+                  @(vExtFromNoC[0].cb_p);
+                end
+              vExtFromNoC[0].noc__mgr__port_valid = 1;
+              @(vExtFromNoC[0].cb_p);
+          
+              // Data cycles
+              for (int cyc=0; cyc<16; cyc++)
+                begin
+                  void'($fgets(entry, fileDesc)); 
+                  void'($sscanf(entry, "@%x %x", memory_address, memory_data));
+                  vExtFromNoC[0].noc__mgr__port_valid = 1;
+                  if ((count+1) == `HOST_DNLD_DWORDS )  // partial packet??
+                    begin
+                      sent_dnld_data = 1;
+                      vExtFromNoC[0].noc__mgr__port_cntl  = 2'd`COMMON_STD_INTF_CNTL_EOM ;
+                    end
+                  else if (cyc == 15)
+                    begin
+                      vExtFromNoC[0].noc__mgr__port_cntl  = 2'd`COMMON_STD_INTF_CNTL_EOM ;
+                    end
+                  else
+                    begin
+                      vExtFromNoC[0].noc__mgr__port_cntl  = 2'd`COMMON_STD_INTF_CNTL_MOM ;
+                    end
+                  noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_RANGE  ] = 'd`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_BOTH  ;
+                  noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_TYPE_RANGE   ] = 'd`MGR_NOC_CONT_PAYLOAD_TYPE_DATA             ; 
+                  if (pkt_count == 0)
+                    begin
+                      noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE    ] = 'd`MGR_NOC_CONT_TYPE_CFG_DMA_DATA_SOD ; 
+                    end
+                  else if (count < `HOST_DNLD_DWORDS -16)
+                    begin
+                      noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE    ] = 'd`MGR_NOC_CONT_TYPE_CFG_DMA_DATA; 
+                    end
+                  else 
+                    begin
+                      noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE    ] = 'd`MGR_NOC_CONT_TYPE_CFG_DMA_DATA_EOD ; 
+                    end
+
+                  noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORDS_RANGE           ] = memory_data ; 
+                  vExtFromNoC[0].noc__mgr__port_data  = noc_data ;
+                  @(vExtFromNoC[0].cb_p);
+                  count++;
+                  if ((count) == `HOST_DNLD_DWORDS )
+                    begin
+                      break;
+                    end
+                end
+              pkt_count++;
+              if (sent_dnld_data == 1)
+                begin
+                  vExtFromNoC[0].noc__mgr__port_valid = 0;
+                  @(vExtFromNoC[0].cb_p);
+                  break;
+                end
+              vExtFromNoC[0].noc__mgr__port_valid = 0;
+              @(vExtFromNoC[0].cb_p);
+            end
+          $fclose(fileDesc);
+        end
+   
+
+    endtask
+
+    task solicited_dnld (); 
+
+      `define HOST_DNLD_PKT_COUNT 4
+      `define HOST_DNLD_DWORDS  `HOST_DNLD_PKT_COUNT*16
+
+      bit  [`MGR_WU_OPT_TYPE_RANGE                      ]   payload_tuple_type       [`MGR_ARRAY_NUM_OF_MGR]    ;
+      bit  [`MGR_WU_EXTD_OPT_VALUE_RANGE                ]   payload_tuple_extd_value [`MGR_ARRAY_NUM_OF_MGR]    ;
+      bit [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD_RANGE ]   payload_data             [`MGR_ARRAY_NUM_OF_MGR]    ;
+      bit matched ;  // found matching sent packet
+
+      int lineNum ;
+      int count   ;
+      int pkt_count   ;
+      int sent_dnld_data   ;
+      string entry  ;
+
+      found = 0;
+      lineNum = 0;
+      count   = 0;
+      pkt_count   = 0;
+      sent_dnld_data = 0  ;
+      noc_bitMask  = {63'd0, 1'b1}    ;
+
+      repeat(100) @(vExtFromNoC[0].cb_p);
+
+      for (int mgr=0; mgr<1; mgr=mgr+1)
+      //for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+        begin
+          fileName  =  $sformatf("./inputFiles/manager_%0d_dnld_data.dat", mgr);
+          fileDesc  =  $fopen (fileName, "r");
+          if (fileDesc == 0) 
+            begin
+              $display("@%0t :%s:%0d:ERROR: file open error opening : %s", $time, `__FILE__, `__LINE__, fileName);
+              $finish;
+          end
+          noc_bitMask  = 64'd0;
+          noc_bitMask[mgr]  = 1'b1 ;
+          while (!$feof(fileDesc)) 
+            begin
+              noc_cntl       = 2'b10 ; 
+              noc_type       = `MGR_NOC_CONT_TYPE_INSTRUCTION      ; 
+              noc_ptype      = `MGR_NOC_CONT_PAYLOAD_TYPE_NOP             ; 
+              noc_desttype   = `MGR_NOC_CONT_DESTINATION_ADDR_TYPE_BITMASK ; 
+              noc_pvalid     = 1'b1 ; 
+          
+              // Create header
+              noc_data [`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_RANGE       ] = noc_bitMask  ; 
+              noc_data [`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_RANGE               ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_PRIORITY_DP  ; 
+              noc_data [`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_RANGE  ] = 'd`MGR_NOC_CONT_EXTERNAL_HEADER_DESTINATION_ADDR_TYPE_MCAST_BITFIELD ; 
+              // Remember to account for 2x2 or 8x8
+              noc_data [`MGR_NOC_CONT_EXTERNAL_HEADER_SOURCE_PE_RANGE              ] = 'd`MGR_ARRAY_HOST_ID ;
+              vExtFromNoC[0].noc__mgr__port_valid = 0;
+              while(vExtFromNoC[0].mgr__noc__port_fc)
+                begin
+                  @(vExtFromNoC[0].cb_p);
+                end
+              vExtFromNoC[0].noc__mgr__port_valid = 1;
+              vExtFromNoC[0].noc__mgr__port_cntl  = 2'b`COMMON_STD_INTF_CNTL_SOM ;
+              vExtFromNoC[0].noc__mgr__port_data  = noc_data ;
+              @(vExtFromNoC[0].cb_p);
+          
+          
+              // Data cycles
+              for (int cyc=0; cyc<16; cyc++)
+                begin
+                  void'($fgets(entry, fileDesc)); 
+                  void'($sscanf(entry, "@%x %x", memory_address, memory_data));
+                  vExtFromNoC[0].noc__mgr__port_valid = 1;
+                  if ((count+1) == `HOST_DNLD_DWORDS )  // partial packet??
+                    begin
+                      sent_dnld_data = 1;
+                      vExtFromNoC[0].noc__mgr__port_cntl  = 2'd`COMMON_STD_INTF_CNTL_EOM ;
+                    end
+                  else if (cyc == 15)
+                    begin
+                      vExtFromNoC[0].noc__mgr__port_cntl  = 2'd`COMMON_STD_INTF_CNTL_EOM ;
+                    end
+                  else
+                    begin
+                      vExtFromNoC[0].noc__mgr__port_cntl  = 2'd`COMMON_STD_INTF_CNTL_MOM ;
+                    end
+                  noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_RANGE  ] = 'd`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_VALID_BOTH  ;
+                  noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PAYLOAD_TYPE_RANGE   ] = 'd`MGR_NOC_CONT_PAYLOAD_TYPE_DATA             ; 
+                  if (pkt_count == 0)
+                    begin
+                      noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE    ] = 'd`MGR_NOC_CONT_TYPE_CFG_DMA_DATA_SOD ; 
+                    end
+                  else if (count < `HOST_DNLD_DWORDS -16)
+                    begin
+                      noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE    ] = 'd`MGR_NOC_CONT_TYPE_CFG_DMA_DATA; 
+                    end
+                  else 
+                    begin
+                      noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_PACKET_TYPE_RANGE    ] = 'd`MGR_NOC_CONT_TYPE_CFG_DMA_DATA_EOD ; 
+                    end
+
+                  noc_data [`MGR_NOC_CONT_EXTERNAL_DATA_CYCLE_WORDS_RANGE           ] = memory_data ; 
+                  vExtFromNoC[0].noc__mgr__port_data  = noc_data ;
+                  @(vExtFromNoC[0].cb_p);
+                  count++;
+                  if ((count) == `HOST_DNLD_DWORDS )
+                    begin
+                      break;
+                    end
+                end
+              pkt_count++;
+              if (sent_dnld_data == 1)
+                begin
+                  vExtFromNoC[0].noc__mgr__port_valid = 0;
+                  @(vExtFromNoC[0].cb_p);
+                  break;
+                end
+              vExtFromNoC[0].noc__mgr__port_valid = 0;
+              @(vExtFromNoC[0].cb_p);
             end
           $fclose(fileDesc);
         end
