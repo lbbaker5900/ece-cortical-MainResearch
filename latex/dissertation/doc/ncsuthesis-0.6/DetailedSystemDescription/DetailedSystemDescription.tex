@@ -83,17 +83,17 @@ Once \ac{ann} parameters and system tables are downloaded, the last instruction 
   %\begin{subfigure}{1\textwidth}
     \centering
     \captionsetup{justification=centering, skip=10pt}
-    \begin{bytefield}[bitwidth=0.49em, endianness=big]{76}
-      \bitheader{0,8,16,24,32,40,48,56,64,72,74} \\
+    \begin{bytefield}[bitwidth=0.49em, endianness=big]{77}
+      \bitheader{0,8,16,24,32,40,48,56,64,68,74,76} \\
       \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
-        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{6}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
+        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
       \end{rightwordgroup}  \\
       \begin{rightwordgroup}{\scriptsize Data Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{4}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{7}{\tiny NA} & \bitbox{57}{\tiny Instruction memory entry}
+        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{7}{\tiny NA} & \bitbox{57}{\tiny Instruction memory entry}
       \end{rightwordgroup}  \\
       \bitbox[]{76}{$\vdots$} \\[1ex]
       \begin{rightwordgroup}{\scriptsize Data Cycle}
-        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{4}{} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{7}{\tiny NA} & \bitbox{57}{\tiny Instruction memory entry}
+        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{7}{\tiny NA} & \bitbox{57}{\tiny Instruction memory entry}
       \end{rightwordgroup}  \\
     \end{bytefield}
     \captionsetup{justification=centering, skip=9pt}

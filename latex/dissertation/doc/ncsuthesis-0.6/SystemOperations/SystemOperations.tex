@@ -514,12 +514,14 @@ It is also responsible for downloading configuration data including \ac{ssc} ins
 The host will use the \ac{noc} to carry the commands and data to accomplish the transfers.
 The commands will employ the same option tuple method as described in section \ref{sec:Configuration Instruction}.
 
-A transfer of data can be solicited or unsolicited.
-In the solicited case, the host initiates the tranfer by sending to the \ac{ssc} an \ac{noc} packet with two option tuples as shown in figure \ref{fig:Host transfer configuration packet}.
-The first contains a configuration data option tuple (see figure \ref{fig:Configuration tuple}) which contains a mode register used to define the type of transfer.
-The second tuple has a storage descriptor pointer defining where in memory to write or read the data.
+A transfer of data to the \ac{ssc} can be solicited or unsolicited.
+In the unsolicited case, the host initiates the transfer by sending the first \ac{noc} packet with two option tuples along with the first data as shown in figure \ref{fig:Host transfer configuration packet}.
+This first packet contains a configuration data option tuple (see figure \ref{fig:Configuration tuple}) which contains a mode register used to define the type of transfer.
+The second tuple has a storage descriptor pointer defining where in memory to write the data.
+Once the first packet has been received, the \ac{ssc} expects only to receive data packets as shown in figure \ref{fig:Host transfer data packet}.
 In the solicited case, the transfer is initiated from a configuration data transfer instruction in which case the main controller receives the mode register and storage descriptor from the instruction decoder.
 An example instruction can be seen in figure \ref{fig:Data transfer instruction}.
+In this case, the host will only send data packets as shown in figure \ref{fig:Host transfer data packet}.
 Additional information on the configuration data option tuple mode registers can be found in sections \ref{sec:Memory download reg} and \ref{sec:Memory upload reg}.
 
 In the case of a data download, the main controller sends the storage tuple to the memory write controller and indicates its a \ac{dma}.
@@ -546,16 +548,23 @@ If the amount of data exceeds the 32 data word \ac{mtu} of the \ac{noc}, the dat
     \captionsetup{justification=centering, skip=10pt}
     \begin{bytefield}[bitwidth=0.49em, endianness=big]{77}
       \bitheader{0,8,16,24,32,40,48,56,64,68,74,76} \\
-      \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
+      \begin{rightwordgroup}{\scriptsize Header}
         \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
       \end{rightwordgroup}  \\
       \begin{rightwordgroup}{\scriptsize Option Cycle}
         \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \colorbitbox{optiontype!40}{8}{\tiny config\\ \vspace{-0em}data} & \colorbitbox{optionvalue!40}{3}{\tiny mem\\ dnld} & \colorbitbox{optionvalue!40}{21}{\tiny number of \\ bytes} & \colorbitbox{optiontype!40}{8}{\tiny storage\\ desc} & \colorbitbox{optionvalue!40}{6}{\tiny SSC ID} & \colorbitbox{optionvalue!40}{18}{\tiny storage descriptor\\ pointer}
       \end{rightwordgroup}  \\
+      \begin{rightwordgroup}{\scriptsize Data Cycle}
+        \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+      \end{rightwordgroup}  \\
+      \bitbox[]{76}{$\vdots$} \\[1ex]
+      \begin{rightwordgroup}{\scriptsize Data Cycle}
+        \bitbox{2}{\rotatebox{90}{\tiny EOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
+      \end{rightwordgroup}  \\
     \end{bytefield}
     \captionsetup{justification=centering, skip=9pt}
     \vspace{-0.5cm}
-    \captionof{figure}{Host unsolicited transfer \ac{noc} memory download configuration packet}
+    \captionof{figure}{Host unsolicited download first \ac{noc} packet}
     \label{fig:Host transfer configuration packet}
   \end{minipage}
 
@@ -568,8 +577,8 @@ If the amount of data exceeds the 32 data word \ac{mtu} of the \ac{noc}, the dat
     \captionsetup{justification=centering, skip=10pt}
     \begin{bytefield}[bitwidth=0.49em, endianness=big]{77}
       \bitheader{0,8,16,24,32,40,48,56,64,68,74,76} \\
-      \begin{rightwordgroup}{\scriptsize Unicast Bitfield header}
-        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{6}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
+      \begin{rightwordgroup}{\scriptsize Header}
+        \bitbox{2}{\rotatebox{90}{\tiny SOM}} & \bitbox{7}{\scriptsize src} & \bitbox{2}{\tiny M} & \bitbox{1}{\rotatebox{90}{\tiny prio}} & \bitbox{64}{\tiny destination SSC bitfield} 
       \end{rightwordgroup}  \\
       \begin{rightwordgroup}{\scriptsize Data Cycle}
         \bitbox{2}{\rotatebox{90}{\tiny MOM}} & \bitbox{1}{} & \bitbox{4}{\tiny type} & \bitbox{3}{\tiny pyld\\ \vspace{-0em} type} & \bitbox{1}{} & \bitbox{1}{\tiny P\\ V} & \bitbox{32}{\tiny Data} & \bitbox{32}{\tiny Data}
@@ -581,7 +590,7 @@ If the amount of data exceeds the 32 data word \ac{mtu} of the \ac{noc}, the dat
     \end{bytefield}
     \captionsetup{justification=centering, skip=9pt}
     \vspace{-0.5cm}
-    \captionof{figure}{Host transfer \ac{noc} data packet}
+    \captionof{figure}{Host transfer \ac{noc} data only packet}
     \label{fig:Host transfer data packet}
   \end{minipage}
 \end{figure}
