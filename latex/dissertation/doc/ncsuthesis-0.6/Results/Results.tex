@@ -429,21 +429,22 @@ The list of features implemented and verified are shown in table \ref{tab:Featur
           \footnotesize
           %\begin{tabular}{|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1.3cm}|>{\centering}m{1.3cm}|}\cline{1-4}
           %\begin{tabular}{ |>{\centering}m{1.5cm}|>{\centering}m{1.5cm}|>{\centering}m{1.5cm}|m{3cm}|}
-          \begin{tabular}{ |m{3cm}|c|c|m{4cm}|}
+          \begin{tabular}{ |m{3cm}|c|c|c|m{4cm}|}
             %\hline
             %\rowcolor{gray!50}
             %\multicolumn{5}{|c|}{Power } \\
             \hline
             %\cline{1-4}
-            %\rowcolor{gray!25}
-        Feature                     &   Limitations           & Method         &   Comment \\
-            \hline                                            
-        Major processing datapaths  &   N                     & Self checking  &  Instructions generated using python scripts \\\cline{1-4}
-        Sync Send                   &   Host only             & Visual         &  Instructions manually generated  \\\cline{1-4}
-        Sync Wait                   &   Host only             & Visual         &  Instructions manually generated  \\\cline{1-4}
-        Memory Upload               &   Host from \ac{dram}   & Visual         &  Instructions manually generated  \\\cline{1-4}
-        Memory Download             &   Host to \ac{dram}     & Visual         &  Instructions manually generated  \\\cline{1-4}
-        BootP                       &   N                     & Visual         &  Instructions manually generated  \\\cline{1-4}
+            \rowcolor{gray!25}
+ \multicolumn{1}{|c|}{Feature}      &   \multicolumn{2}{c|}{Limitations}                 & Method                  &   \multicolumn{1}{c|}{Comment}                                     \\
+            \hline                                                                                                 
+        Major processing datapaths  &   \multicolumn{2}{c|}{N}                           & Self checking           &  Instructions generated using python scripts \\\cline{1-5}
+        Sync Send                   &   \multicolumn{2}{c|}{Host only}                   & Visual                  &  Instructions manually generated                                   \\\cline{1-5}
+        Sync Wait                   &   \multicolumn{2}{c|}{Host only}                   & Visual                  &  Instructions manually generated                                   \\\cline{1-5}
+        Memory Upload               &   \multicolumn{2}{c|}{Host from \ac{dram}}         & Visual                  &  Instructions manually generated                                   \\\cline{1-5}
+ \multirow{2}{*}{Memory Download}   &   Solicited   & \multirow{2}{*}{Host to \ac{dram}} & \multirow{2}{*}{Visual} &  \multirow{2}{4cm}{\parbox{4cm}{Instructions manually generated}}  \\\cline{2-2}
+                                    &   Unsolicited &                                    &                         &                                                                    \\\cline{1-5}
+        BootP                       &   \multicolumn{2}{c|}{N}                           & Visual                  &  Instructions manually generated                                   \\\cline{1-5}
         %MAC                         &   N                     & Self checking  &  Instructions generated using python scripts \\
             %\hline
           \end{tabular}
@@ -451,7 +452,7 @@ The list of features implemented and verified are shown in table \ref{tab:Featur
   \end{minipage}
   \captionsetup{justification=centering, skip=9pt}
   \vspace{0.0cm}
-  \captionof{table}{Features implemented}
+  \captionof{table}{System Ffeatures implemented}
   \label{tab:Features implemented}
 \end{table}
 
@@ -462,9 +463,9 @@ The major interfaces between blocks are all registered but this is considered a 
 The area scaling numbers employed are within a reasonable range based on \cite{schabel2017energy} and perhaps a little low based on \cite{schabel2014diss}.
 Therefore the place and route feasibility study suggests that embarking on productizing a system based on this work would be relatively low risk.
 
-The power numbers were higher than expected but the power still within a number that is still considered manageable when the design is run at \SI{500}{\mega\hertz}.
-The power per unit area of \SI{193}{\milli\watt} and \SI{257}{\milli\watt} at \SI{500}{\mega\hertz} and  \SI{700}{\mega\hertz} respectively appears to be a little high especially when compared to the \SI{133}{\milli\watt} at \SI{700}{\mega\hertz} inferred from \cite{tensorflow2015-whitepaper}.
-There is unlikely opprtunities for clock gating because most of the logic is active during the processing of an \ac{ann}.
+The power numbers were higher than expected %but the power still within a number that is still considered manageable when the design is run at \SI{500}{\mega\hertz}.
+but the power per unit area of \SI[per-mode=symbol]{386}{\milli\watt\per\square\milli\meter\per\giga\hertz} appears to be a high when compared to the \SI[per-mode=symbol]{133}{\milli\watt\\per\square\milli\meter\per\giga\hertz} inferred from \cite{tensorflow2015-whitepaper}, so there may be opportunities for power reduction such as clock gating.
+%There is unlikely opportunities for clock gating because most of the logic is active during the processing of an \ac{ann}.
 %The power numbers seem high but there is likely room for improvement when productizing the system.
 
 
