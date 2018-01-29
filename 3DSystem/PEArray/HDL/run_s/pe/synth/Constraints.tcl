@@ -252,6 +252,7 @@ if {$tech == "65nm"} {
 #  - dw mults etc. are found in dw_foundation.sldb and are found during instance search in the sldb
 #  - i dont think we dont_touch these instances
 #--------------------------------------------------------- 
+set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ DW_fp.*"]
 #set_dont_touch [get_cell DW_*]
 
 #---------------------------------------------------------

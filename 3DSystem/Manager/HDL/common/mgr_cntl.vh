@@ -47,17 +47,24 @@
 // Simple FSM simply to check MgrID from NoC
 // - avoids having manager ID removed for SV
 
-`define MGR_CNTL_NOC_CNTL_INST_DNLD_INIT       10'b00_0000_0001
-`define MGR_CNTL_NOC_CNTL_DNLD_INST            10'b00_0000_0010
-`define MGR_CNTL_NOC_CNTL_DNLD_INST_COMPLETE   10'b00_0000_0100
+`define MGR_CNTL_NOC_CNTL_INST_DNLD_INIT            12'b0000_0000_0001
+`define MGR_CNTL_NOC_CNTL_DNLD_INST                 12'b0000_0000_0010
+`define MGR_CNTL_NOC_CNTL_DNLD_INST_COMPLETE        12'b0000_0000_0100
+                                                    
+`define MGR_CNTL_NOC_CNTL_WAIT                      12'b0000_0000_1000
+`define MGR_CNTL_NOC_CNTL_MWC_RCV                   12'b0000_0001_0000
+                                                    
+`define MGR_CNTL_NOC_CNTL_UNSOL_DMA_START           12'b0000_0010_0000
+`define MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_HEADER   12'b0000_0100_0000
+`define MGR_CNTL_NOC_CNTL_DMA_RCV_ADD_DESC          12'b0000_1000_0000
+`define MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_DATA     12'b0001_0000_0000
+`define MGR_CNTL_NOC_CNTL_DMA_RCV_WAIT_PKT          12'b0010_0000_0000
 
-`define MGR_CNTL_NOC_CNTL_WAIT                 10'b00_0100_0000
-`define MGR_CNTL_NOC_CNTL_MWC_RCV              10'b00_1000_0000
-`define MGR_CNTL_NOC_CNTL_COMPLETE             10'b01_0000_0000
-                                                       
-`define MGR_CNTL_NOC_CNTL_ERR                  10'b10_0000_0000
+`define MGR_CNTL_NOC_CNTL_COMPLETE                  12'b0100_0000_0000
+                                                            
+`define MGR_CNTL_NOC_CNTL_ERR                       12'b1000_0000_0000
 
-`define MGR_CNTL_NOC_CNTL_STATE_WIDTH         10
+`define MGR_CNTL_NOC_CNTL_STATE_WIDTH         12
 `define MGR_CNTL_NOC_CNTL_STATE_MSB           `MGR_CNTL_NOC_CNTL_STATE_WIDTH-1
 `define MGR_CNTL_NOC_CNTL_STATE_LSB           0
 `define MGR_CNTL_NOC_CNTL_STATE_SIZE          (`MGR_CNTL_NOC_CNTL_STATE_MSB - `MGR_CNTL_NOC_CNTL_STATE_LSB +1)

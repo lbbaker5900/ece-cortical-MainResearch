@@ -430,68 +430,72 @@ module mgr_cntl (
   // - coordinate nformation transfer
   //
 
-  reg    [`MGR_STD_OOB_TAG_RANGE            ]    cfg_tag                        ;  // one tag per cfg instruction
-
-  reg    [`MGR_WU_OPT_PER_INST_RANGE        ]    cfg_data_mode_reg_valid        ;  // only expect one cfg mode reg per instruction
-  reg    [`MGR_WU_OPT_TYPE_RANGE            ]    cfg_data_mode_reg_type         ;
-  reg    [`MGR_WU_CONFIG_MODE_REG_ID_RANGE  ]    cfg_data_mode_reg_id           ;
-  reg    [`MGR_WU_CONFIG_MODE_REG_VAL_RANGE ]    cfg_data_mode_reg_value        ;
-
-  reg    [`MGR_WU_OPT_PER_INST_RANGE        ]    cfg_sync_mode_reg_valid        ;  // only expect one sync mode reg per instruction
-  reg    [`MGR_WU_OPT_TYPE_RANGE            ]    cfg_sync_mode_reg_type         ;
-  reg    [`MGR_WU_CONFIG_MODE_REG_ID_RANGE  ]    cfg_sync_mode_reg_id           ;
-  reg    [`MGR_WU_CONFIG_MODE_REG_VAL_RANGE ]    cfg_sync_mode_reg_value        ;
-
-  reg                                            cfg_storage_desc_ptr_valid     ;
-  reg    [`MGR_WU_OPT_TYPE_RANGE            ]    cfg_storage_desc_ptr_type      ;  // keep for debug
-  reg    [`MGR_WU_EXTD_OPT_VALUE_RANGE      ]    cfg_storage_desc_ptr_value     ;
-                                                                                
-  wire                                           process_wud                    ;
-  wire                                           from_wud_valid                 ;
-  wire                                           from_wud_sod                   ;
-  wire                                           from_wud_eod                   ;
-  wire   [`COMMON_STD_INTF_CNTL_RANGE       ]    from_wud_dcntl                 ;
-  wire   [`MGR_STD_OOB_TAG_RANGE            ]    from_wud_tag                   ;
-  wire   [`MGR_WU_OPT_TYPE_RANGE            ]    from_wud_option_type     [`MGR_WU_OPT_PER_INST_RANGE ]  ; 
-  wire   [`MGR_WU_OPT_VALUE_RANGE           ]    from_wud_option_value    [`MGR_WU_OPT_PER_INST_RANGE ]  ;
-  wire                                           from_wud_read                  ;
-
-  wire                                           from_mrc_lanes_valid         ;
-  wire                                           upld_transfer_mrc_to_noc     ;  
-  wire                                           upld_transfer_one_mrc_to_noc ;  
-  wire   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE  ]    from_mrc_valid               ;
-  wire   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE  ]    from_mrc_som                 ;
-  wire   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE  ]    from_mrc_mom                 ;
-  wire   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE  ]    from_mrc_eom                 ;
-  wire   [`COMMON_STD_INTF_CNTL_RANGE       ]    from_mrc_cntl                [`MGR_CNTL_NUM_OF_DMA_LANES ] ;
-  wire   [`STREAMING_OP_DATA_RANGE          ]    from_mrc_data                [`MGR_CNTL_NUM_OF_DMA_LANES ] ;
-  wire                                           from_mrc_read                [`MGR_CNTL_NUM_OF_DMA_LANES ] ;
+  reg    [`MGR_STD_OOB_TAG_RANGE                               ]    cfg_tag                        ;  // one tag per cfg instruction
+                                                               
+  reg    [`MGR_WU_OPT_PER_INST_RANGE                           ]    cfg_data_mode_reg_valid        ;  // only expect one cfg mode reg per instruction
+  reg    [`MGR_WU_OPT_TYPE_RANGE                               ]    cfg_data_mode_reg_type         ;
+  reg    [`MGR_WU_CONFIG_MODE_REG_ID_RANGE                     ]    cfg_data_mode_reg_id           ;
+  reg    [`MGR_WU_CONFIG_MODE_REG_VAL_RANGE                    ]    cfg_data_mode_reg_value        ;
+                                                               
+  reg    [`MGR_WU_OPT_PER_INST_RANGE                           ]    cfg_sync_mode_reg_valid        ;  // only expect one sync mode reg per instruction
+  reg    [`MGR_WU_OPT_TYPE_RANGE                               ]    cfg_sync_mode_reg_type         ;
+  reg    [`MGR_WU_CONFIG_MODE_REG_ID_RANGE                     ]    cfg_sync_mode_reg_id           ;
+  reg    [`MGR_WU_CONFIG_MODE_REG_VAL_RANGE                    ]    cfg_sync_mode_reg_value        ;
+                                                               
+  reg                                                               cfg_storage_desc_ptr_valid     ;
+  reg    [`MGR_WU_OPT_TYPE_RANGE                               ]    cfg_storage_desc_ptr_type      ;  // keep for debug
+  reg    [`MGR_WU_EXTD_OPT_VALUE_RANGE                         ]    cfg_storage_desc_ptr_value     ;
+                                                                                                   
+  wire                                                              process_wud                    ;
+  wire                                                              from_wud_valid                 ;
+  wire                                                              from_wud_sod                   ;
+  wire                                                              from_wud_eod                   ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE                          ]    from_wud_dcntl                 ;
+  wire   [`MGR_STD_OOB_TAG_RANGE                               ]    from_wud_tag                   ;
+  wire   [`MGR_WU_OPT_TYPE_RANGE                               ]    from_wud_option_type     [`MGR_WU_OPT_PER_INST_RANGE ]  ; 
+  wire   [`MGR_WU_OPT_VALUE_RANGE                              ]    from_wud_option_value    [`MGR_WU_OPT_PER_INST_RANGE ]  ;
+  wire                                                              from_wud_read                  ;
+                                                               
+  wire                                                              from_mrc_lanes_valid           ;
+  wire                                                              upld_transfer_mrc_to_noc       ;  
+  wire                                                              upld_transfer_one_mrc_to_noc   ;  
+  wire   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE                     ]    from_mrc_valid                 ;
+  wire   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE                     ]    from_mrc_som                   ;
+  wire   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE                     ]    from_mrc_mom                   ;
+  wire   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE                     ]    from_mrc_eom                   ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE                          ]    from_mrc_cntl                  [`MGR_CNTL_NUM_OF_DMA_LANES ] ;
+  wire   [`STREAMING_OP_DATA_RANGE                             ]    from_mrc_data                  [`MGR_CNTL_NUM_OF_DMA_LANES ] ;
+  wire                                                              from_mrc_read                  [`MGR_CNTL_NUM_OF_DMA_LANES ] ;
       
 
-  reg                                               processing_config_upld     ;  // sending data to host
-  reg                                               processing_sync_to_host    ;  
-  reg                                               processing_sync_to_ssc     ;  
-  reg                                               processing_config_upld_d1  ;  // sending data to host
-  reg                                               processing_sync_to_host_d1 ;  
-  reg                                               processing_sync_to_ssc_d1  ;  
-
-  reg    [`COMMON_STD_INTF_CNTL_RANGE          ]    config_to_noc_cntl         ;
-  reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]    config_to_noc_type         ; 
-  reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]    config_to_noc_ptype        ; 
-  reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE    ]    config_to_noc_desttype     ; 
-  reg                                               config_to_noc_pvalid       ; 
-  reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]    config_to_noc_data         ; 
-  reg                                               config_upld_fifo_write     ;
-  reg                                               config_sync_fifo_write     ;
-
-  reg                                               to_noc_almost_full         ;
-
-
-  reg    [`MGR_WU_CONFIG_MODE_REG_VAL_P1_RANGE                 ]    upld_word_count            ;  // extra bit to account for negative
-  reg    [`MGR_NOC_CONT_EXTERNAL_MTU_DATA_CYCLE_COUNT_P1_RANGE ]    noc_data_cycle_count  ;
-  reg                                                               noc_data_mtu_cycle    ;
-  reg                                                               upld_noc_data_first_pkt    ;
-  reg                                                               upld_noc_data_last_pkt     ;
+  reg                                                               processing_config_upld         ;  // sending data to host
+  reg                                                               processing_config_upld_d1      ;  // sending data to host
+  reg                                                               processing_config_dnld         ;  // receiving data from host
+  reg                                                               processing_sync_to_host        ;  
+  reg                                                               processing_sync_to_ssc         ;  
+  reg                                                               processing_sync_to_host_d1     ;  
+  reg                                                               processing_sync_to_ssc_d1      ;  
+                                                                                                   
+  reg    [`COMMON_STD_INTF_CNTL_RANGE                          ]    config_to_noc_cntl             ;
+  reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE                  ]    config_to_noc_type             ; 
+  reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE                 ]    config_to_noc_ptype            ; 
+  reg    [`MGR_NOC_CONT_NOC_DEST_TYPE_RANGE                    ]    config_to_noc_desttype         ; 
+  reg                                                               config_to_noc_pvalid           ; 
+  reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE                    ]    config_to_noc_data             ; 
+  reg                                                               config_upld_fifo_write         ;
+  reg                                                               config_sync_fifo_write         ;
+                                                                                                   
+  reg                                                               to_noc_almost_full             ;
+                                                                                                   
+                                                                                                   
+  reg    [`MGR_WU_CONFIG_MODE_REG_VAL_P1_RANGE                 ]    upld_word_count                ;  // extra bit to account for negative
+  reg    [`MGR_NOC_CONT_EXTERNAL_MTU_DATA_CYCLE_COUNT_P1_RANGE ]    noc_data_cycle_count           ;
+  reg                                                               noc_data_mtu_cycle             ;
+  reg                                                               upld_noc_data_first_pkt        ;
+  reg                                                               upld_noc_data_last_pkt         ;
+                                                                                                   
+  reg                                                               noc_unsolicited_dma            ;  // noc controller has seen dma start without indication from main controller
+  reg                                                               noc_dnld_complete              ;  // assert when we have received DMA end
 
   // State register 
   reg [`MGR_CNTL_MAIN_STATE_RANGE ] mgr_cntl_main_state      ; // state flop
@@ -500,7 +504,7 @@ module mgr_cntl (
   always @(posedge clk)
     begin
       mgr_cntl_main_state <= ( reset_poweron ) ? `MGR_CNTL_MAIN_WAIT        :
-                                                 mgr_cntl_main_state_next  ;
+                                                  mgr_cntl_main_state_next  ;
     end
 
   always @(*)
@@ -512,7 +516,7 @@ module mgr_cntl (
                                                            `MGR_CNTL_MAIN_WAIT      ; 
 
         `MGR_CNTL_MAIN_START_WUD: 
-          mgr_cntl_main_state_next =   (from_wud_eod   ) ? `MGR_CNTL_MAIN_COMPLETE_WUD :
+          mgr_cntl_main_state_next =   //(from_wud_eod   ) ? `MGR_CNTL_MAIN_COMPLETE_WUD :
                                                            `MGR_CNTL_MAIN_PROCESS_WUD      ; 
 
         `MGR_CNTL_MAIN_PROCESS_WUD: 
@@ -535,7 +539,7 @@ module mgr_cntl (
         `MGR_CNTL_MAIN_MEM_UPLD_DATA: 
           mgr_cntl_main_state_next =   ((upld_word_count == 'd3   ) && upld_transfer_mrc_to_noc  )  ?  `MGR_CNTL_MAIN_MEM_UPLD_DATA_END_PKT   :
                                        ((upld_word_count == 'd4   ) && upld_transfer_mrc_to_noc  )  ?  `MGR_CNTL_MAIN_MEM_UPLD_DATA_END_PKT   :
-                                       ( noc_data_mtu_cycle    && upld_transfer_mrc_to_noc  )  ?  `MGR_CNTL_MAIN_MEM_UPLD_DATA_END_PKT   :
+                                       ( noc_data_mtu_cycle         && upld_transfer_mrc_to_noc  )  ?  `MGR_CNTL_MAIN_MEM_UPLD_DATA_END_PKT   :
                                                                                                        `MGR_CNTL_MAIN_MEM_UPLD_DATA           ;
 
         `MGR_CNTL_MAIN_MEM_UPLD_DATA_END_PKT: 
@@ -556,7 +560,8 @@ module mgr_cntl (
           mgr_cntl_main_state_next =   (~to_noc_almost_full )  ?  `MGR_CNTL_MAIN_COMPLETE :
                                                                   `MGR_CNTL_MAIN_SYNC_SEND_END              ;
         `MGR_CNTL_MAIN_MEM_DNLD: 
-          mgr_cntl_main_state_next =   `MGR_CNTL_MAIN_COMPLETE ;
+          mgr_cntl_main_state_next =   (noc_dnld_complete )  ? `MGR_CNTL_MAIN_COMPLETE :
+                                                               `MGR_CNTL_MAIN_MEM_DNLD ;
                                                         
 
         `MGR_CNTL_MAIN_COMPLETE: 
@@ -587,6 +592,7 @@ module mgr_cntl (
     begin
       processing_config_upld    = (mgr_cntl_main_state == `MGR_CNTL_MAIN_MEM_UPLD_HEADER  ) | (mgr_cntl_main_state == `MGR_CNTL_MAIN_MEM_UPLD_DATA ) | (mgr_cntl_main_state == `MGR_CNTL_MAIN_MEM_UPLD_DATA_END_PKT ) ;
       processing_sync_to_host   = (mgr_cntl_main_state == `MGR_CNTL_MAIN_SYNC_SEND_HEADER ) | (mgr_cntl_main_state == `MGR_CNTL_MAIN_SYNC_SEND     ) | (mgr_cntl_main_state == `MGR_CNTL_MAIN_SYNC_SEND_END         ) ;
+      processing_config_dnld    = (mgr_cntl_main_state == `MGR_CNTL_MAIN_MEM_DNLD  ) ;
     end
 
   always @(posedge clk)
@@ -738,14 +744,20 @@ module mgr_cntl (
   wire [`MGR_ARRAY_HOST_ID_RANGE              ]     from_noc_peek_srcId  ,    from_noc_srcId      ; 
   wire                                              from_noc_peek_read   ,    from_noc_read       ; 
       
+  // Use to peek into the fifo to get the type
+  reg                                               is_peek_cfg_dma       ,   is_cfg_dma          ;  
+  reg                                               is_peek_cfg_dma_start ,   is_cfg_dma_start    ;  
+  reg                                               is_peek_desc_wr_type  ,   is_desc_wr_type     ;  
+  reg                                               is_peek_desc_wr_data  ,   is_desc_wr_data     ;  
+
   // State register 
   reg [`MGR_CNTL_NOC_CNTL_STATE_RANGE ] mgr_cntl_noc_cntl_state      ; // state flop
   reg [`MGR_CNTL_NOC_CNTL_STATE_RANGE ] mgr_cntl_noc_cntl_state_next ;
 
   always @(posedge clk)
     begin
-      mgr_cntl_noc_cntl_state <= ( reset_poweron ) ? `MGR_CNTL_NOC_CNTL_INST_DNLD_INIT        :
-                                                 mgr_cntl_noc_cntl_state_next  ;
+      mgr_cntl_noc_cntl_state <= ( reset_poweron ) ? `MGR_CNTL_NOC_CNTL_INST_DNLD_INIT  :
+                                                      mgr_cntl_noc_cntl_state_next      ;
     end
 
   always @(*)
@@ -760,7 +772,7 @@ module mgr_cntl (
 
         `MGR_CNTL_NOC_CNTL_DNLD_INST: 
           mgr_cntl_noc_cntl_state_next =  ((from_noc_cntl == `COMMON_STD_INTF_CNTL_EOM) && (from_noc_type == `MGR_NOC_CONT_TYPE_INSTRUCTION_EOD) && from_noc_read) ? `MGR_CNTL_NOC_CNTL_DNLD_INST_COMPLETE :
-                                                                                                                                                                 `MGR_CNTL_NOC_CNTL_DNLD_INST          ;
+                                                                                                                                                                     `MGR_CNTL_NOC_CNTL_DNLD_INST          ;
 
         `MGR_CNTL_NOC_CNTL_DNLD_INST_COMPLETE: 
           mgr_cntl_noc_cntl_state_next =    `MGR_CNTL_NOC_CNTL_WAIT          ;
@@ -772,15 +784,45 @@ module mgr_cntl (
           mgr_cntl_noc_cntl_state_next =  
                                       ( from_noc_valid  && (from_noc_cntl == `COMMON_STD_INTF_CNTL_SOM) && (from_noc_srcId == {1'b0, sys__mgr__mgrId})                                        ) ? `MGR_CNTL_NOC_CNTL_ERR      : // from same SSC??
                                       ( from_noc_valid  && (from_noc_cntl != `COMMON_STD_INTF_CNTL_SOM)                                                                                       ) ? `MGR_CNTL_NOC_CNTL_ERR      : // first isnt SOM??
-                                      ( from_noc_valid  && (from_noc_cntl == `COMMON_STD_INTF_CNTL_SOM) &&  from_noc_peek_valid && (from_noc_peek_type == `MGR_NOC_CONT_TYPE_DESC_WRITE_DATA) ) ? `MGR_CNTL_NOC_CNTL_MWC_RCV  : 
-                                                                                                                                                                                                  `MGR_CNTL_NOC_CNTL_WAIT  ;
+                                      //( from_noc_valid  && (from_noc_cntl == `COMMON_STD_INTF_CNTL_SOM) &&  from_noc_peek_valid && (from_noc_peek_type == `MGR_NOC_CONT_TYPE_DESC_WRITE_DATA) ) ? `MGR_CNTL_NOC_CNTL_MWC_RCV  : 
+                                      ( from_noc_valid  && (from_noc_cntl == `COMMON_STD_INTF_CNTL_SOM) &&  from_noc_peek_valid && is_peek_desc_wr_type                                       ) ? `MGR_CNTL_NOC_CNTL_MWC_RCV  : 
+                                      ( from_noc_valid  && (from_noc_cntl == `COMMON_STD_INTF_CNTL_SOM) &&  from_noc_peek_valid && is_peek_cfg_dma_start && processing_config_dnld            ) ? `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_HEADER  : 
+                                      ( from_noc_valid  && (from_noc_cntl == `COMMON_STD_INTF_CNTL_SOM) &&  from_noc_peek_valid && is_peek_cfg_dma_start                                      ) ? `MGR_CNTL_NOC_CNTL_UNSOL_DMA_START: // Unsolicited??
+                                                                                                                                                                                                  `MGR_CNTL_NOC_CNTL_WAIT     ;
   
  
         `MGR_CNTL_NOC_CNTL_MWC_RCV: 
           mgr_cntl_noc_cntl_state_next =  
-                                      ( from_noc_valid  && (from_noc_cntl == `COMMON_STD_INTF_CNTL_EOM)) ? `MGR_CNTL_NOC_CNTL_WAIT      : 
-                                                                                                           `MGR_CNTL_NOC_CNTL_MWC_RCV       ;
+                                      ( from_noc_read && (from_noc_cntl == `COMMON_STD_INTF_CNTL_EOM)) ? `MGR_CNTL_NOC_CNTL_WAIT      : 
+                                                                                                         `MGR_CNTL_NOC_CNTL_MWC_RCV   ;
   
+        // Main control will extract descriptor and assert processing_dnl once ready
+        `MGR_CNTL_NOC_CNTL_UNSOL_DMA_START: 
+          mgr_cntl_noc_cntl_state_next = ( processing_config_dnld  )  ?  `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_HEADER :
+                                                                         `MGR_CNTL_NOC_CNTL_UNSOL_DMA_START         ;
+  
+        `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_HEADER: 
+          // peek is valid also
+          mgr_cntl_noc_cntl_state_next =  
+                                      ( from_noc_read && (from_noc_peek_type == `MGR_NOC_CONT_TYPE_CFG_DMA_DATA_SOD) ) ? `MGR_CNTL_NOC_CNTL_DMA_RCV_ADD_DESC: 
+                                      ( from_noc_read                                                                ) ? `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_DATA : 
+                                                                                                                         `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_HEADER;
+  
+        `MGR_CNTL_NOC_CNTL_DMA_RCV_ADD_DESC: 
+          mgr_cntl_noc_cntl_state_next = ( mwc__mcntl__ready_d1 && cfg_storage_desc_ptr_valid ) ? `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_DATA : 
+                                                                                                  `MGR_CNTL_NOC_CNTL_DMA_RCV_ADD_DESC      ;
+  
+        `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_DATA: 
+          mgr_cntl_noc_cntl_state_next =  
+                                      ( from_noc_read && (from_noc_type == `MGR_NOC_CONT_TYPE_CFG_DMA_DATA_EOD) && (from_noc_cntl == `COMMON_STD_INTF_CNTL_EOM)) ? `MGR_CNTL_NOC_CNTL_COMPLETE              : 
+                                      ( from_noc_read &&                                                           (from_noc_cntl == `COMMON_STD_INTF_CNTL_EOM)) ? `MGR_CNTL_NOC_CNTL_DMA_RCV_WAIT_PKT      : 
+                                                                                                                                                                   `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_DATA ;
+  
+        `MGR_CNTL_NOC_CNTL_DMA_RCV_WAIT_PKT: 
+          mgr_cntl_noc_cntl_state_next =  
+                                      ( from_noc_valid ) ? `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_HEADER  : 
+                                                           `MGR_CNTL_NOC_CNTL_DMA_RCV_WAIT_PKT         ;
+
 
         `MGR_CNTL_NOC_CNTL_COMPLETE: 
           mgr_cntl_noc_cntl_state_next =   `MGR_CNTL_NOC_CNTL_WAIT ;
@@ -806,7 +848,7 @@ module mgr_cntl (
 
         `MGR_CNTL_NOC_CNTL_INST_DNLD_INIT :
           begin
-            wum_address <= 'd0 ;
+            wum_address       <= 'd0 ;
           end
 
         `MGR_CNTL_NOC_CNTL_DNLD_INST :
@@ -819,6 +861,22 @@ module mgr_cntl (
         default:
           begin
             wum_address <= wum_address ;
+          end
+
+      endcase
+    end
+  always @(posedge clk) 
+    begin
+      case (mgr_cntl_noc_cntl_state)  // parallel_case
+
+        `MGR_CNTL_NOC_CNTL_COMPLETE :
+          begin
+            noc_dnld_complete <= 'd1 ;
+          end
+
+        default:
+          begin
+            noc_dnld_complete <= 'd0 ;
           end
 
       endcase
@@ -1222,7 +1280,7 @@ module mgr_cntl (
   assign mcntl__wud__ready_e1            = ~from_WuDecode_Fifo[0].almost_full  ;
 
 
-  assign from_WuDecode_Fifo[0].pipe_read   =   (mgr_cntl_main_state == `MGR_CNTL_MAIN_PROCESS_WUD ) | (mgr_cntl_main_state == `MGR_CNTL_MAIN_COMPLETE_WUD );
+  assign from_WuDecode_Fifo[0].pipe_read   =   (mgr_cntl_main_state == `MGR_CNTL_MAIN_PROCESS_WUD ) ; //| (mgr_cntl_main_state == `MGR_CNTL_MAIN_COMPLETE_WUD );
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1325,6 +1383,18 @@ module mgr_cntl (
   assign  from_noc_data          =   from_noc_fifo[0].pipe_mem_data         ;
   assign  from_noc_pvalid        =   from_noc_fifo[0].pipe_pvalid           ;
 
+   always @(*)
+     begin
+       isCfgDma     (is_peek_cfg_dma      , from_noc_fifo[0].pipe_peek_type);  
+       isCfgDmaStart(is_peek_cfg_dma_start, from_noc_fifo[0].pipe_peek_type);  
+       isWrDescType (is_peek_desc_wr_type , from_noc_fifo[0].pipe_peek_type);                 
+       isNocData    (is_peek_desc_wr_data , from_noc_fifo[0].pipe_peek_type);                 
+
+       isCfgDma     (is_cfg_dma           , from_noc_fifo[0].pipe_type     );  
+       isCfgDmaStart(is_cfg_dma_start     , from_noc_fifo[0].pipe_type     );  
+       isWrDescType (is_desc_wr_type      , from_noc_fifo[0].pipe_type     );                 
+       isNocData    (is_desc_wr_data      , from_noc_fifo[0].pipe_type     );                 
+     end
   //------------------------------------------------------------------------------------------------------------------------------------------------------
   // Connect inputs from rdp and mcntl to intf_fifos 
 
@@ -1337,8 +1407,13 @@ module mgr_cntl (
       mcntl__noc__dp_ready_e1    = ~from_noc_fifo[0].almost_full ;
     end
 
-  wire noc_to_mwc = ((mgr_cntl_noc_cntl_state == `MGR_CNTL_NOC_CNTL_WAIT     ) & from_noc_valid & (from_noc_peek_valid && (from_noc_peek_type == `MGR_NOC_CONT_TYPE_DESC_WRITE_DATA))) | 
-                    ((mgr_cntl_noc_cntl_state == `MGR_CNTL_NOC_CNTL_MWC_RCV  ) & from_noc_valid) ;
+  wire noc_to_mwc = (from_noc_valid & (mgr_cntl_noc_cntl_state == `MGR_CNTL_NOC_CNTL_WAIT                    ) & (from_noc_peek_valid && (from_noc_peek_type == `MGR_NOC_CONT_TYPE_DESC_WRITE_DATA))) | 
+                    (from_noc_valid & (mgr_cntl_noc_cntl_state == `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_HEADER )) | 
+                    //(from_noc_valid & (mgr_cntl_noc_cntl_state == `MGR_CNTL_NOC_CNTL_DMA_RCV_ADD_DESC        )) | 
+                    (from_noc_valid & (mgr_cntl_noc_cntl_state == `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_DATA   )) | 
+                    (from_noc_valid & (mgr_cntl_noc_cntl_state == `MGR_CNTL_NOC_CNTL_MWC_RCV                 ))  ;
+
+  wire add_desc_to_mwc = ((mgr_cntl_noc_cntl_state == `MGR_CNTL_NOC_CNTL_DMA_RCV_ADD_DESC) & mwc__mcntl__ready_d1 & cfg_storage_desc_ptr_valid) ;
 
   wire noc_to_wum = ((mgr_cntl_noc_cntl_state == `MGR_CNTL_NOC_CNTL_DNLD_INST) & from_noc_valid) ;
 
@@ -1350,12 +1425,14 @@ module mgr_cntl (
   //------------------------------------------------------------------------------------------------------------------------------------------------------
 
   always @(*)
-    begin
-      mcntl__mwc__valid_e1     =   from_noc_read & noc_to_mwc                                   ;
+    begin 
+      mcntl__mwc__valid_e1     =   (from_noc_read & noc_to_mwc) | add_desc_to_mwc               ;
       mcntl__mwc__cntl_e1      =   from_noc_cntl                                                ;
       mcntl__mwc__type_e1      =   from_noc_type                                                ;
-      mcntl__mwc__ptype_e1     =   from_noc_ptype                                               ;
-      mcntl__mwc__data_e1      =   from_noc_data                                                ;
+      mcntl__mwc__ptype_e1     =   ( add_desc_to_mwc )   ?  `MGR_NOC_CONT_NOC_PAYLOAD_TYPE_WIDTH 'd`MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES :
+                                                            from_noc_ptype                                                           ;
+      mcntl__mwc__data_e1      =   ( add_desc_to_mwc )   ?  {{`MGR_NOC_CONT_INTERNAL_TUPLE_CYCLE_OPTION1_WIDTH 'd`MGR_NOC_CONT_TYPE_NOP},{`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_WIDTH 'd`MGR_NOC_CONT_TYPE_NOP }, cfg_storage_desc_ptr_type, cfg_storage_desc_ptr_value } :
+                                                            from_noc_data                                                ;
       mcntl__mwc__pvalid_e1    =   from_noc_pvalid                                              ;
       mcntl__mwc__mgrId_e1     =   from_noc_srcId  [`MGR_MGR_ID_RANGE ]                         ;
 

@@ -31,11 +31,38 @@ a = []
 #                            76543210  54321098  210 09876                                                   
 a.append('00000000_00000000__01000001__00000000__011_00000______00001011____00100___01_____01')
 
-#           val2     opt2     val1     opt1      val0     opt0       OP    dcntl  icntl
+#            2    Num lanes    Bcast   Txfer      NoC      tgt                                                                        
+#           val2     opt2     val1     opt1      val0     opt0       CFG    dcntl  icntl
 a.append('00000010_00000100__00000000_00000011__00000011_00000010____00100___00_____00')
+
+#            NA      NOP    ptr[23:16]ptr[15:8] ptr[7:0]  mem                                                                        
+#           val2     opt2     val1     opt1      val0     opt0       CFG    dcntl  icntl
 a.append('00000000_00000000__00000000_00000000__00000000_00000111____00100___10_____10')
 
 print  '// Upload'
+for i in a:
+  print  hex(int(i.replace('_',''),2)).split('x')[1]
+
+a = []
+
+# Mode reg = upld 
+#   dnld:id=010
+#                            cccccccc  cccccccc      ccccc                                                
+#                            nnnnnnnn  nnnnnnnn      nnnnn                                                
+#                            tttttttt  tttttttt  iii ttttt                                                 
+#                            00000000  11111100  ddd 21111       data=11     CFG                                                        
+#                            76543210  54321098  210 09876                                                   
+a.append('00000000_00000000__01000001__00000000__010_00000______00001011____00100___01_____01')
+
+#                    NOP                NOP       NoC      src                                                                        
+#           val2     opt2     val1     opt1      val0     opt0       CFG    dcntl  icntl
+a.append('00000000_00000000__00000000_00000000__00000011_00000001____00100___00_____00')
+
+#            NA      NOP    ptr[23:16]ptr[15:8] ptr[7:0]  mem                                                                        
+#           val2     opt2     val1     opt1      val0     opt0       CFG    dcntl  icntl
+a.append('00000000_00000000__00000000_00000000__00000000_00000111____00100___10_____10')
+
+print  '// Download'
 for i in a:
   print  hex(int(i.replace('_',''),2)).split('x')[1]
 

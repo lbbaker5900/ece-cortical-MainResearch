@@ -694,12 +694,94 @@
 //--------------------------------------------------------------------------------------------------
 
 
-//--------------------------------------------------------------------------------------------------
-//------------------------------------------------
-// FIFO's
-//------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
+// Functions
+//------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------------
+// Packet Type functions
+//
+function automatic void isCfgDma (
+                           output output_f,
+                           input logic [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE ] noc_type
+                          );
+  
+            output_f = (noc_type == `MGR_NOC_CONT_TYPE_CFG_DMA_DATA_SOD ) | 
+                       (noc_type == `MGR_NOC_CONT_TYPE_CFG_DMA_DATA     ) | 
+                       (noc_type == `MGR_NOC_CONT_TYPE_CFG_DMA_DATA_EOD ) ; 
+
+endfunction                  
+
+function automatic void isCfgDmaStart (
+                           output output_f,
+                           input logic [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE ] noc_type
+                          );
+  
+            output_f = (noc_type == `MGR_NOC_CONT_TYPE_CFG_DMA_DATA_SOD ) ; 
+
+endfunction                  
+
+function automatic void isCfgDmaMiddle (
+                           output output_f,
+                           input logic [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE ] noc_type
+                          );
+  
+            output_f = (noc_type == `MGR_NOC_CONT_TYPE_CFG_DMA_DATA ) ; 
+
+endfunction                  
+
+function automatic void isCfgDmaEnd (
+                           output output_f,
+                           input logic [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE ] noc_type
+                          );
+  
+            output_f = (noc_type == `MGR_NOC_CONT_TYPE_CFG_DMA_DATA_EOD ) ; 
+
+endfunction                  
+
+function automatic void isWrDescType (
+                           output output_f,
+                           input logic [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE ] noc_type
+                          );
+  
+            output_f = (noc_type == `MGR_NOC_CONT_TYPE_DESC_WRITE_DATA ) ; 
+
+endfunction                  
+
+//------------------------------------------------------------------------------------------------------------
+// Payload Type functions
+//
+function automatic void isNocNop (
+                           output output_f,
+                           input logic [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ] noc_ptype
+                          );
+  
+            output_f = (noc_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_NOP ) ; 
+
+endfunction                  
+
+function automatic void isNocTuples (
+                           output output_f,
+                           input logic [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ] noc_ptype
+                          );
+  
+            output_f = (noc_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_TUPLES ) ; 
+
+endfunction                  
+
+function automatic void isNocData (
+                           output output_f,
+                           input logic [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ] noc_ptype
+                          );
+  
+            output_f = (noc_ptype == `MGR_NOC_CONT_PAYLOAD_TYPE_DATA ) ; 
+
+endfunction                  
 
 //----------------------------------------------------------------------------------------------------
+//
+//
 //
 `endif
 
