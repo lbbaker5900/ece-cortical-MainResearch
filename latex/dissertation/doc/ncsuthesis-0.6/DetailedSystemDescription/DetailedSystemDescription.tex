@@ -571,33 +571,88 @@ An example of the downstream \ac{oob} transactions can be seen in figure \ref{fi
 \subsection{PE Controller}
 \label{sec:PE Cntl}
 
+The \ac{pe} controller takes \ac{oob} control packets stored in an nterface \ac{fifo} and extracts the \ac{stop} and \ac{simd} pointers.
+The \ac{stop} pointer is used to index into a small \ac{sram} which contains the long instruction word used to select the \ac{stop} functio and where to place the result.
+The \ac{simd} pointer is passed to the \ac{simd} wrapper along with the tag associated with the operation.
+When the \ac{stop} has completed the operation, the \ac{pe} controller takes the next operation from the \ac{oob} \ac{fifo}.
+The \ac{simd} wrapper contains an interface \ac{fifo} and the \ac{pe} controller will only pause if the \ac{simd} wrapper interface asserts flow control.
+A block diagram of the \ac{pe} controller can be seen in figure \ref{fig:PE Controller block diagram}}.
+\begin{figure}[h]
+% the [] contains position info e.g. [!H] means here
+% H 	Place exactly at spot in source text
+% h 	Place approximately at spot in source test
+% t 	Place at top of page
+% b 	Place at bottom of page
+% p 	Place on page for floats only
+% ! 	Override internal LaTeX parameters for determining float position
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=0.9\textwidth}
+\centerline{
+\mbox{\includegraphics[angle=0, width=0.75\textwidth]{PEcntlBlockDiagram}}
+}
+\center\caption{PE controller block diagram}
+\label{fig:PE Controller block diagram}
+\end{figure}
+
+
 \subsection{Streaming Operations}
 \label{sec:stOps}
 
-The streaming Operations are designed to operate on data passed from the manager at or near line-rate. 
-If line-rate cannot be maintained, a flow-control mechanism is employed to slow the data from the manager.
-Once the \ac{stop} has processed the data, it passes the result to the \ac{simd}. Note in some cases the result can be placed in local \ac{sram} or sent to both \ac{sram} and \ac{sram}.
+There is a \ac{stop} module for each execution lane and the \acp{stop} are designed to operate on data passed from the manager at or near line-rate. 
+If line-rate cannot be maintained, an interface \ac{fifo} flow-control mechanism is employed to slow the data from the manager.
+Once the \ac{stop} has processed the data, it passes the result to the \ac{simd}. Note in some cases the result can be placed in local \ac{sram} or sent to both \ac{sram} and \ac{simd}.
 
 It should also be stated that while the \ac{stop} is processing the current data, the \ac{simd} may be operating on the result of the previous operation. 
 It is expected the \ac{simd} will have completed the previous operation before the \ac{stop} completes the current operation, but again, if necessary a flow control mechanism between \ac{simd} and \ac{stop} will be engaged if the \ac{simd} is not ready.
 
-\subsection{DMA Controller}
+There is provision for one of the inputs into the \ac{stop} module to be from the local memory via a local \ac{dma} controller. Although this is designed and tested, this processing path is for future work.
+A block diagram of the \ac{stop} can be seen in figure \ref{fig:stOp block diagram}}.
+\begin{figure}[h]
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=0.9\textwidth}
+\centerline{
+\mbox{\includegraphics[angle=0, width=.75\textwidth]{streamingOpBlockDiagram}}
+}
+\center\caption{Streaming operations block diagram}
+\label{fig:stOp block diagram}
+\end{figure}
+
+
+\subsection{DMA Controller and Local memory}
 \label{sec:Dma Cntl}
 
-\subsection{Local Memory}
-\label{sec:Local Memory}
+The \ac{pe} provides some local \ac{sram} for future use.
+Both the \ac{stop} and the \ac{simd} will have access to the local memory.
+In the case of the \ac{stop}, one of the \ac{stop} inputs can be sourced from the local memory using a \ac{dma} comtroller.
+The \ac{dma} controller is controlled from fields in the instruction word in the \ac{pe} controller.
+The paths from the local memory to the \ac{stop} and from the \ac{stop} to the local memory have been tested.
+
 
 \subsection{SIMD}
 \label{sec:simd}
 
-This work does not put a high level of importance on the \ac{simd} as the functionality provided by the \ac{simd} is relatively straightforward.
+The \ac{simd} takes the operation from the \ac{pe} controller and indexes into a small memory. This memory contains a \ac{pc} for the \ac{simd} along with control information for processing the \ac{stop} result inside the wrapper.
+This work does not put a high level of importance on the \ac{simd} as the functionality provided by the \ac{simd} is to provide a level of flexibility for future work.
+Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed by logic in the \ac{simd} wrapper block, as can be seen in figure \ref{fig:simd wrapper block diagram}.
 However, it was important to include the \ac{simd} in the area portion of the study.
-Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed by logic in a \ac{simd} wrapper block that incorporated a dummy \ac{simd} instance.
-To account for the dummy \ac{simd} instance, in the area layout study a placement blockage was used based 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
+To account for the \ac{simd}, a dummy \ac{simd} instance was instantiated inside the \ac{simd} wrapper and in the area layout study a placement blockage was used based 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
 In practice, the \ac{simd} will take the result data from the \ac{stop} and perform the operation starting at the \ac{pc} indicated by the \ac{simd} operation pointer provided by the \ac{pe} controller.
 The \ac{simd} performs the specified operation on the data provided by the \ac{stop} which can be passed directly to the \ac{simd} or provided indirectly in \ac{simd} local memory.
 In most cases, the \ac{simd} operation \ac{an} activation function which in the baseline system is the \ac{relu} function.
-When the \ac{simd} has completed its operation, it passes the result to the upstream controller to be returned to the manager.
+When the \ac{simd} wrapper has completed its operation, it passes the result to the upstream controller to be returned to the manager.
+\begin{figure}[h]
+\centering
+\captionsetup{justification=centering}
+\captionsetup{width=0.9\textwidth}
+\centerline{
+\mbox{\includegraphics[angle=0, width=.75\textwidth]{SIMDwrapperBlockDiagram}}
+}
+\center\caption{SIMD wrapper block diagram}
+\label{fig:simd wrapper block diagram}
+\end{figure}
+
 
 \subsection{Upstream controller}
 \label{sec:Upstream controller}}
