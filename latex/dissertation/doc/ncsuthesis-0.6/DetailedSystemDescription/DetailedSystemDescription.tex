@@ -620,16 +620,6 @@ A block diagram of the \ac{stop} can be seen in figure \ref{fig:stOp block diagr
 \end{figure}
 
 
-\subsection{DMA Controller and Local memory}
-\label{sec:Dma Cntl}
-
-The \ac{pe} provides some local \ac{sram} for future use.
-Both the \ac{stop} and the \ac{simd} will have access to the local memory.
-In the case of the \ac{stop}, one of the \ac{stop} inputs can be sourced from the local memory using a \ac{dma} comtroller.
-The \ac{dma} controller is controlled from fields in the instruction word in the \ac{pe} controller.
-The paths from the local memory to the \ac{stop} and from the \ac{stop} to the local memory have been tested.
-
-
 \subsection{SIMD}
 \label{sec:simd}
 
@@ -652,6 +642,16 @@ When the \ac{simd} wrapper has completed its operation, it passes the result to 
 \center\caption{SIMD wrapper block diagram}
 \label{fig:simd wrapper block diagram}
 \end{figure}
+
+
+\subsection{DMA Controller and Local memory}
+\label{sec:Dma Cntl}
+
+The \ac{pe} provides some local \ac{sram} for future use.
+Both the \ac{stop} and the \ac{simd} will have access to the local memory.
+In the case of the \ac{stop}, one of the \ac{stop} inputs can be sourced from the local memory using a \ac{dma} comtroller.
+The \ac{dma} controller is controlled from fields in the instruction word in the \ac{pe} controller.
+The paths from the local memory to the \ac{stop} and from the \ac{stop} to the local memory have been tested.
 
 
 \subsection{Upstream controller}
