@@ -164,12 +164,18 @@ module simd_wrapper (
   wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  smdw__simd__regs      [`PE_NUM_OF_EXEC_LANES ]  ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  smdw__simd__regs_cntl [`PE_NUM_OF_EXEC_LANES ]  ;
 
+  wire                                    simd__smdw__processing                          ;
   wire                                    simd__smdw__complete                            ;
   wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__smdw__regs      [`PE_NUM_OF_EXEC_LANES ]  ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__smdw__regs_cntl [`PE_NUM_OF_EXEC_LANES ]  ;
 
-  wire                                     simd_enable      ;
-  wire  [`SIMD_CORE_OPERATION_RANGE    ]   simd_operation   ;
+  // output of option pointer table
+  reg                                                simd_enable                                                         ;
+  reg   [`SIMD_CORE_OPERATION_RANGE              ]   simd_operation                                                      ;
+  reg   [`SIMD_WRAP_OPERATION_TYPE_RANGE         ]   simd_wrapper_op               [`SIMD_WRAP_OPERATION_NUM_OF_STAGES ] ;
+  reg   [`PE_EXEC_LANE_ID_RANGE                  ]   simd_wrapper_op_idx                                                 ;
+  reg                                                simd_wrapper_op_inc                                                 ;
+
   //----------------------------------------------------------------------------------------------------
   // Assignments
 
@@ -393,10 +399,10 @@ module simd_wrapper (
   // For now it immediately takes the stOp result and send it to the simd_upstream_intf  module.
   //
   // Note: We might also want to buffer up more result data before sending
+  //
   
-
-  reg [`SIMD_WRAP_UPSTREAM_CNTL_STATE_RANGE ] simd_wrap_upstream_cntl_state      ; // state flop
-  reg [`SIMD_WRAP_UPSTREAM_CNTL_STATE_RANGE ] simd_wrap_upstream_cntl_state_next ;
+  reg   [`SIMD_WRAP_UPSTREAM_CNTL_STATE_RANGE ] simd_wrap_upstream_cntl_state      ; // state flop
+  reg   [`SIMD_WRAP_UPSTREAM_CNTL_STATE_RANGE ] simd_wrap_upstream_cntl_state_next ;
   
   
 
@@ -419,7 +425,7 @@ module simd_wrapper (
  
   always @(*)
     begin
-      case (simd_wrap_upstream_cntl_state)
+      case (simd_wrap_upstream_cntl_state)  // synopsys parallel_case
 
         
         `SIMD_WRAP_UPSTREAM_CNTL_WAIT: 
@@ -428,12 +434,16 @@ module simd_wrapper (
   
         // check simd enable bit in simd operation memory
         `SIMD_WRAP_UPSTREAM_CNTL_CHECK_SIMD_ENABLE: 
-          simd_wrap_upstream_cntl_state_next =  ( simd_enable ) ? `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD    :  // SIMD will provide data
-                                                                  `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA        ;  // start the data transfer to the sui with data from stOp
+          simd_wrap_upstream_cntl_state_next =  //( ~simd_enable ) ? `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA     :  // start the data transfer to the sui with data from stOp
+                                                                   `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_START ;  // SIMD will provide data
           
-        `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD: 
-          simd_wrap_upstream_cntl_state_next =  ( simd__smdw__complete ) ? `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD    : 
-                                                                           `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA        ;  // start the data transfer to the sui with data from simd
+        `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_START: 
+          simd_wrap_upstream_cntl_state_next =  (simd__smdw__processing ) ? `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_COMPLETE    : 
+                                                                            `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_START       ;  // start the data transfer to the sui with data from simd
+          
+        `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_COMPLETE: 
+          simd_wrap_upstream_cntl_state_next =  (simd__smdw__complete ) ? `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA              : 
+                                                                          `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_COMPLETE ;  // start the data transfer to the sui with data from simd
           
         `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA: 
           
@@ -469,7 +479,7 @@ module simd_wrapper (
   //
 
   
-  wire    smdw__simd__cfg_valid  = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD    ) ;
+  wire    smdw__simd__cfg_valid  = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_START    ) ;
 
 
   // read the FIFO and assert the valid to the stack upstream interface
@@ -500,33 +510,37 @@ module simd_wrapper (
   
   simd_core simd_core (
 
-            .cntl__simd__cfg_valid         ( smdw__simd__cfg_valid        ),  // load PC
-            .cntl__simd__cfg_operation     ( simd_operation           ),  // operation PC for simd
+            .cntl__simd__cfg_valid           ( smdw__simd__cfg_valid        ),  // load PC
+            .cntl__simd__cfg_operation       ( simd_operation               ),  // operation PC for simd
+            .cntl__simd__cfg_wrap_op_idx     ( simd_wrapper_op_idx          ),
+            .cntl__simd__cfg_wrap_op_inc     ( simd_wrapper_op_inc          ),
+            .cntl__simd__cfg_wrap_op         ( simd_wrapper_op              ),  // operations before SIMD
 
-            .smdw__simd__regs_valid        ( smdw__simd__regs_valid       ),  // start SIMD
-            .smdw__simd__regs_cntl         ( smdw__simd__regs_cntl        ),        
-            .smdw__simd__regs              ( smdw__simd__regs             ),        
-
-            .simd__smdw__complete          ( simd__smdw__complete         ),  // SIMD complete
-            .simd__smdw__regs_cntl         ( simd__smdw__regs_cntl        ),        
-            .simd__smdw__regs              ( simd__smdw__regs             ),        
-
-             //-------------------------------
-             // LD/ST Interface 
-            .ldst__memc__request           ( ldst__memc__request          ),
-            .memc__ldst__granted           ( memc__ldst__granted          ),
-            .ldst__memc__released          ( ldst__memc__released         ),
-             // Access
-            .ldst__memc__write_valid       ( ldst__memc__write_valid      ),
-            .ldst__memc__write_address     ( ldst__memc__write_address    ),
-            .ldst__memc__write_data        ( ldst__memc__write_data       ),
-            .memc__ldst__write_ready       ( memc__ldst__write_ready      ),  // output flow control to ldst
-            .ldst__memc__read_valid        ( ldst__memc__read_valid       ),
-            .ldst__memc__read_address      ( ldst__memc__read_address     ),
-            .memc__ldst__read_data         ( memc__ldst__read_data        ),
-            .memc__ldst__read_data_valid   ( memc__ldst__read_data_valid  ),
-            .memc__ldst__read_ready        ( memc__ldst__read_ready       ),  // output flow control to ldst
-            .ldst__memc__read_pause        ( ldst__memc__read_pause       ),  // pipeline flow control from ldst, dont send any more requests
+            .smdw__simd__regs_valid          ( smdw__simd__regs_valid       ),  // start SIMD
+            .smdw__simd__regs_cntl           ( smdw__simd__regs_cntl        ),        
+            .smdw__simd__regs                ( smdw__simd__regs             ),        
+                                            
+            .simd__smdw__processing          ( simd__smdw__processing       ),  // SIMD complete
+            .simd__smdw__complete            ( simd__smdw__complete         ),  // SIMD complete
+            .simd__smdw__regs_cntl           ( simd__smdw__regs_cntl        ),        
+            .simd__smdw__regs                ( simd__smdw__regs             ),        
+                                            
+             //---------------------------------
+             // LD/ST Interface             
+            .ldst__memc__request             ( ldst__memc__request          ),
+            .memc__ldst__granted             ( memc__ldst__granted          ),
+            .ldst__memc__released            ( ldst__memc__released         ),
+             // Access                      
+            .ldst__memc__write_valid         ( ldst__memc__write_valid      ),
+            .ldst__memc__write_address       ( ldst__memc__write_address    ),
+            .ldst__memc__write_data          ( ldst__memc__write_data       ),
+            .memc__ldst__write_ready         ( memc__ldst__write_ready      ),  // output flow control to ldst
+            .ldst__memc__read_valid          ( ldst__memc__read_valid       ),
+            .ldst__memc__read_address        ( ldst__memc__read_address     ),
+            .memc__ldst__read_data           ( memc__ldst__read_data        ),
+            .memc__ldst__read_data_valid     ( memc__ldst__read_data_valid  ),
+            .memc__ldst__read_ready          ( memc__ldst__read_ready       ),  // output flow control to ldst
+            .ldst__memc__read_pause          ( ldst__memc__read_pause       ),  // pipeline flow control from ldst, dont send any more requests
 
             //-------------------------------
             // General
@@ -546,10 +560,12 @@ module simd_wrapper (
   generate
     for (gvi=0; gvi<1 ; gvi=gvi+1) 
       begin: simd_option_memory
+
+        wire  [`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_MEMORY_RANGE ]   read_data ;
   
         generic_1port_memory #(.GENERIC_MEM_DEPTH          (`SIMD_WRAP_SIMD_OPTION_MEMORY_DEPTH           ),
                                .GENERIC_MEM_REGISTERED_OUT (0                                             ),
-                               .GENERIC_MEM_DATA_WIDTH     (`SIMD_WRAP_SIMD_OPTION_AGGREGATE_MEMORY_WIDTH )
+                               .GENERIC_MEM_DATA_WIDTH     (`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_MEMORY_WIDTH )
                         ) gmemory ( 
                         
                         //---------------------------------------------------------------
@@ -562,8 +578,8 @@ module simd_wrapper (
                         //---------------------------------------------------------------
                         // Port 
                         .portA_address       ( from_Cntl_Tag_Fifo[0].pipe_tag_optionPtr               ),
-                        .portA_write_data    ( {`SIMD_WRAP_SIMD_OPTION_AGGREGATE_MEMORY_WIDTH {1'b0}} ),
-                        .portA_read_data     ( { simd_enable, simd_operation                        } ),
+                        .portA_write_data    ( {`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_MEMORY_WIDTH {1'b0}} ),
+                        .portA_read_data     ( read_data                                              ),
                         .portA_enable        ( 1'b1                                                   ),
                         .portA_write         ( 1'b0                                                   ),
                         
@@ -573,6 +589,25 @@ module simd_wrapper (
                         .clk                 ( clk                       )
                         ) ;
       end
+  endgenerate
+
+  always @(*)
+    begin
+      simd_enable          =  simd_option_memory[0].read_data [`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_ENABLE_SIMD_RANGE ];
+      simd_operation       =  simd_option_memory[0].read_data [`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_OP_RANGE          ];
+      simd_wrapper_op_idx  =  simd_option_memory[0].read_data [`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_SAVE_INDEX_RANGE  ];
+      simd_wrapper_op_inc  =  simd_option_memory[0].read_data [`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_SAVE_INC_RANGE    ];
+    end
+
+  generate
+    for (gvi=0; gvi<`SIMD_WRAP_OPERATION_NUM_OF_STAGES; gvi++)
+      begin
+        always @(*)
+          begin
+            //simd_wrapper_op       _valid  [gvi]  =  simd_option_memory[0].read_data [((`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_STAGES_VALID_LSB) + gvi) : (`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_STAGES_VALID_LSB+gvi ) ] ;        
+            simd_wrapper_op               [gvi]  =  simd_option_memory[0].read_data [((`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_STAGES_TYPE_LSB +(`SIMD_WRAP_OPERATION_TYPE_WIDTH -1)) + (gvi*`SIMD_WRAP_OPERATION_TYPE_WIDTH )) : (`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_STAGES_TYPE_LSB +gvi*`SIMD_WRAP_OPERATION_TYPE_WIDTH ) ] ;
+          end
+      end          
   endgenerate
   
 endmodule

@@ -62,7 +62,16 @@ a.append('00000000_00000000__00000000_00000000__00000011_00000001____00100___00_
 #           val2     opt2     val1     opt1      val0     opt0       CFG    dcntl  icntl
 a.append('00000000_00000000__00000000_00000000__00000000_00000111____00100___10_____10')
 
-print  '// Download'
+print  '// SIMD Option Memory'
+for i in a:
+  print  hex(int(i.replace('_',''),2)).split('x')[1]
+
+a = []
+#          save  save  stage   stage   stage   stage    SIMD    Act 
+#           idx   inc    3       2       1       0       EN     Fn       PC
+a.append('_00000___1____0000____0000____0000____0010______1_____10____0000000010')
+
+print  '// SIMD Option Memory'
 for i in a:
   print  hex(int(i.replace('_',''),2)).split('x')[1]
 

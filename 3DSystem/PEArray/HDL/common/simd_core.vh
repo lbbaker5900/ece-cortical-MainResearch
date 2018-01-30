@@ -96,21 +96,44 @@
 //--------------------------------------------------------
 // Debug: do something just to stop EXP and DIV functions from being removed
 
-`define SIMD_CORE_CNTL_WAIT                            9'b0_0000_0001
-`define SIMD_CORE_CNTL_PREPARE_OP                      9'b0_0000_0010
-`define SIMD_CORE_CNTL_WAIT_FOR_SIMD                   9'b0_0000_0100
-`define SIMD_CORE_CNTL_SFU                             9'b0_0000_1000
-`define SIMD_CORE_CNTL_SEND_DATA                       9'b0_0001_0000
-`define SIMD_CORE_CNTL_WAIT_FOR_COMPLETE               9'b0_0010_0000
-`define SIMD_CORE_CNTL_WAIT_COMPLETE_DEASSERTED        9'b0_0100_0000
-`define SIMD_CORE_CNTL_COMPLETE                        9'b0_1000_0000
-`define SIMD_CORE_CNTL_ERR                             9'b1_0000_0000
+`define SIMD_CORE_CNTL_WAIT                            12'b0000_0000_0001
+`define SIMD_CORE_CNTL_PREPARE_OP                      12'b0000_0000_0010
 
-`define SIMD_CORE_CNTL_STATE_WIDTH                     8
+`define SIMD_CORE_CNTL_SFU_START                       12'b0000_0000_1000
+`define SIMD_CORE_CNTL_SFU_RUNNING                     12'b0000_0001_0000
+`define SIMD_CORE_CNTL_SFU_COMPLETE                    12'b0000_0010_0000
+`define SIMD_CORE_CNTL_WAIT_FOR_SIMD                   12'b0000_0100_0000
+`define SIMD_CORE_CNTL_SEND_DATA                       12'b0000_1000_0000
+`define SIMD_CORE_CNTL_WAIT_FOR_COMPLETE               12'b0001_0000_0000
+`define SIMD_CORE_CNTL_WAIT_COMPLETE_DEASSERTED        12'b0010_0000_0000
+
+
+
+`define SIMD_CORE_CNTL_COMPLETE                        12'b0100_0000_0000
+`define SIMD_CORE_CNTL_ERR                             12'b1000_0000_0000
+
+`define SIMD_CORE_CNTL_STATE_WIDTH                     12
 `define SIMD_CORE_CNTL_STATE_MSB                       `SIMD_CORE_CNTL_STATE_WIDTH-1
 `define SIMD_CORE_CNTL_STATE_LSB                       0
 `define SIMD_CORE_CNTL_STATE_SIZE                      (`SIMD_CORE_CNTL_STATE_MSB - `SIMD_CORE_CNTL_STATE_LSB +1)
 `define SIMD_CORE_CNTL_STATE_RANGE                      `SIMD_CORE_CNTL_STATE_MSB : `SIMD_CORE_CNTL_STATE_LSB
+
+
+
+//------------------------------------------------------------------------------------------------------------
+//Special function controller
+//
+// Add
+`define SIMD_CORE_SFU_ADD_CNTL_WAIT                            9'b0_0000_0001
+
+`define SIMD_CORE_SFU_ADD_CNTL_COMPLETE                        9'b0_1000_0000
+`define SIMD_CORE_SFU_ADD_CNTL_ERR                             9'b1_0000_0000
+
+`define SIMD_CORE_SFU_ADD_CNTL_STATE_WIDTH                     9
+`define SIMD_CORE_SFU_ADD_CNTL_STATE_MSB                       `SIMD_CORE_SFU_ADD_CNTL_STATE_WIDTH-1
+`define SIMD_CORE_SFU_ADD_CNTL_STATE_LSB                       0
+`define SIMD_CORE_SFU_ADD_CNTL_STATE_SIZE                      (`SIMD_CORE_SFU_ADD_CNTL_STATE_MSB - `SIMD_CORE_SFU_ADD_CNTL_STATE_LSB +1)
+`define SIMD_CORE_SFU_ADD_CNTL_STATE_RANGE                      `SIMD_CORE_SFU_ADD_CNTL_STATE_MSB : `SIMD_CORE_SFU_ADD_CNTL_STATE_LSB
 
 
 
