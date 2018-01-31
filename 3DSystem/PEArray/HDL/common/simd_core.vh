@@ -141,7 +141,9 @@
 //------------------------------------------------------------------------------------------------------------
 // Add
 `define SIMD_CORE_SFU_ADD_CNTL_WAIT                            9'b0_0000_0001
-`define SIMD_CORE_SFU_ADD_CNTL_ADD_ALL                         9'b0_0000_0010
+`define SIMD_CORE_SFU_ADD_CNTL_ACC_ALL                         9'b0_0000_0010
+`define SIMD_CORE_SFU_ADD_CNTL_ACC_FLUSH                       9'b0_0000_0100
+`define SIMD_CORE_SFU_ADD_CNTL_ACC_COMPLETE                    9'b0_0000_1000
 
 `define SIMD_CORE_SFU_ADD_CNTL_COMPLETE                        9'b0_1000_0000
 `define SIMD_CORE_SFU_ADD_CNTL_ERR                             9'b1_0000_0000
@@ -151,6 +153,23 @@
 `define SIMD_CORE_SFU_ADD_CNTL_STATE_LSB                       0
 `define SIMD_CORE_SFU_ADD_CNTL_STATE_SIZE                      (`SIMD_CORE_SFU_ADD_CNTL_STATE_MSB - `SIMD_CORE_SFU_ADD_CNTL_STATE_LSB +1)
 `define SIMD_CORE_SFU_ADD_CNTL_STATE_RANGE                      `SIMD_CORE_SFU_ADD_CNTL_STATE_MSB : `SIMD_CORE_SFU_ADD_CNTL_STATE_LSB
+
+
+//------------------------------------------------------------------------------------------------------------
+// Add
+`define SIMD_CORE_SFU_EXP_CNTL_WAIT                            9'b0_0000_0001
+`define SIMD_CORE_SFU_EXP_CNTL_SETTLE                          9'b0_0000_0010
+`define SIMD_CORE_SFU_EXP_CNTL_LOAD                            9'b0_0000_0100
+`define SIMD_CORE_SFU_EXP_CNTL_INC                             9'b0_0000_1000
+
+`define SIMD_CORE_SFU_EXP_CNTL_COMPLETE                        9'b0_1000_0000
+`define SIMD_CORE_SFU_EXP_CNTL_ERR                             9'b1_0000_0000
+
+`define SIMD_CORE_SFU_EXP_CNTL_STATE_WIDTH                     9
+`define SIMD_CORE_SFU_EXP_CNTL_STATE_MSB                       `SIMD_CORE_SFU_EXP_CNTL_STATE_WIDTH-1
+`define SIMD_CORE_SFU_EXP_CNTL_STATE_LSB                       0
+`define SIMD_CORE_SFU_EXP_CNTL_STATE_SIZE                      (`SIMD_CORE_SFU_EXP_CNTL_STATE_MSB - `SIMD_CORE_SFU_EXP_CNTL_STATE_LSB +1)
+`define SIMD_CORE_SFU_EXP_CNTL_STATE_RANGE                      `SIMD_CORE_SFU_EXP_CNTL_STATE_MSB : `SIMD_CORE_SFU_EXP_CNTL_STATE_LSB
 
 
 

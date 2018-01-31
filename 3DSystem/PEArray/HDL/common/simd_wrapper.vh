@@ -77,6 +77,10 @@
 `define SIMD_WRAP_SFU_COUNT_RANGE                      `SIMD_WRAP_SFU_COUNT_MSB : `SIMD_WRAP_SFU_COUNT_LSB
 
 //--------------------------------------------------------
+// SIMD wrapper operations multicycle
+`define SIMD_WRAP_OPERATION_EXP_MULTICYCLE              8
+
+//--------------------------------------------------------
 // Transfer from System interface to bank interface
 
 `define SIMD_WRAP_UPSTREAM_CNTL_WAIT                            12'b0000_0000_0001
