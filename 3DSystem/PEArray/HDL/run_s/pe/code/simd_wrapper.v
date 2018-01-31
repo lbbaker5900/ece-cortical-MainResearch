@@ -328,6 +328,8 @@ module simd_wrapper (
   // Tag FIFO
   //
 
+  reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      lane_valid  ;
+
   // Put in a generate in case we decide to extend to multiple fifo's
   generate
     for (gvi=0; gvi<1; gvi=gvi+1) 
@@ -384,7 +386,17 @@ module simd_wrapper (
 
         //
         assign pipe_read = from_stOp_reg_fifo_reads [gvi]  ;
+      end
+  endgenerate
 
+  genvar lane ;
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES ; lane++)
+      begin
+        always @(*)
+          begin
+            lane_valid [lane]  =  ((lane+1) <= from_Cntl_Tag_Fifo[0].pipe_tag_num_lanes) ;
+          end
       end
   endgenerate
 
@@ -484,23 +496,27 @@ module simd_wrapper (
 
   // read the FIFO and assert the valid to the stack upstream interface
   wire   return_data               = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA);
-  assign from_stOp_reg_fifo_reads = {`PE_NUM_OF_EXEC_LANES { return_data }} & from_stOp_reg_fifo_valids ;
+  assign from_stOp_reg_fifo_reads = {`PE_NUM_OF_EXEC_LANES { return_data }} & from_stOp_reg_fifo_valids ;  // only read the lanes that were active
 
 
   assign  simd__sui__tag_e1             =  from_Cntl_Tag_Fifo[0].pipe_tag ;
   assign  simd__sui__tag_num_lanes_e1   =  from_Cntl_Tag_Fifo[0].pipe_tag_num_lanes ;
 
+/*
   assign  simd__sui__regs_valid_e1      =  {`PE_NUM_OF_EXEC_LANES { return_data }} & simd__scntl__rs1 ;
 
-  assign  simd__sui__regs_cntl_e1       =  ( simd_enable ) ? simd__smdw__regs_cntl          :
-                                                             from_stOp_reg_fifo_pipe_cntl   ;
+  assign  simd__sui__regs_cntl_e1       =  //(~simd_enable ) ? from_stOp_reg_fifo_pipe_cntl   :
+                                                             simd__smdw__regs_cntl          ;
+                                                             
 
-  assign  simd__sui__regs_e1            =  ( simd_enable ) ? simd__smdw__regs               :
-                                                             from_stOp_reg_fifo_pipe_data   ;
-
+  assign  simd__sui__regs_e1            =  //(~simd_enable ) ? from_stOp_reg_fifo_pipe_data   :
+                                                             simd__smdw__regs               ;
+                                                             
+*/
   assign  smdw__simd__regs_cntl         =  from_stOp_reg_fifo_pipe_cntl   ;
   assign  smdw__simd__regs              =  from_stOp_reg_fifo_pipe_data   ;
-  assign  smdw__simd__regs_valid        = from_stOp_reg_fifo_valids & {`PE_NUM_OF_EXEC_LANES { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_CHECK_SIMD_ENABLE) & simd_enable }} & simd__scntl__rs1 ; // pulse valid to simd
+  assign  smdw__simd__regs_valid        =  lane_valid                     ;
+  //assign  smdw__simd__regs_valid        =  from_stOp_reg_fifo_valids & {`PE_NUM_OF_EXEC_LANES { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_CHECK_SIMD_ENABLE) & simd_enable }} & simd__scntl__rs1 ; // pulse valid to simd
 
 
   //-------------------------------------------------------------------------------------------------
@@ -508,6 +524,8 @@ module simd_wrapper (
   // 
   //
   
+  wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__smdw__regs_valid    ;
+
   simd_core simd_core (
 
             .cntl__simd__cfg_valid           ( smdw__simd__cfg_valid        ),  // load PC
@@ -516,14 +534,19 @@ module simd_wrapper (
             .cntl__simd__cfg_wrap_op_inc     ( simd_wrapper_op_inc          ),
             .cntl__simd__cfg_wrap_op         ( simd_wrapper_op              ),  // operations before SIMD
 
-            .smdw__simd__regs_valid          ( smdw__simd__regs_valid       ),  // start SIMD
-            .smdw__simd__regs_cntl           ( smdw__simd__regs_cntl        ),        
+            //.smdw__simd__regs_valid          ( smdw__simd__regs_valid       ),  // start SIMD
+            //.smdw__simd__regs_cntl           ( smdw__simd__regs_cntl        ),        
+            //.smdw__simd__regs                ( smdw__simd__regs             ),        
+                                            
+            .smdw__simd__regs_cntl           ( smdw__simd__regs_cntl        ),  // start SIMD
+            .smdw__simd__regs_valid          ( smdw__simd__regs_valid       ),        
             .smdw__simd__regs                ( smdw__simd__regs             ),        
                                             
             .simd__smdw__processing          ( simd__smdw__processing       ),  // SIMD complete
             .simd__smdw__complete            ( simd__smdw__complete         ),  // SIMD complete
-            .simd__smdw__regs_cntl           ( simd__smdw__regs_cntl        ),        
-            .simd__smdw__regs                ( simd__smdw__regs             ),        
+            .simd__smdw__regs_cntl           ( simd__sui__regs_cntl_e1      ),        
+            .simd__smdw__regs_valid          ( simd__sui__regs_valid_e1     ),        
+            .simd__smdw__regs                ( simd__sui__regs_e1           ),        
                                             
              //---------------------------------
              // LD/ST Interface             

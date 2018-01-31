@@ -107,9 +107,8 @@
 `define SIMD_CORE_CNTL_WAIT_FOR_COMPLETE               12'b0001_0000_0000
 `define SIMD_CORE_CNTL_WAIT_COMPLETE_DEASSERTED        12'b0010_0000_0000
 
-
-
 `define SIMD_CORE_CNTL_COMPLETE                        12'b0100_0000_0000
+
 `define SIMD_CORE_CNTL_ERR                             12'b1000_0000_0000
 
 `define SIMD_CORE_CNTL_STATE_WIDTH                     12
@@ -121,10 +120,28 @@
 
 
 //------------------------------------------------------------------------------------------------------------
-//Special function controller
+//------------------------------------------------------------------------------------------------------------
+//Special function controllers
 //
+
+//------------------------------------------------------------------------------------------------------------
+// ReLu
+`define SIMD_CORE_SFU_RELU_CNTL_WAIT                            4'b0001
+`define SIMD_CORE_SFU_RELU_CNTL_RELU                            4'b0010
+
+`define SIMD_CORE_SFU_RELU_CNTL_COMPLETE                        4'b0100
+`define SIMD_CORE_SFU_RELU_CNTL_ERR                             4'b1000
+
+`define SIMD_CORE_SFU_RELU_CNTL_STATE_WIDTH                     4
+`define SIMD_CORE_SFU_RELU_CNTL_STATE_MSB                       `SIMD_CORE_SFU_RELU_CNTL_STATE_WIDTH-1
+`define SIMD_CORE_SFU_RELU_CNTL_STATE_LSB                       0
+`define SIMD_CORE_SFU_RELU_CNTL_STATE_SIZE                      (`SIMD_CORE_SFU_RELU_CNTL_STATE_MSB - `SIMD_CORE_SFU_RELU_CNTL_STATE_LSB +1)
+`define SIMD_CORE_SFU_RELU_CNTL_STATE_RANGE                      `SIMD_CORE_SFU_RELU_CNTL_STATE_MSB : `SIMD_CORE_SFU_RELU_CNTL_STATE_LSB
+
+//------------------------------------------------------------------------------------------------------------
 // Add
 `define SIMD_CORE_SFU_ADD_CNTL_WAIT                            9'b0_0000_0001
+`define SIMD_CORE_SFU_ADD_CNTL_ADD_ALL                         9'b0_0000_0010
 
 `define SIMD_CORE_SFU_ADD_CNTL_COMPLETE                        9'b0_1000_0000
 `define SIMD_CORE_SFU_ADD_CNTL_ERR                             9'b1_0000_0000
