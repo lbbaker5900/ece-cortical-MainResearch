@@ -92,25 +92,28 @@ module simd_core (
   // Registers/Wires
   //
 
-  reg                                            start_special_function                                            ;  
-  reg                                            special_functions_complete                                        ; 
-  reg   [`SIMD_WRAP_OPERATION_VEC_RANGE     ]    special_function_done                                             ; 
-
-  reg   [`SIMD_WRAP_SFU_COUNT_RANGE         ]    special_op_index                                                  ;
-  reg   [`SIMD_WRAP_OPERATION_TYPE_RANGE    ]    special_op                                                        ;
-  reg   [`SIMD_WRAP_OPERATION_TYPE_RANGE    ]    curr_special_op                                                   ;  // latch special op
-
-
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE          ]    special_function_value                                            ;
-  wire  [`PE_EXEC_LANE_WIDTH_RANGE          ]    special_function_out        [`SIMD_CORE_OPERATION_PC_NUM_OF_OPS ] ;
-  wire  [`SIMD_CORE_SFU_CMP_RANGE           ]    special_function_cmp_flag                                         ;  // eq, lt, gt
-  reg                                            load_sfu_value                                                    ;
-
-  reg                                            cntl__simd__cfg_valid_d1                                                ;
-  reg   [`SIMD_CORE_OPERATION_RANGE         ]    cntl__simd__cfg_operation_d1                                            ; 
-  reg   [`SIMD_WRAP_OPERATION_TYPE_RANGE    ]    cntl__simd__cfg_wrap_op_d1        [`SIMD_WRAP_OPERATION_NUM_OF_STAGES ] ;
-  reg   [`PE_EXEC_LANE_ID_RANGE             ]    cntl__simd__cfg_wrap_op_idx_d1                                          ;
-  reg                                            cntl__simd__cfg_wrap_op_inc_d1                                          ;
+  reg                                                        start_special_function                                                  ;  
+  reg                                                        special_functions_complete                                              ; 
+  reg   [`SIMD_WRAP_OPERATION_VEC_RANGE                 ]    special_function_done                                                   ; 
+                                                                                               
+  reg   [`SIMD_WRAP_OPERATION_NUM_OF_STAGES_COUNT_RANGE ]    special_op_index                                                        ;  // stop when count is number of stages
+  reg   [`SIMD_WRAP_OPERATION_TYPE_RANGE                ]    special_op                                                              ;
+  reg   [`SIMD_WRAP_OPERATION_TYPE_RANGE                ]    curr_special_op                                                         ;  // latch special op
+                                                                                               
+                                                                                               
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE                      ]    special_function_value                                                  ;
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE                      ]    special_function_out              [`SIMD_CORE_OPERATION_PC_NUM_OF_OPS ] ;
+  wire  [`SIMD_CORE_SFU_CMP_RANGE                       ]    special_function_cmp_flag                                               ;  // eq, lt, gt
+                                                       
+  reg                                                        cntl__simd__cfg_valid_d1                                                ;
+  reg   [`SIMD_CORE_OPERATION_RANGE                     ]    cntl__simd__cfg_operation_d1                                            ; 
+  reg   [`SIMD_WRAP_OPERATION_TYPE_RANGE                ]    cntl__simd__cfg_wrap_op_d1        [`SIMD_WRAP_OPERATION_NUM_OF_STAGES ] ;
+  reg   [`PE_EXEC_LANE_ID_RANGE                         ]    cntl__simd__cfg_wrap_op_idx_d1                                          ;
+  reg                                                        cntl__simd__cfg_wrap_op_inc_d1                                          ;
+                                                       
+  reg   [`PE_NUM_OF_EXEC_LANES_RANGE                    ]    smdw__simd__regs_valid_d1                                               ;
+  reg   [`COMMON_STD_INTF_CNTL_RANGE                    ]    smdw__simd__regs_cntl_d1          [`PE_NUM_OF_EXEC_LANES              ] ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE                      ]    smdw__simd__regs_d1               [`PE_NUM_OF_EXEC_LANES              ] ;
 
 
   always @(posedge clk)
@@ -133,13 +136,25 @@ module simd_core (
       end          
   endgenerate
 
+  genvar lane ;
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        always @(posedge clk)
+          begin
+            smdw__simd__regs_valid_d1 [lane]  <= smdw__simd__regs_valid [lane] ;
+            smdw__simd__regs_cntl_d1  [lane]  <= smdw__simd__regs_cntl  [lane] ;
+            smdw__simd__regs_d1       [lane]  <= smdw__simd__regs       [lane] ;
+          end
+      end
+  endgenerate
 
   // store regs for processing
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      input_regs_valid                      ;
   reg   [`PE_EXEC_LANE_WIDTH_RANGE        ]      input_regs  [`PE_NUM_OF_EXEC_LANES ]  ;
 
-  reg   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      sfu_regs_valid                        ;
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE        ]      sfu_regs  [`PE_NUM_OF_EXEC_LANES ]    ;
+//  reg   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      sfu_regs_valid                        ;
+//  reg   [`PE_EXEC_LANE_WIDTH_RANGE        ]      sfu_regs  [`PE_NUM_OF_EXEC_LANES ]    ;
 
   reg                                            simd_output_valid                     ;
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      simd_regs_valid                       ;
@@ -162,12 +177,14 @@ module simd_core (
 
   //----------------------------------------------------------------------------------------------------
   // Local register for multi-instruction operations
-  reg                                                                 reset_local_index                           ;  // which operation will reset save index
-  reg                                                                 inc_local_index                             ;  // which operation will increment save index
-  reg   [`PE_EXEC_LANE_ID_RANGE                                   ]   local_index                                 ;  // which local register to store wrapper result
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE                                ]   local_regs        [`PE_NUM_OF_EXEC_LANES ]  ;
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE                                ]   load_local_reg                              ;  // 
+  reg                                                                 reset_common_index                           ;  // which operation will reset save index
+  reg                                                                 inc_common_index                             ;  // which operation will increment save index
+  reg   [`PE_EXEC_LANE_ID_RANGE                                   ]   common_index                                 ;  // which local register to store wrapper result
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE                                ]   local_regs        [`PE_NUM_OF_EXEC_LANES ]  ;  // holds result of each stage
   reg   [`PE_EXEC_LANE_WIDTH_RANGE                                ]   local_regs_valid                            ;  // 
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE                                ]   common_regs       [`PE_NUM_OF_EXEC_LANES ]  ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE                                ]   common_regs_valid                           ;  // holds registers between instructions
+
 
   //----------------------------------------------------------------------------------------------------
   //
@@ -210,8 +227,11 @@ module simd_core (
                                                                       `SIMD_CORE_CNTL_SFU_RUNNING   ;
           
         `SIMD_CORE_CNTL_SFU_COMPLETE: 
-          simd_core_cntl_state_next =   (special_op == `SIMD_WRAP_OPERATION_NOP)  ?  `SIMD_CORE_CNTL_WAIT_FOR_SIMD :
-                                                                                     `SIMD_CORE_CNTL_SFU_START     ;
+          simd_core_cntl_state_next =   (special_op_index[`SIMD_WRAP_OPERATION_NUM_OF_STAGES_COUNT_MSB ] )  ?  `SIMD_CORE_CNTL_WAIT_FOR_SIMD : // processed all stages, even nop is a valid op
+                                                                                                               `SIMD_CORE_CNTL_SFU_NEXT      ;
+          
+        `SIMD_CORE_CNTL_SFU_NEXT: 
+          simd_core_cntl_state_next =   `SIMD_CORE_CNTL_SFU_START     ;
           
         `SIMD_CORE_CNTL_WAIT_FOR_SIMD: 
           simd_core_cntl_state_next =  `SIMD_CORE_CNTL_SEND_DATA        ;
@@ -244,26 +264,18 @@ module simd_core (
   // Assignments
   //
 
-  genvar lane;
   generate
     for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
       begin
         always @(posedge clk)
           begin
             simd__smdw__regs_cntl  [lane] <= `COMMON_STD_INTF_CNTL_SOM_EOM  ;
-/*
-            simd__smdw__regs_valid [lane] <= //( load_sfu_value ) ? special_function_value :  // FIXME
-                                                                    sfu_regs_valid [lane]  ;
-            simd__smdw__regs       [lane] <= //( load_sfu_value ) ? special_function_value :  // FIXME
-                                                                    sfu_regs [lane]        ;
-*/
 
-            simd__smdw__regs_valid [lane]  <= ( simd_core_cntl_state == `SIMD_CORE_CNTL_COMPLETE  )  ?  sfu_regs_valid[lane]   :
+            simd__smdw__regs_valid [lane]  <= ( simd_core_cntl_state == `SIMD_CORE_CNTL_COMPLETE  )  ?  local_regs_valid[lane] :
                                                                                                        'd0                     ;
                                                                                                                            
-            simd__smdw__regs       [lane]  <= ( simd_core_cntl_state == `SIMD_CORE_CNTL_COMPLETE  )  ?  sfu_regs[lane]         :
+            simd__smdw__regs       [lane]  <= ( simd_core_cntl_state == `SIMD_CORE_CNTL_COMPLETE  )  ?  local_regs[lane]       :
                                                                                                         simd__smdw__regs[lane] ;
-        
           end
       end
   endgenerate
@@ -279,7 +291,6 @@ module simd_core (
 
   assign   start_special_function    = (simd_core_cntl_state == `SIMD_CORE_CNTL_SFU_START );
 
-  assign   load_sfu_value         = (simd_core_cntl_state == `SIMD_CORE_CNTL_SFU_RUNNING);
   
   // latch input until cfg is valid
   generate
@@ -287,11 +298,15 @@ module simd_core (
       begin
         always @(posedge clk)
           begin
-            input_regs_valid [lane]  <= ( simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT  )  ?  smdw__simd__regs_valid[lane] :
-                                                                                              input_regs_valid[lane]       ;
+            input_regs_valid [lane]  <= ( simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT           )  ?  smdw__simd__regs_valid_d1 [lane] :
+                                        ( simd_core_cntl_state == `SIMD_CORE_CNTL_SFU_NEXT       )  ?  local_regs_valid          [lane] :
+                                        ( simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT_FOR_SIMD  )  ?  local_regs_valid          [lane] :
+                                                                                                       input_regs_valid          [lane] ;
                                                                                                                            
-            input_regs       [lane]  <= ( simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT  )  ?  smdw__simd__regs[lane]       :
-                                                                                              input_regs[lane]             ;
+            input_regs       [lane]  <= ( simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT           )  ?  smdw__simd__regs_d1       [lane] :
+                                        ( simd_core_cntl_state == `SIMD_CORE_CNTL_SFU_NEXT       )  ?  local_regs                [lane] :
+                                        ( simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT_FOR_SIMD  )  ?  local_regs                [lane] :
+                                                                                                       input_regs                [lane] ;
         
           end
       end
@@ -301,9 +316,37 @@ module simd_core (
   //----------------------------------------------------------------------------------------------------
   // Mux result data to global sfu output
 
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_add_local_regs        [`PE_NUM_OF_EXEC_LANES ]  ;
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_add_load_local_reg                              ;  // 
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_nop_local_regs       [`PE_NUM_OF_EXEC_LANES ]  ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_nop_load_local_reg                             ;  // 
 
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_nop_common_regs      [`PE_NUM_OF_EXEC_LANES ]  ;
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_nop_load_common_reg                            ;  // 
+
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_relu_local_regs       [`PE_NUM_OF_EXEC_LANES ]  ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_relu_load_local_reg                             ;  // 
+
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_relu_common_regs      [`PE_NUM_OF_EXEC_LANES ]  ;
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_relu_load_common_reg                            ;  // 
+
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_add_local_regs        [`PE_NUM_OF_EXEC_LANES ]  ;
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_add_load_local_reg                              ;  // 
+
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_add_common_regs       [`PE_NUM_OF_EXEC_LANES ]  ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_add_load_common_reg                             ;  // 
+
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_exp_local_regs        [`PE_NUM_OF_EXEC_LANES ]  ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_exp_load_local_reg                              ;  // 
+
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_exp_common_regs       [`PE_NUM_OF_EXEC_LANES ]  ;
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_exp_load_common_reg                             ;  // 
+
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_div_local_regs        [`PE_NUM_OF_EXEC_LANES ]  ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_div_load_local_reg                              ;  // 
+
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_div_common_regs       [`PE_NUM_OF_EXEC_LANES ]  ;
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_div_load_common_reg                             ;  // 
+
+/*
   generate
     for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
       begin
@@ -353,8 +396,45 @@ module simd_core (
 
                       sfu_regs       [lane]  <= (sfu_add_load_local_reg [lane]) ? sfu_add_local_regs [lane] :  sfu_regs       [lane] ;
                     end
+                  //--------------------------------------------------
+                  // EXP
+                  16'bxxxx_xxxx_xx1x_xxxx: 
+                    begin
+                      sfu_regs_valid [lane]  <= (sfu_exp_load_local_reg [lane]) ? 1'b1                      :  sfu_regs_valid [lane] ;
+
+                      sfu_regs       [lane]  <= (sfu_exp_load_local_reg [lane]) ? sfu_exp_local_regs [lane] :  sfu_regs       [lane] ;
+                    end
                 endcase
           //    end
+          end
+      end
+  endgenerate
+*/
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        always @(posedge clk)
+          begin
+            local_regs_valid [lane]  <= (reset_poweron                                   ) ? 1'b0                     :
+                                        (simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT    ) ? 1'b0                     :
+                                        (sfu_nop_load_local_reg  [lane] ||                                         
+                                         sfu_add_load_local_reg  [lane] ||                                         
+                                         sfu_relu_load_local_reg [lane] ||                                         
+                                         sfu_div_load_local_reg  [lane] ||                                         
+                                         sfu_exp_load_local_reg  [lane]                  ) ? 1'b1                     :
+                                                                                             local_regs_valid [lane]  ;
+
+            local_regs       [lane]  <= (simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT    ) ? 'd0                     :
+                                        (sfu_nop_load_local_reg  [lane] ||                
+                                         sfu_add_load_local_reg  [lane] ||                
+                                         sfu_relu_load_local_reg [lane] ||                
+                                         sfu_div_load_local_reg  [lane] ||                
+                                         sfu_exp_load_local_reg  [lane]                  ) ? (sfu_nop_local_regs  [lane] | 
+                                                                                              sfu_add_local_regs  [lane] | 
+                                                                                              sfu_relu_local_regs [lane] | 
+                                                                                              sfu_div_local_regs  [lane] | 
+                                                                                              sfu_exp_local_regs  [lane] ) : 
+                                                                                              local_regs          [lane]   ;
           end
       end
   endgenerate
@@ -364,8 +444,30 @@ module simd_core (
       begin
         always @(posedge clk)
           begin
-   //         if ( simd_core_cntl_state == `SIMD_CORE_CNTL_SFU_COMPLETE)
-   //           begin
+            common_regs_valid [lane] <= (reset_poweron                                   ) ? 1'b0                     :
+                                        (simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT    ) ? 1'b0                     :
+                                        (sfu_nop_load_common_reg  [lane] ||                                         
+                                         sfu_add_load_common_reg  [lane] ||                                         
+                                         sfu_relu_load_common_reg [lane] ||                                         
+                                         sfu_div_load_common_reg  [lane] ||                                         
+                                         sfu_exp_load_common_reg  [lane]                 ) ? 1'b1                     :
+                                                                                            common_regs_valid [lane]  ;
+
+            common_regs       [lane] <= (simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT    ) ? 'd0                            :
+                                        (sfu_nop_load_common_reg  [lane] ||                
+                                         sfu_add_load_common_reg  [lane] ||                
+                                         sfu_relu_load_common_reg [lane] ||                
+                                         sfu_div_load_common_reg  [lane] ||                
+                                         sfu_exp_load_common_reg  [lane]                 ) ? (sfu_add_common_regs  [lane] | 
+                                                                                              sfu_relu_common_regs [lane] | 
+                                                                                              sfu_div_common_regs  [lane] | 
+                                                                                              sfu_exp_common_regs  [lane] )  : 
+                                                                                              common_regs          [lane]    ;
+          end
+      end
+  endgenerate
+
+/*
             if (reset_poweron)
               begin
                 local_regs_valid [lane]  <= 'b0 ;
@@ -421,6 +523,8 @@ module simd_core (
           end
       end
   endgenerate
+*/
+
   //----------------------------------------------------------------------------------------------------
   //
 
@@ -438,8 +542,8 @@ module simd_core (
            end
         `SIMD_CORE_CNTL_SFU_START: 
            begin
-             special_op_index   <= special_op_index + 'd1 ;
-             curr_special_op    <= special_op             ;
+             special_op_index   <= special_op_index + 'd1   ;
+             curr_special_op    <= special_op               ;
            end
   
       endcase 
@@ -447,7 +551,7 @@ module simd_core (
 
   always @(*)
     begin
-      special_op  = cntl__simd__cfg_wrap_op_d1 [special_op_index] ;
+      special_op  = cntl__simd__cfg_wrap_op_d1 [special_op_index[`SIMD_WRAP_SFU_COUNT_RANGE]] ;
     end
 
 
@@ -491,6 +595,10 @@ module simd_core (
               begin
                 special_function_done [sfu]  = sfu_add_send_done  ;
               end
+            else if (sfu == `SIMD_WRAP_OPERATION_EXP) 
+              begin
+                special_function_done [sfu]  = sfu_exp_done  ;
+              end
             else
               begin
                 special_function_done [sfu]  = 1'b0  ;
@@ -523,18 +631,18 @@ module simd_core (
 
   always @(*)
     begin
-      reset_local_index  = special_function_done[`SIMD_WRAP_OPERATION_SUM_SEND ] ;
+      reset_common_index  = special_function_done[`SIMD_WRAP_OPERATION_SUM_SEND ] ;
 
-      inc_local_index    = special_function_done[`SIMD_WRAP_OPERATION_SUM_SAVE ] |
-                           special_function_done[`SIMD_WRAP_OPERATION_SUM_ACC  ] ;
+      inc_common_index    = special_function_done[`SIMD_WRAP_OPERATION_SUM_SAVE ] |
+                            special_function_done[`SIMD_WRAP_OPERATION_SUM_ACC  ] ;
     end
 
   always @(posedge clk)
     begin
-      local_index  <=  ( reset_poweron     )  ?  'd0               :
-                       ( reset_local_index )  ?  'd0               :
-                       ( inc_local_index   )  ?  local_index + 'd1 :
-                                                 local_index       ;                                                   
+      common_index  <=  ( reset_poweron      )  ?  'd0                :
+                        ( reset_common_index )  ?  'd0                :
+                        ( inc_common_index   )  ?  common_index + 'd1 :
+                                                   common_index       ;                                                   
     end
 
 
@@ -547,9 +655,98 @@ module simd_core (
     begin
       sfu_nop_done  <=  ( reset_poweron                                                    ) ? 1'b0         :
                         (start_special_function && (special_op == `SIMD_WRAP_OPERATION_NOP)) ? 1'b1         :
-                        (simd_core_cntl_state == `SIMD_CORE_CNTL_SFU_COMPLETE              ) ? 1'b0         :
+                        (simd_core_cntl_state == `SIMD_CORE_CNTL_SFU_NEXT                  ) ? 1'b0         :
+                        (simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT_FOR_SIMD             ) ? 1'b0         :
                                                                                                sfu_nop_done ;
     end
+
+  reg [`SIMD_CORE_SFU_NOP_CNTL_STATE_RANGE ]   simd_core_nop_cntl_state      ; // state flop
+  reg [`SIMD_CORE_SFU_NOP_CNTL_STATE_RANGE ]   simd_core_nop_cntl_state_next ;
+
+  // State register 
+  always @(posedge clk)
+    begin
+      simd_core_nop_cntl_state <= ( reset_poweron ) ? `SIMD_CORE_SFU_NOP_CNTL_WAIT    :
+                                                        simd_core_nop_cntl_state_next  ;
+    end
+  
+ 
+  always @(*)
+    begin
+      case (simd_core_nop_cntl_state)  // synopsys parallel_case
+
+        // use special op for first transition, then use curr_special_op
+        `SIMD_CORE_SFU_NOP_CNTL_WAIT: 
+          simd_core_nop_cntl_state_next =  ( start_special_function  && (special_op == `SIMD_WRAP_OPERATION_NOP )) ? `SIMD_CORE_SFU_NOP_CNTL_NOP   :  
+                                                                                                                     `SIMD_CORE_SFU_NOP_CNTL_WAIT  ;
+  
+        // must be a pulse state
+        `SIMD_CORE_SFU_NOP_CNTL_NOP: 
+          simd_core_nop_cntl_state_next =  `SIMD_CORE_SFU_NOP_CNTL_COMPLETE   ;
+  
+        // must be a pulse state
+        `SIMD_CORE_SFU_NOP_CNTL_COMPLETE: 
+          simd_core_nop_cntl_state_next =  `SIMD_CORE_SFU_NOP_CNTL_WAIT       ;
+  
+        // Latch state on error
+        `SIMD_CORE_SFU_NOP_CNTL_ERR:
+          simd_core_nop_cntl_state_next = `SIMD_CORE_SFU_NOP_CNTL_ERR ;
+  
+        default:
+          simd_core_nop_cntl_state_next = `SIMD_CORE_SFU_NOP_CNTL_WAIT ;
+    
+      endcase 
+    end // always @ (*)
+  
+
+  always @(posedge clk)
+    begin
+      case (simd_core_nop_cntl_state)
+        `SIMD_CORE_SFU_NOP_CNTL_COMPLETE: 
+           begin
+             sfu_nop_done   <= 'd1 ;
+           end
+        default:
+           begin
+             sfu_nop_done   <= 'd0 ;
+           end
+      endcase 
+    end
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        always @(*)
+          begin
+            case (simd_core_nop_cntl_state)
+              `SIMD_CORE_SFU_NOP_CNTL_COMPLETE: 
+                 begin
+                   sfu_nop_load_local_reg    [lane]  =  input_regs_valid[lane] ;
+                                                                                                                                  
+                   sfu_nop_local_regs        [lane]  =  input_regs      [lane] ;
+                 end
+              default:
+                 begin
+                   sfu_nop_load_local_reg    [lane]  = 'b0 ;
+                                                                                                                                  
+                   sfu_nop_local_regs        [lane]  = 'd0 ;
+                 end
+            endcase 
+          end
+      end
+  endgenerate
+
+  // NOP doesnt write to common reg
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        //always @(*)
+        //  begin
+            assign sfu_nop_load_common_reg    [lane]  = 'b0 ;
+                                                                                                                                  
+            assign sfu_nop_common_regs        [lane]  = 'd0 ;
+        //  end
+      end
+  endgenerate
 
   //----------------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------------
@@ -560,16 +757,11 @@ module simd_core (
   reg [`SIMD_CORE_SFU_RELU_CNTL_STATE_RANGE ]   simd_core_relu_cntl_state      ; // state flop
   reg [`SIMD_CORE_SFU_RELU_CNTL_STATE_RANGE ]   simd_core_relu_cntl_state_next ;
 
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE          ]   sfu_relu_local_regs        [`PE_NUM_OF_EXEC_LANES ]  ;
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE          ]   sfu_relu_load_local_reg                              ;  // 
-
-  reg                                         perform_relu                   ;
-  
   // State register 
   always @(posedge clk)
     begin
-      simd_core_relu_cntl_state <= ( reset_poweron ) ? `SIMD_CORE_SFU_RELU_CNTL_WAIT       :
-                                                       simd_core_relu_cntl_state_next  ;
+      simd_core_relu_cntl_state <= ( reset_poweron ) ? `SIMD_CORE_SFU_RELU_CNTL_WAIT    :
+                                                        simd_core_relu_cntl_state_next  ;
     end
   
  
@@ -604,22 +796,6 @@ module simd_core (
   always @(posedge clk)
     begin
       case (simd_core_relu_cntl_state)
-        `SIMD_CORE_SFU_RELU_CNTL_RELU: 
-           begin
-             perform_relu       <= 'd1 ;
-           end
-        default:
-           begin
-             perform_relu       <= 'd0 ;
-           end
-  
-  
-      endcase 
-    end
-
-  always @(posedge clk)
-    begin
-      case (simd_core_relu_cntl_state)
         `SIMD_CORE_SFU_RELU_CNTL_COMPLETE: 
            begin
              sfu_relu_done   <= 'd1 ;
@@ -630,6 +806,43 @@ module simd_core (
            end
       endcase 
     end
+
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        always @(*)
+          begin
+            case (simd_core_relu_cntl_state)
+              `SIMD_CORE_SFU_RELU_CNTL_COMPLETE: 
+                 begin
+                   sfu_relu_load_local_reg    [lane]  =  input_regs_valid[lane] ;
+                                                                                                                                  
+                   sfu_relu_local_regs        [lane]  = ( input_regs[lane][`COMMON_IEEE754_SIGN_RANGE]  )  ?  `COMMON_IEEE754_FLOAT_ZERO  :
+                                                                                                                input_regs [lane]          ;
+                 end
+              default:
+                 begin
+                   sfu_relu_load_local_reg    [lane]  = 'b0 ;
+                                                                                                                                  
+                   sfu_relu_local_regs        [lane]  = 'd0 ;
+                 end
+            endcase 
+          end
+      end
+  endgenerate
+
+  // ReLu doesnt write to common reg
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        //always @(*)
+        //  begin
+            assign sfu_relu_load_common_reg    [lane]  = 'b0 ;
+                                                                                                                                  
+            assign sfu_relu_common_regs        [lane]  = 'd0 ;
+        //  end
+      end
+  endgenerate
 
 
 
@@ -644,8 +857,7 @@ module simd_core (
   reg   [`PE_EXEC_LANE_COUNT_P1_RANGE   ]    add_register_index      ;  // index thru registers 0-31
   reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]    sfu_add_temp_result ;
   reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]    adder_output_reg    ;
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]    adder_input_a       ;
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]    adder_input_b       ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]    adder_input [2]       ;
   wire  [`PE_EXEC_LANE_WIDTH_RANGE      ]    adder_output        ;
 
   DW_fp_add  #(
@@ -653,8 +865,8 @@ module simd_core (
                    .exp_width       ( 8 ), 
                    .ieee_compliance ( 1 )
                )
-  DW_fp_add   ( .a     ( adder_input_a   ), 
-                .b     ( adder_input_b   ), 
+  DW_fp_add   ( .a     ( adder_input[0]   ), 
+                .b     ( adder_input[1]   ), 
                 .z     ( adder_output    ), 
                 .rnd   ( 3'd4            ),
                 .status( ));
@@ -682,7 +894,7 @@ module simd_core (
   
         `SIMD_CORE_SFU_ADD_CNTL_ACC_ALL: 
           simd_core_add_cntl_state_next =  ( add_register_count[`PE_EXEC_LANE_COUNT_P1_MSB] )   ?   `SIMD_CORE_SFU_ADD_CNTL_ACC_FLUSH  :
-                                                                                                `SIMD_CORE_SFU_ADD_CNTL_ACC_ALL   ;
+                                                                                                    `SIMD_CORE_SFU_ADD_CNTL_ACC_ALL   ;
   
         `SIMD_CORE_SFU_ADD_CNTL_ACC_FLUSH: 
           simd_core_add_cntl_state_next =  `SIMD_CORE_SFU_ADD_CNTL_ACC_COMPLETE       ;
@@ -710,31 +922,31 @@ module simd_core (
       case (simd_core_add_cntl_state)
         `SIMD_CORE_SFU_ADD_CNTL_WAIT: 
            begin
-             adder_input_a      <= `COMMON_IEEE754_FLOAT_ZERO ;
-             adder_input_b      <= `COMMON_IEEE754_FLOAT_ZERO ;
+             adder_input[0]      <= `COMMON_IEEE754_FLOAT_ZERO ;
+             adder_input[1]      <= `COMMON_IEEE754_FLOAT_ZERO ;
            end
   
         `SIMD_CORE_SFU_ADD_CNTL_ACC_ALL: 
            begin
-             adder_input_a      <= (~add_register_count[`PE_EXEC_LANE_COUNT_P1_MSB]) ? input_regs [add_register_index]  :
+             adder_input[0]      <= (~add_register_count[`PE_EXEC_LANE_COUNT_P1_MSB]) ? input_regs [add_register_index]  :
                                                                                    adder_output                 ; // accumulate pipeline
 
-             adder_input_b      <= (add_register_index == 0)   ?  `COMMON_IEEE754_FLOAT_ZERO :
+             adder_input[1]      <= (add_register_index == 0)   ?  `COMMON_IEEE754_FLOAT_ZERO :
                                                               adder_output_reg           ;
            end
 
         `SIMD_CORE_SFU_ADD_CNTL_ACC_FLUSH: 
            begin
-             adder_input_a      <= adder_output      ;
+             adder_input[0]      <= adder_output      ;
 
-             adder_input_b      <= adder_output_reg  ;
+             adder_input[1]      <= adder_output_reg  ;
            end
   
         `SIMD_CORE_SFU_ADD_CNTL_ACC_COMPLETE: 
            begin
-             adder_input_a      <= `COMMON_IEEE754_FLOAT_ZERO ;
+             adder_input[0]      <= `COMMON_IEEE754_FLOAT_ZERO ;
 
-             adder_input_b      <= adder_output_reg  ;
+             adder_input[1]      <= adder_output_reg  ;
            end
   
       endcase 
@@ -815,6 +1027,20 @@ module simd_core (
     end
 
 
+  // ACC doesnt write to local reg
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        //always @(*)
+        //  begin
+            assign sfu_add_load_local_reg    [lane]  = 'b0 ;
+                                                                                                                                  
+            assign sfu_add_local_regs        [lane]  = 'd0 ;
+        //  end
+      end
+  endgenerate
+
+
   // Create load signals
   generate
     for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
@@ -827,28 +1053,28 @@ module simd_core (
                    case (curr_special_op)
                      `SIMD_WRAP_OPERATION_SUM_SAVE :
                        begin
-                         if (lane==local_index)
+                         if (lane==common_index)
                            begin
-                             sfu_add_local_regs     [lane]       =  sfu_add_temp_result ;
-                             sfu_add_load_local_reg [lane]       = 1'b1                 ; 
+                             sfu_add_common_regs     [lane]       =  sfu_add_temp_result ;
+                             sfu_add_load_common_reg [lane]       = 1'b1                 ; 
                            end
                          else
                            begin
-                             sfu_add_local_regs     [lane]       = 'd0 ;
-                             sfu_add_load_local_reg [lane]       = 'b0 ;
+                             sfu_add_common_regs     [lane]       = 'd0 ;
+                             sfu_add_load_common_reg [lane]       = 'b0 ;
                            end
                        end
                      default:
                        begin
-                         sfu_add_local_regs     [lane]       = 'd0 ;
-                         sfu_add_load_local_reg [lane]       = 'b0 ;
+                         sfu_add_common_regs     [lane]       = 'd0 ;
+                         sfu_add_load_common_reg [lane]       = 'b0 ;
                        end
                    endcase
                  end
               default:
                  begin
-                   sfu_add_local_regs     [lane]       = 'd0 ;
-                   sfu_add_load_local_reg [lane]       = 'b0 ;
+                   sfu_add_common_regs     [lane]       = 'd0 ;
+                   sfu_add_load_common_reg [lane]       = 'b0 ;
                  end
             endcase 
           end
@@ -866,7 +1092,6 @@ module simd_core (
   
   reg   [`PE_EXEC_LANE_COUNT_P1_RANGE   ]    exp_register_count      ;  // when MSB is one we have cycled thru all regs
   reg   [`PE_EXEC_LANE_COUNT_P1_RANGE   ]    exp_register_index      ;  // index thru registers 0-31
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]    sfu_exp_temp_result     ;
   reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]    exp_output_reg          ;
   reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]    exp_input               ;
   wire  [`PE_EXEC_LANE_WIDTH_RANGE      ]    exp_output              ;
@@ -940,7 +1165,6 @@ module simd_core (
         `SIMD_CORE_SFU_EXP_CNTL_WAIT: 
            begin
              exp_output_reg          <= 'd0 ;
-             sfu_exp_temp_result     <= 'd0 ;
              exp_register_index      <= 'd0 ;
              exp_register_count      <= 'd0 ;
            end
@@ -948,7 +1172,6 @@ module simd_core (
         `SIMD_CORE_SFU_EXP_CNTL_SETTLE: 
            begin
              exp_output_reg      <= exp_output      ;
-             sfu_exp_temp_result <= exp_output_reg  ;
 
              exp_register_index      <= exp_register_index       ;
              exp_register_count      <= exp_register_count +'d1  ;
@@ -957,7 +1180,6 @@ module simd_core (
         `SIMD_CORE_SFU_EXP_CNTL_LOAD: 
            begin
              exp_output_reg      <= exp_output      ;
-             sfu_exp_temp_result <= exp_output_reg  ;
 
              exp_register_index      <= exp_register_index + 'd1 ;
              exp_register_count      <= 'd0                      ;
@@ -966,7 +1188,6 @@ module simd_core (
         default:
            begin
              exp_output_reg      <= exp_output_reg ;
-             sfu_exp_temp_result <= exp_output_reg ;
 
              exp_register_index      <= exp_register_index  ;
              exp_register_count      <= exp_register_count  ;
@@ -993,6 +1214,49 @@ module simd_core (
       endcase 
     end
 
+  // Create load signals
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        always @(*)
+          begin
+            case (simd_core_exp_cntl_state)
+              `SIMD_CORE_SFU_EXP_CNTL_LOAD: 
+                begin
+                  if (lane==exp_register_index)
+                    begin
+                      sfu_exp_local_regs     [lane]       =  exp_output_reg ;
+                      sfu_exp_load_local_reg [lane]       = 1'b1            ; 
+                    end
+                  else
+                    begin
+                      sfu_exp_local_regs     [lane]       = 'd0 ;
+                      sfu_exp_load_local_reg [lane]       = 'b0 ;
+                    end
+                end
+              default:
+                begin
+                  sfu_exp_local_regs     [lane]       = 'd0 ;
+                  sfu_exp_load_local_reg [lane]       = 'b0 ;
+                end
+            endcase 
+          end
+      end
+  endgenerate
+
+  // EXP doesnt write to common reg
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        //always @(*)
+        //  begin
+            assign sfu_exp_load_common_reg    [lane]  = 'b0 ;
+                                                                                                                                  
+            assign sfu_exp_common_regs        [lane]  = 'd0 ;
+        //  end
+      end
+  endgenerate
+
 
 
   DW_fp_exp  #(
@@ -1009,25 +1273,255 @@ module simd_core (
   //----------------------------------------------------------------------------------------------------
   // Divider
  
+ 
+  reg [`SIMD_CORE_SFU_DIV_CNTL_STATE_RANGE ] simd_core_div_cntl_state      ; // state flop
+  reg [`SIMD_CORE_SFU_DIV_CNTL_STATE_RANGE ] simd_core_div_cntl_state_next ;
   
+  reg   [`PE_EXEC_LANE_COUNT_P1_RANGE   ]    div_register_count      ;  // when MSB is one we have cycled thru all regs
+  reg   [`PE_EXEC_LANE_COUNT_P1_RANGE   ]    div_register_index      ;  // index thru registers 0-31
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]    div_output_reg          ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]    div_input   [2]         ;
+  wire  [`PE_EXEC_LANE_WIDTH_RANGE      ]    div_output              ;
+  reg                                        div_start               ;
+  wire                                       div_complete            ;
+
+
+  // DIV Controller
+  //
+  
+  // State register 
+  always @(posedge clk)
+    begin
+      simd_core_div_cntl_state <= ( reset_poweron ) ? `SIMD_CORE_SFU_DIV_CNTL_WAIT       :
+                                                       simd_core_div_cntl_state_next  ;
+    end
+  
+ 
+  always @(*)
+    begin
+      case (simd_core_div_cntl_state)  // synopsys parallel_case
+
+        
+        // use special op for first transition, then use curr_special_op
+        `SIMD_CORE_SFU_DIV_CNTL_WAIT: 
+          simd_core_div_cntl_state_next =  ( start_special_function  && (special_op == `SIMD_WRAP_OPERATION_DIV )) ? `SIMD_CORE_SFU_DIV_CNTL_START    :  
+                                                                                                                     `SIMD_CORE_SFU_DIV_CNTL_WAIT     ;
+  
+        `SIMD_CORE_SFU_DIV_CNTL_START: 
+          simd_core_div_cntl_state_next =  `SIMD_CORE_SFU_DIV_CNTL_WAIT_DIV_START   ;
+  
+        `SIMD_CORE_SFU_DIV_CNTL_WAIT_DIV_START: 
+          simd_core_div_cntl_state_next =  ( ~div_complete             )   ?   `SIMD_CORE_SFU_DIV_CNTL_SETTLE         :
+                                                                               `SIMD_CORE_SFU_DIV_CNTL_WAIT_DIV_START ;
+  
+        `SIMD_CORE_SFU_DIV_CNTL_SETTLE: 
+          simd_core_div_cntl_state_next =  ( div_complete )   ?   `SIMD_CORE_SFU_DIV_CNTL_LOAD     :
+                                                                  `SIMD_CORE_SFU_DIV_CNTL_SETTLE   ;
+  
+        `SIMD_CORE_SFU_DIV_CNTL_LOAD: 
+          simd_core_div_cntl_state_next =  `SIMD_CORE_SFU_DIV_CNTL_LOAD_LOCAL       ;  // load div_output_reg
+  
+        `SIMD_CORE_SFU_DIV_CNTL_LOAD_LOCAL: 
+          simd_core_div_cntl_state_next =  `SIMD_CORE_SFU_DIV_CNTL_INC ;  // index add to local_regs and increment index
+  
+        `SIMD_CORE_SFU_DIV_CNTL_INC: 
+          simd_core_div_cntl_state_next =  ( div_register_index[`PE_EXEC_LANE_COUNT_P1_MSB] )   ?   `SIMD_CORE_SFU_DIV_CNTL_COMPLETE     :
+                                                                                                    `SIMD_CORE_SFU_DIV_CNTL_LOAD_INPUTS     ;
+  
+        `SIMD_CORE_SFU_DIV_CNTL_LOAD_INPUTS: 
+          simd_core_div_cntl_state_next =  `SIMD_CORE_SFU_DIV_CNTL_START ;
+  
+        // must be a pulse state
+        `SIMD_CORE_SFU_DIV_CNTL_COMPLETE: 
+          simd_core_div_cntl_state_next =  `SIMD_CORE_SFU_DIV_CNTL_WAIT       ;
+  
+        // Latch state on error
+        `SIMD_CORE_SFU_DIV_CNTL_ERR:
+          simd_core_div_cntl_state_next = `SIMD_CORE_SFU_DIV_CNTL_ERR ;
+  
+        default:
+          simd_core_div_cntl_state_next = `SIMD_CORE_SFU_DIV_CNTL_WAIT ;
+    
+      endcase 
+    end // always @ (*)
+  
+
+  always @(*)
+    begin
+      case (simd_core_div_cntl_state)
+        `SIMD_CORE_SFU_DIV_CNTL_START: 
+           begin
+             div_start  =   1'b1 ;
+           end
+  
+        default:
+           begin
+             div_start  =   1'b0 ;
+           end
+      endcase 
+    end
+
+  always @(posedge clk)
+    begin
+      case (simd_core_div_cntl_state)
+        `SIMD_CORE_SFU_DIV_CNTL_WAIT: 
+           begin
+             div_input [0]        <= input_regs [div_register_index]  ;
+             div_input [1]        <= common_regs[0] ;
+           end
+  
+        `SIMD_CORE_SFU_DIV_CNTL_LOAD_INPUTS: 
+           begin
+             div_input [0]        <= input_regs [div_register_index]  ;
+             div_input [1]        <= common_regs[0] ;
+           end
+  
+        default:
+           begin
+             div_input [0]        <= div_input [0] ;
+             div_input [1]        <= div_input [1] ;
+           end
+      endcase 
+    end
+
+  always @(posedge clk)
+    begin
+      case (simd_core_div_cntl_state)
+        `SIMD_CORE_SFU_DIV_CNTL_WAIT: 
+           begin
+             div_output_reg          <= 'd0 ;
+             div_register_index      <= 'd0 ;
+             div_register_count      <= 'd0 ;
+           end
+  
+        `SIMD_CORE_SFU_DIV_CNTL_SETTLE: 
+           begin
+             div_output_reg      <= div_output      ;
+
+             div_register_index      <= div_register_index       ;
+             div_register_count      <= div_register_count +'d1  ;
+           end
+  
+        `SIMD_CORE_SFU_DIV_CNTL_LOAD: 
+           begin
+             div_output_reg      <= div_output      ;
+
+             div_register_index      <= div_register_index  ;
+             div_register_count      <= 'd0                 ;
+           end
+  
+        `SIMD_CORE_SFU_DIV_CNTL_LOAD_LOCAL: 
+           begin
+             div_output_reg      <= div_output_reg      ;
+
+             div_register_index      <= div_register_index + 'd1 ;
+             div_register_count      <= 'd0                      ;
+           end
+  
+        default:
+           begin
+             div_output_reg      <= div_output_reg ;
+
+             div_register_index      <= div_register_index  ;
+             div_register_count      <= div_register_count  ;
+           end
+  
+      endcase 
+    end
+
+  always @(*)
+    begin
+      case (simd_core_div_cntl_state)
+        `SIMD_CORE_SFU_DIV_CNTL_WAIT: 
+           begin
+             sfu_div_done   = 1'b0 ;
+           end
+        `SIMD_CORE_SFU_DIV_CNTL_COMPLETE: 
+           begin
+             sfu_div_done   = 1'b1 ;
+           end
+        default:
+           begin
+             sfu_div_done   = 1'b0 ;
+           end
+      endcase 
+    end
+
+  // Create load signals
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        always @(*)
+          begin
+            case (simd_core_div_cntl_state)
+              `SIMD_CORE_SFU_DIV_CNTL_LOAD_LOCAL: 
+                begin
+                  if (lane==div_register_index)
+                    begin
+                      sfu_div_local_regs     [lane]       =  div_output_reg ;
+                      sfu_div_load_local_reg [lane]       = 1'b1            ; 
+                    end
+                  else
+                    begin
+                      sfu_div_local_regs     [lane]       = 'd0 ;
+                      sfu_div_load_local_reg [lane]       = 'b0 ;
+                    end
+                end
+              default:
+                begin
+                  sfu_div_local_regs     [lane]       = 'd0 ;
+                  sfu_div_load_local_reg [lane]       = 'b0 ;
+                end
+            endcase 
+          end
+      end
+  endgenerate
+
+  
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        always @(*)
+          begin
+            sfu_div_load_local_reg    [lane]  = 'b0 ;
+                                                                                                                                  
+            sfu_div_local_regs        [lane]  = 'd0 ;
+          end
+      end
+  endgenerate
+
+
+  // DIV doesnt write to common reg
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        //always @(*)
+        //  begin
+            assign sfu_div_load_common_reg    [lane]  = 'b0 ;
+                                                                                                                                  
+            assign sfu_div_common_regs        [lane]  = 'd0 ;
+        //  end
+      end
+  endgenerate
+
 
   DW_fp_div_seq  #(
                    .sig_width       ( 23), 
                    .exp_width       ( 8 ), 
                    .ieee_compliance ( 1 ),
-                   .num_cyc         ( 16),
-                   .rst_mode        ( 0 ),
+                   .num_cyc         ( 5),
+                   .rst_mode        ( 1 ),
                    .input_mode      ( 1 ),
                    .output_mode     ( 1 ),
                    .early_start     ( 0 ),
                    .internal_reg    ( 1 )
                    )
-  DW_fp_div_seq   ( .a         ( input_regs[0]          ), 
-                    .b         ( input_regs[1]          ), 
+  DW_fp_div_seq   ( .a         ( div_input [0]          ), 
+                    .b         ( div_input [1]          ), 
                     .rnd       ( 3'b000                 ),
-                    .start     ( start_special_function ),
-                    .z         ( special_function_out [2] ), 
-                    .complete  (                        ),
+                    .start     ( div_start              ),
+                    .z         ( div_output             ),
+                    .complete  ( div_complete           ),
                     .status    (                        ),
                     .rst_n     (~reset_poweron          ), 
                     .clk       ( clk                    )

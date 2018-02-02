@@ -29,7 +29,7 @@ set clkname clk
 # WIP
 #
 
-set modname streamingOps
+set modname simd_wrapper
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD

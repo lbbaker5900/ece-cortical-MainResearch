@@ -277,7 +277,7 @@ if {$tech == "65nm"} {
 #  - SIMD core
 #--------------------------------------------------------- 
 if {($modname == "simd_wrapper") || ($modname == "pe")} {
-  set_dont_touch [get_cell simd_wrapper/simd_core]
+  #set_dont_touch [get_cell simd_wrapper/simd_core]
 }
 
 set verilogout_show_unconnected_pins true

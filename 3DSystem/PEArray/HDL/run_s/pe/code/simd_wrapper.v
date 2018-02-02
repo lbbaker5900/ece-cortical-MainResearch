@@ -524,8 +524,6 @@ module simd_wrapper (
   // 
   //
   
-  wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__smdw__regs_valid    ;
-
   simd_core simd_core (
 
             .cntl__simd__cfg_valid           ( smdw__simd__cfg_valid        ),  // load PC
@@ -622,6 +620,7 @@ module simd_wrapper (
       simd_wrapper_op_inc  =  simd_option_memory[0].read_data [`SIMD_WRAP_SIMD_OPTION_MEMORY_AGGREGATE_SAVE_INC_RANGE    ];
     end
 
+  // extract stage operations
   generate
     for (gvi=0; gvi<`SIMD_WRAP_OPERATION_NUM_OF_STAGES; gvi++)
       begin
