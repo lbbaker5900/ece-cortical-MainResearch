@@ -208,14 +208,14 @@ The area contribution of each block within the Manager and \ac{pe} can be seen i
        \multirow{2}{*}{Block name}    &  \multirow{2}{*}{Instances}        &  \multirow{2}{*}{Percentage contribution}     \\  %\cline{1-1}
                                       &                                    &                                               \\
         \hline  % instead of \midrule %midrule doesnt overlap with column lines
-     Operation Decode    & 1&\SI[per-mode=symbol]{ 3.4}{\percent}  \\
+     Operation Decode    & 1&\SI[per-mode=symbol]{ 3.3}{\percent}  \\
    Return Data Control   & 1&\SI[per-mode=symbol]{ 1.5}{\percent}  \\
-    SIMD Control         & 1&\SI[per-mode=symbol]{ 8.1}{\percent}  \\
-        SIMD             & 1&\SI[per-mode=symbol]{19.3}{\percent}  \\
-  Streaming Operations   &32&\SI[per-mode=symbol]{43.3}{\percent}  \\
-  Streaming Op Control   & 1&\SI[per-mode=symbol]{ 2.1}{\percent}  \\
+    SIMD Wrapper         & 1&\SI[per-mode=symbol]{11.2}{\percent}  \\
+        SIMD             & 1&\SI[per-mode=symbol]{18.7}{\percent}  \\
+  Streaming Operations   &32&\SI[per-mode=symbol]{41.8}{\percent}  \\
+  Streaming Op Control   & 1&\SI[per-mode=symbol]{ 2.0}{\percent}  \\
  Local Memory + Control\footnote{A small amount of scratchpad memory was provided between \acp{stop} and \ac{simd} but in practice could be much smaller. It is not used in any of the fanin tests.}  & 1&\SI[per-mode=symbol]{17.7}{\percent}  \\ 
-        TSV              &NA&\SI[per-mode=symbol]{ 4.0}{\percent}  \\
+        TSV              &NA&\SI[per-mode=symbol]{ 3.9}{\percent}  \\
         Misc             &NA&\SI[per-mode=symbol]{ 0.5}{\percent}  \\
         \hline
       \end{tabular}
@@ -429,30 +429,31 @@ The list of features implemented and verified are shown in table \ref{tab:Featur
           \footnotesize
           %\begin{tabular}{|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1cm}|>{\centering}m{1.3cm}|>{\centering}m{1.3cm}|}\cline{1-4}
           %\begin{tabular}{ |>{\centering}m{1.5cm}|>{\centering}m{1.5cm}|>{\centering}m{1.5cm}|m{3cm}|}
-          \begin{tabular}{ |m{3cm}|c|c|c|m{4cm}|}
+          \begin{tabular}{ |m{4cm}|c|c|c|m{3cm}|}
             %\hline
             %\rowcolor{gray!50}
             %\multicolumn{5}{|c|}{Power } \\
             \hline
             %\cline{1-4}
             \rowcolor{gray!25}
- \multicolumn{1}{|c|}{Feature}      &   \multicolumn{2}{c|}{Limitations}                 & Method                  &   \multicolumn{1}{c|}{Comment}                                     \\
-            \hline                                                                                                 
-        Major processing datapaths  &   \multicolumn{2}{c|}{N}                           & Self checking           &  Instructions generated using python scripts \\\cline{1-5}
-        Sync Send                   &   \multicolumn{2}{c|}{Host only}                   & Visual                  &  Instructions manually generated                                   \\\cline{1-5}
-        Sync Wait                   &   \multicolumn{2}{c|}{Host only}                   & Visual                  &  Instructions manually generated                                   \\\cline{1-5}
-        Memory Upload               &   \multicolumn{2}{c|}{Host from \ac{dram}}         & Visual                  &  Instructions manually generated                                   \\\cline{1-5}
- \multirow{2}{*}{Memory Download}   &   Solicited   & \multirow{2}{*}{Host to \ac{dram}} & \multirow{2}{*}{Visual} &  \multirow{2}{4cm}{\parbox{4cm}{Instructions manually generated}}  \\\cline{2-2}
-                                    &   Unsolicited &                                    &                         &                                                                    \\\cline{1-5}
-        BootP                       &   \multicolumn{2}{c|}{N}                           & Visual                  &  Instructions manually generated                                   \\\cline{1-5}
-        %MAC                         &   N                     & Self checking  &  Instructions generated using python scripts \\
+ \multicolumn{1}{|c|}{Feature}          &   \multicolumn{2}{c|}{Limitations}                 & Method                  &   \multicolumn{1}{c|}{Comment}                                         \\
+            \hline                                                                                                     
+        Major processing datapaths      &   \multicolumn{2}{c|}{N}                           & Self checking           &  \multicolumn{1}{c|}{Instructions generated using python scripts}      \\\cline{1-5}
+        SIMD Wrapper special functions  &   \multicolumn{2}{c|}{N}                           & \multirow{7}{*}{Visual} &  \multicolumn{1}{c|}{\multirow{7}{*}{Instructions manually generated}} \\\cline{1-3}
+        Sync Send                       &   \multicolumn{2}{c|}{Host only}                   &                         &                                                                        \\\cline{1-3}
+        Sync Wait                       &   \multicolumn{2}{c|}{Host only}                   &                         &                                                                        \\\cline{1-3}
+        Memory Upload                   &   \multicolumn{2}{c|}{Host from \ac{dram}}         &                         &                                                                        \\\cline{1-3}
+ \multirow{2}{*}{Memory Download}       &   Solicited   & \multirow{2}{*}{Host to \ac{dram}} &                         &                                                                        \\\cline{2-2}
+                                        &   Unsolicited &                                    &                         &                                                                        \\\cline{1-3}
+        BootP                           &   \multicolumn{2}{c|}{N}                           &                         &                                                                        \\\cline{1-5}
+        %MAC                             &   N                     & Self checking  &  Instructions generated using python scripts \\
             %\hline
           \end{tabular}
       %\end{adjustbox}
   \end{minipage}
   \captionsetup{justification=centering, skip=9pt}
   \vspace{0.0cm}
-  \captionof{table}{System Ffeatures implemented}
+  \captionof{table}{System features implemented}
   \label{tab:Features implemented}
 \end{table}
 

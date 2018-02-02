@@ -219,7 +219,7 @@
     \begin{titlepage}
     \centering
       \quad
-      \vspace{0.35\textheight}
+      \vspace{0.5\textheight}
 
       \copyright{} Copyright \ncsu@year{} by \@author \\[1em]
       All Rights Reserved

@@ -624,23 +624,74 @@ A block diagram of the \ac{stop} can be seen in figure \ref{fig:stOp block diagr
 \label{sec:simd}
 
 The \ac{simd} takes the operation from the \ac{pe} controller and indexes into a small memory. This memory contains a \ac{pc} for the \ac{simd} along with control information for processing the \ac{stop} result inside the wrapper.
+The wrapper contains four special functions, a \ac{relu}, a \ac{binary32} adder, a \ac{binary32} exponential and a \ac{binary32} divider.
+The control memory contains a four element vector allowing the special functions to be cascaded.
+The primary operation is to perform \ac{mac} operation in the \ac{stop} followed by a \ac{relu} as one of the four operations with the other three being \ac{nop}.
+Once the four operations have concluded, the result is currently sent back to the manager over the upstream bus.
+
+The adder is used during single \ac{an} processing as described in section \ref{sec:Processing Engine Layer} and shown in figure \ref{fig:Group AN calculation}.
+
+The adder is also employed in the softmax calculation used in the final stage of \ac{ann} classifiers.
+In this case, when processing the \ac{an}, the operations performed are the \ac{relu}, the exponent, and an accumulation using a local register. The \ac{an} states are sent back to the manager.
+All the \acp{an} are processed and the local register contains the summation of the \ac{an} states. 
+The cells are then parsed a second time using the divider and the stored local value to calculate the softmax.
+
+There are single instantiations of the special functions and the processed is performed serially.
+In addition, synthesis multicycle paths are employed as these functions do not represent hot-spots in the processing.
+
 This work does not put a high level of importance on the \ac{simd} as the functionality provided by the \ac{simd} is to provide a level of flexibility for future work.
-Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed by logic in the \ac{simd} wrapper block, as can be seen in figure \ref{fig:simd wrapper block diagram}.
+Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed by the special functions provided in the wrapper as dscribed above and shown in figure \ref{fig:simd wrapper block diagram}.
 However, it was important to include the \ac{simd} in the area portion of the study.
-To account for the \ac{simd}, a dummy \ac{simd} instance was instantiated inside the \ac{simd} wrapper and in the area layout study a placement blockage was used based 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
+To account for the \ac{simd}, in the area layout study a placement blockage was used based 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
 In practice, the \ac{simd} will take the result data from the \ac{stop} and perform the operation starting at the \ac{pc} indicated by the \ac{simd} operation pointer provided by the \ac{pe} controller.
-The \ac{simd} performs the specified operation on the data provided by the \ac{stop} which can be passed directly to the \ac{simd} or provided indirectly in \ac{simd} local memory.
-In most cases, the \ac{simd} operation \ac{an} activation function which in the baseline system is the \ac{relu} function.
-When the \ac{simd} wrapper has completed its operation, it passes the result to the upstream controller to be returned to the manager.
+
+%In most cases, the \ac{simd} operation \ac{an} activation function which in the baseline system is the \ac{relu} function.
+%When the \ac{simd} wrapper has completed its operation, it passes the result to the upstream controller to be returned to the manager.
+
 \begin{figure}[h]
-\centering
-\captionsetup{justification=centering}
-\captionsetup{width=0.9\textwidth}
-\centerline{
-\mbox{\includegraphics[angle=0, width=.75\textwidth]{SIMDwrapperBlockDiagram}}
-}
-\center\caption{SIMD wrapper block diagram}
-\label{fig:simd wrapper block diagram}
+  % the [] contains position info e.g. [!t] means here
+  \centering
+  \captionsetup{justification=centering}
+  \begin{minipage}{1\textwidth}
+    \centering
+    %\captionsetup{justification=centering}
+    \captionsetup{width=0.9\textwidth}
+    \centerline{
+    \mbox{\includegraphics[angle=0, width=.75\textwidth]{SIMDwrapperBlockDiagram}}
+    }
+    \center\caption{SIMD wrapper block diagram}
+    \label{fig:simd wrapper block diagram}
+  \end{minipage}
+  \bigskip
+  \begin{minipage}{0.40\textwidth}
+    \centering
+    \vspace{5mm}
+    \begin{adjustbox}{width=1\textwidth}
+        \centering
+        %\footnotesize
+        \begin{tabular}{ |c|c|  }
+          \hline
+          \rowcolor{gray!50}
+          \multicolumn{2}{|c|}{Special Function} \\
+          \hline
+          \rowcolor{gray!25}
+          code[3:0] & Description  \\
+          \hline
+          0     & NOP                             \\
+          1     & ReLu                            \\
+          2     & Sum/Save in output register     \\
+          3     & Sum/Save with local register    \\
+          4     & Sum/Send outputs                \\
+          5     & Exponent                        \\
+          6     & Divide with local register      \\
+          other & NA                              \\
+          \hline
+        \end{tabular}
+    \end{adjustbox}
+    \captionsetup{justification=centering, skip=9pt}
+    \captionof{table}{SIMD wrapper special function codes}
+    \label{SIMD wrapper special function codes}
+  \end{minipage}
 \end{figure}
 
 
@@ -706,7 +757,7 @@ Currently only the tag and data mode has been implemented.
   \begin{minipage}{1\textwidth}
     \centering
     \begin{minipage}[t]{0.25\textwidth}
-      \vspace{3mm}
+      \vspace{5mm}
       \centering
       \begin{adjustbox}{width=1\textwidth}
           \footnotesize
@@ -727,7 +778,7 @@ Currently only the tag and data mode has been implemented.
       \end{adjustbox}
     \end{minipage}
     \begin{minipage}[t]{0.2\textwidth}
-      \vspace{3mm}
+      \vspace{5mm}
       \centering
       \begin{adjustbox}{width=1\textwidth}
           \footnotesize

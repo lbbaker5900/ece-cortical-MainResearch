@@ -527,7 +527,8 @@
 
 
 \pagestyle{plain}
-\newgeometry{margin=1in,lmargin=1.25in,footskip=\chapterfootskip, includehead, includefoot}
+%\newgeometry{margin=1in,lmargin=1.25in,footskip=\chapterfootskip, includehead, includefoot}
+\newgeometry{letterpaper,top=1in,bottom=1in,right=1in,left=1.25in,footskip=\chapterfootskip, includefoot}
 %\setcounter{chapter}{1}
 \include{Introduction/Introduction}
 \include{ANNs/ANNs}
@@ -577,7 +578,8 @@
  %\vspace{-0.5in}
 \titleformat{\chapter}[display]{\bf\filcenter
 }{\chaptertitlename\ \thechapter}{11pt}{\bf\filcenter}
-\titlespacing*{\chapter}{0pt}{-0.5in-9pt}{22pt}
+%\titlespacing*{\chapter}{0pt}{-0.5in-9pt}{22pt}
+\titlespacing*{\chapter}{0pt}{-0.15in-9pt}{22pt}
 
 \printbibliography[heading=myheading]
 \end{spacing}
