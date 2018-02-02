@@ -1332,6 +1332,7 @@ module simd_core (
   endgenerate
 
 
+
   // DIV doesnt write to common reg
   generate
     for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
@@ -1350,7 +1351,7 @@ module simd_core (
                    .sig_width       ( 23), 
                    .exp_width       ( 8 ), 
                    .ieee_compliance ( 1 ),
-                   .num_cyc         ( 8),
+                   .num_cyc         ( `SIMD_WRAP_OPERATION_DIV_MULTICYCLE ),
                    .rst_mode        ( 1 ),
                    .input_mode      ( 1 ),
                    .output_mode     ( 1 ),

@@ -85,8 +85,8 @@
 
 //--------------------------------------------------------
 // SIMD wrapper operations multicycle
-`define SIMD_WRAP_OPERATION_EXP_MULTICYCLE              8
-`define SIMD_WRAP_OPERATION_DIV_MULTICYCLE              8
+`define SIMD_WRAP_OPERATION_EXP_MULTICYCLE              8   // match with synthesys
+`define SIMD_WRAP_OPERATION_DIV_MULTICYCLE              16  // divide adds registers
 
 //--------------------------------------------------------
 // Transfer from System interface to bank interface
