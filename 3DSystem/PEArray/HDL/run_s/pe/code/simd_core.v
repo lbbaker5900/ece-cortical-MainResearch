@@ -101,10 +101,6 @@ module simd_core (
   reg   [`SIMD_WRAP_OPERATION_TYPE_RANGE                ]    curr_special_op                                                         ;  // latch special op
                                                                                                
                                                                                                
-  reg   [`PE_EXEC_LANE_WIDTH_RANGE                      ]    special_function_value                                                  ;
-  wire  [`PE_EXEC_LANE_WIDTH_RANGE                      ]    special_function_out              [`SIMD_CORE_OPERATION_PC_NUM_OF_OPS ] ;
-  wire  [`SIMD_CORE_SFU_CMP_RANGE                       ]    special_function_cmp_flag                                               ;  // eq, lt, gt
-                                                       
   reg                                                        cntl__simd__cfg_valid_d1                                                ;
   reg   [`SIMD_CORE_OPERATION_RANGE                     ]    cntl__simd__cfg_operation_d1                                            ; 
   reg   [`SIMD_WRAP_OPERATION_TYPE_RANGE                ]    cntl__simd__cfg_wrap_op_d1        [`SIMD_WRAP_OPERATION_NUM_OF_STAGES ] ;
@@ -152,9 +148,6 @@ module simd_core (
   // store regs for processing
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      input_regs_valid                      ;
   reg   [`PE_EXEC_LANE_WIDTH_RANGE        ]      input_regs  [`PE_NUM_OF_EXEC_LANES ]  ;
-
-//  reg   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      sfu_regs_valid                        ;
-//  reg   [`PE_EXEC_LANE_WIDTH_RANGE        ]      sfu_regs  [`PE_NUM_OF_EXEC_LANES ]    ;
 
   reg                                            simd_output_valid                     ;
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      simd_regs_valid                       ;
@@ -346,70 +339,6 @@ module simd_core (
   wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_div_common_regs       [`PE_NUM_OF_EXEC_LANES ]  ;
   wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_div_load_common_reg                             ;  // 
 
-/*
-  generate
-    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
-      begin
-        always @(posedge clk)
-          begin
-   //         if ( simd_core_cntl_state == `SIMD_CORE_CNTL_SFU_COMPLETE)
-   //           begin
-                casex(special_function_done)
-                  //--------------------------------------------------
-                  // NOP
-                  16'bxxxx_xxxx_xxxx_xxx1: 
-                    begin
-                      sfu_regs_valid [lane]  <= input_regs_valid[lane] ;
-                                                                         
-                      sfu_regs       [lane]  <= input_regs[lane]       ;
-                    end
-                  //--------------------------------------------------
-                  // ReLu
-                  16'bxxxx_xxxx_xxxx_xx1x: 
-                    begin
-                      sfu_regs_valid [lane]  <=  input_regs_valid[lane] ;
-                                                                                                                                     
-                      sfu_regs       [lane]  <= ( input_regs[lane][`COMMON_IEEE754_SIGN_RANGE]  )  ?  `COMMON_IEEE754_FLOAT_ZERO  :
-                                                                                                       input_regs [lane]          ;
-                    end
-                  //--------------------------------------------------
-                  // SUM_SAVE
-                  16'bxxxx_xxxx_xxxx_x1xx: 
-                    begin
-                      sfu_regs_valid [lane]  <= (sfu_add_load_local_reg [lane]) ? 1'b1                      :  sfu_regs_valid [lane] ;
-
-                      sfu_regs       [lane]  <= (sfu_add_load_local_reg [lane]) ? sfu_add_local_regs [lane] :  sfu_regs       [lane] ;
-                    end
-                  //--------------------------------------------------
-                  // SUM_ACC
-                  16'bxxxx_xxxx_xxxx_1xxx: 
-                    begin
-                      sfu_regs_valid [lane]  <= (sfu_add_load_local_reg [lane]) ? 1'b1                      :  sfu_regs_valid [lane] ;
-
-                      sfu_regs       [lane]  <= (sfu_add_load_local_reg [lane]) ? sfu_add_local_regs [lane] :  sfu_regs       [lane] ;
-                    end
-                  //--------------------------------------------------
-                  // SUM_SEND
-                  16'bxxxx_xxxx_xxx1_xxxx: 
-                    begin
-                      sfu_regs_valid [lane]  <= (sfu_add_load_local_reg [lane]) ? 1'b1                      :  sfu_regs_valid [lane] ;
-
-                      sfu_regs       [lane]  <= (sfu_add_load_local_reg [lane]) ? sfu_add_local_regs [lane] :  sfu_regs       [lane] ;
-                    end
-                  //--------------------------------------------------
-                  // EXP
-                  16'bxxxx_xxxx_xx1x_xxxx: 
-                    begin
-                      sfu_regs_valid [lane]  <= (sfu_exp_load_local_reg [lane]) ? 1'b1                      :  sfu_regs_valid [lane] ;
-
-                      sfu_regs       [lane]  <= (sfu_exp_load_local_reg [lane]) ? sfu_exp_local_regs [lane] :  sfu_regs       [lane] ;
-                    end
-                endcase
-          //    end
-          end
-      end
-  endgenerate
-*/
   generate
     for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
       begin
@@ -467,63 +396,6 @@ module simd_core (
       end
   endgenerate
 
-/*
-            if (reset_poweron)
-              begin
-                local_regs_valid [lane]  <= 'b0 ;
-                                                                         
-                local_regs       [lane]  <= 'd0 ;
-              end
-            else
-              begin
-                casex(special_function_done)
-                  //--------------------------------------------------
-                  // NOP
-                  16'bxxxx_xxxx_xxxx_xxx1: 
-                    begin
-                      local_regs_valid [lane]  <= input_regs_valid[lane] ;
-                                                                         
-                      local_regs       [lane]  <= input_regs[lane]       ;
-                    end
-                  //--------------------------------------------------
-                  // ReLu
-                  16'bxxxx_xxxx_xxxx_xx1x: 
-                    begin
-                      local_regs_valid [lane]  <=  input_regs_valid[lane] ;
-                                                                                                                                     
-                      local_regs       [lane]  <= ( input_regs[lane][`COMMON_IEEE754_SIGN_RANGE]  )  ?  `COMMON_IEEE754_FLOAT_ZERO  :
-                                                                                                       input_regs [lane]          ;
-                    end
-                  //--------------------------------------------------
-                  // SUM_SAVE
-                  16'bxxxx_xxxx_xxxx_x1xx: 
-                    begin
-                      local_regs_valid [lane]  <= sfu_add_load_local_reg [lane] ;
-
-                      local_regs       [lane]  <= (sfu_add_load_local_reg [lane]) ? sfu_add_local_regs [lane] : local_regs [lane]  ;
-                    end
-                  //--------------------------------------------------
-                  // SUM_ACC
-                  16'bxxxx_xxxx_xxxx_1xxx: 
-                    begin
-                      local_regs_valid [lane]  <= sfu_add_load_local_reg [lane] ;
-
-                      local_regs       [lane]  <= (sfu_add_load_local_reg [lane]) ? sfu_add_local_regs [lane] : local_regs [lane]  ;
-                    end
-                  //--------------------------------------------------
-                  // SUM_SEND
-                  16'bxxxx_xxxx_xxx1_xxxx: 
-                    begin
-                      local_regs_valid [lane]  <= 'b0 ;
-
-                      local_regs       [lane]  <= 'd0 ;
-                    end
-                endcase
-              end
-          end
-      end
-  endgenerate
-*/
 
   //----------------------------------------------------------------------------------------------------
   //
@@ -607,27 +479,6 @@ module simd_core (
       end
   endgenerate
 
-  always @(*)
-    begin
-      case (cntl__simd__cfg_operation [`SIMD_CORE_OPERATION_PC_RANGE ])
-        `SIMD_CORE_OPERATION_PC_MAC :
-          begin
-            special_function_value  = special_function_out [0];
-          end
-        `SIMD_CORE_OPERATION_PC_EXP :
-          begin
-            special_function_value  = special_function_out [1];
-          end
-        `SIMD_CORE_OPERATION_PC_DIV :
-          begin
-            special_function_value  = special_function_out [2];
-          end
-        default :
-          begin
-            special_function_value  = 'd0 ;
-          end
-      endcase 
-    end
 
   always @(*)
     begin
@@ -650,6 +501,7 @@ module simd_core (
   //----------------------------------------------------------------------------------------------------
   // NOP
  
+/*
   // force complete when we see a NOP
   always @(posedge clk)
     begin
@@ -659,6 +511,8 @@ module simd_core (
                         (simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT_FOR_SIMD             ) ? 1'b0         :
                                                                                                sfu_nop_done ;
     end
+*/
+
 
   reg [`SIMD_CORE_SFU_NOP_CNTL_STATE_RANGE ]   simd_core_nop_cntl_state      ; // state flop
   reg [`SIMD_CORE_SFU_NOP_CNTL_STATE_RANGE ]   simd_core_nop_cntl_state_next ;
@@ -1477,19 +1331,6 @@ module simd_core (
       end
   endgenerate
 
-  
-  generate
-    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
-      begin
-        always @(*)
-          begin
-            sfu_div_load_local_reg    [lane]  = 'b0 ;
-                                                                                                                                  
-            sfu_div_local_regs        [lane]  = 'd0 ;
-          end
-      end
-  endgenerate
-
 
   // DIV doesnt write to common reg
   generate
@@ -1509,7 +1350,7 @@ module simd_core (
                    .sig_width       ( 23), 
                    .exp_width       ( 8 ), 
                    .ieee_compliance ( 1 ),
-                   .num_cyc         ( 5),
+                   .num_cyc         ( 8),
                    .rst_mode        ( 1 ),
                    .input_mode      ( 1 ),
                    .output_mode     ( 1 ),
