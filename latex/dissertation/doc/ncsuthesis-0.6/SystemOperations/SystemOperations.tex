@@ -111,7 +111,7 @@ The instruction can be seen in figure \ref{fig:Instruction (4-tuple example)} an
       \item \ac{dram} address for \ac{an} states
     \end{itemize}
 \end{itemize}
-
+\iffalse
 \begin{figure}[!t]
 \centering
 \captionsetup{justification=centering}
@@ -119,6 +119,21 @@ The instruction can be seen in figure \ref{fig:Instruction (4-tuple example)} an
 \centerline{
 \mbox{\includegraphics[width=.9\linewidth]{instruction4Tuple}}
 }
+\caption{Typical compute instruction (4-tuple)}
+\label{fig:Instruction (4-tuple example)}
+\end{figure}
+\fi
+\begin{figure}[!t]
+  % the [] contains position info e.g. [!t] means here
+  \centering
+    \captionsetup{justification=centering, skip=10pt}
+    \vspace{10mm}
+    \begin{bytefield}[bitwidth=0.49em, endianness=big]{80}
+      %\bitheader{0,32,64,96,128} \\
+      %\begin{rightwordgroup}{\scriptsize Option Cycle}
+        \colorbitbox{desc!40}{20}{\scriptsize Operation descriptor\\ \vspace{-0em}(MAC+ReLu)} & \colorbitbox{desc!40}{20}{\scriptsize Read descriptor\\ \vspace{-0em}(Input ROI)} & \colorbitbox{desc!40}{20}{\scriptsize Read descriptor \\ \vspace{-0em}(pre-synaptic \ac{an} states)} & \colorbitbox{desc!40}{20}{\scriptsize Write descriptor\\ \vspace{-0em}(store \ac{an} states)} 
+      %\end{rightwordgroup}  \\
+    \end{bytefield}
 \caption{Typical compute instruction (4-tuple)}
 \label{fig:Instruction (4-tuple example)}
 \end{figure}

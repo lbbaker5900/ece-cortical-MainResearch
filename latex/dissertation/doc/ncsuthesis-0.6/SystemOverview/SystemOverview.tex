@@ -343,7 +343,7 @@ Each of the \ac{diram4} memories contain two channels with each channel containi
 The Manager block is the main \ac{ssc} controller and the memory controller for the \ac{diram4} memory. 
 
 The operations required to process an \ac{ann} are formed from individual instructions which are decoded by the Manager. 
-These instructions (for more detail see section \ref{sec:Instructions}) are sub-divided into descriptors to describe memory read operations, processing engine operations, memory write operations and general system operations for synchronization. 
+These instructions (for more detail see section \ref{sec:Instructions}) are sub-divided into descriptors to describe memory read operations, processing engine operations, memory write operations and general system operations such as data upload, data downlod and synchronization. 
 The manager reads these system instructions from an instruction memory, decodes the descriptors and configures the various blocks in the system.
 The configuration includes:
 \begin{itemize}
@@ -355,6 +355,7 @@ The configuration includes:
 
 The most common instruction is to perform state calculation on a group of \acp{an}.
 This instruction contains four descriptors (see figure \ref{fig:Instruction 4-tuple} and \ref{fig:Instruction Details}), an operation descriptor, two memory read descriptors and a memory write descriptor.
+\iffalse
 \begin{figure}[!t]
 \centering
 \captionsetup{justification=centering}
@@ -365,7 +366,21 @@ This instruction contains four descriptors (see figure \ref{fig:Instruction 4-tu
 \caption{Instruction 4-tuple}
 \label{fig:Instruction 4-tuple}
 \end{figure}
-
+\fi
+\begin{figure}[!t]
+  % the [] contains position info e.g. [!t] means here
+  \centering
+    \captionsetup{justification=centering, skip=10pt}
+    \vspace{10mm}
+    \begin{bytefield}[bitwidth=0.49em, endianness=big]{64}
+      %\bitheader{0,32,64,96,128} \\
+      %\begin{rightwordgroup}{\scriptsize Option Cycle}
+        \colorbitbox{desc!40}{16}{\scriptsize Operation \\ \vspace{-0em}descriptor} & \colorbitbox{desc!40}{16}{\scriptsize Arg0 read \\ \vspace{-0em}descriptor} & \colorbitbox{desc!40}{16}{\scriptsize Arg1 read \\ \vspace{-0em}descriptor} & \colorbitbox{desc!40}{16}{\scriptsize Result write \\ \vspace{-0em}descriptor} 
+      %\end{rightwordgroup}  \\
+    \end{bytefield}
+\caption{Four descriptor instruction (4-tuple)}
+\label{fig:Instruction 4-tuple}
+\end{figure}
 
 The operation descriptor describes the operations the \ac{pe} will perform, which typically includes a \ac{mac} to be performed by the \ac{stop} followed by a \ac{relu} \cite{maas2013rectifier} function to be performed by the \ac{simd}.
 The manager extracts the operation information, embeds the information in an \ac{oob} packet and sends the packet to the \ac{pe} over the downstream \ac{oob} bus.

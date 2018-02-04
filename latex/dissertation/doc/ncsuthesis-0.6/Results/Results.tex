@@ -393,11 +393,11 @@ The estimated overall power along with per block contribution are shown in table
         \hline
        \multirow{2}{*}{Block name}    &  \multirow{2}{*}{Percentage contribution}    \\
                                       &                                              \\\hline
-                Manager  & \SI[per-mode=symbol]{61.8}{\percent}  \\ 
-                     PE  & \SI[per-mode=symbol]{33.6}{\percent}  \\
-                   DRAM  & \SI[per-mode=symbol]{ 1.7}{\percent}  \\
-              DRAM TSVs  & \SI[per-mode=symbol]{ 1.8}{\percent}  \\
-         Stack Bus TSVs  & \SI[per-mode=symbol]{ 1.1}{\percent}  \\
+                Manager  & \SI[per-mode=symbol]{58.7}{\percent}  \\ 
+                     PE  & \SI[per-mode=symbol]{36.5}{\percent}  \\
+                   DRAM  & \SI[per-mode=symbol]{ 2.2}{\percent}  \\
+              DRAM TSVs  & \SI[per-mode=symbol]{ 1.6}{\percent}  \\
+         Stack Bus TSVs  & \SI[per-mode=symbol]{ 1.0}{\percent}  \\
         \hline
       \end{tabular}
     \end{adjustbox}
@@ -465,7 +465,8 @@ The area scaling numbers employed are within a reasonable range based on \cite{s
 Therefore the place and route feasibility study suggests that embarking on productizing a system based on this work would be relatively low risk.
 
 The power numbers were higher than expected %but the power still within a number that is still considered manageable when the design is run at \SI{500}{\mega\hertz}.
-but the power per unit area of \SI[per-mode=symbol]{386}{\milli\watt\per\square\milli\meter\per\giga\hertz} appears to be a high when compared to the \SI[per-mode=symbol]{133}{\milli\watt\\per\square\milli\meter\per\giga\hertz} inferred from \cite{tensorflow2015-whitepaper}, so there may be opportunities for power reduction such as clock gating.
+and the power per unit area of \SI[per-mode=symbol]{197}{\milli\watt\per\square\milli\meter\per\giga\hertz} appears to be a high when compared to the \SI[per-mode=symbol]{133}{\milli\watt\per\square\milli\meter\per\giga\hertz} inferred from \cite{tensorflow2015-whitepaper}.
+Therefore there may either be be opportunities for power reduction, such as clock gating or a fully completed place and route may result in lower power numbers.
 %There is unlikely opportunities for clock gating because most of the logic is active during the processing of an \ac{ann}.
 %The power numbers seem high but there is likely room for improvement when productizing the system.
 
