@@ -178,6 +178,7 @@ module simd_core (
   reg   [`PE_EXEC_LANE_WIDTH_RANGE                                ]   local_regs        [`PE_NUM_OF_EXEC_LANES ]  ;  // holds result of each stage
   reg   [`PE_EXEC_LANE_WIDTH_RANGE                                ]   local_regs_valid                            ;  // 
   reg                                                                 send_local_regs                             ;  
+  reg                                                                 send_null                                   ;  
   reg                                                                 clr_common_regs                             ;  
   reg   [`PE_EXEC_LANE_WIDTH_RANGE                                ]   common_regs       [`PE_NUM_OF_EXEC_LANES ]  ;
   reg   [`PE_EXEC_LANE_WIDTH_RANGE                                ]   common_regs_valid                           ;  // holds registers between instructions
@@ -288,7 +289,7 @@ module simd_core (
                                  (cntl__simd__cfg_valid && (simd_core_cntl_state == `SIMD_CORE_CNTL_WAIT    ))  ?  1'b0                 :
                                                                                                                    simd__smdw__complete ;
 
-      simd__smdw__sending     <= ( reset_poweron )  ?  1'b0  : send_local_regs   ;
+      simd__smdw__sending     <= ( reset_poweron )  ?  1'b0  : (send_local_regs | send_null)   ;
     end
 
   assign   start_special_function    = (simd_core_cntl_state == `SIMD_CORE_CNTL_SFU_START );
@@ -536,6 +537,10 @@ module simd_core (
           begin
             special_op_is_nop  =  1'b1 ;
           end
+        `SIMD_WRAP_OPERATION_SEND_NULL :
+          begin
+            special_op_is_nop  =  1'b1 ;
+          end
         `SIMD_WRAP_OPERATION_CLR_LOCAL_REGS :
           begin
             special_op_is_nop  =  1'b1 ;
@@ -646,24 +651,35 @@ module simd_core (
                  `SIMD_WRAP_OPERATION_CLR_COMMON_REGS :
                    begin
                      clr_local_regs    = 'b0 ;
+                     send_null         = 'b0 ;
                      send_local_regs   = 'b0 ;
                      clr_common_regs   = 'b1 ;
                    end
                  `SIMD_WRAP_OPERATION_CLR_LOCAL_REGS :
                    begin
                      clr_local_regs    = 'b1 ;
+                     send_null         = 'b0 ;
                      send_local_regs   = 'b0 ;
                      clr_common_regs   = 'b0 ;
                    end
                  `SIMD_WRAP_OPERATION_SEND :
                    begin
                      clr_local_regs    = 'b0 ;
+                     send_null         = 'b0 ;
                      send_local_regs   = 'b1 ;
+                     clr_common_regs   = 'b0 ;
+                   end
+                 `SIMD_WRAP_OPERATION_SEND_NULL :
+                   begin
+                     clr_local_regs    = 'b0 ;
+                     send_null         = 'b1 ;
+                     send_local_regs   = 'b0 ;
                      clr_common_regs   = 'b0 ;
                    end
                  default:
                    begin
                      clr_local_regs    = 'b0 ;
+                     send_null         = 'b0 ;
                      send_local_regs   = 'b0 ;
                      clr_common_regs   = 'b0 ;
                    end
@@ -672,6 +688,7 @@ module simd_core (
         default:
            begin
              clr_local_regs    = 'b0 ;
+             send_null         = 'b0 ;
              send_local_regs   = 'b0 ;
              clr_common_regs   = 'b0 ;
            end
