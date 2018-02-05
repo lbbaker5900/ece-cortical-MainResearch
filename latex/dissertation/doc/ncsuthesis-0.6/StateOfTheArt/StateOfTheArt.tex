@@ -6,10 +6,10 @@
 \label{sec:State of the art}
 
 For the most part, large scale \acp{ann} have been implemented using \acp{gpu}.
-In some cases, such as \acp{cnn}, these \acp{gpu} are quite effective when the \ac{ann} parameters can be reused in the \acp{gpu} processor local \ac{sram}.
+In some cases, such as \acp{cnn}, these \acp{gpu} are quite effective when the \ac{ann} parameters can be reused in the \acp{gpu} local \ac{sram}.
 
-Much of the \ac{asic} and \ac{asip} research has focused on \acp{cnn} such as \cite{chen201614}\cite{farabet2011neuflow}\cite{azarkhish2017neurostream}, 
-In some cases, implementations have focused on solving specific processing "hot-spots"\ac{ann} \cite{chen201614}.
+Much of the \ac{asic} and \ac{asip} research has focused on \acp{cnn} \cite{chen201614}\cite{farabet2011neuflow}\cite{azarkhish2017neurostream}. 
+In some cases, implementations have focused on solving specific processing ``hot-spots'' \cite{chen201614}.
 %% Dissertation
 %% convnets use shared parameters that 
 %% a) help with translation invariance
@@ -21,18 +21,18 @@ In some cases \iffalse, as seen in \fref{fig:Example state-of-the-art die}\fi th
 processing element die \cite{kim2016neurocube}\cite{chen2014diannao}.
 
 Those that employ external \ac{dram}, such as Neurostream \cite{azarkhish2017neurostream}, \ac{tpu} \cite{tensorflow2015-whitepaper}, NnSP{\cite{esmaeilzadeh2005nnsp} and NeuroCube\cite{kim2016neurocube} still 
-load weights and \ac{an} states to local \ac{sram} prior to processing although \ac{tpu} assumes all required parameters can be stored in its very large local \ac{sram}.
+load weights and \ac{an} states to local \ac{sram} prior to processing, although \ac{tpu} assumes all required parameters can be stored in its very large local \ac{sram}.
 Others, such as DianNao \cite{chen2016diannao} are moving away from external \ac{dram} toward \ac{edram} thereby acknowledging you need both capacity and \ac{dram} bandwidth. 
-But \ac{edram} still has capacity and technology availability issues and in the case of \cite{dadiannao2017} still utilizes > 47\% of the silicon area.
+But \ac{edram} still has capacity and technology availability issues and in the case of \cite{dadiannao2017} still utilizes more than 47\% of the silicon area.
 
 In the case of NnSP{\cite{esmaeilzadeh2005nnsp}, the paper discusses caching data to bridge the speed gap between external memory and the \ac{pe} 
-but does not provide details on how to ensure data locality when reading a \ac{dram} cacheline and how to minimize the impact of \ac{dram} protocol.
+but does not provide details on how to ensure data locality when reading a \ac{dram} cache line and how to minimize the impact of \ac{dram} protocol.
 %% dissertion - mention overlapping kernels etc. ????
 %%NnSP recognizes the need to stream from SDRAM but does not address the significant issues associated with
 %%data structures in \ac{dram} to facilitate streaming and minimize the access protocol limitations of \ac{dram}.
 
 NnSP {\cite{esmaeilzadeh2005nnsp} employs \ac{sdram} but still transfers parameters to a local cache.
-There is very little detail regarding network size and supported types but the use of cache implies reuse and therefore targets shared parameter \acp{ann} such as \acp{cnn}.
+There is very little detail regarding network size and supported types but the use of cache implies reuse and therefore suggests shared parameter \acp{ann} such as \acp{cnn}.
 
 Neuflow\cite{farabet2011neuflow} is limited to \acp{cnn} and the external memory is \ac{qdr} \ac{sram} 
 and thus will be limited by the network size.
@@ -41,25 +41,24 @@ NeuroCube uses \ac{3dic} along with \ac{hmc} \ac{3ddram} and data is transferred
 The combination of limited \ac{hmc} interface bandwidth and the local \ac{sram} limits support to shared weight \acp{ann} such as \acp{cnn}.
 %%NeuroCube appears to transfer operands as packets so is not a "stream" processor.
 
-Eyeriss\cite{chen201614} focuses on \acp{cnn} and specifically on the convolution "hot-spots". It does not support the pooling operations although these can
-be supported by a local CPU.  However, it does not support the memory intensive fully-connected classifier layers or non weight shared locally-connected layers.
-Eyeriss can not be effectively applied to locally-connected type \acp{ann} such as Deepface \cite{Taigman_2014_CVPR}.
+Eyeriss\cite{chen201614} focuses on \acp{cnn} and specifically on the convolution ``hot-spots.''  It does not support the pooling operations although these can
+be supported by a local CPU.  However, it does not support the memory intensive fully-connected classifier layers or non-weight-shared locally-connected layers.
+Eyeriss cannot be effectively applied to locally-connected \acp{ann} such as Deepface \cite{Taigman_2014_CVPR}.
 
 The DianNao family of \acp{asic} \cite{chen2014diannao} \cite{chen2016diannao} originally used external \ac{dram} to store \ac{ann} parameters but still uses \ac{dma} along with \ac{sram} as an intermediate store.
 However, the recent versions of the \ac{asic} acknowledge that local \ac{sram} limits the size of the \ac{ann} the device is able to support and have moved from external \ac{dram} to \ac{edram} \cite{dadiannao2017}.
 However, the local \ac{edram} is still limited to \SI[per-mode=symbol]{36}{\mega \byte} and therefore requires multiple instances to support \acp{dnn} similar to the types of \ac{dnn} this work is targeting.
-To support these useful \acp{dnn}, they have to instantiate up to 64 devices to accomodate the required \ac{dnn} parameter storage resulting in a power approaching \SI[per-mode=symbol]{1}{\kilo\watt} and an area \SI[per-mode=symbol]{430}{\mm\squared}.
+To support these useful \acp{dnn}, they have to instantiate up to 64 devices to accomodate the required \ac{dnn} parameter storage resulting in a power approaching \SI[per-mode=symbol]{1}{\kilo\watt} and an area of \SI[per-mode=symbol]{430}{\mm\squared}.
 These multi-instance implementations can be used to support batch processing \cite{dadiannao2017} but not the single input systems this work is targeting.
 
 The Neurostream \ac{asip} uses \ac{3dic} along with \ac{hmc} \ac{3ddram}. 
 The Neurostream acknowledges that \ac{dram} is required to support useful \acp{dnn} but again data is transferred from the \ac{dram} to local \ac{sram} prior to processing and local \ac{sram} limits support to \acp{cnn}.
 
 The Google \ac{tpu} \cite{tensorflow2015-whitepaper} utilizes a large local \SI[per-mode=symbol]{24}{\mega \byte} \ac{sram} along with a 256x256 systolic array and a \SI[per-mode=symbol]{30}{\giga \byte\per\second} external \ac{dram} interface.
-It gains performance by storing parameters within the array and by performing large batch processing.
-This Google designed solution acknowledges that it is bandwidth limited when implementing the fully connected \acp{ann}.
+It gains performance by storing parameters within the array and by performing large batch processing but acknowledges that it is bandwidth limited when implementing fully-connected \acp{ann}.
 It also states that their experience of implementing \acp{ann} in the Google server farms suggests that these fully connected \acp{ann} represent the bulk of their processing requirements.
 The simpler \acp{cnn} only represent 5\% of the servers \ac{ann} processing requirements.
-It should also be stated that this paper also believes that GPU solutions cannot reach the required performance targets.
+It should also be stated that \cite{tensorflow2015-whitepaper} suggests that GPU solutions cannot reach the required performance targets.
 
 %% Dissertation
 \iffalse

@@ -2,35 +2,35 @@
 \section[The Solution]{The Solution}
 \label{sec:The Solution}
 
-This work believes that to support all types of disparate \ac{ann}s, the system needs to be able to operate directly from the \ac{dram}.
+This work assumes that to support all types of disparate \ac{ann}s, the system needs to be able to operate directly from the \ac{dram}.
 \iffalse 
 This is because SRAM-based solutions assume memory reuse when processing a \ac{ann}.
 However, when \ac{ann}s do not provide sufficient reuse these solutions become \ac{dram} bandwidth bound. 
 \fi
 
-Considering \ac{dram} is required to meet the main storage requirements of useful sized \ac{ann}s, if an implementation can ensure the \ac{dram} bandwidth can meet the system requirements, why use \ac{sram} as an intermediate memory and waste the significant silicon area they consume.
+Considering \ac{dram} is required to meet the main storage requirements of usefully sized \ac{ann}s, if an implementation can ensure the \ac{dram} bandwidth can meet the system requirements, why use \ac{sram} as an intermediate memory and waste the significant silicon area it consumes?
 
 The question becomes, can an implementation employ \ac{dram} with minimal \ac{sram} and meet the system requirements?
 
-This works implementation operates directly out of \ac{dram}, but not just \ac{dram}, \ac{3ddram}.
+This work's implementation operates directly out of \ac{dram}, but not just \ac{dram}, \ac{3ddram}.
 This work has designed a system that can stay within the physical footprint of the \ac{3ddram} and thus can leverage the benefits of 3DIC.
-The benefits of \ac{3dic}, which are reviewed in chapter \ref{sec:3dic} include reduced energy, reduced area and increased connectivity and bandwidth.
+The benefits of \ac{3dic}, which are reviewed in Chapter \ref{sec:3dic} include reduced energy, reduced area and increased connectivity and bandwidth.
 
 \iffalse
-Therefore, this work is able to propose a custom 3D-\ac{dram} that exposes more of the \ac{dram}s internal page and thus generates interface bandwidth that is of the order of 64 times that of the standard \ac{3ddram}.
+Therefore, this work is able to propose a custom 3D-\ac{dram} that exposes more of the \ac{dram}s internal page and thus generates interface bandwidth that is on the order of 64 times that of the standard \ac{3ddram}.
 \fi
 
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------
-Given the problem description \iffalse outlined in section \ref{sec:The Problem},\fi the primary design considerations that drove the architecture of this work are :
+Given the problem description \iffalse outlined in Section \ref{sec:The Problem},\fi the primary design considerations that drove the architecture of this work are :
 \begin{outline}
   \1 \ac{dram} is required for storage of \ac{ann} parameters 
   \1 Target applications are unable to take advantage of memory reuse opportunities and therefore not able to achieve high performance using local \ac{sram} \iffalse to store \ac{ann} parameters or the \ac{ann} input \fi
-  \1 Target application will likely apply many disparate \acp{ann} to perform various system functions
-  \1 Target application will have space and power limitations
+  \1 Target applications will likely apply many disparate \acp{ann} to perform various system functions
+  \1 Target applications will have space and power limitations
 \end{outline}
 
-When performing inference in \acp{ann}, the computational hotspot is the \ac{an} pre-synaptic summation shown in figure \ref{fig:Rate Based Model} and equation \eqref{eq:activation function}.
+When performing inference in \acp{ann}, the computational hotspot is the \ac{an} pre-synaptic summation shown in Figure \ref{fig:Rate Based Model} and \eqref{eq:activation function}.
 This \ac{an} summation involves hundreds or thousands of multiply-accumulates of the pre-synaptic \ac{an} activations and corresponding connection weights. 
 In this work, the \ac{an} activations and weights are stored in \ac{dram} with minimal local \ac{sram}. 
 Therefore, because of the complex access protocol associated with \ac{dram}, one of the main objectives is to demonstrate the \ac{3ddram} can be accessed while maintaining the required average bandwidth to the processing elements.
@@ -39,10 +39,10 @@ Therefore, because of the complex access protocol associated with \ac{dram}, one
 The system has to process thousands of \acp{an} concurrently and do this with minimal unused bus cycles.
 Therefore, the system must decode instructions, configure the various functions, pre-fetch and pipeline \ac{dram} data and perform the actual activation calculation. 
 
-To maximize the processing bandwidth, these operations are all performed concurrently enabling this work to demonstrate the ability to meet and exceed the required \iffalse \SI[per-mode=symbol]{32}{\tera \bit \per \second} of\fi processing bandwidth as shown in equation \eqref{eq:maximumBandwidth}.
+To maximize the processing bandwidth, these operations are all performed concurrently enabling this work to demonstrate the ability to meet and exceed the required \iffalse \SI[per-mode=symbol]{32}{\tera \bit \per \second} of\fi processing bandwidth as shown in \eqref{eq:maximumBandwidth}.
 
 \iffalse
-The problem associated with processing \acp{ann} are outlined in section \ref{sec:The Problem}. 
+The problem associated with processing \acp{ann} are outlined in Section \ref{sec:The Problem}. 
 \fi
 
 \section[Novelty]{Novelty}
@@ -50,11 +50,11 @@ The problem associated with processing \acp{ann} are outlined in section \ref{se
 
 The novelty of this work includes:
 \begin{outline}
-    \1 An extensible architecture that can simultaneously process multiple disparate \ac{ann}s at or near real-time 
-      \2 with low power and real-estate demands
-    \1 A custom \ac{3ddram} providing a \textasciitilde 64X bandwidth benefit compared to standard \ac{3ddram}
+    \1 An extensible architecture that can simultaneously process multiple disparate real-time \ac{ann}s 
+      \2 with low power and real estate demands
+    \1 Proposing a custom \ac{3ddram} providing a \textasciitilde 64X bandwidth benefit compared to standard \ac{3ddram}
       \2 the \ac{3ddram} could be employed in other applications
-    \1 A system that employs pure \ac{3dic} technology
+    \1 An \ac{ann} system that employs pure \ac{3dic} technology
       \2 providing power and performance benefits of remaining within a \ac{3dic} stack
     \1 Custom instructions and data structures that facilitate operating directly out of \ac{3ddram} 
       \2 maximizing processing bandwidth by ensuring effective use of the \ac{3ddram}
@@ -67,20 +67,19 @@ The novelty of this work includes:
 
 This research explores a \ac{3dic} solution using a custom organized \ac{3ddram} in conjunction with unique data structures and custom processing modules to significantly reduce the 
 area and power footprint of an application that needs to support the processing associated with multiple \ac{ann}s.
-This works system will provide at or near real-time performance required for systems employing multiple disparate \ac{ann}s whilst staying within acceptable area and power limits and will provide greater than an order of magnitude benefit over comparable solutions.
+This work's system will provide at or near real-time performance required for systems employing multiple disparate \ac{ann}s while staying within acceptable area and power limits and will provide greater than an order of magnitude benefit over comparable solutions.
 
-There will always be questions regarding the suitability of this works target application, the baseline \ac{ann} and the \ac{binary32} number format.
-But it is our belief that this work has provided an extensible architecture.
+There will always be questions regarding the suitability of this work's target application, the baseline \ac{ann} and the \ac{binary32} number format, but these should be mitigated by providing an extensible architecture.
 Given different processing and/or number format requirements, with reasonable modifications this work could provide a solution to most \ac{ann} system requirements.
 
 \hfill %\break \newline
 
 \iffalse
-An overview of \ac{3dic} technology is given in chapter \ref{sec:3dic}.
-An overview on the pros and cons of \ac{dram} and \ac{sram} along with some proposed \ac{dram} customizations are given in chapter \ref{sec:DRAM Customizations}.
+An overview of \ac{3dic} technology is given in Chapter \ref{sec:3dic}.
+An overview on the pros and cons of \ac{dram} and \ac{sram} along with some proposed \ac{dram} customizations are given in Chapter \ref{sec:DRAM Customizations}.
 \fi
-Some state-of-the-art implementations are reviewed in chapter \ref{sec:State of the art}.
-An overview of the proposed system is described in chapter \ref{sec:System Overview} with more details in chapter \ref{sec:Detailed System Description}.
-An overview of the instruction architecture is given in chapter \ref{sec:System Operations}.
-Simulation results are shown in chapter \ref{sec:Results}.
-The conclusion and further work are discussed in chapter \ref{sec:Conclusions and Future Work}.
+Some state-of-the-art implementations are reviewed in Chapter \ref{sec:State of the art}.
+An overview of the proposed system is described in Chapter \ref{sec:System Overview} with more details in Chapter \ref{sec:Detailed System Description}.
+An overview of the instruction architecture is given in Chapter \ref{sec:System Operations}.
+Simulation results are shown in Chapter \ref{sec:Results}.
+The conclusion and further work are discussed in Chapter \ref{sec:Conclusions and Future Work}.

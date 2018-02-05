@@ -19,10 +19,10 @@ face recognition and autonomous control.
 Artificial neural networks (\ac{ann}) take their inspiration from neuron behavior observed in the mammalian brain, although implementations are simplifications of what actually exists in the brain.
 
 The mammalian neuron is a cell that receives input and generates output in the form of electrical and chemical processes.
-The neuron has a cell body (or soma), a group of dendrites which provide the inputs from other cells, a cell body, an axom which generates the output signals, and the axom terminals which are the outputs of the cell.
-The connection from a cells output, or axom terminal to another cells input, or dendrite is known as a synapse. 
+The neuron has a cell body (or soma), a group of dendrites which provide the inputs from other cells, a cell body, an axon which generates the output signals, and the axon terminals which are the outputs of the cell.
+The connection from a cells output, or axon terminal to another cells input, or dendrite is known as a synapse. 
 The connection in the synapse is a chemical process stimulated by electrical impulses.
-The neuron can be seen in figure \ref{fig:neuron}.
+The neuron can be seen in Figure \ref{fig:neuron}.
 
 The connection from one cell to another has both an associated delay and a strength. The strength of the connection can be influenced by the size of the pre-synaptic neuron spike or by the pre-synaptic neuron generating a series of spikes rather than a single spike.
 
@@ -34,16 +34,16 @@ The connection from one cell to another has both an associated delay and a stren
 \centerline{
 \mbox{\includegraphics[width=4.0in]{Neuron.pdf}}
 }
-\caption{Artists impression of a Mammalian Neuron \cite{wikipedia_neuron}}
+\caption{Artist's impression of a mammalian neuron \cite{wikipedia_neuron}}
 \label{fig:neuron}
 \end{figure}
 
 
 
 \iftrue
-So it is known that mammalian neurons generate "spikes" in response to inputs which for humans include sight, touch, sound etc.. This spiking behavior is often referred to as the neuron being activated.
+So it is known that mammalian neurons generate ``spikes'' in response to inputs which for humans include sight, touch, sound etc.. This spiking behavior is often referred to as the neuron being activated.
 When these neurons are activated, their spikes propagate to other neurons. Under certain conditions, the combination of the various inputs to a neuron cause it to activate. 
-A particular neuron may have many hundreds, perhaps thousands of other neurons connected to its "input".
+A particular neuron may have many hundreds, perhaps thousands of other neurons connected to its ``input.''
 These input neurons are referred to as pre-synaptic neurons. These pre-synaptic neurons may provide input to many neurons which are referred to as post-synaptic neurons.
 A particular neuron can get activated by a particular arrival pattern of pre-synaptic neuron spikes or simply by the intensity of the pre-synaptic spikes. 
 
@@ -81,10 +81,10 @@ The spiking neuron model is characterized by \cite{paugam2012computing}:
         \1 Connections between neurons have both a strength and a delay
           \2 The pre-synaptic neuron output is multiplied by the connection weight and delayed 
         \1 The weighted inputs from all pre-synaptic neurons are accumulated
-        \1 The accumulated inputs drives an activation function
+        \1 The accumulated inputs drive an activation function
           \2 the activation function $f(x)$ is a spiking model is based on differential equations
           \2 many models have been proposed with varying levels of complexity
-              \3 Leaky integrate and fire \cite{Brunel2007} to Izhikevich \cite{Iz2005} (see \fref{fig:Izhikevich Model})
+              \3 from Leaky integrate and fire \cite{Brunel2007} to Izhikevich \cite{Iz2005} (see \fref{fig:Izhikevich Model})
               \3 complexity based on the number of differential equations and/or computations
          
 \end{outline}
@@ -94,7 +94,7 @@ The Rate-based neuron model is characterized by \cite{NNintro_Bullinaria}:
         \1 Connections between neurons have only a strength
           \2 The pre-synaptic neuron output is multiplied by the connection weight
         \1 The weighted inputs from all pre-synaptic neurons are accumulated
-        \1 The accumulated inputs drives an activation function
+        \1 The accumulated inputs drive an activation function
           \2 the activation function $f(x)$ is a non-linear function
           \2 early models used binary functions although in practice the function needs to be differentiable
             \3 examples are (see \fref{fig:Example Rated-Based Model Activation functions}):
@@ -206,14 +206,14 @@ The Rate-based neuron model is characterized by \cite{NNintro_Bullinaria}:
 \label{fig:Example Spiking Model}
 \end{figure}
 
-To emulate complex behavior, the artifical neurons are connected in networks, typically with layers of sub-networks which are in affect separated by the non-linear activation function.
+To emulate complex behavior, the artifical neurons are connected in networks, typically with layers of sub-networks which are in effect separated by the non-linear activation function.
 Examples of both rate-based and spiking artificial neural networks can be seen in \fref{fig:Rate-based Model Network} and \fref{fig:Spiking Model Network} respectively.
-Typically neural networks process in a feed-forward fashion. Considering \fref{fig:Artificial Neural Network}, this means the input arrives on the left, the inputs propagate to neurons N0 through N3. WHen N0 through N3 are processed, their values propagate forward to neurons N4 and N5 etc.. Sometime \ac{ann}s also include recursion where for example neurons N0 through N4 are not only influenced
+Typically neural networks process in a feed-forward fashion. Considering \fref{fig:Network of ANs}, this means the input arrives on the left, the inputs propagate to neurons N0 through N3. WHen N0 through N3 are processed, their values propagate forward to neurons N4 and N5 etc.. Sometimes \ac{ann}s also include recursion where for example neurons N0 through N4 are not only influenced
 by the input, but also by themselves. Many \ac{ann}s operate only in feed-forward fashion but some popular \ac{ann}s, such as \ac{lstm} \cite{hochreiter1997long}, employ recursion.
 
-Another popular \ac{ann} known as Deep Neural Networks (\ac{dnn}) \cite{aizenberg2013multi}\cite{doi:10.1162/neco.2006.18.7.1527} have gained traction over the last few years. They get good press in applications such as image recognition and speech recognition. 
-Deep Neural Networks are often formed from tens of layers of \ac{an}s with each layer containing many \ac{an}s. \ac{dnn}s are also processed in a feed-forward manner with one layer being the inputs to the next layer. 
-As mentioned \cite{krizhevsky2012imagenet}, these useful \ac{dnn}s often require hundreds of thousands of \ac{an}s and within the network, each \ac{an} can have hundreds, even thousands of feeder or pre-synaptic \ac{an}s.
+Another popular type of \ac{ann}, the \ac{dnn} \cite{aizenberg2013multi}\cite{doi:10.1162/neco.2006.18.7.1527} has gained traction over the last few years. \acp{dnn} get good press in applications such as image recognition and speech recognition. 
+\acp{dnn} are often formed from tens of layers of \ac{an}s with each layer containing many \ac{an}s. \ac{dnn}s are also processed in a feed-forward manner with one layer being the inputs to the next layer. 
+As mentioned in \cite{krizhevsky2012imagenet}, these useful \ac{dnn}s often require hundreds of thousands of \ac{an}s and within the network, each \ac{an} can have hundreds, even thousands of feeder or pre-synaptic \ac{an}s.
 There have been implementations that use different number formats from double precision floating point to eight bit integers, but in all cases these useful \ac{ann}s require a significant amount of memory to store the connection weights (parameters).
 
 
@@ -242,22 +242,22 @@ There have been implementations that use different number formats from double pr
 \end{figure}
 
 Although the spiking neural network more closely models the behavior of real neurons, over the last 20 years there 
-have been breakthroughs in the configuring of rate-based models especially with the introduction of the back-propagation
-algorithm and stochastic gradient descent. Along with the abundance of data now available in the form of voice, images etc. to "teach" these networks
-using back-propagation, most of the effective applications of artificial neural networks have employed these rate-based models.
+have been breakthroughs in the ``teaching'' of rate-based models, especially with the introduction of the back-propagation algorithm \cite{wikipedia_back_propagation} and stochastic gradient descent \cite{wikipedia_sgd} which are used to ``learn'' the connection weights of a \ac{dnn}. 
+Along with the abundance of data now available in the form of voice, images etc. to ``teach'' these networks using back-propagation, most of the effective applications of \acp{ann} have employed these rate-based models.
 
 \iffalse
 Our research will focus on these rate-based models which we will now refer to as \ac{ann}s.
 \fi
 
-This work does not address the training of these rate-based \acp{ann}, the training is mostly performed offline. This work is addressing the inference of \acp{ann}.
+This work does not address the training or ``teaching'' of these rate-based \acp{ann}, the training is mostly performed offline. 
+This work is addressing inference using \acp{ann} where the \acp{ann} are used for example to detect objects in an image or reproduce the output of a cost function based on the observed values.
 During inference, the most computationally intensive operation is the multiply accumulate associated with the \ac{an} activation, which can involve hundreds or thousands of multiply-accumulates.
-The \ac{an} activation calculation for the rate-based \ac{an} in figure \ref{fig:Rate Based Model} is shown in \eqref{eq:activation function}.
+The \ac{an} activation calculation for the rate-based \ac{an} in Figure \ref{fig:Rate Based Model} is shown in \eqref{eq:activation function}.
 
 \begin{alignat}{2} 
 \label{eq:activation function}
 \text{\ac{an} activation }\hspace{4mm} A & = f\bigg(\sum_{n=0}^{C_n}W_n \mathbf{\cdot} A_n\bigg)  \\
-              &\mathbf{C_p} \text{ is the number of pre-synaptic connections} \notag\\
+              &\mathbf{C_n} \text{ is the number of pre-synaptic connections} \notag\\
               &\mathbf{W_p} \text{ is the weight of a connection} \notag\\
               &\mathbf{A_p} \text{ is the state of the pre-synaptic \ac{an}} \notag \\
 \text{and }   &f(x) \text{ is the activation function such as \ac{relu} \cite{maas2013rectifier}}  \notag 
@@ -266,9 +266,9 @@ The \ac{an} activation calculation for the rate-based \ac{an} in figure \ref{fig
 \subsection[ANN Layers]{ANN Layers}
 \label{sec:ANN Layers}
 
-In figure \ref{fig:Network of ANs} and \ref{fig:Rate-based Model Network}, the \ac{ann} is shown to be constructed using layers of \acp{an}. It has long been known that a single layer of \acp{an} can be used linearly partition an n-dimensional input \cite{NNintro_Bullinaria}, as shown in figure \ref{fig:linear discrimination}.
-However, if a more complex partition is required, this cannot be achieved using a single layer of \acp{an}. A higher order classification, as shown in figure \ref{fig:linear discrimination} can only be achieved using multiple layers of \acp{an}. 
-In addition, to ensure the multiple layers cannot be mathematically collapsed into a single layer, the activation function $f(x)$, as shown in figure \ref{fig:Rate Based Model} must be a non-linear function.
+in Figure \ref{fig:Network of ANs} and \ref{fig:Rate-based Model Network}, the \ac{ann} is shown to be constructed using layers of \acp{an}. It has long been known that a single layer of \acp{an} can be used to linearly partition an n-dimensional input \cite{NNintro_Bullinaria}, as shown in Figure \ref{fig:linear discrimination}.
+However, if a more complex partition is required, this cannot be achieved using a single layer of \acp{an}. A higher order classification, as shown in Figure \ref{fig:complex discrimination} can only be achieved using multiple layers of \acp{an}. 
+In addition, to ensure the multiple layers cannot be mathematically collapsed into a single layer, the activation function $f(x)$, as shown in Figure \ref{fig:Rate Based Model} must be a non-linear function.
 
 
 
@@ -301,12 +301,12 @@ As mentioned, a single layer of neurons can be used as a linear classifier as lo
 Even some simple cases cannot be linearly separated, an example often used is an exclusive-OR gate \cite{NNintro_Bullinaria}.
 
 Even with a layered \ac{ann}, the final output comes from a single layer. To allow this final layer to linearly separate classes, the original input needs to be transformed into a space where the classes can be linearly separated.
-\acf{dnn} are \acp{ann} that incorporate many layers of \acp{an}, often which are often up to tens of layers deep.
+\acfp{dnn} are \acp{ann} that incorporate many layers of \acp{an}, often which are often up to tens of layers deep.
 The additional layers are incorporated to translate the space of the input so the various classes being identified can be separated using linear classifiers in the later layers.
 
 Recently, an example of a \ac{dnn} known as a \acf{cnn} demonstrated high levels of efficacy when used to classify objects in images \cite{krizhevsky2012imagenet}.
 These \acp{cnn} use the early layers to identify low-level features and later layers are used combine these features into yet more higher-level features \cite{Kwolek2005}\cite{wikipedia_deep_learning}\cite{deeplearning4j}.
-Finally, the combination of high-level features are used to identify the required classes.
+Finally, the combination of high-level features is used to identify the required classes.
 This layering is shown in \fref{fig:Deep network showing feature layers}.
 \begin{figure}[h]
 \centering
@@ -331,18 +331,18 @@ real-time acceleration and storage of of these systems.
 For the most part, different \acp{ann} are characterized by how the \acp{an} are interconnected and the activation function employed.
 
 The typical \ac{dnn} layers are processed in a feed-forward fashion where the pre-synaptic \acp{an} are formed from \acp{an} in the previous layer.
-There are some types of \ac{dnn} which also include recursive connections where the the pre-synaptic \acp{an} include \acp{an} from the current layer.
+There are some types of \ac{dnn} which also include recursive connections where the pre-synaptic \acp{an} include \acp{an} from the current layer.
 A popular recursive \ac{dnn} is \acf{lstm} \cite{hochreiter1997long}. Although this work does not preclude supporting \ac{lstm} in the future, the focus of this work is on the feed-forward type \ac{dnn}.
 
-As described in \ref{sec:Deep Neural Networks}, a \ac{dnn} layer transforms the previous layer with each higher layer providing a coarser grained transformation. 
-This is best seen in image recognition application were the early layers identify low level shapes or features, such as angled lines. 
+As described in Section \ref{sec:Deep Neural Networks}, a \ac{dnn} layer transforms the previous layer with each higher layer providing a coarser grained transformation. 
+This is best seen in image recognition applications, where the early layers identify low level shapes or features, such as angled lines. 
 The following layers are used to identify higher order shapes such as circles, blocks etc. 
 Although the features detected during the image recognition application are somewhat intuitive, it is believed that in less intuitive applications the \ac{dnn} performs a similar fine to coarse feature extraction.
 
 The connections between layers can be locally-connected or fully-connected. 
-With locally-connected layers as shown in figure \ref{fig:Locally Connected Layer to Layer Connection Types}, a layers pre-synaptic \acp{an} are formed from regions of the previous layer.
-With fully-connected layers as shown in figure \ref{fig:Fully Connected Layer to Layer Connection Types}, a layers pre-synaptic \acp{an} are formed from all \acp{an} in the previous layer.
-In many cases, a \ac{dnn} is constructed with lower layers being locally-connected and higher layers being fully connected \cite{krizhevsky2012imagenet}.
+With locally-connected layers as shown in Figure \ref{fig:Locally Connected Layer to Layer Connection Types}, a layer's pre-synaptic \acp{an} are formed from regions of the previous layer.
+With fully-connected layers as shown in Figure \ref{fig:Fully Connected Layer to Layer Connection Types}, a layers pre-synaptic \acp{an} are formed from all \acp{an} in the previous layer.
+In many cases, a \ac{dnn} is constructed with lower layers being locally-connected and higher layers being fully-connected \cite{krizhevsky2012imagenet}.
 
 \begin{figure}[h]
   \centering
@@ -438,7 +438,7 @@ In many cases, a \ac{dnn} is constructed with lower layers being locally-connect
 \iffalse With locally-connected layers, the connection weights of the pre-synaptic \acp{an} are often formed from wanting to identify particular features. \fi
 In early uses of locally-connected \acp{ann}, the first layers weights were often hand-generated, an example being Gabor filters \cite{Kwolek2005}. 
 With automatically trained \acp{ann}, the feature detectors at each layer are often created during training.
-Some contrived examples of locally-connected feature detectors are shown in figure \ref{fig:Features and locally-connected filters (kernels)}.
+Some contrived examples of locally-connected feature detectors are shown in Figure \ref{fig:Features and locally-connected filters (kernels)}.
 \begin{figure}[h]
 \centering
   %\begin{subfigure}{.7\textwidth}
@@ -450,13 +450,13 @@ Some contrived examples of locally-connected feature detectors are shown in figu
   %\end{subfigure}%
 \end{figure}
 
-The pre-synaptic \acp{an} of a locally-connected \ac{an} are formed from particular \ac{roi} of the previous layer using the weights from a feature filter. 
+The pre-synaptic \acp{an} of a locally-connected \ac{an} are formed from a particular \ac{roi} of the previous layer using the weights from a feature filter. 
 Another locally-connected \ac{an} may use the same \ac{roi} but employs a different filter.
 In practice, for a particular \ac{roi}, a number of feature filters are employed resulting in a number of \acp{an} being associated with the same \ac{roi} in the previous layer. 
 To reiterate, these feature filters all operate on the same \ac{roi}.
 A different \ac{roi} will result in another group of \acp{an} all using their own feature filters.
 The resulting locally-connected layer becomes a \ac{3d} layer with its X-Y coordinates representing a reference to a particular \ac{roi} and the Z-dimension representing the various filters applied to that \ac{roi}.
-A example \ac{3d} locally-connected layer can be seen in figure \ref{fig:3D layers of Features}.
+A example \ac{3d} locally-connected layer can be seen in Figure \ref{fig:3D layers of Features}.
 
 \iffalse
 A good example of the feature filters is image recognition \acp{ann}. The lower level features generated during automatic training are often intuitive and the filters are constructed to detect small features such as lines at various angles, different curves etc..
@@ -499,12 +499,12 @@ The number of feature filters applied at each layer can be tens to hundreds of f
 The filters employed in a layer following one of these \ac{3d} locally-connected layers are themselves 3D. With tens to hundreads of features in the previous layer the number of weights associated with each filter is usually hundreds to thousands of weights. 
 
 The feature filters employed in the locally-connected layers can be unique to the regions of the previous layer or the same filters can be employed across the entire previous layer.
-In the case of employing the same filters across the entire input layer the \ac{ann} is known as a \acf{cnn}. The \acp{cnn} are examples of \acp{ann} which can take advantage of reuse described in chapter \ref{sec:chap-one}. 
+In the case of employing the same filters across the entire input layer the \ac{ann} is known as a \acf{cnn}. The \acp{cnn} are examples of \acp{ann} which can take advantage of reuse described in Chapter \ref{sec:chap-one}. 
 These \acp{cnn} can store the filter parameters in local \ac{sram} and construct an entire feature plane. These \acp{cnn} are considered a subset of the generic case of \ac{dnn}.
 This work considers the more general \ac{dnn} case and supports acceleration of generic \acp{dnn} which includes \acp{cnn}.
 
-An example of a \ac{dnn} can be seen in figure \ref{fig:Baseline DNN showing layer order} with the layer configurations shown in table \ref{tab:Baseline Layer Configuration}. A \ac{cnn} similar to this has demonstrated high levels of efficacy in image recognition applications.
-{\textbf{\textcolor{black}{Therefore, this work will use the parameters from the table shown in figure \ref{tab:Baseline Layer Configuration} as a template for a baseline \ac{ann} for estimating the storage and processing requirements and the range of pre-synaptic fanins.}}}
+An example of a \ac{dnn} can be seen in Figure \ref{fig:Baseline DNN showing layer order} with the layer configurations shown in table \ref{tab:Baseline Layer Configuration}. A \ac{cnn} similar to this has demonstrated high levels of efficacy in image recognition applications.
+{\textbf{\textcolor{black}{Therefore, this work will use the parameters from the table shown in Figure \ref{tab:Baseline Layer Configuration} as a template for a baseline \ac{ann} for estimating the storage and processing requirements and the range of pre-synaptic fanins.}}}
 
 %%
 
@@ -626,15 +626,15 @@ An example of a \ac{dnn} can be seen in figure \ref{fig:Baseline DNN showing lay
 \end{sidewaysfigure}
 \fi
 
-To approach the capabilities observed in human behavior, such as object recognition \ac{ann}s have become very large. The example shown in figure \ref{fig:Baseline DNN showing layer order}, which is based on the work from \cite{krizhevsky2012imagenet}, has hundreds of thousands of \acp{an} and hundreds of millions of connection weights (see table \ref{tab:Baseline Layer Configuration}).
+To approach the capabilities observed in human behavior, such as object recognition \ac{ann}s have become very large. The example shown in Figure \ref{fig:Baseline DNN showing layer order}, which is based on the work from \cite{krizhevsky2012imagenet}, has hundreds of thousands of \acp{an} and hundreds of millions of connection weights (see table \ref{tab:Baseline Layer Configuration}).
 These \acp{ann} utilize these hundreds of thousands of \acp{an} to implement what a human would consider a relatively straightforward task.
-For example, a "useful" \ac{ann} similar to that described in \cite{krizhevsky2012imagenet} which was used to recognize up to 1000 different object classes, has a network size of approximately 650,000 \acp{an} and 630 million synaptic connections \cite{krizhevsky2012imagenetPreso}. 
+For example, a ``useful'' \ac{ann} similar to that described in \cite{krizhevsky2012imagenet} which was used to recognize up to 1000 different object classes, has a network size of approximately 650,000 \acp{an} and 630 million synaptic connections \cite{krizhevsky2012imagenetPreso}. 
 
 The increased performance of \ac{ann}s over classical methods in image recognition and voice recognition might suggest that \ac{ann}s will out-perform operations performed in other applications.
 \iffalse There is reason to believe that \acp{ann} will replace various functions in existing systems. \fi
 
-If \ac{ann}s fulfill their potential, systems employing \ac{ann}s will utilize them for various functions, such as engine monitoring, anomaly detection, navigation etc. all within the same system.
-Considering the various functions a complex customer facing or embedded application system performs, it is likely that many real-world applications will employ multiple disparate instances of these useful sized \ac{ann}s.
+If \acp{ann} fulfill their potential, systems employing \ac{ann}s will utilize them for various functions, such as engine monitoring, anomaly detection, navigation, etc., all within the same system.
+Considering the various functions a complex customer facing or embedded application system performs, it is likely that many real-world applications will employ multiple disparate instances of these usefully sized \acp{ann}.
 Assuming these complex functions will require \ac{ann}s similar in size to figure \ref{fig:Baseline DNN showing layer order} and \cite{krizhevsky2012imagenet}, these implementations will be processing multiple large \ac{ann}s at or near real-time.
 
 \subsection[ANN Processing]{ANN Processing}
@@ -643,7 +643,7 @@ Assuming these complex functions will require \ac{ann}s similar in size to figur
 Considering the storage required for the input, the \ac{an} states and most significantly the weights for connections, the storage requirements results in gigabytes of memory.
 When these \ac{ann}s are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
 
-As a metric, this work assumes that any useful \ac{ann} will be similar to that shown in table \ref{tab:Baseline Layer Configuration} which utilizes $>\num{900e3}$\acp{an} and $\approx\num{200e6}$ parameters. 
+As a metric, this work assumes that any useful \ac{ann} will be similar to that shown in table \ref{tab:Baseline Layer Configuration} which utilizes more than 900 thousand \acp{an} and approximately 200 million parameters. 
 \iffalse
 Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for embedded systems employing inference on multiple disparate useful-sized neural networks.}}}
 \fi
@@ -652,9 +652,9 @@ Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth a
 Considering that \ac{dram} is required to store the \ac{ann} parameters, why is it that much of the \ac{asic} and \ac{asip} \ac{ann} research employs \ac{sram} as an intermediate store? Well, in practice there are benefits if you can operate solely out of \ac{sram}.
 Certainly good performance and potentially low power.
 But use of \ac{sram} makes assumptions on the type of \acp{ann} that can be supported and the application in which the \ac{ann} is being deployed.
-The primary requirement of the type of \ac{ann} and the deployed application to allow effective use of \ac{sram} is "reuse". Reuse means that once parameters are transferred and stored in \ac{sram}, these parameters can be reused such that the \ac{sram} isn't simply an intermediate memory but something akin to a cache.
+The primary requirement of the type of \ac{ann} and the deployed application to allow effective use of \ac{sram} is ``reuse.'' Reuse means that once parameters are transferred and stored in \ac{sram}, these parameters can be reused such that the \ac{sram} isn't simply an intermediate memory but something akin to a cache.
 
-In some \ac{ann}s there are reuse opportunities. A prime example is \acp{cnn}, where the connection weights are reused. In \acp{cnn}, a common filter is passed across an input to form the next layer. These filter "kernels" can be held in memory and the input is read from \ac{dram} thus reducing the \ac{dram} bandwidth.
+In some \ac{ann}s there are reuse opportunities. A prime example is \acp{cnn}, where the connection weights are reused. In \acp{cnn}, a common filter is passed across an input to form the next layer. These filter ``kernels'' can be held in memory and the input is read from \ac{dram} thus reducing the \ac{dram} bandwidth.
 Even with \ac{dnn}s where weights may not be reused, when implementing multiple \ac{dnn}s, there is opportunity to hold the input in memory.
 If the system is being employed in cloud applications or in training, there is opportunity to reuse inputs whilst performing batch processing.
 
@@ -705,21 +705,21 @@ Overall GPUs have limited suitability to meet embedded application requirements.
 
 
 Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or \ac{sram}. 
-These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an embedded application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
+These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the ``toy examples'' but when a system requires multiple disparate \ac{ann}s in an embedded application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
 
 \fi
 
 \iffalse
-How this work addresses the problem are outlined in section \ref{chap-five}.
+How this work addresses the problem are outlined in Section \ref{chap-five}.
 \fi
 
 
 When it comes to estimating storage requirements for \acp{ann} there is a lot of debate regarding the precision of number format for the parameters. 
-There has been work on the impact of changing the precision of the number format employed during training and inference. These formats can vary between eight bit fixed point to 64-bit double precision.
+There has been work on the impact of changing the precision of the number format employed during training and inference. These formats can vary between eight bit fixed-point to 64-bit double precision.
 For the baseline requirements this work assumes 32-bit single-precision \ac{fp}.
 
 
-Assuming an \ac{ann} similar to that shown in table \ref{tab:Baseline Layer Configuration} with \num{775e3}\acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{32}{\tera \bit \per \second} (see equation \ref{eq:maximumBandwidth}).
+Assuming an \ac{ann} similar to that shown in table \ref{tab:Baseline Layer Configuration} with 775 thousand \acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{32}{\tera \bit \per \second} (see equation \ref{eq:maximumBandwidth}).
 
 % {2} means 2 columns
 \begin{alignat}{2} 
@@ -737,7 +737,7 @@ Assuming an \ac{ann} similar to that shown in table \ref{tab:Baseline Layer Conf
 \end{alignat}
 
 When implementing \ac{ann}s, the memory requirements are also significant. The storage is required for the input, the \ac{an} states and most significantly the parameters for each of the \acp{an} pre-synaptic connections. 
-For the case shown in table \ref{tab:Baseline Layer Configuration}, there are \num{202e6} parameters requiring \SI[per-mode=symbol]{0.81}{\giga\byte} and \num{772e3} \acp{an} requiring \SI[per-mode=symbol]{3.88}{\mega\byte} storage.
+For the case shown in table \ref{tab:Baseline Layer Configuration}, there are 202 million parameters requiring \SI[per-mode=symbol]{0.81}{\giga\byte} and 772 thousand \acp{an} requiring \SI[per-mode=symbol]{3.88}{\mega\byte} storage.
 The storage required for 10 \acp{ann} is of the order of \SI[per-mode=symbol]{8.0}{\giga\byte} \eqref{eq:memoryRequired}.
 
 \begin{alignat}{2} 
@@ -747,6 +747,7 @@ The storage required for 10 \acp{ann} is of the order of \SI[per-mode=symbol]{8.
   & = \sum_{\mathbf{n}=0}^{9} \SI[per-mode=symbol]{6.49}{\giga\bit}  \notag \\
   & = \SI[per-mode=symbol]{64.9}{\giga\bit} \, \equiv \, \SI[per-mode=symbol]{8.1}{\giga\byte}\\
   \text{where } &\mathbf{N}_n \text{ is the number of \ac{ann}s} \notag\\
+                &\mathbf{N}_p \text{ is the number of parameters per \ac{ann}} \notag\\
                 &\mathbf{N}_a \text{ is the number of \ac{an}s per \ac{ann}} \notag\\
   \text{and }   &\mathbf{b_w} \text{ is the number of bits per parameter} \notag
 \end{alignat}
@@ -780,7 +781,7 @@ the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide 
 Considering that \ac{dram} is required to store the \ac{ann} parameters, why is it that much of the \ac{asic} and \ac{asip} \ac{ann} research employs \ac{sram} as an intermediate store? Well, in practice there are benefits if you can operate solely out of \ac{sram}.
 Certainly good performance and potentially low power.
 But use of \ac{sram} makes assumptions on the type of \acp{ann} that can be supported and the application in which the \ac{ann} is being deployed.
-The primary requirement of the type of \ac{ann} and the deployed application to allow effective use of \ac{sram} is "reuse". Reuse means that once parameters are transferred and stored in \ac{sram}, these parameters can be reused such that the \ac{sram} \iffalse isn't simply an intermediate memory but \fi is something akin to a cache.
+The primary requirement of the type of \ac{ann} and the deployed application to allow effective use of \ac{sram} is ``reuse.'' Reuse means that once parameters are transferred and stored in \ac{sram}, these parameters can be reused such that the \ac{sram} \iffalse isn't simply an intermediate memory but \fi is something akin to a cache.
 
 In some \ac{ann}s there are reuse opportunities. A prime example is \acp{cnn}, where the connection weights are reused. In \acp{cnn}, a common filter is passed across an input to form the next layer. These feature filters can be held in memory and the input is read from \ac{dram} thus reducing the \ac{dram} bandwidth.
 Even with \ac{dnn}s where weights may not be reused, when implementing multiple \ac{dnn}s, there is opportunity to hold the input in memory.
@@ -833,10 +834,10 @@ Overall GPUs have limited suitability to meet embedded application requirements.
 
 
 Much of the \ac{ann} application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or \ac{sram}. 
-These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the "toy examples" but when a system requires multiple disparate \ac{ann}s in an embedded application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
+These implementations can be shown to be effective with specific \ac{ann} architectures (\ac{cnn}), server applications or the ``toy examples'' but when a system requires multiple disparate \ac{ann}s in an embedded application, these implementations do not provide the required flexibility, storage capacity and deterministic performance.
 
 \iffalse
-How this work addresses the problem are outlined in section \ref{chap-five}.
+How this work addresses the problem are outlined in Section \ref{chap-five}.
 \fi
 \fi
 
