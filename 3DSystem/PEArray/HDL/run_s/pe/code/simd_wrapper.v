@@ -100,6 +100,7 @@ module simd_wrapper (
                           output reg   [`PE_NUM_OF_EXEC_LANES_RANGE       ]      simd__sui__regs_valid                          ,
                           output reg   [`COMMON_STD_INTF_CNTL_RANGE       ]      simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ,
                           output reg   [`PE_EXEC_LANE_WIDTH_RANGE         ]      simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg                                             simd__sui__send                                ,
                           input  reg                                             sui__simd__regs_complete                       ,
                           input  reg                                             sui__simd__regs_ready                          ,
                                                                                  
@@ -146,6 +147,7 @@ module simd_wrapper (
   wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid_e1                           ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__sui__regs_cntl_e1   [`PE_NUM_OF_EXEC_LANES ] ;
   wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs_e1        [`PE_NUM_OF_EXEC_LANES ] ;
+  wire                                    simd__sui__send_e1                                 ;
 
   reg                                     sui__simd__regs_complete_d1                     ;
   reg                                     sui__simd__regs_ready_d1                        ;
@@ -165,6 +167,7 @@ module simd_wrapper (
   wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  smdw__simd__regs_cntl [`PE_NUM_OF_EXEC_LANES ]  ;
 
   wire                                    simd__smdw__processing                          ;
+  wire                                    simd__smdw__sending                             ;
   wire                                    simd__smdw__complete                            ;
   wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__smdw__regs      [`PE_NUM_OF_EXEC_LANES ]  ;
   wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__smdw__regs_cntl [`PE_NUM_OF_EXEC_LANES ]  ;
@@ -202,12 +205,14 @@ module simd_wrapper (
       end
   endgenerate
 
+  assign  simd__sui__send_e1  =  simd__smdw__sending  ;
   generate
     always @(posedge clk)
       begin
         simd__sui__tag               <= ( reset_poweron ) ? 'd0 : simd__sui__tag_e1            ;
         simd__sui__tag_num_lanes     <= ( reset_poweron ) ? 'd0 : simd__sui__tag_num_lanes_e1  ;
         simd__sui__regs_valid        <= ( reset_poweron ) ? 'd0 : simd__sui__regs_valid_e1     ;
+        simd__sui__send              <= ( reset_poweron ) ? 'd0 : simd__sui__send_e1           ;
       end
     for (gvi=0; gvi<`PE_NUM_OF_EXEC_LANES ; gvi=gvi+1) 
       begin: sui_output_regFile
@@ -446,7 +451,7 @@ module simd_wrapper (
   
         // check simd enable bit in simd operation memory
         `SIMD_WRAP_UPSTREAM_CNTL_CHECK_SIMD_ENABLE: 
-          simd_wrap_upstream_cntl_state_next =  //( ~simd_enable ) ? `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA     :  // start the data transfer to the sui with data from stOp
+          simd_wrap_upstream_cntl_state_next =  //( ~simd_enable ) ? `SIMD_WRAP_UPSTREAM_CNTL_SENT_DATA     :  // start the data transfer to the sui with data from stOp
                                                                    `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_START ;  // SIMD will provide data
           
         `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_START: 
@@ -454,10 +459,11 @@ module simd_wrapper (
                                                                             `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_START       ;  // start the data transfer to the sui with data from simd
           
         `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_COMPLETE: 
-          simd_wrap_upstream_cntl_state_next =  (simd__smdw__complete ) ? `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA              : 
+          simd_wrap_upstream_cntl_state_next =  (simd__smdw__sending  ) ? `SIMD_WRAP_UPSTREAM_CNTL_SENT_DATA              : 
+                                                (simd__smdw__complete ) ? `SIMD_WRAP_UPSTREAM_CNTL_COMPLETE               : 
                                                                           `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_COMPLETE ;  // start the data transfer to the sui with data from simd
           
-        `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA: 
+        `SIMD_WRAP_UPSTREAM_CNTL_SENT_DATA: 
           
           // Assert a valid pulse to the SIMD core but dont read fifo until SIMD asserts comlete
           simd_wrap_upstream_cntl_state_next =  `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_COMPLETE          ;
@@ -470,7 +476,7 @@ module simd_wrapper (
 
         `SIMD_WRAP_UPSTREAM_CNTL_WAIT_COMPLETE_DEASSERTED:
           simd_wrap_upstream_cntl_state_next =   ( ~sui__simd__regs_complete_d1 ) ? `SIMD_WRAP_UPSTREAM_CNTL_WAIT_COMPLETE_DEASSERTED   : 
-                                                                                    `SIMD_WRAP_UPSTREAM_CNTL_COMPLETE                   ;
+                                                                                    `SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_COMPLETE     ;
 
         `SIMD_WRAP_UPSTREAM_CNTL_COMPLETE:
           simd_wrap_upstream_cntl_state_next =   `SIMD_WRAP_UPSTREAM_CNTL_WAIT    ; 
@@ -495,8 +501,8 @@ module simd_wrapper (
 
 
   // read the FIFO and assert the valid to the stack upstream interface
-  wire   return_data               = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA);
-  assign from_stOp_reg_fifo_reads = {`PE_NUM_OF_EXEC_LANES { return_data }} & from_stOp_reg_fifo_valids ;  // only read the lanes that were active
+  wire   returned_data               = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SENT_DATA);
+  assign from_stOp_reg_fifo_reads = {`PE_NUM_OF_EXEC_LANES { returned_data }} & from_stOp_reg_fifo_valids ;  // only read the lanes that were active
 
 
   assign  simd__sui__tag_e1             =  from_Cntl_Tag_Fifo[0].pipe_tag ;
@@ -542,6 +548,7 @@ module simd_wrapper (
                                             
             .simd__smdw__processing          ( simd__smdw__processing       ),  // SIMD complete
             .simd__smdw__complete            ( simd__smdw__complete         ),  // SIMD complete
+            .simd__smdw__sending             ( simd__smdw__sending          ),  
             .simd__smdw__regs_cntl           ( simd__sui__regs_cntl_e1      ),        
             .simd__smdw__regs_valid          ( simd__sui__regs_valid_e1     ),        
             .simd__smdw__regs                ( simd__sui__regs_e1           ),        

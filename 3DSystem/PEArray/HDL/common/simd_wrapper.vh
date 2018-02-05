@@ -43,11 +43,16 @@
 `define SIMD_WRAP_OPERATION_WIDTH                  (`CLOG2(`SIMD_WRAP_OPERATION_NUM_OF_OPS  ))
 `define SIMD_WRAP_OPERATION_NOP                     0
 `define SIMD_WRAP_OPERATION_RELU                    1
-`define SIMD_WRAP_OPERATION_SUM_SAVE                2  // save to reg
-`define SIMD_WRAP_OPERATION_SUM_ACC                 3  // sum all and local reg and save to reg
-`define SIMD_WRAP_OPERATION_SUM_SEND                4  // sum to reg and send
-`define SIMD_WRAP_OPERATION_EXP                     5
-`define SIMD_WRAP_OPERATION_DIV                     6  // divide each with common reg
+`define SIMD_WRAP_OPERATION_SUM_SAVE_LOCAL          2  // sum all and save to indexed local reg
+`define SIMD_WRAP_OPERATION_SUM_SAVE_COMMON         3  // sum all and save to common 
+`define SIMD_WRAP_OPERATION_EXP                     4
+`define SIMD_WRAP_OPERATION_DIV                     5  // divide each with common reg
+`define SIMD_WRAP_OPERATION_SEND                    8  // send output regs to upstream
+`define SIMD_WRAP_OPERATION_SEND_NULL               9  // send null response with tag
+`define SIMD_WRAP_OPERATION_CLR_LOCAL_REGS         10  // clear output regs
+`define SIMD_WRAP_OPERATION_CLR_COMMON_REGS        11  // clear common regs
+`define SIMD_WRAP_OPERATION_CLR_IDX                12  // clear index
+`define SIMD_WRAP_OPERATION_INC_IDX                13  // increment index
 
 `define SIMD_WRAP_OPERATION_TYPE_WIDTH            (`SIMD_WRAP_OPERATION_WIDTH) 
 `define SIMD_WRAP_OPERATION_TYPE_MSB              `SIMD_WRAP_OPERATION_TYPE_WIDTH-1
@@ -95,7 +100,7 @@
 `define SIMD_WRAP_UPSTREAM_CNTL_CHECK_SIMD_ENABLE               12'b0000_0000_0010
 `define SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_START             12'b0000_0000_0100
 `define SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_SIMD_COMPLETE          12'b0000_0000_1000
-`define SIMD_WRAP_UPSTREAM_CNTL_SEND_DATA                       12'b0000_0001_0000
+`define SIMD_WRAP_UPSTREAM_CNTL_SENT_DATA                       12'b0000_0001_0000
 `define SIMD_WRAP_UPSTREAM_CNTL_WAIT_FOR_COMPLETE               12'b0000_0010_0000
 `define SIMD_WRAP_UPSTREAM_CNTL_WAIT_COMPLETE_DEASSERTED        12'b0000_0100_0000
 

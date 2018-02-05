@@ -70,6 +70,9 @@ a = []
 #          save  save  stage   stage   stage   stage    SIMD    Act 
 #           idx   inc    3       2       1       0       EN     Fn       PC
 a.append('_00000___1____0000____0110____0010____0001______1_____10____0000000010')
+#                        inc     clr
+#                        idx     idx    send     nop
+a.append('_00000___1____1101____1100____1000____0000______1_____10____0000000010')
 
 print  '// SIMD Option Memory'
 for i in a:

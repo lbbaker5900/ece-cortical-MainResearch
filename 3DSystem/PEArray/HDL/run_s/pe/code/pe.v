@@ -319,6 +319,7 @@ module pe (
   wire  [`COMMON_STD_INTF_CNTL_RANGE   ]  simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ;
   wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ;
   wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  simd__sui__regs_valid                          ;
+  wire                                    simd__sui__send                                ;
   wire                                    sui__simd__regs_complete                       ;
   wire                                    sui__simd__regs_ready                          ;
 
@@ -336,6 +337,7 @@ module pe (
 
                   //--------------------------------------------------
                   // Register(s) from simd
+                  .simd__sui__send          ( simd__sui__send          ),
                   .simd__sui__regs_valid    ( simd__sui__regs_valid    ),
                   .simd__sui__regs_cntl     ( simd__sui__regs_cntl     ),
                   .simd__sui__regs          ( simd__sui__regs          ),
@@ -404,6 +406,7 @@ module pe (
             .simd__sui__regs_valid        ( simd__sui__regs_valid    ),
             .simd__sui__regs_cntl         ( simd__sui__regs_cntl     ),
             .simd__sui__regs              ( simd__sui__regs          ),
+            .simd__sui__send              ( simd__sui__send          ),
             .sui__simd__regs_complete     ( sui__simd__regs_complete ),
             .sui__simd__regs_ready        ( sui__simd__regs_ready    ),
 
