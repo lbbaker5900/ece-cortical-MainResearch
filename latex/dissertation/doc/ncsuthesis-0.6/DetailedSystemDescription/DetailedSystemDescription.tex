@@ -623,11 +623,27 @@ A block diagram of the \ac{stop} can be seen in figure \ref{fig:stOp block diagr
 \subsection{SIMD}
 \label{sec:simd}
 
-The \ac{simd} takes the operation from the \ac{pe} controller and indexes into a small memory. This memory contains a \ac{pc} for the \ac{simd} along with control information for processing the \ac{stop} result inside the wrapper.
-The wrapper contains four special functions, a \ac{relu}, a \ac{binary32} adder, a \ac{binary32} exponential and a \ac{binary32} divider.
-The control memory contains a four element vector allowing the special functions to be cascaded.
-The primary operation is to perform \ac{mac} operation in the \ac{stop} followed by a \ac{relu} as one of the four operations with the other three being \ac{nop}.
-Once the four operations have concluded, the result is currently sent back to the manager over the upstream bus.
+The \ac{simd} takes the operation from the \ac{pe} controller and indexes into a small memory. This \ac{simd} pointer memory contains a \ac{pc} for the \ac{simd} along with control information for processing the \ac{stop} result inside the wrapper.
+The processing in the wrapper is controlled by a four element vector allowing up to four cascaded operations using the \acp{sfu}.
+The wrapper contains four \acp{sfu} , a \ac{relu}, a \ac{binary32} adder, a \ac{binary32} exponential and a \ac{binary32} divider.
+The \ac{relu} operation is a simple operation and is performed in parallel on all 32 results from the \ac{stop}.
+The divide, exponent and adder are more complex and there are single instantiations of each of the \acp{sfu}.
+When provcessing a group of values from the \ac{stop}, each value is processed serially.
+
+The most common usage of the \acp{sfu} is during \ac{an} state calculation. In this acse, the \ac{relu} is used as one of the four operations with the other three being \acp{nop}.
+The \ac{relu} is preceded by the \ac{mac} operation in the \ac{stop}.
+Once the \ac{sfu} operations have concluded, the result is currently sent directly back to the manager over the upstream bus.
+
+For this work, a high level of importance was not assigned to the actual \ac{simd} because a) the functionality provided by the \ac{simd} is to provide a level of flexibility for future work and b) the choice of \ac{simd} is currently under considration.
+Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed only by the special functions provided in the wrapper as dscribed above and shown in figure \ref{fig:simd wrapper block diagram}.
+However, it was important to include the \ac{simd} in the area portion of the study.
+To account for the \ac{simd}, in the area layout study a placement blockage was used based 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
+
+In practice, the \ac{simd} will take the result data from the \ac{stop} and/or the \acp{sfu} and perform a pre-programmed operation starting at the \ac{pc} indicated by the \ac{simd} operation pointer provided by the \ac{pe} controller.
+It is expected that in future work the \ac{simd} would also be given control of the \acp{sfu} allowing for more flexible and complex processing.
+
+\subsection{\Acp{sfu}}
+\label{sec:sfu}
 
 The adder is used during single \ac{an} processing as described in section \ref{sec:Processing Engine Layer} and shown in figure \ref{fig:Group AN calculation}.
 
@@ -636,14 +652,7 @@ In this case, when processing the \ac{an}, the operations performed are the \ac{
 All the \acp{an} are processed and the local register contains the summation of the \ac{an} states. 
 The cells are then parsed a second time using the divider and the stored local value to calculate the softmax.
 
-There are single instantiations of the special functions and the processed is performed serially.
-In addition, synthesis multicycle paths are employed as these functions do not represent hot-spots in the processing.
-
-This work does not put a high level of importance on the \ac{simd} as the functionality provided by the \ac{simd} is to provide a level of flexibility for future work.
-Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed by the special functions provided in the wrapper as dscribed above and shown in figure \ref{fig:simd wrapper block diagram}.
-However, it was important to include the \ac{simd} in the area portion of the study.
-To account for the \ac{simd}, in the area layout study a placement blockage was used based 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
-In practice, the \ac{simd} will take the result data from the \ac{stop} and perform the operation starting at the \ac{pc} indicated by the \ac{simd} operation pointer provided by the \ac{pe} controller.
+Other than the \ac{relu}, the \acp{sfu} are not considered hot-spots in the processing of an \ac{ann} and because of this multicycle paths are employed during synthesis allowing these complex functions to meet timing.
 
 %In most cases, the \ac{simd} operation \ac{an} activation function which in the baseline system is the \ac{relu} function.
 %When the \ac{simd} wrapper has completed its operation, it passes the result to the upstream controller to be returned to the manager.
@@ -663,28 +672,34 @@ In practice, the \ac{simd} will take the result data from the \ac{stop} and perf
     \label{fig:simd wrapper block diagram}
   \end{minipage}
   \bigskip
-  \begin{minipage}{0.40\textwidth}
+  \begin{minipage}{0.80\textwidth}
     \centering
     \vspace{5mm}
     \begin{adjustbox}{width=1\textwidth}
         \centering
         %\footnotesize
-        \begin{tabular}{ |c|c|  }
+        \begin{tabular}{ |c|c|c|  }
           \hline
           \rowcolor{gray!50}
-          \multicolumn{2}{|c|}{Special Function Table Codes} \\
+          \multicolumn{3}{|c|}{Special Function Table Codes} \\
           \hline
           \rowcolor{gray!25}
-          code[3:0] & Description  \\
+          code[3:0] & Description & Comment \\
           \hline
-          0     & NOP                             \\
-          1     & ReLu                            \\
-          2     & Sum/Save in output register     \\
-          3     & Sum/Save with local register    \\
-          4     & Sum/Send outputs                \\
-          5     & Exponent                        \\
-          6     & Divide with local register      \\
-          other & NA                              \\
+          0     & NOP                            &                                                     \\\cline{1-3}
+          1     & ReLu                           &                                                     \\\cline{1-3}
+          2     & Sum/Save in local register     & accumulate and save to register pointed to by index \\\cline{1-3}
+          3     & Sum/Save in common register    & accumulate with common register and save            \\\cline{1-3}
+          4     & Exponent                       & performed on each valid \ac{stop} result            \\\cline{1-3}
+          5     & Divide with common register    & denominator is the common register                  \\\cline{1-3}
+          6-7   & \multicolumn{2}{c|}{NA}                                                              \\\cline{1-3}
+          8     & Send                           & Local registers sent to upstream                    \\\cline{1-3}
+          8     & Send null                      & Send a null packet upstream                         \\\cline{1-3}
+          9     & Clear local register           &  \multirow{4}{*}{no data operations}                \\\cline{1-2}
+         10     & Clear common register          &                                                     \\\cline{1-2}
+         11     & Clear index register           &                                                     \\\cline{1-2}
+         12     & Increment index register       &                                                     \\\cline{1-3}
+        13-15   & \multicolumn{2}{c|}{NA}                                                              \\\cline{1-3}
           \hline
         \end{tabular}
     \end{adjustbox}
