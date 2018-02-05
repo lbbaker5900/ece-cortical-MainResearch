@@ -1,11 +1,11 @@
 
-MODNAME = manager
+MODNAME = mwc_cntl
 INST    = 2
 TECH    = 65nm
 # F65/F28 = 2.6
 # 500MHz = 5.2
-#PERIOD  = 5.2
-PERIOD  = 10.0
+PERIOD  = 5.2
+#PERIOD  = 10.0
 FULLRUN = False
 
 RTL_DIR = ../code

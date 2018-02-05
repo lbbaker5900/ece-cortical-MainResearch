@@ -29,7 +29,7 @@ set clkname clk
 # WIP
 #
 
-set modname manager
+set modname mwc_cntl
 
 #------------------------------------------------------------------------------------------------------------------------
 # TBD
@@ -53,14 +53,14 @@ if {$tech == "65nm"} {
 
   #set CLK_PER 2.6
   #set CLK_PER 3.71
-set CLK_PER 10.0
+set CLK_PER 5.2
   #set CLK_PER 10.0
 
 } elseif {($tech == "28nm")} {
 
   #set CLK_PER 2.6
   #set CLK_PER 3.71
-set CLK_PER 10.0
+set CLK_PER 5.2
   #set CLK_PER 10.0
 
 }
