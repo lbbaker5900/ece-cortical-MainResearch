@@ -38,8 +38,8 @@ Therefore, the design was synthesized using an available \SI{65}{\nano\meter} te
 \label{sec:Power and Area Scaling estimates}
 
 To obtain scaling numbers, portions of the design were synthesized using the \SI{28}{\nano\meter} library.
-The area and power results from these synthesis runs are shown in table was used to generate the power and area scaling numbers shown in table \ref{tab:Scaling runs}.
-The final scaling numbers are shown in table \ref{tab:Scaling}.
+The area and power results from these synthesis runs are shown in Table was used to generate the power and area scaling numbers shown in Table \ref{tab:Scaling runs}.
+The final scaling numbers are shown in Table \ref{tab:Scaling}.
 
 \begin{table}[h]
   % the [] contains position info e.g. [!t] means here
@@ -142,7 +142,7 @@ The final scaling numbers are shown in table \ref{tab:Scaling}.
               %\rowcolor{gray!25}  
          \multicolumn{2}{c|}{}                                          & \multicolumn{3}{c|}{Logic power}                                                                  &  \multicolumn{3}{c|}{Memory power}                                                                                                                                  \\\cline{1-8}
          Logic Area                  & Memory Area                      & Internal                            & Net switching                  & Leakage                    & Internal                                                                                                              & Net switching                  & Leakage    \\\cline{1-8}
-          \num{2.68}                 & \num{2.78}                       &  \num{5.07}                         & \num{1.21}                     & \num{4.12e-4}              & \num{5.07}\footnote{this number is conservative based on table \ref{tab:Example design with memory synthesis power}}  & NA                             & NA         \\
+          \num{2.68}                 & \num{2.78}                       &  \num{5.07}                         & \num{1.21}                     & \num{4.12e-4}              & \num{5.07}\footnote{this number is conservative based on Table \ref{tab:Example design with memory synthesis power}}  & NA                             & NA         \\
               \hline
             \end{tabular}
         \end{adjustbox}
@@ -162,7 +162,7 @@ The final scaling numbers are shown in table \ref{tab:Scaling}.
 Based on the \ac{diram4} layout shown in in figure \ref{fig:diram4Layout}, the dimensions of the area available for each \ac{ssc} is \SI{1470}{\micro\meter} by \SI{1656}{\micro\meter} or approximately \SI{2.43}{\square\milli\meter}.
 Using the logic and memory scaling numbers from table \ref{tab:Scaling numbers}, the effective dimensions at \SI{65}{\nano\meter} is \SI{2431}{\micro\meter} by \SI{2738}{\micro\meter} providing a design area at \SI{65}{\nano\meter} of approximately \SI{6.66}{\square\milli\meter}.
 
-The area contribution of each block within the Manager and \ac{pe} can be seen in table \ref{tab:Area contribution}.
+The area contribution of each block within the Manager and \ac{pe} can be seen in Table \ref{tab:Area contribution}.
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
   \captionsetup{justification=centering, skip=3pt}
@@ -313,7 +313,7 @@ The operations simulated were based on the expected lower and upper limits of pr
 These testcases were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} which represent a pre-synaptic fanin of 225 and 4000 respectively.
 Additional testcases were employed representing pre-synaptic fanins of 294, 300, 500 and 1000. Both locally connected (CONV) and fully connected (FC) type fanins were tested.
 To understand the test notation, the tests labelled CONV-500 and FC-500 represent convolutional and fully-connected tests respectively both with a pre-synaptic fanin of 500.
-The results showing sustained average bandwidth can be seen in table \ref{tab:Bandwidth Estimates}.
+The results showing sustained average bandwidth can be seen in Table \ref{tab:Bandwidth Estimates}.
 
 
 \begin{table}[h]
@@ -357,7 +357,7 @@ The power testcase employed was the CONV2.
 The simulation generated an activity file which was then used by the Synopsys\textregistered ~Primetime-PX\texttrademark ~power analysis tool to obtain power and bandwidth estimates.
 The \ac{dram} accesses were captured and \ac{dram} power dissipation calculated from \cite{tezzaron:diram4}. The power dissipated in the TSVs were estimated from \cite{liu2012compact}.
 These estimates were scaled using the scaling numbers from table \ref{tab:Scaling runs} and used to estimate power dissipation for operating frequencies of \SI{500}{\mega\hertz} and \SI{700}{\mega\hertz} using a \SI{28}{\nano\meter} techology node.
-The estimated overall power along with per block contribution are shown in table \ref{tab:Simulation-based estimates}.
+The estimated overall power along with per block contribution are shown in Table \ref{tab:Simulation-based estimates}.
 
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
@@ -412,11 +412,11 @@ The estimated overall power along with per block contribution are shown in table
 \section{Summary}
 \label{sec:Results summary}
 
-The bandwidth performance shown in table \ref{tab:Bandwidth Estimates} shows a sustained average bandwidth that exceeds the requirement shown in table \ref{tab:Bandwidth and Storage Design Requirements}.
+The bandwidth performance shown in Table \ref{tab:Bandwidth Estimates} shows a sustained average bandwidth that exceeds the requirement shown in Table \ref{tab:Bandwidth and Storage Design Requirements}.
 When using this work in a full system with data transfers between a host and the \ac{ssc}, there will be idle times but this should have a relatively low impact as it involves mostly input download and result upload.
 The focus of the veriication environment was the \ac{an} processing which involves the most complex operations in the system, including memory management, flow control etc.
 The \ac{bootp} process was simulated along with host memory upload and download, mainly to ensure the major datapath infrastructure was in place to ensure further features would have minimal impact on the area study.
-The list of features implemented and verified are shown in table \ref{tab:Features implemented}.
+The list of features implemented and verified are shown in Table \ref{tab:Features implemented}.
 
 \begin{table}[h]
   % the [] contains position info e.g. [!t] means here
