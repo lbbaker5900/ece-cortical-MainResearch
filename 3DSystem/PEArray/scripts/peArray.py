@@ -3406,10 +3406,30 @@ if __name__ == "__main__":
     pLine = pLine + '\n    {0} :'.format(cycle)
     pLine = pLine + '\n      begin'.format(cycle)
     pLine = pLine + '\n        // FIXME: Condition on cntl. Not really needed but right now dont ant dc_shell to strip as I suspect we need the cntl signals'
-    pLine = pLine + '\n        to_Stu_Fifo[0].write_data   <= {{{{`PE_EXEC_LANE_WIDTH {{(simd__sui__regs_cntl_d1[{0:>2}] == `COMMON_STD_INTF_CNTL_SOM_EOM)}}}} & simd__sui__regs_d1[{0:>2}],  '.format(msReg)
+    pLine = pLine + '\n        to_Stu_Fifo[0].write_data   = {{{{`PE_EXEC_LANE_WIDTH {{(send_regs_cntl[{0:>2}] == `COMMON_STD_INTF_CNTL_SOM_EOM)}}}} & send_regs[{0:>2}],  '.format(msReg)
     for reg in range (1, regsPerCycle-1): 
-      pLine = pLine + '\n                                        {{`PE_EXEC_LANE_WIDTH {{(simd__sui__regs_cntl_d1[{0:>2}] == `COMMON_STD_INTF_CNTL_SOM_EOM)}}}} & simd__sui__regs_d1[{0:>2}],  '.format(msReg-reg)
-    pLine = pLine + '\n                                        {{`PE_EXEC_LANE_WIDTH {{(simd__sui__regs_cntl_d1[{0:>2}] == `COMMON_STD_INTF_CNTL_SOM_EOM)}}}} & simd__sui__regs_d1[{0:>2}]}}; '.format(lsReg)
+      pLine = pLine + '\n                                       {{`PE_EXEC_LANE_WIDTH {{(send_regs_cntl[{0:>2}] == `COMMON_STD_INTF_CNTL_SOM_EOM)}}}} & send_regs[{0:>2}],  '.format(msReg-reg)
+    pLine = pLine + '\n                                       {{`PE_EXEC_LANE_WIDTH {{(send_regs_cntl[{0:>2}] == `COMMON_STD_INTF_CNTL_SOM_EOM)}}}} & send_regs[{0:>2}]}}; '.format(lsReg)
+    pLine = pLine + '\n          '.format(cycle)
+    pLine = pLine + '\n        to_Stu_Fifo[0].write_data_lane_valid   = {{send_regs_valid[{0:>2}],  '.format(msReg)
+    for reg in range (1, regsPerCycle-1): 
+      pLine = pLine + '\n                                                  send_regs_valid[{0:>2}],  '.format(msReg-reg)
+    pLine = pLine + '\n                                                  send_regs_valid[{0:>2}]}}; '.format(lsReg)
+    pLine = pLine + '\n          '.format(cycle)
+    pLine = pLine + '\n        case(to_Stu_Fifo[0].write_data_lane_valid)  // synopsys parallel_case  '.format(cycle)
+    pLine = pLine + '\n          4\'b0000:'.format(cycle)
+    pLine = pLine + '\n            to_Stu_Fifo[0].write_type = STU_PACKET_TYPE_TAG_ONLY           ;  '.format(cycle)
+    pLine = pLine + '\n          4\'b0001:'.format(cycle)
+    pLine = pLine + '\n            to_Stu_Fifo[0].write_type = STU_PACKET_TYPE_TAG_AND_DATA_ONE   ;  '.format(cycle)
+    pLine = pLine + '\n          4\'b0011:'.format(cycle)
+    pLine = pLine + '\n            to_Stu_Fifo[0].write_type = STU_PACKET_TYPE_TAG_AND_DATA_TWO   ;  '.format(cycle)
+    pLine = pLine + '\n          4\'b0111:'.format(cycle)
+    pLine = pLine + '\n            to_Stu_Fifo[0].write_type = STU_PACKET_TYPE_TAG_AND_DATA_THREE ;  '.format(cycle)
+    pLine = pLine + '\n          4\'b1111:'.format(cycle)
+    pLine = pLine + '\n            to_Stu_Fifo[0].write_type = STU_PACKET_TYPE_TAG_AND_DATA_FOUR  ;  '.format(cycle)
+    pLine = pLine + '\n          '.format(cycle)
+    pLine = pLine + '\n        endcase'.format(cycle)
+    pLine = pLine + '\n          '.format(cycle)
     pLine = pLine + '\n      end '.format(cycle)
 
 

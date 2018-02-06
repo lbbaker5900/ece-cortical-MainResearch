@@ -48,9 +48,13 @@ typedef enum logic [`STACK_DOWN_OOB_INTF_OPTION_SIZE -1:0 ] {
 // Upstream
 
 typedef enum logic [`STACK_UP_INTF_TYPE_RANGE ] {
-                                            STU_PACKET_TYPE_DATA          = 0,  // Operation may be uniquee per execution lane. Requires a larger WU packet - WIP
-                                            STU_PACKET_TYPE_CONTROL       = 1,  // Operation is the same for all lanes. Data type, operation, number of operands etc.
-                                            STU_PACKET_TYPE_NA            = {`STACK_UP_INTF_TYPE_WIDTH{1'b1}}
+                                            STU_PACKET_TYPE_TAG_AND_DATA_ONE     = 0,  
+                                            STU_PACKET_TYPE_TAG_AND_DATA_TWO     = 1,  
+                                            STU_PACKET_TYPE_TAG_AND_DATA_THREE   = 2,  
+                                            STU_PACKET_TYPE_TAG_AND_DATA_FOUR    = 3,  
+                                            STU_PACKET_TYPE_TAG_ONLY             = 4, 
+                                            STU_PACKET_TYPE_CONTROL              = 8, 
+                                            STU_PACKET_TYPE_NA                   = {`STACK_UP_INTF_TYPE_WIDTH{1'b1}}
                                           } stack_up_type ;
 
 

@@ -114,24 +114,39 @@ module simd_upstream_intf (
   reg    [`COMMON_STD_INTF_CNTL_RANGE   ]           simd__sui__regs_cntl_d1  [`PE_NUM_OF_EXEC_LANES ] ;
   reg    [`PE_EXEC_LANE_WIDTH_RANGE     ]           simd__sui__regs_d1       [`PE_NUM_OF_EXEC_LANES ] ;
   reg                                               simd__sui__send_d1                                ;
+
+  reg    [`STACK_DOWN_OOB_INTF_TAG_RANGE]           send_tag                                 ;
+  reg    [`PE_NUM_LANES_RANGE           ]           send_tag_num_lanes                       ; 
+  reg    [`PE_NUM_OF_EXEC_LANES_RANGE   ]           send_regs_valid                          ;
+  reg    [`COMMON_STD_INTF_CNTL_RANGE   ]           send_regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg    [`PE_EXEC_LANE_WIDTH_RANGE     ]           send_regs       [`PE_NUM_OF_EXEC_LANES ] ;
+  reg                                               send                                     ;
   genvar gvi;
   generate
     for (gvi=0; gvi<`PE_NUM_OF_EXEC_LANES ; gvi=gvi+1) 
       begin: regFile_load
         always @(posedge clk)
           begin
-            simd__sui__regs_valid_d1 [gvi]  <=  ( reset_poweron ) ? 'd0 : simd__sui__regs_valid [gvi]  ;
-            simd__sui__regs_cntl_d1  [gvi]  <=  ( reset_poweron ) ? 'd0 : simd__sui__regs_cntl  [gvi]  ;
-            simd__sui__regs_d1       [gvi]  <=  ( reset_poweron ) ? 'd0 : simd__sui__regs       [gvi]  ;
+            simd__sui__regs_valid_d1 [gvi]  <=  simd__sui__regs_valid [gvi]  ;
+            simd__sui__regs_cntl_d1  [gvi]  <=  simd__sui__regs_cntl  [gvi]  ;
+            simd__sui__regs_d1       [gvi]  <=  simd__sui__regs       [gvi]  ;
+
+            send_regs_valid [gvi]  <=  ( simd__sui__send_d1 ) ?  simd__sui__regs_valid_d1 [gvi] : send_regs_valid [gvi] ;
+            send_regs_cntl  [gvi]  <=  ( simd__sui__send_d1 ) ?  simd__sui__regs_cntl_d1  [gvi] : send_regs_cntl  [gvi] ;
+            send_regs       [gvi]  <=  ( simd__sui__send_d1 ) ?  simd__sui__regs_d1       [gvi] : send_regs       [gvi] ;
           end
       end
   endgenerate
 
   always @(posedge clk)
     begin
-      simd__sui__send_d1            <=  ( reset_poweron ) ? 'd0 :   simd__sui__send         ;
-      simd__sui__tag_d1             <=  ( reset_poweron ) ? 'd0 : ( simd__sui__regs_valid ) ? simd__sui__tag            : simd__sui__tag_d1            ;
-      simd__sui__tag_num_lanes_d1   <=  ( reset_poweron ) ? 'd0 : ( simd__sui__regs_valid ) ? simd__sui__tag_num_lanes  : simd__sui__tag_num_lanes_d1  ;
+      simd__sui__send_d1            <=  simd__sui__send           ;
+      simd__sui__tag_d1             <=  simd__sui__tag            ;
+      simd__sui__tag_num_lanes_d1   <=  simd__sui__tag_num_lanes  ;
+
+      send                          <=  simd__sui__send_d1                                                           ;
+      send_tag                      <=  ( simd__sui__send_d1 ) ?   simd__sui__tag_d1           : send_tag            ;
+      send_tag_num_lanes            <=  ( simd__sui__send_d1 ) ?   simd__sui__tag_num_lanes_d1 : send_tag_num_lanes  ;
     end
 
   reg                                              sti__sui__ready_d1            ;
@@ -148,7 +163,7 @@ module simd_upstream_intf (
       begin
         always @(posedge clk)
           begin
-            reg_enable [lane] <= lane < simd__sui__tag_num_lanes_d1  ;
+            reg_enable [lane] <= lane < send_tag_num_lanes  ;
           end
       end
   endgenerate
@@ -166,6 +181,8 @@ module simd_upstream_intf (
       begin: to_Stu_Fifo
 
         // Write data
+        reg  [`STACK_UP_INTF_DATA_LANE_VALID_RANGE ]      write_data_lane_valid        ;  // use to set number of valid data words
+  
         reg    [`COMMON_STD_INTF_CNTL_RANGE   ]           write_cntl       ;
         stack_up_type                                     write_type       ;
         //wire   [`STACK_UP_INTF_TYPE_RANGE     ]           write_type       ;
@@ -225,8 +242,8 @@ module simd_upstream_intf (
   reg [`SIMD_TO_STI_CNTL_STATE_RANGE ] simd_to_sti_cntl_state_next;
   
   // we will transfer (stack up data width divided by exec lane reg width) cycles
-  reg  [`SIMD_TO_STI_NUM_OF_TRANSFERS_RANGE ]   sui2stiTransferCount   ;  // counter for number of transfers between registers and sti fifo
-  
+  reg  [`SIMD_TO_STI_NUM_OF_TRANSFERS_RANGE  ]   sui2stiTransferCount   ;  // counter for number of transfers between registers and sti fifo
+
 
   // State register 
   always @(posedge clk)
@@ -237,7 +254,7 @@ module simd_upstream_intf (
   
   // FIXME: Does this need to be based on number of active lanes?
   //wire sendUpstreamPkt = |simd__sui__regs_valid_d1 ; // assume all regs must be ready at the same time
-  wire sendUpstreamPkt = simd__sui__send_d1 ; // may need to send dummy return packet
+  wire sendUpstreamPkt = send  ; // may need to send dummy return packet
 
   always @(*)
     begin
@@ -303,13 +320,14 @@ module simd_upstream_intf (
       to_Stu_Fifo[0].write_cntl   <= (sui2stiTransferCount == 0                               ) ? `COMMON_STD_INTF_CNTL_SOM   :
                                      (sui2stiTransferCount == `SIMD_TO_STI_NUM_OF_TRANSFERS-1 ) ? `COMMON_STD_INTF_CNTL_EOM   :
                                                                                                   `COMMON_STD_INTF_CNTL_MOM   ;
-
+/*
       to_Stu_Fifo[0].write_type   <= (sui2stiTransferCount == 0                               ) ?  STU_PACKET_TYPE_DATA       :
                                                                                                    STU_PACKET_TYPE_NA         ;
+*/
 
-      to_Stu_Fifo[0].write_oob_data   <= simd__sui__tag_d1   ;
+      to_Stu_Fifo[0].write_oob_data   <= send_tag   ;
 
-      case  (sui2stiTransferCount )
+      case  (sui2stiTransferCount )  // synopsys parallel_case
         `include "simd_upstream_intf_register_mux.vh"
       endcase 
 

@@ -82,7 +82,15 @@
 //---------------------------------------------------------------------------------------------------------------------
 // Stack Upstream interface
 
-`define STACK_UP_INTF_DATA_WIDTH                   128
+`define STACK_UP_INTF_NUM_DATA_LANES                   4
+
+`define STACK_UP_INTF_DATA_LANE_VALID_WIDTH            (`STACK_UP_INTF_NUM_DATA_LANES)
+`define STACK_UP_INTF_DATA_LANE_VALID_MSB              `STACK_UP_INTF_DATA_LANE_VALID_WIDTH-1
+`define STACK_UP_INTF_DATA_LANE_VALID_LSB              0
+`define STACK_UP_INTF_DATA_LANE_VALID_RANGE            `STACK_UP_INTF_DATA_LANE_VALID_MSB : `STACK_UP_INTF_DATA_LANE_VALID_LSB
+
+// `define STACK_UP_INTF_DATA_WIDTH                   (`STACK_UP_INTF_NUM_DATA_LANES*`PE_EXEC_LANE_WIDTH )
+`define STACK_UP_INTF_DATA_WIDTH                   128  // has to be a num for python
 `define STACK_UP_INTF_DATA_MSB                     `STACK_UP_INTF_DATA_WIDTH-1
 `define STACK_UP_INTF_DATA_LSB                     0
 `define STACK_UP_INTF_DATA_RANGE                   `STACK_UP_INTF_DATA_MSB : `STACK_UP_INTF_DATA_LSB

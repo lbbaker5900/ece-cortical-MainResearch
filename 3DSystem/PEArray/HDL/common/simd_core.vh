@@ -188,17 +188,17 @@
 
 //------------------------------------------------------------------------------------------------------------
 // Exp
-`define SIMD_CORE_SFU_DIV_CNTL_WAIT                            9'b00_0000_0001
-`define SIMD_CORE_SFU_DIV_CNTL_START                           9'b00_0000_0010
-`define SIMD_CORE_SFU_DIV_CNTL_WAIT_DIV_START                  9'b00_0000_0100
-`define SIMD_CORE_SFU_DIV_CNTL_SETTLE                          9'b00_0000_1000
-`define SIMD_CORE_SFU_DIV_CNTL_LOAD                            9'b00_0001_0000
-`define SIMD_CORE_SFU_DIV_CNTL_LOAD_LOCAL                      9'b00_0010_0000
-`define SIMD_CORE_SFU_DIV_CNTL_INC                             9'b00_0100_0000
-`define SIMD_CORE_SFU_DIV_CNTL_LOAD_INPUTS                     9'b00_1000_0000
+`define SIMD_CORE_SFU_DIV_CNTL_WAIT                            10'b00_0000_0001
+`define SIMD_CORE_SFU_DIV_CNTL_START                           10'b00_0000_0010
+`define SIMD_CORE_SFU_DIV_CNTL_WAIT_DIV_START                  10'b00_0000_0100
+`define SIMD_CORE_SFU_DIV_CNTL_SETTLE                          10'b00_0000_1000
+`define SIMD_CORE_SFU_DIV_CNTL_LOAD                            10'b00_0001_0000
+`define SIMD_CORE_SFU_DIV_CNTL_LOAD_LOCAL                      10'b00_0010_0000
+`define SIMD_CORE_SFU_DIV_CNTL_INC                             10'b00_0100_0000
+`define SIMD_CORE_SFU_DIV_CNTL_LOAD_INPUTS                     10'b00_1000_0000
 
-`define SIMD_CORE_SFU_DIV_CNTL_COMPLETE                        9'b01_0000_0000
-`define SIMD_CORE_SFU_DIV_CNTL_ERR                             9'b10_0000_0000
+`define SIMD_CORE_SFU_DIV_CNTL_COMPLETE                        10'b01_0000_0000
+`define SIMD_CORE_SFU_DIV_CNTL_ERR                             10'b10_0000_0000
 
 `define SIMD_CORE_SFU_DIV_CNTL_STATE_WIDTH                     10
 `define SIMD_CORE_SFU_DIV_CNTL_STATE_MSB                       `SIMD_CORE_SFU_DIV_CNTL_STATE_WIDTH-1

@@ -307,6 +307,7 @@ module stu_cntl (
   //----------------------------------------------------------------------------------------------------
   // Upstream Packet Processing FSM
   //
+  reg                                  is_data_cycle               ;
 
   reg [`STU_CNTL_RX_CNTL_STATE_RANGE ] stu_cntl_rx_cntl_state      ; // state flop
   reg [`STU_CNTL_RX_CNTL_STATE_RANGE ] stu_cntl_rx_cntl_state_next ;
@@ -329,8 +330,10 @@ module stu_cntl (
         `STU_CNTL_RX_CNTL_WAIT: 
           stu_cntl_rx_cntl_state_next =  ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_CONTROL) ) ? `STU_CNTL_RX_CNTL_CONTROL_SOM       :  // start processing control
                                          ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_CONTROL) ) ? `STU_CNTL_RX_CNTL_CONTROL_COMPLETE  :  // start processing control
-                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA   ) ) ? `STU_CNTL_RX_CNTL_DATA_SOM          :  // start processing data
-                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA   ) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE     :  // start processing data
+                                         //( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA   ) ) ? `STU_CNTL_RX_CNTL_DATA_SOM          :  // start processing data
+                                         //( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA   ) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE     :  // start processing data
+                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && ( is_data_cycle                                         ) ) ? `STU_CNTL_RX_CNTL_DATA_SOM          :  // start processing data
+                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && ( is_data_cycle                                         ) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE     :  // start processing data
                                          ( from_Stu_Fifo[0].pipe_read                                                                                                                             ) ? `STU_CNTL_RX_CNTL_ERR               :  // first cycle must be data or control
                                                                                                                                                                                                       `STU_CNTL_RX_CNTL_WAIT              ;
   
@@ -353,8 +356,10 @@ module stu_cntl (
         `STU_CNTL_RX_CNTL_CONTROL_COMPLETE: 
           stu_cntl_rx_cntl_state_next =  ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_CONTROL) ) ? `STU_CNTL_RX_CNTL_CONTROL_SOM       :  // start processing control
                                          ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_CONTROL) ) ? `STU_CNTL_RX_CNTL_CONTROL_COMPLETE  :  // start processing control
-                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA   ) ) ? `STU_CNTL_RX_CNTL_DATA_SOM          :  // start processing data
-                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA   ) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE     :  // start processing data
+                                         //( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_Stu_Fifo[0].pipe_type != STU_PACKET_TYPE_TAG_ONLY   ) ) ? `STU_CNTL_RX_CNTL_DATA_SOM          :  // start processing data
+                                         //( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_Stu_Fifo[0].pipe_type != STU_PACKET_TYPE_TAG_ONLY   ) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE     :  // start processing data
+                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && ( is_data_cycle                                       ) ) ? `STU_CNTL_RX_CNTL_DATA_SOM          :  // start processing data
+                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && ( is_data_cycle                                       ) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE     :  // start processing data
                                          ( from_Stu_Fifo[0].pipe_read                                                                                                                             ) ? `STU_CNTL_RX_CNTL_ERR               :  // first cycle must be data or control
                                                                                                                                                                                                       `STU_CNTL_RX_CNTL_WAIT              ;  // just go back to WAIT
   
@@ -371,13 +376,23 @@ module stu_cntl (
                                          ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    )) ? `STU_CNTL_RX_CNTL_ERR           :  // error
                                          ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ? `STU_CNTL_RX_CNTL_ERR           :  // error
                                                                                                                                           `STU_CNTL_RX_CNTL_DATA_MOM      ;
+/*
         `STU_CNTL_RX_CNTL_DATA_COMPLETE: 
-          stu_cntl_rx_cntl_state_next =  ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA) ) ? `STU_CNTL_RX_CNTL_DATA_SOM       :  // start processing control
-                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE  :  // start processing control
-                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA) ) ? `STU_CNTL_RX_CNTL_DATA_SOM       :  // start processing data
-                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE  :  // start processing data
+          stu_cntl_rx_cntl_state_next =  ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_Stu_Fifo[0].pipe_type != STU_PACKET_TYPE_TAG_ONLY) ) ? `STU_CNTL_RX_CNTL_DATA_SOM       :  // start processing control
+                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_Stu_Fifo[0].pipe_type != STU_PACKET_TYPE_TAG_ONLY) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE  :  // start processing control
+                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (from_Stu_Fifo[0].pipe_type != STU_PACKET_TYPE_TAG_ONLY) ) ? `STU_CNTL_RX_CNTL_DATA_SOM       :  // start processing data
+                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (from_Stu_Fifo[0].pipe_type != STU_PACKET_TYPE_TAG_ONLY) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE  :  // start processing data
                                          ( from_Stu_Fifo[0].pipe_read                                                                                                                          ) ? `STU_CNTL_RX_CNTL_ERR            :  // first cycle must be data or control
                                                                                                                                                                                                    `STU_CNTL_RX_CNTL_WAIT           ;  // just go back to WAIT
+*/
+
+        `STU_CNTL_RX_CNTL_DATA_COMPLETE: 
+          stu_cntl_rx_cntl_state_next =  ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (is_data_cycle             ) ) ? `STU_CNTL_RX_CNTL_DATA_SOM       :  // start processing control
+                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (is_data_cycle             ) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE  :  // start processing control
+                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM    ) && (is_data_cycle             ) ) ? `STU_CNTL_RX_CNTL_DATA_SOM       :  // start processing data
+                                         ( from_Stu_Fifo[0].pipe_read && (from_Stu_Fifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) && (is_data_cycle             ) ) ? `STU_CNTL_RX_CNTL_DATA_COMPLETE  :  // start processing data
+                                         ( from_Stu_Fifo[0].pipe_read                                                                                                  ) ? `STU_CNTL_RX_CNTL_ERR            :  // first cycle must be data or control
+                                                                                                                                                                           `STU_CNTL_RX_CNTL_WAIT           ;  // just go back to WAIT
 
         // Latch state on error
         `STU_CNTL_RX_CNTL_ERR:
@@ -398,13 +413,22 @@ module stu_cntl (
                                     (stu_cntl_rx_cntl_state == `STU_CNTL_RX_CNTL_CONTROL_MOM     ) &                                                           from_Stu_Fifo[0].pipe_valid & rcp__stuc__ready  |
                                     (stu_cntl_rx_cntl_state == `STU_CNTL_RX_CNTL_CONTROL_COMPLETE) &                                                           from_Stu_Fifo[0].pipe_valid & rcp__stuc__ready  ;  // data packets to Response data processor
 
-  assign stuc__rdp__valid_e1    =   (stu_cntl_rx_cntl_state == `STU_CNTL_RX_CNTL_WAIT            ) & (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA   ) & from_Stu_Fifo[0].pipe_valid & rdp__stuc__ready  |  // data packets to Response data processor
+  assign stuc__rdp__valid_e1    =   //(stu_cntl_rx_cntl_state == `STU_CNTL_RX_CNTL_WAIT          ) & (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_DATA   ) & from_Stu_Fifo[0].pipe_valid & rdp__stuc__ready  |  // data packets to Response data processor
+                                    (stu_cntl_rx_cntl_state == `STU_CNTL_RX_CNTL_WAIT            ) & ( is_data_cycle                                       ) & from_Stu_Fifo[0].pipe_valid & rdp__stuc__ready  |  // data packets to Response data processor
                                     (stu_cntl_rx_cntl_state == `STU_CNTL_RX_CNTL_DATA_SOM        ) &                                                           from_Stu_Fifo[0].pipe_valid & rdp__stuc__ready  |
                                     (stu_cntl_rx_cntl_state == `STU_CNTL_RX_CNTL_DATA_MOM        ) &                                                           from_Stu_Fifo[0].pipe_valid & rdp__stuc__ready  |
                                     (stu_cntl_rx_cntl_state == `STU_CNTL_RX_CNTL_DATA_COMPLETE   ) &                                                           from_Stu_Fifo[0].pipe_valid & rdp__stuc__ready  ;  // data packets to Response data processor
 
   assign from_Stu_Fifo[0].pipe_read   =  stuc__rcp__valid_e1 | stuc__rdp__valid_e1 ;
 
+  always @(*)
+    begin
+      is_data_cycle      =  (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_TAG_AND_DATA_ONE   )  | 
+                            (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_TAG_AND_DATA_TWO   )  | 
+                            (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_TAG_AND_DATA_THREE )  | 
+                            (from_Stu_Fifo[0].pipe_type == STU_PACKET_TYPE_TAG_AND_DATA_FOUR  )  ;
+                                                                                                    
+    end
 
   always @(*)
     begin
