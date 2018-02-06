@@ -737,7 +737,7 @@ Currently only the tag and data mode has been implemented.
   \begin{minipage}{1\textwidth}
     \centering
     \captionsetup{justification=centering, skip=10pt}
-    \begin{minipage}[t]{0.45\textwidth}
+    \begin{minipage}[t]{0.4\textwidth}
       \begin{flushright}
         \begin{bytefield}[bitwidth=0.49em, endianness=big]{22}
           \bitheader{0, 16, 21} \\
@@ -747,7 +747,7 @@ Currently only the tag and data mode has been implemented.
         \end{bytefield}
       \end{flushright}
     \end{minipage}
-    \begin{minipage}[t]{0.45\textwidth}
+    \begin{minipage}[t]{0.55\textwidth}
       \begin{flushleft}
         \hspace{1mm}
         \begin{bytefield}[bitwidth=0.1em, endianness=big]{128}
@@ -771,7 +771,7 @@ Currently only the tag and data mode has been implemented.
   \end{minipage}
   \begin{minipage}{1\textwidth}
     \centering
-    \begin{minipage}[t]{0.25\textwidth}
+    \begin{minipage}[t]{0.28\textwidth}
       \vspace{5mm}
       \centering
       \begin{adjustbox}{width=1\textwidth}
@@ -784,31 +784,31 @@ Currently only the tag and data mode has been implemented.
             \rowcolor{gray!25}
             type[1:0] & Description  \\
             \hline
-            0     & OOB=Tag, Data valid \\
-            1     & OOB=NA, Data valid \\
-            2     & OOB=Tag, Data invalid \\
-            3     & NA \\
+            0     & OOB=Tag, Data valid   \\
+            1     & OOB=Tag, Data invalid \\
+            2     & Control (TBD)         \\
+            3     & other (TBD)           \\
             \hline
           \end{tabular}
       \end{adjustbox}
     \end{minipage}
-    \begin{minipage}[t]{0.2\textwidth}
+    \begin{minipage}[t]{0.23\textwidth}
       \vspace{5mm}
       \centering
       \begin{adjustbox}{width=1\textwidth}
           \footnotesize
           \begin{tabular}{ |c|c|  }
             \hline
-            \rowcolor{gray!50}
-            \multicolumn{2}{|c|}{ Number of valid words} \\
+            \rowcolor{gray!50}\multicolumn{2}{|c|}{ Number of valid data words} \\
+            \rowcolor{gray!50}\multicolumn{2}{|c|}{ (type = 0)                } \\
             \hline
             \rowcolor{gray!25}
             PV[1:0] & Description  \\
             \hline
-            0     & One word valid \\
-            1     & Two words valid \\
+            0     & One word valid    \\
+            1     & Two words valid   \\
             2     & Three words valid \\
-            3     & Four words valid \\
+            3     & Four words valid  \\
             \hline
           \end{tabular}
       \end{adjustbox}
