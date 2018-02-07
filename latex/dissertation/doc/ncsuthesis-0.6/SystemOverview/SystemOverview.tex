@@ -87,8 +87,9 @@ The customizations described in Section \ref{sec:Very-Wide Bus} means each \ac{s
 The \ac{diram4} has 64 sub-memories so there are 64 \acp{ssc}. 
 The \ac{ssc} has been designed as a standalone unit and does not have a direct knowledge of the other \acp{ssc} in the system and any required coordination between \acp{ssc} is embedded within an instruction rather than in the hardware.
 
-To process an \ac{ann}, the user must allocate the individual \acp{an} to an \ac{ssc}. Once partitioned, an \acp{ann} pre-synaptic connection weights must be stored in the \ac{ssc} memory associated with the \ac{an}.
-The states of the pre-synaptic \acp{an} must also be stored in a dependent \acp{an} allocated \ac{ssc} memory.
+To process an \ac{ann}, the user must allocate the individual \acp{an} to an \ac{ssc}. 
+Once partitioned, an \ac{ann}'s pre-synaptic connection weights must be stored in the \ac{ssc} memory associated with the \ac{an}.
+The states of the pre-synaptic \acp{an} must also be stored in a dependent \ac{an}'s allocated \ac{ssc} memory.
 Details on where the parameters and \ac{an} states are stored are described in Chapter \ref{sec:System Operations}.
 
 The baseline \ac{ssc} is designed with 32 execution lanes, each of which can simultaneously process two streams of \ac{binary32} words.
@@ -105,7 +106,7 @@ The 32 execution lanes can be used for processing a group of one to 32 individua
 
 In the case of a group of \acp{an}, all the \acp{an} must be associated with a \ac{roi} or a fully-connected layer.
 The pre-synaptic \ac{roi}, or all the \acp{an} in the case of a fully-connected layer, are broadcast to one of the streams of all execution lanes.
-The other stream is used for the individual \acp{an} connection weights. 
+The other stream is used for the individual \ac{an}'s connection weights. 
 The \ac{pe} \ac{stop} performs 32 simultaneous \acf{fp} \ac{mac} operations while the data is being streamed from the manager layer to the \ac{pe} layer.
 Once all the \ac{an} states and weights have been streamed to the \ac{pe}, the \ac{stop} passes the result of the \ac{mac} to the \ac{pe} \ac{simd} which then applies the activation function.
 Typically the \ac{simd} then sends states of the group of \acp{an} back to the manager.
@@ -388,7 +389,7 @@ The operation descriptor describes the operations the \ac{pe} will perform, whic
 The manager extracts the operation information, embeds the information in an \ac{oob} packet and sends the packet to the \ac{pe} over the downstream \ac{oob} bus.
 The two memory read descriptors are used to define the memory locations of the downstream stack data buses.
 There is one memory read descriptor for each of the two operand streams in the execution lanes.  One typically defines where the pre-synaptic weights are stored and the other defines where the pre-synaptic \ac{an} states are stored.
-The architecture is designed to cause an instruction to compute the state of multiple \acp{an} or to cause an individual \acp{an} state to be computed.
+The architecture is designed to cause an instruction to compute the state of multiple \acp{an} or to cause an individual \ac{an}'s state to be computed.
 If a group of \acp{an} are computed, the pre-synaptic connection weights for the \acp{an} are stored interleaved and when read from \ac{dram} are directed to one of the streams of each of the execution lanes.
 If a single \ac{an} is computed, the pre-synaptic connection weights for the \acp{an} are stored linearly and when read from \ac{dram} are directed to one of the streams of each of the execution lanes.
 The pre-synaptic \ac{an} states are stored in row-major order and when read are broadcast to the other stream of each execution lane.

@@ -126,7 +126,7 @@ A stream block inside the memory read block immediately starts waiting for data 
 The memory write descriptor is decoded and the storage descriptor pointer extracted and along with the tag are sent to the return data processor. The tag is sent to match with the returned data.
 Currently the system only allows in-order data but the tag is provided for extensibility.
 
-At this point all the blocks that take part in a compute operation on a group of \acp{an} are perforiming the various tasks.
+At this point all the blocks that take part in a compute operation on a group of \acp{an} are performing the various tasks.
 As mentioned in Section \ref{sec:Common Bus Signalling}, the inputs to many blocks employ \acp{fifo}. 
 This allows blocks to pipeline tasks to absorb any latencies, they also allow blocks to start sending data to a destination block before that block has been configured to receive the data.
 The \ac{fifo} will assert a flow control signal until the block is ready to receive.
