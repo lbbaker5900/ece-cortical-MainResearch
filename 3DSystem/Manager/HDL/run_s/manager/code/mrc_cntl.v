@@ -34,7 +34,7 @@
 
 module mrc_cntl (  
 
-            //-------------------------------
+            //----------------------------------------------------------------------------------------------------
             // From WU Decoder
             // - receiver MR descriptorss
             //
@@ -45,7 +45,7 @@ module mrc_cntl (
             input   wire  [`MGR_WU_OPT_VALUE_RANGE        ]        wud__mrc__option_value  [`MGR_WU_OPT_PER_INST ] ,  
             input   wire  [`MGR_STD_OOB_TAG_RANGE         ]        wud__mrc__tag                                   ,  // mmc needs to service tag requests before tag+1
             
-            //-------------------------------
+            //----------------------------------------------------------------------------------------------------
             // to NoC (via mcntl)
             //
             output  reg   [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]      mrc__mcntl__lane_valid                                       ,
@@ -53,7 +53,7 @@ module mrc_cntl (
             input   wire  [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ]      mcntl__mrc__lane_ready                                       ,
             output  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]      mrc__mcntl__lane_data     [`MGR_CNTL_NUM_OF_DMA_LANES_RANGE ],
 
-            //-------------------------------
+            //----------------------------------------------------------------------------------------------------
             // Stack Bus - Downstream arguments
             //
             output  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE     ]      mrc__std__lane_valid                                   ,
@@ -61,7 +61,7 @@ module mrc_cntl (
             input   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE     ]      std__mrc__lane_ready                                   ,
             output  reg   [`STACK_DOWN_INTF_STRM_DATA_RANGE ]      mrc__std__lane_data     [`MGR_NUM_OF_EXEC_LANES_RANGE ],
 
-            //-------------------------------
+            //----------------------------------------------------------------------------------------------------
             // Main Memory Controller interface
             // - response must be in order
             //
@@ -80,7 +80,24 @@ module mrc_cntl (
             output  reg                                                                           mrc__mmc__ready [`MGR_DRAM_NUM_CHANNELS ] ,
             input   wire  [`MGR_MMC_TO_MRC_INTF_NUM_WORDS_RANGE ] [ `MGR_EXEC_LANE_WIDTH_RANGE ]  mmc__mrc__data  [`MGR_DRAM_NUM_CHANNELS ] ,
 
-            //-------------------------------
+            //----------------------------------------------------------------------------------------------------
+            //----------------------------------------------------------------------------------------------------
+            // Config/Status
+            
+            //-------------------------------------------------------------------------------------------------
+            // Storage descriptor download
+
+            input   wire                                                       mcntl__sdp__enable_sdmem_dnld   ,
+            input   wire                                                       mcntl__sdp__sdmem_valid         ,
+            input   wire  [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__sdp__sdmem_address       ,
+            output  wire                                                       sdp__mcntl__sdmem_ready         ,
+
+            // Storage descriptor memory contents
+            input   wire  [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__sdp__sdmem_addr          ,
+            input   wire  [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__sdp__sdmem_order         ,
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump      ,
+            
+            //----------------------------------------------------------------------------------------------------
             // General
             //
             input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
@@ -599,6 +616,19 @@ module mrc_cntl (
             .xxx__sdp__lane_ready                        ( xxx__sdp__lane_ready              ),
                                                                                                                     
             //-------------------------------
+            // Config/Status
+            //-------------------------------
+            // storage descriptor memory download
+            //
+            .mcntl__sdp__enable_sdmem_dnld               ( mcntl__sdp__enable_sdmem_dnld     ),
+            .mcntl__sdp__sdmem_valid                     ( mcntl__sdp__sdmem_valid           ),
+            .mcntl__sdp__sdmem_address                   ( mcntl__sdp__sdmem_address         ),
+            .sdp__mcntl__sdmem_ready                     ( sdp__mcntl__sdmem_ready           ),
+            .mcntl__sdp__sdmem_addr                      ( mcntl__sdp__sdmem_addr            ),
+            .mcntl__sdp__sdmem_order                     ( mcntl__sdp__sdmem_order           ),
+            .mcntl__sdp__sdmem_consJump                  ( mcntl__sdp__sdmem_consJump        ),
+                                                         
+            //-------------------------------           
             // General
             //
             .sys__mgr__mgrId                             ( sys__mgr__mgrId                   ),

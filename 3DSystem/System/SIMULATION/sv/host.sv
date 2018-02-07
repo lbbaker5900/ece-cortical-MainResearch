@@ -84,6 +84,9 @@ class host_driver_checker;
 
     task run (); 
 
+      `define HOST_DNLD_PKT_COUNT 4
+      `define HOST_DNLD_DWORDS  `HOST_DNLD_PKT_COUNT*16
+
       bit  [`MGR_WU_OPT_TYPE_RANGE                      ]   payload_tuple_type       [`MGR_ARRAY_NUM_OF_MGR]    ;
       bit  [`MGR_WU_EXTD_OPT_VALUE_RANGE                ]   payload_tuple_extd_value [`MGR_ARRAY_NUM_OF_MGR]    ;
       bit [`MGR_NOC_CONT_INTERNAL_DATA_CYCLE_WORD_RANGE ]   payload_data             [`MGR_ARRAY_NUM_OF_MGR]    ;
@@ -95,13 +98,6 @@ class host_driver_checker;
       int sent_instructions   ;
       string entry  ;
 
-      found = 0;
-      lineNum = 0;
-      count   = 0;
-      pkt_count   = 0;
-      sent_instructions = 0  ;
-      noc_bitMask  = {63'd0, 1'b1}    ;
-
       fileName  =  $sformatf("foo.dat");
       fileName  =  $sformatf("foo2.dat");
 
@@ -111,9 +107,18 @@ class host_driver_checker;
         end
       repeat (20) @(vExtFromNoC[0].cb_p);
 
-      for (int mgr=0; mgr<1; mgr=mgr+1)
-      //for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+      //for (int mgr=0; mgr<1; mgr=mgr+1)
+      for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
         begin
+          $display("@%0t :%s:%0d:INFO: Manager %0d BootP instruction download", $time, `__FILE__, `__LINE__, mgr);
+          count   = 0;
+          pkt_count   = 0;
+          found = 0;
+          lineNum = 0;
+          sent_instructions = 0  ;
+          noc_bitMask  = 64'd0;
+          noc_bitMask[mgr]  = 1'b1 ;
+
           fileName  =  $sformatf("./inputFiles/manager_%0d_layer1_instruction_readmem.dat", mgr);
           fileDesc  =  $fopen (fileName, "r");
           if (fileDesc == 0) 
@@ -123,7 +128,8 @@ class host_driver_checker;
           end
           noc_bitMask  = 64'd0;
           noc_bitMask[mgr]  = 1'b1 ;
-          while (!$feof(fileDesc)) 
+          while ( (sent_instructions == 0 ) && !$feof(fileDesc))
+          //while (!$feof(fileDesc)) 
             begin
               noc_cntl       = 2'b10 ; 
               noc_type       = `MGR_NOC_CONT_TYPE_INSTRUCTION      ; 
@@ -189,15 +195,19 @@ class host_driver_checker;
                   count++;
                   if ((count) == `MGR_WU_MEMORY_INIT_ENTRIES)
                     begin
+                      //$display("@%0t :%s:%0d:DEBUG: Manager %0d : BootP %0d ", $time, `__FILE__, `__LINE__, mgr, count);
                       break;
                     end
+                  //$display("@%0t :%s:%0d:DEBUG: Manager %0d : BootP %0d ", $time, `__FILE__, `__LINE__, mgr, count);
                 end
               pkt_count++;
               if (sent_instructions == 1)
                 begin
                   @(vExtFromNoC[0].cb_p);
                   vExtFromNoC[0].noc__mgr__port_valid = 0;
-                  break;
+                  repeat(10) @(vExtFromNoC[0].cb_p);
+                  //$display("@%0t :%s:%0d:DEBUG: Manager %0d : BootP %0d ", $time, `__FILE__, `__LINE__, mgr, count);
+                  //break;
                 end
               /*
               @(vExtFromNoC[0].cb_p);
@@ -217,6 +227,7 @@ class host_driver_checker;
               //$display("ERROR:LEE:readmem file contents : %s  : Addr:%h, Data:%h", memFile, memory_address, memory_data);
               //
               //mem[memory_address] = memory_data ;
+              $display("@%0t :%s:%0d:INFO: Manager %0d completed BootP instruction download", $time, `__FILE__, `__LINE__, mgr);
             end
           $fclose(fileDesc);
         end
@@ -238,18 +249,19 @@ class host_driver_checker;
       int sent_dnld_data   ;
       string entry  ;
 
-      found = 0;
-      lineNum = 0;
-      count   = 0;
-      pkt_count   = 0;
-      sent_dnld_data = 0  ;
-      noc_bitMask  = {63'd0, 1'b1}    ;
-
       repeat(100) @(vExtFromNoC[0].cb_p);
 
-      for (int mgr=0; mgr<1; mgr=mgr+1)
-      //for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
+      //for (int mgr=0; mgr<1; mgr=mgr+1)
+      for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
         begin
+          count   = 0;
+          pkt_count   = 0;
+          found = 0;
+          lineNum = 0;
+          sent_dnld_data = 0  ;
+          noc_bitMask  = {64'd0}    ;
+
+          $display("@%0t :%s:%0d:INFO: Manager %0d Unsolicited dnld", $time, `__FILE__, `__LINE__, mgr);
           fileName  =  $sformatf("./inputFiles/manager_%0d_dnld_data.dat", mgr);
           fileDesc  =  $fopen (fileName, "r");
           if (fileDesc == 0) 
@@ -259,7 +271,8 @@ class host_driver_checker;
           end
           noc_bitMask  = 64'd0;
           noc_bitMask[mgr]  = 1'b1 ;
-          while (!$feof(fileDesc)) 
+          //while (!$feof(fileDesc))
+          while ( (count < `HOST_DNLD_DWORDS) && !$feof(fileDesc))
             begin
               noc_cntl       = 2'b10 ; 
               noc_type       = `MGR_NOC_CONT_TYPE_INSTRUCTION      ; 
@@ -364,8 +377,8 @@ class host_driver_checker;
               if (sent_dnld_data == 1)
                 begin
                   vExtFromNoC[0].noc__mgr__port_valid = 0;
-                  @(vExtFromNoC[0].cb_p);
-                  break;
+                  repeat(10) @(vExtFromNoC[0].cb_p);
+                  //break;
                 end
               vExtFromNoC[0].noc__mgr__port_valid = 0;
               @(vExtFromNoC[0].cb_p);

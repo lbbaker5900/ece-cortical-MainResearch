@@ -32,6 +32,7 @@
 module mgr_cntl (  
 
             //-------------------------------------------------------------------------------------------------
+            //-------------------------------------------------------------------------------------------------
             // Configuration
             //
             output  reg  [`MGR_WU_ADDRESS_RANGE           ]    mcntl__wuf__start_addr           ,  // first WU address
@@ -43,11 +44,14 @@ module mgr_cntl (
             input   wire                                       wuf__mcntl__stalled              ,
             input   wire                                       wud__mcntl__stalled              ,
 
+            //-------------------------------------------------------------------------------------------------
             // Instruction download
+
             output  reg                                        mcntl__wum__enable_inst_dnld     ,
             output  reg                                        mcntl__wum__valid                ,
             output  reg   [`MGR_WU_ADDRESS_RANGE          ]    mcntl__wum__address              ,
             input   wire                                       wum__mcntl__ready                ,
+
             // WU Instruction delineators
             output  reg   [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__icntl                ,  // instruction delineator
             output  reg   [`COMMON_STD_INTF_CNTL_RANGE    ]    mcntl__wum__dcntl                ,  // descriptor delineator
@@ -56,6 +60,20 @@ module mgr_cntl (
             // WU Instruction option fields
             output  reg   [`MGR_WU_OPT_TYPE_RANGE         ]    mcntl__wum__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ,  // 
             output  reg   [`MGR_WU_OPT_VALUE_RANGE        ]    mcntl__wum__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ,  // 
+
+            //-------------------------------------------------------------------------------------------------
+            // Storage descriptor download
+
+            output  reg                                                        mcntl__xxx__enable_sdmem_dnld   ,
+            output  reg                                                        mcntl__xxx__sdmem_valid         ,
+            output  reg   [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__xxx__sdmem_address       ,
+            input   wire  [`MGR_CNTL_STORAGE_DESC_USERS_RANGE             ]    xxx__mcntl__sdmem_ready         ,
+
+            // Storage descriptor memory contents
+            output  reg   [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__xxx__sdmem_addr          ,
+            output  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__xxx__sdmem_order         ,
+            output  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__xxx__sdmem_consJump      ,
+            
 
             //-------------------------------------------------------------------------------------------------
             // Status
@@ -206,7 +224,11 @@ module mgr_cntl (
 
 
   //-------------------------------------------------------------------------------------------------
-  // to WUM
+  //-------------------------------------------------------------------------------------------------
+  // Configuration
+  //
+  //-------------------------------------------------------------------------------------------------
+  // Instruction download to WUM
   reg                                        mcntl__wum__enable_inst_dnld_e1 ;
   reg                                        mcntl__wum__valid_e1            ;
   reg                                        wum__mcntl__ready_d1            ;
@@ -220,6 +242,19 @@ module mgr_cntl (
   reg   [`MGR_WU_OPT_TYPE_RANGE         ]    mcntl__wum__option_type_e1    [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
   reg   [`MGR_WU_OPT_VALUE_RANGE        ]    mcntl__wum__option_value_e1   [`MGR_WU_OPT_PER_INST_RANGE ] ;  // 
 
+  //-------------------------------------------------------------------------------------------------
+  // Storage descriptor download to XXX
+
+  reg                                                        mcntl__xxx__enable_sdmem_dnld_e1   ;
+  reg                                                        mcntl__xxx__sdmem_valid_e1         ;
+  reg   [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__xxx__sdmem_address_e1       ;
+  reg   [`MGR_CNTL_STORAGE_DESC_USERS_RANGE             ]    xxx__mcntl__sdmem_ready_d1         ;
+  // Storage descriptor memory contents
+  reg   [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__xxx__sdmem_addr_e1          ;
+  reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__xxx__sdmem_order_e1         ;
+  reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__xxx__sdmem_consJump_e1      ;
+            
+  //-------------------------------------------------------------------------------------------------
   //-------------------------------------------------------------------------------------------------
   // from NoC 
   reg                                               noc__mcntl__cp_valid_d1      ; 
@@ -313,24 +348,18 @@ module mgr_cntl (
       end
   endgenerate
   //-------------------------------------------------------------------------------------------------
-  // to WUM
+  // Instruction download to WUM
+  //
     always @(posedge clk) 
       begin
         mcntl__wum__enable_inst_dnld <=  (reset_poweron) ? 1'b0 : mcntl__wum__enable_inst_dnld_e1 ;
         mcntl__wum__valid            <=  (reset_poweron) ? 1'b0 : mcntl__wum__valid_e1            ;
-        wum__mcntl__ready_d1         <=  wum__mcntl__ready               ;
-                                                                         
-        mcntl__wum__address          <=  mcntl__wum__address_e1          ;
-        mcntl__wum__icntl            <=  mcntl__wum__icntl_e1            ;
-        mcntl__wum__dcntl            <=  mcntl__wum__dcntl_e1            ;
-        mcntl__wum__op               <=  mcntl__wum__op_e1               ;
-        /*
-       for (int opt=0; opt<`MGR_WU_OPT_PER_INST; opt++)
-         begin: option_out
-           mcntl__wum__option_type    [opt]  <=  mcntl__wum__option_type_e1    [opt] ;
-           mcntl__wum__option_value   [opt]  <=  mcntl__wum__option_value_e1   [opt] ;
-         end
-        */
+        wum__mcntl__ready_d1         <=                           wum__mcntl__ready               ;
+                                                                                                  
+        mcntl__wum__address          <=                           mcntl__wum__address_e1          ;
+        mcntl__wum__icntl            <=                           mcntl__wum__icntl_e1            ;
+        mcntl__wum__dcntl            <=                           mcntl__wum__dcntl_e1            ;
+        mcntl__wum__op               <=                           mcntl__wum__op_e1               ;
       end
   genvar opt;
   generate
@@ -343,6 +372,22 @@ module mgr_cntl (
           end
       end
   endgenerate
+
+  //-------------------------------------------------------------------------------------------------
+  // Storage descriptor download to XXX
+  //
+    always @(posedge clk) 
+      begin
+        mcntl__xxx__enable_sdmem_dnld      <=  (reset_poweron) ? 1'b0 : mcntl__xxx__enable_sdmem_dnld_e1  ;
+        mcntl__xxx__sdmem_valid            <=  (reset_poweron) ? 1'b0 : mcntl__xxx__sdmem_valid_e1        ;
+                                                                                                          
+        xxx__mcntl__sdmem_ready_d1         <=                           xxx__mcntl__sdmem_ready           ;
+                                                                                                          
+        mcntl__xxx__sdmem_address          <=                           mcntl__xxx__sdmem_address_e1      ;
+        mcntl__xxx__sdmem_addr             <=                           mcntl__xxx__sdmem_addr_e1         ;
+        mcntl__xxx__sdmem_order            <=                           mcntl__xxx__sdmem_order_e1        ;
+        mcntl__xxx__sdmem_consJump         <=                           mcntl__xxx__sdmem_consJump_e1     ;
+      end
 
   //--------------------------------------------------
   // from NoC
@@ -767,8 +812,8 @@ module mgr_cntl (
         // first we need to download instructions
         `MGR_CNTL_NOC_CNTL_INST_DNLD_INIT: 
           //mgr_cntl_noc_cntl_state_next =   `MGR_CNTL_NOC_CNTL_WAIT ;
-          //mgr_cntl_noc_cntl_state_next =   `MGR_CNTL_NOC_CNTL_DNLD_INST ;
-          mgr_cntl_noc_cntl_state_next =   (sys__mgr__mgrId == `MGR_WU_MEMORY_INIT_ID ) ? `MGR_CNTL_NOC_CNTL_DNLD_INST : `MGR_CNTL_NOC_CNTL_WAIT ; // FIXME
+          mgr_cntl_noc_cntl_state_next =   `MGR_CNTL_NOC_CNTL_DNLD_INST ;
+          //mgr_cntl_noc_cntl_state_next =   (sys__mgr__mgrId == `MGR_WU_MEMORY_INIT_ID ) ? `MGR_CNTL_NOC_CNTL_DNLD_INST : `MGR_CNTL_NOC_CNTL_WAIT ; // FIXME
 
         `MGR_CNTL_NOC_CNTL_DNLD_INST: 
           mgr_cntl_noc_cntl_state_next =  ((from_noc_cntl == `COMMON_STD_INTF_CNTL_EOM) && (from_noc_type == `MGR_NOC_CONT_TYPE_INSTRUCTION_EOD) && from_noc_read) ? `MGR_CNTL_NOC_CNTL_DNLD_INST_COMPLETE :

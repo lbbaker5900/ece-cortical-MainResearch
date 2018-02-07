@@ -52,7 +52,7 @@ module sdp_cntl (
             input   wire  [`MGR_INST_OPTION_TRANSFER_RANGE  ]      xxx__sdp__txfer_type                         ,
             input   wire  [`MGR_INST_OPTION_TGT_RANGE       ]      xxx__sdp__target                             ,
 
-            //-------------------------------
+            //----------------------------------------------------------------------------------------------------
             // Main Memory Controller interface
             // - response must be in order
             //
@@ -67,7 +67,7 @@ module sdp_cntl (
 
             input   wire  [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   xxx__sdp__mem_request_channel_data_valid ,  // valid data from channel data fifo
 
-            //-------------------------------
+            //----------------------------------------------------------------------------------------------------
             // from MMC fifo Control
             output  reg   [`MGR_DRAM_NUM_CHANNELS_VECTOR_RANGE ]   sdp__xxx__get_next_line                                    ,
             output  reg   [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   sdp__xxx__lane_valid                                       ,
@@ -79,8 +79,24 @@ module sdp_cntl (
             input   wire  [`MGR_NUM_OF_EXEC_LANES_RANGE        ]   xxx__sdp__lane_ready                                       ,
            
 
-            //
-            //-------------------------------
+            //----------------------------------------------------------------------------------------------------
+            //----------------------------------------------------------------------------------------------------
+            // Config/Status
+            
+            //-------------------------------------------------------------------------------------------------
+            // Storage descriptor download
+
+            input   wire                                                       mcntl__sdp__enable_sdmem_dnld   ,
+            input   wire                                                       mcntl__sdp__sdmem_valid         ,
+            input   wire  [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__sdp__sdmem_address       ,
+            output  wire                                                       sdp__mcntl__sdmem_ready         ,
+
+            // Storage descriptor memory contents
+            input   wire  [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__sdp__sdmem_addr          ,
+            input   wire  [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__sdp__sdmem_order         ,
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump      ,
+            
+            //----------------------------------------------------------------------------------------------------
             // General
             //
             input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
@@ -138,15 +154,6 @@ module sdp_cntl (
   sdp_request_cntl sdp_request_cntl (  
 
             //------------------------------
-            // Configuration
-            //
-            .xxx__sdp__lane_enable                        ( xxx__sdp__lane_enable                      ),
-            .xxx__sdp__tag                                ( xxx__sdp__tag                              ),
-            .xxx__sdp__num_lanes                          ( xxx__sdp__num_lanes                        ),
-            .xxx__sdp__num_lanes_m1                       ( xxx__sdp__num_lanes_m1                     ),
-            .xxx__sdp__txfer_type                         ( xxx__sdp__txfer_type                       ),
-
-            //------------------------------
             // Request Generation
             //
             .xxx__sdp__storage_desc_processing_enable     ( xxx__sdp__storage_desc_processing_enable   ),
@@ -185,6 +192,28 @@ module sdp_cntl (
             .sdpr__sdps__consJump_value                   ( sdpr__sdps__consJump_value                 ),
             .sdps__sdpr__consJump_ready                   ( sdps__sdpr__consJump_ready                 ),
 
+            //-------------------------------
+            // Config/Status
+
+            //------------------------------
+            // 
+            .xxx__sdp__lane_enable                        ( xxx__sdp__lane_enable                      ),
+            .xxx__sdp__tag                                ( xxx__sdp__tag                              ),
+            .xxx__sdp__num_lanes                          ( xxx__sdp__num_lanes                        ),
+            .xxx__sdp__num_lanes_m1                       ( xxx__sdp__num_lanes_m1                     ),
+            .xxx__sdp__txfer_type                         ( xxx__sdp__txfer_type                       ),
+
+            //-------------------------------
+            // storage descriptor memory download
+            //
+            .mcntl__sdp__enable_sdmem_dnld               ( mcntl__sdp__enable_sdmem_dnld     ),
+            .mcntl__sdp__sdmem_valid                     ( mcntl__sdp__sdmem_valid           ),
+            .mcntl__sdp__sdmem_address                   ( mcntl__sdp__sdmem_address         ),
+            .sdp__mcntl__sdmem_ready                     ( sdp__mcntl__sdmem_ready           ),
+            .mcntl__sdp__sdmem_addr                      ( mcntl__sdp__sdmem_addr            ),
+            .mcntl__sdp__sdmem_order                     ( mcntl__sdp__sdmem_order           ),
+            .mcntl__sdp__sdmem_consJump                  ( mcntl__sdp__sdmem_consJump        ),
+                                                         
             //------------------------------
             // General
             //

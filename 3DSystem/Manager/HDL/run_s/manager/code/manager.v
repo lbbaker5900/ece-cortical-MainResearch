@@ -139,6 +139,13 @@ module manager (
   wire                                  mcntl__wud__release     ;
   wire                                  wud__mcntl__stalled     ;
 
+  wire                                                       mcntl__xxx__enable_sdmem_dnld   ;
+  wire                                                       mcntl__xxx__sdmem_valid         ;
+  wire  [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__xxx__sdmem_address       ;
+  wire  [`MGR_CNTL_STORAGE_DESC_USERS_RANGE             ]    xxx__mcntl__sdmem_ready         ;
+  wire  [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__xxx__sdmem_addr          ;
+  wire  [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__xxx__sdmem_order         ;
+  wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__xxx__sdmem_consJump      ;
 
   //-------------------------------------------------------------------------------------------------
   // NoC
@@ -561,6 +568,17 @@ module manager (
                 .mmc__mrc__cntl          ( mmc__mrc__cntl          ),                         
                 .mrc__mmc__ready         ( mrc__mmc__ready         ),                         
                 .mmc__mrc__data          ( mmc__mrc__data          ),                         
+
+                //-------------------------------
+                // storage descriptor memory download
+                //
+                .mcntl__sdp__enable_sdmem_dnld  ( mcntl__xxx__enable_sdmem_dnld     ),
+                .mcntl__sdp__sdmem_valid        ( mcntl__xxx__sdmem_valid           ),
+                .mcntl__sdp__sdmem_address      ( mcntl__xxx__sdmem_address         ),
+                .sdp__mcntl__sdmem_ready        ( xxx__mcntl__sdmem_ready     [gvi] ),
+                .mcntl__sdp__sdmem_addr         ( mcntl__xxx__sdmem_addr            ),
+                .mcntl__sdp__sdmem_order        ( mcntl__xxx__sdmem_order           ),
+                .mcntl__sdp__sdmem_consJump     ( mcntl__xxx__sdmem_consJump        ),
 
                 //-------------------------------
                 // General
@@ -1017,7 +1035,17 @@ module manager (
             .mwc__mmc__data_mask     ( xxx__mmc__data_mask    [0]  ),                         
             .mmc__mwc__data_ready    ( mmc__xxx__data_ready   [0]  ),                         
                                                                                            
-                                                                   
+            //-------------------------------
+            // storage descriptor memory download
+            //
+            .mcntl__mwc__enable_sdmem_dnld  ( mcntl__xxx__enable_sdmem_dnld     ),
+            .mcntl__mwc__sdmem_valid        ( mcntl__xxx__sdmem_valid           ),
+            .mcntl__mwc__sdmem_address      ( mcntl__xxx__sdmem_address         ),
+            .mwc__mcntl__sdmem_ready        ( xxx__mcntl__sdmem_ready       [2] ),
+            .mcntl__mwc__sdmem_addr         ( mcntl__xxx__sdmem_addr            ),
+            .mcntl__mwc__sdmem_order        ( mcntl__xxx__sdmem_order           ),
+            .mcntl__mwc__sdmem_consJump     ( mcntl__xxx__sdmem_consJump        ),
+
             //-------------------------------                      
             // General                                             
             //                                                     
@@ -1048,6 +1076,16 @@ module manager (
             .mcntl__wum__op                 ( mcntl__wum__op                ),
             .mcntl__wum__option_type        ( mcntl__wum__option_type       ),
             .mcntl__wum__option_value       ( mcntl__wum__option_value      ),
+
+            //-------------------------------
+            // - storage descriptor memory download
+            .mcntl__xxx__enable_sdmem_dnld  ( mcntl__xxx__enable_sdmem_dnld     ),
+            .mcntl__xxx__sdmem_valid        ( mcntl__xxx__sdmem_valid           ),
+            .mcntl__xxx__sdmem_address      ( mcntl__xxx__sdmem_address         ),
+            .xxx__mcntl__sdmem_ready        ( xxx__mcntl__sdmem_ready           ),
+            .mcntl__xxx__sdmem_addr         ( mcntl__xxx__sdmem_addr            ),
+            .mcntl__xxx__sdmem_order        ( mcntl__xxx__sdmem_order           ),
+            .mcntl__xxx__sdmem_consJump     ( mcntl__xxx__sdmem_consJump        ),
 
             //-------------------------------
             .mcntl__wuf__start_addr         ( mcntl__wuf__start_addr        ),  // first WU address

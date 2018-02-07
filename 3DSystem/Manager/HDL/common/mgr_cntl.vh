@@ -14,6 +14,16 @@
 
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
+// Who needs their storage descriptor memory loaded
+// MRC0, MRC1, MWC
+`define MGR_CNTL_STORAGE_DESC_USERS_WIDTH         3
+`define MGR_CNTL_STORAGE_DESC_USERS_MSB           `MGR_CNTL_STORAGE_DESC_USERS_WIDTH-1
+`define MGR_CNTL_STORAGE_DESC_USERS_LSB           0
+`define MGR_CNTL_STORAGE_DESC_USERS_SIZE          (`MGR_CNTL_STORAGE_DESC_USERS_MSB - `MGR_CNTL_STORAGE_DESC_USERS_LSB +1)
+`define MGR_CNTL_STORAGE_DESC_USERS_RANGE          `MGR_CNTL_STORAGE_DESC_USERS_MSB : `MGR_CNTL_STORAGE_DESC_USERS_LSB
+
+//------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 // FSM's
 //------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------

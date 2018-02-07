@@ -118,8 +118,26 @@ module sdp_request_cntl (
             input  reg                                             sdps__sdpr__consJump_ready ,
 
 
-            //
-            //-------------------------------
+            //----------------------------------------------------------------------------------------------------
+            //----------------------------------------------------------------------------------------------------
+            // Config/Status
+            
+            //-------------------------------------------------------------------------------------------------
+            // Storage descriptor download
+
+            input   wire                                                       mcntl__sdp__enable_sdmem_dnld   ,
+            input   wire                                                       mcntl__sdp__sdmem_valid         ,
+            input   wire  [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__sdp__sdmem_address       ,
+            output  reg                                                        sdp__mcntl__sdmem_ready         ,
+
+            // Storage descriptor memory contents
+            input   wire  [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__sdp__sdmem_addr          ,
+            input   wire  [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__sdp__sdmem_order         ,
+            input   wire  [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump      ,
+            
+            
+            //----------------------------------------------------------------------------------------------------
+            //----------------------------------------------------------------------------------------------------
             // General
             //
             input  wire  [`MGR_MGR_ID_RANGE    ]  sys__mgr__mgrId ,
@@ -158,6 +176,18 @@ module sdp_request_cntl (
   reg   [`MGR_DRAM_PAGE_ADDRESS_RANGE     ]      sdpr__sdps__response_id_page_e1      ;
   reg   [`MGR_DRAM_LINE_ADDRESS_RANGE     ]      sdpr__sdps__response_id_line_e1      ;
 
+   //-------------------------------------------------------------------------------------------------
+   // Storage descriptor download
+ 
+   reg                                                        mcntl__sdp__enable_sdmem_dnld_d1   ;
+   reg                                                        mcntl__sdp__sdmem_valid_d1         ;
+   reg   [`MGR_WU_ADDRESS_RANGE                          ]    mcntl__sdp__sdmem_address_d1       ;
+   reg                                                        sdp__mcntl__sdmem_ready_e1         ;
+   // Storage descriptor memory contents
+   reg   [`MGR_DRAM_ADDRESS_RANGE                        ]    mcntl__sdp__sdmem_addr_d1          ;
+   reg   [`MGR_INST_OPTION_ORDER_RANGE                   ]    mcntl__sdp__sdmem_order_d1         ;
+   reg   [`MGR_LOCAL_STORAGE_DESC_CONSJUMP_ADDRESS_RANGE ]    mcntl__sdp__sdmem_consJump_d1      ;
+            
 
   //--------------------------------------------------
   // to Main Memory Controller
@@ -187,6 +217,22 @@ module sdp_request_cntl (
       sdpr__sdps__response_id_page      <=   ( reset_poweron   ) ? 'd0  :  sdpr__sdps__response_id_page_e1    ;
       sdpr__sdps__response_id_line      <=   ( reset_poweron   ) ? 'd0  :  sdpr__sdps__response_id_line_e1    ;
     end
+
+  //-------------------------------------------------------------------------------------------------
+  // Storage descriptor download
+  //
+    always @(posedge clk) 
+      begin
+        mcntl__sdp__enable_sdmem_dnld_d1   <=  (reset_poweron) ? 1'b0 : mcntl__sdp__enable_sdmem_dnld     ;
+        mcntl__sdp__sdmem_valid_d1         <=  (reset_poweron) ? 1'b0 : mcntl__sdp__sdmem_valid           ;
+                                                                                                       
+        sdp__mcntl__sdmem_ready            <=                           sdp__mcntl__sdmem_ready_e1        ;
+                                                                                                       
+        mcntl__sdp__sdmem_address_d1       <=                           mcntl__sdp__sdmem_address         ;
+        mcntl__sdp__sdmem_addr_d1          <=                           mcntl__sdp__sdmem_addr            ;
+        mcntl__sdp__sdmem_order_d1         <=                           mcntl__sdp__sdmem_order           ;
+        mcntl__sdp__sdmem_consJump_d1      <=                           mcntl__sdp__sdmem_consJump        ;
+      end
 
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------

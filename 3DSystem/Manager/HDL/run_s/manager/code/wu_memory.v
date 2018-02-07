@@ -29,33 +29,6 @@
 
 
 module wu_memory (  
-/*
-            sys__mgr__mgrId             ,
-
-            // from WU fetch
-            wum__wuf__stall             ,
-            wuf__wum__addr              ,
-            wuf__wum__read              ,
-                                  
-            // to WU decode
-            wum__wud__valid             ,
-            wud__wum__ready             ,
-            wum__wud__icntl             ,
-            wum__wud__dcntl             ,
-            wum__wud__op                ,
-            wum__wud__option_type       ,
-            wum__wud__option_value      ,
-
-            //-------------------------------
-            // Config/Status
-            //
-            wum__mcntl__inst_count      ,
-            //-------------------------------
-            // General
-            //
-            clk                         ,
-            reset_poweron    
-*/
 
             //----------------------------------------------------------------------------------------------------
             //----------------------------------------------------------------------------------------------------
@@ -76,7 +49,8 @@ module wu_memory (
             input   wire  [`MGR_WU_OPT_TYPE_RANGE         ]    mcntl__wum__option_type    [`MGR_WU_OPT_PER_INST_RANGE ] ,  // 
             input   wire  [`MGR_WU_OPT_VALUE_RANGE        ]    mcntl__wum__option_value   [`MGR_WU_OPT_PER_INST_RANGE ] ,  // 
 
-            output  reg   [`WUM_MAX_INST_RANGE            ]     wum__mcntl__inst_count  ,  // instruction count
+            output  reg   [`WUM_MAX_INST_RANGE            ]    wum__mcntl__inst_count  ,  // instruction count
+
             //----------------------------------------------------------------------------------------------------
             //----------------------------------------------------------------------------------------------------
             
