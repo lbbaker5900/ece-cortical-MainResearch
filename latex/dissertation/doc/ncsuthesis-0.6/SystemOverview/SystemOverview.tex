@@ -93,8 +93,8 @@ The states of the pre-synaptic \acp{an} must also be stored in a dependent \ac{a
 Details on where the parameters and \ac{an} states are stored are described in Chapter \ref{sec:System Operations}.
 
 The baseline \ac{ssc} is designed with 32 execution lanes, each of which can simultaneously process two streams of \ac{binary32} words.
-The customized \ac{diram4} provides a 2048-bit cacheline at the system clock rate to the manager. This 2048-bit bus is sub-divided into 64 \ac{binary32} words.
-The manager layer reads the 2048-bit cacheline from the \ac{dram}, multiplexes the 64 words onto 32 execution lanes with two words per execution lane and passes the execution lane data to the \ac{pe} layer.
+The customized \ac{diram4} provides a 2048-bit cache line at the system clock rate to the manager. This 2048-bit bus is sub-divided into 64 \ac{binary32} words.
+The manager layer reads the 2048-bit cache line from the \ac{dram}, multiplexes the 64 words onto 32 execution lanes with two words per execution lane and passes the execution lane data to the \ac{pe} layer.
 The primary function is to direct a pre-synaptic \ac{an} state and connection weight to the two words in an execution lane where they are multiplied and accumulated by the \ac{pe} layer.
 
 The manager layer has individual stream read memory controllers to allow the individual streams in the execution lanes to operate independently.
@@ -168,12 +168,12 @@ Unlike traditional \ac{dram}, the \ac{diram4} has two independent channels which
 Each channel has 32 banks and 4096 pages per bank with \SI[per-mode=symbol]{4096}{\bit\per page}.
 
 The standard \ac{diram4} has a 32-bit read databus and a 32-bit write databus enabling simultaneous read and write. Both read and write databuses employ \ac{ddr} signaling.
-The read and write transactions are burst-of-two providing 64bits per read/write. When accessing a \ac{dram}, a read and write are often referred to as a cacheline.
+The read and write transactions are burst-of-two providing 64bits per read/write. When accessing a \ac{dram}, a read and write are often referred to as a cache line.
 The device is designed to operate at \SI[per-mode=symbol]{1}{\giga\hertz} although this work targeted a \SI[per-mode=symbol]{500}{\mega\hertz} clock frequency.
 
 This work is proposing customizations to the \ac{diram4} which are outlined in Chapter \ref{sec:DRAM Customizations}. One of these proposed changes is to widen the read and write databuses to 2048-bits.
-Using the same burst-of-two means each read and write will access an entire page. A cacheline becomes 4096-bits.
-Another proposed change is to add mask bits to the write databuse to avoid having to perform read/modify/writes when writing back data much smaller than the new large cacheline.
+Using the same burst-of-two means each read and write will access an entire page. A cache line becomes 4096-bits.
+Another proposed change is to add mask bits to the write databuse to avoid having to perform read/modify/writes when writing back data much smaller than the new large cache line.
 
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here

@@ -368,9 +368,9 @@ As soon as read data is sent back to the \ac{mrc} via the \ac{mmc}, that data is
 
 The \ac{mmc} is responsible for taking read requests from the two \acp{mrc} and write requests from the \ac{mwc}.
 
-The read requests the \ac{mmc} receives from the \acp{mrc} includes channel, bank, page and cacheline addresses. 
+The read requests the \ac{mmc} receives from the \acp{mrc} includes channel, bank, page and cache line addresses. 
 The request also contains an operation identifier.
-The write requests from the \ac{mwc} includes channel, bank, page and cacheline addresses. 
+The write requests from the \ac{mwc} includes channel, bank, page and cache line addresses. 
 
 The \ac{mmc} processes the three requestors providing a small priority to write requests.
 In addition, the \ac{mmc} processes all read erquests associated with an operation before processing requests from the next operation.
@@ -423,7 +423,7 @@ The per execution lane index module is required to account for bank and page bou
 The lane index module uses the storage descritpor information to generate a memory location address which includes channel, bank, page and word addresses.
 The location address is them matched to the request at the head of the two request \acp{fifo}, and it a match occurs, the data is passed to the execution lane bus.
 If there is no match, the index module requests the request and data \acp{fifo} are read. The request control \ac{fsm} will ony read the \ac{fifo} if all lane index modules make a read request.
-This is done because as data is stored in memory, if the data crosses a bank, page or cacheline boundary the execution lanes must be allowed to get out of sync.
+This is done because as data is stored in memory, if the data crosses a bank, page or cache line boundary the execution lanes must be allowed to get out of sync.
 
 
 \subsection{\Acf{rdp}}
