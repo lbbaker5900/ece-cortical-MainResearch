@@ -75,7 +75,7 @@ The first \ac{bootp} instruction will be a configuration sync sent to the host t
 After the configuration sync is sent to the host, the configuration data instruction will prepare the \ac{ssc} to receive data from the host and the host will then start sending configuration data. 
 The size of the data is known by both the \ac{ssc} via the instruction and the host.
 The \ac{ann} parameters can be downloaded using multiple downloads.
-Once \ac{ann} parameters and system tables are downloaded, the last instruction can be another configuration data instruction download to load operational code.
+Once \ac{ann} parameters and system tables are downloaded, the last instruction can be another configuration data download instruction to load operational code.
 
 \begin{figure}[h]
   \vspace{5mm}
@@ -106,36 +106,38 @@ Once \ac{ann} parameters and system tables are downloaded, the last instruction 
 \subsection{Instruction Decoder}
 \label{sec:Instruction Decoder}
 
-in Figure \ref{fig:Manager block diagram}, instructions are read from WU memory by the WU fetch block and the output of the memory is passed to the WU decoder block.
+In Figure \ref{fig:Manager block diagram}, instructions are read from instruction memory by the instruction fetch block and the output of the memory is passed to the instruction decoder block.
 
 \subsubsection{Compute Instructions}
 \label{sec:Decoding Compute Instructions}
 
 The operation descriptor is decoded and a \ac{stop} pointer and a \ac{simd} \ac{pc} pointer are extracted. 
-A sequential tag is generated and along with the \ac{stop} and \ac{simd} pointers and immediately sent to the \ac{pe} inside an \ac{oob} control packet.
+A sequential tag is generated and along with the \ac{stop} and \ac{simd} pointers is immediately sent to the \ac{pe} inside an \ac{oob} control packet.
 The \ac{stop} pointer specifies what streaming operation is to take place on the data directly streamed to the \ac{pe}. 
 The SIMD pointer is essentially a \ac{pc} counter that the \ac{simd} will jump to to process the result from the \ac{stop}.
-The \ac{pe} will immediately start preparing for downstream oeprand data.
+The \ac{pe} will immediately start preparing for downstream operand data.
 If the \ac{simd} operation ncludes result data being returned to the manager, the tag will be included in the upstream result data packet.
 
 The memory read descriptors are decoded to identify the target memory read controller and the storage descriptor pointer directed to the appropriate memory read block.
-There is a memory read block associated with each of the operand streams and are responsible for generating memory requests and directing the \ac{dram} data to all the execution lane streams.
-A request block inside the memory read block immediately start pre-fetching the memory data by sending memory requests to the \ac{dram}.
+There is a memory read block associated with each of the operand streams which is responsible for generating memory requests and directing the \ac{dram} data to all the execution lane streams.
+A request block inside the memory read block immediately starts pre-fetching the memory data by sending memory requests to the \ac{dram}.
 A stream block inside the memory read block immediately starts waiting for data from the \ac{dram} and will direct \ac{dram} data to the appropriate execution lane.
 
-The memory write descriptor is decoded and the storage descriptor pointer extracted and along with the tag are sent to the return data processor. The tag is sent to match with the returned data.
-Currently the system only allows in-order data but the tag is provided for extensibility.
+The memory write descriptor is decoded and the storage descriptor pointer extracted and along with the tag is sent to the return data processor.
+Currently the system only allows in-order data and any tag mismatch will cause an error.
+In the case where multiple upstream packets are associated with a tag, the \ac{rdp} ensures the correct number of upstream data packets are observed.
 
 At this point all the blocks that take part in a compute operation on a group of \acp{an} are performing the various tasks.
 As mentioned in Section \ref{sec:Common Bus Signalling}, the inputs to many blocks employ \acp{fifo}. 
-This allows blocks to pipeline tasks to absorb any latencies, they also allow blocks to start sending data to a destination block before that block has been configured to receive the data.
+This allows blocks to pipeline tasks to absorb any latencies, and allows blocks to start sending data to a destination block before that block has been configured to receive data.
 The \ac{fifo} will assert a flow control signal until the block is ready to receive.
-In practice, the instruction decode logic batch decodes up to eight instructions and sends descriptor contents to dependent blocks where they are also pipelined.
+In practice, the instruction decode logic batch-decodes up to eight instructions and sends descriptor contents to dependent blocks where they are also pipelined in \acp{fifo}.
+The head of the \ac{fifo} is processed immediately the previous task has been completed thus avoiding any decode latencies.
 
 \subsubsection{Configuration Instructions}
 \label{sec:Decoding Configuration Instructions}
 
-The configuration instructions are responsible for :
+As shown in Figure \ref{fig:Configuration Instruction types}, the configuration instructions are responsible for :
 \begin{outline}
  \1 performing synchronization between the \ac{ssc} and other \acp{ssc} or the host system.
  \1 performing data download and upload operations
@@ -149,22 +151,22 @@ It is assumed at this point that adequate infrastructure and extensibility has b
 
 The configuration instruction contains a single descriptor with one, two or three option tuples.
 
-The sync instruction descriptor contains a single configuration sync option tuple. The 24-bit option value contains a 3-bit mode register identifier and a 21-bit mode register.
+The configuration sync instruction descriptor contains a single configuration sync option tuple. The 24-bit option value contains a 3-bit mode register identifier and a 21-bit mode register.
 There are currently four mode registers defined, "Send", "Wait", "Pause" and "Flush". Each register has fields specific to the mode as seen in Figure \ref{fig:Sync instruction}.
 
-The data configuration instruction descriptor contains a configuration data option tuple and a storage descriptor tuple and optionally a target tuple. 
-The configuration data option value is 24-bits with a 3-bit mode register identifier and a 21-bit mode register.
+The configuration data instruction descriptor contains a configuration data option tuple and a storage descriptor tuple and optionally a target tuple. 
+The configuration data option value is 24 bits with a 3-bit mode register identifier and a 21-bit mode register.
 There are currently four mode registers defined, "instruction download", "sync group download", "memory download" and "memory upload". Each register has fields specific to the mode as seen in Figure \ref{fig:Data transfer instruction}.
 
 \paragraph{Sync Send}
 
-The register fields can be seen in register \ref{reg:Sync Send mode register}.
+The Sync Send mode register fields can be seen in Register \ref{reg:Sync Send mode register}.
 The decoder sends the sync option tuple to the system controller.
 A sync \ac{noc} packet is constructed based on the register contents sent over the \ac{noc}.
-If the group pointer enable bit is set, the system conntroller uses the pointer to index into a 64 table. 
-Each table entry is a 64-bit bitfield indicating which \acp{ssc} are a part of the group.
-If the all flag is set, the sync packet will be sent to all \acp{ssc}.
-if the host flag is also set, the host bit in the \ac{noc} packet will be set.
+If the group pointer enable bit is set, the system controller uses the pointer to index into a 64-element table. 
+Each table entry is a 64-bit bitfield indicating which \acp{ssc} are part of the group.
+If the ``{\textit{all}}'' flag is set, the sync packet will be sent to all \acp{ssc}.
+if the ``{\textit{host}}'' flag is also set, the host bit in the \ac{noc} packet will be set.
 \begin{register}{H}{Sync Send mode register}{}%{0x250} name=example
   \label{reg:Sync Send mode register}
   % sizes 
@@ -189,15 +191,15 @@ if the host flag is also set, the host bit in the \ac{noc} packet will be set.
 
 \paragraph{Sync Wait}
 
-The register fields can be seen in register \ref{reg:Sync Send mode register}.
+The Sync Wait mode register fields can be seen in Register \ref{reg:Sync Wait mode register}.
 The decoder sends the sync option tuple to the system conntroller.
 The instruction decoder will stop processing any more instructions until the release signal is asserted from the system conntroller.
-The wait option informs the system conntroller to start expecting sync send packets from other \acp{ssc} and/or the host.
-Based on the register values, the system conntroller will assert the release signal to the instruction decoder only once sync send packets have been received from all specified sources.
-If the group pointer enable bit is set, the system conntroller uses the pointer to index into a 64 table. 
+The wait option informs the system controller to start expecting sync send packets from other \acp{ssc} and/or the host.
+Based on the register values, the system controller will assert the release signal to the instruction decoder only after sync send packets have been received from all specified sources.
+If the group pointer enable bit is set, the system controller uses the pointer to index into a 64-element table. 
 Each table entry is a 64-bit bitfield indicating from which \acp{ssc} a sync send packet should be received.
-If the all flag is set, all sync send packets are expected from all \acp{ssc}.
-if the host flag is also set, a sync send packet is expected from the host.
+If the ``{\textit{all}}'' flag is set, all sync send packets are expected from all \acp{ssc}.
+if the ``{\textit{host}}'' flag is also set, a sync send packet is expected from the host.
 \begin{register}{H}{Sync Wait mode register}{}%{0x250} name=example
   \label{reg:Sync Wait mode register}
   \vspace{-20pt}
@@ -214,9 +216,9 @@ if the host flag is also set, a sync send packet is expected from the host.
 
 \paragraph{Sync Pause}
 
-The register fields can be seen in register \ref{reg:Sync Pause mode register}.
-The decoder sends the sync option tuple to the system conntroller and ceases decoding instructions.
-If the indefinitely flag is set, instruction decode will not restart until the release signal is asserted from the system conntroller, otherwise the decoder will wait a number of clock cycles specified by the count field and then restart decoding instructions.
+The Sync Pause mode register fields can be seen in Register \ref{reg:Sync Pause mode register}.
+The decoder sends the sync option tuple to the system controller and ceases decoding instructions.
+If the ``{\textit{indefinitely}}'' flag is set, instruction decode will not restart until the release signal is asserted from the system controller, otherwise the decoder will wait a number of clock cycles specified by the count field and then restart decoding instructions.
 \begin{register}{H}{Sync Pause mode register}{}%{0x250} name=example
   \label{reg:Sync Pause mode register}
   \vspace{-10pt}
@@ -231,7 +233,7 @@ If the indefinitely flag is set, instruction decode will not restart until the r
 \paragraph{Sync Flush}
 
 There are currently no fields implemented in the sync flush register.
-This instruction is designed to pause instruction decode until all outstanding commands sent to the \ac{pe} have been returned to the manager.
+This is designed to pause instruction decode until all outstanding commands sent to the \ac{pe} have been returned to the manager.
 The decoder sends the sync option tuple to the return data processor and pauses processing instructions.
 When the return data processor receives all outstanding tags, it asserts a release signal to the decoder.
 
@@ -246,10 +248,10 @@ When the return data processor receives all outstanding tags, it asserts a relea
 
 \paragraph{Instruction download}
 
-The register fields can be seen in register \ref{reg:Inst dnld mode register}.
+The Instruction Download mode register fields can be seen in Register \ref{reg:Inst dnld mode register}.
 The decoder sends the data option tuple to the system controller.
 The system controller will ensure the fetch and decode blocks are disabled and then expects to receive the number of instruction entries from the host over the \ac{noc}.
-Once the instruction memory is loaded, the system controller will enable the fetch and decode loagic.
+Once the instruction memory is loaded, the system controller will enable the fetch and decode logic.
 \begin{register}{H}{Instruction download mode register}{}%{0x250} name=example
   \label{reg:Inst dnld mode register}
   % sizes 
@@ -272,11 +274,11 @@ Once the instruction memory is loaded, the system controller will enable the fet
 
 \paragraph{Sync group table download}
 
-The register fields can be seen in register \ref{reg:Sync grp dnld mode register}.
+The Sync group register fields can be seen in Register \ref{reg:Sync grp dnld mode register}.
 The decoder sends the data option tuple to the system controller.
 The system controller will ensure the fetch and decode blocks are disabled and then expects to receive the number of sync groups from the host over the \ac{noc}.
 The group table entry is 64-bits and eight are contained in an \ac{noc} packet.
-Once the sync group table is loaded, the system controller will enable the fetch and decode loagic.
+Once the sync group table is loaded, the system controller will enable the fetch and decode logic.
 \begin{register}{H}{Sync group table download mode register}{}%{0x250} name=example
   \label{reg:Sync grp dnld mode register}
   % sizes 
@@ -301,7 +303,7 @@ Once the sync group table is loaded, the system controller will enable the fetch
 \paragraph{Memory download}
 \label{sec:Memory download reg}
 
-The register fields can be seen in register \ref{reg:Mem dnld mode register}.
+The Memory download mode register fields can be seen in Register \ref{reg:Mem dnld mode register}.
 The decoder sends the data option tuple to the system controller.
 The system controller will ensure the fetch and decode blocks are disabled and then expects to receive the number of bytes from the host over the \ac{noc}.
 As each data packet is received, it is passed to the memory write controller along with the storage descriptor for writing to \ac{dram}.
@@ -326,13 +328,12 @@ As each data packet is received, it is passed to the memory write controller alo
 \paragraph{Memory upload}
 \label{sec:Memory upload reg}
 
-The register fields can be seen in register \ref{reg:Mem upld mode register}.
+The Memory upload mode register fields can be seen in Register \ref{reg:Mem upld mode register}.
 The decoder sends the data option tuple to the system controller.
 The system controller will ensure the fetch and decode blocks are disabled.
 The controller sends the storage descriptor and target option tuples to the the stream 0 memory read controller. 
 The read controller generates read requests to the \ac{dram} and sends the corresponding read data to the system controller.
-The system controller the data and embeds the data in an \ac{noc} packet and send it to the host.
-The data is fragmented and sent using multiple data \ac{noc} packets.
+The system controller takes the streaming data from the read controller and partitions it into \ac{noc} \ac{mtu} sized blocks, then embeds the block of data in an \ac{noc} packet and sends the fragmented data to the host using multiple data \ac{noc} packets.
 \begin{register}{H}{Memory upload mode register}{}%{0x250} name=example
   \label{reg:Mem upld mode register}
   % sizes 
@@ -354,37 +355,39 @@ The data is fragmented and sent using multiple data \ac{noc} packets.
 \iffalse
 \subsubsection{Argument Decode}
 \label{sec:argumentDecode}
-The instruction also includes memory read descriptors. These descriptors include storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the two operand streamss in each execution lane.
+The instruction includes memory read descriptors which contain storage descriptor pointers that point to a storage descriptor stored in local memory that encodes where data should be read from for the two operand streams in each execution lane.
 As soon as the memory read descriptor target option is decoded, the read storage descriptor pointers are passed to the \acp{mrc}.
-The \acp{mrc} read the actual storage descriptor from their local memory and immediately start sending read commands to the memory via a \ac{mmc}. 
-The \ac{mmc} is not shown in the diagram but essentially takes the memory read requests and converts them into the \ac{dram} read protocol.
+The \acp{mrc} read the actual storage descriptors from their local memories and immediately start sending read commands to the memory via the \ac{mmc}. 
+The \ac{mmc} is not shown in the diagram but it essentially takes the memory read requests and converts them into the \ac{dram} read protocol.
 
-As soon as read data is sent back to the \ac{mrc} via the \ac{mmc}, that data is aligned with the downstream bus and sent to the 32 Streaming Operations inside the PE.
+As soon as read data is sent back to the \ac{mrc} via the \ac{mmc}, that data is aligned with the downstream bus and sent to the 32 streaming operations inside the \ac{pe}.
 \fi
 
 
-\subsection{\Acf{mmc}}
+\subsection{\acf{mmc}}
 \label{sec:MMC}
 
 The \ac{mmc} is responsible for taking read requests from the two \acp{mrc} and write requests from the \ac{mwc}.
 
-The read requests the \ac{mmc} receives from the \acp{mrc} includes channel, bank, page and cache line addresses. 
-The request also contains an operation identifier.
-The write requests from the \ac{mwc} includes channel, bank, page and cache line addresses. 
+The read requests the \ac{mmc} receives from the \acp{mrc} include channel, bank, page and cache line addresses. 
+Read requests also contain an operation identifier.
+Write requests from the \ac{mwc} include channel, bank, page and cache line addresses. 
 
-The \ac{mmc} processes the three requestors providing a small priority to write requests.
-In addition, the \ac{mmc} processes all read erquests associated with an operation before processing requests from the next operation.
+The \ac{mmc} processes read requests from the two \acp{mrc} and write requests from the \ac{mwc}.
+The write requests are given priority with the  and the read requests processed in a round-robin fashion.
+the three requestors providing a small priority to write requests.
+In addition, the \ac{mmc} processes all read requests associated with an operation before processing requests from the next operation.
 This is because memory requests are pre-fetched and memory requests for the next operation will be received before the \ac{mrc} has streamed data for the previous operation.
-This avoids the case where a request from the next operation could block a request from the rpevious operation causing a deadlock.
+This avoids the case where a request from the next operation could block a request from the previous operation causing a deadlock.
 
 The \ac{mmc} does not reorder requests to improve \ac{dram} efficiency. 
 the \ac{mmc} does keep track of open pages within banks to avoid unnecessary page open and page close commands.
-It should be noted that refresh has yet to be implemented but this is not anticipated to be a significant impact and will eb done in future work.
+It should be noted that refresh has yet to be implemented but this is not anticipated to be a significant impact and will be done in future work.
 
-The \ac{mmc} ensures the \ac{dram} protocol is observed and this was verified using the Tezzaron \ac{diram4} verilog models during simulation.
+The \ac{mmc} ensures the \ac{dram} protocol is observed and this has been verified using Tezzaron \ac{diram4} verilog models.
 
 
-\subsection{\Acf{mrc}}
+\subsection{\acf{mrc}}
 \label{sec:MRC}
 
 The \ac{mrc} is provided with multiple option tuples by the decoder block, a storage descriptor pointer, the number of execution lanes, the target for read data and the transfer type.
@@ -401,7 +404,7 @@ A block diagram of the \ac{mrc} can be seen in Figure \ref{fig:MRC block diagram
 \label{fig:MRC block diagram}
 \end{figure}
 
-The \ac{mrc} is one of the most complicated blocks in the system, it is also the largest but mainly because of the size of the data path \acp{fifo}.
+The \ac{mrc} is one of the most complicated blocks in the system.  It is also the largest, mainly because of the size of the read data path \acp{fifo} described in Section \ref{sec:DRAM Bus}.
 There are two \ac{mrc} blocks instantiated in the manager, one for stream 0 and one for stream 1 in the execution lanes.
 
 The \ac{mrc} uses the storage descriptor to identify the start address of the data and how the address should be incremented.
@@ -417,18 +420,18 @@ As the request block processes the storage descriptor start address and consecut
 
 The stream block is responsible for taking the 2048-bit memory data from the \ac{mmc} and directing words to each execution lane.
 As the data is returned from the \ac{mmc}, it is placed in a channel 0 \ac{fifo} and a channel 1 \ac{fifo}. 
-The stream block has a per execution lane index module each of which generates an index to the channel and word.
+The stream block has a per-execution-lane index module, each of which generates an index to the channel and word.
 The index is used to multiplex the data to the execution lane stream.
-The per execution lane index module is required to account for bank and page boundaries in the \ac{roi} as described in Sections \ref{sec:AccessingANStates} and \ref{sec:Storage Descriptor}.
-The lane index module uses the storage descritpor information to generate a memory location address which includes channel, bank, page and word addresses.
-The location address is them matched to the request at the head of the two request \acp{fifo}, and it a match occurs, the data is passed to the execution lane bus.
-If there is no match, the index module requests the request and data \acp{fifo} are read. The request control \ac{fsm} will ony read the \ac{fifo} if all lane index modules make a read request.
-This is done because as data is stored in memory, if the data crosses a bank, page or cache line boundary the execution lanes must be allowed to get out of sync.
+The per-execution-lane index module is required to account for bank and page boundaries in the \ac{roi} as described in Sections \ref{sec:AccessingANStates} and \ref{sec:Storage Descriptor}.
+The lane index module uses the storage descriptor information to generate a memory location address which includes channel, bank, page and word addresses.
+The location address is then matched to the request at the head of the two request \acp{fifo}, and if a match occurs, the data is passed to the execution lane bus.
+If there is no match, the index module requests a read of the data \acp{fifo}. The request control \ac{fsm} will only perform the read if all lane index modules are asserting the read request.
+This is done to account for data crossing a bank, page or cache line boundary allowing the execution lanes to get out of sync.
 
 
-\subsection{\Acf{rdp}}
+\subsection{\acf{rdp}}
 \label{sec:RDP}
-The \ac{rdp} is responsible for taking the result data from the \ac{pe} and determining which \ac{ssc} it should be stored (see Figure \ref{fig:RDP block diagram}).
+The \ac{rdp} is responsible for taking the result data from the \ac{pe} and determining into which \ac{ssc} it should be stored (see Figure \ref{fig:RDP block diagram}).
 
 \begin{figure}[h]
 \centering
@@ -445,12 +448,12 @@ The \ac{rdp} receives a descriptor from the decoder which includes storage descr
 The information is stored in a \ac{fifo} and as data is returned to the manager over the upstream stack bus, the \ac{rdp} matches the return data tag with the head of the \ac{fifo}.
 Currently the return data is in order but to support an expansive architecture the tag is provided to and checked by the \ac{rdp}.
 
-When the data is matched to the tag, the \ac{rdp} examines all the storage descriptor pointers. The pointers include \ac{ssc} index in the \acp{msb} and the \ac{rdp} constructs an \ac{ssc} bit-field.
-Once the descriptors have been parsed, if one of the destinations is the local \ac{ssc} \ac{dram}, the \ac{rdp} passed the descriptor and data to the system conntroller which in turn passes it to the \ac{mwc}.
+When the data is matched to the tag, the \ac{rdp} examines all the storage descriptor pointers. The pointers include the \ac{ssc} index in the \acp{msb} and the \ac{rdp} constructs an \ac{ssc} bit-field.
+Once the descriptors have been parsed, if one of the destinations is the local \ac{ssc} \ac{dram}, the \ac{rdp} passes the descriptor and data to the system controller which in turn passes it to the \ac{mwc}.
 If the destination(s) include other \acp{ssc}, the \ac{rdp} provides the \ac{ssc} bitfield along with the data to the \ac{noc}.
 
 
-\subsection{\Acf{mwc}}
+\subsection{\acf{mwc}}
 \label{sec:MWC}
 
 The \acf{mwc} receives data from two sources, the \ac{noc} via the system conntroller and the \ac{rdp}.
@@ -467,11 +470,11 @@ A block diagram of the \ac{mwc} can be seen in Figure \ref{fig:MWC block diagram
 \center\caption{MWC block diagram}
 \label{fig:MWC block diagram}
 \end{figure}
-As data is received from the \ac{rdp} or \ac{noc}, the addresses are compared to the cache entry and if page address match occurs and the corresponding word is invalid, the data is stored in the cache.
-If a page miss occurs, the contents of one of the entries is written to memory and the new data stored in the cache.
+As data is received from the \ac{rdp} or \ac{noc}, the addresses are compared to the cache entry and if a page address match occurs and the corresponding word is invalid, the data is stored in the cache.
+If a page miss occurs, the contents of one of the entries is written to memory and the new data is stored in the cache.
 
-This crude cache was provided for two reasons, first even though write efficiency was not anticipated to be an issue, as described in Section \ref{sec:writingANStates}, it was anticipated that the addresses from multiple operations may occur in consecutive address and by coalescing data would make writes more efficient.
-The more important reason was to provide expansibility and by accounting for a small cache future work, such as host data downloads would have less of an impact on logic area.
+This crude cache was provided for two reasons: First, even though write efficiency was not anticipated to be an issue as described in Section \ref{sec:writingANStates}, it was anticipated that the addresses from multiple operations may occur in consecutive address and by coalescing data would make writes more efficient.
+The more important reason was to provide expansibility. By accounting for a small cache, future implementations can be created with less logic area than they would otherwise need.
 
 
 \section{Processing Engine}
@@ -571,8 +574,8 @@ An example of the downstream \ac{oob} transactions can be seen in Figure \ref{fi
 \subsection{PE Controller}
 \label{sec:PE Cntl}
 
-The \ac{pe} controller takes \ac{oob} control packets stored in an nterface \ac{fifo} and extracts the \ac{stop} and \ac{simd} pointers.
-The \ac{stop} pointer is used to index into a small \ac{sram} which contains the long instruction word used to select the \ac{stop} functio and where to place the result.
+The \ac{pe} controller takes \ac{oob} control packets stored in an interface \ac{fifo} and extracts the \ac{stop} and \ac{simd} pointers.
+The \ac{stop} pointer is used to index into a small \ac{sram} which contains the long instruction word used to select the \ac{stop} function and where to place the result.
 The \ac{simd} pointer is passed to the \ac{simd} wrapper along with the tag associated with the operation.
 When the \ac{stop} has completed the operation, the \ac{pe} controller takes the next operation from the \ac{oob} \ac{fifo}.
 The \ac{simd} wrapper contains an interface \ac{fifo} and the \ac{pe} controller will only pause if the \ac{simd} wrapper interface asserts flow control.
@@ -604,7 +607,7 @@ If line-rate cannot be maintained, an interface \ac{fifo} flow-control mechanism
 Once the \ac{stop} has processed the data, it passes the result to the \ac{simd}. Note in some cases the result can be placed in local \ac{sram} or sent to both \ac{sram} and \ac{simd}.
 
 It should also be stated that while the \ac{stop} is processing the current data, the \ac{simd} may be operating on the result of the previous operation. 
-It is expected the \ac{simd} will have completed the previous operation before the \ac{stop} completes the current operation, but again, if necessary a flow control mechanism between \ac{simd} and \ac{stop} will be engaged if the \ac{simd} is not ready.
+It is expected the \ac{simd} will have completed the previous operation before the \ac{stop} completes the current operation, but again, if necessary, a flow control mechanism between \ac{simd} and \ac{stop} will be engaged if the \ac{simd} is not ready.
 
 There is provision for one of the inputs into the \ac{stop} module to be from the local memory via a local \ac{dma} controller. Although this is designed and tested, this processing path is for future work.
 A block diagram of the \ac{stop} can be seen in Figure \ref{fig:stOp block diagram}}.
@@ -624,25 +627,25 @@ A block diagram of the \ac{stop} can be seen in Figure \ref{fig:stOp block diagr
 \label{sec:simd}
 
 The \ac{simd} takes the operation from the \ac{pe} controller and indexes into a small memory. This \ac{simd} pointer memory contains a \ac{pc} for the \ac{simd} along with control information for processing the \ac{stop} result inside the wrapper.
-The processing in the wrapper is controlled by a four element vector allowing up to four cascaded operations using the \acp{sfu}.
-The wrapper contains four \acp{sfu} , a \ac{relu}, a \ac{binary32} adder, a \ac{binary32} exponential and a \ac{binary32} divider.
+The processing in the wrapper is controlled by a four-element vector allowing up to four cascaded operations using the \acp{sfu}.
+The wrapper contains four \acp{sfu}, a \ac{relu}, a \ac{binary32} adder, a \ac{binary32} exponential and a \ac{binary32} divider.
 The \ac{relu} operation is a simple operation and is performed in parallel on all 32 results from the \ac{stop}.
 The divide, exponent and adder are more complex and there are single instantiations of each of the \acp{sfu}.
-When provcessing a group of values from the \ac{stop}, each value is processed serially.
+When processing a group of values from the \ac{stop}, each value is processed serially.
 
-The most common usage of the \acp{sfu} is during \ac{an} state calculation. In this acse, the \ac{relu} is used as one of the four operations with the other three being \acp{nop}.
+The most common usage of the \acp{sfu} is during \ac{an} state calculation. In this case, the \ac{relu} is used as one of the four operations with the other three being \acp{nop}.
 The \ac{relu} is preceded by the \ac{mac} operation in the \ac{stop}.
-Once the \ac{sfu} operations have concluded, the result is currently sent directly back to the manager over the upstream bus.
+Once the \ac{sfu} operations have concluded, the result is sent directly back to the manager over the upstream bus.
 
 For this work, a high level of importance was not assigned to the actual \ac{simd} because a) the functionality provided by the \ac{simd} is to provide a level of flexibility for future work and b) the choice of \ac{simd} is currently under considration.
 Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed only by the special functions provided in the wrapper as dscribed above and shown in Figure \ref{fig:simd wrapper block diagram}.
 However, it was important to include the \ac{simd} in the area portion of the study.
-To account for the \ac{simd}, in the area layout study a placement blockage was used based 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
+To account for the \ac{simd}, in the area layout study a placement blockage is used based on a 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
 
 In practice, the \ac{simd} will take the result data from the \ac{stop} and/or the \acp{sfu} and perform a pre-programmed operation starting at the \ac{pc} indicated by the \ac{simd} operation pointer provided by the \ac{pe} controller.
 It is expected that in future work the \ac{simd} would also be given control of the \acp{sfu} allowing for more flexible and complex processing.
 
-\subsection{\Acp{sfu}}
+\subsection{\acp{sfu}}
 \label{sec:sfu}
 
 The adder is used during single \ac{an} processing as described in Section \ref{sec:Processing Engine Layer} and shown in Figure \ref{fig:Group AN calculation}.
@@ -726,7 +729,7 @@ The paths from the local memory to the \ac{stop} and from the \ac{stop} to the l
 The upstream controller takes the data from the \ac{simd} and a tag from the \ac{pe} controller and sends it to the manager.
 The format of the upstream transactions can be seen in Figure \ref{fig:Upstream data transactions}.
 The upstream packet format accomodates both data and tag to be transmitted or just the tag.
-The upstream format allows sending tag only is to accomodate a sync flush operation without data being returned to the manager.
+The reason for allowing tag-only operation is to accomodate a sync flush operation without data being returned to the manager.
 Currently only the tag and data mode has been implemented.
 
 \begin{figure}[h]

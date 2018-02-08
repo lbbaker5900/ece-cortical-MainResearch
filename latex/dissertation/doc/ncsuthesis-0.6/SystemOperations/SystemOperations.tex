@@ -66,7 +66,7 @@ For example, to process a group of \acp{an}, the instruction contains a descript
 \subsection{Instruction Types}
 \label{sec:Instruction Types}
 There are two instruction types currently defined, a \textbf{{\textcolor{black}{configuration}}} instruction and a \textbf{\textcolor{black}{compute}} instruction.
-The configuration instruction has been defined to deal with data downloads and uploads which includes \ac{ann} parameters and input, \ac{ssc} instructions, \ac{simd} and \ac{stop} operation pointers and \ac{simd} instructions.\\
+The configuration instruction has been defined to deal with synchronization and data downloads and uploads which includes \ac{ann} parameters and input, \ac{ssc} instructions, \ac{simd} and \ac{stop} operation pointers and \ac{simd} instructions.
 The compute instruction has been defined to deal with computing the states of a group of \acp{an}. \par
 Although this work's focus has been on the compute instruction -- as it has the most influence on system performance -- configuration instructions have been defined and tested to provide an extensible system.
 \iffalse
@@ -438,7 +438,7 @@ The sync configuration instruction is shown in Figure \ref{fig:Sync instruction}
   \end{subfigure}%
   %\vspace{-10pt}
   \captionsetup{justification=centering, skip=16pt}
-  \caption{Configuration Instruction types}
+  \caption{Configuration instruction types}
   \label{fig:Configuration Instruction types}
 \end{figure}
 
@@ -446,14 +446,14 @@ The data option value mode register \cite{standard2007jedec} defines the type of
 The storage option type contains a storage descriptor pointer which specifies the address of memory transfers.
 An overview of the configuration instructions is given in Sections \ref{sec:Data Transfer Instruction} and \ref{sec:Sync Instruction} with additional details in Section \ref{sec:Decoding Configuration Instructions}.
 
-\subsubsection{Data Instruction}
+\subsubsection{Configuration Data Instruction}
 \label{sec:Data Transfer Instruction}
 
 There are currently four mode registers defined, an instruction download register, a sync group download register, a memory download register and a memory upload register.
 The contents of the mode register specify the type of transfer, the size of the transfer and some additional flags.
 When transferring to or from memory, an additional descriptor element contains a storage descriptor defining where the data should read or written.
 
-\subsubsection{Sync Instruction}
+\subsubsection{Configuration Sync Instruction}
 \label{sec:Sync Instruction}
 
 The option element is a sync option whose value contains a mode register.
