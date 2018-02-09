@@ -68,10 +68,12 @@
 `define MWC_CNTL_PTR_DATA_RCV_PROCESS_DATA                        16'b0000_0000_1000_0000
 `define MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_LOWER    16'b0000_0001_0000_0000
 `define MWC_CNTL_PTR_DATA_RCV_FILL_HOLDING_REG_FROM_INTF_UPPER    16'b0000_0010_0000_0000
+`define MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REG_FROM_INTF_LOWER   16'b0000_0100_0000_0000
+`define MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REG_FROM_INTF_UPPER   16'b0000_1000_0000_0000
 
-`define MWC_CNTL_PTR_DATA_RCV_FLUSH_HOLDING_REGS                  16'b0000_0100_0000_0000
+`define MWC_CNTL_PTR_DATA_RCV_FLUSH_ALL_HOLDING_REGS              16'b0001_0000_0000_0000
 
-`define MWC_CNTL_PTR_DATA_RCV_DMA                           16'b0000_1000_0000_0000
+`define MWC_CNTL_PTR_DATA_RCV_DMA                                 16'b0010_0000_0000_0000
 
 `define MWC_CNTL_PTR_DATA_RCV_COMPLETE                            16'b0100_0000_0000_0000
 `define MWC_CNTL_PTR_DATA_RCV_ERR                                 16'b1000_0000_0000_0000
@@ -206,7 +208,7 @@
 
 // Threshold below full when we assert almost full
 // assert almost full when there are only this many entries available in the fifo
-`define MWC_CNTL_FROM_MCNTL_FIFO_ALMOST_FULL_THRESHOLD 4
+`define MWC_CNTL_FROM_MCNTL_FIFO_ALMOST_FULL_THRESHOLD 16
 
 //--------------------------------------------------------
 //--------------------------------------------------------

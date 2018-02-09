@@ -181,7 +181,7 @@
 //--------------------------------------------------------
 // From NoC
 
-`define MGR_CNTL_FROM_NOC_FIFO_DEPTH          8
+`define MGR_CNTL_FROM_NOC_FIFO_DEPTH          16
 `define MGR_CNTL_FROM_NOC_FIFO_DEPTH_MSB      (`MGR_CNTL_FROM_NOC_FIFO_DEPTH) -1
 `define MGR_CNTL_FROM_NOC_FIFO_DEPTH_LSB      0
 `define MGR_CNTL_FROM_NOC_FIFO_DEPTH_SIZE     (`MGR_CNTL_FROM_NOC_FIFO_DEPTH_MSB - `MGR_CNTL_FROM_NOC_FIFO_DEPTH_LSB +1)
@@ -193,7 +193,7 @@
 
 // Threshold below full when we assert almost full
 // assert almost full when there are only this many entries available in the fifo
-`define MGR_CNTL_FROM_NOC_FIFO_ALMOST_FULL_THRESHOLD 4
+`define MGR_CNTL_FROM_NOC_FIFO_ALMOST_FULL_THRESHOLD 6
 
 `define MGR_CNTL_FROM_NOC_AGGREGATE_DATA_WIDTH    `MGR_NOC_CONT_INTERNAL_DATA_WIDTH 
 `define MGR_CNTL_FROM_NOC_AGGREGATE_DATA_MSB      `MGR_CNTL_FROM_NOC_AGGREGATE_DATA_WIDTH-1

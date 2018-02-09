@@ -557,8 +557,9 @@ module mgr_cntl (
       case (mgr_cntl_main_state)  // synopsys parallel_case
         
         `MGR_CNTL_MAIN_WAIT: 
-          mgr_cntl_main_state_next =   (from_wud_valid ) ? `MGR_CNTL_MAIN_START_WUD :
-                                                           `MGR_CNTL_MAIN_WAIT      ; 
+          mgr_cntl_main_state_next =   ( from_wud_valid       ) ? `MGR_CNTL_MAIN_START_WUD :
+                                       ( noc_unsolicited_dma  ) ? `MGR_CNTL_MAIN_MEM_DNLD  :
+                                                                  `MGR_CNTL_MAIN_WAIT      ; 
 
         `MGR_CNTL_MAIN_START_WUD: 
           mgr_cntl_main_state_next =   //(from_wud_eod   ) ? `MGR_CNTL_MAIN_COMPLETE_WUD :
@@ -843,7 +844,7 @@ module mgr_cntl (
   
         // Main control will extract descriptor and assert processing_dnl once ready
         `MGR_CNTL_NOC_CNTL_UNSOL_DMA_START: 
-          mgr_cntl_noc_cntl_state_next = ( processing_config_dnld  )  ?  `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_HEADER :
+          mgr_cntl_noc_cntl_state_next = ( processing_config_dnld  )  ?  `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_DATA   :
                                                                          `MGR_CNTL_NOC_CNTL_UNSOL_DMA_START         ;
   
         `MGR_CNTL_NOC_CNTL_DMA_RCV_TRANSFER_HEADER: 
@@ -889,7 +890,7 @@ module mgr_cntl (
       
   always @(posedge clk) 
     begin
-      case (mgr_cntl_noc_cntl_state)  // parallel_case
+      case (mgr_cntl_noc_cntl_state)  // synopsys parallel_case
 
         `MGR_CNTL_NOC_CNTL_INST_DNLD_INIT :
           begin
@@ -912,7 +913,7 @@ module mgr_cntl (
     end
   always @(posedge clk) 
     begin
-      case (mgr_cntl_noc_cntl_state)  // parallel_case
+      case (mgr_cntl_noc_cntl_state)  // synopsys parallel_case
 
         `MGR_CNTL_NOC_CNTL_COMPLETE :
           begin
@@ -926,10 +927,36 @@ module mgr_cntl (
 
       endcase
     end
+  always @(posedge clk) 
+    begin
+      case (mgr_cntl_noc_cntl_state)  // synopsys parallel_case
+
+        `MGR_CNTL_NOC_CNTL_WAIT :
+          begin
+            noc_unsolicited_dma  <= 'd0 ;
+          end
+
+        `MGR_CNTL_NOC_CNTL_INST_DNLD_INIT:
+          begin
+            noc_unsolicited_dma  <= 'd0 ;
+          end
+
+        `MGR_CNTL_NOC_CNTL_UNSOL_DMA_START :
+          begin
+            noc_unsolicited_dma  <= 'd1 ;
+          end
+
+        default:
+          begin
+            noc_unsolicited_dma  <= noc_unsolicited_dma  ;
+          end
+
+      endcase
+    end
 
   always @(*)
     begin
-      case (mgr_cntl_noc_cntl_state)  // parallel_case
+      case (mgr_cntl_noc_cntl_state)  // synopsys parallel_case
 
         `MGR_CNTL_NOC_CNTL_INST_DNLD_INIT :
           begin

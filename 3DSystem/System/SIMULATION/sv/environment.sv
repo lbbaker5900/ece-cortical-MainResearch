@@ -306,6 +306,7 @@ class Environment;
             begin
               host_driver.run();
               //host_driver.solicited_dnld();
+              //host_driver.unsolicited_dnld();
             end
 /*
             begin

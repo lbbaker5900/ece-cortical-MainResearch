@@ -62,14 +62,20 @@ a.append('00000000_00000000__00000000_00000000__00000011_00000001____00100___00_
 #           val2     opt2     val1     opt1      val0     opt0       CFG    dcntl  icntl
 a.append('00000000_00000000__00000000_00000000__00000000_00000111____00100___10_____10')
 
-print  '// SIMD Option Memory'
+print  '// Download'
 for i in a:
   print  hex(int(i.replace('_',''),2)).split('x')[1]
+
 
 a = []
 #          save  save  stage   stage   stage   stage    SIMD    Act 
 #           idx   inc    3       2       1       0       EN     Fn       PC
-a.append('_00000___1____0000____0110____0010____0001______1_____10____0000000010')
+a.append('_00000___1____0000____0110____0100____0001______1_____10____0000000010')
+             
+#                               sum/
+#                       send     save    Exp     ReLu
+a.append('_00000___1____1000____0011____0100____0001______1_____10____0000000010')
+
 #                        inc     clr
 #                        idx     idx    send     nop
 a.append('_00000___1____1101____1100____1000____0000______1_____10____0000000010')
@@ -78,7 +84,13 @@ a.append('_00000___1____1101____1100____1000____0000______1_____10____0000000010
 #                        idx     idx    null     nop
 a.append('_00000___1____0000____0000____1001____0000______1_____10____0000000010')
 
+#                        sum/
+#                        save    Exp     ReLu  send
+a.append('_00000___1_____0011____0100____0001___1000___1_____10____0000000010')
+
 print  '// SIMD Option Memory'
 for i in a:
   print  hex(int(i.replace('_',''),2)).split('x')[1]
 
+print  '// send - ReLu - Exp - Sum/save'
+print  hex(int(a[4].replace('_',''),2)).split('x')[1]

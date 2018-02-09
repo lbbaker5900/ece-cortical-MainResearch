@@ -1702,6 +1702,8 @@ if __name__ == "__main__":
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group TO_MCNTL -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/wud__mcntl__option_value}}'.format(mgr,strm)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group TO_MCNTL -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/wud__mcntl__tag}}'.format(mgr,strm)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group TO_MCNTL -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/mcntl__wud__ready}}'.format(mgr,strm)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group TO_MCNTL -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/wud__mcntl__stalled}}'.format(mgr,strm)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group TO_MCNTL -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/mcntl__wud__release}}'.format(mgr,strm)
     #
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group TO_OOB -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/wud__odc__valid}}'.format(mgr,strm)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group TO_OOB -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/wud__odc__cntl}}'.format(mgr,strm)
@@ -1745,6 +1747,7 @@ if __name__ == "__main__":
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group GEN -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/mode_reg_valid}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group GEN -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/mode_reg_id}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group GEN -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/mode_reg_value}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group GEN -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/stalled}}'.format(mgr)
     #pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_DECODE -group GEN -radix hexadecimal {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_decode/send_info_to_mem_write}}'.format(mgr)
     for ot in range (0, numOfOptTuples):
       #
@@ -2017,6 +2020,9 @@ if __name__ == "__main__":
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/held_page}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/held_data}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/held_mask}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/held_last_accessed}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/held_update}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/held_entry_clear}}'.format(mgr)
     #pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/held_accessOrder}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/holding_reg_line_count}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/holding_reg_chan_ptr}}'.format(mgr)
@@ -2631,13 +2637,13 @@ if __name__ == "__main__":
     #
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/mcntl__wuf__enable}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/mcntl__wuf__start_addr}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/xxx__wuf__stall}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/mcntl__wuf__stall}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/wum__wuf__stall}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/mcntl__wuf__enable_d1}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/mcntl__wuf__start_addr_d1}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/wuf__wum__addr_e1}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/wuf__wum__read_e1}}'.format(mgr)
-    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/xxx__wuf__stall_d1}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/mcntl__wuf__stall_d1}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/wum__wuf__stall_d1}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/pc}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group WU_FETCH -group GENERAL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/wu_fetch/increment_pc}}'.format(mgr)

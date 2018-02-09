@@ -378,7 +378,7 @@ class host_driver_checker;
                 begin
                   vExtFromNoC[0].noc__mgr__port_valid = 0;
                   repeat(10) @(vExtFromNoC[0].cb_p);
-                  //break;
+                  break;
                 end
               vExtFromNoC[0].noc__mgr__port_valid = 0;
               @(vExtFromNoC[0].cb_p);
@@ -405,18 +405,19 @@ class host_driver_checker;
       int sent_dnld_data   ;
       string entry  ;
 
-      found = 0;
-      lineNum = 0;
-      count   = 0;
-      pkt_count   = 0;
-      sent_dnld_data = 0  ;
-      noc_bitMask  = {63'd0, 1'b1}    ;
-
       repeat(100) @(vExtFromNoC[0].cb_p);
 
       for (int mgr=0; mgr<1; mgr=mgr+1)
       //for (int mgr=0; mgr<`MGR_ARRAY_NUM_OF_MGR; mgr=mgr+1)
         begin
+          count   = 0;
+          pkt_count   = 0;
+          found = 0;
+          lineNum = 0;
+          sent_dnld_data = 0  ;
+          noc_bitMask  = {64'd0}    ;
+
+          $display("@%0t :%s:%0d:INFO: Manager %0d solicited dnld", $time, `__FILE__, `__LINE__, mgr);
           fileName  =  $sformatf("./inputFiles/manager_%0d_dnld_data.dat", mgr);
           fileDesc  =  $fopen (fileName, "r");
           if (fileDesc == 0) 
@@ -426,7 +427,7 @@ class host_driver_checker;
           end
           noc_bitMask  = 64'd0;
           noc_bitMask[mgr]  = 1'b1 ;
-          while (!$feof(fileDesc)) 
+          while ( (count < `HOST_DNLD_DWORDS) && !$feof(fileDesc))
             begin
               noc_cntl       = 2'b10 ; 
               noc_type       = `MGR_NOC_CONT_TYPE_INSTRUCTION      ; 
@@ -498,7 +499,7 @@ class host_driver_checker;
               if (sent_dnld_data == 1)
                 begin
                   vExtFromNoC[0].noc__mgr__port_valid = 0;
-                  @(vExtFromNoC[0].cb_p);
+                  repeat(10) @(vExtFromNoC[0].cb_p);
                   break;
                 end
               vExtFromNoC[0].noc__mgr__port_valid = 0;
