@@ -37,9 +37,10 @@ typedef enum logic [3 :0] {
                    PY_WU_INST_OPT_TYPE_MEMORY                                 =  7, 
                    PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS                               =  8, 
                    PY_WU_INST_OPT_TYPE_NUM_OF_ARG1_OPERANDS                               =  9, 
-                   PY_WU_INST_OPT_TYPE_CFG_SYNC                               = 10, 
-                   PY_WU_INST_OPT_TYPE_CFG_DATA                               = 11, 
-                   PY_WU_INST_OPT_TYPE_STATUS                                 = 12 
+                   PY_WU_INST_OPT_TYPE_NUM_OF_RETURN_PKTS                               = 10, 
+                   PY_WU_INST_OPT_TYPE_CFG_SYNC                               = 11, 
+                   PY_WU_INST_OPT_TYPE_CFG_DATA                               = 12, 
+                   PY_WU_INST_OPT_TYPE_STATUS                                 = 13 
                            } python_option_type ; 
 
 

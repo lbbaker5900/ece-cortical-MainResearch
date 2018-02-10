@@ -67,7 +67,9 @@ function automatic void isExtdTuple (
                            input logic [`MGR_WU_OPT_VALUE_RANGE] option_type
                           );
   
-            output_f = ((option_type == PY_WU_INST_OPT_TYPE_CFG_SYNC) | (option_type == PY_WU_INST_OPT_TYPE_CFG_DATA) | (option_type == PY_WU_INST_OPT_TYPE_MEMORY)) ;
+            output_f = ((option_type == PY_WU_INST_OPT_TYPE_CFG_SYNC             ) | (option_type == PY_WU_INST_OPT_TYPE_CFG_DATA             ) | 
+                        (option_type == PY_WU_INST_OPT_TYPE_MEMORY               ) | (option_type == PY_WU_INST_OPT_TYPE_NUM_OF_RETURN_PKTS   ) |
+                        (option_type == PY_WU_INST_OPT_TYPE_NUM_OF_ARG0_OPERANDS ) | (option_type == PY_WU_INST_OPT_TYPE_NUM_OF_ARG1_OPERANDS ));
 
 endfunction                  
 

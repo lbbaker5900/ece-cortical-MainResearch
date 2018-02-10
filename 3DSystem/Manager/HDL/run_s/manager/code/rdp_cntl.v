@@ -81,6 +81,7 @@ module rdp_cntl (
             output  reg                                                rdp__mwc__valid      , 
             output  reg    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl       , 
             input   wire                                               mwc__rdp__ready      , 
+            output  reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__mwc__type       , 
             output  reg    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype      , 
             output  reg                                                rdp__mwc__pvalid     , 
             output  reg    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data       , 
@@ -263,6 +264,7 @@ module rdp_cntl (
   wire                                                rdp__mwc__valid_e1   ; 
   wire    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl_e1    ; 
   reg                                                 mwc__rdp__ready_d1   ; 
+  reg     [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__mwc__type_e1    ;
   wire    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype_e1   ; 
   wire                                                rdp__mwc__pvalid_e1  ; 
   wire    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data_e1    ; 
@@ -372,6 +374,7 @@ module rdp_cntl (
       rdp__mwc__valid     <= ( reset_poweron   ) ? 'd0  :  rdp__mwc__valid_e1  ;
       rdp__mwc__cntl      <= ( reset_poweron   ) ? 'd0  :  rdp__mwc__cntl_e1   ;
       mwc__rdp__ready_d1  <= ( reset_poweron   ) ? 'd0  :  mwc__rdp__ready     ;
+      rdp__mwc__type      <= ( reset_poweron   ) ? 'd0  :  rdp__mwc__type_e1   ;
       rdp__mwc__ptype     <= ( reset_poweron   ) ? 'd0  :  rdp__mwc__ptype_e1  ;
       rdp__mwc__pvalid    <= ( reset_poweron   ) ? 'd0  :  rdp__mwc__pvalid_e1 ;
       rdp__mwc__data      <= ( reset_poweron   ) ? 'd0  :  rdp__mwc__data_e1   ;
@@ -422,13 +425,13 @@ module rdp_cntl (
                                           // Write                                                               
                                          .write            ( write                                                ),
                                          .write_data       ( {write_dcntl, write_tag, write_option_type[0], write_option_value[0],
-                                                                                                  write_option_type[1], write_option_value[1],
-                                                                                                  write_option_type[2], write_option_value[2]}),
+                                                                                      write_option_type[1], write_option_value[1],
+                                                                                      write_option_type[2], write_option_value[2]}),
                                           // Read                                                
                                          .read             ( read                                  ),
                                          .read_data        ( {read_dcntl,  read_tag,  read_option_type[0],  read_option_value[0],
-                                                                                                   read_option_type[1],  read_option_value[1],
-                                                                                                   read_option_type[2],  read_option_value[2]}),
+                                                                                      read_option_type[1],  read_option_value[1],
+                                                                                      read_option_type[2],  read_option_value[2]}),
 
                                          // General
                                          .clear            ( clear                                                ),
@@ -447,7 +450,6 @@ module rdp_cntl (
         reg    [`MGR_WU_OPT_TYPE_RANGE          ]            pipe_option_type  [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
         reg    [`MGR_WU_OPT_VALUE_RANGE         ]            pipe_option_value [`MGR_WU_OPT_PER_INST_RANGE ]  ;  // 
         wire                                                 pipe_read         ;
-
 
         assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
         assign fifo_pipe_read = fifo_pipe_valid & (~pipe_valid      | pipe_read     ) ; 
@@ -512,6 +514,62 @@ module rdp_cntl (
   assign end_of_wu_descriptor            = from_WuDecode_Fifo[0].pipe_valid & (from_WuDecode_Fifo[0].pipe_dcntl == `COMMON_STD_INTF_CNTL_EOM) ;
   assign rdp__wud__ready_e1              = ~from_WuDecode_Fifo[0].almost_full  ;
 
+  reg    [`MGR_WU_OPT_PER_INST_RANGE      ]            pipe_option_is_extd_type ;
+  reg    [`MGR_WU_OPT_PER_INST_RANGE      ]            pipe_option_extd_valid                               ;
+  reg    [`MGR_WU_OPT_TYPE_RANGE          ]            pipe_option_extd_type         [`MGR_WU_OPT_PER_INST] ;
+  reg    [`MGR_WU_EXTD_OPT_VALUE_RANGE    ]            pipe_option_extd_value        [`MGR_WU_OPT_PER_INST] ;
+
+
+  genvar opt;
+  generate
+    for (opt=0; opt<`MGR_WU_OPT_PER_INST; opt=opt+1) 
+      begin: extd_tuple_decode
+        always @(*)
+          begin
+            isExtdTuple(pipe_option_is_extd_type[opt], from_WuDecode_Fifo[0].read_option_type[opt]);
+          end
+
+        if (opt == 0)
+         begin
+           always @(posedge clk)
+             begin
+               pipe_option_extd_type        [opt]  <=  ( from_WuDecode_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? {from_WuDecode_Fifo[0].read_option_type [opt]} :
+                                                                                                                                    pipe_option_extd_type        [opt] ;
+               
+               pipe_option_extd_value       [opt]  <=  ( from_WuDecode_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? {from_WuDecode_Fifo[0].read_option_type [opt], from_WuDecode_Fifo[0].read_option_value [opt], from_WuDecode_Fifo[0].read_option_type [opt+1], from_WuDecode_Fifo[0].read_option_value [opt+1]}  : 
+                                                                                                                                    pipe_option_extd_value       [opt] ;
+               
+               pipe_option_extd_valid       [opt]  <=  ( reset_poweron ) ? 1'b0 :
+                                                       ( from_WuDecode_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? 1'b1                               :
+                                                                                                                                    pipe_option_extd_valid             [opt] ;
+             end
+         end
+        else if (opt == 1)
+         begin
+           always @(posedge clk)
+             begin
+               pipe_option_extd_type        [opt]  <=  ( from_WuDecode_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? {from_WuDecode_Fifo[0].read_option_type [opt]} :
+                                                                                                                                                                        pipe_option_extd_type        [opt]  ;
+               
+               pipe_option_extd_value       [opt]  <=  ( from_WuDecode_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? {from_WuDecode_Fifo[0].read_option_type [opt], from_WuDecode_Fifo[0].read_option_value [opt], from_WuDecode_Fifo[0].read_option_type [opt+1], from_WuDecode_Fifo[0].read_option_value [opt+1]}  : 
+                                                                                                                                                                        pipe_option_extd_value       [opt]  ;
+               
+               pipe_option_extd_valid       [opt]  <=  ( reset_poweron ) ? 1'b0 :
+                                                       ( from_WuDecode_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? 1'b1                               :
+                                                                                                                                                                      pipe_option_extd_valid             [opt] ;
+             end
+         end
+        else 
+         begin
+           always @(posedge clk)
+             begin
+               pipe_option_extd_valid       [opt]  <=   'd0  ;
+               pipe_option_extd_type        [opt]  <=  1'b0  ;
+               pipe_option_extd_value       [opt]  <=  1'b0  ;
+             end
+         end
+      end
+  endgenerate
 
 
 
@@ -1102,7 +1160,7 @@ module rdp_cntl (
                                                                                                                                                
   wire                                              from_wrPtrFifo_valid                  =  storagePtr_LocalFifo[0].pipe_valid                ;
   wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         from_wrPtrFifo_cntl                   =  storagePtr_LocalFifo[0].pipe_cntl                 ;
-  wire   [`MGR_STORAGE_DESC_ADDRESS_RANGE ]         from_WrPtrFifo_wrPtr                  =  storagePtr_LocalFifo[0].pipe_storage_ptr          ;
+  wire   [`MGR_STORAGE_DESC_ADDRESS_RANGE ]         from_wrPtrFifo_wrPtr                  =  storagePtr_LocalFifo[0].pipe_storage_ptr          ;
   wire                                              from_wrPtrFifo_eom                    =  (from_wrPtrFifo_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (from_wrPtrFifo_cntl == `COMMON_STD_INTF_CNTL_EOM) ;
                                                                                           
   wire                                              from_NocInfoFifo_valid                =  storageDestAddr_LocalFifo[0].pipe_valid           ; 
@@ -1265,8 +1323,8 @@ module rdp_cntl (
   reg      [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL0_RANGE ] tuple_cycle_val0   ; // store lower tuple before reading second write pointer
   always @(posedge clk)
     begin
-      tuple_cycle_val0   <= ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_START_PTR     ) & wr_destinations_ready ) ? from_WrPtrFifo_wrPtr :
-                            ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS ) & wr_destinations_ready ) ? from_WrPtrFifo_wrPtr :
+      tuple_cycle_val0   <= ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_START_PTR     ) & wr_destinations_ready ) ? from_wrPtrFifo_wrPtr :
+                            ((rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_TRANSFER_PTRS ) & wr_destinations_ready ) ? from_wrPtrFifo_wrPtr :
                                                                                                                                       tuple_cycle_val0     ;
     end
 
@@ -1277,7 +1335,7 @@ module rdp_cntl (
   assign  tuple_cycle_data_fields [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_OPTION1_RANGE    ]  =  (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_PAD_NOP) ? PY_WU_INST_OPT_TYPE_NOP    :  // there was an odd number of wr_ptr's
                                                                                                                                                                      PY_WU_INST_OPT_TYPE_MEMORY ;
   assign  tuple_cycle_data_fields [`MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_EXTD_VAL1_RANGE  ]  =  (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_PAD_NOP) ? 'd0                        :  // there was an odd number of wr_ptr's
-                                                                                                                                                                     from_WrPtrFifo_wrPtr       ;
+                                                                                                                                                                     from_wrPtrFifo_wrPtr       ;
 
   // When we are in the last data cycle, take the upper or lower of the 4 words based on the 2 LSB of numLanes
   // e.g. 001 -> lower, 010 -> lower, 011 -> upper, 100 -> upper  Note: 000 is invalid
@@ -1319,20 +1377,21 @@ module rdp_cntl (
   `include "mgr_noc_cntl_create_thisMgr_bitmask_address.vh"
 
 
-  assign      rdp__mwc__valid_e1         =  wrDescOutputPkt_valid_e1 & from_NocInfoFifo_oneIsLocal   ; 
-  assign      rdp__mwc__cntl_e1          =  wrDescOutputPkt_cntl_e1   ; 
-  assign      rdp__mwc__ptype_e1         =  wrDescOutputPkt_ptype_e1  ; 
-  assign      rdp__mwc__pvalid_e1        =  wrDescOutputPkt_pvalid_e1 ; 
-  assign      rdp__mwc__data_e1          =  wrDescOutputPkt_data_e1   ; 
+  assign      rdp__mwc__valid_e1            =  wrDescOutputPkt_valid_e1 & from_NocInfoFifo_oneIsLocal      ; 
+  assign      rdp__mwc__cntl_e1             =  wrDescOutputPkt_cntl_e1                                     ; 
+  assign      rdp__mwc__type_e1             =  wrDescOutputPkt_type_e1                                     ; 
+  assign      rdp__mwc__ptype_e1            =  wrDescOutputPkt_ptype_e1                                    ; 
+  assign      rdp__mwc__pvalid_e1           =  wrDescOutputPkt_pvalid_e1                                   ; 
+  assign      rdp__mwc__data_e1             =  wrDescOutputPkt_data_e1                                     ; 
                                          
   assign      rdp__mcntl__noc_valid_e1      =  wrDescOutputPkt_valid_e1 & from_NocInfoFifo_oneIsNotLocal   ; 
-  assign      rdp__mcntl__noc_cntl_e1       =  wrDescOutputPkt_cntl_e1   ; 
-  assign      rdp__mcntl__noc_type_e1       =  wrDescOutputPkt_type_e1   ; 
-  assign      rdp__mcntl__noc_desttype_e1   =  wrDescOutputPkt_desttype_e1  ; 
-  assign      rdp__mcntl__noc_ptype_e1      =  wrDescOutputPkt_ptype_e1  ; 
-  assign      rdp__mcntl__noc_pvalid_e1     =  wrDescOutputPkt_pvalid_e1 ; 
+  assign      rdp__mcntl__noc_cntl_e1       =  wrDescOutputPkt_cntl_e1                                     ; 
+  assign      rdp__mcntl__noc_type_e1       =  wrDescOutputPkt_type_e1                                     ; 
+  assign      rdp__mcntl__noc_desttype_e1   =  wrDescOutputPkt_desttype_e1                                 ; 
+  assign      rdp__mcntl__noc_ptype_e1      =  wrDescOutputPkt_ptype_e1                                    ; 
+  assign      rdp__mcntl__noc_pvalid_e1     =  wrDescOutputPkt_pvalid_e1                                   ; 
   assign      rdp__mcntl__noc_data_e1       =  (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR ) ? (wrDescOutputPkt_data_e1  & ~thisMgrBitMask) :  // mask out this Manager bit in the address
-                                                                                                                        wrDescOutputPkt_data_e1                     ;
+                                                                                                                           wrDescOutputPkt_data_e1                     ;
 
 
 

@@ -47,6 +47,7 @@ module mwc_cntl (
             input   wire                                             rdp__mwc__valid      , 
             input   wire [`COMMON_STD_INTF_CNTL_RANGE          ]     rdp__mwc__cntl       , 
             output  reg                                              mwc__rdp__ready      , 
+            input   wire [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE  ]     rdp__mwc__type       ,   
             input   wire [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE ]     rdp__mwc__ptype      , 
             input   wire                                             rdp__mwc__pvalid     , 
             input   wire [`MGR_NOC_CONT_INTERNAL_DATA_RANGE    ]     rdp__mwc__data       , 
@@ -135,6 +136,7 @@ module mwc_cntl (
   // from RDP (local)
   reg                                               rdp__mwc__valid_d1      ; 
   reg  [`COMMON_STD_INTF_CNTL_RANGE           ]     rdp__mwc__cntl_d1       ; 
+  reg  [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE   ]     rdp__mwc__type_d1       ;
   reg  [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE  ]     rdp__mwc__ptype_d1      ; 
   reg  [`MGR_NOC_CONT_INTERNAL_DATA_RANGE     ]     rdp__mwc__data_d1       ; 
   reg                                               rdp__mwc__pvalid_d1     ; 
@@ -205,6 +207,7 @@ module mwc_cntl (
     begin
       rdp__mwc__valid_d1    <=   ( reset_poweron   ) ? 'd0  : rdp__mwc__valid      ;
       rdp__mwc__cntl_d1     <=   ( reset_poweron   ) ? 'd0  : rdp__mwc__cntl       ;
+      rdp__mwc__type_d1     <=   ( reset_poweron   ) ? 'd0  : rdp__mwc__type       ;
       rdp__mwc__ptype_d1    <=   ( reset_poweron   ) ? 'd0  : rdp__mwc__ptype      ;
       rdp__mwc__data_d1     <=   ( reset_poweron   ) ? 'd0  : rdp__mwc__data       ;
       rdp__mwc__pvalid_d1   <=   ( reset_poweron   ) ? 'd0  : rdp__mwc__pvalid     ;
@@ -407,8 +410,9 @@ module mwc_cntl (
   //----------------------------------------------------------------------------------------------------
   // Write data fields
   assign input_intf_fifo[0].write       =  rdp__mwc__valid_d1 ;
-  // force type to DESC_WRITE_DATA for everything from RDP - FIXME ????
-  assign input_intf_fifo[0].write_data  = {rdp__mwc__cntl_d1, {`MGR_NOC_CONT_NOC_PACKET_TYPE_WIDTH 'd `MGR_NOC_CONT_TYPE_DESC_WRITE_DATA }, rdp__mwc__ptype_d1, rdp__mwc__pvalid_d1, rdp__mwc__data_d1};
+
+  assign input_intf_fifo[0].write_data  = {rdp__mwc__cntl_d1, rdp__mwc__type_d1, rdp__mwc__ptype_d1, rdp__mwc__pvalid_d1, rdp__mwc__data_d1};
+
   always @(*)
     begin
       mwc__rdp__ready_e1    = ~input_intf_fifo[0].almost_full ;

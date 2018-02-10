@@ -850,6 +850,7 @@ module manager (
   wire                                                rdp__mwc__valid      ; 
   wire    [`COMMON_STD_INTF_CNTL_RANGE             ]  rdp__mwc__cntl       ; 
   wire                                                mwc__rdp__ready      ; 
+  wire    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]  rdp__mwc__type       ; 
   wire    [`MGR_NOC_CONT_NOC_PAYLOAD_TYPE_RANGE    ]  rdp__mwc__ptype      ; 
   wire                                                rdp__mwc__pvalid     ; 
   wire    [`MGR_NOC_CONT_INTERNAL_DATA_RANGE       ]  rdp__mwc__data       ; 
@@ -882,6 +883,7 @@ module manager (
             .rdp__mwc__valid         ( rdp__mwc__valid         ), 
             .mwc__rdp__ready         ( mwc__rdp__ready         ), 
             .rdp__mwc__cntl          ( rdp__mwc__cntl          ), 
+            .rdp__mwc__type          ( rdp__mwc__type          ), 
             .rdp__mwc__ptype         ( rdp__mwc__ptype         ), 
             .rdp__mwc__pvalid        ( rdp__mwc__pvalid        ), 
             .rdp__mwc__data          ( rdp__mwc__data          ), 
@@ -1010,6 +1012,7 @@ module manager (
             .rdp__mwc__valid         ( rdp__mwc__valid             ), 
             .mwc__rdp__ready         ( mwc__rdp__ready             ), 
             .rdp__mwc__cntl          ( rdp__mwc__cntl              ), 
+            .rdp__mwc__type          ( rdp__mwc__type              ), 
             .rdp__mwc__ptype         ( rdp__mwc__ptype             ), 
             .rdp__mwc__pvalid        ( rdp__mwc__pvalid            ), 
             .rdp__mwc__data          ( rdp__mwc__data              ), 
