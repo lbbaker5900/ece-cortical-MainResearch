@@ -88,9 +88,23 @@ a.append('_00000___1____0000____0000____1001____0000______1_____10____0000000010
 #                        save    Exp     ReLu  send
 a.append('_00000___1_____0011____0100____0001___1000___1_____10____0000000010')
 
+#                        sum/
+#                        save    Exp     ReLu  send
+a.append('_00000___1_____0011____0100____0001___1000___1_____10____0000000010')
+
+#                                        sum/                                                            
+#                                        save
+#                        NOP     Recip   comm   send
+a.append('_00000___1_____0000____0110____0011___1000___1_____10____0000000010')
+
 print  '// SIMD Option Memory'
+
 for i in a:
   print  hex(int(i.replace('_',''),2)).split('x')[1]
 
 print  '// send - ReLu - Exp - Sum/save'
 print  hex(int(a[4].replace('_',''),2)).split('x')[1]
+print  '// send - Div - NOP - Sum/save'
+print  hex(int(a[5].replace('_',''),2)).split('x')[1]
+print  '// send - Sum/save common - recip - NOP'
+print  hex(int(a[6].replace('_',''),2)).split('x')[1]
