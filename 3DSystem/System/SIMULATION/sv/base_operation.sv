@@ -404,21 +404,28 @@ package operation;
 
         //----------------------------------------------------------------------------------------------------
         // Operands
-
+        // LEE: DEBUG: Floating point
         constraint c_operandValues {
 
             // choose reasonable floating point fields
             foreach (operandsExp         [i,j]) {
-                    operandsExp[i][j] inside {[128:129]} ;
-                    //operandsExp[i][j] inside {128} ;
+                    //operandsExp[i][j] inside {[128:129]} ;
+                    //operandsExp[i][j] inside {8'b0111_1011} ;   // 0.06666
+                    //operandsExp[i][j] inside {8'b0111_1010} ;   // 0.047
+                    //operandsExp[i][j] inside {8'b0111_1011} ;   // 0.081
+                    operandsExp[i][j] inside {[8'b0111_1010:8'b0111_1011]} ;   // 0.081
             }
             foreach (operandsSign       [i,j]) {
                     operandsSign[i][j] inside {[0:1]};
-                    //operandsSign[i][j] inside {0};
+                    //operandsSign[i][j] inside {0};   // +ve
             }
             foreach (operandsSignificand         [i,j]) {
-                    operandsSignificand[i][j] inside {[23'b010_0000_0000_0000_0000_0000:23'b110_0000_0000_0000_0000_0000]} ;
-                    //operandsSignificand[i][j] inside {23'b010_0000_0000_0000_0000_0000};
+                    //operandsSignificand[i][j] inside {[23'b010_0000_0000_0000_0000_0000:23'b110_0000_0000_0000_0000_0000]} ;
+                    //operandsSignificand[i][j] inside {23'b000_0000_0000_0000_0101_0011};   // 0.06666
+                    //operandsSignificand[i][j] inside {23'b000_1000_1000_1000_1000_0111};   // 0.06666
+                    //operandsSignificand[i][j] inside {23'b100_0000_1000_0011_0001_0010:};   // 0.047
+                    //operandsSignificand[i][j] inside {23'b010_0101_1110_0011_0101_0011};   // 0.081
+                    operandsSignificand[i][j] inside {[23'b010_0101_1110_0011_0101_0011:23'b100_0000_1000_0011_0001_0010]};   // 0.047 - 0.081
             }
         }
 

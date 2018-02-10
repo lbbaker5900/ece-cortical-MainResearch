@@ -623,7 +623,7 @@ module simd_core (
         always @(*)
           begin
             case (simd_core_nop_cntl_state)  // synopsys parallel_case
-              `SIMD_CORE_SFU_NOP_CNTL_COMPLETE: 
+              `SIMD_CORE_SFU_NOP_CNTL_NOP: 
                  begin
                    sfu_nop_load_local_reg    [lane]  =  input_regs_valid[lane] ;
                                                                                                                                   
@@ -859,8 +859,9 @@ module simd_core (
         
         // use special op for first transition, then use curr_special_op
         `SIMD_CORE_SFU_ADD_CNTL_WAIT: 
-          simd_core_add_cntl_state_next =  ( start_special_function  && (special_op == `SIMD_WRAP_OPERATION_SUM_SAVE_LOCAL )) ? `SIMD_CORE_SFU_ADD_CNTL_ACC_ALL  :  
-                                                                                                                          `SIMD_CORE_SFU_ADD_CNTL_WAIT     ;
+          simd_core_add_cntl_state_next =  ( start_special_function  && (special_op == `SIMD_WRAP_OPERATION_SUM_SAVE_LOCAL  )) ? `SIMD_CORE_SFU_ADD_CNTL_ACC_ALL  :  
+                                           ( start_special_function  && (special_op == `SIMD_WRAP_OPERATION_SUM_SAVE_COMMON )) ? `SIMD_CORE_SFU_ADD_CNTL_ACC_ALL  :  
+                                                                                                                                 `SIMD_CORE_SFU_ADD_CNTL_WAIT     ;
   
         `SIMD_CORE_SFU_ADD_CNTL_ACC_ALL: 
           simd_core_add_cntl_state_next =  ( add_register_count[`PE_EXEC_LANE_COUNT_P1_MSB] )   ?   `SIMD_CORE_SFU_ADD_CNTL_ACC_FLUSH  :

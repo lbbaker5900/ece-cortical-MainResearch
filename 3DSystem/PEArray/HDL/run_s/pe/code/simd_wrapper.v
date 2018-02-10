@@ -141,6 +141,7 @@ module simd_wrapper (
   reg   [`PE_EXEC_LANE_WIDTH_RANGE     ]  allLanes_results  [`PE_NUM_OF_EXEC_LANES ]      ;
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  allLanes_valid                                  ;
                                                                                           
+  wire                                    return_data_to_upstream                         ;
 
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag_e1                                  ;
   reg   [`PE_NUM_LANES_RANGE           ]  simd__sui__tag_num_lanes_e1                        ;  // number of active lanes associated with this tag
@@ -333,7 +334,8 @@ module simd_wrapper (
   // Tag FIFO
   //
 
-  reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      lane_valid  ;
+  reg   [`PE_EXEC_LANES_VEC_RANGE        ]          pipe_tag_lane_valid ;  // bitmask of active lanes for this operation
+  //reg    [`PE_EXEC_LANES_VEC_RANGE        ]      lane_valid  ;
 
   // Put in a generate in case we decide to extend to multiple fifo's
   generate
@@ -346,16 +348,16 @@ module simd_wrapper (
         wire   [`PE_NUM_LANES_RANGE             ]          write_tag_num_lanes ;  // number of active lanes associated with this tag
                                                  
         // Read data                              
-        wire                                               pipe_valid         ; 
-        wire                                               pipe_read          ; 
-        wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]          pipe_tag           ;
-        wire   [`PE_CNTL_OOB_OPTION_RANGE       ]          pipe_tag_optionPtr ; 
-        wire   [`PE_NUM_LANES_RANGE             ]          pipe_tag_num_lanes ;  // number of active lanes associated with this tag
+        wire                                               pipe_valid          ; 
+        wire                                               pipe_read           ; 
+        wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]          pipe_tag            ;
+        wire   [`PE_CNTL_OOB_OPTION_RANGE       ]          pipe_tag_optionPtr  ; 
+        wire   [`PE_NUM_LANES_RANGE             ]          pipe_tag_num_lanes  ;  // number of active lanes associated with this tag
 
         // Control
-        wire                                              clear            ; 
-        wire                                              almost_full      ; 
-        wire                                              write            ; 
+        wire                                               clear               ; 
+        wire                                               almost_full         ; 
+        wire                                               write               ; 
 
         // FIXME: Combine FIFO's for synthesis
         generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH (`SIMD_WRAP_TAG_FROM_CNTL_FIFO_DEPTH                 ), 
@@ -390,7 +392,8 @@ module simd_wrapper (
         assign clear                      =   1'b0                           ;  // just in case
 
         //
-        assign pipe_read = from_stOp_reg_fifo_reads [gvi]  ;
+        //assign pipe_read = from_stOp_reg_fifo_reads [gvi]  ;
+        assign pipe_read = return_data_to_upstream ;
       end
   endgenerate
 
@@ -400,7 +403,7 @@ module simd_wrapper (
       begin
         always @(*)
           begin
-            lane_valid [lane]  =  ((lane+1) <= from_Cntl_Tag_Fifo[0].pipe_tag_num_lanes) ;
+            pipe_tag_lane_valid [lane]  =  ((lane+1) <= from_Cntl_Tag_Fifo[0].pipe_tag_num_lanes) ;
           end
       end
   endgenerate
@@ -438,7 +441,8 @@ module simd_wrapper (
   //
   //       FIXME: I am adding what might be redundant states as I suspect coordinating stOp's and SIMD might take a few states
   
-  assign tag_and_data_ready =  from_Cntl_Tag_Fifo[0].pipe_valid & (&(from_stOp_reg_fifo_valids | ~simd__scntl__rs1) ) ; //|(~simd__scntl__rs1))) ;
+  //assign tag_and_data_ready =  from_Cntl_Tag_Fifo[0].pipe_valid & (&(from_stOp_reg_fifo_valids | ~simd__scntl__rs1) ) ; //|(~simd__scntl__rs1))) ;
+  assign tag_and_data_ready =  from_Cntl_Tag_Fifo[0].pipe_valid & (&(from_stOp_reg_fifo_valids | ~pipe_tag_lane_valid ) ) ; // only start once all stOp lanes active in the operation have returned data
  
   always @(*)
     begin
@@ -501,8 +505,9 @@ module simd_wrapper (
 
 
   // read the FIFO and assert the valid to the stack upstream interface
-  wire   returned_data               = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SENT_DATA);
-  assign from_stOp_reg_fifo_reads = {`PE_NUM_OF_EXEC_LANES { returned_data }} & from_stOp_reg_fifo_valids ;  // only read the lanes that were active
+  assign   return_data_to_upstream               = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SENT_DATA);
+  //assign from_stOp_reg_fifo_reads = {`PE_NUM_OF_EXEC_LANES { return_data_to_upstream }} & from_stOp_reg_fifo_valids ;  // only read the lanes that were active
+  assign from_stOp_reg_fifo_reads = {`PE_NUM_OF_EXEC_LANES { return_data_to_upstream }} & pipe_tag_lane_valid ;  // only read the lanes that were active
 
 
   assign  simd__sui__tag_e1             =  from_Cntl_Tag_Fifo[0].pipe_tag ;
@@ -521,7 +526,7 @@ module simd_wrapper (
 */
   assign  smdw__simd__regs_cntl         =  from_stOp_reg_fifo_pipe_cntl   ;
   assign  smdw__simd__regs              =  from_stOp_reg_fifo_pipe_data   ;
-  assign  smdw__simd__regs_valid        =  lane_valid                     ;
+  assign  smdw__simd__regs_valid        =  pipe_tag_lane_valid            ;
   //assign  smdw__simd__regs_valid        =  from_stOp_reg_fifo_valids & {`PE_NUM_OF_EXEC_LANES { (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_CHECK_SIMD_ENABLE) & simd_enable }} & simd__scntl__rs1 ; // pulse valid to simd
 
 
