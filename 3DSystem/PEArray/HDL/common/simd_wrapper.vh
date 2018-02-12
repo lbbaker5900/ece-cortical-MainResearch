@@ -47,6 +47,7 @@
 `define SIMD_WRAP_OPERATION_SUM_SAVE_COMMON         3  // sum all and save to common 
 `define SIMD_WRAP_OPERATION_EXP                     4
 `define SIMD_WRAP_OPERATION_DIV                     5  // divide each with common reg
+`define SIMD_WRAP_OPERATION_RECIP                   6  // reciprocal of common back to common
 `define SIMD_WRAP_OPERATION_SEND                    8  // send output regs to upstream
 `define SIMD_WRAP_OPERATION_SEND_NULL               9  // send null response with tag
 `define SIMD_WRAP_OPERATION_CLR_LOCAL_REGS         10  // clear output regs

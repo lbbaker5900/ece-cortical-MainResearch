@@ -1975,6 +1975,7 @@ if __name__ == "__main__":
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group MCNTL -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/mwc__mcntl__ready}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group RDP -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/rdp__mwc__valid}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group RDP -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/rdp__mwc__cntl}}'.format(mgr)
+    pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group RDP -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/rdp__mwc__type}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group RDP -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/rdp__mwc__ptype}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group RDP -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/rdp__mwc__pvalid}}'.format(mgr)
     pLine = pLine + '\nadd wave -noupdate -group MGR{0} -group MWC -group RDP -radix hexadecimal  {{/top/system_inst/manager_array_inst/mgr_inst[{0}]/manager/mwc_cntl/rdp__mwc__data}}'.format(mgr)

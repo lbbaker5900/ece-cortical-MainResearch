@@ -404,9 +404,10 @@
 `define MGR_INST_OPTION_TYPE_MEMORY                 7
 `define MGR_INST_OPTION_TYPE_NUM_OF_ARG0_OPERANDS   8
 `define MGR_INST_OPTION_TYPE_NUM_OF_ARG1_OPERANDS   9
-`define MGR_INST_OPTION_TYPE_CFG_SYNC              10
-`define MGR_INST_OPTION_TYPE_CFG_DATA              11
-`define MGR_INST_OPTION_TYPE_STATUS                12
+`define MGR_INST_OPTION_TYPE_NUM_OF_RETURN_PKTS    10
+`define MGR_INST_OPTION_TYPE_CFG_SYNC              11
+`define MGR_INST_OPTION_TYPE_CFG_DATA              12
+`define MGR_INST_OPTION_TYPE_STATUS                13
 
 //-------------------------------------------------------------
 // - FIXME : Must match python_typedef.vh python_simd_type
