@@ -251,6 +251,7 @@ OptionType = namedtuple('OptionType',   \
                                       MEMORY         \
                                       NUM_OF_ARG0_OPERANDS \
                                       NUM_OF_ARG1_OPERANDS \
+                                      NUM_OF_RETURN_PKTS   \
                                       CFG_SYNC       \
                                       CFG_DATA       \
                                       STATUS')
