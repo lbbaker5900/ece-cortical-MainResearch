@@ -695,7 +695,8 @@ Other than the \ac{relu}, the \acp{sfu} are not considered hot-spots in the proc
           3     & Sum/Save in common register    & accumulate with common register and save            \\\cline{1-3}
           4     & Exponent                       & performed on each valid \ac{stop} result            \\\cline{1-3}
           5     & Divide with common register    & denominator is the common register                  \\\cline{1-3}
-          6-7   & \multicolumn{2}{c|}{NA}                                                              \\\cline{1-3}
+          6     & Recipricate common register    & save to same common register [idx]                  \\\cline{1-3}
+          7     & \multicolumn{2}{c|}{NA}                                                              \\\cline{1-3}
           8     & Send                           & Local registers sent to upstream                    \\\cline{1-3}
           8     & Send null                      & Send a null packet upstream                         \\\cline{1-3}
           9     & Clear local register           &  \multirow{4}{*}{no data operations}                \\\cline{1-2}
