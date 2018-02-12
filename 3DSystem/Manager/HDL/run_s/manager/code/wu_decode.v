@@ -900,6 +900,8 @@ module wu_decode (
             // pointer to stOp operation control memory
             stOp_cmd                 <=  ( reset_poweron                                                                                                     ) ?  'd0                                            :
                                          ( (decNum != 0) && (pipe_option_extd_valid      [decNum]                                              )) ? stOp_cmd                                        :  // option type not valid if option[0] is an extended tuple
+                                         ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INITIATED_INSTR                                                   ) ? stOp_cmd               :  
+                                         ( wu_dec_instr_dec_state == `WU_DEC_INSTR_DECODE_INSTR_COMPLETE                                                    ) ? stOp_cmd               :  
                                          ( from_WuMemory_Fifo[0].pipe_valid  && (from_WuMemory_Fifo[0].pipe_option_type[decNum] == PY_WU_INST_OPT_TYPE_STOP )) ? from_WuMemory_Fifo[0].pipe_option_value[decNum] :
                                                                                                                                                                  stOp_cmd                                        ;
         

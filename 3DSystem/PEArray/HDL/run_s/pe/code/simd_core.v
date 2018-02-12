@@ -64,6 +64,8 @@ module simd_core (
                     output reg   [`PE_NUM_OF_EXEC_LANES_RANGE        ]    simd__smdw__regs_valid                           ,
                     output reg   [`PE_EXEC_LANE_WIDTH_RANGE          ]    simd__smdw__regs        [`PE_NUM_OF_EXEC_LANES ] ,
                   
+                    output reg   [`PE_EXEC_LANE_WIDTH_RANGE          ]    simd__smdw__common_regs_valid [`PE_NUM_OF_EXEC_LANES ] ,
+                    output reg   [`PE_EXEC_LANE_WIDTH_RANGE          ]    simd__smdw__common_regs       [`PE_NUM_OF_EXEC_LANES ] ,
                     //----------------------------------------------------------------------------------------------------
                     // interface to LD/ST unit                                         
                     output reg                                            ldst__memc__request          ,
@@ -1571,7 +1573,20 @@ module simd_core (
                     .clk       ( clk                    )
                  );
 
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Output to streaming Ops
 
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES ; lane=lane+1) 
+      begin: reg_to_simd_out 
+        always @(posedge clk)
+          begin
+            simd__smdw__common_regs_valid [lane] = common_regs_valid [lane]  ;
+            simd__smdw__common_regs       [lane] = common_regs [lane]        ;
+          end
+      end
+  endgenerate
 
 endmodule
 

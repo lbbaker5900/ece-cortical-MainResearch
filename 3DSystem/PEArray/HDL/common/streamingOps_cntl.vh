@@ -222,6 +222,7 @@
 `define STREAMING_OP_CNTL_OPERATION_FP_MAX_N                 5
 `define STREAMING_OP_CNTL_OPERATION_FP_MAX_N_THR             6
 `define STREAMING_OP_CNTL_OPERATION_FP_MAX_ALL_THR           7
+`define STREAMING_OP_CNTL_OPERATION_FP_MULT                  8
 //`define STREAMING_OP_CNTL_OPERATION_NOP_MEM_TO_MEM          16
 //`define STREAMING_OP_CNTL_OPERATION_NOP_MEM_TO_NOC          17
 `define STREAMING_OP_CNTL_OPERATION_NOP                     31
@@ -247,12 +248,15 @@
 `define STREAMING_OP_CNTL_OPERATION_FROM_EXT                 2  // FIXME : use STD not EXT
 `define STREAMING_OP_CNTL_OPERATION_FROM_STD                 2
 `define STREAMING_OP_CNTL_OPERATION_FROM_NOC                 3
+`define STREAMING_OP_CNTL_OPERATION_FROM_REG                 4  // SIMD
+`define STREAMING_OP_CNTL_OPERATION_FROM_SIMD                4  // SIMD
 
 `define STREAMING_OP_CNTL_OPERATION_TO_NONE                  0
 `define STREAMING_OP_CNTL_OPERATION_TO_MEMORY                1
 `define STREAMING_OP_CNTL_OPERATION_TO_STD                   2
 `define STREAMING_OP_CNTL_OPERATION_TO_NOC                   3
-`define STREAMING_OP_CNTL_OPERATION_TO_REG                   4    
+`define STREAMING_OP_CNTL_OPERATION_TO_REG                   4  // SIMD
+`define STREAMING_OP_CNTL_OPERATION_TO_SIMD                  4  // SIMD
 
 // FIXME : get rid of number of streams. Use src and dest to determine number
 // FIXME: make sure we track order of struct in TB_streamingOps_cntl.vh
