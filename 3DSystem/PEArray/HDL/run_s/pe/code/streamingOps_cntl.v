@@ -92,6 +92,18 @@ module streamingOps_cntl (
                           // Result interface to simd regFile
                           `include "streamingOps_cntl_to_simd_regfile_ports.vh"
 
+                          //--------------------------------------------------
+                          // SIMD to stOp  (via scntl(
+                          reg__sdp__valid  ,
+                          reg__sdp__cntl   ,
+                          reg__sdp__data   ,
+                          sdp__reg__ready  ,
+
+                          reg__scntl__valid  ,
+                          reg__scntl__cntl   ,
+                          reg__scntl__data   ,
+                          scntl__reg__ready  ,
+
                           //--------------------------------------------------------
                           // Result interface from stOp 
                           `include "streamingOps_cntl_stOp_to_cntl_regfile_ports.vh"
@@ -155,6 +167,19 @@ module streamingOps_cntl (
   //
   `include "pe_simd_port_declarations.vh"
 
+  //--------------------------------------------------
+  // SIMD to stOp  (via scntl(
+  output    [`PE_NUM_OF_EXEC_LANES_RANGE      ]      reg__sdp__valid                          ;
+  output    [`COMMON_STD_INTF_CNTL_RANGE      ]      reg__sdp__cntl  [`PE_NUM_OF_EXEC_LANES ] ;
+  output    [`PE_EXEC_LANE_WIDTH_RANGE        ]      reg__sdp__data  [`PE_NUM_OF_EXEC_LANES ] ;
+  input     [`PE_NUM_OF_EXEC_LANES_RANGE      ]      sdp__reg__ready                          ;
+
+  //--------------------------------------------------
+  // SIMD to stOp (via scntl( 
+  input     [`PE_NUM_OF_EXEC_LANES_RANGE      ]      reg__scntl__valid                          ;
+  input     [`COMMON_STD_INTF_CNTL_RANGE      ]      reg__scntl__cntl  [`PE_NUM_OF_EXEC_LANES ] ;
+  input     [`PE_EXEC_LANE_WIDTH_RANGE        ]      reg__scntl__data  [`PE_NUM_OF_EXEC_LANES ] ;
+  output    [`PE_NUM_OF_EXEC_LANES_RANGE      ]      scntl__reg__ready                          ;
 
   //-------------------------------------------------------------------------------------------------
   // Result to simd regFile
@@ -172,6 +197,20 @@ module streamingOps_cntl (
 
   `include "streamingOps_cntl_simd_wires.vh"
   `include "streamingOps_cntl_simd_assignments.vh"  // convert from multidimensional array
+  //--------------------------------------------------
+  // SIMD to stOp  (via scntl(
+  reg    [`PE_NUM_OF_EXEC_LANES_RANGE      ]      reg__sdp__valid                          ;
+  reg    [`COMMON_STD_INTF_CNTL_RANGE      ]      reg__sdp__cntl  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg    [`PE_EXEC_LANE_WIDTH_RANGE        ]      reg__sdp__data  [`PE_NUM_OF_EXEC_LANES ] ;
+  wire   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      sdp__reg__ready                          ;
+
+  //--------------------------------------------------
+  // SIMD to stOp (via scntl( 
+  wire   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      reg__scntl__valid                          ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE      ]      reg__scntl__cntl  [`PE_NUM_OF_EXEC_LANES ] ;
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      reg__scntl__data  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg    [`PE_NUM_OF_EXEC_LANES_RANGE      ]      scntl__reg__ready                          ;
+
 
   reg      pe__sys__thisSynchronized    ;  // this PE's streams are complete
   wire     pe__sys__thisSynchronized_e1 ; 
@@ -640,6 +679,13 @@ module streamingOps_cntl (
 
   //--------------------------------------------------------------------------------------------
 
+  always @(posedge clk)
+    begin
+      reg__sdp__valid     <=     reg__scntl__valid  ;
+      reg__sdp__cntl      <=     reg__scntl__cntl   ;
+      reg__sdp__data      <=     reg__scntl__data   ;
+      scntl__reg__ready   <=     sdp__reg__ready    ;
+    end
    
 
   //-------------------------------------------------------------------------------------------------

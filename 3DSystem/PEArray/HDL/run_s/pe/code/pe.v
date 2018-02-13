@@ -369,6 +369,20 @@ module pe (
   wire  [`MEM_ACC_CONT_MEMORY_ADDRESS_RANGE ]  ldst__memc__read_address    ;
   wire  [`MEM_ACC_CONT_MEMORY_DATA_RANGE    ]  memc__ldst__read_data       ; 
 
+  //--------------------------------------------------
+  // SIMD to stOp (via scntl) 
+  wire   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      reg__scntl__valid                          ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE      ]      reg__scntl__cntl  [`PE_NUM_OF_EXEC_LANES ] ;
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      reg__scntl__data  [`PE_NUM_OF_EXEC_LANES ] ;
+  wire   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      scntl__reg__ready                          ;
+
+  //--------------------------------------------------
+  // SIMD to stOp  (via scntl)
+  wire   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      reg__sdp__valid                          ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE      ]      reg__sdp__cntl  [`PE_NUM_OF_EXEC_LANES ] ;
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE        ]      reg__sdp__data  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg    [`PE_NUM_OF_EXEC_LANES_RANGE      ]      sdp__reg__ready                          ;
+
   simd_wrapper simd_wrapper (
 
             //-------------------------------
@@ -394,6 +408,13 @@ module pe (
             .scntl__reg__data          ( scntl__reg__data          ),
             .reg__scntl__ready         ( reg__scntl__ready         ),
             //`include "simd_wrapper_scntl_to_simd_regfile_instance_ports.vh"
+
+            //-------------------------------
+            // Register input to stOp
+            .reg__scntl__valid         ( reg__scntl__valid         ),
+            .reg__scntl__cntl          ( reg__scntl__cntl          ),
+            .reg__scntl__data          ( reg__scntl__data          ),
+            .scntl__reg__ready         ( scntl__reg__ready         ),
 
             //--------------------------------------------------
             // Additional control to stack upstream 
@@ -449,7 +470,8 @@ module pe (
                           
                           //------------------------------------------------------------
                           // General system signals
-                          .sys__pe__allSynchronized  (sys__pe__allSynchronized ),  // all PE streams are complete
+                          //.sys__pe__allSynchronized  (sys__pe__allSynchronized ),  // all PE streams are complete
+                          .sys__pe__allSynchronized  (1'b1 ),  // all PE streams are complete  // FIXME
                           .pe__sys__thisSynchronized (pe__sys__thisSynchronized),  // this PE's streams are complete
                           
                           //------------------------------------------------------------
@@ -478,6 +500,20 @@ module pe (
                           //------------------------------------------------------------
                            // Result to simd regFile 
                           `include "streamingOps_cntl_to_simd_regfile_instance_ports.vh"
+
+                          //-------------------------------
+                          // Register input to stOp from SIMD
+                          .reg__scntl__valid         ( reg__scntl__valid         ),
+                          .reg__scntl__cntl          ( reg__scntl__cntl          ),
+                          .reg__scntl__data          ( reg__scntl__data          ),
+                          .scntl__reg__ready         ( scntl__reg__ready         ),
+
+                          //-------------------------------
+                          // Register input to stOp to stOp 
+                          .reg__sdp__valid           ( reg__sdp__valid           ),
+                          .reg__sdp__cntl            ( reg__sdp__cntl            ),
+                          .reg__sdp__data            ( reg__sdp__data            ),
+                          .sdp__reg__ready           ( sdp__reg__ready           ),
 
                           //------------------------------------------------------------
                            // Result from stOp to simd regFile
@@ -556,6 +592,14 @@ module pe (
         wire                                         stOp__reg__valid         ;
         wire   [`STREAMING_OP_RESULT_RANGE        ]  stOp__reg__data          ;
         wire   [`COMMON_STD_INTF_CNTL_RANGE       ]  stOp__reg__cntl          ; 
+
+        //-------------------------------------------------------------------------------------------------
+        // SIMD
+        
+        wire                                         stOp__simd__strm0_ready       ;
+        reg   [`DMA_CONT_STRM_CNTL_RANGE     ]       simd__stOp__strm0_cntl        ; 
+        reg   [`STREAMING_OP_DATA_RANGE      ]       simd__stOp__strm0_data        ; 
+        reg                                          simd__stOp__strm0_valid       ; 
 
         wire  [`STREAMING_OP_CNTL_OPERATION_RANGE ]  scntl__dma__operation     ;
 
@@ -689,6 +733,13 @@ module pe (
                                  .stOp__reg__data                ( stOp__reg__data                ),
                                  .stOp__reg__cntl                ( stOp__reg__cntl                ),
 
+                                  // SIMD interface
+                                  // 
+                                 .stOp__simd__strm0_ready        ( stOp__simd__strm0_ready        ),
+                                 .simd__stOp__strm0_cntl         ( simd__stOp__strm0_cntl         ), 
+                                 .simd__stOp__strm0_data         ( simd__stOp__strm0_data         ), 
+                                 .simd__stOp__strm0_valid        ( simd__stOp__strm0_valid        ), 
+
                                                                                                        
                                  //--------------------------------------------------------------------------------
                                  // External interface - Stack bus
@@ -705,7 +756,20 @@ module pe (
                                  .sti__stOp__strm1_data_mask     ( sti__stOp__strm1_data_mask     ),
                                  .stOp__sti__strm1_ready         ( stOp__sti__strm1_ready         )
         );
-            
+
+      end
+  endgenerate
+
+  generate
+    for (gvi=0; gvi<`PE_NUM_OF_EXEC_LANES ; gvi=gvi+1) 
+      begin: stOp_from_simd
+        always @(*)
+          begin
+            stOp_lane[gvi].simd__stOp__strm0_valid     =  reg__sdp__valid  [gvi]                  ;
+            stOp_lane[gvi].simd__stOp__strm0_cntl      =  reg__sdp__cntl   [gvi]                  ;
+            stOp_lane[gvi].simd__stOp__strm0_data      =  reg__sdp__data   [gvi]                  ;
+            sdp__reg__ready [gvi]                      =  stOp_lane[gvi].stOp__simd__strm0_ready ;
+          end
       end
   endgenerate
 

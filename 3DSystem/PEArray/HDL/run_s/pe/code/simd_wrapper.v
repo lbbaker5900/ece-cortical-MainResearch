@@ -94,15 +94,22 @@ module simd_wrapper (
                           //`include "simd_wrapper_scntl_to_simd_regfile_ports.vh"
 
                           //--------------------------------------------------
+                          // SIMD to stOp 
+                          output reg   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      reg__scntl__valid                          ,
+                          output reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      reg__scntl__cntl  [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg   [`PE_EXEC_LANE_WIDTH_RANGE        ]      reg__scntl__data  [`PE_NUM_OF_EXEC_LANES ] ,
+                          input  wire  [`PE_NUM_OF_EXEC_LANES_RANGE      ]      scntl__reg__ready                          ,
+
+                          //--------------------------------------------------
                           // Register(s) to stack upstream
-                          output reg   [`STACK_DOWN_OOB_INTF_TAG_RANGE    ]      simd__sui__tag                                 ,
-                          output reg   [`PE_NUM_LANES_RANGE               ]      simd__sui__tag_num_lanes                       ,  // number of active lanes associated with this tag
-                          output reg   [`PE_NUM_OF_EXEC_LANES_RANGE       ]      simd__sui__regs_valid                          ,
-                          output reg   [`COMMON_STD_INTF_CNTL_RANGE       ]      simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ,
-                          output reg   [`PE_EXEC_LANE_WIDTH_RANGE         ]      simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ,
-                          output reg                                             simd__sui__send                                ,
-                          input  reg                                             sui__simd__regs_complete                       ,
-                          input  reg                                             sui__simd__regs_ready                          ,
+                          output reg   [`STACK_DOWN_OOB_INTF_TAG_RANGE   ]      simd__sui__tag                                 ,
+                          output reg   [`PE_NUM_LANES_RANGE              ]      simd__sui__tag_num_lanes                       ,  // number of active lanes associated with this tag
+                          output reg   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      simd__sui__regs_valid                          ,
+                          output reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      simd__sui__regs_cntl  [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg   [`PE_EXEC_LANE_WIDTH_RANGE        ]      simd__sui__regs       [`PE_NUM_OF_EXEC_LANES ] ,
+                          output reg                                            simd__sui__send                                ,
+                          input  reg                                            sui__simd__regs_complete                       ,
+                          input  reg                                            sui__simd__regs_ready                          ,
                                                                                  
                                                                                  
                           //-------------------------------                      
@@ -162,6 +169,11 @@ module simd_wrapper (
   reg   [`COMMON_STD_INTF_CNTL_RANGE   ]  scntl__reg__cntl_d1  [`PE_NUM_OF_EXEC_LANES ]   ;
   reg   [`PE_EXEC_LANE_WIDTH_RANGE     ]  scntl__reg__data_d1  [`PE_NUM_OF_EXEC_LANES ]   ;
 
+  reg   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      reg__scntl__valid_e1                          ;
+  reg   [`COMMON_STD_INTF_CNTL_RANGE      ]      reg__scntl__cntl_e1  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE        ]      reg__scntl__data_e1  [`PE_NUM_OF_EXEC_LANES ] ;
+  reg   [`PE_NUM_OF_EXEC_LANES_RANGE      ]      scntl__reg__ready_d1                          ;
+
 
   wire  [`PE_NUM_OF_EXEC_LANES_RANGE   ]  smdw__simd__regs_valid                          ;
   wire  [`PE_EXEC_LANE_WIDTH_RANGE     ]  smdw__simd__regs      [`PE_NUM_OF_EXEC_LANES ]  ;
@@ -182,6 +194,20 @@ module simd_wrapper (
 
   //----------------------------------------------------------------------------------------------------
   // Assignments
+  //
+  genvar lane;
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES ; lane=lane+1) 
+      begin: reg_to_simd_out 
+        always @(posedge clk)
+          begin
+            reg__scntl__valid    [lane]  <= ( reset_poweron ) ? 'd0 : reg__scntl__valid_e1 [lane]  ;
+            reg__scntl__cntl     [lane]  <= ( reset_poweron ) ? 'd0 : reg__scntl__cntl_e1  [lane]  ;
+            reg__scntl__data     [lane]  <= ( reset_poweron ) ? 'd0 : reg__scntl__data_e1  [lane]  ;
+            scntl__reg__ready_d1 [lane]  <= ( reset_poweron ) ? 'd0 : scntl__reg__ready    [lane]  ;
+          end
+      end
+  endgenerate
 
   genvar gvi;
   generate
@@ -397,7 +423,6 @@ module simd_wrapper (
       end
   endgenerate
 
-  genvar lane ;
   generate
     for (lane=0; lane<`PE_NUM_OF_EXEC_LANES ; lane++)
       begin
@@ -534,46 +559,51 @@ module simd_wrapper (
   // SIMD core
   // 
   //
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE          ]    simd__smdw__common_regs_valid [`PE_NUM_OF_EXEC_LANES ] ;
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE          ]    simd__smdw__common_regs       [`PE_NUM_OF_EXEC_LANES ] ;
   
   simd_core simd_core (
 
-            .cntl__simd__cfg_valid           ( smdw__simd__cfg_valid        ),  // load PC
-            .cntl__simd__cfg_operation       ( simd_operation               ),  // operation PC for simd
-            .cntl__simd__cfg_wrap_op_idx     ( simd_wrapper_op_idx          ),
-            .cntl__simd__cfg_wrap_op_inc     ( simd_wrapper_op_inc          ),
-            .cntl__simd__cfg_wrap_op         ( simd_wrapper_op              ),  // operations before SIMD
-
-            //.smdw__simd__regs_valid          ( smdw__simd__regs_valid       ),  // start SIMD
-            //.smdw__simd__regs_cntl           ( smdw__simd__regs_cntl        ),        
-            //.smdw__simd__regs                ( smdw__simd__regs             ),        
-                                            
-            .smdw__simd__regs_cntl           ( smdw__simd__regs_cntl        ),  // start SIMD
-            .smdw__simd__regs_valid          ( smdw__simd__regs_valid       ),        
-            .smdw__simd__regs                ( smdw__simd__regs             ),        
-                                            
-            .simd__smdw__processing          ( simd__smdw__processing       ),  // SIMD complete
-            .simd__smdw__complete            ( simd__smdw__complete         ),  // SIMD complete
-            .simd__smdw__sending             ( simd__smdw__sending          ),  
-            .simd__smdw__regs_cntl           ( simd__sui__regs_cntl_e1      ),        
-            .simd__smdw__regs_valid          ( simd__sui__regs_valid_e1     ),        
-            .simd__smdw__regs                ( simd__sui__regs_e1           ),        
-                                            
-             //---------------------------------
-             // LD/ST Interface             
-            .ldst__memc__request             ( ldst__memc__request          ),
-            .memc__ldst__granted             ( memc__ldst__granted          ),
-            .ldst__memc__released            ( ldst__memc__released         ),
-             // Access                      
-            .ldst__memc__write_valid         ( ldst__memc__write_valid      ),
-            .ldst__memc__write_address       ( ldst__memc__write_address    ),
-            .ldst__memc__write_data          ( ldst__memc__write_data       ),
-            .memc__ldst__write_ready         ( memc__ldst__write_ready      ),  // output flow control to ldst
-            .ldst__memc__read_valid          ( ldst__memc__read_valid       ),
-            .ldst__memc__read_address        ( ldst__memc__read_address     ),
-            .memc__ldst__read_data           ( memc__ldst__read_data        ),
-            .memc__ldst__read_data_valid     ( memc__ldst__read_data_valid  ),
-            .memc__ldst__read_ready          ( memc__ldst__read_ready       ),  // output flow control to ldst
-            .ldst__memc__read_pause          ( ldst__memc__read_pause       ),  // pipeline flow control from ldst, dont send any more requests
+            .cntl__simd__cfg_valid           ( smdw__simd__cfg_valid          ),  // load PC
+            .cntl__simd__cfg_operation       ( simd_operation                 ),  // operation PC for simd
+            .cntl__simd__cfg_wrap_op_idx     ( simd_wrapper_op_idx            ),
+            .cntl__simd__cfg_wrap_op_inc     ( simd_wrapper_op_inc            ),
+            .cntl__simd__cfg_wrap_op         ( simd_wrapper_op                ),  // operations before SIMD
+                                                                              
+            //.smdw__simd__regs_valid        ( smdw__simd__regs_valid         ),  // start SIMD
+            //.smdw__simd__regs_cntl         ( smdw__simd__regs_cntl          ),        
+            //.smdw__simd__regs              ( smdw__simd__regs               ),        
+                                                                              
+            .smdw__simd__regs_cntl           ( smdw__simd__regs_cntl          ),  // start SIMD
+            .smdw__simd__regs_valid          ( smdw__simd__regs_valid         ),        
+            .smdw__simd__regs                ( smdw__simd__regs               ),        
+                                                                              
+            .simd__smdw__processing          ( simd__smdw__processing         ),  // SIMD complete
+            .simd__smdw__complete            ( simd__smdw__complete           ),  // SIMD complete
+            .simd__smdw__sending             ( simd__smdw__sending            ),  
+            .simd__smdw__regs_cntl           ( simd__sui__regs_cntl_e1        ),        
+            .simd__smdw__regs_valid          ( simd__sui__regs_valid_e1       ),        
+            .simd__smdw__regs                ( simd__sui__regs_e1             ),        
+                                                                             
+            .simd__smdw__common_regs_valid   ( simd__smdw__common_regs_valid  ),        
+            .simd__smdw__common_regs         ( simd__smdw__common_regs        ),        
+                                                                              
+             //---------------------------                                    
+             // LD/ST Interface                                              
+            .ldst__memc__request             ( ldst__memc__request            ),
+            .memc__ldst__granted             ( memc__ldst__granted            ),
+            .ldst__memc__released            ( ldst__memc__released           ),
+             // Access                                                        
+            .ldst__memc__write_valid         ( ldst__memc__write_valid        ),
+            .ldst__memc__write_address       ( ldst__memc__write_address      ),
+            .ldst__memc__write_data          ( ldst__memc__write_data         ),
+            .memc__ldst__write_ready         ( memc__ldst__write_ready        ),  // output flow control to ldst
+            .ldst__memc__read_valid          ( ldst__memc__read_valid         ),
+            .ldst__memc__read_address        ( ldst__memc__read_address       ),
+            .memc__ldst__read_data           ( memc__ldst__read_data          ),
+            .memc__ldst__read_data_valid     ( memc__ldst__read_data_valid    ),
+            .memc__ldst__read_ready          ( memc__ldst__read_ready         ),  // output flow control to ldst
+            .ldst__memc__read_pause          ( ldst__memc__read_pause         ),  // pipeline flow control from ldst, dont send any more requests
 
             //-------------------------------
             // General
@@ -644,5 +674,20 @@ module simd_wrapper (
       end          
   endgenerate
   
+
+  //----------------------------------------------------------------------------------------------------
+  // Output to streaming Op
+  //
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES ; lane=lane+1) 
+      begin: reg_to_simd_out_e1 
+        always @(posedge clk)
+          begin
+            reg__scntl__cntl_e1     [lane]  <=  `COMMON_STD_INTF_CNTL_SOM_EOM         ;
+            reg__scntl__valid_e1    [lane]  <=  simd__smdw__common_regs_valid [lane]  ;
+            reg__scntl__data_e1     [lane]  <=  simd__smdw__common_regs       [lane]  ;
+          end
+      end
+  endgenerate
 endmodule
 

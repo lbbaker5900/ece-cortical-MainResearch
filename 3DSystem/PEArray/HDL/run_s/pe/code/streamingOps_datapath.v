@@ -52,6 +52,13 @@ module streamingOps_datapath (
             stOp__reg__data              , 
             stOp__reg__cntl              , 
 
+            // SIMD interface
+            // - strm0 only
+            stOp__simd__strm0_ready       ,
+            simd__stOp__strm0_cntl        , 
+            simd__stOp__strm0_data        , 
+            simd__stOp__strm0_valid       , 
+
             //---------------------------------------------------------------
             // Memory Interface
 
@@ -161,10 +168,16 @@ module streamingOps_datapath (
    
   //-------------------------------------------------------------------------------------------------
   // Result interface
-  input                                        reg__stOp__ready             ;
-  output                                       stOp__reg__valid             ;
-  output [`STREAMING_OP_RESULT_RANGE   ]       stOp__reg__data              ; 
-  output [`COMMON_STD_INTF_CNTL_RANGE  ]       stOp__reg__cntl              ; 
+  input                                        reg__stOp__ready              ;
+  output                                       stOp__reg__valid              ;
+  output [`STREAMING_OP_RESULT_RANGE   ]       stOp__reg__data               ; 
+  output [`COMMON_STD_INTF_CNTL_RANGE  ]       stOp__reg__cntl               ; 
+
+  // SIMD interface
+  output                                        stOp__simd__strm0_ready      ;
+  input  [`COMMON_STD_INTF_CNTL_RANGE   ]       simd__stOp__strm0_cntl       ;  
+  input  [`STREAMING_OP_DATA_RANGE      ]       simd__stOp__strm0_data       ;  
+  input                                         simd__stOp__strm0_valid      ;
 
 
   //-------------------------------------------------------------------------------------------------
@@ -268,6 +281,14 @@ module streamingOps_datapath (
 
 
   //-------------------------------------------------------------------------------------------------
+  // SIMD
+
+  wire                                         stOp__simd__strm0_ready       ;
+  wire  [`DMA_CONT_STRM_CNTL_RANGE     ]       simd__stOp__strm0_cntl        ; 
+  wire  [`STREAMING_OP_DATA_RANGE      ]       simd__stOp__strm0_data        ; 
+  wire                                         simd__stOp__strm0_valid       ; 
+
+  //-------------------------------------------------------------------------------------------------
   // DMA Engine
 
   wire                                         stOp__dma__strm0_ready       ;
@@ -320,6 +341,13 @@ module streamingOps_datapath (
                            .stOp__reg__valid             ( stOp__reg__valid            ),
                            .stOp__reg__data              ( stOp__reg__data             ),
                            .stOp__reg__cntl              ( stOp__reg__cntl             ),
+
+                            // SIMD interface
+                            // 
+                           .stOp__simd__strm0_ready       ( stOp__simd__strm0_ready      ),
+                           .simd__stOp__strm0_cntl        ( simd__stOp__strm0_cntl       ), 
+                           .simd__stOp__strm0_data        ( simd__stOp__strm0_data       ), 
+                           .simd__stOp__strm0_valid       ( simd__stOp__strm0_valid      ), 
 
                             // DMA interface
                             //  - port 0

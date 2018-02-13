@@ -236,92 +236,6 @@ module pe_cntl (
     end
 `endif
 
-
-  //----------------------------------------------------------------------------------------------------
-  // StreamingOp configuration memory
-  //
-  //  - stOp fields are accessed by a pointer provided in the OOB {option,value} tuple
-  //
-  
-  genvar gvi;
-  generate
-    for (gvi=0; gvi<1 ; gvi=gvi+1) 
-      begin: stOp_option_memory
-  
-        wire enable_memory ;
-
-        generic_1port_memory #(.GENERIC_MEM_DEPTH          (`PE_CNTL_STOP_OPTION_MEMORY_DEPTH           ),
-                               .GENERIC_MEM_REGISTERED_OUT (0                                           ),
-                               .GENERIC_MEM_DATA_WIDTH     (`PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_WIDTH )
-                        ) gmemory ( 
-                        
-                        //---------------------------------------------------------------
-                        // Initialize
-                        //
-                        `ifndef SYNTHESIS
-                           .memFile (""),
-                        `endif
-
-                        //---------------------------------------------------------------
-                        // Port 
-                        .portA_address       ( stOp_optionPtr       ),
-                        .portA_write_data    ( {`PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_WIDTH {1'b0}} ),
-                        .portA_read_data     ( { stOp_operation       ,                                                     
-                                                 sourceAddress0       ,
-                                                 destinationAddress0  ,
-                                                 src_data_type0       ,
-                                                 dest_data_type0      ,
-                                                 sourceAddress1       ,
-                                                 destinationAddress1  ,
-                                                 src_data_type1       ,
-                                                 dest_data_type1      ,
-                                                 numberOfOperands     }),
-                        .portA_enable        ( enable_memory                    ),
-                        .portA_write         ( 1'b0                             ),
-                        
-                        //---------------------------------------------------------------
-                        // General
-                        .reset_poweron       ( reset_poweron             ),
-                        .clk                 ( clk                       )
-                        ) ;
-  // Note: parameters must be fixed, so have to load directly
-  //defparam gmemory.GENERIC_MEM_INIT_FILE   =    $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId);
-        `ifndef SYNTHESIS
-
-          always
-            begin
-              @(posedge enable_memory)
-                //$readmemh($sformatf("./inputFiles/pe%0d_pe_cntl_stOp_memory.dat", sys__pe__peId), gmemory.mem);
-                ->gmemory.loadMemory;
-            end
-
-        `endif
-      end
-  endgenerate
-/*
-  pe_cntl_stOp_rom pe_cntl_stOp_rom (  
-                                     .valid                 ( oob_packet_starting  ),  // used by readmem. If we are receiving a WU, update control memory
-                                     .optionPtr             ( stOp_optionPtr       ),
-                                                                                  
-                                     .stOp_operation        ( stOp_operation       ),
-                                                                                  
-                                     .sourceAddress0        ( sourceAddress0       ),
-                                     .destinationAddress0   ( destinationAddress0  ),
-                                     .src_data_type0        ( src_data_type0       ),
-                                     .dest_data_type0       ( dest_data_type0      ),
-                                                                                  
-                                     .sourceAddress1        ( sourceAddress1       ),
-                                     .destinationAddress1   ( destinationAddress1  ),
-                                     .src_data_type1        ( src_data_type1       ),
-                                     .dest_data_type1       ( dest_data_type1      ),
-                                                                                  
-                                     .numberOfOperands      ( numberOfOperands     ),
-                                
-                                     .sys__pe__peId         ( sys__pe__peId        ),
-                                     .clk
-                                  );
-*/
-
   //----------------------------------------------------------------------------------------------------
   // Downstream OOB FIFO
   //
@@ -334,6 +248,7 @@ module pe_cntl (
   //
   // Put in a generate in case we decide to extend to multiple downstream lanes
 
+  genvar gvi;
   generate
     for (gvi=0; gvi<1; gvi=gvi+1) 
       begin: from_Sti_OOB_Fifo
@@ -396,6 +311,8 @@ module pe_cntl (
   // Downstream OOB Packet Processing FSM
   //
 
+  wire                                    local_stOp_cntl_fifo_ready      ;
+
   reg [`PE_CNTL_OOB_RX_CNTL_STATE_RANGE ] pe_cntl_oob_rx_cntl_state      ; // state flop
   reg [`PE_CNTL_OOB_RX_CNTL_STATE_RANGE ] pe_cntl_oob_rx_cntl_state_next ;
   
@@ -447,8 +364,9 @@ module pe_cntl (
         // Transition directly to wait complete so this will create a pulse and the option tuple has been latched
         // This state generates a pulse, so beware of adding conditions
         `PE_CNTL_OOB_RX_CNTL_START_CMD:
-          pe_cntl_oob_rx_cntl_state_next =   `PE_CNTL_OOB_RX_CNTL_OP_RUNNING ;  // 
-
+          pe_cntl_oob_rx_cntl_state_next =   `PE_CNTL_OOB_RX_CNTL_COMPLETE ;  // 
+          //pe_cntl_oob_rx_cntl_state_next =   `PE_CNTL_OOB_RX_CNTL_OP_RUNNING ;  // 
+/*
         // make sure the operations have started to allow for some time for simd and/or stOp to get started
         `PE_CNTL_OOB_RX_CNTL_OP_RUNNING:
           pe_cntl_oob_rx_cntl_state_next =   ( stOp_complete            ) ? `PE_CNTL_OOB_RX_CNTL_WAIT_COMPLETE_DEASSERTED  :  // 
@@ -457,10 +375,10 @@ module pe_cntl (
         `PE_CNTL_OOB_RX_CNTL_WAIT_COMPLETE_DEASSERTED:
           pe_cntl_oob_rx_cntl_state_next =   ( stOp_complete            ) ? `PE_CNTL_OOB_RX_CNTL_WAIT_COMPLETE_DEASSERTED         :  // 
                                                                             `PE_CNTL_OOB_RX_CNTL_COMPLETE    ;  // 
-
+*/
         `PE_CNTL_OOB_RX_CNTL_COMPLETE:
-          pe_cntl_oob_rx_cntl_state_next =   ( simd__cntl__tag_ready_d1 ) ? `PE_CNTL_OOB_RX_CNTL_WAIT        :  // 
-                                                                            `PE_CNTL_OOB_RX_CNTL_COMPLETE    ;  // if the simd isnt ready for the tag, dont perform the next operation
+          pe_cntl_oob_rx_cntl_state_next =   ( simd__cntl__tag_ready_d1 && local_stOp_cntl_fifo_ready      ) ? `PE_CNTL_OOB_RX_CNTL_WAIT        :  // 
+                                                                                                               `PE_CNTL_OOB_RX_CNTL_COMPLETE    ;  // if the simd isnt ready for the tag, dont perform the next operation
 
         // Latch state on error
         `PE_CNTL_OOB_RX_CNTL_ERR:
@@ -476,12 +394,13 @@ module pe_cntl (
   //----------------------------------------------------------------------------------------------------
   // Assignments
   //
-  assign stOp_option_memory[0].enable_memory = (pe_cntl_oob_rx_cntl_state != `PE_CNTL_OOB_RX_CNTL_WAIT) ;
-
+ 
   assign from_Sti_OOB_Fifo[0].pipe_read = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT) & from_Sti_OOB_Fifo[0].pipe_valid |
                                           (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_SOM ) & from_Sti_OOB_Fifo[0].pipe_valid |
                                           (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_MOM ) & from_Sti_OOB_Fifo[0].pipe_valid ;
 
+/*
+  assign stOp_option_memory[0].enable_memory = (pe_cntl_oob_rx_cntl_state != `PE_CNTL_OOB_RX_CNTL_WAIT) ;
 
   always @(*)
     begin
@@ -492,7 +411,7 @@ module pe_cntl (
       stop_simd_operation     = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT_COMPLETE_DEASSERTED) & contained_simd ;
 
     end
-
+*/
   // examine {option, value} tuples and set local fields
   always @(posedge clk)
     begin
@@ -538,17 +457,12 @@ module pe_cntl (
 
     end
 
-  // activate lanes. Number of lanes start from '0'
-  always @(*)
-    begin
-      case(numberOfActiveLanes)
-        `include "pe_cntl_lane_enable_assignments.vh"
-        default:
-          begin
-            execLanesActive  = 'd0     ;
-          end
-      endcase
-    end
+
+  //----------------------------------------------------------------------------------------------------
+  // stOp Tag/operation FIFO to simd_wrapper
+  //
+
+  wire transfer_operations       =  (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_START_CMD) & simd__cntl__tag_ready_d1 & local_stOp_cntl_fifo_ready  ; // & (stOp_operation[`STREAMING_OP_CNTL_OPERATION_OPCODE_RANGE ] == `STREAMING_OP_CNTL_OPERATION_FP_MAC ) ;  // FIXME : may need to handle tags in simd
 
   assign oob_packet_starting     = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_WAIT) & (pe_cntl_oob_rx_cntl_state_next != `PE_CNTL_OOB_RX_CNTL_WAIT) ;  // transitioning out of WAIT
 
@@ -558,13 +472,280 @@ module pe_cntl (
   // send the tag as soon as we start the operations 
   //   - only send tags whose operations are FPMAC
   //   - this assumes we only use FPMAC operations that send a result to a reg in the simd
-  assign cntl__simd__tag_valid   = (pe_cntl_oob_rx_cntl_state == `PE_CNTL_OOB_RX_CNTL_START_CMD) & simd__cntl__tag_ready_d1 & (stOp_operation[`STREAMING_OP_CNTL_OPERATION_OPCODE_RANGE ] == `STREAMING_OP_CNTL_OPERATION_FP_MAC ) ;  // FIXME : may need to handle tags in simd
 
-  assign cntl__simd__tag_optionPtr            =  simd_optionPtr                 ;
+  assign cntl__simd__tag_valid   = transfer_operations  ;
 
+  assign cntl__simd__tag_optionPtr  =  simd_optionPtr                 ;
+
+
+  //----------------------------------------------------------------------------------------------------
+  // stOp Tag/operation FIFO to local stOp FSM
+  //
+
+  reg   [`PE_EXEC_LANES_VEC_RANGE        ]          pipe_tag_lane_valid ;  // bitmask of active lanes for this operation
+
+  // Put in a generate in case we decide to extend to multiple fifo's
+  generate
+    for (gvi=0; gvi<1; gvi=gvi+1) 
+      begin: from_Cntl_Tag_Fifo
+
+        // Write data
+        wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]          write_tag           ;
+        wire   [`PE_CNTL_OOB_OPTION_RANGE       ]          write_tag_optionPtr ; 
+        wire   [`PE_NUM_LANES_RANGE             ]          write_tag_num_lanes ;  // number of active lanes associated with this tag
+                                                 
+        // Read data                              
+        wire                                               pipe_valid          ; 
+        wire                                               pipe_read           ; 
+        wire   [`STACK_DOWN_OOB_INTF_TAG_RANGE  ]          pipe_tag            ;
+        wire   [`PE_CNTL_OOB_OPTION_RANGE       ]          pipe_tag_optionPtr  ; 
+        wire   [`PE_NUM_LANES_RANGE             ]          pipe_tag_num_lanes  ;  // number of active lanes associated with this tag
+
+        // Control
+        wire                                               clear               ; 
+        wire                                               almost_full         ; 
+        wire                                               write               ; 
+
+        // FIXME: Combine FIFO's for synthesis
+        generic_pipelined_fifo #(.GENERIC_FIFO_DEPTH (`PE_CNTL_TAG_FROM_CNTL_FIFO_DEPTH                 ), 
+                       .GENERIC_FIFO_THRESHOLD       (`PE_CNTL_TAG_FROM_CNTL_FIFO_ALMOST_FULL_THRESHOLD ),
+                       .GENERIC_FIFO_DATA_WIDTH      (`PE_CNTL_TAG_FROM_CNTL_AGGREGATE_FIFO_WIDTH       )
+                        ) gpfifo (
+                                          // Status
+                                         .almost_full      ( almost_full                      ),
+                                          // Write                                            
+                                         .write            ( write                            ),
+                                         .write_data       ( {write_tag_optionPtr, write_tag_num_lanes, write_tag} ),
+                                          // Read                                          
+                                         .pipe_valid       ( pipe_valid                       ),
+                                         .pipe_read        ( pipe_read                        ),
+                                         .pipe_data        ( {pipe_tag_optionPtr, pipe_tag_num_lanes, pipe_tag}   ),
+                                                                                              
+                                         // General                                           
+                                         .clear            ( clear                            ),
+                                         .reset_poweron    ( reset_poweron                    ),
+                                         .clk              ( clk                              )
+                                         );
+
+        assign write                      =   transfer_operations            ;
+        assign write_tag                  =   tag                            ;
+        assign write_tag_optionPtr        =   stOp_optionPtr                 ;
+        assign write_tag_num_lanes        =   numberOfActiveLanes            ;
+        assign clear                      =   1'b0                           ;  // just in case
+
+        //assign pipe_read = pipe_valid ;
+      end
+  endgenerate
+
+  assign local_stOp_cntl_fifo_ready   =  ~from_Cntl_Tag_Fifo[0].almost_full ;
+
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES ; lane++)
+      begin
+        always @(*)
+          begin
+            pipe_tag_lane_valid [lane]  =  ((lane+1) <= from_Cntl_Tag_Fifo[0].pipe_tag_num_lanes) ;
+          end
+      end
+  endgenerate
+
+
+  //----------------------------------------------------------------------------------------------------
+  // stOp control FSM
+  //
+
+  reg [`PE_CNTL_STOP_CNTL_STATE_RANGE ] pe_cntl_stOp_cntl_state      ; // state flop
+  reg [`PE_CNTL_STOP_CNTL_STATE_RANGE ] pe_cntl_stOp_cntl_state_next ;
+  
+  
+
+  // State register 
+  always @(posedge clk)
+    begin
+      pe_cntl_stOp_cntl_state <= ( reset_poweron ) ? `PE_CNTL_STOP_CNTL_WAIT       :
+                                                       pe_cntl_stOp_cntl_state_next  ;
+    end
+  
+  // Every cycle of the OOB packet, examine each {option, value} tuple and set local config
+  // Once the packet has completed, initiate the command.
+  // Note: a) we might choose to start commands such as stOp as soon as the tuple is observed
+  //       b) FIXME:There is currentlyno checking to see if a option is repeated or if an option is invalid
+  //       c) Make error checking more robust as this is an external interface
+  //
+  //       FIXME: I am adding what might be redundant states as I suspect coordinating stOp's and SIMD might take a few states
+ 
+  always @(*)
+    begin
+      case (pe_cntl_stOp_cntl_state)
+
+        
+        `PE_CNTL_STOP_CNTL_WAIT: 
+          pe_cntl_stOp_cntl_state_next =  ( from_Cntl_Tag_Fifo[0].pipe_valid ) ? `PE_CNTL_STOP_CNTL_READ_STOP_MEMORY :  
+                                                                                 `PE_CNTL_STOP_CNTL_WAIT         ;
+  
+
+
+        `PE_CNTL_STOP_CNTL_READ_STOP_MEMORY:
+          pe_cntl_stOp_cntl_state_next =   `PE_CNTL_STOP_CNTL_START_CMD ;  // initiate command
+
+        // Transition directly to wait complete so this will create a pulse and the option tuple has been latched
+        // This state generates a pulse, so beware of adding conditions
+        `PE_CNTL_STOP_CNTL_START_CMD:
+          pe_cntl_stOp_cntl_state_next =   `PE_CNTL_STOP_CNTL_OP_RUNNING ;  // 
+
+        // make sure the operations have started to allow for some time for simd and/or stOp to get started
+        `PE_CNTL_STOP_CNTL_OP_RUNNING:
+          pe_cntl_stOp_cntl_state_next =   ( stOp_complete            ) ? `PE_CNTL_STOP_CNTL_WAIT_COMPLETE_DEASSERTED  :  // 
+                                                                            `PE_CNTL_STOP_CNTL_OP_RUNNING     ;  // 
+
+        `PE_CNTL_STOP_CNTL_WAIT_COMPLETE_DEASSERTED:
+          pe_cntl_stOp_cntl_state_next =   ( stOp_complete            ) ? `PE_CNTL_STOP_CNTL_WAIT_COMPLETE_DEASSERTED         :  // 
+                                                                            `PE_CNTL_STOP_CNTL_COMPLETE    ;  // 
+
+        `PE_CNTL_STOP_CNTL_COMPLETE:
+          pe_cntl_stOp_cntl_state_next =                                    `PE_CNTL_STOP_CNTL_WAIT    ;  
+
+        // Latch state on error
+        `PE_CNTL_STOP_CNTL_ERR:
+          pe_cntl_stOp_cntl_state_next = `PE_CNTL_STOP_CNTL_ERR ;
+  
+        default:
+          pe_cntl_stOp_cntl_state_next = `PE_CNTL_STOP_CNTL_WAIT ;
+    
+      endcase // case(so_cntl_state)
+    end // always @ (*)
+  
+
+  //----------------------------------------------------------------------------------------------------
+  // Assignments
+  //
+  
+
+  assign   from_Cntl_Tag_Fifo[0].pipe_read =  (pe_cntl_stOp_cntl_state == `PE_CNTL_STOP_CNTL_COMPLETE);
+  always @(*)
+    begin
+  
+      start_stOp_operation    = (pe_cntl_stOp_cntl_state == `PE_CNTL_STOP_CNTL_START_CMD               )  ;
+      stop_stOp_operation     = (pe_cntl_stOp_cntl_state == `PE_CNTL_STOP_CNTL_WAIT_COMPLETE_DEASSERTED)  ;
+      start_simd_operation    = (pe_cntl_stOp_cntl_state == `PE_CNTL_STOP_CNTL_START_CMD               )  ;
+      stop_simd_operation     = (pe_cntl_stOp_cntl_state == `PE_CNTL_STOP_CNTL_WAIT_COMPLETE_DEASSERTED)  ;
+
+    end
+
+  // activate lanes. Number of lanes start from '0'
+  always @(*)
+    begin
+      case(from_Cntl_Tag_Fifo[0].pipe_tag_num_lanes)
+        `include "pe_cntl_lane_enable_assignments.vh"
+        default:
+          begin
+            execLanesActive  = 'd0     ;
+          end
+      endcase
+    end
+
+
+  //----------------------------------------------------------------------------------------------------
+  // StreamingOp configuration memory
+  //
+  //  - stOp fields are accessed by a pointer provided in the OOB {option,value} tuple
+  //
+  
+  generate
+    for (gvi=0; gvi<1 ; gvi=gvi+1) 
+      begin: stOp_option_memory
+  
+        wire enable_memory ;
+
+        generic_1port_memory #(.GENERIC_MEM_DEPTH          (`PE_CNTL_STOP_OPTION_MEMORY_DEPTH           ),
+                               .GENERIC_MEM_REGISTERED_OUT (0                                           ),
+                               .GENERIC_MEM_DATA_WIDTH     (`PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_WIDTH )
+                        ) gmemory ( 
+                        
+                        //---------------------------------------------------------------
+                        // Initialize
+                        //
+                        `ifndef SYNTHESIS
+                           .memFile (""),
+                        `endif
+
+                        //---------------------------------------------------------------
+                        // Port 
+                        .portA_address       ( from_Cntl_Tag_Fifo[0].pipe_tag_optionPtr       ),
+                        .portA_write_data    ( {`PE_CNTL_STOP_OPTION_AGGREGATE_MEMORY_WIDTH {1'b0}} ),
+                        .portA_read_data     ( { stOp_operation       ,                                                     
+                                                 sourceAddress0       ,
+                                                 destinationAddress0  ,
+                                                 src_data_type0       ,
+                                                 dest_data_type0      ,
+                                                 sourceAddress1       ,
+                                                 destinationAddress1  ,
+                                                 src_data_type1       ,
+                                                 dest_data_type1      ,
+                                                 numberOfOperands     }),
+                        .portA_enable        ( enable_memory                    ),
+                        .portA_write         ( 1'b0                             ),
+                        
+                        //---------------------------------------------------------------
+                        // General
+                        .reset_poweron       ( reset_poweron             ),
+                        .clk                 ( clk                       )
+                        ) ;
+  // Note: parameters must be fixed, so have to load directly
+  //defparam gmemory.GENERIC_MEM_INIT_FILE   =    $sformatf("./inputFiles/manager_%0d_layer1_storageDescriptor_readmem.dat", sys__mgr__mgrId);
+        `ifndef SYNTHESIS
+
+          always
+            begin
+              @(posedge enable_memory)
+                //$readmemh($sformatf("./inputFiles/pe%0d_pe_cntl_stOp_memory.dat", sys__pe__peId), gmemory.mem);
+                ->gmemory.loadMemory;
+            end
+
+        `endif
+      end
+  endgenerate
+
+  assign stOp_option_memory[0].enable_memory = (pe_cntl_stOp_cntl_state != `PE_CNTL_STOP_CNTL_WAIT) ;
+
+/*
+  pe_cntl_stOp_rom pe_cntl_stOp_rom (  
+                                     .valid                 ( oob_packet_starting  ),  // used by readmem. If we are receiving a WU, update control memory
+                                     .optionPtr             ( stOp_optionPtr       ),
+                                                                                  
+                                     .stOp_operation        ( stOp_operation       ),
+                                                                                  
+                                     .sourceAddress0        ( sourceAddress0       ),
+                                     .destinationAddress0   ( destinationAddress0  ),
+                                     .src_data_type0        ( src_data_type0       ),
+                                     .dest_data_type0       ( dest_data_type0      ),
+                                                                                  
+                                     .sourceAddress1        ( sourceAddress1       ),
+                                     .destinationAddress1   ( destinationAddress1  ),
+                                     .src_data_type1        ( src_data_type1       ),
+                                     .dest_data_type1       ( dest_data_type1      ),
+                                                                                  
+                                     .numberOfOperands      ( numberOfOperands     ),
+                                
+                                     .sys__pe__peId         ( sys__pe__peId        ),
+                                     .clk
+                                  );
+*/
+
+
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  //
+ 
 endmodule
 
 
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
 
 `ifndef SYNTHESIS
 
