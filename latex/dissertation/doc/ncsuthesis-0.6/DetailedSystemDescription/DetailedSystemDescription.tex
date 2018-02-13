@@ -364,7 +364,7 @@ As soon as read data is sent back to the \ac{mrc} via the \ac{mmc}, that data is
 \fi
 
 
-\subsection{\acf{mmc}}
+\subsection{\Acf{mmc}}
 \label{sec:MMC}
 
 The \ac{mmc} is responsible for taking read requests from the two \acp{mrc} and write requests from the \ac{mwc}.
@@ -387,7 +387,7 @@ It should be noted that refresh has yet to be implemented but this is not antici
 The \ac{mmc} ensures the \ac{dram} protocol is observed and this has been verified using Tezzaron \ac{diram4} verilog models.
 
 
-\subsection{\acf{mrc}}
+\subsection{\Acf{mrc}}
 \label{sec:MRC}
 
 The \ac{mrc} is provided with multiple option tuples by the decoder block, a storage descriptor pointer, the number of execution lanes, the target for read data and the transfer type.
@@ -429,7 +429,7 @@ If there is no match, the index module requests a read of the data \acp{fifo}. T
 This is done to account for data crossing a bank, page or cache line boundary allowing the execution lanes to get out of sync.
 
 
-\subsection{\acf{rdp}}
+\subsection{\Acf{rdp}}
 \label{sec:RDP}
 The \ac{rdp} is responsible for taking the result data from the \ac{pe} and determining into which \ac{ssc} it should be stored (see Figure \ref{fig:RDP block diagram}).
 
@@ -453,7 +453,7 @@ Once the descriptors have been parsed, if one of the destinations is the local \
 If the destination(s) include other \acp{ssc}, the \ac{rdp} provides the \ac{ssc} bitfield along with the data to the \ac{noc}.
 
 
-\subsection{\acf{mwc}}
+\subsection{\Acf{mwc}}
 \label{sec:MWC}
 
 The \acf{mwc} receives data from two sources, the \ac{noc} via the system conntroller and the \ac{rdp}.
@@ -575,27 +575,65 @@ An example of the downstream \ac{oob} transactions can be seen in Figure \ref{fi
 \label{sec:PE Cntl}
 
 The \ac{pe} controller takes \ac{oob} control packets stored in an interface \ac{fifo} and extracts the \ac{stop} and \ac{simd} pointers.
-The \ac{stop} pointer is used to index into a small \ac{sram} which contains the long instruction word used to select the \ac{stop} function and where to place the result.
 The \ac{simd} pointer is passed to the \ac{simd} wrapper along with the tag associated with the operation.
-When the \ac{stop} has completed the operation, the \ac{pe} controller takes the next operation from the \ac{oob} \ac{fifo}.
-The \ac{simd} wrapper contains an interface \ac{fifo} and the \ac{pe} controller will only pause if the \ac{simd} wrapper interface asserts flow control.
+The \ac{simd} wrapper contains an interface \ac{fifo} and the \ac{pe} controller will pause if the \ac{simd} wrapper interface asserts flow control.
+The \ac{stop} pointer is used to index into a small \ac{sram} which contains the long instruction word used to select the \ac{stop} function and control the source and destination of the data.
+The contents of the memory is shown in Table \ref{tab:stOp pointer memory}.
+When the \ac{stop} has completed the operation, the \ac{pe} controller takes the next operation from the \ac{fifo}.
 A block diagram of the \ac{pe} controller can be seen in Figure \ref{fig:PE Controller block diagram}}.
+
 \begin{figure}[h]
-% the [] contains position info e.g. [!H] means here
-% H 	Place exactly at spot in source text
-% h 	Place approximately at spot in source test
-% t 	Place at top of page
-% b 	Place at bottom of page
-% p 	Place on page for floats only
-% ! 	Override internal LaTeX parameters for determining float position
 \centering
 \captionsetup{justification=centering}
 \captionsetup{width=0.9\textwidth}
-\centerline{
-\mbox{\includegraphics[angle=0, width=0.75\textwidth]{PEcntlBlockDiagram}}
-}
-\center\caption{PE controller block diagram}
-\label{fig:PE Controller block diagram}
+  \begin{minipage}{1\textwidth}
+    \centering
+    \centerline{
+    \mbox{\includegraphics[angle=0, width=0.75\textwidth]{PEcntlBlockDiagram}}
+    }
+    \center\caption{PE controller block diagram}
+    \label{fig:PE Controller block diagram}
+  \end{minipage}
+  \bigskip
+  \begin{minipage}{1\textwidth}
+    \centering
+    \captionsetup{justification=centering, skip=10pt}
+    \begin{minipage}[t]{1\textwidth}
+        \vspace{0.5cm}
+        \begin{center}
+          \begin{bytefield}[bitwidth=0.3em, endianness=big]{109}
+            %\bitheader{0, 31, 37} \\
+            \bitbox{21}{\scriptsize Streaming \\Operation} & \bitbox{24}{\scriptsize Source Address \\ stream 0} & \bitbox{8}{\scriptsize Type 0} & \bitbox{24}{\scriptsize Source Address \\ stream 1} & \bitbox{8}{\scriptsize Type 1} & \bitbox{24}{\scriptsize Destination Address }  \\
+          \end{bytefield}
+        \end{center}
+    \end{minipage}
+    \begin{minipage}{1\textwidth}
+      \centering
+      \begin{minipage}[t]{0.75\textwidth}
+        \centering
+        \begin{adjustbox}{width=1\textwidth}
+            \footnotesize
+            \begin{tabular}{ |c|c|c|c|  }
+              \hline
+              \rowcolor{gray!50}
+              \multicolumn{4}{|c|}{Field Definitions} \\
+              \hline
+              \rowcolor{gray!25}
+              Field & Width & Description & Comment \\
+              \hline
+              StreamingOp         & 21 & Controls streaming operation          & Further decoded in stOp block          \\\cline{1-4}
+              Source Address 0    & 24 & \multirow{3}{*}{Local memory address} & \multirow{3}{*}{if using local memory} \\\cline{1-2}
+              Source Address 1    & 24 &                                       &                                        \\\cline{1-2}
+              Destination Address & 24 &                                       &                                        \\\cline{1-4}
+              Type                & 4  & Data type                             & WORD only                              \\\cline{1-4}
+              \hline
+            \end{tabular}
+        \end{adjustbox}
+      \end{minipage}
+    \end{minipage}
+    \captionof{table}{stOp pointer memory fields}
+    \label{tab:stOp pointer memory}
+  \end{minipage}
 \end{figure}
 
 
@@ -604,7 +642,11 @@ A block diagram of the \ac{pe} controller can be seen in Figure \ref{fig:PE Cont
 
 There is a \ac{stop} module for each execution lane and the \acp{stop} are designed to operate on data passed from the manager at or near line-rate. 
 If line-rate cannot be maintained, an interface \ac{fifo} flow-control mechanism is employed to slow the data from the manager.
-Once the \ac{stop} has processed the data, it passes the result to the \ac{simd}. Note in some cases the result can be placed in local \ac{sram} or sent to both \ac{sram} and \ac{simd}.
+The \ac{stop} is designed to perform either a \ac{mac} operation, which is employed during \ac{an} state calculation, or a multiply operation which is used during a Softmax \cite{wikipedia_softmax} calculation.
+The \ac{stop} receives the operation from the \ac{pe} controller and decodes the fields as shown in Register \ref{reg:stOp opcode} and Table \ref{tab:stOp op fields}.
+In the case of a \ac{mac} operation, each lane produces a single result which is passed to the \ac{simd}.
+In the case of a multiply operation, each lane generates a result on each clock cycle and each is passed to the \ac{simd}.
+Note that based on the destination specified, the result can also be placed in local \ac{sram}.
 
 It should also be stated that while the \ac{stop} is processing the current data, the \ac{simd} may be operating on the result of the previous operation. 
 It is expected the \ac{simd} will have completed the previous operation before the \ac{stop} completes the current operation, but again, if necessary, a flow control mechanism between \ac{simd} and \ac{stop} will be engaged if the \ac{simd} is not ready.
@@ -612,14 +654,107 @@ It is expected the \ac{simd} will have completed the previous operation before t
 There is provision for one of the inputs into the \ac{stop} module to be from the local memory via a local \ac{dma} controller. Although this is designed and tested, this processing path is for future work.
 A block diagram of the \ac{stop} can be seen in Figure \ref{fig:stOp block diagram}}.
 \begin{figure}[h]
-\centering
-\captionsetup{justification=centering}
-\captionsetup{width=0.9\textwidth}
-\centerline{
-\mbox{\includegraphics[angle=0, width=.75\textwidth]{streamingOpBlockDiagram}}
-}
-\center\caption{Streaming operations block diagram}
-\label{fig:stOp block diagram}
+  \centering
+  \captionsetup{justification=centering}
+  \captionsetup{width=0.9\textwidth}
+  \begin{minipage}{1\textwidth}
+    \centering
+    \centerline{
+    \mbox{\includegraphics[angle=0, width=.75\textwidth]{streamingOpBlockDiagram}}
+    }
+    \center\caption{Streaming operations block diagram}
+    \label{fig:stOp block diagram}
+  \end{minipage}
+  \bigskip
+  \begin{minipage}{1\textwidth}
+    \centering
+    \captionsetup{justification=centering, skip=10pt}
+    \begin{minipage}[t]{0.4\textwidth}
+      \centering
+      \begin{register}{H}{Streaming operation contents}{}%{0x250} name=example
+        \label{reg:stOp opcode}
+        %\LARGE 	
+        \vspace{-10pt}
+        \regfield{{\scriptsize Function                   }}{ 5}{12}{{opCode}}%
+        \regfield{{\scriptsize Destination                }}{ 3}{ 6}{{dest}}%
+        \regfield{{\scriptsize Stream 1 source            }}{ 3}{ 3}{{src1}}%
+        \regfield{{\scriptsize Stream 0 source            }}{ 3}{ 0}{{src0}}%
+      \end{register}
+    \end{minipage}
+    \bigskip
+    \vspace{0.25cm}
+    \begin{minipage}{1\textwidth}
+      \centering
+      \begin{minipage}[t]{1\textwidth}
+        \vspace{1mm}
+        \centering
+        \begin{minipage}[t]{0.25\textwidth}
+          \vspace{1mm}
+          \centering
+          \begin{adjustbox}{width=1\textwidth}
+              \footnotesize
+              \begin{tabular}{ |c|c|  }
+                \hline
+                \rowcolor{gray!50}
+                \multicolumn{2}{|c|}{Source} \\
+                \hline
+                \rowcolor{gray!25}
+                src*[2:0] & Description  \\
+                \hline
+                1      & Local memory    \\
+                2      & Downstream bus  \\
+                4      & \ac{simd}       \\
+                other  & NA              \\
+                \hline
+              \end{tabular}
+          \end{adjustbox}
+        \end{minipage}
+        \begin{minipage}[t]{0.25\textwidth}
+          \vspace{1mm}
+          \centering
+          \begin{adjustbox}{width=1\textwidth}
+              \footnotesize
+              \begin{tabular}{ |c|c|  }
+                \hline
+                \rowcolor{gray!50}
+                \multicolumn{2}{|c|}{Destination} \\
+                \hline
+                \rowcolor{gray!25}
+                dest[2:0] & Description  \\
+                \hline
+                1      & Local memory    \\
+                4      & \ac{simd}       \\
+                other  & NA              \\
+                \hline
+              \end{tabular}
+          \end{adjustbox}
+        \end{minipage}
+        \begin{minipage}[t]{0.25\textwidth}
+          \vspace{1mm}
+          \centering
+          \begin{adjustbox}{width=1\textwidth}
+              \footnotesize
+              \begin{tabular}{ |c|c|  }
+                \hline
+                \rowcolor{gray!50}
+                \multicolumn{2}{|c|}{Function} \\
+                \hline
+                \rowcolor{gray!25}
+                opCode[4:0] & Description  \\
+                \hline
+                2      & \ac{mac} \\
+                8      & Multiply \\
+                31     & \ac{nop} \\
+                other  & NA       \\
+                \hline
+              \end{tabular}
+          \end{adjustbox}
+        \end{minipage}
+      \end{minipage}
+    \end{minipage}
+    \captionof{table}{Streaming operation fields}
+    \label{tab:stOp op fields}
+  \end{minipage}
 \end{figure}
 
 
@@ -645,7 +780,7 @@ To account for the \ac{simd}, in the area layout study a placement blockage is u
 In practice, the \ac{simd} will take the result data from the \ac{stop} and/or the \acp{sfu} and perform a pre-programmed operation starting at the \ac{pc} indicated by the \ac{simd} operation pointer provided by the \ac{pe} controller.
 It is expected that in future work the \ac{simd} would also be given control of the \acp{sfu} allowing for more flexible and complex processing.
 
-\subsection{\acp{sfu}}
+\subsection{\Acp{sfu}}
 \label{sec:sfu}
 
 The adder is used during single \ac{an} processing as described in Section \ref{sec:Processing Engine Layer} and shown in Figure \ref{fig:Group AN calculation}.
