@@ -122,8 +122,8 @@
 // FIFO's
 //------------------------------------------------
 
-`define SIMD_WRAP_REG_FROM_SCNTL_FIFO_DEPTH          8
-`define SIMD_WRAP_REG_FROM_SCNTL_FIFO_THRESHOLD      4
+`define SIMD_WRAP_REG_FROM_SCNTL_FIFO_DEPTH          16
+`define SIMD_WRAP_REG_FROM_SCNTL_FIFO_THRESHOLD      12
 
 
 //`define SIMD_WRAP_TAG_FROM_CNTL_FIFO_DEPTH           8

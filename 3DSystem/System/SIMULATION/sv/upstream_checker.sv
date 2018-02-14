@@ -62,6 +62,7 @@ class upstream_checker;
 
         int tag    ;  // we need to match the tag of the upstream data with the tag from the manager and generator
         bit tagFound = 0;
+        int count;  // general use
         int numberOfActiveLanes;
         bit foundError = 0;  // flag if at least one entry is in error
         bit foundGoodPacket = 0;  
@@ -104,7 +105,7 @@ class upstream_checker;
                       foundError      = 0;
                       foundGoodPacket = 0;  
                       // check contents
-                      $display ("@%0t::%s:%0d:: INFO:UPSTREAM_CHECKER :: Cycle Data for {%d} : %p", $time, `__FILE__, `__LINE__, this,Id, upstream_packet_data);
+                      $display ("@%0t::%s:%0d:: INFO:UPSTREAM_CHECKER :: Cycle Data for {%d} : %p", $time, `__FILE__, `__LINE__, this.Id, upstream_packet_data);
                       lastCycle = 0;
                       transactionCount = 0 ;
 
@@ -126,6 +127,7 @@ class upstream_checker;
                         $display ("@%0t:%s:%0d:INFO:UPSTREAM_CHECKER :: Find operation in manager {%0d} mailbox for tag {%0d}. mailbox has %0d entries", $time, `__FILE__, `__LINE__, this.Id, tag, mgr2up.num());
                         for (int mp=0; mp<mgr2up.num(); mp++)
                           begin
+                            count = 0;
 
                             // search available operations that match tag. If it doesnt match, put the operation back in the mailbox
                             while (~tagFound )
@@ -143,6 +145,13 @@ class upstream_checker;
                                     mgr2up.put(sys_operation_mgr) ;  
                                   end 
 
+                                count++;
+                                //$display ("@%0t:%s:%0d:INFO:UPSTREAM_CHECKER :: {%0d} : Tag found = %0d, mgr2up.num = %0d, count = %0d", $time, `__FILE__, `__LINE__, this.Id, tagFound, mgr2up.num(), count);
+                                if (~tagFound && (count == mgr2up.num()))
+                                  begin
+                                    //$display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: {%0d} : Tag not found and checked all manager operations, mp = %0d, mgr2up.num = %0d, count = %0d", $time, `__FILE__, `__LINE__, this.Id, mp, mgr2up.num(), count);
+                                    break;
+                                  end
                               end // while
 
                           end  // for
@@ -155,6 +164,7 @@ class upstream_checker;
                       end
 
                     // found manager operation matching the tag, now find the generator operations
+                    $display ("@%0t:%s:%0d:INFO:UPSTREAM_CHECKER :: Found operation in manager {%0d} mailbox for tag {%0d}. mailbox has %0d entries", $time, `__FILE__, `__LINE__, this.Id, tag, mgr2up.num());
 
                     for (int lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
                       begin
@@ -174,8 +184,10 @@ class upstream_checker;
                             tagFound = 0;
                             for (int gp=0; gp<gen2up.num(); gp++)
                               begin
+                                count = 0;
                                 while (~tagFound )
                                   begin
+                                    //$display ("@%0t:%s:%0d:INFO:UPSTREAM_CHECKER :: {%0d} : Tag found = %0d, gen2up.num = %0d, count = %0d", $time, `__FILE__, `__LINE__, this.Id, tagFound, gen2up.num(), count);
                                     gen2up.get(sys_operation_gen) ;  //Taking the instruction from the manager 
                                     if (tag == sys_operation_gen.tId)
                                       begin 
@@ -186,10 +198,18 @@ class upstream_checker;
                                       // not the correct tag so put at the back of the mailbox
                                       begin 
                                         gen2up.put(sys_operation_gen) ;  
-                                      end 
+                                      end  
+                                    count++;
+                                    //$display ("@%0t:%s:%0d:INFO:UPSTREAM_CHECKER :: {%0d} : Tag found = %0d, gen2up.num = %0d, count = %0d", $time, `__FILE__, `__LINE__, this.Id, tagFound, gen2up.num(), count);
+                                    if (~tagFound && (count == gen2up.num()))
+                                      begin
+                                        //$display ("@%0t:%s:%0d:ERROR:UPSTREAM_CHECKER :: {%0d} : Tag not found and checked all operations, gp = %0d, gen2up.num = %0d, count = %0d", $time, `__FILE__, `__LINE__, this.Id, gp, gen2up.num(), count);
+                                        break;
+                                      end
                                   end // while
                               end  // for
                             
+                            $display ("@%0t:%s:%0d:INFO:UPSTREAM_CHECKER :: Tag found = %0d", $time, `__FILE__, `__LINE__, tagFound);
                             if (tagFound)
                               begin
                                if (lane < numberOfActiveLanes )

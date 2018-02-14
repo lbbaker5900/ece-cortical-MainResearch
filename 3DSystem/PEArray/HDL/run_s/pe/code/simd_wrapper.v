@@ -149,6 +149,8 @@ module simd_wrapper (
   reg   [`PE_NUM_OF_EXEC_LANES_RANGE   ]  allLanes_valid                                  ;
                                                                                           
   wire                                    return_data_to_upstream                         ;
+  wire                                    end_of_data                                     ;
+  wire                                    tag_and_data_ready                              ;
 
   wire  [`STACK_DOWN_OOB_INTF_TAG_RANGE]  simd__sui__tag_e1                                  ;
   reg   [`PE_NUM_LANES_RANGE           ]  simd__sui__tag_num_lanes_e1                        ;  // number of active lanes associated with this tag
@@ -296,6 +298,7 @@ module simd_wrapper (
   // create a vector of cntl/data for the FSM
   wire [`COMMON_STD_INTF_CNTL_RANGE    ]  from_stOp_reg_fifo_pipe_cntl [`PE_NUM_OF_EXEC_LANES ]   ;
   wire [`PE_EXEC_LANE_WIDTH_RANGE      ]  from_stOp_reg_fifo_pipe_data [`PE_NUM_OF_EXEC_LANES ]   ;
+  wire [`PE_EXEC_LANE_WIDTH_RANGE      ]  from_stOp_reg_fifo_pipe_eom                             ;
 
   generate
     for (gvi=0; gvi<`PE_NUM_OF_EXEC_LANES; gvi=gvi+1) 
@@ -351,6 +354,8 @@ module simd_wrapper (
         // FSM will drive read for each lane, most likely all together
         assign pipe_read = from_stOp_reg_fifo_reads [gvi]  ;
 
+
+        assign from_stOp_reg_fifo_pipe_eom [gvi] =  (pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (pipe_cntl == `COMMON_STD_INTF_CNTL_EOM);
       end
   endgenerate
 
@@ -419,7 +424,7 @@ module simd_wrapper (
 
         //
         //assign pipe_read = from_stOp_reg_fifo_reads [gvi]  ;
-        assign pipe_read = return_data_to_upstream ;
+        assign pipe_read = return_data_to_upstream & end_of_data ;
       end
   endgenerate
 
@@ -467,7 +472,10 @@ module simd_wrapper (
   //       FIXME: I am adding what might be redundant states as I suspect coordinating stOp's and SIMD might take a few states
   
   //assign tag_and_data_ready =  from_Cntl_Tag_Fifo[0].pipe_valid & (&(from_stOp_reg_fifo_valids | ~simd__scntl__rs1) ) ; //|(~simd__scntl__rs1))) ;
-  assign tag_and_data_ready =  from_Cntl_Tag_Fifo[0].pipe_valid & (&(from_stOp_reg_fifo_valids | ~pipe_tag_lane_valid ) ) ; // only start once all stOp lanes active in the operation have returned data
+  //LEE
+  assign   tag_and_data_ready  =  from_Cntl_Tag_Fifo[0].pipe_valid & (&(from_stOp_reg_fifo_valids | ~pipe_tag_lane_valid ) ) ; // only start once all stOp lanes active in the operation have returned data
+
+  assign   end_of_data         =  (&((from_stOp_reg_fifo_valids & from_stOp_reg_fifo_pipe_eom) | ~pipe_tag_lane_valid ) ) ; // if stOp is sending multiple regs, as in MULT op then packetize all
  
   always @(*)
     begin
@@ -530,7 +538,7 @@ module simd_wrapper (
 
 
   // read the FIFO and assert the valid to the stack upstream interface
-  assign   return_data_to_upstream               = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SENT_DATA);
+  assign   return_data_to_upstream               = (simd_wrap_upstream_cntl_state == `SIMD_WRAP_UPSTREAM_CNTL_SENT_DATA) ;
   //assign from_stOp_reg_fifo_reads = {`PE_NUM_OF_EXEC_LANES { return_data_to_upstream }} & from_stOp_reg_fifo_valids ;  // only read the lanes that were active
   assign from_stOp_reg_fifo_reads = {`PE_NUM_OF_EXEC_LANES { return_data_to_upstream }} & pipe_tag_lane_valid ;  // only read the lanes that were active
 

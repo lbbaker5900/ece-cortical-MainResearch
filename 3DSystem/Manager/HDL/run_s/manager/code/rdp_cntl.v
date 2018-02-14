@@ -298,25 +298,27 @@ module rdp_cntl (
   //-------------------------------------------------------------------------------------------------
   // WU Decode and Stuc combine
   //
-  wire                                     wud_data_available          ;
-  wire                                     stuc_data_available         ;
-  reg  [`RDP_CNTL_NUM_LANES_RANGE       ]  num_of_valid_lanes          ;  // how many words are valid from stack upstream packet
-  reg                                      write_storage_ptr_tmp_valid ;
-  reg  [`COMMON_STD_INTF_CNTL_RANGE     ]  write_storage_ptr_tmp_cntl  ;
-  reg  [`MGR_STORAGE_DESC_ADDRESS_RANGE ]  write_storage_ptr_tmp       ;
-  wire                                     wud_fifo_contains_wr_ptr    ;
-  wire                                     wud_fifo_read               ;
-  wire                                     wr_ptrs_all_sent            ;
-  wire                                     destAddr_localFifo_write    ;
-  wire                                     ptr_localFifo_write         ;
-  wire                                     ptr_localFifo_almost_full   ;
-  wire                                     wr_ptrs_all_stored          ;
-  reg                                      wr_ptrs_all_stored_d1       ;
-  wire                                     data_all_sent               ;
-  wire                                     start_of_wu_descriptor      ;  // dcntl == SOM
-  wire                                     middle_of_wu_descriptor     ;  // dcntl == MOM
-  wire                                     end_of_wu_descriptor        ;  // dcntl == EOM
-  reg  [`MGR_STD_OOB_TAG_RANGE          ]  current_tag                 ;  // waiting for this tag's return data
+  wire                                                  wud_fifo_pipe_valid         ;
+  wire                                                  stuc_data_available         ;
+  reg     [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE     ]    nocType                     ;  // usually DESC_WRITE_DATA except for multi packet returns in which case its DMA_DATA_SOD - DMA_DATA - DMA_DATA_EOD
+  reg     [`RDP_CNTL_NUM_LANES_RANGE               ]    num_of_valid_lanes          ;  // how many words are valid from stack upstream packet
+  reg                                                   write_storage_ptr_tmp_valid ;
+  reg     [`COMMON_STD_INTF_CNTL_RANGE             ]    write_storage_ptr_tmp_cntl  ;
+  reg     [`MGR_STORAGE_DESC_ADDRESS_RANGE         ]    write_storage_ptr_tmp       ;
+  wire                                                  wud_fifo_contains_wr_ptr    ;
+  wire                                                  wud_fifo_read               ;
+  wire                                                  wr_ptrs_all_sent            ;
+  wire                                                  destAddr_localFifo_write    ;
+  wire                                                  ptr_localFifo_write         ;
+  wire                                                  ptr_localFifo_almost_full   ;
+  wire                                                  wr_ptrs_all_stored          ;
+  reg                                                   wr_ptrs_all_stored_d1       ;
+  wire                                                  data_all_sent               ;
+  wire                                                  processing_wu_complete      ;
+  wire                                                  start_of_wu_descriptor      ;  // dcntl == SOM
+  wire                                                  middle_of_wu_descriptor     ;  // dcntl == MOM
+  wire                                                  end_of_wu_descriptor        ;  // dcntl == EOM
+  reg     [`MGR_STD_OOB_TAG_RANGE                  ]    current_tag                 ;  // waiting for this tag's return data
 
 
   //-------------------------------------------------------------------------------------------------
@@ -533,30 +535,34 @@ module rdp_cntl (
          begin
            always @(posedge clk)
              begin
+               pipe_option_extd_valid       [opt]  <=  ( reset_poweron                                                          ) ? 1'b0                               :
+                                                       ( processing_wu_complete                                                 ) ? 1'b0                               : 
+                                                       ( from_WuDecode_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? 1'b1                               :
+                                                                                                                                    pipe_option_extd_valid             [opt] ;
+
                pipe_option_extd_type        [opt]  <=  ( from_WuDecode_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? {from_WuDecode_Fifo[0].read_option_type [opt]} :
                                                                                                                                     pipe_option_extd_type        [opt] ;
                
                pipe_option_extd_value       [opt]  <=  ( from_WuDecode_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? {from_WuDecode_Fifo[0].read_option_type [opt], from_WuDecode_Fifo[0].read_option_value [opt], from_WuDecode_Fifo[0].read_option_type [opt+1], from_WuDecode_Fifo[0].read_option_value [opt+1]}  : 
                                                                                                                                     pipe_option_extd_value       [opt] ;
                
-               pipe_option_extd_valid       [opt]  <=  ( reset_poweron ) ? 1'b0 :
-                                                       ( from_WuDecode_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? 1'b1                               :
-                                                                                                                                    pipe_option_extd_valid             [opt] ;
              end
          end
         else if (opt == 1)
          begin
            always @(posedge clk)
              begin
+               pipe_option_extd_valid       [opt]  <=  ( reset_poweron                                                                                            ) ? 1'b0                               :
+                                                       ( processing_wu_complete                                                                                   ) ? 1'b0                               : 
+                                                       ( from_WuDecode_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? 1'b1                               :
+                                                                                                                                                                      pipe_option_extd_valid             [opt] ;
+
                pipe_option_extd_type        [opt]  <=  ( from_WuDecode_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? {from_WuDecode_Fifo[0].read_option_type [opt]} :
                                                                                                                                                                         pipe_option_extd_type        [opt]  ;
                
                pipe_option_extd_value       [opt]  <=  ( from_WuDecode_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? {from_WuDecode_Fifo[0].read_option_type [opt], from_WuDecode_Fifo[0].read_option_value [opt], from_WuDecode_Fifo[0].read_option_type [opt+1], from_WuDecode_Fifo[0].read_option_value [opt+1]}  : 
                                                                                                                                                                         pipe_option_extd_value       [opt]  ;
                
-               pipe_option_extd_valid       [opt]  <=  ( reset_poweron ) ? 1'b0 :
-                                                       ( from_WuDecode_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? 1'b1                               :
-                                                                                                                                                                      pipe_option_extd_valid             [opt] ;
              end
          end
         else 
@@ -571,6 +577,70 @@ module rdp_cntl (
       end
   endgenerate
 
+  reg                                                               op_num_of_return_pkts_valid     ;
+  reg    [`MGR_WU_OPT_TYPE_RANGE                               ]    op_num_of_return_pkts_type      ;  // keep for debug
+  reg    [`MGR_WU_EXTD_OPT_VALUE_RANGE                         ]    op_num_of_return_pkts_value     ;
+                                                                                                   
+  reg    [`MGR_WU_EXTD_OPT_VALUE_RANGE                         ]    op_num_of_return_counter        ;  // use this to generate packet delineation
+  reg                                                               completed_repeat_pkt            ;  
+
+  always @(posedge clk)
+    begin
+      op_num_of_return_pkts_valid  <= ( reset_poweron                                                                                                          )  ?  1'b0                        : 
+                                      ( processing_wu_complete                                                                                                 )  ?  1'b0                        : 
+                                      ((wud_fifo_read) && pipe_option_extd_valid [0] && (pipe_option_extd_type[0] == `MGR_INST_OPTION_TYPE_NUM_OF_RETURN_PKTS ))  ?  1'b1                        :
+                                      ((wud_fifo_read) && pipe_option_extd_valid [1] && (pipe_option_extd_type[1] == `MGR_INST_OPTION_TYPE_NUM_OF_RETURN_PKTS ))  ?  1'b1                        :
+                                      ((wud_fifo_read) && pipe_option_extd_valid [2] && (pipe_option_extd_type[2] == `MGR_INST_OPTION_TYPE_NUM_OF_RETURN_PKTS ))  ?  1'b1                        :
+                                                                                                                                                                     op_num_of_return_pkts_valid ;
+
+      op_num_of_return_pkts_type   <= ((wud_fifo_read) && pipe_option_extd_valid [0] && (pipe_option_extd_type[0] == `MGR_INST_OPTION_TYPE_NUM_OF_RETURN_PKTS ))  ?  pipe_option_extd_type  [0]  :
+                                      ((wud_fifo_read) && pipe_option_extd_valid [1] && (pipe_option_extd_type[1] == `MGR_INST_OPTION_TYPE_NUM_OF_RETURN_PKTS ))  ?  pipe_option_extd_type  [1]  :
+                                      ((wud_fifo_read) && pipe_option_extd_valid [2] && (pipe_option_extd_type[2] == `MGR_INST_OPTION_TYPE_NUM_OF_RETURN_PKTS ))  ?  pipe_option_extd_type  [2]  :
+                                                                                                                                                                     op_num_of_return_pkts_type  ;
+
+      op_num_of_return_pkts_value  <= ((wud_fifo_read) && pipe_option_extd_valid [0] && (pipe_option_extd_type[0] == `MGR_INST_OPTION_TYPE_NUM_OF_RETURN_PKTS ))  ?  pipe_option_extd_value [0]  :
+                                      ((wud_fifo_read) && pipe_option_extd_valid [1] && (pipe_option_extd_type[1] == `MGR_INST_OPTION_TYPE_NUM_OF_RETURN_PKTS ))  ?  pipe_option_extd_value [1]  :
+                                      ((wud_fifo_read) && pipe_option_extd_valid [2] && (pipe_option_extd_type[2] == `MGR_INST_OPTION_TYPE_NUM_OF_RETURN_PKTS ))  ?  pipe_option_extd_value [2]  :
+                                                                                                                                                                     op_num_of_return_pkts_value ;
+    end
+
+  always @(posedge clk)
+    begin
+      completed_repeat_pkt        <=  ( reset_poweron                                                                            )  ?  1'b0                 : 
+                                      ( processing_wu_complete                                                                   )  ?  1'b0                 : 
+                                      ( op_num_of_return_pkts_valid && (op_num_of_return_counter == op_num_of_return_pkts_value) )  ?  1'b1                 :
+                                                                                                                                       completed_repeat_pkt ;
+    end
+
+  always @(posedge clk)
+    begin
+      op_num_of_return_counter    <=  ( reset_poweron                                           )  ?   'd0                             : 
+                                      ( processing_wu_complete                                  )  ?   'd0                             : 
+                                      ( wr_ptrs_all_sent                                        )  ?   op_num_of_return_counter + 'd1  :
+                                                                                                       op_num_of_return_counter        ;
+    end
+
+
+  // Write to local storage pointer FIFO
+  // Extract storage ptr - wr_ptrs can only exist in first two tuples because they are extended tuples
+  assign wud_fifo_contains_wr_ptr =  (pipe_option_extd_valid[0] && (pipe_option_extd_type [0] == PY_WU_INST_OPT_TYPE_MEMORY )) | //         from_WuDecode_Fifo[0].pipe_valid & 
+                                     (pipe_option_extd_valid[1] && (pipe_option_extd_type [1] == PY_WU_INST_OPT_TYPE_MEMORY )) ;
+  always @(posedge clk)
+    begin
+      write_storage_ptr_tmp    <= (from_WuDecode_Fifo[0].pipe_read  && pipe_option_extd_valid[0] && (pipe_option_extd_type [0] == PY_WU_INST_OPT_TYPE_MEMORY )) ? pipe_option_extd_value [0]  :
+                                  (from_WuDecode_Fifo[0].pipe_read  && pipe_option_extd_valid[1] && (pipe_option_extd_type [1] == PY_WU_INST_OPT_TYPE_MEMORY )) ? pipe_option_extd_value [1]  :
+                                                                                                                                                                  write_storage_ptr_tmp       ; 
+    end
+  // Extract Number of valid lanes
+  always @(posedge clk)
+    begin
+      num_of_valid_lanes   <= ( reset_poweron                                                                                                                                       ) ? 'd0                                        :
+                              (from_WuDecode_Fifo[0].pipe_read  && ( from_WuDecode_Fifo[0].pipe_option_type[0] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES)                                 ) ? from_WuDecode_Fifo[0].pipe_option_value[0] : 
+                              (from_WuDecode_Fifo[0].pipe_read  && ((from_WuDecode_Fifo[0].pipe_option_type[1] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES) && ~pipe_option_extd_valid [0] )) ? from_WuDecode_Fifo[0].pipe_option_value[1] : 
+                              (from_WuDecode_Fifo[0].pipe_read  && ((from_WuDecode_Fifo[0].pipe_option_type[2] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES) && ~pipe_option_extd_valid [1] )) ? from_WuDecode_Fifo[0].pipe_option_value[2] : 
+                                                                                                                                                                                        num_of_valid_lanes                         ; // 
+    end
+  //`include "rdp_cntl_option_tuple_extract.vh"
 
 
   //----------------------------------------------------------------------------------------------------
@@ -720,8 +790,8 @@ module rdp_cntl (
         
         `RDP_CNTL_TAG_DATA_COMBINE_WAIT: 
           rdp_cntl_tag_data_combine_state_next =  ( wud_fifo_contains_wr_ptr && start_of_wu_descriptor) ? `RDP_CNTL_TAG_DATA_COMBINE_FIRST_WR_PTR      :  // First cycle contains wr_ptr and by default the temporary register wont be valid. Set cntl=SOD in case we need to write in FIRST_PTR state
-                                                  ( wud_data_available       && start_of_wu_descriptor) ? `RDP_CNTL_TAG_DATA_COMBINE_PREPARE_FOR_PTR   :  // First cycle doesnt contain wr_ptr
-                                                  ( wud_data_available                                ) ? `RDP_CNTL_TAG_DATA_COMBINE_ERR               :  // wu descriptor always more than 1-cycle
+                                                  ( wud_fifo_pipe_valid      && start_of_wu_descriptor) ? `RDP_CNTL_TAG_DATA_COMBINE_PREPARE_FOR_PTR   :  // First cycle doesnt contain wr_ptr
+                                                  ( wud_fifo_pipe_valid                               ) ? `RDP_CNTL_TAG_DATA_COMBINE_ERR               :  // wu descriptor always more than 1-cycle
                                                                                                           `RDP_CNTL_TAG_DATA_COMBINE_WAIT              ;
 
         // Read the {option, value} tuples from the WU Decoder so we can form a destination bitfield for the NoC and prepare for stack upstream data
@@ -758,8 +828,8 @@ module rdp_cntl (
         `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR: 
           rdp_cntl_tag_data_combine_state_next =  ( wud_fifo_contains_wr_ptr && end_of_wu_descriptor    ) ? `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE :
                                                   ( wud_fifo_contains_wr_ptr && middle_of_wu_descriptor ) ? `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      :
-                                                  ( wud_data_available       && end_of_wu_descriptor    ) ? `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE :  // EOD and no wr_ptr
-                                                  ( wud_data_available       && middle_of_wu_descriptor ) ? `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      :  // MOD and no wr_ptr
+                                                  ( wud_fifo_pipe_valid      && end_of_wu_descriptor    ) ? `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE :  // EOD and no wr_ptr
+                                                  ( wud_fifo_pipe_valid      && middle_of_wu_descriptor ) ? `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      :  // MOD and no wr_ptr
                                                                                                             `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR      ;
         // need to find num_lanes and all write pointers
         //  - the write pointers will be written to a local fifo. We dont know how many there are so pause on each mem ptr so we can check if another is coming before writing the CNTL field
@@ -783,7 +853,12 @@ module rdp_cntl (
                                                                        `RDP_CNTL_TAG_DATA_COMBINE_SEND_DATA  ;
         
         `RDP_CNTL_TAG_DATA_COMBINE_COMPLETE: 
-          rdp_cntl_tag_data_combine_state_next =  `RDP_CNTL_TAG_DATA_COMBINE_WAIT           ;
+          rdp_cntl_tag_data_combine_state_next =  ( op_num_of_return_pkts_valid && completed_repeat_pkt )  ? `RDP_CNTL_TAG_DATA_COMBINE_WAIT             :
+                                                  ( op_num_of_return_pkts_valid                         )  ? `RDP_CNTL_TAG_DATA_COMBINE_REPEAT           :
+                                                                                                             `RDP_CNTL_TAG_DATA_COMBINE_WAIT             ;
+        
+        `RDP_CNTL_TAG_DATA_COMBINE_REPEAT: 
+          rdp_cntl_tag_data_combine_state_next =  `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE  ;  // validate old pointer so it gets written
         
         // Latch state on error
         `RDP_CNTL_TAG_DATA_COMBINE_ERR:
@@ -800,25 +875,28 @@ module rdp_cntl (
   //
 
   // Always read the WU Descriptor FIFO unless the temporary reg is valid and the local ptr fifo is almost full
-  assign wud_fifo_read                   =    wud_data_available & 
+  assign wud_fifo_read                   =    wud_fifo_pipe_valid & 
                                             ~(wud_fifo_contains_wr_ptr & write_storage_ptr_tmp_valid & ptr_localFifo_almost_full) &  // cant transfer to temporary ptr register, so dont read
                                             ((rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_WAIT            ) |  
                                              (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_PREPARE_FOR_PTR ) |  
-//                                             (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_WAIT_FOR_WR_PTR ) |  
                                              (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_FIRST_WR_PTR    ) |  
                                              (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_HOLD_WR_PTR     ));  
 
   assign from_WuDecode_Fifo[0].pipe_read =   wud_fifo_read ;
+
+  assign processing_wu_complete  =  (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_COMPLETE ) & (~op_num_of_return_pkts_valid  | ( op_num_of_return_pkts_valid &  completed_repeat_pkt)) ;
 
   // We always load the pointer into the tmp register prior to loading into the local storage FIFO
   // We hold the pointer in this temp register unless we are about to read another pointer, so once valid, it stays valid until the descriptor has been completely
   // read from the WU descriptor fifo
   always @(posedge clk)
     begin
-      write_storage_ptr_tmp_valid <=  ( reset_poweron                                                                        ) ? 1'b0                        :
-                                      ( wud_fifo_contains_wr_ptr && wud_fifo_read                                            ) ? 1'b1                        :
-                                      ( rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE       ) ? 1'b0                        :
-                                                                                                                                 write_storage_ptr_tmp_valid ;
+      write_storage_ptr_tmp_valid <=  ( reset_poweron                                                                                                                               ) ? 1'b0                        :
+                                      ( wud_fifo_contains_wr_ptr && wud_fifo_read                                                                                                   ) ? 1'b1                        :
+                                      ((rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_WR_PTRS_COMPLETE )                                                            ) ? 1'b0                        :
+                                      ((rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_REPEAT           )                                                            ) ? 1'b1                        :  // write pointer still hold value from original wud
+                                                                                                                                                                                        write_storage_ptr_tmp_valid ;
+
       write_storage_ptr_tmp_cntl  <=  ( reset_poweron                                                                                                                                           ) ? `COMMON_STD_INTF_CNTL_SOM     :  
                                       (                                                                        (rdp_cntl_tag_data_combine_state == `RDP_CNTL_TAG_DATA_COMBINE_WAIT             )) ? `COMMON_STD_INTF_CNTL_SOM     :
                                                           
@@ -841,9 +919,17 @@ module rdp_cntl (
     end
 
 
-  assign wud_data_available              = from_WuDecode_Fifo[0].pipe_valid ;
-  assign stuc_data_available             = from_Stuc_Fifo[0].pipe_valid     ;
+  assign wud_fifo_pipe_valid      = from_WuDecode_Fifo[0].pipe_valid ;
+  assign stuc_data_available      = from_Stuc_Fifo[0].pipe_valid     ;
 
+  always @(*)
+    begin
+      nocType  =  (~op_num_of_return_pkts_valid                                                              )  ?  `MGR_NOC_CONT_TYPE_DESC_WRITE_DATA   :
+                  ( op_num_of_return_pkts_valid && (op_num_of_return_counter == 'd0                         ))  ?  `MGR_NOC_CONT_TYPE_CFG_DMA_DATA_SOD  :
+                  ( op_num_of_return_pkts_valid && (op_num_of_return_counter == op_num_of_return_pkts_value ))  ?  `MGR_NOC_CONT_TYPE_CFG_DMA_DATA_EOD  :
+                  ( op_num_of_return_pkts_valid                                                              )  ?  `MGR_NOC_CONT_TYPE_CFG_DMA_DATA      :
+                                                                                                                   `MGR_NOC_CONT_TYPE_NOP               ;
+    end
 
   //----------------------------------------------------------------------------------------------------
   // Local Memory Write Tuple and destination bitmask address storage
@@ -956,10 +1042,8 @@ module rdp_cntl (
   assign storagePtr_LocalFifo[0].write_storage_ptr  = write_storage_ptr_tmp      ;
 
   assign wr_ptrs_all_sent   = storagePtr_LocalFifo[0].pipe_valid & storagePtr_LocalFifo[0].pipe_read & ((storagePtr_LocalFifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_EOM) || (storagePtr_LocalFifo[0].pipe_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ;
-  assign wr_ptrs_all_stored = storagePtr_LocalFifo[0].write & ((storagePtr_LocalFifo[0].write_cntl == `COMMON_STD_INTF_CNTL_EOM) || (storagePtr_LocalFifo[0].write_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ;
 
-  // Write to local storage pointer FIFO
-  `include "rdp_cntl_option_tuple_extract.vh"
+  assign wr_ptrs_all_stored = storagePtr_LocalFifo[0].write      & ((storagePtr_LocalFifo[0].write_cntl == `COMMON_STD_INTF_CNTL_EOM) || (storagePtr_LocalFifo[0].write_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM)) ;
 
 
   //------------------------------------------------------------------------------------------------------------------------
@@ -1006,33 +1090,35 @@ module rdp_cntl (
 
         // Write data
         // Dont really need cntl as there is one destination address per NoC packet
-        reg    [`COMMON_STD_INTF_CNTL_RANGE     ]         write_cntl         ;
-        reg    [`MGR_STD_OOB_TAG_RANGE          ]         write_tag          ;  // this tag should match the tag from the stuc FIFO
-        reg                                               write_oneIsLocal   ;  // at least one of the pointers is for this manager
-        reg                                               write_oneIsNotLocal;  // at least one of the pointers is for another manager
-        reg    [`RDP_CNTL_NUM_LANES_RANGE       ]         write_numLanes     ;
-        reg    [`MGR_MGR_ID_BITMASK_RANGE       ]         write_destAddr     ;
-                                                                             
-        // Read data                                                         
-        wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         read_cntl          ;
-        wire   [`MGR_STD_OOB_TAG_RANGE          ]         read_tag           ;
-        wire                                              read_oneIsLocal    ; 
-        wire                                              read_oneIsNotLocal ; 
-        wire   [`RDP_CNTL_NUM_LANES_RANGE       ]         read_numLanes      ;
-        wire   [`MGR_MGR_ID_BITMASK_RANGE       ]         read_destAddr      ;
-                                                                             
-        // Control                                                           
-        wire                                              clear              ; 
-        wire                                              empty              ; 
-        wire                                              almost_full        ; 
-        wire                                              read               ; 
-        wire                                              write              ; 
+        reg    [`COMMON_STD_INTF_CNTL_RANGE         ]         write_cntl         ;
+        reg    [`MGR_STD_OOB_TAG_RANGE              ]         write_tag          ;  // this tag should match the tag from the stuc FIFO
+        reg                                                   write_oneIsLocal   ;  // at least one of the pointers is for this manager
+        reg                                                   write_oneIsNotLocal;  // at least one of the pointers is for another manager
+        reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE ]         write_type         ;
+        reg    [`RDP_CNTL_NUM_LANES_RANGE           ]         write_numLanes     ;
+        reg    [`MGR_MGR_ID_BITMASK_RANGE           ]         write_destAddr     ;
+                                                                                 
+        // Read data                                                             
+        wire   [`COMMON_STD_INTF_CNTL_RANGE         ]         read_cntl          ;
+        wire   [`MGR_STD_OOB_TAG_RANGE              ]         read_tag           ;
+        wire                                                  read_oneIsLocal    ; 
+        wire                                                  read_oneIsNotLocal ; 
+        reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE ]         read_type          ;
+        wire   [`RDP_CNTL_NUM_LANES_RANGE           ]         read_numLanes      ;
+        wire   [`MGR_MGR_ID_BITMASK_RANGE           ]         read_destAddr      ;
+                                                                                 
+        // Control                                                               
+        wire                                                  clear              ; 
+        wire                                                  empty              ; 
+        wire                                                  almost_full        ; 
+        wire                                                  read               ; 
+        wire                                                  write              ; 
  
 
         // FIXME: Combine FIFO's for synthesis
         generic_fifo #(.GENERIC_FIFO_DEPTH      (`RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_DEPTH     ), 
                        .GENERIC_FIFO_THRESHOLD  (`RDP_CNTL_TO_NOC_DEST_ADDR_FIFO_THRESHOLD ),
-                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+1+1+`MGR_STD_OOB_TAG_WIDTH+`RDP_CNTL_NUM_LANES_WIDTH+`MGR_MGR_ID_BITMASK_WIDTH)
+                       .GENERIC_FIFO_DATA_WIDTH (`COMMON_STD_INTF_CNTL_WIDTH+`MGR_STD_OOB_TAG_WIDTH+1+1+`MGR_NOC_CONT_NOC_PACKET_TYPE_WIDTH+`RDP_CNTL_NUM_LANES_WIDTH+`MGR_MGR_ID_BITMASK_WIDTH)
                         ) gfifo (
                                           // Status
                                          .empty            ( empty                      ),
@@ -1041,10 +1127,10 @@ module rdp_cntl (
                                          .depth            (                            ),
                                           // Write                                      
                                          .write            ( write                      ),
-                                         .write_data       ( {write_cntl, write_tag, write_oneIsLocal, write_oneIsNotLocal, write_numLanes, write_destAddr }), 
+                                         .write_data       ( {write_cntl, write_tag, write_oneIsLocal, write_oneIsNotLocal, write_type, write_numLanes, write_destAddr }), 
                                           // Read                                                         
                                          .read             ( read                       ), 
-                                         .read_data        ( { read_cntl,  read_tag,  read_oneIsLocal,  read_oneIsNotLocal,  read_numLanes,  read_destAddr }), 
+                                         .read_data        ( { read_cntl,  read_tag,  read_oneIsLocal,  read_oneIsNotLocal,  read_type, read_numLanes,  read_destAddr }), 
 
                                          // General
                                          .clear            ( clear                      ),
@@ -1054,17 +1140,18 @@ module rdp_cntl (
 
         // Note: First stage of pipeline is inside FIFO
         // fifo output stage
-        reg                                                  fifo_pipe_valid   ;
-        wire                                                 fifo_pipe_read    ;
-        // pipe stage
-        reg                                                  pipe_valid        ;
-        reg    [`COMMON_STD_INTF_CNTL_RANGE     ]            pipe_cntl         ;
-        reg    [`MGR_STD_OOB_TAG_RANGE          ]            pipe_tag          ;
-        reg                                                  pipe_oneIsLocal   ;
-        reg                                                  pipe_oneIsNotLocal;
-        reg    [`RDP_CNTL_NUM_LANES_RANGE       ]            pipe_numLanes     ;
-        reg    [`MGR_MGR_ID_BITMASK_RANGE       ]            pipe_destAddr     ;
-        wire                                                 pipe_read         ;
+        reg                                                      fifo_pipe_valid   ;
+        wire                                                     fifo_pipe_read    ;
+        // pipe stage                             
+        reg                                                      pipe_valid        ;
+        reg    [`COMMON_STD_INTF_CNTL_RANGE         ]            pipe_cntl         ;
+        reg    [`MGR_STD_OOB_TAG_RANGE              ]            pipe_tag          ;
+        reg                                                      pipe_oneIsLocal   ;
+        reg                                                      pipe_oneIsNotLocal;
+        reg    [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE ]            pipe_type         ;
+        reg    [`RDP_CNTL_NUM_LANES_RANGE           ]            pipe_numLanes     ;
+        reg    [`MGR_MGR_ID_BITMASK_RANGE           ]            pipe_destAddr     ;
+        wire                                                     pipe_read         ;
 
 
         assign read           = ~empty          & (~fifo_pipe_valid | fifo_pipe_read) ; // keep the pipe charged
@@ -1098,6 +1185,8 @@ module rdp_cntl (
                                                             pipe_oneIsLocal    ;
             pipe_oneIsNotLocal  <= ( fifo_pipe_read     ) ? read_oneIsNotLocal :
                                                             pipe_oneIsNotLocal ;
+            pipe_type           <= ( fifo_pipe_read     ) ? read_type          :
+                                                            pipe_type          ;
             pipe_numLanes       <= ( fifo_pipe_read     ) ? read_numLanes      :
                                                             pipe_numLanes      ;
             pipe_destAddr       <= ( fifo_pipe_read     ) ? read_destAddr      :
@@ -1121,6 +1210,7 @@ module rdp_cntl (
   assign storageDestAddr_LocalFifo[0].write_tag              = current_tag                   ;
   assign storageDestAddr_LocalFifo[0].write_oneIsLocal       = onePtrIsLocal                 ;
   assign storageDestAddr_LocalFifo[0].write_oneIsNotLocal    = onePtrIsNotLocal              ;
+  assign storageDestAddr_LocalFifo[0].write_type             = nocType                       ;
   assign storageDestAddr_LocalFifo[0].write_numLanes         = num_of_valid_lanes            ;
   assign storageDestAddr_LocalFifo[0].write_destAddr         = aggregateNocDestBitMaskAddr   ;
 
@@ -1152,24 +1242,25 @@ module rdp_cntl (
   // FSM Regs and Wires
 
   // Create wires for source of data for NoC packets and local memory write
-  wire                                              from_Stuc_valid                       =  from_Stuc_Fifo[0].pipe_valid                      ;
-  wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         from_Stuc_cntl                        =  from_Stuc_Fifo[0].pipe_cntl                       ;
-  wire   [`MGR_STD_OOB_TAG_RANGE          ]         from_Stuc_tag                         =  from_Stuc_Fifo[0].pipe_tag                        ;
-  wire   [`STACK_UP_INTF_DATA_RANGE       ]         from_Stuc_data                        =  from_Stuc_Fifo[0].pipe_data                       ;
-  wire                                              from_Stuc_eom                         =  (from_Stuc_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (from_Stuc_cntl == `COMMON_STD_INTF_CNTL_EOM) ;
-                                                                                                                                               
-  wire                                              from_wrPtrFifo_valid                  =  storagePtr_LocalFifo[0].pipe_valid                ;
-  wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         from_wrPtrFifo_cntl                   =  storagePtr_LocalFifo[0].pipe_cntl                 ;
-  wire   [`MGR_STORAGE_DESC_ADDRESS_RANGE ]         from_wrPtrFifo_wrPtr                  =  storagePtr_LocalFifo[0].pipe_storage_ptr          ;
-  wire                                              from_wrPtrFifo_eom                    =  (from_wrPtrFifo_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (from_wrPtrFifo_cntl == `COMMON_STD_INTF_CNTL_EOM) ;
-                                                                                          
-  wire                                              from_NocInfoFifo_valid                =  storageDestAddr_LocalFifo[0].pipe_valid           ; 
-  wire   [`COMMON_STD_INTF_CNTL_RANGE     ]         from_NocInfoFifo_cntl                 =  storageDestAddr_LocalFifo[0].pipe_cntl            ;
-  wire   [`MGR_STD_OOB_TAG_RANGE          ]         from_NocInfoFifo_tag                  =  storageDestAddr_LocalFifo[0].pipe_tag             ; 
-  wire                                              from_NocInfoFifo_oneIsLocal           =  storageDestAddr_LocalFifo[0].pipe_oneIsLocal      ; 
-  wire                                              from_NocInfoFifo_oneIsNotLocal        =  storageDestAddr_LocalFifo[0].pipe_oneIsNotLocal   ; 
-  wire   [`RDP_CNTL_NUM_LANES_RANGE       ]         from_NocInfoFifo_numLanes             =  storageDestAddr_LocalFifo[0].pipe_numLanes        ;
-  wire   [`MGR_MGR_ID_BITMASK_RANGE       ]         from_NocInfoFifo_destAddr             =  storageDestAddr_LocalFifo[0].pipe_destAddr        ;
+  wire                                                  from_Stuc_valid                       =  from_Stuc_Fifo[0].pipe_valid                      ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE         ]         from_Stuc_cntl                        =  from_Stuc_Fifo[0].pipe_cntl                       ;
+  wire   [`MGR_STD_OOB_TAG_RANGE              ]         from_Stuc_tag                         =  from_Stuc_Fifo[0].pipe_tag                        ;
+  wire   [`STACK_UP_INTF_DATA_RANGE           ]         from_Stuc_data                        =  from_Stuc_Fifo[0].pipe_data                       ;
+  wire                                                  from_Stuc_eom                         =  (from_Stuc_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (from_Stuc_cntl == `COMMON_STD_INTF_CNTL_EOM) ;
+                                                                                                                                                   
+  wire                                                  from_wrPtrFifo_valid                  =  storagePtr_LocalFifo[0].pipe_valid                ;
+  wire   [`COMMON_STD_INTF_CNTL_RANGE         ]         from_wrPtrFifo_cntl                   =  storagePtr_LocalFifo[0].pipe_cntl                 ;
+  wire   [`MGR_STORAGE_DESC_ADDRESS_RANGE     ]         from_wrPtrFifo_wrPtr                  =  storagePtr_LocalFifo[0].pipe_storage_ptr          ;
+  wire                                                  from_wrPtrFifo_eom                    =  (from_wrPtrFifo_cntl == `COMMON_STD_INTF_CNTL_SOM_EOM) | (from_wrPtrFifo_cntl == `COMMON_STD_INTF_CNTL_EOM) ;
+                                                                                              
+  wire                                                  from_NocInfoFifo_valid                =  storageDestAddr_LocalFifo[0].pipe_valid           ; 
+  wire   [`COMMON_STD_INTF_CNTL_RANGE         ]         from_NocInfoFifo_cntl                 =  storageDestAddr_LocalFifo[0].pipe_cntl            ;
+  wire   [`MGR_STD_OOB_TAG_RANGE              ]         from_NocInfoFifo_tag                  =  storageDestAddr_LocalFifo[0].pipe_tag             ; 
+  wire                                                  from_NocInfoFifo_oneIsLocal           =  storageDestAddr_LocalFifo[0].pipe_oneIsLocal      ; 
+  wire                                                  from_NocInfoFifo_oneIsNotLocal        =  storageDestAddr_LocalFifo[0].pipe_oneIsNotLocal   ; 
+  wire   [`MGR_NOC_CONT_NOC_PACKET_TYPE_RANGE ]         from_NocInfoFifo_type                 =  storageDestAddr_LocalFifo[0].pipe_type            ;
+  wire   [`RDP_CNTL_NUM_LANES_RANGE           ]         from_NocInfoFifo_numLanes             =  storageDestAddr_LocalFifo[0].pipe_numLanes        ;
+  wire   [`MGR_MGR_ID_BITMASK_RANGE           ]         from_NocInfoFifo_destAddr             =  storageDestAddr_LocalFifo[0].pipe_destAddr        ;
 
   // check if the pointer include a local pointer and/or a pointer destined for another manager and test the local ready flag and/or NoC ready flag
   wire                                              wr_destinations_ready                 = (~from_NocInfoFifo_oneIsLocal | mwc__rdp__ready_d1) & (~from_NocInfoFifo_oneIsNotLocal | mcntl__rdp__noc_ready_d1) ;
@@ -1357,7 +1448,7 @@ module rdp_cntl (
                                        ((wrDescOutputPkt_cntl_e1 == `COMMON_STD_INTF_CNTL_EOM) && dataCountOdd ) ? `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_ONE  :  // there was an odd number of lanes activated
                                                                                                                    `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_VALID_BOTH ;                                                                                           
 
-  assign  wrDescOutputPkt_type_e1     = `MGR_NOC_CONT_TYPE_DESC_WRITE_DATA          ; 
+  assign  wrDescOutputPkt_type_e1     = from_NocInfoFifo_type              ;
   assign  wrDescOutputPkt_desttype_e1 = `MGR_NOC_CONT_DESTINATION_ADDR_TYPE_BITMASK ; 
 
   assign  wrDescOutputPkt_ptype_e1   = (rdp_cntl_noc_data_packet_gen_state == `RDP_CNTL_NOC_PKT_GEN_SEND_ADDR     ) ? `MGR_NOC_CONT_EXTERNAL_TUPLE_CYCLE_PAYLOAD_TYPE_HEADER :

@@ -175,4 +175,21 @@
 //------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------------
+// Divide
+`define STREAMING_OP_MULT_CNTL_WAIT                            7'b000_0001
+`define STREAMING_OP_MULT_CNTL_START                           7'b000_0010
+`define STREAMING_OP_MULT_CNTL_PROCESS                         7'b000_0100
+`define STREAMING_OP_MULT_CNTL_FLUSH                           7'b000_1000
+`define STREAMING_OP_MULT_CNTL_END                             7'b001_0000
+
+`define STREAMING_OP_MULT_CNTL_COMPLETE                        7'b010_0000
+`define STREAMING_OP_MULT_CNTL_ERR                             7'b100_0000
+
+`define STREAMING_OP_MULT_CNTL_STATE_WIDTH                     7
+`define STREAMING_OP_MULT_CNTL_STATE_MSB                       `STREAMING_OP_MULT_CNTL_STATE_WIDTH-1
+`define STREAMING_OP_MULT_CNTL_STATE_LSB                       0
+`define STREAMING_OP_MULT_CNTL_STATE_SIZE                      (`STREAMING_OP_MULT_CNTL_STATE_MSB - `STREAMING_OP_MULT_CNTL_STATE_LSB +1)
+`define STREAMING_OP_MULT_CNTL_STATE_RANGE                      `STREAMING_OP_MULT_CNTL_STATE_MSB : `STREAMING_OP_MULT_CNTL_STATE_LSB
+
+//------------------------------------------------------------------------------------------------------------
 `endif
