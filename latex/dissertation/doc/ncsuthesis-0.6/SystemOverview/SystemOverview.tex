@@ -218,7 +218,7 @@ The 512-bit upstream bus is primarily designed to send the results of a downstre
 The upstream bus is packetized with the result data contained in the data portion of the upstream packet.
 Additional information includes the operation identification tag provided by the decoder in the downstream \ac{oob} operation configuration and the number of data words.
 The upstream bus is not as wide as the downstream bus because the ratio of downstream operands to result data is a function of the pre-synaptic fanin.
-Based on the average fanin from the baseline \ac{ann} shown in table \ref{tab:Baseline Layer Configuration}, a 512-bit bus exceeds the required average bandwidth.
+Based on the average fanin from the baseline \ac{ann} shown in Table \ref{tab:Baseline Layer Configuration}, a 512-bit bus exceeds the required average bandwidth.
 
 The stack bus \ac{oob} downstream and upstream signalling can be seen in Figure \ref{fig:Stack Bus signalling}.
 
@@ -732,14 +732,14 @@ A control and data flow diagram of the stack showing the 64 sub-system columns c
 \end{figure}
 
 
-One of the primary objectives is to ensure the system can maintain the required average bandwidth (see table \ref{tab:Bandwidth and Storage Design Requirements}) while operating directly out of \ac{dram} over a range of pre-synaptic fanins.
+One of the primary objectives is to ensure the system can maintain the required average bandwidth (see Table \ref{tab:Bandwidth and Storage Design Requirements}) while operating directly out of \ac{dram} over a range of pre-synaptic fanins.
 To achieve this the system decodes instructions and concurrently sends configuration information to various system functions.
 It concurrently pre-fetches and pipelines data to absorb the latencies associated with \ac{dram}.
 All system functions pipeline their configuration data to ensure the main processing pipeline is not starved of data and/or operations.
 This parallelism allows this system to constantly stream data while results from previous operations are being processed, broadcast to other \acp{ssc} and written back to \ac{ssc} memory.
 The instructions, the structures for describing the operations and the structures describing how data is retrieved and stored have been architected to provide extensibility.
 A detailed description of the instruction architecture and data structures is given in Chapter \ref{sec:System Operations}.
-The baseline \ac{ann} described in table \ref{tab:Baseline Layer Configuration} was used to define a collection of pre-synaptic fanin tests and those tests were used to ensure the average bandwidth can be maintained.
+The baseline \ac{ann} described in Table \ref{tab:Baseline Layer Configuration} was used to define a collection of pre-synaptic fanin tests and those tests were used to ensure the average bandwidth can be maintained.
 The results of those tests can be seen in Chapter \ref{sec:Results}.
 
 

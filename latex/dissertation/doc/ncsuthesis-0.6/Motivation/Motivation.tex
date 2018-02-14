@@ -14,14 +14,14 @@
 
 As mentioned in chapter \ref{sec:Introduction}, this work focuses on embedded applications employing disparate \ac{ann}s and therefore assumes there are limited opportunities for both weight reuse and batch processing.
 
-Given the storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, it is generally accepted that \ac{dram} is required to store the \ac{ann} parameters \cite{dadiannao2014}\cite{dadiannao2017}\cite{azarkhish2017neurostream}.
+Given the storage requirements shown in Table \ref{tab:Bandwidth and Storage Design Requirements}, it is generally accepted that \ac{dram} is required to store the \ac{ann} parameters \cite{dadiannao2014}\cite{dadiannao2017}\cite{azarkhish2017neurostream}.
 
 When considering systems that will employ multiple \ac{dnn}s simultaneously, we assume that these embedded systems will require usable memory bandwidth on the order of tens of \SI[per-mode=symbol]{}{\tera \bit \per \second} \eqref{eq:maximumBandwidth}.
 
 In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck} \cite{dadiannao2017}}.
 
 \iffalse
-Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for embedded systems employing inference on multiple disparate useful-sized neural networks.}}}
+Given the bandwidth and storage requirements shown in Table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for embedded systems employing inference on multiple disparate useful-sized neural networks.}}}
 %\hlc[gray]{hello}
 \fi
 

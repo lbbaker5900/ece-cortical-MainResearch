@@ -19,7 +19,7 @@ face recognition and autonomous control.
 Artificial neural networks (\ac{ann}) take their inspiration from neuron behavior observed in the mammalian brain, although implementations are simplifications of what actually exists in the brain.
 
 The mammalian neuron is a cell that receives input and generates output in the form of electrical and chemical processes.
-The neuron has a cell body (or sona), a group of dendrites which provide the inputs from other cells, a cell body, an axon which generates the output signals, and the axon terminals which are the outputs of the cell.
+The neuron has a cell body (or soma), a group of dendrites which provide the inputs from other cells, a cell body, an axon which generates the output signals, and the axon terminals which are the outputs of the cell.
 The connection from a cells output, or axon terminal to another cells input, or dendrite is known as a synapse. 
 The connection in the synapse is a chemical process stimulated by electrical impulses.
 The neuron can be seen in Figure \ref{fig:neuron}.
@@ -503,7 +503,7 @@ In the case of employing the same filters across the entire input layer the \ac{
 These \acp{cnn} can store the filter parameters in local \ac{sram} and construct an entire feature plane. These \acp{cnn} are considered a subset of the generic case of \ac{dnn}.
 This work considers the more general \ac{dnn} case and supports acceleration of generic \acp{dnn} which includes \acp{cnn}.
 
-An example of a \ac{dnn} can be seen in Figure \ref{fig:Baseline DNN showing layer order} with the layer configurations shown in table \ref{tab:Baseline Layer Configuration}. A \ac{cnn} similar to this has demonstrated high levels of efficacy in image recognition applications.
+An example of a \ac{dnn} can be seen in Figure \ref{fig:Baseline DNN showing layer order} with the layer configurations shown in Table \ref{tab:Baseline Layer Configuration}. A \ac{cnn} similar to this has demonstrated high levels of efficacy in image recognition applications.
 {\textbf{\textcolor{black}{Therefore, this work will use the parameters from the table shown in Figure \ref{tab:Baseline Layer Configuration} as a template for a baseline \ac{ann} for estimating the storage and processing requirements and the range of pre-synaptic fanins.}}}
 
 %%
@@ -626,7 +626,7 @@ An example of a \ac{dnn} can be seen in Figure \ref{fig:Baseline DNN showing lay
 \end{sidewaysfigure}
 \fi
 
-To approach the capabilities observed in human behavior, such as object recognition \ac{ann}s have become very large. The example shown in Figure \ref{fig:Baseline DNN showing layer order}, which is based on the work from \cite{krizhevsky2012imagenet}, has hundreds of thousands of \acp{an} and hundreds of millions of connection weights (see table \ref{tab:Baseline Layer Configuration}).
+To approach the capabilities observed in human behavior, such as object recognition \ac{ann}s have become very large. The example shown in Figure \ref{fig:Baseline DNN showing layer order}, which is based on the work from \cite{krizhevsky2012imagenet}, has hundreds of thousands of \acp{an} and hundreds of millions of connection weights (see Table \ref{tab:Baseline Layer Configuration}).
 These \acp{ann} utilize these hundreds of thousands of \acp{an} to implement what a human would consider a relatively straightforward task.
 For example, a ``useful'' \ac{ann} similar to that described in \cite{krizhevsky2012imagenet} which was used to recognize up to 1000 different object classes, has a network size of approximately 650,000 \acp{an} and 630 million synaptic connections \cite{krizhevsky2012imagenetPreso}. 
 
@@ -643,9 +643,9 @@ Assuming these complex functions will require \ac{ann}s similar in size to figur
 Considering the storage required for the input, the \ac{an} states and most significantly the weights for connections, the storage requirements results in gigabytes of memory.
 When these \ac{ann}s are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
 
-As a metric, this work assumes that any useful \ac{ann} will be similar to that shown in table \ref{tab:Baseline Layer Configuration} which utilizes more than 900 thousand \acp{an} and approximately 200 million parameters. 
+As a metric, this work assumes that any useful \ac{ann} will be similar to that shown in Table \ref{tab:Baseline Layer Configuration} which utilizes more than 900 thousand \acp{an} and approximately 200 million parameters. 
 \iffalse
-Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for embedded systems employing inference on multiple disparate useful-sized neural networks.}}}
+Given the bandwidth and storage requirements shown in Table \ref{tab:Bandwidth and Storage Design Requirements}, the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for embedded systems employing inference on multiple disparate useful-sized neural networks.}}}
 \fi
 %\hlc[gray]{hello}
 \iffalse
@@ -719,7 +719,7 @@ There has been work on the impact of changing the precision of the number format
 For the baseline requirements this work assumes 32-bit single-precision \ac{fp}.
 
 
-Assuming an \ac{ann} similar to that shown in table \ref{tab:Baseline Layer Configuration} with 775 thousand \acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{32}{\tera \bit \per \second} (see equation \ref{eq:maximumBandwidth}).
+Assuming an \ac{ann} similar to that shown in Table \ref{tab:Baseline Layer Configuration} with 775 thousand \acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{32}{\tera \bit \per \second} (see equation \ref{eq:maximumBandwidth}).
 
 % {2} means 2 columns
 \begin{alignat}{2} 
@@ -737,7 +737,7 @@ Assuming an \ac{ann} similar to that shown in table \ref{tab:Baseline Layer Conf
 \end{alignat}
 
 When implementing \ac{ann}s, the memory requirements are also significant. The storage is required for the input, the \ac{an} states and most significantly the parameters for each of the \ac{an}'s pre-synaptic connections. 
-For the case shown in table \ref{tab:Baseline Layer Configuration}, there are 202 million parameters requiring \SI[per-mode=symbol]{0.81}{\giga\byte} and 772 thousand \acp{an} requiring \SI[per-mode=symbol]{3.88}{\mega\byte} storage.
+For the case shown in Table \ref{tab:Baseline Layer Configuration}, there are 202 million parameters requiring \SI[per-mode=symbol]{0.81}{\giga\byte} and 772 thousand \acp{an} requiring \SI[per-mode=symbol]{3.88}{\mega\byte} storage.
 The storage required for 10 \acp{ann} is of the order of \SI[per-mode=symbol]{8.0}{\giga\byte} \eqref{eq:memoryRequired}.
 
 \begin{alignat}{2} 
@@ -752,7 +752,7 @@ The storage required for 10 \acp{ann} is of the order of \SI[per-mode=symbol]{8.
   \text{and }   &\mathbf{b_w} \text{ is the number of bits per parameter} \notag
 \end{alignat}
 
-The approximate system bandwidth and storage requirements are shown in table \ref{tab:Bandwidth and Storage Design Requirements}.
+The approximate system bandwidth and storage requirements are shown in Table \ref{tab:Bandwidth and Storage Design Requirements}.
 
 \begin{table}[h]
   \captionsetup{justification=centering, skip=3pt}
@@ -773,7 +773,7 @@ The approximate system bandwidth and storage requirements are shown in table \re
 
 
 
-Given the bandwidth and storage requirements shown in table \ref{tab:Bandwidth and Storage Design Requirements}, 
+Given the bandwidth and storage requirements shown in Table \ref{tab:Bandwidth and Storage Design Requirements}, 
 the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for embedded systems employing inference on multiple disparate useful-sized neural networks.}}}
 %\hlc[gray]{hello}
 
