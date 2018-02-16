@@ -416,7 +416,7 @@ If the \ac{roi} is contiguous in memory, then there is one consecuitive field an
 
 The request block generates memory requests based on the storage descriptor contents and number of lanes and sends the requests to the \ac{mmc}.
 The request information is also sent to the stream block.
-As the request block processes the storage descriptor start address and consecutive/jump fields it also send the information to the stream block.
+As the request block processes the storage descriptor start address and consecutive/jump fields it also sends the information to the stream block.
 
 The stream block is responsible for taking the 2048-bit memory data from the \ac{mmc} and directing words to each execution lane.
 As the data is returned from the \ac{mmc}, it is placed in a channel 0 \ac{fifo} and a channel 1 \ac{fifo}. 
@@ -763,16 +763,16 @@ A block diagram of the \ac{stop} can be seen in Figure \ref{fig:stOp block diagr
 
 The \ac{simd} takes the operation from the \ac{pe} controller and indexes into a small memory. This \ac{simd} pointer memory contains a \ac{pc} for the \ac{simd} along with control information for processing the \ac{stop} result inside the wrapper.
 The processing in the wrapper is controlled by a four-element vector allowing up to four cascaded operations using the \acp{sfu}.
-The wrapper contains four \acp{sfu}, a \ac{relu}, a \ac{binary32} adder, a \ac{binary32} exponential and a \ac{binary32} divider.
+The wrapper contains four \acp{sfu}, a \ac{relu}, a \ac{binary32} adder, a \ac{binary32} exponential, a \ac{binary32} comparator and a \ac{binary32} divider.
 The \ac{relu} operation is a simple operation and is performed in parallel on all 32 results from the \ac{stop}.
-The divide, exponent and adder are more complex and there are single instantiations of each of the \acp{sfu}.
+The divide, exponent, comparator and adder are more complex and there are single instantiations of each of the \acp{sfu}.
 When processing a group of values from the \ac{stop}, each value is processed serially.
 
-The most common usage of the \acp{sfu} is during \ac{an} state calculation. In this case, the \ac{relu} is used as one of the four operations with the other three being \acp{nop}.
+The most common usage of the \acp{sfu} is during \ac{an} state calculation. In this case, the \ac{relu} is used as one of the four operations with the other three being a ``send'' followed by three \acp{nop}.
 The \ac{relu} is preceded by the \ac{mac} operation in the \ac{stop}.
 Once the \ac{sfu} operations have concluded, the result is sent directly back to the manager over the upstream bus.
 
-For this work, a high level of importance was not assigned to the actual \ac{simd} because a) the functionality provided by the \ac{simd} is to provide a level of flexibility for future work and b) the choice of \ac{simd} is currently under considration.
+For this work, a high level of importance was not assigned to the actual \ac{simd} because a) the functionality provided by the \ac{simd} is to provide a level of flexibility for future work and b) the choice of \ac{simd} is currently under consideration.
 Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed only by the special functions provided in the wrapper as dscribed above and shown in Figure \ref{fig:simd wrapper block diagram}.
 However, it was important to include the \ac{simd} in the area portion of the study.
 To account for the \ac{simd}, in the area layout study a placement blockage is used based on a 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
@@ -831,14 +831,14 @@ Other than the \ac{relu}, the \acp{sfu} are not considered hot-spots in the proc
           4     & Exponent                       & performed on each valid \ac{stop} result            \\\cline{1-3}
           5     & Divide with common register    & denominator is the common register                  \\\cline{1-3}
           6     & Recipricate common register    & save to same common register [idx]                  \\\cline{1-3}
-          7     & \multicolumn{2}{c|}{NA}                                                              \\\cline{1-3}
+          7     & Compare with common register   & save max to same common register [idx]              \\\cline{1-3}
           8     & Send                           & Local registers sent to upstream                    \\\cline{1-3}
-          8     & Send null                      & Send a null packet upstream                         \\\cline{1-3}
-          9     & Clear local register           &  \multirow{4}{*}{no data operations}                \\\cline{1-2}
-         10     & Clear common register          &                                                     \\\cline{1-2}
-         11     & Clear index register           &                                                     \\\cline{1-2}
-         12     & Increment index register       &                                                     \\\cline{1-3}
-        13-15   & \multicolumn{2}{c|}{NA}                                                              \\\cline{1-3}
+          9     & Send null                      & Send a null packet upstream                         \\\cline{1-3}
+         10     & Clear local register           &  \multirow{4}{*}{no data operations}                \\\cline{1-2}
+         11     & Clear common register          &                                                     \\\cline{1-2}
+         12     & Clear index register           &                                                     \\\cline{1-2}
+         13     & Increment index register       &                                                     \\\cline{1-3}
+        14-15   & \multicolumn{2}{c|}{NA}                                                              \\\cline{1-3}
           \hline
         \end{tabular}
     \end{adjustbox}
