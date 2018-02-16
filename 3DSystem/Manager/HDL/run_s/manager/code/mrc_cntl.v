@@ -386,6 +386,65 @@ module mrc_cntl (
          
   assign mrc__wud__ready_e1              = ~from_Wud_Fifo[0].almost_full  ;
 
+  reg    [`MGR_WU_OPT_PER_INST_RANGE      ]            pipe_option_is_extd_type ;
+  reg    [`MGR_WU_OPT_PER_INST_RANGE      ]            pipe_option_extd_valid                               ;
+  reg    [`MGR_WU_OPT_TYPE_RANGE          ]            pipe_option_extd_type         [`MGR_WU_OPT_PER_INST] ;
+  reg    [`MGR_WU_EXTD_OPT_VALUE_RANGE    ]            pipe_option_extd_value        [`MGR_WU_OPT_PER_INST] ;
+
+
+  genvar opt;
+  generate
+    for (opt=0; opt<`MGR_WU_OPT_PER_INST; opt=opt+1) 
+      begin: extd_tuple_decode
+        always @(*)
+          begin
+            isExtdTuple(pipe_option_is_extd_type[opt], from_Wud_Fifo[0].read_option_type[opt]);
+          end
+
+        if (opt == 0)
+         begin
+           always @(posedge clk)
+             begin
+               pipe_option_extd_valid       [opt]  <=  ( reset_poweron                                                     ) ? 1'b0                   :
+                                                       ( from_Wud_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? 1'b1                   :
+                                                       ( from_Wud_Fifo[0].pipe_read                                        ) ? 1'b0                   :
+                                                                                                                               pipe_option_extd_valid [opt];
+
+               pipe_option_extd_type        [opt]  <=  ( from_Wud_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? {from_Wud_Fifo[0].read_option_type [opt]} :
+                                                                                                                                    pipe_option_extd_type        [opt] ;
+               
+               pipe_option_extd_value       [opt]  <=  ( from_Wud_Fifo[0].fifo_pipe_read &&  pipe_option_is_extd_type[opt] ) ? {from_Wud_Fifo[0].read_option_type [opt], from_Wud_Fifo[0].read_option_value [opt], from_Wud_Fifo[0].read_option_type [opt+1], from_Wud_Fifo[0].read_option_value [opt+1]}  : 
+                                                                                                                                    pipe_option_extd_value       [opt] ;
+               
+             end
+         end
+        else if (opt == 1)
+         begin
+           always @(posedge clk)
+             begin
+               pipe_option_extd_valid       [opt]  <=  ( reset_poweron                                                                                            ) ? 1'b0                               :
+                                                       ( from_Wud_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? 1'b1                               :
+                                                                                                                                                                      pipe_option_extd_valid             [opt] ;
+
+               pipe_option_extd_type        [opt]  <=  ( from_Wud_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? {from_Wud_Fifo[0].read_option_type [opt]} :
+                                                                                                                                                                        pipe_option_extd_type        [opt]  ;
+               
+               pipe_option_extd_value       [opt]  <=  ( from_Wud_Fifo[0].fifo_pipe_read && ~pipe_option_is_extd_type[opt-1] && pipe_option_is_extd_type[opt]) ? {from_Wud_Fifo[0].read_option_type [opt], from_Wud_Fifo[0].read_option_value [opt], from_Wud_Fifo[0].read_option_type [opt+1], from_Wud_Fifo[0].read_option_value [opt+1]}  : 
+                                                                                                                                                                        pipe_option_extd_value       [opt]  ;
+               
+             end
+         end
+        else 
+         begin
+           always @(posedge clk)
+             begin
+               pipe_option_extd_valid       [opt]  <=   'd0  ;
+               pipe_option_extd_type        [opt]  <=  1'b0  ;
+               pipe_option_extd_value       [opt]  <=  1'b0  ;
+             end
+         end
+      end
+  endgenerate
 
 
   //----------------------------------------------------------------------------------------------------
@@ -419,11 +478,20 @@ module mrc_cntl (
         wire   contains_storage_ptr  ;  
         wire   contains_txfer_type   ;  
         wire   contains_target       ;  
-
-        assign contains_num_lanes   = from_Wud_Fifo[0].pipe_valid  && (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES ) ;
-        assign contains_storage_ptr = from_Wud_Fifo[0].pipe_valid  && (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_MEMORY       ) ;
-        assign contains_target      = from_Wud_Fifo[0].pipe_valid  && (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_TGT          ) ;  // arg0 or arg1 
-        assign contains_txfer_type  = from_Wud_Fifo[0].pipe_valid  && (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_TXFER        ) ;  // bcast or vector
+        if (optNum == 0)
+          begin
+            assign contains_num_lanes   = from_Wud_Fifo[0].pipe_valid  & (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES ) ;
+            assign contains_storage_ptr = from_Wud_Fifo[0].pipe_valid  & (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_MEMORY       ) ;
+            assign contains_target      = from_Wud_Fifo[0].pipe_valid  & (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_TGT          ) ;  // arg0 or arg1 
+            assign contains_txfer_type  = from_Wud_Fifo[0].pipe_valid  & (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_TXFER        ) ;  // bcast or vector
+          end
+        else 
+          begin
+            assign contains_num_lanes   = from_Wud_Fifo[0].pipe_valid  & (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_NUM_OF_LANES ) & ~pipe_option_extd_valid[optNum-1] ;
+            assign contains_storage_ptr = from_Wud_Fifo[0].pipe_valid  & (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_MEMORY       ) & ~pipe_option_extd_valid[optNum-1] ;
+            assign contains_target      = from_Wud_Fifo[0].pipe_valid  & (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_TGT          ) & ~pipe_option_extd_valid[optNum-1] ;  // arg0 or arg1 
+            assign contains_txfer_type  = from_Wud_Fifo[0].pipe_valid  & (from_Wud_Fifo[0].pipe_option_type[optNum] == PY_WU_INST_OPT_TYPE_TXFER        ) & ~pipe_option_extd_valid[optNum-1] ;  // bcast or vector
+          end
 
       end
   endgenerate

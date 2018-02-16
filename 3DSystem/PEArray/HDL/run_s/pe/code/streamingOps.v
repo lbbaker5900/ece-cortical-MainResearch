@@ -208,6 +208,11 @@ module streamingOps (
   wire  [`STREAMING_OP_DATA_RANGE      ]       simd__stOp__strm0_data        ; 
   wire                                         simd__stOp__strm0_valid       ; 
 
+  wire                                         stOp__simd__strm0_ready_e1    ;
+  reg   [`DMA_CONT_STRM_CNTL_RANGE     ]       simd__stOp__strm0_cntl_d1     ; 
+  reg   [`STREAMING_OP_DATA_RANGE      ]       simd__stOp__strm0_data_d1     ; 
+  reg                                          simd__stOp__strm0_valid_d1    ; 
+
   // DMA interface
   wire                                         dma__stOp__strm0_ready       ;
   reg    [`DMA_CONT_STRM_CNTL_RANGE     ]      stOp__dma__strm0_cntl        ; 
@@ -248,6 +253,15 @@ module streamingOps (
   wire  [`STREAMING_OP_DATA_RANGE      ]       sti__stOp__strm1_data_mask   ; 
   wire                                         sti__stOp__strm1_data_valid  ; 
 
+  always @(posedge clk)
+    begin
+      stOp__simd__strm0_ready       <=   stOp__simd__strm0_ready_e1   ;
+      simd__stOp__strm0_cntl_d1     <=   simd__stOp__strm0_cntl       ; 
+      simd__stOp__strm0_data_d1     <=   simd__stOp__strm0_data       ; 
+      simd__stOp__strm0_valid_d1    <=   simd__stOp__strm0_valid      ; 
+    end
+  assign  stOp__simd__strm0_ready_e1   =  1'b1 ;  // FIXME
+
   // Input FIFO
   wire                                        strm0_fifo_data_valid    ;    // FIFO output pipe valid
   reg                                         strm0_fifo_read               ;    
@@ -282,10 +296,11 @@ module streamingOps (
   reg                            fp_mac_result_valid  ;
 
   // FP MULT
-  reg [`STREAMING_OP_FP_RANGE]   fp_mult               ;
-  reg                            fp_mult_enable        ;
-  reg                            fp_mult_complete      ;
-  reg                            fp_mult_result_valid  ;
+  reg [`STREAMING_OP_FP_RANGE]              fp_mult               ;
+  reg                                       fp_mult_enable        ;
+  reg                                       fp_mult_complete      ;
+  reg                                       fp_mult_result_valid  ;
+  reg [`COMMON_STD_INTF_CNTL_RANGE  ]       fp_mult_cntl          ; 
 
   // FP Compare
   reg [`STREAMING_OP_INDEX_RANGE] fp_cmp                     ;
@@ -309,6 +324,10 @@ module streamingOps (
   reg                                       strm1_stOp_complete    ; // let the streaming operation tell us when it is complete
                                                                      // Means selected streaming operation complete
 
+  reg                                       stOp_reg_valid       ;
+  reg [`STREAMING_OP_RESULT_RANGE   ]       stOp_reg_data        ; 
+  reg [`COMMON_STD_INTF_CNTL_RANGE  ]       stOp_reg_cntl        ; 
+
   reg     strm0_ready          ;  // Stream ready 
   reg     strm1_ready          ;  
   reg     strm0_complete       ;  // Stream complete thru fifo and output processing
@@ -320,8 +339,14 @@ module streamingOps (
   wire    strm1_src_complete_next  ;  
 
   //-------------------------------------------------------------------------------------------------
-  // Operation Data-Flow
+  // Operation Data-Flo
   //
+  always @(posedge clk)
+    begin
+      stOp__reg__valid    <=   stOp_reg_valid   ;
+      stOp__reg__cntl     <=   stOp_reg_cntl    ;
+      stOp__reg__data     <=   stOp_reg_data    ;
+    end
 
   // Operations need to know when the last transaction is at the output of the
   // FIFO
@@ -331,9 +356,9 @@ module streamingOps (
   always @(*)
     begin
     // Output
-    stOp__reg__cntl              =   'd0                       ;
-    stOp__reg__data              =   'd0                       ;
-    stOp__reg__valid             =   'b0                       ;
+    stOp_reg_valid             =   'b0                       ;
+    stOp_reg_cntl              =   'd0                       ;
+    stOp_reg_data              =   'd0                       ;
     // to Memory (via dma)
     stOp__dma__strm0_data        =    32'hFFFF_FFFF            ;
     stOp__dma__strm0_data_mask   =    32'hFFFF_FFFF            ;
@@ -356,6 +381,7 @@ module streamingOps (
     // stOp control
     bsum_enable                  =   'b0                       ;
     fp_mac_enable                =   'b0                       ;
+    fp_mult_enable               =   'b0                       ;
     fp_cmp_min                   =   'b0                       ;
     fp_cmp_max                   =   'b0                       ;
     fp_cmp_first_gt_threshold    =   'b0                       ;
@@ -370,10 +396,10 @@ module streamingOps (
           stOp__dma__strm0_data_valid  =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & bsum_result_valid  ;
 
           // FIXME : always send single result operations to simd register 
-          stOp__reg__data              =   bsum                                                                               ;
-          stOp__reg__cntl              =  `COMMON_STD_INTF_CNTL_SOM_EOM                                                       ; // only one result
-          // stOp__reg__valid             =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_REG   ) & bsum_result_valid  ;
-          stOp__reg__valid             =   bsum_result_valid  ;
+          stOp_reg_data              =   bsum                                                                               ;
+          stOp_reg_cntl              =  `COMMON_STD_INTF_CNTL_SOM_EOM                                                       ; // only one result
+          // stOp_reg_valid             =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_REG   ) & bsum_result_valid  ;
+          stOp_reg_valid             =   bsum_result_valid  ;
 
           // FIFO control
           strm0_fifo_read              =   strm0_enable & strm_fifo_data_valid & ~strm0_src_complete ;
@@ -417,9 +443,9 @@ module streamingOps (
           stOp__dma__strm0_cntl        =  `DMA_CONT_STRM_CNTL_SOP_EOP ; // only one result
           stOp__dma__strm0_data_valid  =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & fp_mac_result_valid ;
           // FIXME : always send single result operations to simd register 
-          stOp__reg__valid             =   fp_mac_result_valid           ;
-          stOp__reg__data              =   fp_mac                        ;
-          stOp__reg__cntl              =  `COMMON_STD_INTF_CNTL_SOM_EOM  ; // only one result
+          stOp_reg_valid             =   fp_mac_result_valid           ;
+          stOp_reg_data              =   fp_mac                        ;
+          stOp_reg_cntl              =  `COMMON_STD_INTF_CNTL_SOM_EOM  ; // only one result
 
 
           // FIFO control
@@ -436,16 +462,16 @@ module streamingOps (
           // Output
           stOp__dma__strm0_data_valid  =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_MEMORY) & fp_mult_result_valid ;
           stOp__dma__strm0_data        =   fp_mult                     ;
-          stOp__dma__strm0_cntl        =  `DMA_CONT_STRM_CNTL_SOP_EOP ; // only one result
-          // FIXME : always send single result operations to simd register 
-          stOp__reg__valid             =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_SIMD) & fp_mult_result_valid ;
-          stOp__reg__data              =   fp_mult                        ;
-          stOp__reg__cntl              =  `COMMON_STD_INTF_CNTL_SOM_EOM  ; // only one result
+          stOp__dma__strm0_cntl        =   fp_mult_cntl                ;
+          
+          stOp_reg_valid             =   (strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_SIMD) & fp_mult_result_valid ;
+          stOp_reg_data              =   fp_mult                        ;
+          stOp_reg_cntl              =   fp_mult_cntl                   ;
 
 
           // FIFO control
-          strm0_fifo_read              =   strm0_enable & strm0_fifo_data_valid & ~strm0_src_complete ;  // this will read ony once because of single input
-          strm1_fifo_read              =   strm1_enable & strm1_fifo_data_valid & ~strm1_src_complete ;
+          strm0_fifo_read              =   1'b0                  ;  // direct connect to SIMD
+          strm1_fifo_read              =   strm1_enable & strm1_fifo_data_valid & ~strm1_src_complete & ((strm0_destination == `STREAMING_OP_CNTL_OPERATION_TO_SIMD) & reg__stOp__ready);
           strm0_stOp_complete          =   fp_mult_complete      ;
           strm1_stOp_complete          =   fp_mult_complete      ;
     
@@ -567,6 +593,7 @@ module streamingOps (
   always @(*)
     begin
       stOp__sti__strm0_ready  = 'd0                          ; 
+      stOp__dma__strm0_ready  = 1'b0                  ;
       casex (strm0_source)  // the strm0_source override the FROM in the operation
         `STREAMING_OP_CNTL_OPERATION_FROM_MEMORY       : 
           begin
@@ -584,13 +611,15 @@ module streamingOps (
             stOp__sti__strm0_ready  = ~fifo[0].almost_full         ; 
           end
 
+        // Direct connect SIMD reg
         `STREAMING_OP_CNTL_OPERATION_FROM_SIMD : 
           begin
-            strm0_cntl              =  simd__stOp__strm0_cntl       ; 
-            strm0_data              =  simd__stOp__strm0_data       ; 
-            strm0_data_valid        =  simd__stOp__strm0_valid      ; 
-            stOp__simd__strm0_ready  = ~fifo[0].almost_full         ; 
+            strm0_cntl              =  sti__stOp__strm0_cntl       ; 
+            strm0_data              =  sti__stOp__strm0_data       ; 
+            strm0_data_valid        =  sti__stOp__strm0_data_valid ; 
+            stOp__sti__strm0_ready  = ~fifo[0].almost_full         ; 
           end
+
 
         default                       : 
           begin
@@ -598,6 +627,7 @@ module streamingOps (
             strm0_data              =  'd0                         ; 
             strm0_data_valid        =  'd0                         ; 
             stOp__dma__strm0_ready  = 1'b0                  ;
+            stOp__sti__strm0_ready  = 'd0                          ; 
           end
       endcase // always @
     end
@@ -631,7 +661,6 @@ module streamingOps (
             strm1_cntl              =  'd0                         ; 
             strm1_data              =  'd0                         ; 
             strm1_data_valid        =  'd0                         ; 
-            stOp__dma__strm0_ready  = 1'b0                         ;
           end
       endcase // always @
     end
@@ -787,7 +816,7 @@ module streamingOps (
   assign     fifo[0].pipe_read          =  strm0_fifo_read                      ; 
   assign     strm0_fifo_read_data       =  fifo[0].pipe_data                    ; 
   assign     strm0_fifo_read_cntl       =  fifo[0].pipe_cntl                    ; 
-  assign     strm0_src_complete_next    =  fifo[0].pipe_read & fifo[0].pipe_eom ;
+  assign     strm0_src_complete_next    =  fp_mult_enable | (fifo[0].pipe_read & fifo[0].pipe_eom );  // only strm1 with mul
   assign     fifo[0].write_data         =  strm0_data                           ;
   assign     fifo[0].write_cntl         =  strm0_cntl                           ;
   assign     fifo[0].write              =  strm0_data_valid                     ;  // with FIFO inputs, dont condition write with ready
@@ -1002,6 +1031,83 @@ module streamingOps (
   reg  [7 : 0]                   fp_mac_status      ;
   wire [7 : 0]                   fp_mac_status_next ;
 
+
+
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  // Mult control
+ 
+ 
+  reg [`STREAMING_OP_MULT_CNTL_STATE_RANGE ] streaming_op_mult_cntl_state      ; // state flop
+  reg [`STREAMING_OP_MULT_CNTL_STATE_RANGE ] streaming_op_mult_cntl_state_next ;
+  
+  // State register 
+  always @(posedge clk)
+    begin
+      streaming_op_mult_cntl_state <= ( reset_poweron ) ? `STREAMING_OP_MULT_CNTL_WAIT    :
+                                                       streaming_op_mult_cntl_state_next  ;
+    end
+  
+ 
+  always @(*)
+    begin
+      case (streaming_op_mult_cntl_state)  // synopsys parallel_case
+
+        
+        // use special op for first transition, then use curr_special_op
+        `STREAMING_OP_MULT_CNTL_WAIT: 
+          streaming_op_mult_cntl_state_next =  ( fp_mult_enable  ) ? `STREAMING_OP_MULT_CNTL_START  :
+                                                                     `STREAMING_OP_MULT_CNTL_WAIT     ;
+  
+        `STREAMING_OP_MULT_CNTL_START: 
+          streaming_op_mult_cntl_state_next =  ( fp_mac_z_s2_valid ) ?  `STREAMING_OP_MULT_CNTL_PROCESS  :
+                                                                        `STREAMING_OP_MULT_CNTL_START    ;
+
+        `STREAMING_OP_MULT_CNTL_PROCESS: 
+          streaming_op_mult_cntl_state_next =  ( strm1_src_complete  ) ? `STREAMING_OP_MULT_CNTL_FLUSH    :
+                                                                         `STREAMING_OP_MULT_CNTL_PROCESS  ;
+  
+        `STREAMING_OP_MULT_CNTL_FLUSH: 
+          streaming_op_mult_cntl_state_next =  ( ~fp_mac_z_s1_valid && fp_mac_z_s2_valid  ) ? `STREAMING_OP_MULT_CNTL_END       :
+                                                                                              `STREAMING_OP_MULT_CNTL_FLUSH     ;
+  
+        `STREAMING_OP_MULT_CNTL_END: 
+          streaming_op_mult_cntl_state_next =  `STREAMING_OP_MULT_CNTL_COMPLETE    ;
+
+        // must be a pulse state
+        `STREAMING_OP_MULT_CNTL_COMPLETE: 
+          streaming_op_mult_cntl_state_next =  ( ~strm0_enable && ~strm1_enable  )  ? `STREAMING_OP_MULT_CNTL_WAIT     :
+                                                                                      `STREAMING_OP_MULT_CNTL_COMPLETE ;
+  
+        // Latch state on error
+        `STREAMING_OP_MULT_CNTL_ERR:
+          streaming_op_mult_cntl_state_next = `STREAMING_OP_MULT_CNTL_ERR ;
+  
+        default:
+          streaming_op_mult_cntl_state_next = `STREAMING_OP_MULT_CNTL_WAIT ;
+    
+      endcase 
+    end // always @ (*)
+  
+
+  always @(posedge clk)
+    begin
+      fp_mult_result_valid  <= (streaming_op_mult_cntl_state != `STREAMING_OP_MULT_CNTL_WAIT) & fp_mac_z_s2_valid  ;
+
+      fp_mult_complete      <= (streaming_op_mult_cntl_state == `STREAMING_OP_MULT_CNTL_COMPLETE) ;
+
+      fp_mult_cntl          <= (streaming_op_mult_cntl_state == `STREAMING_OP_MULT_CNTL_START)  ?  `COMMON_STD_INTF_CNTL_SOM  :
+                               (streaming_op_mult_cntl_state == `STREAMING_OP_MULT_CNTL_END  )  ?  `COMMON_STD_INTF_CNTL_EOM  :
+                                                                                                   `COMMON_STD_INTF_CNTL_MOM  ;
+    end
+
+
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------
 //
 // For more pipeline stages, change first to second etc.
   wire   fp_mac_almost_complete  = fp_mac_done_second_flush_summation_d1 & fp_mac_fb_s2_valid ;  // 2nd flush summation is done using fb valid
@@ -1010,6 +1116,7 @@ module streamingOps (
   always @(posedge clk)
     begin
       fp_mac_input_valid  <= ( (~strm0_enable && ~strm1_enable) || (~fp_mac_enable && ~fp_mult_enable )) ? 'd0                                    :
+                            (  fp_mult_enable                                                          ) ? strm1_fifo_read                        :
                                                                                                            ( strm0_fifo_read  & strm1_fifo_read ) ;
 
       fp_mac_fb_valid  <= ( (~strm0_enable && ~strm1_enable)          || ~fp_mac_enable                                        ) ? 'b0   :
@@ -1026,6 +1133,7 @@ module streamingOps (
       // MAC input stage
       fp_mac_a           <= ( (~strm0_enable && ~strm1_enable) || (~fp_mac_enable && ~fp_mult_enable )   ) ? `COMMON_IEEE754_FLOAT_ZERO :
                             (   strm0_stOp_complete &  strm1_stOp_complete                               ) ? `COMMON_IEEE754_FLOAT_ZERO :
+                            ( fp_mult_enable                                                             ) ?  simd__stOp__strm0_data_d1 :
                             ( strm0_fifo_read                                                            ) ?  strm0_fifo_read_data      :
                             ( fp_mac_first_flush_complete                                                ) ? `COMMON_IEEE754_FLOAT_ONE  :
                                                                                                              `COMMON_IEEE754_FLOAT_ZERO ;
@@ -1096,11 +1204,14 @@ module streamingOps (
       fp_mac_start_flush  <= ( (~strm0_enable & ~strm1_enable) ) ? 1'b0                  :
                                                                    (strm0_src_complete & strm0_enable & strm1_src_complete & strm1_enable);
 
+                                                                                                    
+
       //-------------------------------------------------------------------------------------------
       // Flush the pipeline - when we are done, we latch the flushed values
       // and their valid state
       //
       // MAC Flush stage 0                                                        
+
       fp_mac_start_flush_s0  <= ( (~strm0_enable & ~strm1_enable) ) ? 1'b0                  :
                                                                       fp_mac_start_flush    ;
 
@@ -1113,6 +1224,7 @@ module streamingOps (
                                                                  ( fp_mac_start_flush && fp_mac_z_s2_valid  ) || ( fp_mac_start_flush && fp_mac_fb_s2_valid ) ;
 
       // MAC Flush stage 1                                                        
+
       fp_mac_start_flush_s1  <= ( (~strm0_enable & ~strm1_enable) ) ? 1'b0                  :
                                                                       fp_mac_start_flush_s0 ;
 
@@ -1124,6 +1236,7 @@ module streamingOps (
                                 ( fp_mac_first_flush_complete     ) ? fp_mac_flush_s1_valid :  // latch when flush complete
                                                                       fp_mac_flush_s0_valid ;
       // MAC Flush stage 2                                                        
+
       fp_mac_start_flush_s2  <= ( (~strm0_enable & ~strm1_enable) ) ? 1'b0                  :
                                                                       fp_mac_start_flush_s1 ;
 
@@ -1174,7 +1287,6 @@ module streamingOps (
   // fp_mac_flush{0..2} and fp_mac_z_s2 
   // The state of each of these fluahed values is declared in fp_mac_flush_{0..2}_valid and fp_mac_fb_s2_valid 
   assign  fp_mac_first_flush_complete = fp_mac_start_flush_s2 ;  // create a pulse for first flush complete
-  assign  fp_mult_complete            = fp_mac_start_flush_s2 ;  // create a pulse for mult complete
 
 `ifdef JOSHS_FP
     fp_mac   fp_mac_inst   ( 
