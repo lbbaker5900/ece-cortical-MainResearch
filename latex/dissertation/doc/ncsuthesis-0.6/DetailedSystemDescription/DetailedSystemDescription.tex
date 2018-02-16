@@ -642,7 +642,7 @@ A block diagram of the \ac{pe} controller can be seen in Figure \ref{fig:PE Cont
 
 There is a \ac{stop} module for each execution lane and the \acp{stop} are designed to operate on data passed from the manager at or near line-rate. 
 If line-rate cannot be maintained, an interface \ac{fifo} flow-control mechanism is employed to slow the data from the manager.
-The \ac{stop} is designed to perform either a \ac{mac} operation, which is employed during \ac{an} state calculation, or a multiply operation which is used during a Softmax \cite{wikipedia_softmax} calculation.
+The \ac{stop} is designed to perform either a \ac{mac} operation, which is employed during \ac{an} state calculation, or a multiply operation which is used during a Softmax \cite{wikipedia_softmax} calculation (see Appendix \ref{sec:Softmax Implementation}).
 The \ac{stop} receives the operation from the \ac{pe} controller and decodes the fields as shown in Register \ref{reg:stOp opcode} and Table \ref{tab:stOp op fields}.
 In the case of a \ac{mac} operation, each lane produces a single result which is passed to the \ac{simd}.
 In the case of a multiply operation, each lane generates a result on each clock cycle and each is passed to the \ac{simd}.
