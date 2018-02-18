@@ -327,22 +327,21 @@ The results showing sustained average bandwidth can be seen in Table \ref{tab:Ba
   \centering
     \begin{adjustbox}{width=0.45\textwidth}
       \begin{tabular}{|c|c|c|}
-        %\toprule
         \hline
                             % \multicolumn{4}{c}{3D-DRAM Simulation-based estimates}   \\
-               \multirow{3}{*}{Test}                   &                                         \multicolumn{2}{c|}{\multirow{2}{*}{Average Bandwidth at frequency}}  \\
-                                                       &                                         \multicolumn{2}{c|}{}                                                 \\ \cline{2-3} % still need line even though cells are defined
-                                                       &        \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\%  \cline{1-3}
+               \multirow{3}{*}{Test}                   &                                        \multicolumn{2}{c|}{\multirow{2}{*}{Average Bandwidth at frequency}}  \\
+                                                       &                                        \multicolumn{2}{c|}{}                                                 \\ \cline{2-3} % still need line even though cells are defined
+                                                       &       \SI{500}{\mega\hertz}                            & \SI{700}{\mega\hertz}                               \\%  \cline{1-3}
         \hline  % instead of \midrule %midrule doesnt ove        
-                   CONV2 \cite{krizhevsky2012imagenet} &\ \SI[per-mode=symbol]{\sim 22}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-294                            &\ \SI[per-mode=symbol]{\sim 23}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-300                            &\ \SI[per-mode=symbol]{\sim 25}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 34}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-500                            &\ \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
-                   CONV-1000                           &\ \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 41}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-350                              &\ \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 36}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-500                              &\ \SI[per-mode=symbol]{\sim 27}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-1000                             &\ \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 42}{\tera\bit\per\second} \\ %\cline{2-2}
-                   FC-7 \cite{krizhevsky2012imagenet}  &\ \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV2 \cite{krizhevsky2012imagenet} & \SI[per-mode=symbol]{\sim 22}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-294                            & \SI[per-mode=symbol]{\sim 23}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-300                            & \SI[per-mode=symbol]{\sim 25}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 34}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-500                            & \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
+                   CONV-1000                           & \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 41}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-350                              & \SI[per-mode=symbol]{\sim 26}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 36}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-500                              & \SI[per-mode=symbol]{\sim 27}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 38}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-1000                             & \SI[per-mode=symbol]{\sim 30}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 42}{\tera\bit\per\second} \\ %\cline{2-2}
+                   FC-7 \cite{krizhevsky2012imagenet}  & \SI[per-mode=symbol]{\sim 31}{\tera\bit\per\second}    & \SI[per-mode=symbol]{\sim 43}{\tera\bit\per\second} \\ %\cline{2-2}
         \hline
         %\bottomrule
       \end{tabular}
@@ -350,6 +349,34 @@ The results showing sustained average bandwidth can be seen in Table \ref{tab:Ba
     \vspace{3pt}
   \end{table}
 
+Considering the baseline system shown in Figure \ref{tab:Baseline Layer Configuration}, the distrbution of \ac{an} operations and expected bandwidth are shown in Table \ref{tab:Baseline ANN expected bandwidth}.
+
+\begin{table}[h]
+  \captionsetup{justification=centering, skip=3pt}
+  \caption{Baseline ANN expected bandwidth}
+  \vspace{3pt}
+  \label{tab:Baseline ANN expected bandwidth}
+  \centering
+    \begin{adjustbox}{width=0.85\textwidth}
+      \begin{tabular}{|c|c|c|c|c|}
+        \hline
+    \multirow{2}{*}{Layer}    & \multirow{2}{*}{Operation fanin}  & \multirow{2}{*}{Equivalent test}  & \multirow{2}{*}{Percentage of operations}  &  \multirow{2}{*}{Expected bandwidth}                  \\
+                              &                                   &                                   &                                            &                                                       \\\hline
+      1                       &   363                             &  CONV-300                         &   44\%                                     &  \SI[per-mode=symbol]{ 10.9 }{\tera\bit\per\second}   \\\cline{1-5}
+      2                       &     4                             &  \multicolumn{3}{c|}{Performed during previous layer}                                                                                  \\\cline{1-5}
+      3                       &  2400                             &  CONV-1000                        &   28\%                                     &  \SI[per-mode=symbol]{  8.5 }{\tera\bit\per\second}   \\\cline{1-5}
+      4                       &     4                             &  \multicolumn{3}{c|}{Performed during previous layer}                                                                                  \\\cline{1-5}
+      5                       &  2304                             &  CONV-1000                        &   10\%                                     &  \SI[per-mode=symbol]{  3   }{\tera\bit\per\second}   \\\cline{1-5}
+      6                       &  3456                             &  CONV-1000                        &   10\%                                     &  \SI[per-mode=symbol]{  3   }{\tera\bit\per\second}   \\\cline{1-5}
+      7                       &  3456                             &  CONV-1000                        &    7\%                                     &  \SI[per-mode=symbol]{  2   }{\tera\bit\per\second}   \\\cline{1-5}
+      8                       & 43264                             &  FC-7                             &    1\%                                     &  \SI[per-mode=symbol]{  0.2 }{\tera\bit\per\second}   \\\cline{1-5}
+      9                       &  4096                             &  FC-7                             &    1\%                                     &  \SI[per-mode=symbol]{  0.2 }{\tera\bit\per\second}   \\\cline{1-5}
+     10                       &  4096                             &  FC-7                             &   <1\%                                     &  \SI[per-mode=symbol]{  0.05}{\tera\bit\per\second}   \\\cline{1-5}
+     \multicolumn{3}{c|}{}                                                                            &\textbf{\textcolor{black}{Total}}           &  \textbf{\textcolor{black}{\SI[per-mode=symbol]{ >27.7 }{\tera\bit\per\second}}}   \\\cline{4-5}
+      \end{tabular}
+    \end{adjustbox}
+    \vspace{3pt}
+  \end{table}
 
 \section{Power Estimates}
 \label{sec:Power Estimates}
@@ -413,7 +440,7 @@ The estimated overall power and per-block contributions are shown in Table \ref{
 \section{Summary}
 \label{sec:Results summary}
 
-The bandwidth performance shown in Table \ref{tab:Bandwidth Estimates} shows a sustained average bandwidth that exceeds the requirement shown in Table \ref{tab:Bandwidth and Storage Design Requirements}.
+The bandwidth performance shown in Table \ref{tab:Bandwidth Estimates} shows a sustained average bandwidth that meets the requirement shown in Table \ref{tab:Bandwidth and Storage Design Requirements}.
 In a full system with data transfers between a host and the \ac{ssc}, there will be idle times but this should have a relatively low impact as it involves mostly input download and result upload.
 The focus of the verification environment was the \ac{an} processing which involves the most complex operations in the system, including memory management, flow control, etc.
 %The \ac{bootp} process was simulated along with host memory upload and download, mainly to ensure the major data path infrastructure was in place to ensure further features would have minimal impact on the area study.
@@ -466,7 +493,38 @@ The area scaling numbers employed are within a reasonable range \cite{schabel201
 Therefore the place and route feasibility study suggests that embarking on productizing a system based on this work would be relatively low risk.
 
 The power numbers were higher than expected %but the power still within a number that is still considered manageable when the design is run at \SI{500}{\mega\hertz}.
-with a power per unit area of \SI[per-mode=symbol]{395}{\milli\watt\per\square\milli\meter\per\giga\hertz} compared to the \SI[per-mode=symbol]{191}{\milli\watt\per\square\milli\meter\per\giga\hertz} inferred from \cite{tensorflow2015-whitepaper}.
+with a power per unit area of \SI[per-mode=symbol]{395}{\milli\watt\per\square\milli\meter\per\giga\hertz} but comparable to the \SI[per-mode=symbol]{389}{\milli\watt\per\square\milli\meter\per\giga\hertz} from \cite{chen2016diannao} and higher than the \SI[per-mode=symbol]{304}{\milli\watt\per\square\milli\meter\per\giga\hertz} from \cite{azarkhish2017neurostream} and the \SI[per-mode=symbol]{191}{\milli\watt\per\square\milli\meter\per\giga\hertz} inferred from \cite{tensorflow2015-whitepaper}.
 Therefore there may either be opportunities for power reduction -- such as clock gating -- or a fully completed place and route may result in lower power numbers.
 %There is unlikely opportunities for clock gating because most of the logic is active during the processing of an \ac{ann}.
 %The power numbers seem high but there is likely room for improvement when productizing the system.
+
+\subsection{Recent state-of-the-art comparison}
+\label{sec:State-of-the-art Comparison}
+When making comparisons it is important to consider whether a solution meets the requirements and not how high it performs against a particular metric.
+This work places emphasis on meeting the requirements and not on maximizing a particular metric.
+
+Recently Neurostream \cite{azarkhish2017neurostream} obtained \SI[per-mode=symbol]{22.7}{\giga OP\per\second\per\watt} and claimed a 3.5X performance improvement over a representative \ac{gpu} while using a \ac{binary32} number format.
+It uses a \ac{hbm} \ac{3ddram} to provide capacity and a main memory bandwidth of \SI[per-mode=symbol]{256}{\giga\bit\per\second}. Neurostream has an average performance of \SI[per-mode=symbol]{240}{\giga FLOPS}.
+To achieve this performance Neurostream must use its \SI[per-mode=symbol]{1}{\mega\bit} \ac{sram} because the \ac{dram} could only support a sustained \SI[per-mode=symbol]{8}{\giga FLOPS}.
+The Neurostream device is targeted toward \acp{cnn}.
+Considering that \ac{dram} bandwidth is the bottleneck, for \cite{azarkhish2017neurostream} to meet the bandwidth requirements of this works target application it would have to instantiate tens of devices.
+This would result in a power dissipation in excess of \SI[per-mode=symbol]{1}{\kilo\watt} providing this work a 15X improvement.
+The \acp{flop} performance and capacity would be impressive but it would far exceed the requirements of the system.
+Note that this work achieves \SI[per-mode=symbol]{22.4}{\giga OPs\per\second\per\watt}, which is similar to Neurostream \cite{azarkhish2017neurostream}.
+
+A similar scenario occurs when comparing Tensor processing unit \cite{tensorflow2015-whitepaper} although the number formats are very different and \cite{tensorflow2015-whitepaper} acknowledges the system relies on batch processing to achieve the very high performance.
+It uses \ac{dram} with a bandwidth of \SI[per-mode=symbol]{288}{\giga\bit\per\second} which means this work provides greater than 90 times improvement. 
+It should be noted in the case of \cite{tensorflow2015-whitepaper} this is an unfair comparison as they do acknowledge the device relies on batch processing and \ac{ann} parameter ``reuse'' and they also state performance degrades when running fully-connected \acp{ann} and therefore this device is not appropriate for this works target applications.
+
+The DaDainNao \cite{chen2016diannao} device achieves a higher local memory density by employing \ac{edram} instead of \ac{sram}. A single device has \SI[per-mode=symbol]{288}{\giga\bit} of \ac{edram} with a bandwidth of \SI[per-mode=symbol]{2.48}{\tera\bit\per\second}.
+To approach the bandwidth of this work would require ten devices dissipating \SI[per-mode=symbol]{167}{\watt} providing this work a 2.2X improvement.
+To approach the storage provided by this work would require over two hundred devices. 
+In fact \cite{chen2016diannao} states that to implement one of their example \acp{ann}, which requires \SI[per-mode=symbol]{1.39}{\giga\byte} of storage would require 36-node system. 
+They also reference a 64-node system which they claim would outperform a \ac{gpu} by 450X.
+So even assuming a 64-node DaDianNao system this work would provide a 25X area improvement and a 14X power dissipation improvement.
+
+The devices described in \cite{chen2016diannao} and \cite{azarkhish2017neurostream} most closely match this work and both suggest they offer significant speed improvements over \ac{gpu}.
+In the target application, this work provides significant power and/or speed improvements over both \cite{chen2016diannao} and \cite{azarkhish2017neurostream}.
+
+
+
