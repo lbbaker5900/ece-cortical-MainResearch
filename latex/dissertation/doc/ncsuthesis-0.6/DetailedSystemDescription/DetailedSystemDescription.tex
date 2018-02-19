@@ -152,11 +152,11 @@ It is assumed at this point that adequate infrastructure and extensibility has b
 The configuration instruction contains a single descriptor with one, two or three option tuples.
 
 The configuration sync instruction descriptor contains a single configuration sync option tuple. The 24-bit option value contains a 3-bit mode register identifier and a 21-bit mode register.
-There are currently four mode registers defined, "Send", "Wait", "Pause" and "Flush". Each register has fields specific to the mode as seen in Figure \ref{fig:Sync instruction}.
+There are currently four mode registers defined, ``Send'', ``Wait'', ``Pause'' and ``Flush.'' Each register has fields specific to the mode as seen in Figure \ref{fig:Sync instruction}.
 
 The configuration data instruction descriptor contains a configuration data option tuple and a storage descriptor tuple and optionally a target tuple. 
 The configuration data option value is 24 bits with a 3-bit mode register identifier and a 21-bit mode register.
-There are currently four mode registers defined, "instruction download", "sync group download", "memory download" and "memory upload". Each register has fields specific to the mode as seen in Figure \ref{fig:Data transfer instruction}.
+There are currently four mode registers defined, ``instruction download'', ``sync group download'', ``memory download'' and ``memory upload.''   Each register has fields specific to the mode as seen in Figure \ref{fig:Data transfer instruction}.
 
 \paragraph{Sync Send}
 

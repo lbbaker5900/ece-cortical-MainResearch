@@ -16,10 +16,10 @@ The \ac{an} states of this layer are sent back to main memory.
 The next layer is a single \ac{an} calculation, as described in Section \ref{sec:Processing a single ANe} with the pre-synatic weights set to unity.
 The resulting calculation is an accumulation of the \ac{an} exponent values.
 The \ac{simd} divider \ac{sfu} is then used to perform a reciprocal and the result is placed in a \ac{simd} register.
-The final layer is calculated using the \ac{stop} to perform a multiplication of each presynaptic \ac{an} state with the reciprocal value held in the \ac{simd} register effectively performing the division in the softmax function.
+The final layer is calculated using the \ac{stop} to perform a multiplication of each pre-synaptic \ac{an} state with the reciprocal value held in the \ac{simd} register, effectively performing the division in the softmax function.
 
-Performing the Softmax funcion is relatively inefficient, however the time taken is masked by the time taken to perform the initial classifier layer \ac{an} state calculation.
-An example calculation sequeuce is shown in Figure \ref{fig:classifier implementation sequence timing} using the baseline \ac{ann} which employs one thousand classifiers with four thousand presynapic \acp{an}.
+Performing the softmax funcion is relatively inefficient, however the time taken is masked by the time taken to perform the initial classifier layer \ac{an} state calculation.
+An example calculation sequeuce is shown in Figure \ref{fig:classifier implementation sequence timing} using the baseline \ac{ann} which employs one thousand classifiers with four thousand pre-synapic \acp{an}.
 
 
 \begin{figure}[h]

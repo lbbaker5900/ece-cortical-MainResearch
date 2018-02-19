@@ -10,7 +10,7 @@ The common pooling operation is max-pooling (see Figure \ref{fig:Baseline DNN sh
 The feature \acp{an} compared are a 2x2 region as shown in Figure \ref{fig:Pooling 3D layer}.
 
 This work calculates the ``max pooling'' layer by sequencing the \acp{an} calculations such that the pooling \ac{roi} group of features are cascaded.
-A maximum comparison operation is performed on the current and previous \ac{an} state and the maximum value retained. After the final comparison, the result is the next layers \ac{an} state.
+A maximum comparison operation is performed on the current and previous \ac{an} state and the maximum value retained. After the final comparison, the result is the next layer's \ac{an} state.
 This sequencing is shown in Figure \ref{fig:Pooling implementation}.
 
 \begin{figure}[h]
