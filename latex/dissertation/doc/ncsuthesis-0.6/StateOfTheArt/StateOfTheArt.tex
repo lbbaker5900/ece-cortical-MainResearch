@@ -48,7 +48,7 @@ Eyeriss cannot be effectively applied to locally-connected \acp{ann} such as Dee
 The DianNao family of \acp{asic} \cite{chen2014diannao} \cite{chen2016diannao} originally used external \ac{dram} to store \ac{ann} parameters but still uses \ac{dma} along with \ac{sram} as an intermediate store.
 However, the recent versions of the \ac{asic} acknowledge that local \ac{sram} limits the size of the \ac{ann} the device is able to support and have moved from external \ac{dram} to \ac{edram} \cite{dadiannao2017}.
 However, the local \ac{edram} is still limited to \SI[per-mode=symbol]{36}{\mega \byte} and therefore requires multiple instances to support \acp{dnn} similar to the types of \ac{dnn} this work is targeting.
-To support these useful \acp{dnn}, they have to instantiate up to 64 devices to accomodate the required \ac{dnn} parameter storage resulting in a power approaching \SI[per-mode=symbol]{1}{\kilo\watt} and an area of \SI[per-mode=symbol]{430}{\mm\squared}.
+To support these useful \acp{dnn}, they have to instantiate up to 64 devices to accommodate the required \ac{dnn} parameter storage resulting in a power approaching \SI[per-mode=symbol]{1}{\kilo\watt} and an area of \SI[per-mode=symbol]{430}{\mm\squared}.
 These multi-instance implementations can be used to support batch processing \cite{dadiannao2017} but not the single input systems this work is targeting.
 
 The Neurostream \ac{asip} uses \ac{3dic} along with \ac{hmc} \ac{3ddram}. 
@@ -115,7 +115,7 @@ providing silicon for processing and not local storage.
 Neuflow\cite{farabet2011neuflow} has processing elements that are limited to \acp{cnn}.
 NnSP{\cite{esmaeilzadeh2005nnsp} transfers weights and inputs to local \ac{pe} memory prior to processing.
 nn-X\cite{gokhale2014240} limits the number format to integer, and although there is some acceptance that similar
-results can be obtained compared to floating point, this will likely limit the applcation space. 
+results can be obtained compared to floating point, this will likely limit the application space. 
 nn-X is also limited to performing the convolution operation and \ac{sram} size will limit its capability when performing the classifier stage.
 
 Below is a summary of current technology.
@@ -124,13 +124,13 @@ Below is a summary of current technology.
 
 Uses external \ac{dram} with a cache.
 Does not address the main issue of DRAM access limitations and providing data structures.
-It simply says "use a cache" but doesnt justify locality issues.
+It simply says ``use a cache'' but doesn't justify locality issues.
 
 Transfers weights and inputs to local \ac{pe} prior to processing
-Similar "Streaming" terminlogy but streams from local memory.
+Similar ``Streaming'' terminology but streams from local memory.
 \ac{an} outputs are kept locally and transferred to other \ac{an} via an  \ac{noc}.
 
-No detail on processing element but likely limited to "standard" feedforward \acp{ann}.
+No detail on processing element but likely limited to ``standard'' feedforward \acp{ann}.
 
 
 %% Note: add \section[<section>]{<section> \cite{}} instead of \section{<section> \cite...}
@@ -145,7 +145,7 @@ The NeuroCube implements a processing layer but does not address adding addition
 3D uses HMC
  - limited by HMC bandwidth
  - is serdes a good choice for die-to-die communication (typically used for die to chip/board?)
- - doesnt really discuss adding additional layers
+ - doesn't really discuss adding additional layers
 
 Transfers data to \ac{pe} prior to processing
 
@@ -158,20 +158,20 @@ In general will not scale to \acp{ann} of interest.
 
 
 \section{NeuFlow \cite{farabet2011neuflow}}
-Neuflow\cite{farabet2011neuflow} has processing elements that are "highly optimized" to \acp{cnn}.
+Neuflow\cite{farabet2011neuflow} has processing elements that are ``highly optimized'' to \acp{cnn}.
 Neuflow is designed around external \ac{qdr} memory and does not address the issues associated with supporting large networks.
 
 
 \section[nn-X]{nn-X \cite{gokhale2014240}}
 nn-X\cite{gokhale2014240} limits the number format to integer, and although there is some acceptance that similar
-results can be obtained, this will likely limit the applcation space. nn-X is also limited to performing the convolution operation
+results can be obtained, this will likely limit the application space. nn-X is also limited to performing the convolution operation
 and \ac{sram} size will limit its capability when performing the classifier stage.
 nn-X was implemented in an fpga and does not address \ac{sram} size when scaling to larger networks.
 
 
 \section[Diannao]{Diannao \cite{chen2014diannao}}
 Diannao\cite{chen2014diannao} acknowledges the need for large amounts of storage which will exceed the capability of local memory.
-The kernel sizes are limited by \ac{sram} size although it does state kernels can be "broken up".
+The kernel sizes are limited by \ac{sram} size although it does state kernels can be ``broken up.''
 The \ac{sram} use on the \ac{pe} is significant (see \fref{fig:DiannaoDie}).
 
 

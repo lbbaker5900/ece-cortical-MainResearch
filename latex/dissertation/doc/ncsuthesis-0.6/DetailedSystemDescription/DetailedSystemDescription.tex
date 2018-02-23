@@ -116,7 +116,7 @@ A sequential tag is generated and along with the \ac{stop} and \ac{simd} pointer
 The \ac{stop} pointer specifies what streaming operation is to take place on the data directly streamed to the \ac{pe}. 
 The SIMD pointer is essentially a \ac{pc} counter that the \ac{simd} will jump to to process the result from the \ac{stop}.
 The \ac{pe} will immediately start preparing for downstream operand data.
-If the \ac{simd} operation ncludes result data being returned to the manager, the tag will be included in the upstream result data packet.
+If the \ac{simd} operation includes result data being returned to the manager, the tag will be included in the upstream result data packet.
 
 The memory read descriptors are decoded to identify the target memory read controller and the storage descriptor pointer directed to the appropriate memory read block.
 There is a memory read block associated with each of the operand streams which is responsible for generating memory requests and directing the \ac{dram} data to all the execution lane streams.
@@ -146,7 +146,7 @@ As shown in Figure \ref{fig:Configuration Instruction types}, the configuration 
 The configuration packets are broken into two types, configuration data and configuration sync.
 \iffalse
 Currently the sync instruction has been implemented.
-It is assumed at this point that adequate infrastructure and extensibility has been built into the system to allow implementation without adding significant amouts of logic.
+It is assumed at this point that adequate infrastructure and extensibility has been built into the system to allow implementation without adding significant amounts of logic.
 \fi
 
 The configuration instruction contains a single descriptor with one, two or three option tuples.
@@ -192,8 +192,8 @@ if the ``{\textit{host}}'' flag is also set, the host bit in the \ac{noc} packet
 \paragraph{Sync Wait}
 
 The Sync Wait mode register fields can be seen in Register \ref{reg:Sync Wait mode register}.
-The decoder sends the sync option tuple to the system conntroller.
-The instruction decoder will stop processing any more instructions until the release signal is asserted from the system conntroller.
+The decoder sends the sync option tuple to the system controller.
+The instruction decoder will stop processing any more instructions until the release signal is asserted from the system controller.
 The wait option informs the system controller to start expecting sync send packets from other \acp{ssc} and/or the host.
 Based on the register values, the system controller will assert the release signal to the instruction decoder only after sync send packets have been received from all specified sources.
 If the group pointer enable bit is set, the system controller uses the pointer to index into a 64-element table. 
@@ -412,7 +412,7 @@ The \ac{sdp} block contains a request block and a stream block.
 The request block uses the storage descriptor pointer to index into a small memory containing the actual storage descriptor. 
 As described in Section \ref{sec:Storage Descriptor}, the storage descriptor itself contains a start address and a pointer to a table containing consecutive and jump fields.
 The starting address and consecutive/jump fields allow the request generator to make disjoint memory requests based on the \ac{roi} of the data. 
-If the \ac{roi} is contiguous in memory, then there is one consecuitive field and no jump field.
+If the \ac{roi} is contiguous in memory, then there is one consecutive field and no jump field.
 
 The request block generates memory requests based on the storage descriptor contents and number of lanes and sends the requests to the \ac{mmc}.
 The request information is also sent to the stream block.
@@ -456,7 +456,7 @@ If the destination(s) include other \acp{ssc}, the \ac{rdp} provides the \ac{ssc
 \subsection{\Acf{mwc}}
 \label{sec:MWC}
 
-The \acf{mwc} receives data from two sources, the \ac{noc} via the system conntroller and the \ac{rdp}.
+The \acf{mwc} receives data from two sources, the \ac{noc} via the system controller and the \ac{rdp}.
 The \ac{mwc} uses the storage descriptor provided with the data to identify the write address.
 The \ac{mwc} does not store the data immediately, it places the data in a small crude cache which has enough storage for two pages per channel.
 A block diagram of the \ac{mwc} can be seen in Figure \ref{fig:MWC block diagram}.
@@ -773,7 +773,7 @@ The \ac{relu} is preceded by the \ac{mac} operation in the \ac{stop}.
 Once the \ac{sfu} operations have concluded, the result is sent directly back to the manager over the upstream bus.
 
 For this work, a high level of importance was not assigned to the actual \ac{simd} because a) the functionality provided by the \ac{simd} is to provide a level of flexibility for future work and b) the choice of \ac{simd} is currently under consideration.
-Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed only by the special functions provided in the wrapper as dscribed above and shown in Figure \ref{fig:simd wrapper block diagram}.
+Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed only by the special functions provided in the wrapper as described above and shown in Figure \ref{fig:simd wrapper block diagram}.
 However, it was important to include the \ac{simd} in the area portion of the study.
 To account for the \ac{simd}, in the area layout study a placement blockage is used based on a 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
 
@@ -854,7 +854,7 @@ Other than the \ac{relu}, the \acp{sfu} are not considered hot-spots in the proc
 
 The \ac{pe} provides some local \ac{sram} for future use.
 Both the \ac{stop} and the \ac{simd} will have access to the local memory.
-In the case of the \ac{stop}, one of the \ac{stop} inputs can be sourced from the local memory using a \ac{dma} comtroller.
+In the case of the \ac{stop}, one of the \ac{stop} inputs can be sourced from the local memory using a \ac{dma} controller.
 The \ac{dma} controller is controlled from fields in the instruction word in the \ac{pe} controller.
 The paths from the local memory to the \ac{stop} and from the \ac{stop} to the local memory have been tested.
 
@@ -864,8 +864,8 @@ The paths from the local memory to the \ac{stop} and from the \ac{stop} to the l
 
 The upstream controller takes the data from the \ac{simd} and a tag from the \ac{pe} controller and sends it to the manager.
 The format of the upstream transactions can be seen in Figure \ref{fig:Upstream data transactions}.
-The upstream packet format accomodates both data and tag to be transmitted or just the tag.
-The reason for allowing tag-only operation is to accomodate a sync flush operation without data being returned to the manager.
+The upstream packet format accommodates both data and tag to be transmitted or just the tag.
+The reason for allowing tag-only operation is to accommodate a sync flush operation without data being returned to the manager.
 Currently only the tag and data mode has been implemented.
 
 \begin{figure}[h]

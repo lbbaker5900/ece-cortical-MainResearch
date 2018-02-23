@@ -61,7 +61,7 @@ If kept unchecked, the stored value will dissipate and it is this behavior that 
 Accessing a typical \ac{sram} involves providing an address and either reading or writing the contents of that location. 
 The read or write often completes in one or two clock cycles depending on whether the \ac{sram} employs internal registers which are used run the \ac{sram} with a faster clock.
 
-The storage cell inside the \ac{sram} is formed from cross-coupled transistors (see Figure \ref{fig:SRAM Cell}) which latch the contents and hold the contents indefnitely or until power is removed from the device.
+The storage cell inside the \ac{sram} is formed from cross-coupled transistors (see Figure \ref{fig:SRAM Cell}) which latch the contents and hold the contents indefinitely or until power is removed from the device.
 The storage structure employs six transistors and allows the access logic to be relatively simple and fast but has a relatively low density because of the number of transistors employed.
 
 Accessing a ``typical'' \ac{dram} is much more involved, it involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page. 
@@ -69,7 +69,7 @@ Accessing a ``typical'' \ac{dram} is much more involved, it involves opening a p
 When an \ac{sram} cell is read, the cross-coupled transistors retain the stored value. 
 The reasons behind this added complexity is the memory cell inside the \ac{dram} which is formed from a capacitor (see Figure \ref{fig:DRAM Cell}) which holds a charge reflecting a logic zero or one. 
 When a page(row) of a \ac{dram} memory array is read by the sense amps (see Figure \ref{fig:dramBlockDiagram}), the process of sensing the charge on the capacitor causes the capacitor to discharge and lose its contents. 
-To alleviate this problem \iffalse \ac{dram} arrays are formed from a column of storage elements known as a page. \fi when the read occurs, the entire contents of the page are transferred to registers, refered to as ``page intermediate store'' in Figure \ref{fig:dramBlockDiagram}. 
+To alleviate this problem \iffalse \ac{dram} arrays are formed from a column of storage elements known as a page. \fi when the read occurs, the entire contents of the page are transferred to registers, referred to as ``page intermediate store'' in Figure \ref{fig:dramBlockDiagram}. 
 The process of transferring a page to the intermediate store is known as a ``page open''.
 Once this transfer is complete, portions of the open page can be read similar to reading an \ac{sram}. 
 
@@ -117,13 +117,13 @@ If the cache blocks are large enough and the program's access behavior exhibits 
 As mentioned in Section \ref{sec:overview} much of the \ac{asic} and \ac{asip} \ac{ann} research has focused on taking advantage of the performance and ease of use of \ac{sram}. 
 If the target application's memory access behavior exhibits some locality and the \ac{sram} cache can be made large enough to avoid high levels of cache misses, then this use of \ac{sram} can be effective.
 
-But this work's target application is such that the access behavior exhibits no or little locality (reuse) and block transfers between the cache and main memory would be constantly occuring.
+But this work's target application is such that the access behavior exhibits no or little locality (reuse) and block transfers between the cache and main memory would be constantly occurring.
 Under these circumstances, \textbf{\textcolor{black}{\ac{dram} bandwidth will be the bottleneck}}.
 
 This work focuses on using \ac{dram} as the primary storage and managing the accesses to ensure the \ac{dram} is used effectively. 
 With the increased bandwidth achieved from the additional \ac{dram} customizations discussed in Section \ref{sec:Very-Wide Bus} and \ref{sec:Write Mask}, this work demonstrates \ac{dram} bandwidths 10X faster than what is available with 2 or 2.5D solutions.
 
-This high level of \ac{dram} bandwidth provides this work the ability to process multiple disparate \acp{ann} at or near real-time while being \textbf{\textcolor{black}{10-100X faster than state-of-the-art solutions}}.
+This high level of \ac{dram} bandwidth provides this work the ability to process multiple disparate \acp{ann} at or near real-time while being \textbf{\textcolor{black}{significantly faster than state-of-the-art solutions}}.
 
 
 \subsection{DRAM Customizations}

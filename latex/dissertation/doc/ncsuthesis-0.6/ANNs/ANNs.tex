@@ -206,7 +206,7 @@ The Rate-based neuron model is characterized by \cite{NNintro_Bullinaria}:
 \label{fig:Example Spiking Model}
 \end{figure}
 
-To emulate complex behavior, the artifical neurons are connected in networks, typically with layers of sub-networks which are in effect separated by the non-linear activation function.
+To emulate complex behavior, the artificial neurons are connected in networks, typically with layers of sub-networks which are in effect separated by the non-linear activation function.
 Examples of both rate-based and spiking artificial neural networks can be seen in \fref{fig:Rate-based Model Network} and \fref{fig:Spiking Model Network} respectively.
 Typically neural networks process in a feed-forward fashion. Considering \fref{fig:Network of ANs}, this means the input arrives on the left, the inputs propagate to neurons N0 through N3. WHen N0 through N3 are processed, their values propagate forward to neurons N4 and N5 etc.. Sometimes \ac{ann}s also include recursion where for example neurons N0 through N4 are not only influenced
 by the input, but also by themselves. Many \ac{ann}s operate only in feed-forward fashion but some popular \ac{ann}s, such as \ac{lstm} \cite{hochreiter1997long}, employ recursion.
@@ -496,7 +496,7 @@ In the general \ac{dnn} case, the trained feature detectors may not be as intuit
 
 So these locally-connected layers have multiple filters applied to the same \ac{roi} and the next layer becomes a \ac{3d} array with the Z-axis representing the features. 
 The number of feature filters applied at each layer can be tens to hundreds of filters.
-The filters employed in a layer following one of these \ac{3d} locally-connected layers are themselves 3D. With tens to hundreads of features in the previous layer the number of weights associated with each filter is usually hundreds to thousands of weights. 
+The filters employed in a layer following one of these \ac{3d} locally-connected layers are themselves 3D. With tens to hundreds of features in the previous layer the number of weights associated with each filter is usually hundreds to thousands of weights. 
 
 The feature filters employed in the locally-connected layers can be unique to the regions of the previous layer or the same filters can be employed across the entire previous layer.
 In the case of employing the same filters across the entire input layer the \ac{ann} is known as a \acf{cnn}. The \acp{cnn} are examples of \acp{ann} which can take advantage of reuse described in Chapter \ref{sec:chap-one}. 
@@ -674,12 +674,12 @@ Even in cloud applications, there are limitations on reuse. We paraphrase a quot
 
 \hyphenquote{american}{the architecture research community is paying attention to \acp{ann}, but of all the papers at ISCA 2016 on hardware accelerators for \acp{ann}, alas, all nine papers looked at \ac{cnn}s, and only two mentioned other \acp{ann}. Unfortunately \ac{cnn}s represent only about 5\% of our datacenter \ac{ann} workload}
 
-The applications targeted by the google TPU \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected \ac{dnn}s and in these cases weight reuse is not as benefitial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
+The applications targeted by the Google TPU \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected \ac{dnn}s and in these cases weight reuse is not as beneficial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
 
 Therefore, implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally and fully connected \ac{dnn}s and LSTMs.
 
 This work focuses on embedded applications employing disparate \ac{ann}s and assumes there are limited opportunities for both weight reuse and batch processing.
-Considering systems will want to perform multiple \ac{dnn}s simultaneously suggests that these embedded systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second} \eqref{eq:maximumBandwidth}.
+Considering systems will want to perform multiple \ac{dnn}s simultaneously suggests that these embedded systems will require usable memory bandwidth of the order of tens of \SI[per-mode=symbol]{}{\tera \bit \per \second} \eqref{eq:maximumBandwidth}.
 
 In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
 \fi
@@ -695,10 +695,10 @@ For example employing multiple cameras or monitoring and controlling different s
 \fi
 
 \iffalse
-Some might suggest the requirements of these applications would be satisified by employing multiple graphics processor units(GPU).
+Some might suggest the requirements of these applications would be satisfied by employing multiple graphics processor units(GPU).
 In fact, Graphics processing Units (GPU) are used to implement large \ac{ann}s and in some \ac{ann} architectures, such as \acp{cnn}, they are quite effective. However, we should not forget they are not optimized purely for \ac{ann} processing and are restricted by available SRAM and they are power hungry. These limitations will limit the effectiveness of GPUs regardless of what we might hear from the GPU community.
-Even in the case of newer GPUs which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} tecnology.
-For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwith of the order of \SI[per-mode=symbol]{4}{\tera \bit \per \second}.
+Even in the case of newer GPUs which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} technology.
+For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwidth of the order of \SI[per-mode=symbol]{4}{\tera \bit \per \second}.
 Also, its has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
 Given these multiple GPU systems have high real-estate and power requirements and given each instance consumes of the order of \SI{100}{\watt} to \SI{200}{\watt}.
 Overall GPUs have limited suitability to meet embedded application requirements.
@@ -803,12 +803,12 @@ Even in cloud applications, there are limitations on reuse. We paraphrase a quot
 
 \hyphenquote{american}{the architecture research community is paying attention to NNs, but of all the papers at ISCA 2016 on hardware accelerators for NNs, alas, all nine papers looked at \ac{cnn}s, and only two mentioned other NNs. Unfortunately \ac{cnn}s represent only about 5\% of our datacenter NN workload}
 
-The applications targeted by the google TPU \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected \ac{dnn}s and in these cases weight reuse is not as benefitial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
+The applications targeted by the Google TPU \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected \ac{dnn}s and in these cases weight reuse is not as beneficial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
 
 Therefore, implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally and fully connected \ac{dnn}s and LSTMs.
 
 This work focuses on embedded applications employing disparate \ac{ann}s and assumes both weight reuse and batch processing do not apply.
-Considering systems will want to perform multiple \ac{dnn}s simultaneously suggests that these embedded systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
+Considering systems will want to perform multiple \ac{dnn}s simultaneously suggests that these embedded systems will require usable memory bandwidth of the order of tens of \SI[per-mode=symbol]{}{\tera \bit \per \second}.
 
 In these cases, \textbf{\textcolor{black}{\ac{dram} bandwidth is the bottleneck}}.
 \fi
@@ -824,10 +824,10 @@ require multiple instances of \ac{ann}s of similar size to the \ac{ann} describe
 For example employing multiple cameras or monitoring and controlling different systems in a drone, a automobile each with an image recognition \ac{ann}\cite{krizhevsky2012imagenet}\cite{bojarski2016end} for navigation, engine monitoring along with other system control.
 \fi
 
-Some might suggest the requirements of these applications would be satisified by employing multiple graphics processor units(GPU).
+Some might suggest the requirements of these applications would be satisfied by employing multiple graphics processor units(GPU).
 In fact, Graphics processing Units (GPU) are used to implement large \ac{ann}s and in some \ac{ann} architectures, such as \acp{cnn}, they are quite effective. However, we should not forget they are not optimized purely for \ac{ann} processing and are restricted by available SRAM and they are power hungry. These limitations will limit the effectiveness of GPUs regardless of what we might hear from the GPU community.
-Even in the case of newer GPUs which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} tecnology.
-For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwith of the order of \SI[per-mode=symbol]{4}{\tera \bit \per \second}.
+Even in the case of newer GPUs which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} technology.
+For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwidth of the order of \SI[per-mode=symbol]{4}{\tera \bit \per \second}.
 Also, its has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
 Given these multiple GPU systems have high real-estate and power requirements and given each instance consumes of the order of \SI{100}{\watt} to \SI{200}{\watt}.
 Overall GPUs have limited suitability to meet embedded application requirements.

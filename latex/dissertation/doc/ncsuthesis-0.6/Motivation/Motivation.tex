@@ -82,11 +82,11 @@ For example employing multiple cameras or monitoring and controlling different s
 
 \subsubsection{\Acfp{gpu}}
 \label{sec:gpu}
-The requirements of these applications would be satisified by employing multiple \acp{gpu}.
+The requirements of these applications would be satisfied by employing multiple \acp{gpu}.
 In practice, \acp{gpu} are used to implement large \ac{ann}s and in some \ac{ann} architectures, such as \acp{cnn}, they are quite effective. However, we should not forget they are a) not optimized purely for \ac{ann} processing, b) restricted by available \ac{sram} and c) power hungry. 
 These limitations will limit the effectiveness of \acp{gpu}.
 Even in the case of newer \acp{gpu} which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} technology.
-For example, a 2.5D solution employing \ac{hbm} would be limited to a maximum raw bandwith on the order of \SI[per-mode=symbol]{6}{\tera \bit \per \second} \cite{Nvidia_p100_summary_datasheet}.
+For example, a 2.5D solution employing \ac{hbm} would be limited to a maximum raw bandwidth on the order of \SI[per-mode=symbol]{6}{\tera \bit \per \second} \cite{Nvidia_p100_summary_datasheet}.
 Also, it has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
 
 A solution could employ multiple devices, but there would be significant power and real-estate issues. 

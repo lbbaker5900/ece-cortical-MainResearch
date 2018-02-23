@@ -193,8 +193,8 @@ In Figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation des
               NOP                              &    0   &  N&  \acl{nop} \\
               source                           &    1   &  N&  Used to define the source of any data, such as memory or \ac{pe}  \\
               target                           &    2   &  N&  Used to define the target for any data, such as memory or \ac{pe}  \\
-              transfer type                    &    3   &  N&  How data will be directed, vector or braodcast                    \\
-              number of lanes                  &    4   &  N&  number of active execution lanes used in opration \\
+              transfer type                    &    3   &  N&  How data will be directed, vector or broadcast                    \\
+              number of lanes                  &    4   &  N&  number of active execution lanes used in operation \\
               \ac{stop} pointer                &    5   &  N&  pointer to \ac{pe} \ac{stop} operation table in \ac{pe} controller \\
               \ac{simd} pointer                &    6   &  N&  pointer to \ac{pe} \ac{simd} instruction memory  \\
               Memory storage descriptor        &    7   &  Y&  pointer to storage descriptor used in memory read or write \\
@@ -218,7 +218,7 @@ To pull it all together, Figure \ref{fig:Instruction Details} demonstrates a fou
 Figure \ref{fig:Instruction and Descriptors} shows the compute instruction which contains three 4-tuple and one 5-tuple descriptors.
 The memory write descriptor shows two storage option elements which indicates the resulting \ac{an} states need to be saved in the memory of two \acp{ssc}.
 The waveform in Figure \ref{fig:Instruction memory waveform} is from the verification environment and shows the instruction as it is read out of the managers instruction memory.
-The waveform also shows an example of the common interface signalling described in Section \label{sec:Common Bus Signalling} with the signals \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore icntl} and \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore dcntl} being used to delineate the instruction and descriptors respectively.
+The waveform also shows an example of the common interface signaling described in Section \label{sec:Common Bus Signalling} with the signals \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore icntl} and \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore dcntl} being used to delineate the instruction and descriptors respectively.
 As can be seen in Figure \ref{fig:Instruction memory waveform}, the instruction memory transfers three descriptor elements per cycle shown on the bus signals \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore option\textunderscore type} and \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore option\textunderscore value}.
 \\
 Note: The signal name convention used between blocks in the \ac{rtl} is <src>\textunderscore\textunderscore <dest>\textunderscore\textunderscore <signal\textunderscore\textunderscore  name>. In Figure \ref{fig:Instruction memory waveform},~ \texttt{wum} and \texttt{wud} refer to ``work unit memory'' and ``work unit decode''
@@ -321,10 +321,10 @@ Figure \ref{fig:storageDescriptor} shows the structure of the storage descriptor
 
 When the \ac{pe} has processed the group of \acp{an}, the new \ac{an} states are sent back to the manager and stored in \ac{dram} in the row-major array format described earlier.
 \iffalse
-A significant difference taken advantage of is that for any given operation, the system is writing far less than is being read. For example, the \ac{roi} and parameters are usually vectors that exceed 100 elements and in many cases many more. When an operation is complete, in almost all cases one word per lane is writen back to main memory. 
+A significant difference taken advantage of is that for any given operation, the system is writing far less than is being read. For example, the \ac{roi} and parameters are usually vectors that exceed 100 elements and in many cases many more. When an operation is complete, in almost all cases one word per lane is written back to main memory. 
 Now that sounds like writing back has a very small impact on performance, but with \acp{dram} that's not always true.
 \fi
-When an operation is complete, in almost all cases one word per lane is writen back to \ac{dram}.
+When an operation is complete, in almost all cases one word per lane is written back to \ac{dram}.
 Considering a \ac{dram} page contains 128 words, the system typically writes a quarter of a page and this is a relatively inefficient use of \ac{dram} bandwidth. 
 However, the pre-synaptic fanin typically far exceeds 100 elements and in the baseline \ac{an} shown in Table \ref{tab:Baseline Layer Configuration} the average fanin is \num 1650.
 So the write-to-read ratio is very high and the inefficient write has little impact on the overall performance.
@@ -350,7 +350,7 @@ In most cases, the \ac{stop} module will operate on the \ac{an} state and weight
 \subsection{SIMD}
 \label{sec:SIMD}
 
-The \ac{simd} is a 32-lane processor with some builtin special functions, such as the ReLu operation.
+The \ac{simd} is a 32-lane processor with some built-in special functions, such as the ReLu operation.
 
 The \ac{simd} will take the result provided by the \ac{stop} and perform a ReLu. The result will, in most cases, then transmitted back to the manager.
 

@@ -28,7 +28,7 @@ given the target application, provides a potentially 10-50X performance improvem
 
 This work focused on providing the infrastructure for an expansive architecture.
 The design infrastructure implemented was designed to allow additional functionality to be added without a high logic area impact to maintain the validity of the current area study.
-This work focused on the \ac{an} state calculations and assumed instructions and configuration tables are preloaded.
+This work focused on the \ac{an} state calculations and assumed instructions and configuration tables are pre-loaded.
 Therefore future work should include adding the data transfer functionality described in Section \ref{sec:System Overview}.
 
 %The choice of \ac{binary32} made this work more manageable because it allowed
@@ -37,7 +37,7 @@ There is a level of acceptance that in some cases, lower precision is acceptable
 %The choice of \ac{binary32} was in some part convenient and \ac{binary16} might have been a better choice especially as there is a level of acceptance that lower precision is acceptable in \ac{ann} inference.
 %Therefore, further work should include manager and \ac{pe} changes to support \ac{binary16}.
 In the manager, supporting \ac{binary16} would require additional muxing logic when directing words in the wide \ac{dram} bus to execution lanes as shown in \ref{sec:MRC}, but the bulk of the design should remain relatively intact.
-Supporting \ac{binary16} in the \ac{pe} would be relatively straighforward.
+Supporting \ac{binary16} in the \ac{pe} would be relatively straightforward.
 
 This work does not put a high level of importance on the \ac{pe} as the functionality provided by the \ac{pe} is relatively straightforward and primary emphasis was ensuring the \ac{pe} fits within the \ac{3dic} footprint.
 However, there is opportunity to research different \ac{pe} architectures such as systolic arrays and a more function-rich \ac{simd}.
