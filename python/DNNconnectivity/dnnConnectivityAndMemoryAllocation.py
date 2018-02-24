@@ -3803,7 +3803,7 @@ def main():
     #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
 
     #*CONV-2500
-    network.addLayer('Input',           25,  25,  40,                     ) #   96,
+    network.addLayer('Input',           25,  25, 100,                     ) #   96,
     network.addLayer('Convolutional',   10,  10,  64,    5,   5, 100,   2 ) #  256,
     network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
 
