@@ -42,7 +42,7 @@ The combination of limited \ac{hmc} interface bandwidth and the local \ac{sram} 
 %%NeuroCube appears to transfer operands as packets so is not a "stream" processor.
 
 Eyeriss\cite{chen201614} focuses on \acp{cnn} and specifically on the convolution ``hot-spots.''  It does not support the pooling operations although these can
-be supported by a local CPU.  However, it does not support the memory intensive fully-connected classifier layers or non-weight-shared locally-connected layers.
+be supported by a local CPU.  However, it does not support the memory intensive fully-connected classifier layers or non-weight-shared locally-connected layers \cite{le2013building}\cite{Taigman_2014_CVPR}.
 Eyeriss cannot be effectively applied to locally-connected \acp{ann} such as Deepface \cite{Taigman_2014_CVPR}.
 
 The DianNao family of \acp{asic} \cite{chen2014diannao} \cite{chen2016diannao} originally used external \ac{dram} to store \ac{ann} parameters but still uses \ac{dma} along with \ac{sram} as an intermediate store.
