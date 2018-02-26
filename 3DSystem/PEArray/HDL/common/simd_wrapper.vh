@@ -48,6 +48,7 @@
 `define SIMD_WRAP_OPERATION_EXP                     4
 `define SIMD_WRAP_OPERATION_DIV                     5  // divide each with common reg
 `define SIMD_WRAP_OPERATION_RECIP                   6  // reciprocal of common back to common
+`define SIMD_WRAP_OPERATION_CMP                     7  // compare with local reg
 `define SIMD_WRAP_OPERATION_SEND                    8  // send output regs to upstream
 `define SIMD_WRAP_OPERATION_SEND_NULL               9  // send null response with tag
 `define SIMD_WRAP_OPERATION_CLR_LOCAL_REGS         10  // clear output regs
@@ -93,6 +94,7 @@
 // SIMD wrapper operations multicycle
 `define SIMD_WRAP_OPERATION_EXP_MULTICYCLE              8   // match with synthesys
 `define SIMD_WRAP_OPERATION_DIV_MULTICYCLE              16  // divide adds registers
+`define SIMD_WRAP_OPERATION_CMP_MULTICYCLE              8   // match with synthesys
 
 //--------------------------------------------------------
 // Transfer from System interface to bank interface

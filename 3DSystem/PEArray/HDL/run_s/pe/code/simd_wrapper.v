@@ -349,7 +349,10 @@ module simd_wrapper (
         assign from_stOp_reg_fifo_pipe_cntl [gvi] = pipe_cntl                ; 
         assign from_stOp_reg_fifo_pipe_data [gvi] = pipe_data                ; 
 
-        assign reg__scntl__ready            [gvi] = ~almost_full             ;
+        always @(posedge clk)
+          begin
+            reg__scntl__ready            [gvi] <= ~almost_full             ;
+          end
 
         // FSM will drive read for each lane, most likely all together
         assign pipe_read = from_stOp_reg_fifo_reads [gvi]  ;
@@ -433,7 +436,7 @@ module simd_wrapper (
       begin
         always @(*)
           begin
-            pipe_tag_lane_valid [lane]  =  ((lane+1) <= from_Cntl_Tag_Fifo[0].pipe_tag_num_lanes) ;
+            pipe_tag_lane_valid [lane]  =  ((lane+1) <= from_Cntl_Tag_Fifo[0].pipe_tag_num_lanes & from_Cntl_Tag_Fifo[0].pipe_valid) ;
           end
       end
   endgenerate

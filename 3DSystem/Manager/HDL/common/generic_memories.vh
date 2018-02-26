@@ -1723,6 +1723,23 @@ else if ((GENERIC_MEM_DEPTH == 256) && (GENERIC_MEM_DATA_WIDTH == 32) && (GENERI
                    .RM         ( 4'b0011));
   end
 
+else if ((GENERIC_MEM_DEPTH == 256) && (GENERIC_MEM_DATA_WIDTH == 35) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 1))
+  begin : dw_mem
+    sasslnpky1p256x35cm4sw0ltlc1 mem1p256x35( 
+                   // Port A
+                   .CLK        ( clk                              ),
+                   .WE         ( portA_write_dly                  ),
+                   .ME         ( portA_enable_dly                 ),
+                   .ADR        ( portA_address_dly                ),
+                   .D          ( portA_write_data_dly             ),
+                   .Q          ( int_portA_read_data_dly          ),
+                
+                
+                   .TEST1      ( 1'b0 ),
+                   .RME        ( 1'b1 ),
+                   .RM         ( 4'b0011));
+  end
+
 //------------------------------------------------------------------------------------------------------------------------
 //
 else if ((GENERIC_MEM_DEPTH == 256) && (GENERIC_MEM_DATA_WIDTH == 32) && (GENERIC_MEM_REGISTERED_OUT == 0) && (GENERIC_NUM_OF_PORTS == 2))
