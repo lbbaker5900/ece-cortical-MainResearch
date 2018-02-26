@@ -208,6 +208,33 @@
 `define SIMD_CORE_SFU_DIV_CNTL_STATE_RANGE                      `SIMD_CORE_SFU_DIV_CNTL_STATE_MSB : `SIMD_CORE_SFU_DIV_CNTL_STATE_LSB
 
 
+//------------------------------------------------------------------------------------------------------------
+// Compare
+`define SIMD_CORE_SFU_CMP_CNTL_WAIT                            9'b0_0000_0001
+`define SIMD_CORE_SFU_CMP_CNTL_SETTLE                          9'b0_0000_0010
+`define SIMD_CORE_SFU_CMP_CNTL_LOAD                            9'b0_0000_0100
+`define SIMD_CORE_SFU_CMP_CNTL_INC                             9'b0_0000_1000
+
+`define SIMD_CORE_SFU_CMP_CNTL_COMPLETE                        9'b0_1000_0000
+`define SIMD_CORE_SFU_CMP_CNTL_ERR                             9'b1_0000_0000
+
+`define SIMD_CORE_SFU_CMP_CNTL_STATE_WIDTH                     9
+`define SIMD_CORE_SFU_CMP_CNTL_STATE_MSB                       `SIMD_CORE_SFU_CMP_CNTL_STATE_WIDTH-1
+`define SIMD_CORE_SFU_CMP_CNTL_STATE_LSB                       0
+`define SIMD_CORE_SFU_CMP_CNTL_STATE_SIZE                      (`SIMD_CORE_SFU_CMP_CNTL_STATE_MSB - `SIMD_CORE_SFU_CMP_CNTL_STATE_LSB +1)
+`define SIMD_CORE_SFU_CMP_CNTL_STATE_RANGE                      `SIMD_CORE_SFU_CMP_CNTL_STATE_MSB : `SIMD_CORE_SFU_CMP_CNTL_STATE_LSB
+
+
+`define SIMD_CORE_SFU_CMP_OUTPUTS_WIDTH                     3
+`define SIMD_CORE_SFU_CMP_OUTPUTS_MSB                       `SIMD_CORE_SFU_CMP_OUTPUTS_WIDTH-1
+`define SIMD_CORE_SFU_CMP_OUTPUTS_LSB                       0
+`define SIMD_CORE_SFU_CMP_OUTPUTS_SIZE                      (`SIMD_CORE_SFU_CMP_OUTPUTS_MSB - `SIMD_CORE_SFU_CMP_OUTPUTS_LSB +1)
+`define SIMD_CORE_SFU_CMP_OUTPUTS_RANGE                      `SIMD_CORE_SFU_CMP_OUTPUTS_MSB : `SIMD_CORE_SFU_CMP_OUTPUTS_LSB
+
+`define SIMD_CORE_SFU_CMP_EQ_BIT                     0
+`define SIMD_CORE_SFU_CMP_LT_BIT                     1
+`define SIMD_CORE_SFU_CMP_GT_BIT                     2
+
 
 //------------------------------------------------------------------------------------------------------------
 `endif

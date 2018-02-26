@@ -57,10 +57,11 @@
 
 
 //------------------------------------------------------------------------------------------------------------
-`define COMMON_IEEE754_FLOAT_ONE       32'h3F80_0000
-`define COMMON_IEEE754_FLOAT_ZERO      32'h0000_0000
-`define COMMON_IEEE754_FLOAT_INFINITY  32'h7F80_0000
-`define COMMON_INT_MAX                 32'hFFFF_FFFF
+`define COMMON_IEEE754_FLOAT_ONE             32'h3F80_0000
+`define COMMON_IEEE754_FLOAT_ZERO            32'h0000_0000
+`define COMMON_IEEE754_FLOAT_INFINITY        32'h7F80_0000
+`define COMMON_IEEE754_FLOAT_NEG_INFINITY    32'hFF80_0000
+`define COMMON_INT_MAX                       32'hFFFF_FFFF
 
 `define COMMON_IEEE754_FRACTION_WIDTH          23
 `define COMMON_IEEE754_FRACTION_MSB            (`COMMON_IEEE754_FRACTION_LSB+`COMMON_IEEE754_FRACTION_WIDTH-1)

@@ -226,7 +226,7 @@ if {$tech == "65nm"} {
 
 } elseif {($tech == "28nm")} {
 
-  set PORT_LOAD_CELL sc12mc_cmos28hpp_base_rvt_c30_ss_nominal_max_0p765v_110c/DFFQ_X1M_A12TR_C30/D
+  set PORT_LOAD_CELL sc12mc_cmos28hpp_base_rvt_c30_tt_nominal_max_0p90v_25c/DFFNQ_X1M_A12TR_C30/D
   set WIRE_LOAD_EST   0.013
   set FANOUT          4
   set PORT_LOAD [expr $WIRE_LOAD_EST + $FANOUT * [load_of $PORT_LOAD_CELL]]
@@ -252,9 +252,6 @@ if {$tech == "65nm"} {
 #  - dw mults etc. are found in dw_foundation.sldb and are found during instance search in the sldb
 #  - i dont think we dont_touch these instances
 #--------------------------------------------------------- 
-#set_dont_touch [get_cell -hier -regexp -filter "ref_name =~ DW_fp.*"]
-#set_dont_touch [get_cell DW_*]
-#
 
 #---------------------------------------------------------
 # Dont touch on memories and regFiles
@@ -277,10 +274,21 @@ if {$tech == "65nm"} {
 # Other Dont touch 
 #  - SIMD core
 #--------------------------------------------------------- 
-if {($modname == "simd_wrapper") || ($modname == "pe")} {
-  #set_dont_touch [get_cell simd_wrapper/simd_core]
+if {($modname == "simd_wrapper")} {
   set_multicycle_path -from simd_core/exp_input_reg*/* -to simd_core/exp_output_reg*/* 8
   set_multicycle_path -from simd_core/exp_input_reg*/* -to simd_core/exp_output_reg*/* -hold 7
+
+  set_multicycle_path -from simd_core/cmp_input_reg*/* -to simd_core/cmp_output_reg*/* 8
+  set_multicycle_path -from simd_core/cmp_input_reg*/* -to simd_core/cmp_output_reg*/* -hold 7
+
+} else {
+  #set_dont_touch [get_cell simd_wrapper/simd_core]
+  set_multicycle_path -from simd_wrapper/simd_core/exp_input_reg*/* -to simd_wrapper/simd_core/exp_output_reg*/* 8
+  set_multicycle_path -from simd_wrapper/simd_core/exp_input_reg*/* -to simd_wrapper/simd_core/exp_output_reg*/* -hold 7
+
+  set_multicycle_path -from simd_wrapper/simd_core/cmp_input_reg*/* -to simd_wrapper/simd_core/cmp_output_reg*/* 8
+  set_multicycle_path -from simd_wrapper/simd_core/cmp_input_reg*/* -to simd_wrapper/simd_core/cmp_output_reg*/* -hold 7
+
 }
 
 set verilogout_show_unconnected_pins true

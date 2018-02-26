@@ -351,6 +351,12 @@ module simd_core (
   reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_div_common_regs       [`PE_NUM_OF_EXEC_LANES ]  ;
   reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_div_load_common_reg                             ;  // 
 
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_cmp_local_regs        [`PE_NUM_OF_EXEC_LANES ]  ;
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE      ]   sfu_cmp_load_local_reg                              ;  // 
+
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_cmp_common_regs       [`PE_NUM_OF_EXEC_LANES ]  ;
+  wire   [`PE_EXEC_LANE_WIDTH_RANGE     ]   sfu_cmp_load_common_reg                             ;  // 
+
   generate
     for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
       begin
@@ -362,6 +368,7 @@ module simd_core (
                                          sfu_add_load_local_reg  [lane] ||                                         
                                          sfu_relu_load_local_reg [lane] ||                                         
                                          sfu_div_load_local_reg  [lane] ||                                         
+                                         sfu_cmp_load_local_reg  [lane] ||                                         
                                          sfu_exp_load_local_reg  [lane]                  ) ? 1'b1                     :
                                                                                              local_regs_valid [lane]  ;
 
@@ -371,10 +378,12 @@ module simd_core (
                                          sfu_add_load_local_reg  [lane] ||                
                                          sfu_relu_load_local_reg [lane] ||                
                                          sfu_div_load_local_reg  [lane] ||                
+                                         sfu_cmp_load_local_reg  [lane] ||                
                                          sfu_exp_load_local_reg  [lane]                  ) ? (sfu_nop_local_regs  [lane] | 
                                                                                               sfu_add_local_regs  [lane] | 
                                                                                               sfu_relu_local_regs [lane] | 
                                                                                               sfu_div_local_regs  [lane] | 
+                                                                                              sfu_cmp_local_regs  [lane] | 
                                                                                               sfu_exp_local_regs  [lane] ) : 
                                                                                               local_regs          [lane]   ;
           end
@@ -392,6 +401,7 @@ module simd_core (
                                          sfu_add_load_common_reg  [lane] ||                                         
                                          sfu_relu_load_common_reg [lane] ||                                         
                                          sfu_div_load_common_reg  [lane] ||                                         
+                                         sfu_cmp_load_common_reg  [lane] ||                                         
                                          sfu_exp_load_common_reg  [lane]                 ) ? 1'b1                     :
                                                                                             common_regs_valid [lane]  ;
 
@@ -401,9 +411,11 @@ module simd_core (
                                          sfu_add_load_common_reg  [lane] ||                
                                          sfu_relu_load_common_reg [lane] ||                
                                          sfu_div_load_common_reg  [lane] ||                
+                                         sfu_cmp_load_common_reg  [lane] ||                
                                          sfu_exp_load_common_reg  [lane]                 ) ? (sfu_add_common_regs  [lane] | 
                                                                                               sfu_relu_common_regs [lane] | 
                                                                                               sfu_div_common_regs  [lane] | 
+                                                                                              sfu_cmp_common_regs  [lane] | 
                                                                                               sfu_exp_common_regs  [lane] )  : 
                                                                                               common_regs          [lane]    ;
           end
@@ -451,6 +463,7 @@ module simd_core (
   reg                  sfu_add_save_common_done  ;
   reg                  sfu_relu_done             ;
   reg                  sfu_div_done              ;
+  reg                  sfu_cmp_done              ;
   reg                  sfu_exp_done              ;
 
   // assign done to function
@@ -483,6 +496,10 @@ module simd_core (
             else if (sfu == `SIMD_WRAP_OPERATION_DIV) 
               begin
                 special_function_done [sfu]  = sfu_div_done  ;
+              end
+            else if (sfu == `SIMD_WRAP_OPERATION_CMP) 
+              begin
+                special_function_done [sfu]  = sfu_cmp_done  ;
               end
             else if (sfu == `SIMD_WRAP_OPERATION_SEND) 
               begin
@@ -1277,6 +1294,219 @@ module simd_core (
                 .status( ));
 
 
+
+  //----------------------------------------------------------------------------------------------------
+  // Compare
+ 
+  reg [`SIMD_CORE_SFU_CMP_CNTL_STATE_RANGE ]    simd_core_cmp_cntl_state      ; // state flop
+  reg [`SIMD_CORE_SFU_CMP_CNTL_STATE_RANGE ]    simd_core_cmp_cntl_state_next ;
+  
+  reg   [`PE_EXEC_LANE_COUNT_P1_RANGE      ]    cmp_register_count      ;  // when MSB is one we have cycled thru all regs
+  reg   [`PE_EXEC_LANE_COUNT_P1_RANGE      ]    cmp_register_index      ;  // index thru registers 0-31
+  reg   [`PE_EXEC_LANE_WIDTH_RANGE         ]    cmp_input    [2]        ;
+  wire  [`SIMD_CORE_SFU_CMP_OUTPUTS_RANGE  ]    cmp_output              ;  //I0 eq I1, I0 lt I1, I0 gt I1
+  reg   [`SIMD_CORE_SFU_CMP_OUTPUTS_RANGE  ]    cmp_output_reg          ;  //I0 eq I1, I0 lt I1, I0 gt I1
+  reg                                           cmp_result_eq_reg       ; 
+  reg                                           cmp_result_lt_reg       ; 
+  reg                                           cmp_result_gt_reg       ; 
+  reg                                           cmp_initial             ; // initially set common reg to -INF
+
+
+  // CMP Controller
+  //
+  
+  // State register 
+  always @(posedge clk)
+    begin
+      simd_core_cmp_cntl_state <= ( reset_poweron ) ? `SIMD_CORE_SFU_CMP_CNTL_WAIT       :
+                                                       simd_core_cmp_cntl_state_next  ;
+    end
+  
+ 
+  always @(*)
+    begin
+      case (simd_core_cmp_cntl_state)  // synopsys parallel_case
+
+        
+        // use special op for first transition, then use curr_special_op
+        `SIMD_CORE_SFU_CMP_CNTL_WAIT: 
+          simd_core_cmp_cntl_state_next =  ( start_special_function  && (special_op == `SIMD_WRAP_OPERATION_CMP )) ? `SIMD_CORE_SFU_CMP_CNTL_SETTLE  :  
+                                                                                                                     `SIMD_CORE_SFU_CMP_CNTL_WAIT     ;
+  
+        `SIMD_CORE_SFU_CMP_CNTL_SETTLE: 
+          simd_core_cmp_cntl_state_next =  ( cmp_register_count ==  `SIMD_WRAP_OPERATION_CMP_MULTICYCLE  )   ?   `SIMD_CORE_SFU_CMP_CNTL_LOAD     :
+                                                                                                                 `SIMD_CORE_SFU_CMP_CNTL_SETTLE   ;
+  
+        `SIMD_CORE_SFU_CMP_CNTL_LOAD: 
+          simd_core_cmp_cntl_state_next =  `SIMD_CORE_SFU_CMP_CNTL_INC       ;
+  
+        `SIMD_CORE_SFU_CMP_CNTL_INC: 
+          simd_core_cmp_cntl_state_next =  ( cmp_register_index[`PE_EXEC_LANE_COUNT_P1_MSB] )   ?   `SIMD_CORE_SFU_CMP_CNTL_COMPLETE     :
+                                                                                                    `SIMD_CORE_SFU_CMP_CNTL_SETTLE       ;
+  
+        // must be a pulse state
+        `SIMD_CORE_SFU_CMP_CNTL_COMPLETE: 
+          simd_core_cmp_cntl_state_next =  `SIMD_CORE_SFU_CMP_CNTL_WAIT       ;
+  
+        // Latch state on error
+        `SIMD_CORE_SFU_CMP_CNTL_ERR:
+          simd_core_cmp_cntl_state_next = `SIMD_CORE_SFU_CMP_CNTL_ERR ;
+  
+        default:
+          simd_core_cmp_cntl_state_next = `SIMD_CORE_SFU_CMP_CNTL_WAIT ;
+    
+      endcase 
+    end // always @ (*)
+  
+
+  always @(posedge clk)
+    begin
+      case (simd_core_cmp_cntl_state)
+        default:
+           begin
+             cmp_input  [0]      <= input_regs [cmp_register_index]  ;
+
+             cmp_input  [1]      <= ( cmp_initial         )  ?  `COMMON_IEEE754_FLOAT_NEG_INFINITY :
+                                                                local_regs [cmp_register_index]    ;
+           end
+      endcase 
+    end
+
+  always @(posedge clk)
+    begin
+      case (simd_core_cmp_cntl_state)  // synopsys parallel_case
+        `SIMD_CORE_SFU_CMP_CNTL_WAIT: 
+           begin
+             cmp_output_reg          <= 'd0 ;
+             cmp_register_index      <= 'd0 ;
+             cmp_register_count      <= 'd0 ;
+           end
+  
+        `SIMD_CORE_SFU_CMP_CNTL_SETTLE: 
+           begin
+             cmp_output_reg      <= cmp_output      ;
+
+             cmp_register_index      <= cmp_register_index       ;
+             cmp_register_count      <= cmp_register_count +'d1  ;
+           end
+  
+        `SIMD_CORE_SFU_CMP_CNTL_LOAD: 
+           begin
+             cmp_output_reg      <= cmp_output      ;
+
+             cmp_register_index      <= cmp_register_index + 'd1 ;
+             cmp_register_count      <= 'd0                      ;
+           end
+  
+        default:
+           begin
+             cmp_output_reg      <= cmp_output_reg ;
+
+             cmp_register_index      <= cmp_register_index  ;
+             cmp_register_count      <= cmp_register_count  ;
+           end
+  
+      endcase 
+    end
+
+  always @(*)
+    begin
+      case (simd_core_cmp_cntl_state)  // synopsys parallel_case
+        `SIMD_CORE_SFU_CMP_CNTL_WAIT: 
+           begin
+             sfu_cmp_done   = 1'b0 ;
+           end
+        `SIMD_CORE_SFU_CMP_CNTL_COMPLETE: 
+           begin
+             sfu_cmp_done   = 1'b1 ;
+           end
+        default:
+           begin
+             sfu_cmp_done   = 1'b0 ;
+           end
+      endcase 
+    end
+
+  // Create load signals
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        always @(*)
+          begin
+            case (simd_core_cmp_cntl_state)  // synopsys parallel_case
+              `SIMD_CORE_SFU_CMP_CNTL_LOAD: 
+                begin
+                  if (lane==cmp_register_index)
+                    begin
+                      sfu_cmp_local_regs     [lane]       =  ( cmp_output_reg [`SIMD_CORE_SFU_CMP_OP_GT  ])  ?  input_regs [cmp_register_index] :
+                                                                                                                local_regs [cmp_register_index] ;
+                      sfu_cmp_load_local_reg [lane]       = 1'b1            ; 
+                    end
+                  else
+                    begin
+                      sfu_cmp_local_regs     [lane]       = 'd0 ;
+                      sfu_cmp_load_local_reg [lane]       = 'b0 ;
+                    end
+                end
+              default:
+                begin
+                  sfu_cmp_local_regs     [lane]       = 'd0 ;
+                  sfu_cmp_load_local_reg [lane]       = 'b0 ;
+                end
+            endcase 
+          end
+      end
+  endgenerate
+
+  // CMP doesnt write to common reg
+  generate
+    for (lane=0; lane<`PE_NUM_OF_EXEC_LANES; lane++)
+      begin
+        //always @(*)
+        //  begin
+            assign sfu_cmp_load_common_reg    [lane]  = 'b0 ;
+                                                                                                                                  
+            assign sfu_cmp_common_regs        [lane]  = 'd0 ;
+        //  end
+      end
+  endgenerate
+
+
+  DW_fp_cmp  #(
+                   .sig_width       ( 23), 
+                   .exp_width       ( 8 ), 
+                   .ieee_compliance ( 1 )
+                  )
+  DW_fp_cmp   ( 
+                // Inputs
+                .a             ( cmp_input [0]                          ), 
+                .b             ( cmp_input [1]                          ), 
+                .zctr          ( 1'b1                                   ),   // z0 - max, z1 - min
+                // Outputs
+                .aeqb          ( cmp_output [`SIMD_CORE_SFU_CMP_EQ_BIT] ), 
+                .altb          ( cmp_output [`SIMD_CORE_SFU_CMP_LT_BIT] ), 
+                .agtb          ( cmp_output [`SIMD_CORE_SFU_CMP_GT_BIT] ), 
+                .unordered     (                                        ),   // FIXME
+                .z0            (                                        ),   // FIXME 
+                .z1            (                                        ),   // FIXME 
+                .status0       (                                        ),
+                .status1       (                                        ));
+
+  always @(*)
+    begin
+      cmp_result_eq_reg    =  cmp_output [`SIMD_CORE_SFU_CMP_EQ_BIT]   ; 
+      cmp_result_lt_reg    =  cmp_output [`SIMD_CORE_SFU_CMP_LT_BIT]   ; 
+      cmp_result_gt_reg    =  cmp_output [`SIMD_CORE_SFU_CMP_GT_BIT]   ; 
+    end
+
+  always @(posedge clk)
+    begin
+      cmp_initial <= ( reset_poweron                                                 )  ?  1'b1        :
+                     ( simd_core_cmp_cntl_state ==  `SIMD_CORE_SFU_CMP_CNTL_COMPLETE )  ?  1'b1        :
+                     ( send_local_regs                                               )  ?  1'b0        :
+                                                                                           cmp_initial ;
+    end
+  
   //----------------------------------------------------------------------------------------------------
   // Divider
  

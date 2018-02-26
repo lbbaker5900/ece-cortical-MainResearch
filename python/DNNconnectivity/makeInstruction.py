@@ -140,7 +140,7 @@ a.append('_00000___1_____0011____0100____0001___1000___1_____10____0000000010')
 
 #                        sum/
 #                        save
-#                        comm    NOP     Div   send
+#                        comm    NOP     Div    send
 a.append('_00000___1_____0011____0000____0101___1000___1_____10____0000000010')
 
 #                                        sum/                                                            
@@ -151,6 +151,9 @@ a.append('_00000___1_____0000____0110____0011___1000___1_____10____0000000010')
 #  
 #                        NOP     NOP     NOP    send
 a.append('_00000___1_____0000____0000____0000___1000___1_____10____0000000010')
+
+#                        NOP     NOP     Cmp    send
+a.append('_00000___1_____0000____0000____0111___1000___1_____10____0000000010')
 
 print  '// SIMD Option Memory'
 
@@ -167,6 +170,8 @@ print  '// send - Sum/save common - recip - NOP'
 print  hex(int(a[6].replace('_',''),2)).split('x')[1]
 print  '// send - nop - nop - nop'
 print  hex(int(a[7].replace('_',''),2)).split('x')[1]
+print  '// send - cmp - nop - nop'
+print  hex(int(a[8].replace('_',''),2)).split('x')[1]
 
 #----------------------------------------------------------------------------------------------------
 # PE control operations
