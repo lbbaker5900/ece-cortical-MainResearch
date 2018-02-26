@@ -8,16 +8,16 @@
 
 There have been many attempts to accelerate \acp{ann}. Many have shown excellent performance mainly when implementing \acp{cnn}. The improvement mostly comes from the ability to hold kernel weights and/or \ac{an} states in local \ac{sram}. 
 Another method of employing local memory is often due to pooling of batch requests, especially in server applications.
-This local storage allows the system to take advantage of the low latency and random access benefits of \ac{sram} whilst performing multiple operations on that data.
+This local storage allows the system to take advantage of the low latency and random access benefits of \ac{sram} while performing multiple operations on that data.
 When considering applications where this local storage cannot be used effectively, all these implementations suffer a degradation in performance.
 
 This work considers embedded applications where a system is processing requests with a disparate set of \acp{ann}. 
-A further assumption is that in embedded applications there a restrictions on power consumption and area.
-This target application means that local \ac{sram} would not effective and performance is based on \ac{dram} bandwidth.
+A further assumption is that in embedded applications there are restrictions on power consumption and area.
+In this type of target application local \ac{sram} would not be effective and performance is based on \ac{dram} bandwidth.
 This work considers \acf{3dic} technology and a customized \acf{3ddram} is proposed. 
-The customized \ac{3ddram} combined with a design based on custom instructions and operation descriptors allows the this works system to achieve high levels of usable memory bandwidth.
-There is no doubt existing \ac{cnn} accelerators that take advantage of batch processing achieve a performance that is difficult to better, but applying these systems to this works target application exposes those systems \ac{dram} bandwidth limitations.
-This work demonstrates a \ac{3dic} system that at the surface has a relatively low \ac{flops}, but considering the target application is memory bound this work potentially provides a 10-50X improvement over existing \acp{asic}/\acp{asip} or \acp{gpu}.
+The customized \ac{3ddram} combined with a design based on custom instructions and operation descriptors allows the system to achieve high levels of usable memory bandwidth.
+There is no doubt existing \ac{cnn} accelerators that take advantage of batch processing achieve a performance that is difficult to better, but applying these systems to this work's target application exposes those systems' \ac{dram} bandwidth limitations.
+This work demonstrates a \ac{3dic} system that at the surface provides relatively low \ac{flops}, but considering the target application is memory bound, this work potentially provides a 10-50X improvement over existing \acp{asic}/\acp{asip} or \acp{gpu}.
 In reality, it is difficult to compare performance against existing \ac{gpu} or \ac{asic} solutions because they target different application spaces. 
 \iffalse
 given the target application, provides a potentially 10-50X performance improvement over existing ASIC/ASIPs or GPUs.
@@ -28,34 +28,37 @@ given the target application, provides a potentially 10-50X performance improvem
 
 This work focused on providing the infrastructure for an expansive architecture.
 The design infrastructure implemented was designed to allow additional functionality to be added without a high logic area impact to maintain the validity of the current area study.
-This work focused on the \ac{an} state calculations and assumed instructions and configuration tables are preloaded.
-Therefore future work should include adding the data transfer functionality described in \ref{sec:System Overview}.
+This work focused on the \ac{an} state calculations and assumed instructions and configuration tables are pre-loaded.
+Therefore future work should include adding the data transfer functionality described in Section \ref{sec:System Overview}.
 
-The choice of using \ac{binary32} was in some part convenient and \ac{binary16} might have been a better choice especially as there is a level of acceptance that lower precision is acceptable in \ac{ann} inference.
-Therefore, further work should include manager and \ac{pe} changes to support \ac{binary16}.
+%The choice of \ac{binary32} made this work more manageable because it allowed
+%a certain amount of code reuse.  
+There is a level of acceptance that in some cases, lower precision is acceptable in \ac{ann} inference, therefore further work should include manager and \ac{pe} changes to support \ac{binary16}.
+%The choice of \ac{binary32} was in some part convenient and \ac{binary16} might have been a better choice especially as there is a level of acceptance that lower precision is acceptable in \ac{ann} inference.
+%Therefore, further work should include manager and \ac{pe} changes to support \ac{binary16}.
 In the manager, supporting \ac{binary16} would require additional muxing logic when directing words in the wide \ac{dram} bus to execution lanes as shown in \ref{sec:MRC}, but the bulk of the design should remain relatively intact.
-Supporting \ac{binary16} in the \ac{pe} would be relatively straighforward.
+Supporting \ac{binary16} in the \ac{pe} would be relatively straightforward.
 
 This work does not put a high level of importance on the \ac{pe} as the functionality provided by the \ac{pe} is relatively straightforward and primary emphasis was ensuring the \ac{pe} fits within the \ac{3dic} footprint.
-However, there is opportunity to research different \ac{pe} architectures such as systolic arrays and a more function rich \ac{simd}.
+However, there is opportunity to research different \ac{pe} architectures such as systolic arrays and a more function-rich \ac{simd}.
 
 This work focused on providing an array of \acp{ssc} to match the array of \acp{dram} interfaces provided by the \ac{diram4}, but further research should include ganging \ac{dram} interfaces to a coarser array of \acp{ssc}.
 In practice, this may also be synergistic with alternative \ac{pe} architectures, such as employing a \ac{pe} with a large systolic array \cite{tensorflow2015-whitepaper}.
 
-The instruction decode logic is currently coded using an \ac{fsm}, in accordance with creating an expansive architecture it might be a better to use a small processor to decode and control system functions.
+The instruction decode logic is currently coded using an \ac{fsm}.  In accordance with creating an expansive architecture it might be a better to use a small processor to decode and control system functions.
 
 \iffalse
   \item Half-Precision PE
-%    \2 modifying the PE to support 16-bit FP would be relatively trivial
+%    \2 Modifying the PE to support 16-bit FP would be relatively trivial.
   \item Additional PE pipelining
-%    \2 Adding layers of processing to the PE would effectively increase the operations per second
-%     \3 the PE area utilization is relatively low so it could support some additional pipelining
-%     \3 using a reduction array would effectively double the FLOPs
-%     \3 looking at storing weights and inputs for a pipelined PE would be required and the manager would likely be customized to the PE, but the belief is the Manager design and complexity should be similar
+%    \2 Adding layers of processing to the PE would effectively increase the operations per second.
+%     \3 The PE area utilization is relatively low so it could support some additional pipelining.
+%     \3 Using a reduction array would effectively double the FLOPs.
+%     \3 Looking at storing weights and inputs for a pipelined PE would be required and the manager would likely be customized to the PE, but the belief is the Manager design and complexity should be similar.
   \item Systolic PE
-%    \2 systolic arrays have shown efficacy when used in server applications such as TPU, but its not clear how effective they would be in an embedded application
-%      \3 consider how to effectively feed a systolic array PE
-%      \3 consider types of systolic array
-%      \3 consider situations such as multiple Managers feeding a single PE. For example, a systolic PE might use two managers to feed X and Y inputs of the array
+%    \2 Systolic arrays have shown efficacy when used in server applications such as TPU, but its not clear how effective they would be in an embedded application.
+%      \3 Consider how to effectively feed a systolic array PE.
+%      \3 Consider types of systolic arrays.
+%      \3 Consider situations such as multiple Managers feeding a single PE. For example, a systolic PE might use two managers to feed X and Y inputs of the array.
 \fi
 

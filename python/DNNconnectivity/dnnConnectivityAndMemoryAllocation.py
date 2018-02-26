@@ -3802,15 +3802,20 @@ def main():
     #network.addLayer('Convolutional',   27,  27,  64,    5,   5,  40,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
 
+    #*CONV-2500
+    network.addLayer('Input',           25,  25, 100,                     ) #   96,
+    network.addLayer('Convolutional',   10,  10,  64,    5,   5, 100,   2 ) #  256,
+    network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
+
     # CONV-4000
     #network.addLayer('Input',           55,  55, 160,                     ) #   96,
     #network.addLayer('Convolutional',   27,  27,  64,    5,   5, 160,   2 ) #  256,
     #network.addLayer('Convolutional',   13,  13,  64,    3,   3,  64,   2 ) #  384,
 
     # FC-100
-    network.addLayer('Input',          100,    1,    1,                      ) #   96,
-    network.addLayer('Convolutional', 1024,    1,    1,  100,   1,    1,   0 ) #  256,
-    network.addLayer('Convolutional', 1024,    1,    1, 1024,   1,    1,   0 ) #  384,
+    #network.addLayer('Input',          100,    1,    1,                      ) #   96,
+    #network.addLayer('Convolutional', 1024,    1,    1,  100,   1,    1,   0 ) #  256,
+    #network.addLayer('Convolutional', 1024,    1,    1, 1024,   1,    1,   0 ) #  384,
     
     #*FC-300
     #network.addLayer('Input',          300,    1,    1,                      ) #   96,

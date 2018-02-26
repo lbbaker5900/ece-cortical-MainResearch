@@ -281,6 +281,7 @@
 %http://tex.stackexchange.com/questions/94032/fancy-tables-in-latex
 % Lee \usepackage[table]{xcolor}
 \usepackage{array}
+\usepackage{tabularx}
 %\usepackage{array,booktabs}
 % Lee \usepackage{colortbl}
 % Lee \newcolumntype{L}{@{}>{\kern\tabcolsep}l<{\kern\tabcolsep}}
@@ -591,8 +592,16 @@
 % Appendices
 %\ensureoddstart
 \restoregeometry
+\appendix
+\newgeometry{letterpaper,top=1in,bottom=1in,right=1in,left=1.25in,footskip=\chapterfootskip, includefoot}
+%\newgeometry{margin=1in,lmargin=1.25in,footskip=\chapterfootskip, includehead, includefoot}
+
 
 \include{Appendix-A/Appendix-A}
+\include{Appendix-B/Appendix-B}
+%\include{Appendix-C/Appendix-C}
+%\include{Appendix-D/Appendix-D}
+%\include{Appendix-E/Appendix-E}
 
 \restoregeometry
 
