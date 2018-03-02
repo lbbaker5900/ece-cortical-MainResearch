@@ -12,7 +12,8 @@
 There are two types of memory employed in \acp{asic} and \acp{asip}, \acf{sram} and \acf{dram}.
 Both of these technologies have a similar top level block diagram which contains an array of storage elements, a means to address into a particular row of memory cells and a means to read and write a column of those cells.
 A basic block diagram is shown in Figure \ref{fig:MemoryBlockDiagram}.
-\begin{figure}[!t]
+%\begin{figure}[!t]
+\begin{figure}[h]
 % the [] contains position info e.g. [!t] means here
 \centering
 \captionsetup{justification=centering}
@@ -24,7 +25,7 @@ A basic block diagram is shown in Figure \ref{fig:MemoryBlockDiagram}.
 \end{figure}
 
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \begin{subfigure}{.45\textwidth}
   \centering
@@ -64,7 +65,7 @@ The read or write often completes in one or two clock cycles depending on whethe
 The storage cell inside the \ac{sram} is formed from cross-coupled transistors (see Figure \ref{fig:SRAM Cell}) which latch the contents and hold the contents indefinitely or until power is removed from the device.
 The storage structure employs six transistors and allows the access logic to be relatively simple and fast but has a relatively low density because of the number of transistors employed.
 
-Accessing a ``typical'' \ac{dram} is much more involved, it involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page. 
+Accessing a ``typical'' \ac{dram} is much more involved. It involves opening a page in a bank, reading or writing a portion of the contents of the page then closing the page. 
 
 When an \ac{sram} cell is read, the cross-coupled transistors retain the stored value. 
 The reasons behind this added complexity is the memory cell inside the \ac{dram} which is formed from a capacitor (see Figure \ref{fig:DRAM Cell}) which holds a charge reflecting a logic zero or one. 
@@ -132,7 +133,7 @@ In a typical \ac{dram}, a bank may contain on the order of a few thousand pages 
 Once the page is open, the user accesses a portion of the requested page over a bus. With PCB based DRAMs the bus might vary from four to 16 bits wide, but with 3D DRAMs, such as HBM the bus might be up to 128 bits wide.
 An \ac{asic}, \ac{asip} or \ac{gpu} implementation may combine multiple devices to generate bus widths on the order of \SI[per-mode=symbol]{1}{\kilo \bit} wide. 
 When using 2.5D technology and \ac{hbm} with their Pascal\texttrademark \ac{gpu} accelerator device, NVidia\textregistered ~achieve a raw \ac{dram} bandwidth approaching \SI[per-mode=symbol]{6}{\tera \bit \per \second} \cite{Nvidia_p100_summary_datasheet}\footnote{datasheet also shows a \ac{tdp} of \SI[per-mode=symbol]{300}{\watt}}.
-However, experience has shown \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper} that usable bandwidth will likely be much lower.
+However, experience has shown \cite{farabet2011neuflow} \cite{jouppi2017datacenter} that usable bandwidth will likely be much lower.
 Regardless, this existing technology does not achieve the required bandwidth \eqref{eq:maximumBandwidth}.
 
 
@@ -161,7 +162,7 @@ Figure \ref{fig:dramBlockDiagram} shows a block diagram of a typical DRAM.
 
 This work achieves the increase in bandwidth by proposing that the DRAM expose more of its currently open page.
 
-Without the limitations of having to transfer data beyond the chip stack, this work suggests exposing a larger portion of the page over a very wide bus. By staying within the 3D footprint, this bus can be implemented using fine pitch through-silicon-vias.
+Without the limitations of having to transfer data beyond the chip stack, this work suggests exposing a larger portion of the page over a very wide bus. By staying within the 3D footprint, this bus can be implemented using fine pitch \acp{tsv}. %through-silicon-vias.
 (see Figure \ref{fig:dramBusChange}).
 
 \begin{figure}[!t]
@@ -180,7 +181,14 @@ This work assumes the \ac{dram} interface protocol uses \ac{ddr} with a bus widt
 
 \subsubsection{Customization Two: Write Mask}
 \label{sec:Write Mask}
-When processing an \ac{ann}, to compute the activation of an individual \ac{an} involves reading the pre-synaptic \ac{an} activations and the weights of the connections between the pre-synaptic \acp{an} and the \ac{an} being processed. The activation of the processed \ac{an} is written back to memory. The ratio of reads to writes is high, hundreds or thousands to one. Therefore, the system often needs to write a portion of the page back to memory. To avoid a read/modify/write, a customization to the DRAM is the addition of a write data mask to the DRAM write path.
-
+When processing an \ac{ann}, to compute the activation of an individual \ac{an} involves reading the pre-synaptic \ac{an} activations and the weights of the connections between the pre-synaptic \acp{an} and the \ac{an} being processed. 
+Typically, a group of up to 32 \acp{an} are processed. Assuming the state of an \ac{an} is represented by a \ac{binary32} number format, the memory used to store the states of the group of \acp{an} represents only up to 25 percent of a \ac{dram} page.
+If a partial page needs to be written, the write controller with have to read the page, then modify the page with the new data and write the modified page back to memory.
+To minimize writing partial pages, the write controller has temporary registers to store two pages of data. 
+The write controller accumulates the \ac{an} states in these temporary registers before writing back to memory.
+If the write controller receives any data that is not destined for the pages associated with the temporary registers, the contents of one of these page registers must be written back to memory to accomodate the new data.
+If the register chosen to be written back to memory only contains a partial page of data, the write controller would need to perform a read/modify/write operation.
+The ratio of reads to writes is high, hundreds or thousands to one so this additional read/modify/write will not adversly affect the performance. 
+However, a proposed customization to the DRAM is the addition of a write data mask to the \ac{dram} write path thus avoiding this read/modify/write.
 This work assumes single precision floating point for \ac{ann} weights and activation, so a mask bit will be provided on a word basis or every 32 bits.
 

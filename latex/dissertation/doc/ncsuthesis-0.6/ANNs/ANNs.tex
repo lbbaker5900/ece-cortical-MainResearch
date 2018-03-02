@@ -20,7 +20,7 @@ Artificial neural networks (\ac{ann}) take their inspiration from neuron behavio
 
 The mammalian neuron is a cell that receives input and generates output in the form of electrical and chemical processes.
 The neuron has a cell body (or soma), a group of dendrites which provide the inputs from other cells, a cell body, an axon which generates the output signals, and the axon terminals which are the outputs of the cell.
-The connection from a cells output, or axon terminal to another cells input, or dendrite is known as a synapse. 
+The connection from a cell's output, or axon terminal, to another cells input, or dendrite, is known as a synapse. 
 The connection in the synapse is a chemical process stimulated by electrical impulses.
 The neuron can be seen in Figure \ref{fig:neuron}.
 
@@ -41,7 +41,7 @@ The connection from one cell to another has both an associated delay and a stren
 
 
 \iftrue
-So it is known that mammalian neurons generate ``spikes'' in response to inputs which for humans include sight, touch, sound etc.. This spiking behavior is often referred to as the neuron being activated.
+It is known that mammalian neurons generate ``spikes'' in response to inputs which for humans include sight, touch, sound etc.. This spiking behavior is often referred to as the neuron being activated.
 When these neurons are activated, their spikes propagate to other neurons. Under certain conditions, the combination of the various inputs to a neuron cause it to activate. 
 A particular neuron may have many hundreds, perhaps thousands of other neurons connected to its ``input.''
 These input neurons are referred to as pre-synaptic neurons. These pre-synaptic neurons may provide input to many neurons which are referred to as post-synaptic neurons.
@@ -65,10 +65,11 @@ produce a value which is proportional to the rate at which spikes occur.
 These \acp{ann} can be categorized as rate-based coded or spike time coded neurons \cite{NNintro_Bullinaria}\cite{10.3389/fnsys.2015.00151}.
 
 
-When used in networks of neurons, both model types employ a connection weight between the pre and post-synaptic neuron, however, the spiking neuron network also introduces a time delay associated with the connection.
+When used in networks of neurons, both model types employ a connection weight between the pre and post-synaptic neuron.
+However, the spiking neuron network also introduces a time delay associated with the connection.
 
-The spiking neuron model is characterized by \cite{paugam2012computing}:
-
+The spiking neuron model \cite{paugam2012computing}is characterized by:
+\vspace{-3mm}
 \begin{outline}
   %\setlength{\baselineskip}{10pt}
   %\setlength{\itemsep}{12pt}
@@ -78,28 +79,38 @@ The spiking neuron model is characterized by \cite{paugam2012computing}:
   %\setlength{\topsep}{0pt}
   %\setlength{\itemindent}{\leftmargin}
   %\setlength{\leftmargin}{0pt}
-        \1 Connections between neurons have both a strength and a delay
-          \2 The pre-synaptic neuron output is multiplied by the connection weight and delayed 
+        %\1 Connections between neurons have both a strength and a delay
+        \1 Connections have a strength and a delay
+\vspace{-3mm}
+         % \2 The pre-synaptic neuron output is multiplied by the connection weight and delayed 
         \1 The weighted inputs from all pre-synaptic neurons are accumulated
+\vspace{-3mm}
         \1 The accumulated inputs drive an activation function
-          \2 the activation function $f(x)$ is a spiking model is based on differential equations
-          \2 many models have been proposed with varying levels of complexity
-              \3 from Leaky integrate and fire \cite{Brunel2007} to Izhikevich \cite{Iz2005} (see \fref{fig:Izhikevich Model})
-              \3 complexity based on the number of differential equations and/or computations
+\vspace{-3mm}
+%          \2 the activation function $f(x)$ is a spiking model based on differential equations
+          \2 the activation function $f(x)$ is based on differential equations
+          \2 varying levels of complexity from Leaky integrate and fire \cite{Brunel2007} to Izhikevich \cite{Iz2005} (see \fref{fig:Izhikevich Model})
+          %\2 many models have been proposed with varying levels of complexity
+              %\3 from Leaky integrate and fire \cite{Brunel2007} to Izhikevich \cite{Iz2005} (see \fref{fig:Izhikevich Model})
+              %\3 complexity based on the number of differential equations and/or computations
          
 \end{outline}
 
-The Rate-based neuron model is characterized by \cite{NNintro_Bullinaria}:
+The Rate-based neuron model \cite{NNintro_Bullinaria} is characterized by:
+\vspace{-3mm}
 \begin{outline}
         \1 Connections between neurons have only a strength
-          \2 The pre-synaptic neuron output is multiplied by the connection weight
+\vspace{-3mm}
+          %\2 The pre-synaptic neuron output is multiplied by the connection weight
         \1 The weighted inputs from all pre-synaptic neurons are accumulated
-        \1 The accumulated inputs drive an activation function
-          \2 the activation function $f(x)$ is a non-linear function
-          \2 early models used binary functions although in practice the function needs to be differentiable
-            \3 examples are (see \fref{fig:Example Rated-Based Model Activation functions}):
-              \4 sigmoid \cite{paugam2012computing}
-              \4 \ac{relu} \cite{maas2013rectifier}
+\vspace{-3mm}
+        \1 The accumulated inputs drive a differentiable non-linear activation function $f(x)$
+\vspace{-3mm}
+          \2 such as Sigmoid \cite{paugam2012computing} or \ac{relu} \cite{maas2013rectifier} (see \fref{fig:Example Rated-Based Model Activation functions}):
+          %\2 the activation function $f(x)$ is a non-linear function
+          %\2 early models used binary functions although in practice the function needs to be differentiable
+            %\3 examples are (see \fref{fig:Example Rated-Based Model Activation functions}):
+              %\4 sigmoid \cite{paugam2012computing} \ac{relu} \cite{maas2013rectifier}
 \end{outline}
 
 \begin{figure}
@@ -144,7 +155,7 @@ The Rate-based neuron model is characterized by \cite{NNintro_Bullinaria}:
         ]
         \addplot[myBlueThickStyle] expression[domain=-6:6,samples=100]{1/(1+e^(-x))} 
                     node at (axis cs:3,0.7){}; 
-        \legend{{\large $f(x)=\frac{1}{1+e^{-t}}$}}
+        \legend{{\large $f(x)=\frac{1}{1+e^{-x}}$}}
     \end{axis}
   \end{tikzpicture}
   \captionsetup{justification=centering, skip=5pt}
@@ -208,7 +219,8 @@ The Rate-based neuron model is characterized by \cite{NNintro_Bullinaria}:
 
 To emulate complex behavior, the artificial neurons are connected in networks, typically with layers of sub-networks which are in effect separated by the non-linear activation function.
 Examples of both rate-based and spiking artificial neural networks can be seen in \fref{fig:Rate-based Model Network} and \fref{fig:Spiking Model Network} respectively.
-Typically neural networks process in a feed-forward fashion. Considering \fref{fig:Network of ANs}, this means the input arrives on the left, the inputs propagate to neurons N0 through N3. WHen N0 through N3 are processed, their values propagate forward to neurons N4 and N5 etc.. Sometimes \ac{ann}s also include recursion where for example neurons N0 through N4 are not only influenced
+Typically neural networks process in a feed-forward fashion. Considering \fref{fig:Network of ANs}, this means the input arrives on the left, the inputs propagate to neurons N0 through N3. 
+When N0 through N3 are processed, their values propagate forward to neurons N4 and N5 etc.. Sometimes \ac{ann}s also include recursion where for example neurons N0 through N4 are not only influenced
 by the input, but also by themselves. Many \ac{ann}s operate only in feed-forward fashion but some popular \ac{ann}s, such as \ac{lstm} \cite{hochreiter1997long}, employ recursion.
 
 Another popular type of \ac{ann}, the \ac{dnn} \cite{aizenberg2013multi}\cite{doi:10.1162/neco.2006.18.7.1527} has gained traction over the last few years. \acp{dnn} get good press in applications such as image recognition and speech recognition. 
@@ -249,7 +261,8 @@ Along with the abundance of data now available in the form of voice, images etc.
 Our research will focus on these rate-based models which we will now refer to as \ac{ann}s.
 \fi
 
-This work does not address the training or ``teaching'' of these rate-based \acp{ann}, the training is mostly performed offline. 
+This work does not address the training or ``teaching'' of these rate-based \acp{ann}.
+The training is mostly performed offline. 
 This work is addressing inference using \acp{ann} where the \acp{ann} are used for example to detect objects in an image or reproduce the output of a cost function based on the observed values.
 During inference, the most computationally intensive operation is the multiply accumulate associated with the \ac{an} activation, which can involve hundreds or thousands of multiply-accumulates.
 The \ac{an} activation calculation for the rate-based \ac{an} in Figure \ref{fig:Rate Based Model} is shown in \eqref{eq:activation function}.
@@ -258,17 +271,21 @@ The \ac{an} activation calculation for the rate-based \ac{an} in Figure \ref{fig
 \label{eq:activation function}
 \text{\ac{an} activation }\hspace{4mm} A & = f\bigg(\sum_{n=0}^{C_n}W_n \mathbf{\cdot} A_n\bigg)  \\
               &\mathbf{C_n} \text{ is the number of pre-synaptic connections} \notag\\
-              &\mathbf{W_p} \text{ is the weight of a connection} \notag\\
-              &\mathbf{A_p} \text{ is the state of the pre-synaptic \ac{an}} \notag \\
+              &\mathbf{W_n} \text{ is the weight of a connection} \notag\\
+              &\mathbf{A_n} \text{ is the state of the pre-synaptic \ac{an}} \notag \\
 \text{and }   &f(x) \text{ is the activation function such as \ac{relu} \cite{maas2013rectifier}}  \notag 
 \end{alignat}
 
 \subsection[ANN Layers]{ANN Layers}
 \label{sec:ANN Layers}
 
-in Figure \ref{fig:Network of ANs} and \ref{fig:Rate-based Model Network}, the \ac{ann} is shown to be constructed using layers of \acp{an}. It has long been known that a single layer of \acp{an} can be used to linearly partition an n-dimensional input \cite{NNintro_Bullinaria}, as shown in Figure \ref{fig:linear discrimination}.
-However, if a more complex partition is required, this cannot be achieved using a single layer of \acp{an}. A higher order classification, as shown in Figure \ref{fig:complex discrimination} can only be achieved using multiple layers of \acp{an}. 
-In addition, to ensure the multiple layers cannot be mathematically collapsed into a single layer, the activation function $f(x)$, as shown in Figure \ref{fig:Rate Based Model} must be a non-linear function.
+In Figure \ref{fig:Network of ANs} and \ref{fig:Rate-based Model Network}, the \ac{ann} is shown to be constructed using layers of \acp{an}. 
+%It has long been known that a single layer of \acp{an} can be used to linearly partition an n-dimensional input \cite{NNintro_Bullinaria}, as shown in Figure \ref{fig:linear discrimination}.
+It has long been known that a single layer of \acp{an} can be used to partition an n-dimensional input \cite{NNintro_Bullinaria} using a linear combination of the inputs, as shown in Figure \ref{fig:linear discrimination}.
+%However, if a more complex partition is required, this cannot be achieved using a single layer of \acp{an}. 
+However, a more complex partition, as shown in Figure \ref{fig:complex discrimination}, can only be achieved using multiple layers of \acp{an}. 
+%A higher order classification where the , as shown in Figure \ref{fig:complex discrimination} can only be achieved using multiple layers of \acp{an}. 
+To ensure the multiple layers cannot be mathematically collapsed into a single layer, the activation function $f(x)$, as shown in Figure \ref{fig:Rate Based Model} must be a non-linear function.
 
 
 
@@ -499,12 +516,14 @@ The number of feature filters applied at each layer can be tens to hundreds of f
 The filters employed in a layer following one of these \ac{3d} locally-connected layers are themselves 3D. With tens to hundreds of features in the previous layer the number of weights associated with each filter is usually hundreds to thousands of weights. 
 
 The feature filters employed in the locally-connected layers can be unique to the regions of the previous layer or the same filters can be employed across the entire previous layer.
-In the case of employing the same filters across the entire input layer the \ac{ann} is known as a \acf{cnn}. The \acp{cnn} are examples of \acp{ann} which can take advantage of reuse described in Chapter \ref{sec:chap-one}. 
+In the case of employing the same filters across the entire input layer the \ac{ann} is known as a \acf{cnn}. 
+The \acp{cnn} are examples of \acp{ann} which can take advantage of reuse. % described in Chapter \ref{sec:chap-one}. 
 These \acp{cnn} can store the filter parameters in local \ac{sram} and construct an entire feature plane. These \acp{cnn} are considered a subset of the generic case of \ac{dnn}.
 This work considers the more general \ac{dnn} case and supports acceleration of generic \acp{dnn} which includes \acp{cnn}.
 
-An example of a \ac{dnn} can be seen in Figure \ref{fig:Baseline DNN showing layer order} with the layer configurations shown in Table \ref{tab:Baseline Layer Configuration}. A \ac{cnn} similar to this has demonstrated high levels of efficacy in image recognition applications.
-{\textbf{\textcolor{black}{Therefore, this work will use the parameters from the table shown in Figure \ref{tab:Baseline Layer Configuration} as a template for a baseline \ac{ann} for estimating the storage and processing requirements and the range of pre-synaptic fanins.}}}
+An example of a \ac{dnn} can be seen in Figure \ref{fig:Baseline DNN showing layer order} with the layer configurations shown in Table \ref{tab:Baseline Layer Configuration}. 
+A \ac{cnn} similar to this has demonstrated high levels of efficacy in image recognition applications.
+{\textbf{\textcolor{black}{Therefore, this work will use the parameters from Table \ref{tab:Baseline Layer Configuration} as a template for a baseline \ac{ann} for estimating the storage and processing requirements and the range of pre-synaptic fanins.}}}
 
 %%
 
@@ -626,7 +645,8 @@ An example of a \ac{dnn} can be seen in Figure \ref{fig:Baseline DNN showing lay
 \end{sidewaysfigure}
 \fi
 
-To approach the capabilities observed in human behavior, such as object recognition \ac{ann}s have become very large. The example shown in Figure \ref{fig:Baseline DNN showing layer order}, which is based on the work from \cite{krizhevsky2012imagenet}, has hundreds of thousands of \acp{an} and hundreds of millions of connection weights (see Table \ref{tab:Baseline Layer Configuration}).
+To approach the capabilities observed in human behavior, such as object recognition, \ac{ann}s have become very large. 
+The example shown in Figure \ref{fig:Baseline DNN showing layer order}, which is based on the work from \cite{krizhevsky2012imagenet}, has hundreds of thousands of \acp{an} and hundreds of millions of connection weights (see Table \ref{tab:Baseline Layer Configuration}).
 These \acp{ann} utilize these hundreds of thousands of \acp{an} to implement what a human would consider a relatively straightforward task.
 For example, a ``useful'' \ac{ann} similar to that described in \cite{krizhevsky2012imagenet} which was used to recognize up to 1000 different object classes, has a network size of approximately 650,000 \acp{an} and 630 million synaptic connections \cite{krizhevsky2012imagenetPreso}. 
 
@@ -670,11 +690,11 @@ We believe a system can be designed with \ac{dram} as the primary processing sto
 There important application is disparate \ac{ann}s because specifically a form of \ac{dnn}, Convolutional Neural networks (\ac{cnn}) have gotten good press recently, but they are not the only \ac{dnn}.
 \fi
 
-Even in cloud applications, there are limitations on reuse. We paraphrase a quote from a Google paper \cite{tensorflow2015-whitepaper} on their Tensor Processing Unit ASIC (TPU):
+Even in cloud applications, there are limitations on reuse. We paraphrase a quote from a Google paper \cite{jouppi2017datacenter} on their Tensor Processing Unit ASIC (TPU):
 
 \hyphenquote{american}{the architecture research community is paying attention to \acp{ann}, but of all the papers at ISCA 2016 on hardware accelerators for \acp{ann}, alas, all nine papers looked at \ac{cnn}s, and only two mentioned other \acp{ann}. Unfortunately \ac{cnn}s represent only about 5\% of our datacenter \ac{ann} workload}
 
-The applications targeted by the Google TPU \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected \ac{dnn}s and in these cases weight reuse is not as beneficial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
+The applications targeted by the Google TPU \cite{jouppi2017datacenter} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{jouppi2017datacenter} are fully-connected \ac{dnn}s and in these cases weight reuse is not as beneficial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
 
 Therefore, implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally and fully connected \ac{dnn}s and LSTMs.
 
@@ -699,7 +719,7 @@ Some might suggest the requirements of these applications would be satisfied by 
 In fact, Graphics processing Units (GPU) are used to implement large \ac{ann}s and in some \ac{ann} architectures, such as \acp{cnn}, they are quite effective. However, we should not forget they are not optimized purely for \ac{ann} processing and are restricted by available SRAM and they are power hungry. These limitations will limit the effectiveness of GPUs regardless of what we might hear from the GPU community.
 Even in the case of newer GPUs which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} technology.
 For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwidth of the order of \SI[per-mode=symbol]{4}{\tera \bit \per \second}.
-Also, its has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
+Also, its has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{jouppi2017datacenter}.
 Given these multiple GPU systems have high real-estate and power requirements and given each instance consumes of the order of \SI{100}{\watt} to \SI{200}{\watt}.
 Overall GPUs have limited suitability to meet embedded application requirements.
 
@@ -719,7 +739,7 @@ There has been work on the impact of changing the precision of the number format
 For the baseline requirements this work assumes 32-bit single-precision \ac{fp}.
 
 
-Assuming an \ac{ann} similar to that shown in Table \ref{tab:Baseline Layer Configuration} with 772 thousand \acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests a average bandwidth of \SI[per-mode=symbol]{\sim 26}{\tera \bit \per \second} (see equation \ref{eq:maximumBandwidth}).
+Assuming an \ac{ann} similar to that shown in Table \ref{tab:Baseline Layer Configuration} with 772 thousand \acp{an} and an average fanin to each \ac{an} of 1650, a system employing 10 \ac{ann}s for various disparate functions and an average processing time of \SI{16}{\milli\second} suggests an average bandwidth of \SI[per-mode=symbol]{\sim 26}{\tera \bit \per \second} (see equation \ref{eq:maximumBandwidth}).
 
 % {2} means 2 columns
 \begin{alignat}{2} 
@@ -799,11 +819,11 @@ We believe a system can be designed with \ac{dram} as the primary processing sto
 There important application is disparate \ac{ann}s because specifically a form of \ac{dnn}, Convolutional Neural networks (\ac{cnn}) have gotten good press recently, but they are not the only \ac{dnn}.
 \fi
 
-Even in cloud applications, there are limitations on reuse. We paraphrase a quote from a Google paper \cite{tensorflow2015-whitepaper} on their Tensor Processing Unit ASIC (TPU):
+Even in cloud applications, there are limitations on reuse. We paraphrase a quote from a Google paper \cite{jouppi2017datacenter} on their Tensor Processing Unit ASIC (TPU):
 
 \hyphenquote{american}{the architecture research community is paying attention to NNs, but of all the papers at ISCA 2016 on hardware accelerators for NNs, alas, all nine papers looked at \ac{cnn}s, and only two mentioned other NNs. Unfortunately \ac{cnn}s represent only about 5\% of our datacenter NN workload}
 
-The applications targeted by the Google TPU \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected \ac{dnn}s and in these cases weight reuse is not as beneficial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
+The applications targeted by the Google TPU \cite{jouppi2017datacenter} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{jouppi2017datacenter} are fully-connected \ac{dnn}s and in these cases weight reuse is not as beneficial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
 
 Therefore, implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally and fully connected \ac{dnn}s and LSTMs.
 
@@ -828,7 +848,7 @@ Some might suggest the requirements of these applications would be satisfied by 
 In fact, Graphics processing Units (GPU) are used to implement large \ac{ann}s and in some \ac{ann} architectures, such as \acp{cnn}, they are quite effective. However, we should not forget they are not optimized purely for \ac{ann} processing and are restricted by available SRAM and they are power hungry. These limitations will limit the effectiveness of GPUs regardless of what we might hear from the GPU community.
 Even in the case of newer GPUs which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} technology.
 For example, a 2.5D solution employing High bandwidth Memory (HBM) would be limited to a maximum raw bandwidth of the order of \SI[per-mode=symbol]{4}{\tera \bit \per \second}.
-Also, its has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
+Also, its has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{jouppi2017datacenter}.
 Given these multiple GPU systems have high real-estate and power requirements and given each instance consumes of the order of \SI{100}{\watt} to \SI{200}{\watt}.
 Overall GPUs have limited suitability to meet embedded application requirements.
 

@@ -3,7 +3,7 @@
 \chapter{System Operations}
 \label{sec:System Operations}
 
-As mentioned in Section \ref{sec:System Overview}, an \ac{ssc} has 32 execution lanes allowing the simultaneous processing of up to 32 \acp{an}.
+As mentioned in Chapter \ref{sec:System Overview}, an \ac{ssc} has 32 execution lanes allowing the simultaneous processing of up to 32 \acp{an}.
 When processing a group of \acp{an} the basic operations to determine their states are:
 \begin{outline}
   %\lbbcleanspace{20pt}
@@ -217,7 +217,7 @@ In Figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation des
 To pull it all together, Figure \ref{fig:Instruction Details} demonstrates a four-tuple compute instruction with details shown for each of the descriptors.
 Figure \ref{fig:Instruction and Descriptors} shows the compute instruction which contains three 4-tuple and one 5-tuple descriptors.
 The memory write descriptor shows two storage option elements which indicates the resulting \ac{an} states need to be saved in the memory of two \acp{ssc}.
-The waveform in Figure \ref{fig:Instruction memory waveform} is from the verification environment and shows the instruction as it is read out of the managers instruction memory.
+The waveform in Figure \ref{fig:Instruction memory waveform} is from the verification environment and shows the instruction as it is read out of the manager's instruction memory.
 The waveform also shows an example of the common interface signaling described in Section \label{sec:Common Bus Signalling} with the signals \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore icntl} and \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore dcntl} being used to delineate the instruction and descriptors respectively.
 As can be seen in Figure \ref{fig:Instruction memory waveform}, the instruction memory transfers three descriptor elements per cycle shown on the bus signals \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore option\textunderscore type} and \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore option\textunderscore value}.
 \\
@@ -288,9 +288,9 @@ Figure \ref{fig:roiStorage} shows an input to a \ac{ann} layer in the form of a 
 \label{fig:roiStorage}
 \end{figure}
 
-The various connection weights are stored in multiple contiguous sections. However, its not possible to arrange the input in such a way that each \ac{an}'s \ac{roi} can be stored in contiguous memory locations. 
+The various connection weights are stored in multiple contiguous sections. However, it's not possible to arrange the input in such a way that each \ac{an}'s \ac{roi} can be stored in contiguous memory locations. 
 The \ac{roi} arrangement shown in Figure \ref{fig:roiStorage} is typical. Assuming the input array is stored in row-major order, an \ac{roi} is drawn from disjoint sections of memory. 
-These disjoint sections contain a number of \ac{an} states, in this case 14 and the sections are separated by a gap of a number of memory addresses. 
+These disjoint sections contain a number of \ac{an} states, in this case 14, and the sections are separated by a gap of a number of memory addresses. 
 When the parameters are accessed while performing a particular operation, the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. 
 In practice groups of \acp{an} share a common \ac{roi}, so often when reading an \ac{roi} from the \ac{dram} it is broadcast across a group of execution lanes.
 
@@ -327,10 +327,10 @@ Now that sounds like writing back has a very small impact on performance, but wi
 When an operation is complete, in almost all cases one word per lane is written back to \ac{dram}.
 Considering a \ac{dram} page contains 128 words, the system typically writes a quarter of a page and this is a relatively inefficient use of \ac{dram} bandwidth. 
 However, the pre-synaptic fanin typically far exceeds 100 elements and in the baseline \ac{an} shown in Table \ref{tab:Baseline Layer Configuration} the average fanin is \num 1650.
-So the write-to-read ratio is very high and the inefficient write has little impact on the overall performance.
+So the read-to-write ratio is very high and the inefficient write has little impact on the overall performance.
 
 As discussed in Section \ref{sec:Inter-Manager Communication}, in many cases the results have to be provided not only to the local \ac{ssc} \ac{dram} but also to other \acp{ssc} memory. 
-This is handled by examining the write storage descriptors and if at least one storage descriptor address references another \acp{ssc} memory, all the write storage descriptors in the instruction are included in the \ac{noc} packet (see Figure \ref{fig:NoC packet format}).
+This is handled by examining the write storage descriptors and if at least one storage descriptor address references another \ac{ssc}'s memory, all the write storage descriptors in the instruction are included in the \ac{noc} packet (see Figure \ref{fig:NoC packet format}).
 
 % ----------------------------------------------------------------------------------------------------
 % ----------------------------------------------------------------------------------------------------

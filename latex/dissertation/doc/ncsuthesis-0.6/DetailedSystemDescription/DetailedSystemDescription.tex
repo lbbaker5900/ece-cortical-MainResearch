@@ -132,7 +132,7 @@ As mentioned in Section \ref{sec:Common Bus Signalling}, the inputs to many bloc
 This allows blocks to pipeline tasks to absorb any latencies, and allows blocks to start sending data to a destination block before that block has been configured to receive data.
 The \ac{fifo} will assert a flow control signal until the block is ready to receive.
 In practice, the instruction decode logic batch-decodes up to eight instructions and sends descriptor contents to dependent blocks where they are also pipelined in \acp{fifo}.
-The head of the \ac{fifo} is processed immediately the previous task has been completed thus avoiding any decode latencies.
+The head of the \ac{fifo} is processed immediately once the previous task has been completed, thus avoiding any decode latencies.
 
 \subsubsection{Configuration Instructions}
 \label{sec:Decoding Configuration Instructions}
@@ -381,7 +381,7 @@ This is because memory requests are pre-fetched and memory requests for the next
 This avoids the case where a request from the next operation could block a request from the previous operation causing a deadlock.
 
 The \ac{mmc} does not reorder requests to improve \ac{dram} efficiency. 
-the \ac{mmc} does keep track of open pages within banks to avoid unnecessary page open and page close commands.
+The \ac{mmc} does keep track of open pages within banks to avoid unnecessary page open and page close commands.
 It should be noted that refresh has yet to be implemented but this is not anticipated to be a significant impact and will be done in future work.
 
 The \ac{mmc} ensures the \ac{dram} protocol is observed and this has been verified using Tezzaron \ac{diram4} verilog models.
@@ -775,7 +775,7 @@ Once the \ac{sfu} operations have concluded, the result is sent directly back to
 For this work, a high level of importance was not assigned to the actual \ac{simd} because a) the functionality provided by the \ac{simd} is to provide a level of flexibility for future work and b) the choice of \ac{simd} is currently under consideration.
 Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed only by the special functions provided in the wrapper as described above and shown in Figure \ref{fig:simd wrapper block diagram}.
 However, it was important to include the \ac{simd} in the area portion of the study.
-To account for the \ac{simd}, in the area layout study a placement blockage is used based on a 32 lane, 32-bit \ac{simd} from \cite{schabel2014diss}.
+To account for the \ac{simd}, in the area layout study a placement blockage is used based on a 32 lane, 32-bit \ac{simd} from \cite{schabel2016processor}.
 
 In practice, the \ac{simd} will take the result data from the \ac{stop} and/or the \acp{sfu} and perform a pre-programmed operation starting at the \ac{pc} indicated by the \ac{simd} operation pointer provided by the \ac{pe} controller.
 It is expected that in future work the \ac{simd} would also be given control of the \acp{sfu} allowing for more flexible and complex processing.

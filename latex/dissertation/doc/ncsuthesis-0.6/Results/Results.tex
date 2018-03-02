@@ -41,16 +41,16 @@ in \SI{28}{\nano\meter}.
 \label{sec:Power and Area Scaling estimates}
 
 To obtain scaling numbers, some portions of the design were actually synthesized using \SI{28}{\nano\meter} libraries.
-The area and power results from these synthesis runs are shown in Table \ref{tab:Scaling runs}.  The final scaling numbers are shown in Table \ref{tab:Scaling}.
+The area and power results from these synthesis runs are shown in Table \ref{tab:Scaling runs}.  The final scaling numbers are shown in Table \ref{tab:Scaling numbers}.
 
 \begin{table}[h]
   % the [] contains position info e.g. [!t] means here
   \centering
   \captionsetup{justification=centering}
 
-  \begin{minipage}{1\textwidth}
+  %\begin{minipage}{1\textwidth}
     \centering
-    \begin{minipage}{0.65\textwidth}
+    \begin{subtable}{0.65\textwidth}
         \begin{adjustbox}{width=1\textwidth}
             \footnotesize
             \begin{tabular}{ |c|c|c|c|c|c|  }
@@ -69,10 +69,10 @@ The area and power results from these synthesis runs are shown in Table \ref{tab
               \hline
             \end{tabular}
         \end{adjustbox}
-      \subcaption{Example logic only design synthesis power}
+      \caption{Example logic only design synthesis power}
       \label{tab:Scaling}
-    \end{minipage}
-    \begin{minipage}{0.65\textwidth}
+    \end{subtable}
+    \begin{subtable}{0.65\textwidth}
         \vspace{5mm}
         \begin{adjustbox}{width=1\textwidth}
             \footnotesize
@@ -93,10 +93,10 @@ The area and power results from these synthesis runs are shown in Table \ref{tab
               \hline
             \end{tabular}
         \end{adjustbox}
-      \subcaption{Example design with memory synthesis power}
+      \caption{Example design with memory synthesis power}
       \label{tab:Example design with memory synthesis power}
-    \end{minipage}
-    \begin{minipage}{0.65\textwidth}
+    \end{subtable}
+    \begin{subtable}{0.65\textwidth}
         \vspace{5mm}
         \begin{adjustbox}{width=1\textwidth}
             \footnotesize
@@ -116,13 +116,13 @@ The area and power results from these synthesis runs are shown in Table \ref{tab
               \hline
             \end{tabular}
         \end{adjustbox}
-      \subcaption{Example design area}
+      \caption{Example design area}
       \label{tab:Example design area}
-    \end{minipage}
-  \end{minipage}
+    \end{subtable}
+  %\end{minipage}
   \captionsetup{justification=centering, skip=9pt}
   \vspace{0.0cm}
-  \captionof{table}{Example design area and power}
+  \caption{Example design area and power}
   \label{tab:Scaling runs}
 \end{table}
 
@@ -486,11 +486,11 @@ The design was conservatively coded to ensure there were opportunities for logic
 %to avoid debugging flow control issues rather than debugging the system as a whole.
 In the design of \acp{fsm}, the number of states was assigned conservatively.
 The major interfaces between blocks are all registered, but this is considered a requirement when designing a system of this size.
-The area scaling numbers employed are within a reasonable range \cite{schabel2017energy}, but it is possible that they are actually a little low \cite{schabel2014diss}.
+The area scaling numbers employed are within a reasonable range \cite{schabel2017energy}\footnote{work done by Schabel et al, yet to be published}.
 Therefore the place and route feasibility study suggests that embarking on productizing a system based on this work would be relatively low risk.
 
 The power numbers were higher than expected %but the power still within a number that is still considered manageable when the design is run at \SI{500}{\mega\hertz}.
-with a power per unit area of \SI[per-mode=symbol]{395}{\milli\watt\per\square\milli\meter\per\giga\hertz} but comparable to the \SI[per-mode=symbol]{389}{\milli\watt\per\square\milli\meter\per\giga\hertz} from \cite{chen2016diannao} and higher than the \SI[per-mode=symbol]{304}{\milli\watt\per\square\milli\meter\per\giga\hertz} from \cite{azarkhish2017neurostream} and the \SI[per-mode=symbol]{191}{\milli\watt\per\square\milli\meter\per\giga\hertz} inferred from \cite{tensorflow2015-whitepaper}.
+with a power per unit area of \SI[per-mode=symbol]{395}{\milli\watt\per\square\milli\meter\per\giga\hertz} but comparable to the \SI[per-mode=symbol]{389}{\milli\watt\per\square\milli\meter\per\giga\hertz} from \cite{chen2016diannao} and higher than the \SI[per-mode=symbol]{304}{\milli\watt\per\square\milli\meter\per\giga\hertz} from \cite{azarkhish2017neurostream} and the \SI[per-mode=symbol]{191}{\milli\watt\per\square\milli\meter\per\giga\hertz} inferred from \cite{jouppi2017datacenter}.
 Therefore there may either be opportunities for power reduction -- such as clock gating -- or a fully completed place and route may result in lower power numbers.
 %There is unlikely opportunities for clock gating because most of the logic is active during the processing of an \ac{ann}.
 %The power numbers seem high but there is likely room for improvement when productizing the system.
@@ -504,21 +504,21 @@ Recently Neurostream \cite{azarkhish2017neurostream} obtained \SI[per-mode=symbo
 It uses a \ac{hbm} \ac{3ddram} to provide capacity and a main memory bandwidth of \SI[per-mode=symbol]{256}{\giga\bit\per\second}. Neurostream has an average performance of \SI[per-mode=symbol]{240}{\giga FLOPS}.
 To achieve this performance Neurostream must use its \SI[per-mode=symbol]{1}{\mega\bit} \ac{sram} because the \ac{dram} could only support a sustained \SI[per-mode=symbol]{8}{\giga FLOPS}.
 The Neurostream device is targeted toward \acp{cnn}.
-Considering that \ac{dram} bandwidth is the bottleneck, for \cite{azarkhish2017neurostream} to meet the bandwidth requirements of this works target application it would have to instantiate tens of devices.
+Considering that \ac{dram} bandwidth is the bottleneck, for \cite{azarkhish2017neurostream} to meet the bandwidth requirements of this work's target application it would have to instantiate tens of devices.
 This would result in a power dissipation in excess of \SI[per-mode=symbol]{1}{\kilo\watt} providing this work a 15X improvement.
 The \acp{flop} performance and capacity would be impressive but it would far exceed the requirements of the system.
 Note that this work achieves \SI[per-mode=symbol]{22.4}{\giga OPs\per\second\per\watt}, which is similar to Neurostream \cite{azarkhish2017neurostream}.
 
-A similar scenario occurs when comparing Tensor processing unit \cite{tensorflow2015-whitepaper} although the number formats are very different and \cite{tensorflow2015-whitepaper} acknowledges the system relies on batch processing to achieve the very high performance.
+A similar scenario occurs when comparing Tensor processing unit \cite{jouppi2017datacenter} although the number formats are very different and \cite{jouppi2017datacenter} acknowledges the system relies on batch processing to achieve the very high performance.
 It uses \ac{dram} with a bandwidth of \SI[per-mode=symbol]{288}{\giga\bit\per\second} which means this work provides greater than 90 times improvement. 
-It should be noted in the case of \cite{tensorflow2015-whitepaper} this is an unfair comparison as they do acknowledge the device relies on batch processing and \ac{ann} parameter ``reuse'' and they also state performance degrades when running fully-connected \acp{ann} and therefore this device is not appropriate for this works target applications.
+It should be noted in the case of \cite{jouppi2017datacenter} this is an unfair comparison as they do acknowledge the device relies on batch processing and \ac{ann} parameter ``reuse'' and they also state performance degrades when running fully-connected \acp{ann} and therefore this device is not appropriate for this work's target applications.
 
 The DaDainNao \cite{chen2016diannao} device achieves a higher local memory density by employing \ac{edram} instead of \ac{sram}. A single device has \SI[per-mode=symbol]{288}{\giga\bit} of \ac{edram} with a bandwidth of \SI[per-mode=symbol]{2.48}{\tera\bit\per\second}.
 To approach the bandwidth of this work would require ten devices dissipating \SI[per-mode=symbol]{167}{\watt} providing this work a 2.2X improvement.
 To approach the storage provided by this work would require over two hundred devices. 
-In fact \cite{chen2016diannao} states that to implement one of their example \acp{ann}, which requires \SI[per-mode=symbol]{1.39}{\giga\byte} of storage would require 36-node system. 
+In fact \cite{chen2016diannao} states that to implement one of their example \acp{ann}, which requires \SI[per-mode=symbol]{1.39}{\giga\byte} of storage would require a 36-node system. 
 They also reference a 64-node system which they claim would outperform a \ac{gpu} by 450X.
-So even assuming a 64-node DaDianNao system this work would provide a 25X area improvement and a 14X power dissipation improvement.
+So, even assuming a 64-node DaDianNao system, this work would provide a 25X area improvement and a 14X power dissipation improvement.
 
 The devices described in \cite{chen2016diannao} and \cite{azarkhish2017neurostream} most closely match this work and both suggest they offer significant speed improvements over \ac{gpu}.
 In the target application, this work provides significant power and/or speed improvements over both \cite{chen2016diannao} and \cite{azarkhish2017neurostream}.

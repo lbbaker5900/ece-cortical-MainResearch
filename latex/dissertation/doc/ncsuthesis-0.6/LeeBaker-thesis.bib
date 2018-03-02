@@ -5,12 +5,14 @@
   publisher={Springer Science \& Business Media}
 }
 
-@misc{standard2007jedec,
-  title={JEDEC JESD79-3},
-  author={Standard, DDR3 SDRAM},
-  year={2007},
-  publisher={June}
+
+@article{standard2007jedec,
+  title={DDR3 SDRAM Standard},
+  author={{Standard, JEDEC}},
+  journal={JESD79-3, Jun},
+  year={2007}
 }
+
 
 @manual{micron_ddr3,
     organization  = "Micron Technology Inc.",
@@ -39,16 +41,6 @@
   organization={IEEE}
 }
 
-@article{patti2014,
-  title={2.5 D and 3D Integration Technology Update},
-  author={Patti, Robert},
-  journal={Additional Papers and Presentations},
-  volume={2014},
-  number={DPC},
-  pages={1--35},
-  year={2014},
-  publisher={International Microelectronics Assembly and Packaging Society}
-}
 
 @ARTICLE{patti2006,
 author={R. S. Patti},
@@ -127,26 +119,33 @@ abstract = { We show how to use âcomplementary priorsâ to eliminate th
 }
 
 
+@inproceedings{schabel2016processor,
+  title={Processor-in-memory support for artificial neural networks},
+  author={Schabel, Joshua and Baker, Lee and Dey, Sumon and Li, Weifu and Franzon, Paul D},
+  booktitle={Rebooting Computing (ICRC), IEEE International Conference on},
+  pages={1--8},
+  year={2016},
+  organization={IEEE}
+}
 
-@manual{schabel2014diss,
+@phdthesis{schabel2014diss,
   title={Design of an Application-Specific Instruction Set Processor for the Sparse Neural Network Design Space},
   author={Schabel, Joshua C.},
   year={2017},
-  school={Electrical and Computer Engineering},
+  publisher={Electrical and Computer Engineering},
   organization={North Carolina State University},
   address={Box 7911, Raleigh, NC 27695-7911}
 }
 
-@manual{schabel2017energy,
+@techreport{schabel2017energy,
   title={Predictive energy-Per-Op scaling for exploring the design space},
   author={Schabel, Joshua C. and Park, Jong Beom and Davis, Rhett William and Franzon, Paul D.},
   year={2014},
-  school={Electrical and Computer Engineering},
+  publisher={Electrical and Computer Engineering},
   organization={North Carolina State University},
   address={Box 7911, Raleigh, NC 27695-7911}
 }
 
-Schabel, Joshua C. Design of an Application-Specific Instruction Set Processor for the Sparse Neural Network Design Space2017.
 
 @manual{park2015data,
   title={Three-Dimensional DRAM Area, Timing and Energy Model},
@@ -166,10 +165,25 @@ Schabel, Joshua C. Design of an Application-Specific Instruction Set Processor f
     note          = "Rev. 0.04"
 }
 
-@manual{tezzaron:preso,
-    organization  = "Tezzaron Semiconductor",
-    title         = "Evolving 2.5D and 3D Integration"
+%http://www.imapsource.org/action/showCitFormats?doi=10.4071%2F2014DPC-ta12
+@article{patti2014,
+author = { Robert  Patti },
+organization  = "Tezzaron Semiconductor",
+title = {2.5D and 3D Integration Technology Update},
+journal = {Additional Conferences (Device Packaging, HiTEC, HiTEN, \& CICMT)},
+volume = {2014},
+number = {DPC},
+pages = {1-35},
+year = {2014},
+doi = {10.4071/2014DPC-ta12},
+URL = { 
+        https://doi.org/10.4071/2014DPC-ta12
+},
+eprint = { 
+        https://doi.org/10.4071/2014DPC-ta12
 }
+}
+
 
 @article{qiu2013parallel,
   title={A parallel neuromorphic text recognition system and its implementation on a heterogeneous high-performance computing cluster},
@@ -224,11 +238,12 @@ Schabel, Joshua C. Design of an Application-Specific Instruction Set Processor f
 }
 
 @inproceedings{kim2016neurocube,
-  title={Neurocube: A Programmable Digital Neuromorphic Architecture with High-Density 3D Memory},
-  author={Kim, Duckhwan and Kung, JH and Chai, Sek and Yalamanchili, Sudhakar and Mukhopadhyay, Saibal},
-  booktitle={Proceedings of ISCA},
-  volume={43},
-  year={2016}
+  title={Neurocube: A programmable digital neuromorphic architecture with high-density 3D memory},
+  author={Kim, Duckhwan and Kung, Jaeha and Chai, Sek and Yalamanchili, Sudhakar and Mukhopadhyay, Saibal},
+  booktitle={Computer Architecture (ISCA), 2016 ACM/IEEE 43rd Annual International Symposium on},
+  pages={380--392},
+  year={2016},
+  organization={IEEE}
 }
 
 @article{kyo2011imapcar,
@@ -245,7 +260,7 @@ Schabel, Joshua C. Design of an Application-Specific Instruction Set Processor f
 @inproceedings{farabet2011neuflow,
   title={Neuflow: A runtime reconfigurable dataflow processor for vision},
   author={Farabet, Cl{\'e}ment and Martini, Berin and Corda, Benoit and Akselrod, Polina and Culurciello, Eugenio and LeCun, Yann},
-  booktitle={Cvpr 2011 Workshops},
+  booktitle={Computer Vision and Pattern Recognition Workshops (CVPRW), 2011 IEEE Computer Society Conference on},
   pages={109--116},
   year={2011},
   organization={IEEE}
@@ -307,7 +322,7 @@ Schabel, Joshua C. Design of an Application-Specific Instruction Set Processor f
 
 @INPROCEEDINGS{dadiannao2014,
 author={Y. Chen and T. Luo and S. Liu and S. Zhang and L. He and J. Wang and L. Li and T. Chen and Z. Xu and N. Sun and O. Temam},
-booktitle={2014 47th Annual IEEE/ACM International Symposium on Microarchitecture},
+booktitle={47th Annual IEEE/ACM International Symposium on Microarchitecture},
 title={DaDianNao: A Machine-Learning Supercomputer},
 year={2014},
 volume={},
@@ -425,7 +440,7 @@ month={Jan},}
 
 @misc{deeplearning4j,
   title = {Introduction to Deep Neural Networks},
-  author={Deeplearning4j Development Team},
+  author={{Deeplearning4j Development Team}},
   publisher={Open-source distributed deep learning for the JVM, Apache Software Foundation License 2.0},
   howpublished = {\url{http://deeplearning4j.org}},
   note = {Accessed: 2018-01-02}
@@ -447,6 +462,15 @@ abstract="This paper proposes a method for detecting facial regions by combining
 isbn="978-3-540-28754-4",
 doi="10.1007/11550822_86",
 url="https://doi.org/10.1007/11550822_86"
+}
+
+@inproceedings{jouppi2017datacenter,
+  title={In-datacenter performance analysis of a tensor processing unit},
+  author={Jouppi, Norman P and Young, Cliff and Patil, Nishant and Patterson, David and Agrawal, Gaurav and Bajwa, Raminder and Bates, Sarah and Bhatia, Suresh and Boden, Nan and Borchers, Al and others},
+  booktitle={Proceedings of the 44th Annual International Symposium on Computer Architecture},
+  pages={1--12},
+  year={2017},
+  organization={ACM}
 }
 
 
@@ -566,13 +590,6 @@ year = {2014}
   publisher = {IEEE COMPUTER SOC},
   doi = {10.1109/MCSE.2007.55},
   year      = 2007
-}
-
-@article{jouppi2017datacenter,
-  title={In-datacenter performance analysis of a tensor processing unit},
-  author={Jouppi, Norman P and Young, Cliff and Patil, Nishant and Patterson, David and Agrawal, Gaurav and Bajwa, Raminder and Bates, Sarah and Bhatia, Suresh and Boden, Nan and Borchers, Al and others},
-  journal={arXiv preprint arXiv:1704.04760},
-  year={2017}
 }
 
 @ARTICLE{5604678,

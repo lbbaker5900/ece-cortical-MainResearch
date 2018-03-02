@@ -13,21 +13,21 @@
 \section{Overview}
 \label{sec:overview}
 
-Machine Learning in the form of \acfp{dnn} has gained traction over the last few years.
-It has gained traction in applications such as image recognition and speech recognition.
+Machine Learning in the form of \acfp{dnn} has gained traction over the last few years,
+in applications such as image recognition and speech recognition.
 \acp{dnn} are constructed from a basic building block, the \acf{an}.
 With popular \acp{dnn}, the \acf{ann} is often formed from tens of layers with each layer containing many \acp{an}.
 In most cases, these layers are processed in a feed-forward manner with one layer being the inputs to the next layer.
 Therefore, useful \acp{dnn} often require hundreds of thousands of \acp{an} and within the network, each \ac{an} can have hundreds, even thousands of feeder or pre-synaptic \acp{an}.
 
 There have been implementations that use different number formats from double precision floating point to eight bit integers, but in all cases these useful \ac{ann}s have significant
-memory requirements to store the connection weights (parameters) therefore requiring Dynamic Random Access memory (\ac{dram}) to store the \ac{an} parameters.
+memory requirements to store the connection weights (parameters), therefore requiring high-capacity \acf{dram} to store the \ac{an} parameters.
 
 There have been many successful attempts to accelerate \ac{ann}s, but in most cases the focus is on a subset of the \ac{dnn} known as the Convolutional Neural network (\ac{cnn}).
 \acp{cnn} assume a significant amount of reuse of the weights connecting \acp{an} and thus they can take advantage of local memory (\ac{sram}).
 
 Much of the \ac{asic} and \ac{asip} \ac{ann} research has focused on taking advantage of the performance and ease of use of \ac{sram}.
-These implementations can be shown to be effective with specific \ac{ann} architectures, such as \ac{cnn}s where the \ac{ann} parameters can be stored in \ac{sram} in a cache-like architecture avoiding constant accessing of the ``slower'' \ac{dram}.
+These implementations can be shown to be effective with specific \ac{ann} architectures, such as \ac{cnn}s where the \ac{ann} parameters can be stored in \ac{sram} in a cache-like architecture avoiding constant accessing of the slower \ac{dram}.
 In addition, to achieve a high performance, these rely on processing a batch of inputs, such as processing a batch of images or voice recordings using the same \ac{ann}.
 
 The work in this paper considers embedded applications that require the processing of a disparate set of useful sized \ac{ann}s. The work assumes that the application system is utilizing \ac{ann}s
@@ -44,14 +44,14 @@ It should be noted that this work does not design a custom \ac{3ddram} but answe
 
 \hfill %\break \newline
 
-An overview of \ac{ann} technology is given in chapter \ref{sec:Artificial Neural Networks}.
-The motivation for this work is given in chapter \ref{sec:Motivation}.
-An overview of \ac{3dic} technology is given in chapter \ref{sec:3dic} and the pros and cons of \ac{dram} and \ac{sram} along with some proposed \ac{dram} customizations are given in chapter \ref{sec:DRAM Customizations}.
-Some state-of-the-art implementations are reviewed in chapter \ref{sec:State of the art}.
-An overview of the proposed system is described in chapter \ref{sec:System Overview} with more details in chapter \ref{sec:Detailed System Description}.
-An overview of the instruction architecture is given in chapter \ref{sec:System Operations}.
-Simulation results are shown in chapter \ref{sec:Results}.
-The conclusion and further work are discussed in chapter \ref{sec:Conclusions and Future Work}.
+An overview of \ac{ann} technology is given in Section \ref{sec:Artificial Neural Networks}.
+The motivation for this work is given in Section \ref{sec:Motivation}.
+An overview of \ac{3dic} technology is given in Section \ref{sec:3dic} and the pros and cons of \ac{dram} and \ac{sram} along with some proposed \ac{dram} customizations are given in Section \ref{sec:DRAM Customizations}.
+Some state-of-the-art implementations are reviewed in Chapter \ref{sec:State of the art}.
+An overview of the proposed system is described in Chapter \ref{sec:System Overview} with more details in Chapter \ref{sec:Detailed System Description}.
+An overview of the instruction architecture is given in Chapter \ref{sec:System Operations}.
+Simulation results are shown in Chapter \ref{sec:Results}.
+The conclusion and further work are discussed in Chapter \ref{sec:Conclusions and Future Work}.
 %%---------------------------------------------------------------------------------------------------------
 %%---------------------------------------------------------------------------------------------------------
 

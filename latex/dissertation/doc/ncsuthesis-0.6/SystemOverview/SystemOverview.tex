@@ -7,11 +7,11 @@
 \chapter{System Overview}
 \label{chap-five}
 \label{sec:System Overview}
-As mentioned in Chapter \ref{sec:Introduction} and chapter \ref{sec:Motivation}, this work's target application implements multiple \acp{ann}, each of which have limited opportunities for both weight reuse and batch processing.
+As mentioned in Chapter \ref{sec:Introduction}, this work's target application implements multiple \acp{ann}, each of which have limited opportunities for both weight reuse and batch processing.
 These requirements require \ac{dram} to be employed for main storage of \ac{ann} parameters and local \ac{sram} is of limited use.
 Under these conditions, the \ac{dram} bandwidth is the system bottleneck.
 
-To meet these requirements, this work proposes employing \acp{3dic} technology along with a customized \ac{3d} \ac{dram} and \ac{asic} technology. 
+To meet these requirements, this work proposes employing \ac{3dic} technology along with a customized \ac{3d} \ac{dram} and \ac{asic} technology. 
 By physically staying within the \ac{3dic} footprint and taking advantage of high density \acp{tsv} this work is able to maintain a significantly higher bandwidth over 2D or 2.5D \ac{asic} or \ac{asip} solutions.
 The objective is to demonstrate that a pure \ac{3dic} system can implement multiple disparate \acp{ann} within reasonable power and area constraints. 
 
@@ -171,7 +171,7 @@ The standard \ac{diram4} has a 32-bit read databus and a 32-bit write databus en
 The read and write transactions are burst-of-two providing 64 bits per read/write. When accessing a \ac{dram}, a read and write are often referred to as a cache line.
 The device is designed to operate at \SI[per-mode=symbol]{1}{\giga\hertz} although this work targeted a \SI[per-mode=symbol]{500}{\mega\hertz} clock frequency.
 
-This work is proposing customizations to the \ac{diram4} which are outlined in Chapter \ref{sec:DRAM Customizations}. One of these proposed changes is to widen the read and write databuses to 2048-bits.
+This work is proposing customizations to the \ac{diram4} which are outlined in Section \ref{sec:DRAM Customizations}. One of these proposed changes is to widen the read and write databuses to 2048-bits.
 Using the same burst-of-two means each read and write will access an entire page. A cache line becomes 4096-bits.
 Another proposed change is to add mask bits to the write databus to avoid having to perform read/modify/writes when writing back data much smaller than the new large cache line.
 
@@ -401,8 +401,7 @@ The pre-synaptic \ac{an} states are stored in row-major order and when read are 
 \label{sec:Processing Engine Layer}
 The \ac{pe} contains two main processing modules, the \ac{stop} and the \ac{simd} block.
 Both the \ac{stop} block and the \ac{simd} have 32 execution lanes. The execution lanes inside the \ac{stop} contain functions required to perform \ac{an} related operations.
-The \ac{simd} will be based on the device described in \cite{schabel2014diss}.
-
+The \ac{simd} will be a 32 execution lane, 32-bit \ac{simd} engine based on the device described in \cite{schabel2016processor}.
 
 The \ac{pe} is configured by the manager to perform operations on two operand data streams from the manager. 
 The \ac{stop} is able to operate on this data directly from the manager at the full bandwidth rate of the stack bus so it does not have to be stored in local \ac{sram} prior to processing. 
@@ -455,7 +454,7 @@ If a particular layer $n-1$ \ac{an} is required by another \ac{ssc} when computi
 The instruction contains one or more storage descriptors (see section \ref{sec:Storage Descriptor}) that identify the destination of the operation result.
 If the result must be replicated, there are multiple storage descriptors. When the result is returned by the \ac{pe}, the manager examines the storage descriptors and determines to which \ac{ssc} the result should be sent.
 The manager creates an \ac{noc} header which includes information on all the destination \acp{ssc}. 
-This is encoded as a 64-bit field although to provide extensibility the \ac{noc} header supports a multicast group. 
+This is encoded as a 64-bit field, although to provide extensibility the \ac{noc} header supports a multicast group. 
 The multiple storage descriptors and the result data are placed in the data portion of the \ac{noc} packet.
 As the packet traverses the \ac{noc}, it is replicated to outgoing ports based on the destination bit field.
 When the destination \ac{ssc} receives the packet, it extracts the storage descriptor and writes the data to its local \ac{dram}.

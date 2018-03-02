@@ -12,7 +12,7 @@
 \subsection[The Problem]{The Problem}
 \label{sec:The Problem}
 
-As mentioned in chapter \ref{sec:Introduction}, this work focuses on embedded applications employing disparate \ac{ann}s and therefore assumes there are limited opportunities for both weight reuse and batch processing.
+This work focuses on embedded applications employing disparate \ac{ann}s and therefore assumes there are limited opportunities for both weight reuse and batch processing.
 
 Given the storage requirements shown in Table \ref{tab:Bandwidth and Storage Design Requirements}, it is generally accepted that \ac{dram} is required to store the \ac{ann} parameters \cite{dadiannao2014}\cite{dadiannao2017}\cite{azarkhish2017neurostream}.
 
@@ -31,8 +31,7 @@ Given the bandwidth and storage requirements shown in Table \ref{tab:Bandwidth a
 
 Why is it that much of the \ac{asic} and \ac{asip} \ac{ann} research employs \ac{sram} as an intermediate store? 
 
-In practice there are benefits if the processing elements can operate out of \ac{sram}.
-Certainly good performance and potentially low power. 
+In practice there are benefits if the processing elements can operate out of \ac{sram}, such as higher performance and potentially low power. 
 
 When compared to \ac{dram}, \ac{sram} has low latency. Also, the \ac{dram} access protocol is much more complicated to implement than \ac{sram}. 
 The high latency and \ac{dram} protocol force the system to interleave accesses. Overall, when compared to \ac{dram}, \ac{sram} is relatively easy to use.
@@ -48,7 +47,7 @@ These filter ``kernels'' can be held in memory and the input is read from \ac{dr
 Even with \ac{dnn}s where different filters may be used for different \acp{roi} some filter reuse may be available.
 Another form of reuse is in cloud applications or in training where there is opportunity to reuse inputs while performing batch processing.
 
-But \ac{sram} comes at a price, often physical layouts of \ac{ann} processors are dominated by the silicon area of the \ac{sram} \cite{kim2016neurocube}\cite{chen2014diannao}\cite{tensorflow2015-whitepaper}. 
+But \ac{sram} comes at a price, often physical layouts of \ac{ann} processors are dominated by the silicon area of the \ac{sram} \cite{kim2016neurocube}\cite{chen2014diannao}\cite{jouppi2017datacenter}. 
 Because of the relatively large area required for \ac{sram}, companies attempt to create custom \acp{sram} to minimize the area impact.
 
 So \ac{asic} and \ac{asip} \ac{ann} implementations that target applications that have considerable weight reuse and/or batch processing opportunities can effectively use \ac{sram} as an intermediate store.
@@ -87,13 +86,13 @@ In practice, \acp{gpu} are used to implement large \ac{ann}s and in some \ac{ann
 These limitations will limit the effectiveness of \acp{gpu}.
 Even in the case of newer \acp{gpu} which are employing 2.5DIC technology, the memory bandwidth will still be limited by available \ac{dram} technology.
 For example, a 2.5D solution employing \ac{hbm} would be limited to a maximum raw bandwidth on the order of \SI[per-mode=symbol]{6}{\tera \bit \per \second} \cite{Nvidia_p100_summary_datasheet}.
-Also, it has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{tensorflow2015-whitepaper}.
+Also, it has proven very difficult, if not impossible to take advantage of the available memory bandwidth \cite{farabet2011neuflow} \cite{jouppi2017datacenter}.
 
 A solution could employ multiple devices, but there would be significant power and real-estate issues. 
 The typical high performance \ac{gpu} consumes between \SI{100}{\watt} and \SI{200}{\watt}.
 A multiple \ac{gpu} implementation would have a high real estate impact and a system power approaching a \SI[per-mode=symbol]{1}{\kilo \watt}.
 
-Overall \acp{gpu} have limited suitability to meet this works target application requirements \cite{dadiannao2017}.
+Overall \acp{gpu} have limited suitability to meet this work's target application requirements \cite{dadiannao2017}.
 
 
 \subsubsection{\Acp{asic}/\Acp{asip}}
@@ -102,10 +101,11 @@ Much of the \ac{ann} application specific (\ac{asic}/\ac{asip}) research has foc
 These implementations can be shown to be effective with specific \ac{ann} architectures (e.g. \ \ac{cnn}), server applications or the small point problems but when a system requires multiple disparate \ac{ann}s in an embedded application, \textbf{\textcolor{black}{existing implementations do not provide the required flexibility, storage capacity and deterministic performance}}.
 
 \iffalse Even in cloud applications, there are limitations on reuse. \fi 
-According to the Google paper \cite{tensorflow2015-whitepaper} on their \ac{tpu} \ac{asic}, the architecture research community is paying attention to \acp{ann}, but of all the papers at ISCA 2016 on hardware accelerators for \acp{ann} all nine papers looked at \ac{cnn}s, and only two mentioned other \acp{ann}. 
+According to the Google paper \cite{jouppi2017datacenter} on their \ac{tpu} \ac{asic}, the architecture research community is paying attention to \acp{ann}.
+Of all the papers at \ac{isca} 2016, nine discussed hardware accelerators for \acp{ann}. Of those nine papers, all looked at \ac{cnn}s but only two mentioned other types of \acp{ann}. 
 Unfortunately \ac{cnn}s represent only about 5\% of Google's datacenter \ac{ann} workload.
 
-The applications targeted by the Google \ac{tpu} \cite{tensorflow2015-whitepaper} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{tensorflow2015-whitepaper} are fully-connected \ac{dnn}s and in these cases weight reuse is not as beneficial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
+The applications targeted by the Google \ac{tpu} \cite{jouppi2017datacenter} assume multiple requests, so reuse in the form of batch processing is still of great benefit, but the bulk of the requests in \cite{jouppi2017datacenter} are fully-connected \ac{dnn}s and in these cases weight reuse is not as beneficial and the performance of the TPU is degraded when implementing these fully-connected \ac{dnn}s.
 
 Implementations that focus on \ac{cnn}s can suffer from severe degradation in performance when targeting generic types of \ac{ann}, such as locally- and fully-connected \ac{dnn}s and LSTMs.
 Implementations that try to provide adequate on-chip storage, sometimes in the form of \ac{edram} have to have many instances of the \ac{asip} to provide the required total storage \cite{dadiannao2017}. 
