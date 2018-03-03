@@ -83,6 +83,8 @@ This access protocol is rather complicated and involves interleaving page comman
 The system memory controller logic must keep track of which pages are open inside the \ac{dram} and for each memory request must determine if a page needs to be closed and another opened before reading (or writing) the intermediate store.
 If consecutive accesses are not sequenced carefully, the performance of \ac{dram} can be poor.
 
+Some key characteristics of the \ac{dram} used in this work can be seen in Table \ref{tab:DiRAM4 characteristics}. 
+
 
 \subsubsection{Access Locality/Reuse and \ac{sram} as a Cache}
 \label{Access Locality/Reuse and Cache}

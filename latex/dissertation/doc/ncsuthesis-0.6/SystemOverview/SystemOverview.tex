@@ -441,6 +441,13 @@ The \ac{an} states can be sent back to the manager over the stack upstream bus o
 \subsection{Inter-Manager Communication}
 \label{sec:Inter-Manager Communication}
 
+Host to \ac{ssc} and \ac{ssc} to \ac{ssc} communication is provided by an \ac{noc}.
+A four port \ac{noc} within each management block is used to communicate with the host and other \acp{ssc} using a mesh network as shown in Figure \ref{fig:Mesh}.
+The \ac{noc} packet format can be seen in Figure \ref{fig:NoC packet format}.
+
+As shown in Figure \ref{fig:Mesh}, the managers in the middle of the array use all four ports to connect to adjacent managers, the managers in the corners of the array connect to two adjacent managers and the managers at the edges connect to three adjacent managers.
+The host is connected to one (or more) of the managers at one edge of the array. 
+
 During configuration and/or computations, it may be required to replicate data to other \acp{ssc}.
 During \ac{an} computations, an \ac{ssc} only reads \ac{ann} weights and states from its local \ac{dram} and not \ac{dram} of other \acp{ssc}.
 In some cases, such as fully-connected layers and locally-connected layers with \ac{roi} overlap, the \ac{an} computation in an \ac{ssc} for layer $n$ may include \ac{an} states from layer $n-1$ which were computed in another \ac{ssc}.
@@ -449,12 +456,10 @@ If a particular layer $n-1$ \ac{an} is required by another \ac{ssc} when computi
 The instruction contains one or more storage descriptors (see section \ref{sec:Storage Descriptor}) that identify the destination of the operation result.
 If the result must be replicated, there are multiple storage descriptors. When the \ac{pe} returns the result, the manager examines the storage descriptors and determines to which \ac{ssc} the result should be sent.
 The manager creates an \ac{noc} header which includes information on all the destination \acp{ssc}. 
-This is encoded as a 64-bit field, although to provide extensibility the \ac{noc} header supports a multicast group. 
+This is encoded as a 64-bit field, although to provide extensibility the \ac{noc} header also supports a unicast address and multicast group. 
 The multiple storage descriptors and the result data are placed in the data portion of the \ac{noc} packet.
 As the packet traverses the \ac{noc}, it is replicated to outgoing ports based on the destination bit field.
 When the destination \ac{ssc} receives the packet, it extracts the storage descriptor and writes the data to its local \ac{dram}.
-The \ac{noc} packet format can be seen in Figure \ref{fig:NoC packet format}.
-This inter-manager communication is provided by an \ac{noc} with all managers connected in a mesh as shown in Figure \ref{fig:Mesh}.
 
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
@@ -700,14 +705,66 @@ This inter-manager communication is provided by an \ac{noc} with all managers co
 \fi
 
 
-When computing an \ac{ann} across multiple processing sub-systems, often \ac{an} activation data must be shared between these \ac{ssc}s. The \ac{ssc} includes the \ac{dram} port, the manager and the \ac{pe}. 
-An \ac{noc} within each management block communicates with each adjacent manager using a mesh network. This \ac{noc} has a forwarding table that can be reconfigured to provide more efficient routing for a given processing step.
+When computing an \ac{ann}, a group of \acp{ssc} will be assigned to the \ac{ann} and the individual \acp{an} will be distributed over the group of \acp{ssc}.
+The \ac{noc} is employed to replicate \ac{an} states from one \ac{ssc} to other \acp{ssc} in the group.
+It is anticipated that all the \acp{ssc} in the group will be within four \ac{noc} hops of each other.
+When the \ac{pe} passes the \ac{an} states back to the manager, the results may written to the local \ac{dram} and also sent out the \ac{noc}.
+The required time to distribute the packets is dictated in part by the results having to be sent over the \ac{noc} before the \ac{pe} completes processing the next set of \acp{an}.
+%The required time it takes the \ac{noc} to distribute the packets requirement is dictated in part by the results having to be sent over the \ac{noc} in the time taken for the \ac{pe} to process the next set of \acp{an}.
+The time taken to process a group of \acp{an} is proportional to the number of pre-synaptic \acp{an}.
+The minimum pre-synaptic fanin is of the order of two hundred which means the \ac{noc} must transport the result packets in approximately two hundred clocks.
+The \ac{noc} packet shown Figure \ref{fig:NoC packet format} contains a header cycle, 16 data cycles and one option cycle. 
+Assuming a group of eight \acp{ssc} have been assigned to an \ac{ann}, a result will need to be replicated to up to seven other \acp{ssc}.
+This will require four options cycles to carry the seven storage descriptors resulting in an \ac{noc} packet size of 21 cycles.
+The verification identified the system introduces an inter-frame gap of two cycles which means it takes on average 23 cycles to transport a packet between \acp{ssc}.
+Because of the store-and-forward behavior of the \ac{noc} design, when a group of \ac{an} states needs to be replicated to all other \acp{ssc}, it takes six frame times in the network for all the packets to reach their destinations
+requiring a total of 138 cycles, which is within the 200 cycle requirement.
 
-Each manager has an integrated \ac{noc} module that has four ports. 
-The managers in the middle of the array use all four ports to connect to adjacent managers.
-The managers in the corners of the array connect to two adjacent managers.
-The managers at the edges connect to three adjacent managers.
-The host is connected to one (or more) of the managers at one edge of the array. 
+Based on the seven frame times to transport the packets to all destination \acp{ssc}, this means the \ac{noc} has an effective bandwidth of \SI[per-mode=symbol]{30}{\giga\bit\per\second} \eqref{eq:nocEffectiveBandwidth}.
+The raw bandwidth of each \ac{noc} port is \SI[per-mode=symbol]{32}{\giga\bit\per\second} \eqref{eq:rawPortBandwidth} and the raw mesh bandwidth is \SI[per-mode=symbol]{256}{\giga\bit\per\second} \eqref{eq:rawMeshBandwidth}.
+% {2} means 2 columns
+% & alternates R-L-R-L
+\begin{alignat}{5} 
+  \text{NoC effective bandwidth}    & = \frac{N_p \cdot W_p \cdot b_w}{N_f \cdot c_f \cdot t_c} && = \frac{8 \cdot 32 \cdot 32}{6 \cdot 23 \cdot \num{2d-9}} && \approx \SI[per-mode=symbol]{30}{\giga \bit \per \second}  \label{eq:nocEffectiveBandwidth}          \\[-10pt]
+                                                                                                                                                                                                                                                            \notag   \\[-10pt]
+  \text{NoC port bandwidth}         & = \frac{b_i}{t_c}                                         && = \frac{64}{\num{2d-9}}                                   && =  \SI[per-mode=symbol]{32}{\giga \bit \per \second}       \label{eq:rawPortBandwidth}               \\[-10pt]
+                                                                                                                                                                                                                                                            \notag   \\[-10pt]                                                 
+  \text{NoC mesh bandwidth }        & = \frac{N_s \cdot b_i}{t_c}                               && = \frac{8 \cdot 64}{\num{2d-9}}                           && =  \SI[per-mode=symbol]{256}{\giga \bit \per \second}      \label{eq:rawMeshBandwidth}               \\[0pt]
+  &&&\text{where }   &&N_p \text{ is the total number of \ac{ssc} packets}    \notag \\[-5pt]
+  &                &&&&W_p \text{ is the number of words per packet}          \notag \\[-5pt]
+  &                &&&&N_f \text{ is the number of frame times}               \notag \\[-5pt]
+  &                &&&&C_f \text{ is the number of cycles per frame }         \notag \\[-5pt]
+  &                &&&&b_i \text{ is the number of data bits per interface}   \notag \\[-5pt]
+  &                &&&&t_c \text{ is the cycle time}                          \notag
+\end{alignat}
+\iffalse
+\vspace{-10mm}
+\begin{alignat}{2} 
+  \text{NoC port bandwidth} & = \frac{b_i}{t_c} \notag \\
+                                    & = \frac{64}{\num{2d-9}} =  \SI[per-mode=symbol]{32}{\giga \bit \per \second}  \label{eq:rawPortBandwidth}\\
+  \text{where } &b_i \text{ is the number of data bits per \ac{noc} interface} \notag \\
+                &t_c \text{ is the cycle time} \notag
+\end{alignat}
+\vspace{-10mm}
+\begin{alignat}{2} 
+  \text{Raw mesh bandwidth} & = \frac{N_s \cdot b_i}{t_c} \notag \\
+                                    & = \frac{8 \cdot 64}{\num{2d-9}} =  \SI[per-mode=symbol]{256}{\giga \bit \per \second} \label{eq:rawMeshBandwidth} \\
+  \text{where } &N_s \text{ number of \acp{ssc} assigned to an \ac{ann}} \notag \\
+                &b_i \text{ is the number of data bits per \ac{noc} interface} \notag \\
+                &t_c \text{ is the cycle time} \notag
+\end{alignat}
+\fi
+
+\subsubsection{\ac{noc} Future Work}
+\label{sec:NoC future work}
+
+The \ac{noc} designed in this work was primarily to create a representative \ac{noc} for the area and power analysis.
+There are situations based on poor \ac{ssc} assignment where excessive frame hops are required and could potentially violate the maximum transport time.
+Each \ac{noc} has a forwarding table indicating which port should be used to send to a destination \ac{ssc} or the host.
+The forwarding table has a default setting based on shortest path but it is anticipated that it be dynamically reconfigured by the host.
+It is anticipated that the forwarding table configuration will be based on the \ac{ann} \acp{ssc} assignments to provide more optimum routing given the \ac{an} state replication associated with a particular operation.
+An analysis of the hop usage will likely suggest a more optimal routing table rather than the fixed shortest path currently employed. This will be left to future work.
+
 
 % ----------------------------------------------------------------------------------------------------
 \section{Summary}

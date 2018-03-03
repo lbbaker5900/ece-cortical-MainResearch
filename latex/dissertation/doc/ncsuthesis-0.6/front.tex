@@ -3,85 +3,42 @@
 
 %\lipsum[1-6]
 
-This dissertation explores employing a \ac{3dic} in the acceleration of \acp{ann} for systems deployed in embedded applications.
+This dissertation explores employing a customized \ac{3ddram} and a pure \ac{3dic} system in the acceleration of \acp{ann} for systems deployed in embedded applications.
+\iffalse
 Assuming \acs{ann}s fulfill their potential, it is this work's belief that these systems will employ \acs{ann}s for various functions, such as engine monitoring, anomaly detection, navigation etc. and that the various system functions are implemented with a set of disparate \acs{ann}s.
-A further assumption is that these embedded systems may not have access to cloud servers or the cloud servers do not provide the necessary turn-around time for processing the \acs{ann}.
+\fi
+%The combination of an embedded system and multiple disparate \acp{ann} means systems that employ \ac{sram} will not be able to provide the neccessary performance in terms of power or capacity.
+\iffalse
+A further assumption is that these embedded systems do not have access to cloud servers.
 
 Although \acp{ann} have been known of for many decades, it hasn't been until the last few years that they have demonstrated efficacy in applications such as image recognition and voice recognition.
-\iffalse
-These \acp{ann} have demonstrated significant improvements over what was considered to be state-of-the-art algorithms.
-\fi
-
-\iffalse
-In most cases, \ac{ann}s must be "trained" to perform their function and these recent breakthoughs can, in a large part 
-be attributed to the availability of "big" training data.
-
-This data takes the form of images, recordings etc. and this along with the available storage capacity means that the required training data is now available 
-to train these \ac{ann}s.
-\fi
 
 \acp{an} take their inspiration from neuron behavior observed in the mammalian brain, although implementations are simplifications of what actually exists in the brain.
 These simplifications range from attempts to emulate the actual spiking behavior of real neurons to \acp{an} that simply encode the spiking behavior in the form of a number or rate.
-
-\iffalse
-Surprisingly, the \ac{ann}s that have demonstrated the most efficacy are those that employ the more simpler rate-based \acp{an}.
-Although there is a belief that the more complex spiking neurons have the ability to outperform the simpler rate-based neurons, this work focuses on the proven efficacy of \ac{ann}s formed from rate-based \acp{an}.
-\fi
-
-\iffalse
-Now this may be in large part because these simpler rate-based ANs are easier to process or because large \acp{ann} employing the more complex spiking \acp{an} have yet to
-demonsrate improved efficacy in the various applications.
-There is a belief that the more complex spiking neurons have the ability to outperform the simpler rate-based neurons but this work focuses on
-the proven efficacy of \ac{ann}s formed from rate-based ANs.
-\fi
 
 The \ac{ann}s that have demonstrated most efficacy are a family of neural networks that can be described as \acp{dnn}.
 These \acp{dnn} are created by cascading layers of rate-based \acp{an} to form a large, layered \ac{ann} employing ten's of thousands or more of \acp{an}. 
 
 Considering the storage required for the input and the \ac{ann} parameters, the storage requirements result in gigabytes of memory.
 When these \acp{ann} are required to be solved in fractions of a second, the processing and memory bandwidth becomes prohibitive.
-
 Unfortunately, to achieve a high performance, existing implementations rely on processing a batch of inputs, such as processing a batch of images or voice recordings which all use the same \ac{ann} or by employing a sub-family of \acp{dnn}, known as \acp{cnn}, which reuse portions of the \ac{ann} parameters.
+
 These techniques allow these implementations to hold and reuse data in fast local \ac{sram}.
 %With this work's target application, the assumption is there is little opportunity for batch processing or reuse therefore data must be drawn constantly from main memory, which generally is \ac{dram}.
 The assumption is that embedded systems do not have batch processing opportunities or parameter reuse therefore data must be drawn constantly from main memory.
 
-
-\iffalse
-These \acp{ann} are in most cases generate outputs in the form of a classification, such as the probability of an image containing a certain object
-or the output of some approximated function, which might be the expected cost from making a stock trade.
-
-Now researchers have experimented with various sized NNs for various applcations, but those that have demonstrated the most efficacy employ ten's of thousands
-of \acp{an}.
-
-In many implementations of these useful sized NNs, the performance is impacted by the memory bandwidth of the system. 
-Much of the NN application specific (ASIC/ASIP) research has focused on taking advantage of the performance and ease of use of Static Random Access Memory or SRAM. 
-These implementations can be shown to be effective with specific NN architectures, such as Convolutional NNs but in reality, these implementations do not provide the flexibility, 
-storage capacity and deterministic performance required to implement all useful sized NNs.
-
-In addition, it is this works belief that that real-world applications will employ multiple instances of these useful sized \ac{ann}s and current implementations will not
-meet the demands of these multi NN systems.
 \fi
 
-\iffalse
-Researchers have attempted to solve this with
-the use of fast local SRAM. These implementations rely on the \ac{ann} being able to store data in the local SRAM and reuse that data without having to
-constantly go to the main memory, which is often implemented in slower DRAM.
-However, many DNNs do not exhibit this ability to reuse the contents of local SRAM, or not to the extent that makes these implementations acceptable.
-Some work has included combining SRAM with DRAM but these implementations still exhibit poor performance with a wider family of \ac{ann}s.
-\fi
+%The combination of an embedded system and multiple disparate \acp{ann} means systems that employ \ac{sram} will not be able to provide the neccessary performance in terms of power or capacity.
+%One area of integrated circuit technology that has started to be employed in \ac{ann}s is \acp{3dic}.  \acp{3dic} have the potential to increase connectivity, and thus bandwidth, 
+%and keep power dissipation within acceptable levels.
+This work demonstrates how a customized \ac{3dic} \ac{dram} can be combined with application-specific layers to produce a system meeting the required level of performance in embedded systems with multiple instances of disparate \acp{ann}.
+This work avoids any dependencies on \ac{sram} that might limit the size of supported \acp{ann} and thus is able to support embedded systems that employ \acp{ann} that do not exhibit the memory reuse characteristics that make \ac{sram}-based systems effective.
+This work operates directly out of the \ac{3ddram} thus avoiding the limitations of those \ac{sram}-based systems. 
+The customized \ac{3ddram} is combined with instructions and data structures that facilitate operating directly out of the \ac{dram}.
+By allowing system functions to operate asynchronously this work is able to absorb the latencies associated with \ac{dram} and provide the bandwidth required to support multiple useful sized disparate \acp{ann}.
 
-One area of integrated circuit technology that hasn't been widely used in \ac{ann}s is \acp{3dic}.  \acp{3dic} have the potential to increase connectivity, and thus bandwidth, 
-and keep power dissipation within acceptable levels.
-
-This work demonstrates how a customized \ac{3dic} \ac{dram} can be combined with application-specific layers to produce a system meeting the required level of performance in systems with multiple instances of disparate \acp{ann}.
-\iffalse
-This work includes utilizing a customized 3D DRAM along with a system which includes a management layer which coordinates and executes \ac{ann} operations in the form
-of unique instructions and a processing layer able to process data from the DRAM, via the manager at a bandwidth that meets the demands of a system employing
-multiple \ac{ann}s.
-\fi
-
-
+By eliminating the dependency on \ac{sram} and proposing customizations to an existing \ac{3ddram}, this system is able to implement most useful types of \acp{dnn} and provide a 10X power improvement and 20X area improvement over similar \ac{ann} systems.
 
 \end{abstract}
 

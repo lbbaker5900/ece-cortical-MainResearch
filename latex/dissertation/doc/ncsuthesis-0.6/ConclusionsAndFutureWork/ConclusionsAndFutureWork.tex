@@ -47,6 +47,10 @@ In practice, this may also be synergistic with alternative \ac{pe} architectures
 
 The instruction decode logic is currently coded using an \ac{fsm}.  In accordance with creating an expansive architecture it might be a better to use a small processor to decode and control system functions.
 
+The \ac{noc} employed in this work was primarily to create a representative \ac{noc} for the area and power analysis.
+Therefore, there are opportunities to explore alternative \ac{noc} designs including dynamically changing the \ac{noc} routing table to meet the processing needs of different \ac{ssc} assignments.
+This includes considering the routing of the \ac{an} state replication associated with a particular operations.
+
 \iffalse
   \item Half-Precision PE
 %    \2 Modifying the PE to support 16-bit FP would be relatively trivial.
