@@ -8,19 +8,18 @@ When processing a group of \acp{an} the basic operations to determine their stat
 \begin{outline}
   %\lbbcleanspace{20pt}
   \lbbcleanspace
-  \1 manager streams the states of the pre-synaptic \acp{an} to the \ac{pe}
-  \1 manager streams the weights of the pre-synaptic connections to the \ac{pe}
-  \1 each execution lane in the \ac{pe} operates directly on the two argument streams using the \ac{stop} block
-  \1 the \ac{pe} \ac{simd} block takes the 32 results from the \ac{stop} block and performs the activation function to generate the \ac{an} states
-  \1 the \ac{pe} \ac{simd} packetizes the \ac{an} states and sends the packet to the manager
-  \1 the manager replicates the \ac{an} state data over the \ac{noc} to any dependent \acp{ssc}
-  \1 if the local \ac{ssc} is dependent on the result, the manager saves the \ac{an} state data in local \ac{ssc} \ac{dram}
+  \1 Manager streams the states of the pre-synaptic \acp{an} to the \ac{pe}
+  \1 Manager streams the weights of the pre-synaptic connections to the \ac{pe}
+  \1 Each execution lane in the \ac{pe} operates directly on the two argument streams using the \ac{stop} block
+  \1 The \ac{pe} \ac{simd} block takes the 32 results from the \ac{stop} block and performs the activation function to generate the \ac{an} states
+  \1 The \ac{pe} \ac{simd} packetizes the \ac{an} states and sends the packet to the manager
+  \1 The manager replicates the \ac{an} state data over the \ac{noc} to any dependent \acp{ssc}
+  \1 If the local \ac{ssc} is dependent on the result, the manager saves the \ac{an} state data in local \ac{ssc} \ac{dram}
 \end{outline}
 
 Although the primary focus of this work is effective use of a novel \ac{3ddram} along with an expansive system to process \acp{ann}, a complete system needs to also provide support features for tasks such as downloading the \ac{ann} parameters to memory from a host system and a host system also needs to download new inputs and upload \ac{ann} outputs.
 This work has created a system and an infrastructure to include these support tasks.
 Although not all of the features required for an actual final product have been included in this work's design and verification effort,  the infrastructure required to easily add the missing features has been provided.
-
 This work has developed an instruction architecture to support and describe the operations associated with the processing of an \ac{ann} along with the support tasks required when employing this work in a product implementation.
 
 \iffalse
@@ -67,7 +66,7 @@ For example, to process a group of \acp{an}, the instruction contains a descript
 \label{sec:Instruction Types}
 There are two instruction types currently defined, a \textbf{{\textcolor{black}{configuration}}} instruction and a \textbf{\textcolor{black}{compute}} instruction.
 The configuration instruction has been defined to deal with synchronization and data downloads and uploads which includes \ac{ann} parameters and input, \ac{ssc} instructions, \ac{simd} and \ac{stop} operation pointers and \ac{simd} instructions.
-The compute instruction has been defined to deal with computing the states of a group of \acp{an}. \par
+The compute instruction has been defined to deal with computing the states of a group of \acp{an}.
 Although this work's focus has been on the compute instruction -- as it has the most influence on system performance -- configuration instructions have been defined and tested to provide an extensible system.
 \iffalse
 \begin{outline}
@@ -103,8 +102,8 @@ The instruction can be seen in Figure \ref{fig:Instruction (4-tuple example)} an
     \end{itemize}
   \item Two memory read descriptors containing:
     \begin{itemize}
-        \item addresses for the pre-synaptic \ac{an} states and connection weights for the two argument streams to the \ac{pe}
-        \item read data to execution lane multiplex method (broadcast/vectored)
+        \item Addresses for the pre-synaptic \ac{an} states and connection weights for the two argument streams to the \ac{pe}
+        \item Read data to execution lane multiplex method (broadcast/vectored)
     \end{itemize}
   \item Memory write descriptor containing:
     \begin{itemize}
@@ -141,7 +140,7 @@ The instruction can be seen in Figure \ref{fig:Instruction (4-tuple example)} an
 
 The descriptor also employs an n-tuple format where the elements contain configuration options required by the operation.
 The option elements within a descriptor are a two-tuple with option and associated value and are referred to as option tuples.
-These option tuples include a type and value which contain information such as storage descriptor pointer (see Section \ref{sec:Storage Descriptor}), \ac{pe} operations and the number of operands.
+These option tuples include a type and value, which contain information such as storage descriptor pointer (see Section \ref{sec:Storage Descriptor}), \ac{pe} operations and the number of operands.
 The length of the value field is currently eight bits or 24-bits. The 24-bit value field is referred to as an extended tuple and is currently used for memory address, number of operands and configuration options.
 In Figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation descriptor and a list of option types is shown in Table \ref{tab:Option tuple functions}.
 %It should be noted that not all option tuple type are currently used in the system but were provided for expansibility.
@@ -207,7 +206,7 @@ In Figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation des
               \hline
             \end{tabular}
         \end{adjustbox}
-        \caption{Option tuple functions}
+        \captionof{table}{Option tuple functions}
         \label{tab:Option tuple functions}
     \end{minipage}
   \end{minipage}
@@ -258,25 +257,17 @@ which correspond to the manager instruction memory and instruction decoder respe
 \label{sec:AccessingANStates}
 
 A part of the research is determining how to store the \ac{ann} input and parameters in such a way as to effectively make use of main \ac{dram} bandwidth. 
-
 To provide parameters for the up to 32 execution lanes within the \ac{pe}, the \ac{an} parameters are stored in consecutive address locations. 
 With one read to the \ac{dram}, we access 128 words. This provides four weights for each of the 32 \acp{an} being processed. 
 These weights are sent to each lane of the \ac{pe} over four cycles. 
 We will discuss memory efficiency later, but by taking advantage of the multiple \ac{dram} banks along with pre-fetching and buffering, we are able to make very efficient use of the available bandwidth.
 
-Although \ac{an} parameters (weights) are stored in contiguous memory locations, providing the input state to a particular \ac{an} presents us with an interesting problem.
-
-Most often DNNs are represented by layers of \acp{an} whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer. The first layer's input is the actual input to the \ac{ann}.
-
-The input can be represented in the form of a 2-D array of \ac{an} states. For the sake of generality, the input array elements are considered as \ac{an} states.
-
-Any given \ac{an} operates on a \ac{roi} within the input array.
-
-\subsubsection{Storage Descriptor}
-\label{sec:Storage Descriptor}
-
-Figure \ref{fig:roiStorage} shows an input to a \ac{ann} layer in the form of a 2-D array along with the \ac{roi} of two \acp{an}.
-
+Providing the pre-synaptic \ac{an} states to a particular \ac{an} presents us with an interesting problem.
+\Acp{dnn} are represented by layers of \acp{an} whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer with the first layer's input being the actual input to the \ac{ann}.
+For the sake of generality, the \ac{ann} input array elements are considered as \ac{an} states.
+Any given \ac{an} operates on a \ac{roi} within the input array. In the case of fully-connected layers, the entire input is the \ac{roi}. 
+In the case of locally-connected layers, the \ac{roi} is a portion of the input array. 
+Figure \ref{fig:roiStorage} shows an input to a \ac{ann} layer in the form of a 2-D array along with the \ac{roi} of two locally-connected \acp{an}.
 \begin{figure}[!t]
 \centering
 \captionsetup{justification=centering}
@@ -288,15 +279,16 @@ Figure \ref{fig:roiStorage} shows an input to a \ac{ann} layer in the form of a 
 \label{fig:roiStorage}
 \end{figure}
 
-The various connection weights are stored in multiple contiguous sections. However, it's not possible to arrange the input in such a way that each \ac{an}'s \ac{roi} can be stored in contiguous memory locations. 
-The \ac{roi} arrangement shown in Figure \ref{fig:roiStorage} is typical. Assuming the input array is stored in row-major order, an \ac{roi} is drawn from disjoint sections of memory. 
+The various connection weights are stored in multiple contiguous sections. However, it's not possible to arrange the pre-synaptic \ac{an} states in the locally-connected \ac{roi} in such a way that each \ac{an}'s \ac{roi} can be stored in contiguous memory locations. 
+Assuming the input array is stored in row-major order, a locally-connected \ac{roi} is drawn from disjoint sections of memory. 
 These disjoint sections contain a number of \ac{an} states, in this case 14, and the sections are separated by a gap of a number of memory addresses. 
 When the parameters are accessed while performing a particular operation, the memory controller within the manager must be informed of the start address and the lengths of the sections and gaps. 
 In practice groups of \acp{an} share a common \ac{roi}, so often when reading an \ac{roi} from the \ac{dram} it is broadcast across a group of execution lanes.
-
 The read efficiency problem is solved by again taking advantage of the \ac{dram}s banks and pages.
+To describe the reading of a locally-connected \ac{roi}, this work proposes a data structure called a ``storage descriptor'' to describe the \ac{roi} storage locations.
 
-This work proposes a data structure to describe these \ac{roi} storage locations.
+\subsubsection{Storage Descriptor}
+\label{sec:Storage Descriptor}
 
 Although disparate groups of \acp{an} may have different start addresses for their \acp{roi}, a commonality is observed in the \ac{roi} section lengths and gaps. So for each \ac{an} group, the group's \ac{roi} starting address is stored along with a pointer to a common set of section lengths/gaps. This structure is termed a storage descriptor.
 

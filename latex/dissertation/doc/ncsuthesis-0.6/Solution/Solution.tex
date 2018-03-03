@@ -3,13 +3,7 @@
 \label{sec:The Solution}
 
 This work assumes that to support all types of disparate \ac{ann}s, the system needs to be able to operate directly from the \ac{dram}.
-\iffalse 
-This is because SRAM-based solutions assume memory reuse when processing a \ac{ann}.
-However, when \ac{ann}s do not provide sufficient reuse these solutions become \ac{dram} bandwidth bound. 
-\fi
-
 Considering \ac{dram} is required to meet the main storage requirements of usefully sized \ac{ann}s, if an implementation can ensure the \ac{dram} bandwidth can meet the system requirements, why use \ac{sram} as an intermediate memory and waste the significant silicon area it consumes?
-
 The question becomes, can an implementation employ \ac{dram} with minimal \ac{sram} and meet the system requirements?
 
 This work's implementation operates directly out of \ac{dram}, but not just \ac{dram}, \ac{3ddram}.
@@ -38,7 +32,6 @@ Therefore, because of the complex access protocol associated with \ac{dram}, one
 
 The system has to process thousands of \acp{an} concurrently and do this with minimal unused bus cycles.
 Therefore, the system must decode instructions, configure the various functions, pre-fetch and pipeline \ac{dram} data and perform the actual activation calculation. 
-
 To maximize the processing bandwidth, these operations are all performed concurrently enabling this work to demonstrate the ability to meet and exceed the required \iffalse \SI[per-mode=symbol]{32}{\tera \bit \per \second} of\fi processing bandwidth as shown in \eqref{eq:maximumBandwidth}.
 
 \iffalse
@@ -51,14 +44,14 @@ The problem associated with processing \acp{ann} are outlined in Section \ref{se
 The novelty of this work includes:
 \begin{outline}
     \1 An extensible architecture that can simultaneously process multiple disparate real-time \ac{ann}s 
-      \2 with low power and real estate demands
+      \2 With low power and real estate demands
     \1 Proposing a custom \ac{3ddram} providing a \textasciitilde 64X bandwidth benefit compared to standard \ac{3ddram}
-      \2 the \ac{3ddram} could be employed in other applications
-    \1 An \ac{ann} system that employs pure \ac{3dic} technology
-      \2 providing power and performance benefits of remaining within a \ac{3dic} stack
+      \2 The \ac{3ddram} could be employed in other applications
+    \1 An \ac{ann} system that operates on data directly out of the \ac{dram}
+      \2 Avoiding a dependency on \ac{sram} which would impose \ac{ann} size restrictions
     \1 Custom instructions and data structures that facilitate operating directly out of \ac{3ddram} 
-      \2 maximizing processing bandwidth by ensuring effective use of the \ac{3ddram}
-      \2 instruction format allow system functions to operate concurrently 
+      \2 Maximizing processing bandwidth by ensuring effective use of the \ac{3ddram}
+      \2 Instruction format allow system functions to operate concurrently 
 \end{outline}
 
 
@@ -69,7 +62,7 @@ This research explores a \ac{3dic} solution using a custom organized \ac{3ddram}
 area and power footprint of an application that needs to support the processing associated with multiple \ac{ann}s.
 This work's system will provide at or near real-time performance required for systems employing multiple disparate \ac{ann}s while staying within acceptable area and power limits and will provide greater than an order of magnitude benefit over comparable solutions.
 
-There will always be questions regarding the suitability of this work's target application, the baseline \ac{ann} and the \ac{binary32} number format, but these should be mitigated by providing an extensible architecture.
+There will always be questions regarding the suitability of this work's target application, the baseline \ac{ann} and the \ac{binary32} number format, but providing an extensible architecture should mitigate these.
 Given different processing and/or number format requirements, with reasonable modifications this work could provide a solution to most \ac{ann} system requirements.
 
 \hfill %\break \newline

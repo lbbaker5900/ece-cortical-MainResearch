@@ -3,9 +3,9 @@
 
 %\lipsum[1-6]
 
-This dissertation explores employing a \ac{3dic} in the acceleration of \acp{ann} for systems deployed in customer-facing applications.
+This dissertation explores employing a \ac{3dic} in the acceleration of \acp{ann} for systems deployed in embedded applications.
 Assuming \acs{ann}s fulfill their potential, it is this work's belief that these systems will employ \acs{ann}s for various functions, such as engine monitoring, anomaly detection, navigation etc. and that the various system functions are implemented with a set of disparate \acs{ann}s.
-A further assumption is that these customer facing systems may not have access to cloud servers or the cloud servers do not provide the necessary turn-around time for processing the \acs{ann}.
+A further assumption is that these embedded systems may not have access to cloud servers or the cloud servers do not provide the necessary turn-around time for processing the \acs{ann}.
 
 Although \acp{ann} have been known of for many decades, it hasn't been until the last few years that they have demonstrated efficacy in applications such as image recognition and voice recognition.
 \iffalse
@@ -43,7 +43,8 @@ When these \acp{ann} are required to be solved in fractions of a second, the pro
 
 Unfortunately, to achieve a high performance, existing implementations rely on processing a batch of inputs, such as processing a batch of images or voice recordings which all use the same \ac{ann} or by employing a sub-family of \acp{dnn}, known as \acp{cnn}, which reuse portions of the \ac{ann} parameters.
 These techniques allow these implementations to hold and reuse data in fast local \ac{sram}.
-With this work's target application, the assumption is there is little opportunity for batch processing or reuse therefore data must be drawn constantly from main memory, which generally is \ac{dram}.
+%With this work's target application, the assumption is there is little opportunity for batch processing or reuse therefore data must be drawn constantly from main memory, which generally is \ac{dram}.
+The assumption is that embedded systems do not have batch processing opportunities or parameter reuse therefore data must be drawn constantly from main memory.
 
 
 \iffalse
@@ -105,11 +106,11 @@ While working on the manufacturing floor and seeing the white coated "engineers"
 of those white coats.
 The journey to the "white coat" took him to Brighton Polytechnic, now Brighton University and a First Class Honours Degree in Electrical Engineering.
 After working in the UK for a couple of years, he moved to the United States.
-The journey included a family with a daughter and two son's.
+The journey included a family with a daughter and two sons.
 The education continued with a Masters in Engineering from Villanova University and a Masters in Business Administration from North
 Carolina State University.
 
-With the family now being somewhat independent, he decided to make a career change which would hopefully include teaching.
+With the family now being somewhat independent, he decided to make a career change that would hopefully include teaching.
 
 That career change included enrolling in the Electrical Engineering PhD program at North
 Carolina State University. This stage of the education journey has resulted in this dissertation.

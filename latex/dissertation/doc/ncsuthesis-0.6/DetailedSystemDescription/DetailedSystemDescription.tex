@@ -60,8 +60,7 @@ A block diagram can be seen in Figure \ref{fig:System controller}.
 
 The system controller is responsible for performing the initial \ac{bootp} process.
 This involves quiescing the system after reset and downloading the initial boot instructions from the host.
-
-After reset, the controller keeps the instruction fetch logic disabled and expects unsolicited \ac{noc} packets from the host which contain the initial boot code.
+After reset, the controller keeps the instruction fetch logic disabled and expects unsolicited \ac{noc} packets from the host that contain the initial boot code.
 The host will unsolicitedly send the \ac{bootp} code over the \ac{noc} to each \ac{ssc}.
 The controller in each \ac{ssc} decodes the \ac{noc} packets and writes the data directly into instruction memory.
 Currently each \ac{noc} \ac{mtu} packet contains 16 instruction memory entries (see Figure \ref{fig:Host boot code packet}).
@@ -70,7 +69,6 @@ Once the host has sent the \ac{bootp} code, each \ac{ssc} controller releases it
 
 It is anticipated that the initial \ac{bootp} code will not contain operational instructions but only configuration instructions to download configuration tables, the \ac{pe} \ac{simd} instruction memory and the \ac{ann} parameters.
 For example, to download the \ac{ann} parameters, the \ac{bootp} instructions will include a configuration sync and a configuration data download.
-
 The first \ac{bootp} instruction will be a configuration sync sent to the host to indicate the initial \ac{bootp} is complete and \ac{ann} parameters are ready to be received.
 After the configuration sync is sent to the host, the configuration data instruction will prepare the \ac{ssc} to receive data from the host and the host will then start sending configuration data. 
 The size of the data is known by both the \ac{ssc} via the instruction and the host.
@@ -125,7 +123,7 @@ A stream block inside the memory read block immediately starts waiting for data 
 
 The memory write descriptor is decoded and the storage descriptor pointer extracted and along with the tag is sent to the return data processor.
 Currently the system only allows in-order data and any tag mismatch will cause an error.
-In the case where multiple upstream packets are associated with a tag, the \ac{rdp} ensures the correct number of upstream data packets are observed.
+In the case where multiple upstream packets are associated with a tag, the \ac{rdp} ensures the correct number of upstream data packets is observed.
 
 At this point all the blocks that take part in a compute operation on a group of \acp{an} are performing the various tasks.
 As mentioned in Section \ref{sec:Common Bus Signalling}, the inputs to many blocks employ \acp{fifo}. 
@@ -139,8 +137,8 @@ The head of the \ac{fifo} is processed immediately once the previous task has be
 
 As shown in Figure \ref{fig:Configuration Instruction types}, the configuration instructions are responsible for :
 \begin{outline}
- \1 performing synchronization between the \ac{ssc} and other \acp{ssc} or the host system.
- \1 performing data download and upload operations
+ \1 Performing synchronization between the \ac{ssc} and other \acp{ssc} or the host system.
+ \1 Performing data download and upload operations
 \end{outline}
 
 The configuration packets are broken into two types, configuration data and configuration sync.
@@ -444,7 +442,7 @@ The \ac{rdp} is responsible for taking the result data from the \ac{pe} and dete
 \label{fig:RDP block diagram}
 \end{figure}
 
-The \ac{rdp} receives a descriptor from the decoder which includes storage descriptor information and the tag associated with an operation sent to the \ac{pe}.
+The \ac{rdp} receives a descriptor from the decoder that includes storage descriptor information and the tag associated with an operation sent to the \ac{pe}.
 The information is stored in a \ac{fifo} and as data is returned to the manager over the upstream stack bus, the \ac{rdp} matches the return data tag with the head of the \ac{fifo}.
 Currently the return data is in order but to support an expansive architecture the tag is provided to and checked by the \ac{rdp}.
 
@@ -498,7 +496,7 @@ A block diagram of the \ac{pe} can be seen in Figure \ref{fig:PE block diagram}.
 The manager sends configuration information to the \ac{pe} over the downstream \ac{oob} bus.
 The \ac{oob} packet contains option tuples used by the \ac{pe} controller to configure functions within the \ac{pe}.
 The controller extracts the \ac{stop} and \ac{simd} operation pointers from the appropriate option tuple value.
-The \ac{stop} pointer is used to point to a local \ac{stop} configuration which contains the various configuration data required by the \ac{stop} function.
+The \ac{stop} pointer is used to point to a local \ac{stop} configuration that contains the various configuration data required by the \ac{stop} function.
 The configuration data includes:
 \begin{outline}
     \1 \ac{stop} operation type
@@ -577,7 +575,7 @@ An example of the downstream \ac{oob} transactions can be seen in Figure \ref{fi
 The \ac{pe} controller takes \ac{oob} control packets stored in an interface \ac{fifo} and extracts the \ac{stop} and \ac{simd} pointers.
 The \ac{simd} pointer is passed to the \ac{simd} wrapper along with the tag associated with the operation.
 The \ac{simd} wrapper contains an interface \ac{fifo} and the \ac{pe} controller will pause if the \ac{simd} wrapper interface asserts flow control.
-The \ac{stop} pointer is used to index into a small \ac{sram} which contains the long instruction word used to select the \ac{stop} function and control the source and destination of the data.
+The \ac{stop} pointer is used to index into a small \ac{sram} that contains the long instruction word used to select the \ac{stop} function and control the source and destination of the data.
 The contents of the memory is shown in Table \ref{tab:stOp pointer memory}.
 When the \ac{stop} has completed the operation, the \ac{pe} controller takes the next operation from the \ac{fifo}.
 A block diagram of the \ac{pe} controller can be seen in Figure \ref{fig:PE Controller block diagram}}.
@@ -644,7 +642,7 @@ There is a \ac{stop} module for each execution lane and the \acp{stop} are desig
 If line-rate cannot be maintained, an interface \ac{fifo} flow-control mechanism is employed to slow the data from the manager.
 The \ac{stop} is designed to perform either a \ac{mac} operation, which is employed during \ac{an} state calculation, or a multiply operation which is used during a Softmax \cite{wikipedia_softmax} calculation (see Appendix \ref{sec:Softmax Implementation}).
 The \ac{stop} receives the operation from the \ac{pe} controller and decodes the fields as shown in Register \ref{reg:stOp opcode} and Table \ref{tab:stOp op fields}.
-In the case of a \ac{mac} operation, each lane produces a single result which is passed to the \ac{simd}.
+In the case of a \ac{mac} operation, each lane produces a single result that is passed to the \ac{simd}.
 In the case of a multiply operation, each lane generates a result on each clock cycle and each is passed to the \ac{simd}.
 Note that based on the destination specified, the result can also be placed in local \ac{sram}.
 
@@ -784,7 +782,6 @@ It is expected that in future work the \ac{simd} would also be given control of 
 \label{sec:sfu}
 
 The adder is used during single \ac{an} processing as described in Section \ref{sec:Processing Engine Layer} and shown in Figure \ref{fig:Group AN calculation}.
-
 The adder is also employed in the softmax calculation used in the final stage of \ac{ann} classifiers.
 In this case, when processing the \ac{an}, the operations performed are the \ac{relu}, the exponent, and an accumulation using a local register. The \ac{an} states are sent back to the manager.
 All the \acp{an} are processed and the local register contains the summation of the \ac{an} states. 

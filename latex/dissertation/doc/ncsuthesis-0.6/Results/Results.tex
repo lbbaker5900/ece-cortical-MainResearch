@@ -163,7 +163,6 @@ The area and power results from these synthesis runs are shown in Table \ref{tab
 
 Based on the \ac{diram4} layout shown in Figure \ref{fig:diram4Layout}, the dimensions of the area available for each \ac{ssc} are \SI{1470}{\micro\meter} by \SI{1656}{\micro\meter} or approximately \SI{2.43}{\square\milli\meter}.
 Using the logic and memory scaling numbers from Table \ref{tab:Scaling numbers}, the effective dimensions at \SI{65}{\nano\meter} is \SI{2431}{\micro\meter} by \SI{2738}{\micro\meter} providing a design area at \SI{65}{\nano\meter} of approximately \SI{6.66}{\square\milli\meter}.
-
 The area contribution of each block within the Manager and \ac{pe} can be seen in Table \ref{tab:Area contribution}.
 \begin{table}[h]
 %  \captionsetup{justification=centering, skip=-5pt}
@@ -310,7 +309,7 @@ As mentioned previously \eqref{eq:averageBandwidth}, to process multiple useful-
 \label{sec:Logic Verification}
 
 The primary control and data paths of the system have been simulated in a SystemVerilog environment using Mentor Graphics\textregistered ~ModelSim\texttrademark.
-To ensure a high bandwidth utilization can be maintained, a group of tests representing convolutional and fully-connected layers was simulated.
+To ensure high bandwidth utilization can be maintained, a group of tests representing convolutional and fully-connected layers was simulated.
 The operations simulated were based on the expected lower and upper limits of pre-synaptic fanin. 
 These test cases were based on layers similar to CONV2 and FC-7 from \cite{krizhevsky2012imagenet} which represent a pre-synaptic fanin of 225 and 4000 respectively.
 Additional test cases were employed representing pre-synaptic fanins of 294, 300, 500 and 1000. Both locally-connected (CONV) and fully-connected (FC) type fanins were tested.
@@ -513,15 +512,15 @@ A similar scenario occurs when comparing Tensor processing unit \cite{jouppi2017
 It uses \ac{dram} with a bandwidth of \SI[per-mode=symbol]{288}{\giga\bit\per\second} which means this work provides greater than 90 times improvement. 
 It should be noted in the case of \cite{jouppi2017datacenter} this is an unfair comparison as they do acknowledge the device relies on batch processing and \ac{ann} parameter ``reuse'' and they also state performance degrades when running fully-connected \acp{ann} and therefore this device is not appropriate for this work's target applications.
 
-The DaDainNao \cite{chen2016diannao} device achieves a higher local memory density by employing \ac{edram} instead of \ac{sram}. A single device has \SI[per-mode=symbol]{288}{\giga\bit} of \ac{edram} with a bandwidth of \SI[per-mode=symbol]{2.48}{\tera\bit\per\second}.
+The DaDianNao \cite{chen2016diannao} device achieves a higher local memory density by employing \ac{edram} instead of \ac{sram}. A single device has \SI[per-mode=symbol]{288}{\giga\bit} of \ac{edram} with a bandwidth of \SI[per-mode=symbol]{2.48}{\tera\bit\per\second}.
 To approach the bandwidth of this work would require ten devices dissipating \SI[per-mode=symbol]{167}{\watt} providing this work a 2.2X improvement.
 To approach the storage provided by this work would require over two hundred devices. 
 In fact \cite{chen2016diannao} states that to implement one of their example \acp{ann}, which requires \SI[per-mode=symbol]{1.39}{\giga\byte} of storage would require a 36-node system. 
-They also reference a 64-node system which they claim would outperform a \ac{gpu} by 450X.
+They also reference a 64-node system that they claim would outperform a \ac{gpu} by 450X.
 So, even assuming a 64-node DaDianNao system, this work would provide a 25X area improvement and a 14X power dissipation improvement.
 
-The devices described in \cite{chen2016diannao} and \cite{azarkhish2017neurostream} most closely match this work and both suggest they offer significant speed improvements over \ac{gpu}.
-In the target application, this work provides significant power and/or speed improvements over both \cite{chen2016diannao} and \cite{azarkhish2017neurostream}.
+The Neurostream \cite{azarkhish2017neurostream} and DaDianNao \cite{chen2016diannao} most closely match this work and both suggest they offer significant speed improvements over \ac{gpu}.
+In the target application, this work provides significant power and/or speed improvements over both Neurostream \cite{azarkhish2017neurostream} and DaDianNao \cite{chen2016diannao}.
 
 
 

@@ -6,15 +6,13 @@
 \section{Three-Dimensional Integrated Circuits (3DICs)}
 \label{sec:3dic}
 
-Over the last couple of decades, the ever shrinking world of \acp{ic} has enabled the introduction of devices for various uses such as personal computing and cell phones.
+Over the last couple of decades, the ever-shrinking world of \acp{ic} has enabled the introduction of devices for various uses such as personal computing and cell phones.
 As \ac{ic} technology has shrunk, design complexity has grown to take advantage of the hundreds of millions of transistors available on a typical \ac{ic}.
 These \acp{ic} have evolved from performing small functions to becoming systems on a chip.
 
-However, at some point, an \ac{ic} has to interface with another function and often that communication involves the moving of data to and from memory and the increase in complexity often drives a need for higher memory data bandwidth. 
-
+At some point, an \ac{ic} has to interface with another function and often that communication involves the moving of data to and from memory and the increase in complexity often drives a need for higher memory data bandwidth. 
 \acf{ic} complexity has been doubling approximately every two years but the external interfaces are restricted by physical limitations.
 Within the \ac{soc}, the designer can take advantage of very wide interfaces -- often thousands of bits wide -- to increase bandwidth, but when data is moved to off-chip memory, the widest buses are usually hundreds of bits wide.
-
 One way to avoid this limitation is to employ \acp{3dic} (see Figure \ref{fig:3DIC Die}). The advantages of \acp{3dic} are well understood. reducing the amount of off-chip communication increases bandwidth and reduces power. The power reduction comes from not having to drive the relatively
 high capacitance inputs and outputs.
 
@@ -51,16 +49,16 @@ Taking advantage of \acp{3dic} means stacking die on top of one another and maki
 Below is a summary the benefits of \acp{3dic} :
 \begin{outline}
   \1 Reduced Power
-    \2 mainly from not having to drive external outputs and receiving external inputs
+    \2 Mainly from not having to drive external outputs and receiving external inputs
   \1 Increased Connectivity
-    \2 maintaining very wide buses through the \ac{soc} increases bandwidth
+    \2 Maintaining very wide buses through the \ac{soc} increases bandwidth
   \1 Ability to mix heterogeneous technology
     \2 Mixed Analog/Digital
     \2 Mixing memory technology and logic technology
   \1 Increased density and mitigation against the slowing of Moore's Law
-    \2 using the vertical domain to increase perceived transistor per square millimeter
+    \2 Using the vertical domain to increase perceived transistor per square millimeter
   \1 Potentially lower costs by combining simpler die rather than building a large die
-    \2 yield benefits from combining higher yield die
+    \2 Yield benefits from combining higher yield die
   \1 Possibility of novel architectures \cite{Kim2016}
 \end{outline}
 
@@ -68,7 +66,7 @@ Some disadvantages of \acp{3dic} are:
 \begin{outline}
   \1 Reliability
   \1 Cost
-    \2 being a relatively new technology, it is still expensive 
+    \2 Being a relatively new technology, it is still expensive 
     \2 \ac{tsv} technology is still unreliable
 \end{outline}
 
@@ -91,13 +89,13 @@ In \cite{itrs2015_interconn} there are four definitions of \ac{3dic} interconnec
 %\label{sec:3D-Stacked \ac{soc}}
   \1 3D-Stacked \ac{soc} \cite{itrs2015_interconn}
     \2 In this case, different die are stacked and then connected using \acp{tsv}. The \acp{tsv} connect the dies to intermediate metal layers known as global metal layers. This allows the individual die to maintain a high level of functionality and thus is similar to connecting functional building blocks, meaning the individual die are likely to be significant functional pieces of \ac{ip}.
-    \2 using \acp{tsv} provides a medium level of interconnect
+    \2 Using \acp{tsv} provides a medium level of interconnect
 
 %\section{3D-Stack \ac{ic} \cite{itrs2015_interconn}}
 %\label{sec:3D-Stack \ac{ic}}
   \1 3D-Stack \ac{ic} \cite{itrs2015_interconn}
     \2 In this case, different die are stacked and then connected using \acp{tsv}. The \acp{tsv} connect the dies to intermediate higher metal layers known as global metal layers. This infers the individual die are not large functioning pieces of \ac{ip}.
-    \2 using \acp{tsv} provides a high level of interconnect
+    \2 Using \acp{tsv} provides a high level of interconnect
 
 %\section{3D-Integrated Circuit \cite{itrs2015_interconn}}
 %\label{sec:3D-Integrated Circuit}
@@ -126,14 +124,14 @@ A die stack with \acp{tsv} can be seen in \fref{fig:tsv}.
 There are other definitions on how the dies are bonded together:
 \begin{outline}
   \1 Wafer-to-Wafer
-    \2 current \ac{esd} mitigation allows implementation of unbuffered \ac{io} signals
-    \2 potential low yield because of lack of knowledge regarding \ac{kgd}
+    \2 Current \ac{esd} mitigation allows implementation of unbuffered \ac{io} signals
+    \2 Potential low yield because of lack of knowledge regarding \ac{kgd}
   \1 Die-to-Wafer
-    \2 will need additional \ac{esd} mitigation support
-    \2 higher yield because of \ac{kgd}
+    \2 Will need additional \ac{esd} mitigation support
+    \2 Higher yield because of \ac{kgd}
   \1 Die-to-Die
-    \2 will need additional \ac{esd} mitigation support
-    \2 higher yield because of \ac{kgd}
+    \2 Will need additional \ac{esd} mitigation support
+    \2 Higher yield because of \ac{kgd}
 \end{outline}
 
 This work is targeting \ac{3dic} technology that supports 3D-Stacked \ac{soc} or 3D-Stack \ac{ic} with high levels of interconnect.
@@ -143,8 +141,8 @@ To avoid using large \ac{io} buffers for the \ac{tsv} interconnect, this work as
 \subsection{Design Guidelines}
 \label{sec:3dic Design Guidelines}
 
-The technology roadmap in \cite{itrs2015_interconn} and the information in \cite{patti2014} suggests \SI{5}{\micro\meter} pitch \acp{tsv} is a reasonable design goal. 
-The dimensions of these \acp{tsv} are of the same order of magnitude as high level metal layers in a typical 28nm technology node so they are considered to have similar characteristics.
+The technology roadmap in \cite{itrs2015_interconn} and the information in \cite{patti2014} suggest \SI{5}{\micro\meter} pitch \acp{tsv} is a reasonable design goal. 
+The dimensions of these \acp{tsv} are of the same order of magnitude as high-level metal layers in a typical 28nm technology node so they are considered to have similar characteristics.
 Also, at an operating frequency of \SI[per-mode=symbol]{500}{\mega \hertz}, these small \acp{tsv} are not considered to be transmission lines so no additional provisions are needed to route signals between die other than those imposed by the higher metal layers.
 However, to provide opportunities for future signal integrity analysis and improvements, this work assumes the \acp{tsv} are arranged in a signal-ground-signal array providing a one-to-one ratio of signal \acp{tsv} to power/ground \ac{tsv}.
 So when accounting for area associated with \acp{tsv}, the number of signal \acp{tsv} is doubled.

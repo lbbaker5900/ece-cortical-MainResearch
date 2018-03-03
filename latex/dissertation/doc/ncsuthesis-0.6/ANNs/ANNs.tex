@@ -9,22 +9,21 @@
 \label{sec:Artificial Neural Networks}
 \label{sec:chap-two}
 
-Recently, there has been much interest in the use of artificial neural networks in systems that employ tasks such as image recognition\cite{krizhevsky2012imagenet}, text recognition\cite{qiu2013parallel} and game playing\cite{maddison2014move}.
+Recently, there has been much interest in the use of artificial neural networks in systems that employ tasks such as image recognition \cite{krizhevsky2012imagenet}, text recognition \cite{qiu2013parallel} and game playing \cite{maddison2014move}.
 In particular, in the field of image recognition these artificial neural network models have demonstrated superior performance
-over other state-of-the-art technology\cite{krizhevsky2012imagenet}.
+over other state-of-the-art technology \cite{krizhevsky2012imagenet}.
 %There is reason to believe 
 These artificial neural networks will continue to be applied to numerous other areas such as voice recognition, text recognition, 
 face recognition and autonomous control.
 
 Artificial neural networks (\ac{ann}) take their inspiration from neuron behavior observed in the mammalian brain, although implementations are simplifications of what actually exists in the brain.
-
 The mammalian neuron is a cell that receives input and generates output in the form of electrical and chemical processes.
-The neuron has a cell body (or soma), a group of dendrites which provide the inputs from other cells, a cell body, an axon which generates the output signals, and the axon terminals which are the outputs of the cell.
+The neuron has a cell body (or soma), a group of dendrites, which provide the inputs from other cells, a cell body, an axon that generates the output signals, and the axon terminals which are the outputs of the cell.
 The connection from a cell's output, or axon terminal, to another cells input, or dendrite, is known as a synapse. 
 The connection in the synapse is a chemical process stimulated by electrical impulses.
 The neuron can be seen in Figure \ref{fig:neuron}.
 
-The connection from one cell to another has both an associated delay and a strength. The strength of the connection can be influenced by the size of the pre-synaptic neuron spike or by the pre-synaptic neuron generating a series of spikes rather than a single spike.
+The connection from one cell to another has both an associated delay and strength. The strength of the connection can be influenced by the size of the pre-synaptic neuron spike or by the pre-synaptic neuron generating a series of spikes rather than a single spike.
 
 \begin{figure}[!t]
 % the [] contains position info e.g. [!t] means here
@@ -42,9 +41,9 @@ The connection from one cell to another has both an associated delay and a stren
 
 \iftrue
 It is known that mammalian neurons generate ``spikes'' in response to inputs which for humans include sight, touch, sound etc.. This spiking behavior is often referred to as the neuron being activated.
-When these neurons are activated, their spikes propagate to other neurons. Under certain conditions, the combination of the various inputs to a neuron cause it to activate. 
+When these neurons are activated, their spikes propagate to other neurons. Under certain conditions, the combination of the various inputs to a neuron causes it to activate. 
 A particular neuron may have many hundreds, perhaps thousands of other neurons connected to its ``input.''
-These input neurons are referred to as pre-synaptic neurons. These pre-synaptic neurons may provide input to many neurons which are referred to as post-synaptic neurons.
+These input neurons are referred to as pre-synaptic neurons. These pre-synaptic neurons may provide input to many neurons that are referred to as post-synaptic neurons.
 A particular neuron can get activated by a particular arrival pattern of pre-synaptic neuron spikes or simply by the intensity of the pre-synaptic spikes. 
 
 The spiking behavior of a neuron also varies and many spiking profiles have been observed, including single spikes, groups of spikes and repetitive spiking. 
@@ -61,14 +60,14 @@ The various chemical and electrical processes that result in the generation and 
 \label{sec:ANN Overview}
 
 When modeling these neurons in artificial neural networks, the neuron models either generate actual spikes similar to actual neurons or
-produce a value which is proportional to the rate at which spikes occur.
-These \acp{ann} can be categorized as rate-based coded or spike time coded neurons \cite{NNintro_Bullinaria}\cite{10.3389/fnsys.2015.00151}.
+produce a value that is proportional to the rate at which spikes occur.
+These \acp{ann} can be categorized as rate-based coded or spike time coded neurons \cite{10.3389/fnsys.2015.00151}\cite{NNintro_Bullinaria}.
 
 
 When used in networks of neurons, both model types employ a connection weight between the pre and post-synaptic neuron.
 However, the spiking neuron network also introduces a time delay associated with the connection.
 
-The spiking neuron model \cite{paugam2012computing}is characterized by:
+The spiking neuron model \cite{paugam2012computing} is characterized by:
 \vspace{-3mm}
 \begin{outline}
   %\setlength{\baselineskip}{10pt}
@@ -88,8 +87,8 @@ The spiking neuron model \cite{paugam2012computing}is characterized by:
         \1 The accumulated inputs drive an activation function
 \vspace{-3mm}
 %          \2 the activation function $f(x)$ is a spiking model based on differential equations
-          \2 the activation function $f(x)$ is based on differential equations
-          \2 varying levels of complexity from Leaky integrate and fire \cite{Brunel2007} to Izhikevich \cite{Iz2005} (see \fref{fig:Izhikevich Model})
+          \2 The activation function $f(x)$ is based on differential equations
+          \2 Varying levels of complexity from Leaky integrate and fire \cite{Brunel2007} to Izhikevich \cite{Iz2005} (see \fref{fig:Izhikevich Model})
           %\2 many models have been proposed with varying levels of complexity
               %\3 from Leaky integrate and fire \cite{Brunel2007} to Izhikevich \cite{Iz2005} (see \fref{fig:Izhikevich Model})
               %\3 complexity based on the number of differential equations and/or computations
@@ -106,7 +105,7 @@ The Rate-based neuron model \cite{NNintro_Bullinaria} is characterized by:
 \vspace{-3mm}
         \1 The accumulated inputs drive a differentiable non-linear activation function $f(x)$
 \vspace{-3mm}
-          \2 such as Sigmoid \cite{paugam2012computing} or \ac{relu} \cite{maas2013rectifier} (see \fref{fig:Example Rated-Based Model Activation functions}):
+          \2 Such as Sigmoid \cite{paugam2012computing} or \ac{relu} \cite{maas2013rectifier} (see \fref{fig:Example Rated-Based Model Activation functions}):
           %\2 the activation function $f(x)$ is a non-linear function
           %\2 early models used binary functions although in practice the function needs to be differentiable
             %\3 examples are (see \fref{fig:Example Rated-Based Model Activation functions}):
@@ -210,7 +209,7 @@ The Rate-based neuron model \cite{NNintro_Bullinaria} is characterized by:
   \centering
   \mbox{\includegraphics[width=4.0in]{SpikingExample.pdf}}
   \captionsetup{justification=centering, skip=3pt}
-  \caption{Izhikevich Model Simulation \cite{Iz2005}\cite{carnevale2006neuron}}
+  \caption{Izhikevich Model Simulation \cite{carnevale2006neuron}\cite{Iz2005}}
   \label{fig:spiking example}
 \end{subfigure}
 \caption{Example Spiking Activation Function Model}
@@ -226,7 +225,7 @@ by the input, but also by themselves. Many \ac{ann}s operate only in feed-forwar
 Another popular type of \ac{ann}, the \ac{dnn} \cite{aizenberg2013multi}\cite{doi:10.1162/neco.2006.18.7.1527} has gained traction over the last few years. \acp{dnn} get good press in applications such as image recognition and speech recognition. 
 \acp{dnn} are often formed from tens of layers of \ac{an}s with each layer containing many \ac{an}s. \ac{dnn}s are also processed in a feed-forward manner with one layer being the inputs to the next layer. 
 As mentioned in \cite{krizhevsky2012imagenet}, these useful \ac{dnn}s often require hundreds of thousands of \ac{an}s and within the network, each \ac{an} can have hundreds, even thousands of feeder or pre-synaptic \ac{an}s.
-There have been implementations that use different number formats from double precision floating point to eight bit integers, but in all cases these useful \ac{ann}s require a significant amount of memory to store the connection weights (parameters).
+There have been implementations that use different number formats from double precision floating point to eight bit integers, but in all cases, these useful \ac{ann}s require a significant amount of memory to store the connection weights (parameters).
 
 
 \begin{figure}[!t]
@@ -264,7 +263,7 @@ Our research will focus on these rate-based models which we will now refer to as
 This work does not address the training or ``teaching'' of these rate-based \acp{ann}.
 The training is mostly performed offline. 
 This work is addressing inference using \acp{ann} where the \acp{ann} are used for example to detect objects in an image or reproduce the output of a cost function based on the observed values.
-During inference, the most computationally intensive operation is the multiply accumulate associated with the \ac{an} activation, which can involve hundreds or thousands of multiply-accumulates.
+During inference, the most computationally intensive operation is the multiply-accumulate associated with the \ac{an} activation, which can involve hundreds or thousands of multiply-accumulates.
 The \ac{an} activation calculation for the rate-based \ac{an} in Figure \ref{fig:Rate Based Model} is shown in \eqref{eq:activation function}.
 
 \begin{alignat}{2} 
@@ -318,11 +317,11 @@ As mentioned, a single layer of neurons can be used as a linear classifier as lo
 Even some simple cases cannot be linearly separated, an example often used is an exclusive-OR gate \cite{NNintro_Bullinaria}.
 
 Even with a layered \ac{ann}, the final output comes from a single layer. To allow this final layer to linearly separate classes, the original input needs to be transformed into a space where the classes can be linearly separated.
-\acfp{dnn} are \acp{ann} that incorporate many layers of \acp{an}, often which are often up to tens of layers deep.
+\acfp{dnn} are \acp{ann} that incorporate many layers of \acp{an}, often that are tens of layers deep.
 The additional layers are incorporated to translate the space of the input so the various classes being identified can be separated using linear classifiers in the later layers.
 
 Recently, an example of a \ac{dnn} known as a \acf{cnn} demonstrated high levels of efficacy when used to classify objects in images \cite{krizhevsky2012imagenet}.
-These \acp{cnn} use the early layers to identify low-level features and later layers are used combine these features into yet more higher-level features \cite{Kwolek2005}\cite{wikipedia_deep_learning}\cite{deeplearning4j}.
+These \acp{cnn} use the early layers to identify low-level features and later layers are used combine these features into yet more higher-level features \cite{deeplearning4j}\cite{Kwolek2005}\cite{wikipedia_deep_learning}.
 Finally, the combination of high-level features is used to identify the required classes.
 This layering is shown in \fref{fig:Deep network showing feature layers}.
 \begin{figure}[h]
@@ -348,11 +347,11 @@ real-time acceleration and storage of of these systems.
 For the most part, different \acp{ann} are characterized by how the \acp{an} are interconnected and the activation function employed.
 
 The typical \ac{dnn} layers are processed in a feed-forward fashion where the pre-synaptic \acp{an} are formed from \acp{an} in the previous layer.
-There are some types of \ac{dnn} which also include recursive connections where the pre-synaptic \acp{an} include \acp{an} from the current layer.
+There are some types of \ac{dnn} that also include recursive connections where the pre-synaptic \acp{an} include \acp{an} from the current layer.
 A popular recursive \ac{dnn} is \acf{lstm} \cite{hochreiter1997long}. Although this work does not preclude supporting \ac{lstm} in the future, the focus of this work is on the feed-forward type \ac{dnn}.
 
 As described in Section \ref{sec:Deep Neural Networks}, a \ac{dnn} layer transforms the previous layer with each higher layer providing a coarser grained transformation. 
-This is best seen in image recognition applications, where the early layers identify low level shapes or features, such as angled lines. 
+This is best seen in image recognition applications, where the early layers identify low-level shapes or features, such as angled lines. 
 The following layers are used to identify higher order shapes such as circles, blocks etc. 
 Although the features detected during the image recognition application are somewhat intuitive, it is believed that in less intuitive applications the \ac{dnn} performs a similar fine to coarse feature extraction.
 
@@ -519,7 +518,7 @@ The feature filters employed in the locally-connected layers can be unique to th
 In the case of employing the same filters across the entire input layer the \ac{ann} is known as a \acf{cnn}. 
 The \acp{cnn} are examples of \acp{ann} which can take advantage of reuse. % described in Chapter \ref{sec:chap-one}. 
 These \acp{cnn} can store the filter parameters in local \ac{sram} and construct an entire feature plane. These \acp{cnn} are considered a subset of the generic case of \ac{dnn}.
-This work considers the more general \ac{dnn} case and supports acceleration of generic \acp{dnn} which includes \acp{cnn}.
+This work considers the more general \ac{dnn} case and supports acceleration of generic \acp{dnn} that includes \acp{cnn}.
 
 An example of a \ac{dnn} can be seen in Figure \ref{fig:Baseline DNN showing layer order} with the layer configurations shown in Table \ref{tab:Baseline Layer Configuration}. 
 A \ac{cnn} similar to this has demonstrated high levels of efficacy in image recognition applications.
@@ -794,7 +793,8 @@ The approximate system bandwidth and storage requirements are shown in Table \re
 
 
 Given the bandwidth and storage requirements shown in Table \ref{tab:Bandwidth and Storage Design Requirements}, 
-the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for embedded systems employing inference on multiple disparate useful-sized neural networks.}}}
+the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{how to meet these requirements within the power and space constraints expected for embedded systems}}} and will be discussed
+%the problem becomes \hyphenquote{american}{\textbf{\textcolor{black}{to provide deterministic at or near real-time performance within tolerable power and space constraints for embedded systems employing inference on multiple disparate useful-sized neural networks.}}}
 %\hlc[gray]{hello}
 
 \iffalse
