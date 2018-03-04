@@ -37,8 +37,8 @@ There is very little detail regarding network size and supported types but the u
 Neuflow\cite{farabet2011neuflow} is limited to \acp{cnn} and the external memory is \ac{qdr} \ac{sram} 
 and thus will be limited by the network size.
 
-NeuroCube\cite{kim2016neurocube} uses \ac{3dic} along with \ac{hmc} \ac{3ddram} and data is transferred from the \ac{dram} to local \ac{sram} in a \ac{pe}.
-The local \ac{sram} allows NeuroCube\cite{kim2016neurocube} to provide high performance for shared weight \acp{ann} such as \acp{cnn} but the performance of \acp{ann} without reuse opportunities are limited by the \ac{hmc} interface bandwidth.
+NeuroCube\cite{kim2016neurocube} uses \ac{3dic} along with \ac{hmc} \ac{3ddram} and data is transferred from the \ac{dram} to a \ac{pe}.
+The \ac{pe} provides local \ac{sram} which allows NeuroCube\cite{kim2016neurocube} to provide higher performance for shared weight \acp{ann} or batch processing but the performance of \acp{ann} without reuse opportunities are limited by the \ac{hmc} interface bandwidth.
 
 Eyeriss\cite{chen201614} focuses on \acp{cnn} and specifically on the convolution ``hot-spots.''  
 It does not support the pooling operations although a local CPU can support these.
