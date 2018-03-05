@@ -112,7 +112,7 @@ In Figure \ref{fig:Manager block diagram}, instructions are read from instructio
 The operation descriptor is decoded and a \ac{stop} pointer and a \ac{simd} \ac{pc} pointer are extracted. 
 A sequential tag is generated and along with the \ac{stop} and \ac{simd} pointers is immediately sent to the \ac{pe} inside an \ac{oob} control packet.
 The \ac{stop} pointer specifies what streaming operation is to take place on the data directly streamed to the \ac{pe}. 
-The SIMD pointer is essentially a \ac{pc} counter that the \ac{simd} will jump to to process the result from the \ac{stop}.
+The SIMD pointer points to the start of the function that will be used to process the result from the \ac{stop}.
 The \ac{pe} will immediately start preparing for downstream operand data.
 If the \ac{simd} operation includes result data being returned to the manager, the tag will be included in the upstream result data packet.
 
@@ -329,7 +329,7 @@ As each data packet is received, it is passed to the memory write controller alo
 The Memory upload mode register fields can be seen in Register \ref{reg:Mem upld mode register}.
 The decoder sends the data option tuple to the system controller.
 The system controller will ensure the fetch and decode blocks are disabled.
-The controller sends the storage descriptor and target option tuples to the the stream 0 memory read controller. 
+The controller sends the storage descriptor and target option tuples to the stream 0 memory read controller. 
 The read controller generates read requests to the \ac{dram} and sends the corresponding read data to the system controller.
 The system controller takes the streaming data from the read controller and partitions it into \ac{noc} \ac{mtu} sized blocks, then embeds the block of data in an \ac{noc} packet and sends the fragmented data to the host using multiple data \ac{noc} packets.
 \begin{register}{H}{Memory upload mode register}{}%{0x250} name=example
@@ -418,7 +418,7 @@ As the data is returned from the \ac{mmc}, it is placed in a channel 0 \ac{fifo}
 The stream block has a per-execution-lane index module, each of which generates an index to the channel and word.
 The index is used to multiplex the data to the execution lane stream.
 The per-execution-lane index module is required to account for bank and page boundaries in the \ac{roi} as described in Sections \ref{sec:AccessingANStates} and \ref{sec:Storage Descriptor}.
-The lane index module uses the storage descriptor information to generate a memory location address which includes channel, bank, page and word addresses.
+The lane index module uses the storage descriptor information to generate a memory location address that includes channel, bank, page and word addresses.
 The location address is then matched to the request at the head of the two request \acp{fifo}, and if a match occurs, the data is passed to the execution lane bus.
 If there is no match, the index module requests a read of the data \acp{fifo}. The request control \ac{fsm} will only perform the read if all lane index modules are asserting the read request.
 This is done to account for data crossing a bank, page or cache line boundary allowing the execution lanes to get out of sync.
@@ -443,7 +443,7 @@ The \ac{rdp} receives a descriptor from the decoder that includes storage descri
 The information is stored in a \ac{fifo} and as data is returned to the manager over the upstream stack bus, the \ac{rdp} matches the return data tag with the head of the \ac{fifo}.
 Currently the return data is in order but to support an expansive architecture the tag is provided to and checked by the \ac{rdp}.
 When the data is matched to the tag, the \ac{rdp} examines all the storage descriptor pointers. The pointers include the \ac{ssc} index in the \acp{msb} and the \ac{rdp} constructs an \ac{ssc} bit-field.
-Once the descriptors have been parsed, if one of the destinations is the local \ac{ssc} \ac{dram}, the \ac{rdp} passes the descriptor and data to the system controller which in turn passes it to the \ac{mwc}.
+Once the descriptors have been parsed, if one of the destinations is the local \ac{ssc} \ac{dram}, the \ac{rdp} passes the descriptor and data to the system controller that in turn passes it to the \ac{mwc}.
 If the destination(s) include other \acp{ssc}, the \ac{rdp} provides the \ac{ssc} bitfield along with the data to the \ac{noc}.
 
 
@@ -452,7 +452,7 @@ If the destination(s) include other \acp{ssc}, the \ac{rdp} provides the \ac{ssc
 
 The \acf{mwc} receives data from two sources, the \ac{noc} via the system controller and the \ac{rdp}.
 The \ac{mwc} uses the storage descriptor provided with the data to identify the write address.
-The \ac{mwc} does not store the data immediately, it places the data in a small crude cache which has enough storage for two pages per channel.
+The \ac{mwc} does not store the data immediately, it places the data in a small crude cache that has enough storage for two pages per channel.
 A block diagram of the \ac{mwc} can be seen in Figure \ref{fig:MWC block diagram}.
 \begin{figure}[h]
 \centering
@@ -756,7 +756,8 @@ A block diagram of the \ac{stop} can be seen in Figure \ref{fig:stOp block diagr
 \label{sec:simd}
 
 The \ac{simd} takes the operation from the \ac{pe} controller and indexes into a small memory. This \ac{simd} pointer memory contains a \ac{pc} for the \ac{simd} along with control information for processing the \ac{stop} result inside the wrapper.
-The processing in the wrapper is controlled by a four-element vector allowing up to four cascaded operations using the \acp{sfu}.
+%The processing in the wrapper is controlled by a four-element vector allowing up to four cascaded operations using the \acp{sfu}.
+A four-element vector allows up to four cascaded operations using the \acp{sfu}, to operate on the data from the \ac{stop}.
 The wrapper contains four \acp{sfu}, a \ac{relu}, a \ac{binary32} adder, a \ac{binary32} exponential, a \ac{binary32} comparator and a \ac{binary32} divider.
 The \ac{relu} operation is a simple operation and is performed in parallel on all 32 results from the \ac{stop}.
 The divide, exponent, comparator and adder are more complex and there are single instantiations of each of the \acp{sfu}.

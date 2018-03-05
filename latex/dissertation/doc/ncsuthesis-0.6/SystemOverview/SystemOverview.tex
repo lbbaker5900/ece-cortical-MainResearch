@@ -106,7 +106,7 @@ In the case of a group of \acp{an}, all the \acp{an} must be associated with a \
 The pre-synaptic \ac{roi}, or all the \acp{an} in the case of a fully-connected layer, are broadcast to one of the streams of all execution lanes.
 The other stream is used for the individual \ac{an}'s connection weights. 
 The \ac{pe} \ac{stop} performs 32 simultaneous \acf{fp} \ac{mac} operations while the data is being streamed from the manager layer to the \ac{pe} layer.
-Once all the \ac{an} states and weights have been streamed to the \ac{pe}, the \ac{stop} passes the result of the \ac{mac} to the \ac{pe} \ac{simd} which then applies the activation function.
+Once all the \ac{an} states and weights have been streamed to the \ac{pe}, the \ac{stop} passes the result of the \ac{mac} to the \ac{pe} \ac{simd} that then applies the activation function.
 Typically the \ac{simd} then sends states of the group of \acp{an} back to the manager.
 
 Considering the \ac{roi} pre-synaptic \ac{an} states and weights for $k$th \ac{an} as arrays $\left[A\right]$ and $\left[W_k\right]$ with elements $A_p$ and $W_{k,p}$ respectively, the state of the \ac{an} is the dot-product of the two arrays followed by the activation function \eqref{eq:AN dot-product function}.
@@ -212,7 +212,7 @@ This allows the downstream stack bus to simultaneously stream 32 execution lanes
 Typically these streams are the weights and pre-synaptic \ac{an} states to calculate the states of up to 32 \acp{an}. 
 The streams can also be configured to calculate the state of a single \ac{an} where the weights and pre-synaptic \ac{an} states for the single \ac{an} are sent in parallel across the downstream stack bus and a reduction operation can be performed in the \ac{pe} by the \ac{stop} and \ac{simd}.
 
-The 128-bit upstream bus is primarily designed to send the results of a downstream operation. Typically this is the states of up to 32 \acp{an}.
+The 128-bit upstream bus is primarily designed to send the results of a downstream operation. Typically this is the state of up to 32 \acp{an}.
 The upstream bus is packetized with the result data contained in the data portion of the upstream packet.
 Additional information includes the operation identification tag provided by the decoder in the downstream \ac{oob} operation configuration and the number of data words.
 The upstream bus is not as wide as the downstream bus because the ratio of downstream operands to result data is a function of the pre-synaptic fanin.
@@ -442,7 +442,7 @@ The \ac{an} states can be sent back to the manager over the stack upstream bus o
 \subsection{Inter-Manager Communication}
 \label{sec:Inter-Manager Communication}
 
-Host to \ac{ssc} and \ac{ssc} to \ac{ssc} communication is provided by an \ac{noc}.
+An \ac{noc} provides host to \ac{ssc} and \ac{ssc} to \ac{ssc} communication.
 A four port \ac{noc} within each management block is used to communicate with the host and other \acp{ssc} using a mesh network as shown in Figure \ref{fig:Mesh}.
 The \ac{noc} packet format can be seen in Figure \ref{fig:NoC packet format}.
 
@@ -451,12 +451,12 @@ The host is connected to one (or more) of the managers at one edge of the array.
 
 During configuration and/or computations, it may be required to replicate data to other \acp{ssc}.
 During \ac{an} computations, an \ac{ssc} only reads \ac{ann} weights and states from its local \ac{dram} and not \ac{dram} of other \acp{ssc}.
-In some cases, such as fully-connected layers and locally-connected layers with \ac{roi} overlap, the \ac{an} computation in an \ac{ssc} for layer $n$ may include \ac{an} states from layer $n-1$ which were computed in another \ac{ssc}.
+In some cases, such as fully-connected layers and locally-connected layers with \ac{roi} overlap, the \ac{an} computation in an \ac{ssc} for layer $n$ may include \ac{an} states from layer $n-1$ that were computed in another \ac{ssc}.
 In this case, when \acp{an} are being computed for layer $n-1$, the operation instruction contains information as to where the result should be written back for computing \acp{an} in layer $n$.
 If a particular layer $n-1$ \ac{an} is required by another \ac{ssc} when computing a layer $n$ \ac{an}, the result is sent to all dependent \acp{ssc} via the \ac{noc}.
 The instruction contains one or more storage descriptors (see section \ref{sec:Storage Descriptor}) that identify the destination of the operation result.
 If the result must be replicated, there are multiple storage descriptors. When the \ac{pe} returns the result, the manager examines the storage descriptors and determines to which \ac{ssc} the result should be sent.
-The manager creates an \ac{noc} header which includes information on all the destination \acp{ssc}. 
+The manager creates an \ac{noc} header that includes information on all the destination \acp{ssc}. 
 This is encoded as a 64-bit field, although to provide extensibility the \ac{noc} header also supports a unicast address and multicast group. 
 The multiple storage descriptors and the result data are placed in the data portion of the \ac{noc} packet.
 As the packet traverses the \ac{noc}, it is replicated to outgoing ports based on the destination bit field.
@@ -713,7 +713,7 @@ When the \ac{pe} passes the \ac{an} states back to the manager, the results may 
 The required time to distribute the packets is dictated in part by the results having to be sent over the \ac{noc} before the \ac{pe} completes processing the next set of \acp{an}.
 %The required time it takes the \ac{noc} to distribute the packets requirement is dictated in part by the results having to be sent over the \ac{noc} in the time taken for the \ac{pe} to process the next set of \acp{an}.
 The time taken to process a group of \acp{an} is proportional to the number of pre-synaptic \acp{an}.
-The minimum pre-synaptic fanin is of the order of two hundred which means the \ac{noc} must transport the result packets in approximately two hundred clocks.
+The minimum pre-synaptic fanin is of the order of two hundred that means the \ac{noc} must transport the result packets in approximately two hundred clocks.
 The \ac{noc} packet shown Figure \ref{fig:NoC packet format} contains a header cycle, 16 data cycles and one option cycle. 
 Assuming a group of eight \acp{ssc} have been assigned to an \ac{ann}, a result will need to be replicated to up to seven other \acp{ssc}.
 This will require four options cycles to carry the seven storage descriptors resulting in an \ac{noc} packet size of 21 cycles.

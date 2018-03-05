@@ -214,8 +214,8 @@ In Figure \ref{fig:descriptorTuple} we see the format of a 5-tuple operation des
 
 
 To pull it all together, Figure \ref{fig:Instruction Details} demonstrates a four-tuple compute instruction with details shown for each of the descriptors.
-Figure \ref{fig:Instruction and Descriptors} shows the compute instruction which contains three 4-tuple and one 5-tuple descriptors.
-The memory write descriptor shows two storage option elements which indicates the resulting \ac{an} states need to be saved in the memory of two \acp{ssc}.
+Figure \ref{fig:Instruction and Descriptors} shows the compute instruction that contains three 4-tuple and one 5-tuple descriptors.
+The memory write descriptor shows two storage option elements, which indicates the resulting \ac{an} states need to be saved in the memory of two \acp{ssc}.
 The waveform in Figure \ref{fig:Instruction memory waveform} is from the verification environment and shows the instruction as it is read out of the manager's instruction memory.
 The waveform also shows an example of the common interface signaling described in Section \label{sec:Common Bus Signalling} with the signals \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore icntl} and \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore dcntl} being used to delineate the instruction and descriptors respectively.
 As can be seen in Figure \ref{fig:Instruction memory waveform}, the instruction memory transfers three descriptor elements per cycle shown on the bus signals \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore option\textunderscore type} and \texttt{wum\textunderscore\textunderscore wud\textunderscore\textunderscore option\textunderscore value}.
@@ -263,7 +263,9 @@ These weights are sent to each lane of the \ac{pe} over four cycles.
 We will discuss memory efficiency later, but by taking advantage of the multiple \ac{dram} banks along with pre-fetching and buffering, we are able to make very efficient use of the available bandwidth.
 
 Providing the pre-synaptic \ac{an} states to a particular \ac{an} presents us with an interesting problem.
-\Acp{dnn} are represented by layers of \acp{an} whose pre-synaptic neurons are from the previous layer. These previous layers represent the input to a given layer with the first layer's input being the actual input to the \ac{ann}.
+%\Acp{dnn} are represented by layers of \acp{an} whose pre-synaptic neurons are from the previous layer. 
+Multiple layers of \acp{an} whose pre-synaptic neurons are from the previous layer, represent \Acp{dnn}. 
+These previous layers represent the input to a given layer with the first layer's input being the actual input to the \ac{ann}.
 For the sake of generality, the \ac{ann} input array elements are considered as \ac{an} states.
 Any given \ac{an} operates on a \ac{roi} within the input array. In the case of fully-connected layers, the entire input is the \ac{roi}. 
 In the case of locally-connected layers, the \ac{roi} is a portion of the input array. 
@@ -377,7 +379,7 @@ The configuration instruction is used for :
     \end{itemize}
 \end{itemize}
 
-The configuration instruction contains one descriptor and there are two configuration types which are characterized by the descriptor option tuple contents.
+The configuration instruction contains one descriptor and there are two configuration types that are characterized by the descriptor option tuple contents.
 All configuration descriptors start with a configuration option tuple. There are two configuration tuple types, sync and data.
 The sync and data option types are extended types that have a 24-bit option value.
 The 24-bit option value is used to define one of up to eight mode registers, each of which defines the type of configuration operation and various options.
@@ -524,7 +526,7 @@ The commands will employ the same option tuple method as described in Section \r
 
 A transfer of data to the \ac{ssc} can be solicited or unsolicited.
 In the unsolicited case, the host initiates the transfer by sending the first \ac{noc} packet with two option tuples along with the first data as shown in Figure \ref{fig:Host transfer configuration packet}.
-This first packet contains a configuration data option tuple (see Figure \ref{fig:Configuration tuple}) which contains a mode register used to define the type of transfer.
+This first packet contains a configuration data option tuple (see Figure \ref{fig:Configuration tuple}) that contains a mode register used to define the type of transfer.
 The second tuple has a storage descriptor pointer defining where in memory to write the data.
 Once the first packet has been received, the \ac{ssc} expects only to receive data packets as shown in Figure \ref{fig:Host transfer data packet}.
 In the solicited case, the transfer is initiated from a configuration data transfer instruction in which case the main controller receives the mode register and storage descriptor from the instruction decoder.

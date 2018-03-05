@@ -512,10 +512,10 @@ Note that this work achieves \SI[per-mode=symbol]{22.4}{\giga OPs\per\second\per
 Although both NeuroCube \cite{kim2016neurocube} and Tetris \cite{gao2017tetris} do not support the same \ac{binary32} number format, we can still consider the \ac{dram} bandwidth as being the bottleneck. 
 To meet the bandwidth requirements of this work's target application, they would have to instantiate 32 devices.
 Even though the power numbers of both NeuroCube \cite{kim2016neurocube} and Tetris \cite{gao2017tetris} do not represent a \ac{binary32} system, 
-the resulting power dissipation of \SI[per-mode=symbol]{223}{\watt} and an area of \SI[per-mode=symbol]{544}{sq \milli\meter} still represent an improvement from this work of 3X and 6X respectively.
+the resulting power dissipation of \SI[per-mode=symbol]{223}{\watt} and an area of 544 sq. mm still represent an improvement from this work of 3X and 6X respectively.
 
 A similar scenario occurs when comparing Tensor processing unit \cite{jouppi2017datacenter} although the number formats are very different and \cite{jouppi2017datacenter} acknowledges the system relies on batch processing to achieve the very high performance.
-It uses \ac{dram} with a bandwidth of \SI[per-mode=symbol]{288}{\giga\bit\per\second} which means this work provides greater than 90 times improvement. 
+It uses \ac{dram} with a bandwidth of \SI[per-mode=symbol]{288}{\giga\bit\per\second}, which means this work provides greater than 90 times improvement. 
 It should be noted in the case of \cite{jouppi2017datacenter} this is an unfair comparison as they do acknowledge the device relies on batch processing and \ac{ann} parameter ``reuse'' and they also state performance degrades when running fully-connected \acp{ann} and therefore this device is not appropriate for this work's target applications.
 
 The DaDianNao \cite{chen2016diannao} device achieves a higher local memory density by employing \ac{edram} instead of \ac{sram}. A single device has \SI[per-mode=symbol]{288}{\giga\bit} of \ac{edram} with a bandwidth of \SI[per-mode=symbol]{2.48}{\tera\bit\per\second}.

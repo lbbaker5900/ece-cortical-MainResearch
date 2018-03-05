@@ -18,7 +18,7 @@ face recognition and autonomous control.
 
 Artificial neural networks (\ac{ann}) take their inspiration from neuron behavior observed in the mammalian brain, although implementations are simplifications of what actually exists in the brain.
 The mammalian neuron is a cell that receives input and generates output in the form of electrical and chemical processes.
-The neuron has a cell body (or soma), a group of dendrites, which provide the inputs from other cells, a cell body, an axon that generates the output signals, and the axon terminals which are the outputs of the cell.
+The neuron has a cell body (or soma), a group of dendrites, which provide the inputs from other cells, a cell body, an axon that generates the output signals, and the axon terminals that are the outputs of the cell.
 The connection from a cell's output, or axon terminal, to another cells input, or dendrite, is known as a synapse. 
 The connection in the synapse is a chemical process stimulated by electrical impulses.
 The neuron can be seen in Figure \ref{fig:neuron}.
@@ -40,7 +40,7 @@ The connection from one cell to another has both an associated delay and strengt
 
 
 \iftrue
-It is known that mammalian neurons generate ``spikes'' in response to inputs which for humans include sight, touch, sound etc.. This spiking behavior is often referred to as the neuron being activated.
+It is known that mammalian neurons generate ``spikes'' in response to inputs that for humans include sight, touch, sound etc.. This spiking behavior is often referred to as the neuron being activated.
 When these neurons are activated, their spikes propagate to other neurons. Under certain conditions, the combination of the various inputs to a neuron causes it to activate. 
 A particular neuron may have many hundreds, perhaps thousands of other neurons connected to its ``input.''
 These input neurons are referred to as pre-synaptic neurons. These pre-synaptic neurons may provide input to many neurons that are referred to as post-synaptic neurons.
@@ -321,7 +321,7 @@ Even with a layered \ac{ann}, the final output comes from a single layer. To all
 The additional layers are incorporated to translate the space of the input so the various classes being identified can be separated using linear classifiers in the later layers.
 
 Recently, an example of a \ac{dnn} known as a \acf{cnn} demonstrated high levels of efficacy when used to classify objects in images \cite{krizhevsky2012imagenet}.
-These \acp{cnn} use the early layers to identify low-level features and later layers are used combine these features into yet more higher-level features \cite{deeplearning4j}\cite{Kwolek2005}\cite{wikipedia_deep_learning}.
+These \acp{cnn} use the early layers to identify low-level features and later layers are used combine these features into yet more high-level features \cite{deeplearning4j}\cite{Kwolek2005}\cite{wikipedia_deep_learning}.
 Finally, the combination of high-level features is used to identify the required classes.
 This layering is shown in \fref{fig:Deep network showing feature layers}.
 \begin{figure}[h]
@@ -355,7 +355,7 @@ This is best seen in image recognition applications, where the early layers iden
 The following layers are used to identify higher order shapes such as circles, blocks etc. 
 Although the features detected during the image recognition application are somewhat intuitive, it is believed that in less intuitive applications the \ac{dnn} performs a similar fine to coarse feature extraction.
 
-The connections between layers can be locally-connected or fully-connected. 
+The connections between layers can be locally- or fully-connected. 
 With locally-connected layers as shown in Figure \ref{fig:Locally Connected Layer to Layer Connection Types}, a layer's pre-synaptic \acp{an} are formed from regions of the previous layer.
 With fully-connected layers as shown in Figure \ref{fig:Fully Connected Layer to Layer Connection Types}, a layers pre-synaptic \acp{an} are formed from all \acp{an} in the previous layer.
 In many cases, a \ac{dnn} is constructed with lower layers being locally-connected and higher layers being fully-connected \cite{krizhevsky2012imagenet}.
@@ -472,7 +472,7 @@ In practice, for a particular \ac{roi}, a number of feature filters are employed
 To reiterate, these feature filters all operate on the same \ac{roi}.
 A different \ac{roi} will result in another group of \acp{an} all using their own feature filters.
 The resulting locally-connected layer becomes a \ac{3d} layer with its X-Y coordinates representing a reference to a particular \ac{roi} and the Z-dimension representing the various filters applied to that \ac{roi}.
-A example \ac{3d} locally-connected layer can be seen in Figure \ref{fig:3D layers of Features}.
+An example \ac{3d} locally-connected layer can be seen in Figure \ref{fig:3D layers of Features}.
 
 \iffalse
 A good example of the feature filters is image recognition \acp{ann}. The lower level features generated during automatic training are often intuitive and the filters are constructed to detect small features such as lines at various angles, different curves etc..
@@ -516,7 +516,7 @@ The filters employed in a layer following one of these \ac{3d} locally-connected
 
 The feature filters employed in the locally-connected layers can be unique to the regions of the previous layer or the same filters can be employed across the entire previous layer.
 In the case of employing the same filters across the entire input layer the \ac{ann} is known as a \acf{cnn}. 
-The \acp{cnn} are examples of \acp{ann} which can take advantage of reuse. % described in Chapter \ref{sec:chap-one}. 
+The \acp{cnn} are examples of \acp{ann} that can take advantage of reuse. % described in Chapter \ref{sec:chap-one}. 
 These \acp{cnn} can store the filter parameters in local \ac{sram} and construct an entire feature plane. These \acp{cnn} are considered a subset of the generic case of \ac{dnn}.
 This work considers the more general \ac{dnn} case and supports acceleration of generic \acp{dnn} that includes \acp{cnn}.
 

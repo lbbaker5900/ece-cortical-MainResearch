@@ -10,7 +10,7 @@
 \label{sec:DRAM Customizations}
 
 There are two types of memory employed in \acp{asic} and \acp{asip}, \acf{sram} and \acf{dram}.
-Both of these technologies have a similar top-level block diagram which contains an array of storage elements, a means to address into a particular row of memory cells and a means to read and write a column of those cells.
+Both of these technologies have a similar top-level block diagram that contains an array of storage elements, a means to address into a particular row of memory cells and a means to read and write a column of those cells.
 A basic block diagram is shown in Figure \ref{fig:MemoryBlockDiagram}.
 %\begin{figure}[!t]
 \begin{figure}[h]
@@ -125,7 +125,7 @@ Regardless, this existing technology does not achieve the required bandwidth \eq
 %Considering systems will want to perform multiple \ac{dnn}s simultaneously suggests that these embedded systems will require usable memory bandwidth of the order of 10s of \SI[per-mode=symbol]{}{\tera \bit \per \second} \eqref{eq:maximumBandwidth}.
 
 To achieve increased \ac{dram} bandwidth this work is proposing two changes to the Tezzaron\textregistered \ac{diram4} \cite{tezzaron:diram4} \ac{3d} \ac{dram}. 
-The most significant customization is to widen the databuses to generate more raw bandwidth. This is discussed further in Section \ref{sec:Very-Wide Bus}.
+The most significant customization is to widen the databuses to generate additional raw bandwidth. This is discussed further in Section \ref{sec:Very-Wide Bus}.
 With the customizations discussed in Sections \ref{sec:Very-Wide Bus} and \ref{sec:Write Mask}, this work demonstrates \ac{dram} bandwidths >10X faster than what is available with 2 or 2.5D solutions.
 
 \subsubsection{Customization One: Very-Wide Bus}
@@ -161,13 +161,13 @@ This work assumes the \ac{dram} interface protocol uses \ac{ddr} with a bus widt
 \subsubsection{Customization Two: Write Mask}
 \label{sec:Write Mask}
 When processing an \ac{ann}, to compute the activation of an individual \ac{an} involves reading the pre-synaptic \ac{an} activations and the weights of the connections between the pre-synaptic \acp{an} and the \ac{an} being processed. 
-Typically, a group of up to 32 \acp{an} are processed. Assuming the state of an \ac{an} is represented by a \ac{binary32} number format, the memory used to store the states of the group of \acp{an} represents only up to 25 percent of a \ac{dram} page.
+Typically, groups of up to 32 \acp{an} are processed. Assuming the state of an \ac{an} is represented by a \ac{binary32} number format, the memory used to store the states of the group of \acp{an} represents only up to 25 percent of a \ac{dram} page.
 If a partial page needs to be written, the write controller with have to read the page, then modify the page with the new data and write the modified page back to memory.
 To minimize writing partial pages, the write controller has temporary registers to store two pages of data. 
 The write controller accumulates the \ac{an} states in these temporary registers before writing back to memory.
-If the write controller receives any data that is not destined for the pages associated with the temporary registers, the contents of one of these page registers must be written back to memory to accomodate the new data.
+If the write controller receives any data that is not destined for the pages associated with the temporary registers, the contents of one of these page registers must be written back to memory to accommodate the new data.
 If the register chosen to be written back to memory only contains a partial page of data, the write controller would need to perform a read/modify/write operation.
-The ratio of reads to writes is high, hundreds or thousands to one so this additional read/modify/write will not adversly affect the performance. 
+The ratio of reads to writes is high, hundreds or thousands to one so this additional read/modify/write will not adversely affect the performance. 
 However, a proposed customization to the DRAM is the addition of a write data mask to the \ac{dram} write path thus avoiding this read/modify/write.
 This work assumes single precision floating point for \ac{ann} weights and activation, so a mask bit will be provided on a word basis or every 32 bits.
 
