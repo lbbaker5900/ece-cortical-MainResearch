@@ -12,7 +12,7 @@ The objective of this work was to design a system able to accelerate multiple di
 \iffalse
 This means systems that are not designed to process multiple requests of essentially the same operation.
 \fi
-Given that these systems cannot effectively utilize \ac{sram}, the main objective was to demonstrate a system that can operate efficiently using \ac{3ddram}.
+Given that these systems cannot effectively utilize \ac{sram}, the main objective was to demonstrate a system that can operate efficiently using a customized \ac{3ddram} with a wide data-bus.
 \iffalse
 The implemented system decodes instructions, sends configuration to various functions, pre-fetches and pipelines data.
 This parallelism allows the system to constantly stream data while results from previous operations are being processed.
@@ -40,7 +40,7 @@ in \SI{28}{\nano\meter}.
 \section{Power and Area Scaling estimates}
 \label{sec:Power and Area Scaling estimates}
 
-To obtain scaling numbers, some portions of the design were actually synthesized using \SI{28}{\nano\meter} libraries.
+Some representative portions of the design were synthesized using \SI{28}{\nano\meter} libraries to obtain scaling numbers.
 The area and power results from these synthesis runs are shown in Table \ref{tab:Scaling runs}.  The final scaling numbers are shown in Table \ref{tab:Scaling numbers}.
 
 \begin{table}[h]
@@ -270,7 +270,7 @@ The physical placement and congestion of the manager and \ac{pe} suggests a rela
 \label{sec:Synthesis}
 
 %The design has been coded . 
-To determine the appropriate frequency scaling between \SI{28}{\nano\meter} and \SI{65}{\nano\meter}, an example logic-only design was synthesized using the \SI{28}{\nano\meter} and \SI{65}{\nano\meter} libraries. 
+An example logic-only design was synthesized using the \SI{28}{\nano\meter} and \SI{65}{\nano\meter} libraries to determine the appropriate frequency scaling between the two technology nodes.
 In each case, the frequency was increased until negative timing slack was observed.
 This suggested that to achieve an operating frequency of \SI{500}{\mega\hertz} at \SI{28}{\nano\meter}, the design should be synthesized at \SI{65}{\nano\meter} using a frequency of \SI{193}{\mega\hertz}.
 All blocks in the system were synthesized using a typical library and no blocks had issues synthesizing using the typical library at this relatively low frequency, suggesting a target frequency of \SI{500}{\mega\hertz} at \SI{28}{\nano\meter} is relatively low risk.
@@ -499,14 +499,20 @@ Therefore there may either be opportunities for power reduction -- such as clock
 When making comparisons it is important to consider whether a solution meets the requirements and not how high it performs against a particular metric.
 This work places emphasis on meeting the requirements and not on maximizing a particular metric.
 
-Recently Neurostream \cite{azarkhish2017neurostream} obtained \SI[per-mode=symbol]{22.7}{\giga OP\per\second\per\watt} and claimed a 3.5X performance improvement over a representative \ac{gpu} while using a \ac{binary32} number format.
-It uses a \ac{hbm} \ac{3ddram} to provide capacity and a main memory bandwidth of \SI[per-mode=symbol]{256}{\giga\bit\per\second}. Neurostream has an average performance of \SI[per-mode=symbol]{240}{\giga FLOPS}.
+Both Neurostream \cite{azarkhish2017neurostream}, NeuroCube \cite{kim2016neurocube} and Tetris \cite{gao2017tetris} employ \ac{hmc} \ac{3ddram} to provide capacity and a main memory bandwidth of \SI[per-mode=symbol]{1}{\tera\bit\per\second}.
+Neurostream \cite{azarkhish2017neurostream} obtained \SI[per-mode=symbol]{22.7}{\giga OP\per\second\per\watt} and claimed a 3.5X performance improvement over a representative \ac{gpu} while using the same \ac{binary32} number format as this work.
+%Neurostream \cite{azarkhish2017neurostream} reported an average performance of \SI[per-mode=symbol]{240}{\giga FLOPS}.
 To achieve this performance Neurostream must use its \SI[per-mode=symbol]{1}{\mega\bit} \ac{sram} because the \ac{dram} could only support a sustained \SI[per-mode=symbol]{8}{\giga FLOPS}.
-The Neurostream device is targeted toward \acp{cnn}.
-Considering that \ac{dram} bandwidth is the bottleneck, for \cite{azarkhish2017neurostream} to meet the bandwidth requirements of this work's target application it would have to instantiate tens of devices.
-This would result in a power dissipation in excess of \SI[per-mode=symbol]{1}{\kilo\watt} providing this work a 15X improvement.
+
+Considering that \ac{dram} bandwidth is the bottleneck, for Neurostream \cite{azarkhish2017neurostream} to meet the bandwidth requirements of this work's target application, it would have to instantiate tens of devices.
+This would result in a power dissipation in excess of \SI[per-mode=symbol]{1}{\kilo\watt}.
 The \acp{flop} performance and capacity would be impressive but it would far exceed the requirements of the system.
 Note that this work achieves \SI[per-mode=symbol]{22.4}{\giga OPs\per\second\per\watt}, which is similar to Neurostream \cite{azarkhish2017neurostream}.
+
+Although both NeuroCube \cite{kim2016neurocube} and Tetris \cite{gao2017tetris} do not support the same \ac{binary32} number format, we can still consider the \ac{dram} bandwidth as being the bottleneck. 
+To meet the bandwidth requirements of this work's target application, they would have to instantiate 32 devices.
+Even though the power numbers of both NeuroCube \cite{kim2016neurocube} and Tetris \cite{gao2017tetris} do not represent a \ac{binary32} system, 
+the resulting power dissipation of \SI[per-mode=symbol]{223}{\watt} and an area of \SI[per-mode=symbol]{544}{sq \milli\meter} still represent an improvement from this work of 3X and 6X respectively.
 
 A similar scenario occurs when comparing Tensor processing unit \cite{jouppi2017datacenter} although the number formats are very different and \cite{jouppi2017datacenter} acknowledges the system relies on batch processing to achieve the very high performance.
 It uses \ac{dram} with a bandwidth of \SI[per-mode=symbol]{288}{\giga\bit\per\second} which means this work provides greater than 90 times improvement. 
@@ -519,8 +525,9 @@ In fact \cite{chen2016diannao} states that to implement one of their example \ac
 They also reference a 64-node system that they claim would outperform a \ac{gpu} by 450X.
 So, even assuming a 64-node DaDianNao system, this work would provide a 25X area improvement and a 14X power dissipation improvement.
 
-The Neurostream \cite{azarkhish2017neurostream} and DaDianNao \cite{chen2016diannao} most closely match this work and both suggest they offer significant speed improvements over \ac{gpu}.
-In the target application, this work provides significant power and/or speed improvements over both Neurostream \cite{azarkhish2017neurostream} and DaDianNao \cite{chen2016diannao}.
+The NeuroCube \cite{kim2016neurocube}, Tetris \cite{gao2017tetris}, Neurostream \cite{azarkhish2017neurostream} and DaDianNao \cite{chen2016diannao} most closely match this work and they offer significant speed improvements over \ac{gpu}.
+This work provides at least a 6X power improvement and a 3X area improvement over this state of the art, in the target application.
+%NeuroCube \cite{kim2016neurocube}, Tetris \cite{gao2017tetris} and Neurostream \cite{azarkhish2017neurostream} and a 40X area and power improvement over DaDianNao \cite{chen2016diannao}, in the target application.
 
 
 

@@ -32,10 +32,9 @@ The assumption is that embedded systems do not have batch processing opportuniti
 %The combination of an embedded system and multiple disparate \acp{ann} means systems that employ \ac{sram} will not be able to provide the neccessary performance in terms of power or capacity.
 %One area of integrated circuit technology that has started to be employed in \ac{ann}s is \acp{3dic}.  \acp{3dic} have the potential to increase connectivity, and thus bandwidth, 
 %and keep power dissipation within acceptable levels.
-This work demonstrates how a customized \ac{3dic} \ac{dram} with a very wide data-bus can be combined with application-specific layers to produce a system meeting the required level of performance in embedded systems with multiple instances of disparate \acp{ann}.
-This work avoids any dependencies on \ac{sram} that might limit the size of supported \acp{ann} and thus is able to support embedded systems that employ \acp{ann} that do not exhibit the memory reuse characteristics that make \ac{sram}-based systems effective.
-This work operates directly out of the \ac{3ddram} thus avoiding the limitations of those \ac{sram}-based systems. 
-This work demonstrates that relatively high utilization of the very wide \ac{dram} data-bus can be maintained when combined with instructions and data structures that facilitate operating directly out of the \ac{3ddram}.
+This work demonstrates how a customized \ac{3dic} \ac{dram} with a very wide data-bus can be combined with application-specific layers to produce a system meeting the requirements of embedded systems employing multiple instances of disparate \acp{ann}.
+This work avoids any dependencies on \ac{sram} that might limit the size of supported \acp{ann}. 
+This work demonstrates the required utilization of the very wide \ac{dram} data-bus when employing instructions and data structures that facilitate operating directly out of the \ac{3ddram}.
 By allowing system functions to operate asynchronously this work is able to absorb the latencies associated with \ac{dram} and provide the bandwidth required to support multiple useful sized disparate \acp{ann}.
 By demonstrating effective use of the very-wide bus of a customized \ac{3ddram}, 
 this system demonstrates a 3X power improvement and 6X area improvement over similar \ac{ann} systems.

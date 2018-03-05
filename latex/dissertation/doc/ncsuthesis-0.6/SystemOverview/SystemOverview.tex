@@ -7,12 +7,12 @@
 \chapter{System Overview}
 \label{chap-five}
 \label{sec:System Overview}
-As mentioned in Chapter \ref{sec:Introduction}, this work's target application implements multiple \acp{ann}, each of which have limited opportunities for both weight reuse and batch processing.
-These requirements require \ac{dram} to be employed for main storage of \ac{ann} parameters and local \ac{sram} is of limited use.
+As mentioned in Section \ref{sec:Motivation}, this work's target application implements multiple \acp{ann}, each of which have limited opportunities for both weight reuse and batch processing.
+These applications require \ac{dram} to be employed for main storage of \ac{ann} parameters and local \ac{sram} is of limited use.
 Under these conditions, the \ac{dram} bandwidth is the system bottleneck.
 
-To meet these requirements, this work proposes employing \ac{3dic} technology along with a customized \ac{3d} \ac{dram} and \ac{asic} technology. 
-By physically staying within the \ac{3dic} footprint and taking advantage of high density \acp{tsv} this work is able to maintain a significantly higher bandwidth over 2D or 2.5D \ac{asic} or \ac{asip} solutions.
+This work proposes employing \ac{3dic} technology along with a customized \ac{3ddram} with a very wide data-bus to meet the system requirements. 
+This work is able to maintain a significantly higher bandwidth over existing \ac{asic} or \ac{asip} solutions by physically staying within the \ac{3dic} footprint and taking advantage of high density \acp{tsv}.
 The objective is to demonstrate that a pure \ac{3dic} system can implement multiple disparate \acp{ann} within reasonable power and area constraints. 
 The \ac{3dic} system die stack (figure \ref{fig:3DICStack}) includes the \ac{3d}-\ac{dram} with a system manager below and one or more processing layers below the manager.
 \begin{figure}[!t]
@@ -29,7 +29,7 @@ The \ac{3dic} system die stack (figure \ref{fig:3DICStack}) includes the \ac{3d}
 
 3D-DRAM has recently become available in standards such as \ac{hbm} and \ac{hmc} and proprietary devices such as the DiRAM4 available from Tezzaron. 
 These technologies provide high capacity within a small footprint.
-In the case of \ac{hbm} and \ac{diram4} \cite{tezzaron:diram4}, the technology can be combined with additional custom layers to provide a system solution.
+In the case of \ac{hmc}, \ac{hbm} and \ac{diram4} \cite{tezzaron:diram4}, the technology can be combined with additional custom layers to provide a system solution.
 
 The question becomes, can a useful system coexist within the same 3D footprint?
 
@@ -53,7 +53,8 @@ The manager decodes these instructions and based on the instruction contents is 
 With the processing of an \ac{an}, the manager reads pre-synaptic states and connection weights from the \ac{dram}, provides that data to the \ac{pe} which operates on data and returns any results back to the manager.
 There are other instructions that specifically deal with coordination between \acp{ssc} but the main workload is the processing of the \acp{an}.
 
-The \ac{ssc} has been designed for extensibility to allow future modifications to support different number formats, different \ac{pe} configurations and to allow additional features to be implemented without a significant increase in logic area.
+To allow future modifications to support different number formats, different \ac{pe} configurations and to allow additional features to be implemented without a significant increase in logic area,
+the \ac{ssc} has been designed for extensibility.
 The \ac{ssc} is designed to operate on one of the disjoint sub-memories within the \ac{diram4} (see Figure \ref{fig:diram4Layout}).
 As shown in Figure \ref{fig:SSC}, the \ac{ssc} includes the \ac{diram4} sub-memory (referred to as the \ac{ssc} memory), a manager module and a \ac{pe} module.
 \begin{figure}
@@ -189,8 +190,9 @@ Another proposed change is to add mask bits to the write databus to avoid having
 \subsection{Layer Interconnect}
 \label{sec:Layer Interconnect}
 
-The layers are connected using through-silicon-vias (\ac{tsv}s) which provide high connection density, high bandwidth and low energy.
-By ensuring the system stays within the 3D footprint, we can take advantage of the area and bandwidth benefits provided by \acp{tsv}.
+To provide high connection density, high bandwidth and low energy,
+the layers are connected using fine-pitch through-silicon-vias (\ac{tsv}s).
+We can take advantage of the area and bandwidth benefits provided by the \acp{tsv} by ensuring the system stays within the 3D footprint.
 The high density interconnect provided by \acp{tsv} allows the system to take advantage of the very wide \ac{dram} bus provided by the \ac{dram} customization described in Section \ref{sec:Very-Wide Bus}.
 The wide interconnect between the manager and \ac{pe} is also implemented using \acp{tsv}.
 The interconnect between the manager and \ac{pe} is referred to as the stack bus. The interconnect between the manager and \ac{dram} is referred to as the \ac{dram} bus.
@@ -204,18 +206,17 @@ The 36-bit \ac{oob} bus is designed to send configuration packets to configure t
 A configuration packet primarily contains the \ac{stop} function to be performed on the downstream data and the operation the \ac{simd} is to perform on the result from the \ac{stop}.
 It also includes the size of the downstream data stream and an operation identification tag.
 
-In the baseline system, the 2048-bit downstream stack bus is designed to carry 32 execution lanes of data with each execution lane containing two operand buses. 
+The 2048-bit downstream stack bus is designed to carry 32 execution lanes of data with each execution lane containing two operand buses. 
 The two operand buses are designed to carry streams of \ac{binary32} numbers.
 This allows the downstream stack bus to simultaneously stream 32 execution lanes, each with two 32-bit argument streams. 
 Typically these streams are the weights and pre-synaptic \ac{an} states to calculate the states of up to 32 \acp{an}. 
 The streams can also be configured to calculate the state of a single \ac{an} where the weights and pre-synaptic \ac{an} states for the single \ac{an} are sent in parallel across the downstream stack bus and a reduction operation can be performed in the \ac{pe} by the \ac{stop} and \ac{simd}.
 
-The 512-bit upstream bus is primarily designed to send the results of a downstream operation. Typically this is the states of up to 32 \acp{an}.
+The 128-bit upstream bus is primarily designed to send the results of a downstream operation. Typically this is the states of up to 32 \acp{an}.
 The upstream bus is packetized with the result data contained in the data portion of the upstream packet.
 Additional information includes the operation identification tag provided by the decoder in the downstream \ac{oob} operation configuration and the number of data words.
 The upstream bus is not as wide as the downstream bus because the ratio of downstream operands to result data is a function of the pre-synaptic fanin.
 Based on the average fanin from the baseline \ac{ann} shown in Table \ref{tab:Baseline Layer Configuration}, a 512-bit bus exceeds the required average bandwidth.
-
 The stack bus \ac{oob} downstream and upstream signaling can be seen in Figure \ref{fig:Stack Bus signalling}.
 
 \subsubsection{Common Bus Signaling}
@@ -445,7 +446,7 @@ Host to \ac{ssc} and \ac{ssc} to \ac{ssc} communication is provided by an \ac{no
 A four port \ac{noc} within each management block is used to communicate with the host and other \acp{ssc} using a mesh network as shown in Figure \ref{fig:Mesh}.
 The \ac{noc} packet format can be seen in Figure \ref{fig:NoC packet format}.
 
-As shown in Figure \ref{fig:Mesh}, the managers in the middle of the array use all four ports to connect to adjacent managers, the managers in the corners of the array connect to two adjacent managers and the managers at the edges connect to three adjacent managers.
+The managers in the middle of the array use all four ports to connect to adjacent managers, the managers in the corners of the array connect to two adjacent managers and the managers at the edges connect to three adjacent managers, as shown in Figure \ref{fig:Mesh}.
 The host is connected to one (or more) of the managers at one edge of the array. 
 
 During configuration and/or computations, it may be required to replicate data to other \acp{ssc}.

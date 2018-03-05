@@ -366,11 +366,9 @@ As soon as read data is sent back to the \ac{mrc} via the \ac{mmc}, that data is
 \label{sec:MMC}
 
 The \ac{mmc} is responsible for taking read requests from the two \acp{mrc} and write requests from the \ac{mwc}.
-
 The read requests the \ac{mmc} receives from the \acp{mrc} include channel, bank, page and cache line addresses. 
 Read requests also contain an operation identifier.
 Write requests from the \ac{mwc} include channel, bank, page and cache line addresses. 
-
 The \ac{mmc} processes read requests from the two \acp{mrc} and write requests from the \ac{mwc}.
 The write requests are given priority with the  and the read requests processed in a round-robin fashion.
 the three requestors providing a small priority to write requests.
@@ -381,7 +379,6 @@ This avoids the case where a request from the next operation could block a reque
 The \ac{mmc} does not reorder requests to improve \ac{dram} efficiency. 
 The \ac{mmc} does keep track of open pages within banks to avoid unnecessary page open and page close commands.
 It should be noted that refresh has yet to be implemented but this is not anticipated to be a significant impact and will be done in future work.
-
 The \ac{mmc} ensures the \ac{dram} protocol is observed and this has been verified using Tezzaron \ac{diram4} verilog models.
 
 
@@ -445,7 +442,6 @@ The \ac{rdp} is responsible for taking the result data from the \ac{pe} and dete
 The \ac{rdp} receives a descriptor from the decoder that includes storage descriptor information and the tag associated with an operation sent to the \ac{pe}.
 The information is stored in a \ac{fifo} and as data is returned to the manager over the upstream stack bus, the \ac{rdp} matches the return data tag with the head of the \ac{fifo}.
 Currently the return data is in order but to support an expansive architecture the tag is provided to and checked by the \ac{rdp}.
-
 When the data is matched to the tag, the \ac{rdp} examines all the storage descriptor pointers. The pointers include the \ac{ssc} index in the \acp{msb} and the \ac{rdp} constructs an \ac{ssc} bit-field.
 Once the descriptors have been parsed, if one of the destinations is the local \ac{ssc} \ac{dram}, the \ac{rdp} passes the descriptor and data to the system controller which in turn passes it to the \ac{mwc}.
 If the destination(s) include other \acp{ssc}, the \ac{rdp} provides the \ac{ssc} bitfield along with the data to the \ac{noc}.
@@ -774,7 +770,6 @@ For this work, a high level of importance was not assigned to the actual \ac{sim
 Therefore an actual \ac{simd} was not simulated and the data from the \ac{stop} was processed only by the special functions provided in the wrapper as described above and shown in Figure \ref{fig:simd wrapper block diagram}.
 However, it was important to include the \ac{simd} in the area portion of the study.
 To account for the \ac{simd}, in the area layout study a placement blockage is used based on a 32 lane, 32-bit \ac{simd} from \cite{schabel2016processor}.
-
 In practice, the \ac{simd} will take the result data from the \ac{stop} and/or the \acp{sfu} and perform a pre-programmed operation starting at the \ac{pc} indicated by the \ac{simd} operation pointer provided by the \ac{pe} controller.
 It is expected that in future work the \ac{simd} would also be given control of the \acp{sfu} allowing for more flexible and complex processing.
 
@@ -786,7 +781,6 @@ The adder is also employed in the softmax calculation used in the final stage of
 In this case, when processing the \ac{an}, the operations performed are the \ac{relu}, the exponent, and an accumulation using a local register. The \ac{an} states are sent back to the manager.
 All the \acp{an} are processed and the local register contains the summation of the \ac{an} states. 
 The cells are then parsed a second time using the divider and the stored local value to calculate the softmax.
-
 Other than the \ac{relu}, the \acp{sfu} are not considered hot-spots in the processing of an \ac{ann} and because of this multicycle paths are employed during synthesis allowing these complex functions to meet timing.
 
 %In most cases, the \ac{simd} operation \ac{an} activation function which in the baseline system is the \ac{relu} function.
