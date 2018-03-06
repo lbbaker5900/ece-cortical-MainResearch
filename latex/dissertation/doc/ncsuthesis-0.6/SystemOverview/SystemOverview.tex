@@ -708,34 +708,39 @@ When the destination \ac{ssc} receives the packet, it extracts the storage descr
 
 When computing an \ac{ann}, a group of \acp{ssc} will be assigned to the \ac{ann} and the individual \acp{an} will be distributed over the group of \acp{ssc}.
 The \ac{noc} is employed to replicate \ac{an} states from one \ac{ssc} to other \acp{ssc} in the group.
-It is anticipated that all the \acp{ssc} in the group will be within four \ac{noc} hops of each other.
+For the cases studied where the system is supporting multiple \acp{ann}, each \ac{ann} will be assigned to groups containing six to eight \acp{ssc}.
+In this case, the \acp{ssc} in the group will be within four \ac{noc} hops.
 When the \ac{pe} passes the \ac{an} states back to the manager, the results may written to the local \ac{dram} and also sent out the \ac{noc}.
 The required time to distribute the packets is dictated in part by the results having to be sent over the \ac{noc} before the \ac{pe} completes processing the next set of \acp{an}.
 %The required time it takes the \ac{noc} to distribute the packets requirement is dictated in part by the results having to be sent over the \ac{noc} in the time taken for the \ac{pe} to process the next set of \acp{an}.
-The time taken to process a group of \acp{an} is proportional to the number of pre-synaptic \acp{an}.
-The minimum pre-synaptic fanin is of the order of two hundred that means the \ac{noc} must transport the result packets in approximately two hundred clocks.
-The \ac{noc} packet shown Figure \ref{fig:NoC packet format} contains a header cycle, 16 data cycles and one option cycle. 
+The time taken to process a group of \acp{an} is proportional to the number of pre-synaptic \acp{an} in locally- or fully-connected layers (for pooling layers see Appendix \ref{sec:Max pooling}).
+For the baseline \ac{ann} (see Table \ref{tab:Baseline Layer Configuration}), the minimum pre-synaptic fanin is 363, which means the \ac{noc} must transport the result packets in approximately 363 clocks.
+The \ac{noc} packet shown in Figure \ref{fig:NoC packet format} contains a header cycle, 16 data cycles and one option cycle. 
 Assuming a group of eight \acp{ssc} have been assigned to an \ac{ann}, a result will need to be replicated to up to seven other \acp{ssc}.
-This will require four options cycles to carry the seven storage descriptors resulting in an \ac{noc} packet size of 21 cycles.
-The verification identified the system introduces an inter-frame gap of two cycles which means it takes on average 23 cycles to transport a packet between \acp{ssc}.
-Because of the store-and-forward behavior of the \ac{noc} design, when a group of \ac{an} states needs to be replicated to all other \acp{ssc}, it takes six frame times in the network for all the packets to reach their destinations
-requiring a total of 138 cycles, which is within the 200 cycle requirement.
+This will require four option cycles to carry the seven storage descriptors. This results in an \ac{noc} packet size of 21 clock cycles.
+The verification identified that the system introduces an inter-frame gap of two cycles which means it takes on average 23 cycles to transport a packet between \acp{ssc}.
+The time taken to transport a packet over one \ac{noc} hop is called a frame time.
+Because of the store-and-forward behavior of the \ac{noc} design, when a group of \ac{an} states needs to be replicated to all other \acp{ssc}, it takes six frame times in the network for all the packets to reach their destinations,
+requiring a total of 138 cycles, which is within the 363 cycle requirement.
 
+This work defines the effective \ac{noc} bandwidth as being the total number of bits that are distributed within the group over the time it takes to distribute all the packets.
+For the case studied, there are 8 packets with 32 words per packet. % resulting in \SI[per-mode=symbol]{1}{\kilo\bit\per packet}.
 Based on the seven frame times to transport the packets to all destination \acp{ssc}, this means the \ac{noc} has an effective bandwidth of \SI[per-mode=symbol]{30}{\giga\bit\per\second} \eqref{eq:nocEffectiveBandwidth}.
-The raw bandwidth of each \ac{noc} port is \SI[per-mode=symbol]{32}{\giga\bit\per\second} \eqref{eq:rawPortBandwidth} and the raw mesh bandwidth is \SI[per-mode=symbol]{256}{\giga\bit\per\second} \eqref{eq:rawMeshBandwidth}.
+The \ac{noc} port databus width is 64 resulting in a raw bandwidth of \SI[per-mode=symbol]{32}{\giga\bit\per port} \eqref{eq:rawPortBandwidth}. % and the raw mesh bandwidth is \SI[per-mode=symbol]{256}{\giga\bit\per\second} \eqref{eq:rawMeshBandwidth}.
 % {2} means 2 columns
 % & alternates R-L-R-L
 \begin{alignat}{5} 
-  \text{NoC effective bandwidth}    & = \frac{N_p \cdot W_p \cdot b_w}{N_f \cdot c_f \cdot t_c} && = \frac{8 \cdot 32 \cdot 32}{6 \cdot 23 \cdot \num{2d-9}} && \approx \SI[per-mode=symbol]{30}{\giga \bit \per \second}  \label{eq:nocEffectiveBandwidth}          \\[-10pt]
-                                                                                                                                                                                                                                                            \notag   \\[-10pt]
   \text{NoC port bandwidth}         & = \frac{b_i}{t_c}                                         && = \frac{64}{\num{2d-9}}                                   && =  \SI[per-mode=symbol]{32}{\giga \bit \per \second}       \label{eq:rawPortBandwidth}               \\[-10pt]
                                                                                                                                                                                                                                                             \notag   \\[-10pt]                                                 
-  \text{NoC mesh bandwidth }        & = \frac{N_s \cdot b_i}{t_c}                               && = \frac{8 \cdot 64}{\num{2d-9}}                           && =  \SI[per-mode=symbol]{256}{\giga \bit \per \second}      \label{eq:rawMeshBandwidth}               \\[0pt]
+  \text{NoC effective bandwidth}    & = \frac{N_p \cdot W_p \cdot b_w}{N_f \cdot C_f \cdot t_c} && = \frac{8 \cdot 32 \cdot 32}{6 \cdot 23 \cdot \num{2d-9}} && \approx \SI[per-mode=symbol]{30}{\giga \bit \per \second}  \label{eq:nocEffectiveBandwidth}          \\[-10pt]
+                                                                                                                                                                                                                                                            \notag   \\[-10pt]
+%  \text{NoC mesh bandwidth }        & = \frac{N_s \cdot b_i}{t_c}                               && = \frac{8 \cdot 64}{\num{2d-9}}                           && =  \SI[per-mode=symbol]{256}{\giga \bit \per \second}      \label{eq:rawMeshBandwidth}               \\[0pt]
   &&&\text{where }   &&N_p \text{ is the total number of \ac{ssc} packets}    \notag \\[-5pt]
   &                &&&&W_p \text{ is the number of words per packet}          \notag \\[-5pt]
   &                &&&&N_f \text{ is the number of frame times}               \notag \\[-5pt]
   &                &&&&C_f \text{ is the number of cycles per frame }         \notag \\[-5pt]
   &                &&&&b_i \text{ is the number of data bits per interface}   \notag \\[-5pt]
+  &                &&&&b_w \text{ is the number of bits per word          }   \notag \\[-5pt]
   &                &&&&t_c \text{ is the cycle time}                          \notag
 \end{alignat}
 \iffalse
@@ -756,8 +761,8 @@ The raw bandwidth of each \ac{noc} port is \SI[per-mode=symbol]{32}{\giga\bit\pe
 \end{alignat}
 \fi
 
-\subsubsection{\ac{noc} Future Work}
-\label{sec:NoC future work}
+%\subsubsection{NoC Future Work}
+%\label{sec:NoC future work}
 
 The \ac{noc} designed in this work was primarily to create a representative \ac{noc} for the area and power analysis.
 There are situations based on poor \ac{ssc} assignment where excessive frame hops are required and could potentially violate the maximum transport time.
