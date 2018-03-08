@@ -1,0 +1,45 @@
+
+% #######################################################################################################################################
+\chapter{DiRAM4 Characteristics}
+\label{sec:Appendix-C}
+\label{sec:DiRAM4 Characteristics}
+
+\begin{table}[h]
+  % the [] contains position info e.g. [!t] means here
+  \centering
+  \captionsetup{justification=centering}
+
+%  \begin{minipage}{1.25\textwidth}
+    \centering
+    \footnotesize
+    \resizebox{0.95\linewidth}{!}{%
+    \begin{tabular}{|c|c|c|}
+      \hline
+      {\cellcolor{gray!25}}Feature    &   {\cellcolor{gray!25}}Value                  & {\cellcolor{gray!25}}Comment                                  \\\hline
+      Capacity                        &   \SI[per-mode=symbol]{64}{\giga\bit}         & \SI[per-mode=symbol]{1}{\giga\bit\per port}                   \\\cline{1-3}
+      Number of ports                 &   64                                          & Each port provides access to an individual memory             \\\cline{1-3}
+      Maximum clock frequency         &   \SI[per-mode=symbol]{1}{\giga\hertz}        &                                                               \\\cline{1-3}
+      Number of banks per port        &   64                                          &                                                               \\\cline{1-3}
+      Pages per bank                  &   4096                                        &                                                               \\\cline{1-3}
+      Bits per page                   &   4096                                        &                                                               \\\cline{1-3}
+      Cycles per read                 &   2                                           & Burst of 2                                                    \\\cline{1-3}
+      Cycles per write                &   2                                           & Burst of 2                                                    \\\hline
+      \multicolumn{3}{|c|}{{\cellcolor{gray!25}}Timing}                                                                                               \\\hline
+      {\cellcolor{gray!25}}Name       &   {\cellcolor{gray!25}}Value                  & {\cellcolor{gray!25}}Comment                                  \\\hline
+      $t_{POPO}$                      &   \SI[per-mode=symbol]{15}{\nano\second}      & Page open to page open                                        \\\hline
+      $t_{POCRA}$                     &   \SI[per-mode=symbol]{ 3}{\nano\second}      & Page open to cache read, aligned to word address              \\\cline{1-3}
+      $t_{POCR}$                      &   \SI[per-mode=symbol]{ 9}{\nano\second}      & Page open to cache read                                       \\\cline{1-3}
+      $t_{POCW}$                      &   \SI[per-mode=symbol]{ 9}{\nano\second}      & Page open to cache write                                      \\\cline{1-3}
+      $t_{POPC}$                      &   \SI[per-mode=symbol]{ 9}{\nano\second}      & Page open to page close                                       \\\cline{1-3}
+      $t_{PCPO}$                      &   \SI[per-mode=symbol]{10}{\nano\second}      & Page close to page open                                       \\\cline{1-3}
+      $t_{CRL} $                      &   \SI[per-mode=symbol]{ 5}{\nano\second}      & cache read latency                                            \\\cline{1-3}
+      $t_{CWL} $                      &   \SI[per-mode=symbol]{-1}{\nano\second}      & cache write latency                                           \\\cline{1-3}
+    \end{tabular}
+    }
+%  \end{minipage}
+  \captionsetup{justification=centering, skip=9pt}
+  \vspace{0.0cm}
+  \captionof{table}{DiRAM4 characteristics \cite{tezzaron:diram4}}
+  \label{tab:DiRAM4 characteristics}
+\end{table}
+
